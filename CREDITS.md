@@ -4,20 +4,16 @@ If you make a contribution towards this engine, add your name to the list below.
 
 ## Misc.
 
-Capcom (creator of Mega Man)
+[Love2D](love2d.org) (framework)
 
-Love2D (framework)
-
-Mega Engine (reference)
+[Mega Engine](http://sprites-inc.co.uk/showthread.php?tid=1648) (reference)
 
 ## Programming
 
 Yozzaxia1311
 
-## Graphics
+## Assets
 
-Capcom
-
-Sprites Inc.
+[Sprites Inc.](http://sprites-inc.co.uk/) (graphic rips)
 
 Yozzaxia1311
