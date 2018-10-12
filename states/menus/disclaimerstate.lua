@@ -38,6 +38,10 @@ function disclaimer:new()
   self.check = false
   self.cycler = 1
   self.colors = {{0, 70, 90}, {0, 120, 248}, {60, 188, 252}, {255, 255, 255}}
+  self.disclaimerText = "mega man is a registered trademark of capcom." .. 
+    "\n\n\n\nthe mega man love engine is a non-profit fanmade engine created by " .. 
+    "various contributors.\n\nthough it's not required, credit is appreciated.\n\n" .. 
+    "have fun!"
 end
 
 function disclaimer:update()
@@ -75,10 +79,7 @@ function disclaimer:draw()
   love.graphics.draw(self.t, 200, 160)
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.setFont(mmFont)
-  love.graphics.printf("mega man is a registered trademark of capcom" .. 
-    "\n\n\n\nthe mega man love engine is a non-profit fanmade engine created by " .. 
-    "yozzaxia1311.\n\nremember to give credit. don't claim this engine as your own.\n\n" .. 
-    "have fun!", 0, 35, 256, "center")
+  love.graphics.printf(self.disclaimerText, 4, 24, 248, "center")
   love.graphics.setColor(1, 1, 1, self.alpha/255)
   love.graphics.printf("press start to continue\npress escape to rebind controls", -21, 200, 300, "center")
 end
