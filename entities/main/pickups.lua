@@ -382,8 +382,8 @@ function life:new(x, y, despwn, id, spawner)
   life.super.new(self)
   self.transform.y = y
   self.transform.x = x
-  self:setRectangleCollision(16, 14)
-  self.quad = love.graphics.newQuad(104, 12, 16, 15, 128, 96)
+  self:setRectangleCollision(16, 15)
+  self.quad = love.graphics.newQuad(104, 12, 16, 16, 128, 98)
   self.id = id
   self.spawner = spawner
   self.tex = loader.get("particles")
