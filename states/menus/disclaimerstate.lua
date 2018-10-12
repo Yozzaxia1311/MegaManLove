@@ -70,9 +70,9 @@ end
 
 function disclaimer:draw()
   love.graphics.setColor(self.colors[self.cycler][1]/255, self.colors[self.cycler][2]/255, self.colors[self.cycler][3]/255, 1)
-  love.graphics.draw(self.t, 42, 155)
-  love.graphics.draw(self.t, 122, 155)
-  love.graphics.draw(self.t, 202, 155)
+  love.graphics.draw(self.t, 40, 160)
+  love.graphics.draw(self.t, 120, 160)
+  love.graphics.draw(self.t, 200, 160)
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.setFont(mmFont)
   love.graphics.printf("mega man is a registered trademark of capcom" .. 
