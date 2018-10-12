@@ -97,7 +97,7 @@ end
 
 function megaman.transferProperties(self, from)
   for k, v in pairs(from) do
-    if (self[k] ~= nil) then
+    if self[k] ~= nil then
       self[k] = v
     end
   end
