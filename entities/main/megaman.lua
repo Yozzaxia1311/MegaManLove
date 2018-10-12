@@ -96,64 +96,11 @@ function megaman.properties(self)
 end
 
 function megaman.transferProperties(self, from)
-  self.gravityType = from.gravityType
-  self.gravity = from.gravity
-  self.maxChargeTime = from.maxChargeTime
-  self.jumpSpeed = from.jumpSpeed
-  self.jumpDecel = from.jumpDecel
-  self.maxLeftSpeed = from.maxLeftSpeed
-  self.maxRightSpeed = from.maxRightSpeed
-  self.leftSpeed = from.leftSpeed
-  self.rightSpeed = from.rightSpeed
-  self.leftDecel = from.leftDecel
-  self.rightDecel = from.rightDecel
-  self.maxLeftAirSpeed = from.maxLeftAirSpeed
-  self.maxRightAirSpeed = from.maxRightAirSpeed
-  self.leftAirSpeed = from.leftAirSpeed
-  self.rightAirSpeed = from.rightAirSpeed
-  self.leftAirDecel = from.leftAirDecel
-  self.rightAirDecel = from.rightAirDecel
-  self.maxAirSpeed = from.maxAirSpeed
-  self.wallKickSpeed = from.wallKickSpeed
-  self.wallJumpSpeed = from.wallJumpSpeed
-  self.slideLeftSpeed = from.slideLeftSpeed
-  self.slideRightSpeed = from.slideRightSpeed
-  self.dashJumpMultiplier = from.dashJumpMultiplier
-  self.maxSlideTime = from.maxSlideTime
-  self.climbUpSpeed = from.climbUpSpeed
-  self.climbDownSpeed = from.climbDownSpeed
-  self.maxHitTime = from.maxHitTime
-  self.leftKnockBackSpeed = from.leftKnockBackSpeed
-  self.rightKnockBackSpeed = from.rightKnockBackSpeed
-  self.maxShootTime = from.maxShootTime
-  self.side = from.side
-  self.maxStepTime = from.maxStepTime
-  self.alwaysMove = from.alwaysMove
-  self.inv = from.inv
-  self.canGetCrushed = from.canGetCrushed
-  self.canStopJump = from.canStopJump
-  self.maxWallJumpTime = from.maxWallJumpTime
-  self.wallSlideSpeed = from.wallSlideSpeed
-  self.canDashShoot = from.canDashShoot
-  self.canDashJump = from.canDashJump
-  self.canDash = from.canDash
-  self.canShoot = from.canShoot
-  self.canWallJump = from.canWallJump
-  self.canChargeBuster = from.canChargeBuster
-  self.canWalk = from.canWalk
-  self.canJump = from.canJump
-  self.maxNormalBusterShots = from.maxNormalBusterShots
-  self.cameraFocus = from.cameraFocus
-  self.threeWeaponIcons = from.threeWeaponIcons
-  self.cameraOffsetX = from.cameraOffsetX
-  self.cameraOffsetY = from.cameraOffsetY
-  self.cameraWidth = from.cameraWidth
-  self.cameraHeight = from.cameraHeight
-  self.dropSpeed = from.dropSpeed
-  self.riseSpeed = from.riseSpeed
-  self.maxBubbleTime = from.maxBubbleTime
-  self.canJumpOutFromDash = from.canJumpOutFromDash
-  self.canBackOutFromDash = from.canBackOutFromDash
+  for k, v in pairs(from) do
+    if (self[k] ~= nil) then
+      self[k] = v
+    end
+  end
 end
 
 megaman.weaponHandler = {}
