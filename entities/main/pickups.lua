@@ -20,7 +20,7 @@ function smallHealth:new(x, y, despwn, id, spawner)
   self.spawner = spawner
   self.t = loader.get("particles")
   self.tOutline = loader.get("particles_outline")
-  self.despawn = despwn
+  self.despawn = (not despwn and self.id == nil) or despwn
   self.added = function()
     self:addToGroup("removeOnCutscene")
     self:addToGroup("freezable")
@@ -70,6 +70,8 @@ function smallHealth:update(dt)
       self.render = math.wrap(self.timer, 0, 8) > 4
     end
     if self.timer == 400 then
+      megautils.state().sectionHandler:removeEntity(self.spawner)
+      megautils.remove(self.spawner, true)
       megautils.remove(self, true)
     end
   end
@@ -112,7 +114,7 @@ function health:new(x, y, despwn, id, spawner)
   self.spawner = spawner
   self.t = loader.get("particles")
   self.tOutline = loader.get("particles_outline")
-  self.despawn = despwn
+  self.despawn = (not despwn and self.id == nil) or despwn
   self.added = function()
     self:addToGroup("removeOnCutscene")
     self:addToGroup("freezable")
@@ -162,6 +164,8 @@ function health:update(dt)
       self.render = math.wrap(self.timer, 0, 8) > 4
     end
     if self.timer == 400 then
+      megautils.state().sectionHandler:removeEntity(self.spawner)
+      megautils.remove(self.spawner, true)
       megautils.remove(self, true)
     end
   end
@@ -205,7 +209,7 @@ function smallEnergy:new(x, y, despwn, id, spawner)
   self.texOutline = loader.get("particles_outline")
   self.texOne = loader.get("particles_one")
   self.texTwo = loader.get("particles_two")
-  self.despawn = despwn
+  self.despawn = (not despwn and self.id == nil) or despwn
   self.added = function()
     self:addToGroup("removeOnCutscene")
     self:addToGroup("freezable")
@@ -256,6 +260,8 @@ function smallEnergy:update(dt)
       self.render = math.wrap(self.timer, 0, 8) > 4
     end
     if self.timer == 400 then
+      megautils.state().sectionHandler:removeEntity(self.spawner)
+      megautils.remove(self.spawner, true)
       megautils.remove(self, true)
     end
   end
@@ -303,7 +309,7 @@ function energy:new(x, y, despwn, id, spawner)
   self.texOutline = loader.get("particles_outline")
   self.texOne = loader.get("particles_one")
   self.texTwo = loader.get("particles_two")
-  self.despawn = despwn
+  self.despawn = (not despwn and self.id == nil) or despwn
   self.added = function()
     self:addToGroup("removeOnCutscene")
     self:addToGroup("freezable")
@@ -354,6 +360,8 @@ function energy:update(dt)
       self.render = math.wrap(self.timer, 0, 8) > 4
     end
     if self.timer == 400 then
+      megautils.state().sectionHandler:removeEntity(self.spawner)
+      megautils.remove(self.spawner, true)
       megautils.remove(self, true)
     end
   end
@@ -402,7 +410,7 @@ function life:new(x, y, despwn, id, spawner)
   self.texTwo = loader.get("particles_two")
   self.texOutline = loader.get("particles_outline")
   self.texOne = loader.get("particles_one")
-  self.despawn = despwn
+  self.despawn = (not despwn and self.id == nil) or despwn
   self.added = function()
     self:addToGroup("removeOnCutscene")
     self:addToGroup("freezable")
@@ -453,6 +461,8 @@ function life:update(dt)
       self.render = math.wrap(self.timer, 0, 8) > 4
     end
     if self.timer == 400 then
+      megautils.state().sectionHandler:removeEntity(self.spawner)
+      megautils.remove(self.spawner, true)
       megautils.remove(self, true)
     end
   end
@@ -501,7 +511,7 @@ function eTank:new(x, y, despwn, id, spawner)
   self.texOutline = loader.get("particles_outline")
   self.texOne = loader.get("particles_one")
   self.texTwo = loader.get("particles_two")
-  self.despawn = despwn
+  self.despawn = (not despwn and self.id == nil) or despwn
   self.added = function()
     self:addToGroup("removeOnCutscene")
     self:addToGroup("freezable")
@@ -552,6 +562,8 @@ function eTank:update(dt)
       self.render = math.wrap(self.timer, 0, 8) > 4
     end
     if self.timer == 400 then
+      megautils.state().sectionHandler:removeEntity(self.spawner)
+      megautils.remove(self.spawner, true)
       megautils.remove(self, true)
     end
   end
@@ -599,7 +611,7 @@ function wTank:new(x, y, despwn, id, spawner)
   self.texOutline = loader.get("particles_outline")
   self.texOne = loader.get("particles_one")
   self.texTwo = loader.get("particles_two")
-  self.despawn = despwn
+  self.despawn = (not despwn and self.id == nil) or despwn
   self.added = function()
     self:addToGroup("removeOnCutscene")
     self:addToGroup("freezable")
@@ -650,6 +662,8 @@ function wTank:update(dt)
       self.render = math.wrap(self.timer, 0, 8) > 4
     end
     if self.timer == 400 then
+      megautils.state().sectionHandler:removeEntity(self.spawner)
+      megautils.remove(self.spawner, true)
       megautils.remove(self, true)
     end
   end
