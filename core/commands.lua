@@ -95,7 +95,7 @@ concmd["kill"] = {
 
 function cmdGetpos(cmd)
   if globals.mainPlayer then
-    console.print(tostring(globals.mainPlayer.x)..", "..tostring(globals.mainPlayer.y))
+    console.print(tostring(globals.mainPlayer.transform.x)..", "..tostring(globals.mainPlayer.transform.y))
   end
 end
 concmd["getpos"] = {
