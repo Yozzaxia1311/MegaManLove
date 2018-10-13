@@ -6,7 +6,7 @@ function love.load()
   love.graphics.setDefaultFilter("nearest", "nearest")
   OSSystem = love.system.getOS()
   view.init(256, 224, 2)
-  console.init()
+  useConsole = false
   framerate = 1/60
   showEntityCount = false
   showFPS = false
@@ -38,6 +38,8 @@ function love.load()
     control.keyboardControls.next = {"s", "keyboard"}
     control.keyboardControls.dash = {"c", "keyboard"}
   end
+  
+  if useConsole then console.init() end
   
   base64SaveFiles = false
   consoleFont = love.graphics.getFont() -- needs to be preserved
@@ -92,20 +94,20 @@ end
 
 function love.keypressed(k, s, r)
   -- keypressed event must be hijacked for console to work
-	if (console.state == 1) then
+	if useConsole and (console.state == 1) then
 		if (k == "backspace") then
-			console.backspace();
+			console.backspace()
 		end
 		if (k == "return") then
-			console.send();
+			console.send()
 		end
 		if (k == "up" or k == "down") then
-			console.cycle(k);
+			console.cycle(k)
 		end
 		if (k == "tab" and #console.input > 0 and #console.getCompletion(console.input) > 0) then
-			console.complete();
+			console.complete()
 		end
-		return;
+		return
 	end
   globals.lastKeyPressed = {k, "keyboard"}
 end
@@ -137,9 +139,13 @@ function love.gamepadaxis(j, b, v)
   end
 end
 
+function love.textinput(k)
+  if useConsole then console.doInput(k) end
+end
+
 function love.update(dt)
   control.update()
-  console.update(dt)
+  if useConsole then console.update(dt) end
   states.update(dt)
   states.switched = false
   control.flush()
@@ -168,10 +174,10 @@ function love.draw()
   love.graphics.push()
   states.draw()
   love.graphics.pop()
+  if useConsole then console.draw() end
   if touchControls then
     touchInput.draw()
   end
-  console.draw()
 end
 
 function love.run()

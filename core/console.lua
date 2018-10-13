@@ -416,7 +416,3 @@ function console.draw()
   -- if this ever gets called more than once per frame, wait will break!
   if console.wait > 0 then console.wait = console.wait - 1 return end
 end
-
-function love.textinput(k)
-  console.doInput(k)
-end
