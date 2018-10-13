@@ -49,7 +49,11 @@ function cmdMap(cmd)
 		end
 	end
 	if map == nil then console.print("No such map \""..cmd[2].."\"") return end
-	megautils.gotoState("states/stages/"..map, function() mmMusic.stopMusic() end)
+	megautils.gotoState("states/stages/"..map, function()
+    globals.resetState = true
+    megautils.resetPlayer()
+    mmMusic.stopMusic()
+  end)
 end
 concmd["map"] = {
 	helptext = "load a map",
