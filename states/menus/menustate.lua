@@ -86,7 +86,6 @@ function menuSelect:update(dt)
         globals.lifeSegments = data.lifeSegments
         globals.eTanks = data.eTanks
         globals.wTanks = data.wTanks
-        heartTank.list = data.heartTanks
       end
     elseif self.pick == 4 then
       local data = save.load("save.txt") or {}
@@ -96,7 +95,6 @@ function menuSelect:update(dt)
       data.lifeSegments = globals.lifeSegments
       data.eTanks = globals.eTanks
       data.wTanks = globals.wTanks
-      data.heartTanks = heartTank.list
       save.save("save.txt", data)
       mmSfx.play("selected")
     elseif self.pick == 5 then
