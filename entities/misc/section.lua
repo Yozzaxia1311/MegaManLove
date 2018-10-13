@@ -20,6 +20,36 @@ function sectionHandler:new()
   self.next = nil
 end
 
+function sectionHandler:updateEntity(e)
+  for k, v in ipairs(self.sections) do
+    if table.contains(v.group, e) then
+      table.removevaluearray(v.group, e)
+      break
+    end
+  end
+  local tmp = e:collisionTable(self.sections)[1]
+  tmp.group[#tmp.group+1] = e
+end
+
+function sectionHandler:removeEntity(e)
+  for k, v in ipairs(self.sections) do
+    if table.contains(v.group, e) then
+      table.removevaluearray(v.group, e)
+      break
+    end
+  end
+end
+
+function sectionHandler:iterate(func)
+  for k, v in ipairs(self.sections) do
+    for i, j in ipairs(v.group) do
+      if func(j) == true then
+        break
+      end
+    end
+  end
+end
+
 function sectionHandler:add(s)
   self.sections[#self.sections+1] = s
 end
@@ -32,13 +62,18 @@ function sectionHandler:updateAll()
       end
     end
   else
+    self.current.group = self.current:collisionTable(megautils.groups()["despawnable"])
     for k, v in pairs(self.current.group) do
-      megautils.remove(v)
+      if not v.dontRemove then
+        megautils.remove(v)
+      end
     end
   end
   if self.next ~= nil then
     for k, v in pairs(self.next.group) do
-      megautils.add(v)
+      if not v.dontRemove then
+        megautils.add(v)
+      end
     end
     self.current = self.next
     self.next = nil

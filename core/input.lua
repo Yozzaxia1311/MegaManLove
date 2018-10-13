@@ -113,6 +113,9 @@ function inputHandler:unbind(k)
 end
 
 function inputHandler:down(k)
+  if console and console.state == 1 then
+    return false
+  end
   if self.keys[k][1] == "keyboard" then
     return love.keyboard.isDown(self.keys[k][2])
   elseif self.keys[k][1] == "touch" then
@@ -167,6 +170,9 @@ function inputHandler:down(k)
 end
 
 function inputHandler:pressed(k)
+  if console and console.state == 1 then
+    return false
+  end
   if not self.pressedTable[k] and self:down(k) then
     self.pressedTable[k] = true
     return true
@@ -175,6 +181,9 @@ function inputHandler:pressed(k)
 end
 
 function inputHandler:anyDown()
+  if console and console.state == 1 then
+    return false
+  end
   for k, v in pairs(self.keys) do
     if self:down(k) then
       return true

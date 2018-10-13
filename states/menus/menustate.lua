@@ -65,7 +65,11 @@ function menuSelect:update(dt)
       megautils.gotoState("states/menus/stageselectstate.lua")
       globals.stopMusicMenu = nil
     elseif self.pick == 1 then
-      love.window.setFullscreen(not love.window.getFullscreen())
+      if convar.getNumber("r_fullscreen") == 1 then
+        convar.setValue("r_fullscreen", 0, true)
+      else
+        convar.setValue("r_fullscreen", 1, true)
+      end
     elseif self.pick == 2 then
       self.picked = true
       self.render = false

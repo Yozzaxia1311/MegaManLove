@@ -31,7 +31,6 @@ function smallStar:new(x, y, angle, spd, wrap)
   smallStar.super.new(self)
   self.transform.y = y
   self.transform.x = x
-  self:setRectangleCollision(3, 3)
   self.t = loader.get("star_field")
   self.quad = love.graphics.newQuad(25, 120, 3, 3, 256, 187)
   self.velocity = velocity()
@@ -43,8 +42,8 @@ end
 function smallStar:update()
   self:moveBy(self.velocity.velx, self.velocity.vely)
   if self.wrap then
-    self.transform.x = math.wrap(self.transform.x, -self.collisionShape.w, view.w)
-    self.transform.y = math.wrap(self.transform.y, -self.collisionShape.h, view.h)
+    self.transform.x = math.wrap(self.transform.x, -3, view.w)
+    self.transform.y = math.wrap(self.transform.y, -3, view.h)
   end
 end
 
@@ -59,7 +58,6 @@ function star:new(x, y, angle, spd, wrap)
   star.super.new(self)
   self.transform.y = y
   self.transform.x = x
-  self:setRectangleCollision(10, 6)
   self.t = loader.get("star_field")
   self.quad = love.graphics.newQuad(0, 120, 10, 6, 256, 187)
   self.velocity = velocity()
@@ -71,8 +69,8 @@ end
 function star:update()
   self:moveBy(self.velocity.velx, self.velocity.vely)
   if self.wrap then
-    self.transform.x = math.wrap(self.transform.x, -self.collisionShape.w, view.w)
-    self.transform.y = math.wrap(self.transform.y, -self.collisionShape.h, view.h)
+    self.transform.x = math.wrap(self.transform.x, -10, view.w)
+    self.transform.y = math.wrap(self.transform.y, -6, view.h)
   end
 end
 
@@ -87,7 +85,6 @@ function largeStar:new(x, y, angle, spd, wrap)
   largeStar.super.new(self)
   self.transform.y = y
   self.transform.x = x
-  self:setRectangleCollision(15, 11)
   self.t = loader.get("star_field")
   self.quad = love.graphics.newQuad(10, 120, 15, 11, 256, 187)
   self.velocity = velocity()
@@ -99,8 +96,8 @@ end
 function largeStar:update()
   self:moveBy(self.velocity.velx, self.velocity.vely)
   if self.wrap then
-    self.transform.x = math.wrap(self.transform.x, -self.collisionShape.w, view.w)
-    self.transform.y = math.wrap(self.transform.y, -self.collisionShape.h, view.h)
+    self.transform.x = math.wrap(self.transform.x, -15, view.w)
+    self.transform.y = math.wrap(self.transform.y, -11, view.h)
   end
 end
 

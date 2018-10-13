@@ -1,5 +1,7 @@
 entitysystem = class:extend()
 
+entitysystem.drawCollision = false
+
 function entitysystem:new()
   self.entities = {}
   self.updates = {}
@@ -141,6 +143,10 @@ function entitysystem:draw()
             return
           end
           v:draw()
+          love.graphics.setColor(1, 1, 1, 1)
+          if entitysystem.drawCollision then
+            v:drawCollision()
+          end
         end
       end
     end
@@ -425,7 +431,11 @@ end
 
 function entity:drawCollision()
   if self.collisionShape == nil then return false end
-  love.graphics.rectangle("line", self.transform.x, self.transform.y, self.collisionShape.w, self.collisionShape.h)
+  if self.collisionShape.type == 0 then
+    love.graphics.rectangle("line", self.transform.x, self.transform.y, self.collisionShape.w, self.collisionShape.h)
+  elseif self.collisionShape.type == 1 then
+    --image collision drawing not implemented
+  end
 end
 
 function entity:collisionRect(e, x, y)
