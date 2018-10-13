@@ -6,7 +6,7 @@ function love.load()
   love.graphics.setDefaultFilter("nearest", "nearest")
   OSSystem = love.system.getOS()
   view.init(256, 224, 2)
-  useConsole = true
+  useConsole = false
   framerate = 1/60
   showEntityCount = false
   showFPS = false
