@@ -49,7 +49,7 @@ function cmdMap(cmd)
 		end
 	end
 	if map == nil then console.print("No such map \""..cmd[2].."\"") return end
-	megautils.gotoState("states/stages/"..map)
+	megautils.gotoState("states/stages/"..map, function() mmMusic.stopMusic() end)
 end
 concmd["map"] = {
 	helptext = "load a map",
@@ -70,16 +70,16 @@ concmd["maps"] = {
 	fun = cmdMaps,
 }
 
-function cmdHurtme(cmd)
+function cmdGivehealth(cmd)
   if not cmd[2] then return end
   if globals.mainPlayer then
-    globals.mainPlayer:hurt({globals.mainPlayer}, -numberSanitize(cmd[2]), 1)
+    globals.mainPlayer:hurt({globals.mainPlayer}, numberSanitize(cmd[2]), 1)
   end
 end
-concmd["hurtme"] = {
-  helptext = "hurt yourself",
+concmd["givehealth"] = {
+  helptext = "negatively and positively add to your health",
   flags = {"cheat"},
-  fun = cmdHurtme,
+  fun = cmdGivehealth,
 }
 
 function cmdKill(cmd)

@@ -47,14 +47,7 @@ convar["r_fullscreen"] = {
   helptext = "fullscreen mode",
   flags = {"client"},
   value = 0,
-  fun = function(arg)
-    local n = numberSanitize(arg)
-    if n == 1 then
-      love.window.setFullscreen(true)
-    else
-      love.window.setFullscreen(false)
-    end
-  end,
+  fun = function(arg) local n = numberSanitize(arg) love.window.setFullscreen(n == 1) end
 }
 convar["volume"] = {
   helptext = "game volume",
@@ -63,9 +56,10 @@ convar["volume"] = {
   fun = function(arg) local n = numberSanitize(arg) love.audio.setVolume(n) end
 }
 convar["r_hitboxes"] = {
-  helptext = "draw hitboxes (unimplemented)",
+  helptext = "draw hitboxes",
   flags = {"cheat"},
   value = 0,
+  fun = function(arg) local n = numberSanitize(arg) entitysystem.drawCollision = n == 1 end
 }
 
 conaction = {}
