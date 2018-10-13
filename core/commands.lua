@@ -113,6 +113,18 @@ concmd["clear"] = {
   fun = cmdClear,
 }
 
+function cmdGive(cmd)
+  if globals.mainPlayer and cmd[2] then
+    addobjects.add({{["name"]=cmd[2], ["x"]=globals.mainPlayer.transform.x+numberSanitize(cmd[3]),
+      ["y"]=globals.mainPlayer.transform.y+numberSanitize(cmd[4])}})
+  end
+end
+concmd["give"] = {
+  helptext = "spawn registered entity",
+  flags = {},
+  fun = cmdGive,
+}
+
 function cmdExec(cmd)
   if not cmd[2] then return end
   if not love.filesystem.getInfo("cfg/"..cmd[2]..".cfg") then
