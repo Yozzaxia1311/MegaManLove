@@ -14,29 +14,29 @@ function love.load()
   deadZone = 0.8
   
   if touchControls then
-    control.keyboardControls.up = {"up", "touch"}
-    control.keyboardControls.down = {"down", "touch"}
-    control.keyboardControls.left = {"left", "touch"}
-    control.keyboardControls.right = {"right", "touch"}
-    control.keyboardControls.jump = {"jump", "touch"}
-    control.keyboardControls.shoot = {"shoot", "touch"}
-    control.keyboardControls.start = {"start", "touch"}
-    control.keyboardControls.select = {"select", "touch"}
-    control.keyboardControls.prev = {"prev", "touch"}
-    control.keyboardControls.next = {"next", "touch"}
-    control.keyboardControls.dash = {"dash", "touch"}
+    control.inputBinds.up = {"up", "touch"}
+    control.inputBinds.down = {"down", "touch"}
+    control.inputBinds.left = {"left", "touch"}
+    control.inputBinds.right = {"right", "touch"}
+    control.inputBinds.jump = {"jump", "touch"}
+    control.inputBinds.shoot = {"shoot", "touch"}
+    control.inputBinds.start = {"start", "touch"}
+    control.inputBinds.select = {"select", "touch"}
+    control.inputBinds.prev = {"prev", "touch"}
+    control.inputBinds.next = {"next", "touch"}
+    control.inputBinds.dash = {"dash", "touch"}
   else
-    control.keyboardControls.up = {"up", "keyboard"}
-    control.keyboardControls.down = {"down", "keyboard"}
-    control.keyboardControls.left = {"left", "keyboard"}
-    control.keyboardControls.right = {"right", "keyboard"}
-    control.keyboardControls.jump = {"z", "keyboard"}
-    control.keyboardControls.shoot = {"x", "keyboard"}
-    control.keyboardControls.start = {"return", "keyboard"}
-    control.keyboardControls.select = {"rshift", "keyboard"}
-    control.keyboardControls.prev = {"a", "keyboard"}
-    control.keyboardControls.next = {"s", "keyboard"}
-    control.keyboardControls.dash = {"c", "keyboard"}
+    control.inputBinds.up = {"up", "keyboard"}
+    control.inputBinds.down = {"down", "keyboard"}
+    control.inputBinds.left = {"left", "keyboard"}
+    control.inputBinds.right = {"right", "keyboard"}
+    control.inputBinds.jump = {"z", "keyboard"}
+    control.inputBinds.shoot = {"x", "keyboard"}
+    control.inputBinds.start = {"return", "keyboard"}
+    control.inputBinds.select = {"rshift", "keyboard"}
+    control.inputBinds.prev = {"a", "keyboard"}
+    control.inputBinds.next = {"s", "keyboard"}
+    control.inputBinds.dash = {"c", "keyboard"}
   end
   
   if useConsole then console.init() end
