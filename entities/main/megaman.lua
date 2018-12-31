@@ -93,6 +93,7 @@ function megaman.properties(self)
   self.maxBubbleTime = 120
   self.canJumpOutFromDash = true
   self.canBackOutFromDash = true
+  self.canSwitchWeapons = true
 end
 
 megaman.weaponHandler = {}
@@ -242,11 +243,11 @@ function megaman:new(x, y, side, drop)
   self.slideTimer = self.maxSlideTime
   self.dashJump = false
   self.wallJumpTimer = 0
-  self.canSwitchWeapons = true
   self.dropLanded = not self.drop
   self.ignoreTransitions = self.drop
   self.control = not self.drop
   self.bubbleTimer = 0
+  self.runCheck = false
   
   self.groundUpdateFuncs = {}
   self.airUpdateFuncs = {}
@@ -581,6 +582,7 @@ function megaman:healthChanged(o, c, i)
 end
 
 function megaman:code(dt)
+  self.runCheck = ((control.leftDown and not control.rightDown) or (control.rightDown and not control.leftDown))
   if self.hitTimer ~= self.maxHitTime then
     self.hitTimer = math.min(self.hitTimer+1, self.maxHitTime)
     self:grav()
@@ -745,7 +747,7 @@ function megaman:code(dt)
       self.velocity.vely = 1
     end
     if self.canWalk and not (self.stopOnShot and self.shootTimer ~= self.maxShootTime) then
-      if (control.leftDown or control.rightDown) and not self.step then
+      if self.runCheck and not self.step then
         self.side = control.leftDown and -1 or 1
         if self.stepVelocity or self.stepTime == 0 then
           self.velocity.velx = self.velocity.velx + ternary(self.side==1, self.stepRightSpeed, self.stepLeftSpeed)
@@ -757,7 +759,7 @@ function megaman:code(dt)
           self.step = true
           self.stepTime = 0
         end
-      elseif (control.leftDown or control.rightDown) then
+      elseif self.runCheck then
         self.side = control.leftDown and -1 or 1
         self.velocity.velx = self.velocity.velx + (self.side == -1 and self.leftSpeed or self.rightSpeed)
       elseif not self.alwaysMove then
@@ -766,7 +768,7 @@ function megaman:code(dt)
         self.step = false
       end
     else
-      if (control.leftDown or control.rightDown) then
+      if self.runCheck then
         self.side = control.leftDown and -1 or 1
       end
       self.velocity:slowX(self.side == -1 and self.leftDecel or self.rightDecel)
@@ -1116,11 +1118,10 @@ function megaman:animate()
     elseif self.slide then
       self.curAnim = self.dashAnimation[shoot]
     elseif self.ground then
-      if self.canWalk and not self.step and
-        (control.leftDown or control.rightDown) then
+      if self.canWalk and not self.step and self.runCheck then
         self.curAnim = self.nudgeAnimation[shoot]
       elseif (self.canWalk and ((not self.idleMoving and self.alwaysMove and self.velocity.velx ~= 0) or
-        (control.leftDown or control.rightDown))) and
+        self.runCheck)) and
         not (self.stopOnShot and self.shootTimer ~= self.maxShootTime) then
         self.curAnim = self.runAnimation[shoot]
       else
@@ -1153,6 +1154,7 @@ function megaman:animate()
 end
 
 function megaman:update(dt)
+  self.runCheck = false
   if self.rise then
     self.control = false
     if self.dropLanded then
