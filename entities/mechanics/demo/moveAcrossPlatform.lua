@@ -11,13 +11,15 @@ moveAcrossPlatform = entity:extend()
 
 function moveAcrossPlatform:new(x, y, toX, toY, s)
   moveAcrossPlatform.super.new(self)
+  self.added = function(self)
+    self:addToGroup("freezable")
+    self:addToGroup("removeOnCutscene")
+  end
   self.transform.x = x
   self.transform.y = y
   self:setRectangleCollision(32, 16)
   self.tex = loader.get("demo_objects")
   self.quad = love.graphics.newQuad(0, 0, 32, 16, 100, 100)
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnCutscene")
   self.spawner = s
   self.velocity = velocity()
   self.tween = tween.new(1, self.transform, {x=toX, y=toY}, "inOutBack")

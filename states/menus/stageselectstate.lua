@@ -32,9 +32,11 @@ stageSelect = entity:extend()
 
 function stageSelect:new()
   stageSelect.super.new(self)
+  self.added = function(self)
+    self:addToGroup("freezable")
+  end
   self.transform.y = 8
   self.transform.x = 24
-  self:addToGroup("freezable")
   self.quad = love.graphics.newQuad(81, 296, 15, 7, 96, 303)
   self.megaQuad = love.graphics.newQuad(0, 0, 32, 32, 96, 303)
   self.stickQuad = love.graphics.newQuad(32*2, 0, 32, 32, 96, 303)

@@ -27,10 +27,12 @@ disclaimer = entity:extend()
 
 function disclaimer:new()
   disclaimer.super.new(self)
+  self.added = function(self)
+    self:addToGroup("freezable")
+  end
   self.transform.x = 0
   self.transform.y = 0
   self.t = loader.get("face")
-  self:addToGroup("freezable")
   self.timer = 0
   self.timer2 = 2
   self.alpha = 0

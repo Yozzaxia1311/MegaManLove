@@ -311,10 +311,12 @@ function megaman:new(x, y, side, drop)
   self.animations["spawn"] = anim8.newAnimation(loader.get("mega_man_grid")("3-4", 5), 0.08)
   self.animations["spawnLand"] = anim8.newAnimation(loader.get("mega_man_grid")("1-2", 6, 1, 6), 1/20)
   self:face(self.side)
-  self:addToGroup("freezable")
-  self:addToGroup("submergable")
-  self:addToGroup("carry")
-  self:addToGroup("hurtableOther")
+  self.added = function(self)
+    self:addToGroup("freezable")
+    self:addToGroup("submergable")
+    self:addToGroup("carry")
+    self:addToGroup("hurtableOther")
+  end
   self:setLayer(2)
   self.render = not self.drop
 end

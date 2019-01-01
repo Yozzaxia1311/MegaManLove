@@ -37,10 +37,12 @@ menuSelect = entity:extend()
 
 function menuSelect:new()
   menuSelect.super.new(self)
+  self.added = function(self)
+    self:addToGroup("freezable")
+  end
   self.transform.y = 96
   self.transform.x = 88
   self.tex = loader.get("select")
-  self:addToGroup("freezable")
   self.pick = 0
   self.offY = self.transform.y
   self.picked = false

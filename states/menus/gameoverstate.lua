@@ -30,6 +30,9 @@ contPanels = entity:extend()
 
 function contPanels:new()
   contPanels.super.new(self)
+  self.added = function(self)
+    self:addToGroup("freezable")
+  end
   self.tex = loader.get("cont")
   self.quadOne = love.graphics.newQuad(0, 0, 176, 48, 176, 104)
   self.quadTwo = love.graphics.newQuad(0, 48, 160, 56, 176, 104)
