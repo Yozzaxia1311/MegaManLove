@@ -11,6 +11,9 @@ bossdoor.animGrid = anim8.newGrid(32, 64, 160, 64)
 
 function bossdoor:new(x, y, seg, dir, scrollx, scrolly, spd)
   bossdoor.super.new(self)
+  self.added = function(self)
+    self:addToGroup("boss_door")
+  end
   self.transform.y = y
   self.transform.x = x
   self.tex = loader.get("boss_door")
@@ -20,7 +23,6 @@ function bossdoor:new(x, y, seg, dir, scrollx, scrolly, spd)
   self.timer = 0
   self.segments = seg
   self.maxSegments = seg
-  self:addToGroup("boss_door")
   self.spd = spd or 1
   self.state = 0
   self.once = false
@@ -133,5 +135,4 @@ function bossdoor:draw()
       love.graphics.draw(self.tex, self.quad, self.transform.x + (i*16), self.transform.y, math.rad(90))
     end
   end
-  --self.collisionShape:draw()
 end

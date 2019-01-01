@@ -2,14 +2,16 @@ megaBuster = entity:extend()
 
 function megaBuster:new(x, y, dir, wpn)
   megaBuster.super.new(self)
+  self.added = function(self)
+    self:addToGroup("megaBuster")
+    self:addToGroup("freezable")
+    self:addToGroup("removeOnCutscene")
+  end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(8, 6)
   self.tex = loader.get("buster_tex")
   self.quad = love.graphics.newQuad(0, 31, 8, 6, 133, 47)
-  self:addToGroup("megaBuster")
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnCutscene")
   self.dink = false
   self.velocity = velocity()
   self.velocity.velx = dir * 5
@@ -42,14 +44,16 @@ megaSemiBuster = entity:extend()
 
 function megaSemiBuster:new(x, y, dir, wpn)
   megaSemiBuster.super.new(self)
+  self.added = function(self)
+    self:addToGroup("megaBuster")
+    self:addToGroup("freezable")
+    self:addToGroup("removeOnCutscene")
+  end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(16, 10)
   self.tex = loader.get("buster_tex")
   self.anim = anim8.newAnimation(loader.get("small_charge_grid")("1-2", 1), 1/12)
-  self:addToGroup("megaBuster")
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnCutscene")
   self.dink = false
   self.velocity = velocity()
   self.velocity.velx = dir * 5
@@ -87,14 +91,16 @@ megaChargedBuster = entity:extend()
 
 function megaChargedBuster:new(x, y, dir, wpn)
   megaChargedBuster.super.new(self)
+  self.added = function(self)
+    self:addToGroup("megaChargedBuster")
+    self:addToGroup("freezable")
+    self:addToGroup("removeOnCutscene")
+  end
   self.tex = loader.get("buster_tex")
   self.anim = anim8.newAnimation(loader.get("charge_grid")("1-4", 1), 1/20)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(24, 24)
-  self:addToGroup("megaChargedBuster")
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnCutscene")
   self.dink = false
   self.velocity = velocity()
   self.spd = 4
@@ -133,6 +139,11 @@ rushJet = entity:extend()
 
 function rushJet:new(x, y, side, w)
   rushJet.super.new(self)
+  self.added = function(self)
+    self:addToGroup("rushJet")
+    self:addToGroup("freezable")
+    self:addToGroup("removeOnCutscene")
+  end
   self.transform.x = x
   self.transform.y = view.y-8
   self.toY = y
@@ -143,9 +154,6 @@ function rushJet:new(x, y, side, w)
   self.anims["spawn"] = anim8.newAnimation(loader.get("rush_grid")(1, 1), 1)
   self.anims["spawn_land"] = anim8.newAnimation(loader.get("rush_grid")("2-3", 1, 2, 1), 1/20)
   self.anims["jet"] = anim8.newAnimation(loader.get("rush_grid")("2-3", 2), 1/8)
-  self:addToGroup("rushJet")
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnCutscene")
   self.side = side
   self.s = 0
   self.velocity = velocity()
@@ -300,6 +308,11 @@ rushCoil = entity:extend()
 
 function rushCoil:new(x, y, side, w)
   rushCoil.super.new(self)
+  self.added = function(self)
+    self:addToGroup("rushCoil")
+    self:addToGroup("freezable")
+    self:addToGroup("removeOnCutscene")
+  end
   self.transform.x = x
   self.transform.y = view.y-16
   self.toY = y
@@ -311,9 +324,6 @@ function rushCoil:new(x, y, side, w)
   self.anims["spawn_land"] = anim8.newAnimation(loader.get("rush_grid")("2-3", 1, 2, 1), 1/20)
   self.anims["idle"] = anim8.newAnimation(loader.get("rush_grid")(4, 1, 1, 2), 1/8)
   self.anims["coil"] = anim8.newAnimation(loader.get("rush_grid")(4, 2), 1)
-  self:addToGroup("rushCoil")
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnCutscene")
   self.side = side
   self.s = 0
   self.timer = 0
@@ -426,13 +436,15 @@ stickWeapon = entity:extend()
 
 function stickWeapon:new(x, y, dir, wpn)
   stickWeapon.super.new(self)
+  self.added = function(self)
+    self:addToGroup("stickWeapon")
+    self:addToGroup("freezable")
+    self:addToGroup("removeOnCutscene")
+  end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(8, 6)
   self.tex = loader.get("stick_weapon")
-  self:addToGroup("stickWeapon")
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnCutscene")
   self.dink = false
   self.velocity = velocity()
   self.velocity.velx = dir * 5

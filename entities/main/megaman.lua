@@ -256,16 +256,6 @@ function megaman:new(x, y, side, drop)
   self.knockbackUpdateFuncs = {}
   
   megaman.healthHandler = healthhandler({252, 224, 168}, {255, 255, 255}, {0, 0, 0}, nil, nil, globals.lifeSegments)
-  if globals.restart == true then
-    megaman.weaponHandler = weaponhandler(nil, nil, 10)
-    megaman.weaponHandler:register(0, "megaBuster", {0, 120, 248}, {0, 232, 216}, {0, 0, 0})
-    megaman.weaponHandler:register(9, "rushCoil", {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
-    megaman.weaponHandler:register(10, "rushJet", {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
-    if globals.defeats.stickMan then
-      megaman.weaponHandler:register(1, "stickWeapon", {255, 255, 255}, {128, 128, 128}, {0, 0, 0})
-    end
-    globals.restart = false
-  end
   megaman.weaponHandler:reinit()
   megautils.add(megaman.weaponHandler)
   megautils.add(megaman.healthHandler)

@@ -2,6 +2,10 @@ slideParticle = entity:extend()
 
 function slideParticle:new(x, y, side)
   slideParticle.super.new(self)
+  self.added = function(self)
+    self:addToGroup("freezable")
+    self:addToGroup("removeOnCutscene")
+  end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(2, 8)
@@ -9,8 +13,6 @@ function slideParticle:new(x, y, side)
   self.anim = anim8.newAnimation(loader.get("slide_particle_grid")("1-3",1), 1/10)
   self:setLayer(2)
   self.side = side
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnCutscene")
 end
 
 function slideParticle:face(n)
@@ -36,14 +38,16 @@ damageSteam = entity:extend()
 
 function damageSteam:new(x, y)
   damageSteam.super.new(self)
+  self.added = function(self)
+    self:addToGroup("freezable")
+    self:addToGroup("removeOnCutscene")
+  end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(5, 8)
   self.tex = loader.get("particles")
   self.anim = anim8.newAnimation(loader.get("damage_steam_grid")("1-3",1), 1/8)
   self:setLayer(2)
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnCutscene")
 end
 
 function damageSteam:update(dt)
@@ -64,6 +68,10 @@ airBubble = entity:extend()
 
 function airBubble:new(x, y)
   airBubble.super.new(self)
+  self.added = function(self)
+    self:addToGroup("freezable")
+    self:addToGroup("removeOnCutscene")
+  end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(2, 8)
@@ -72,8 +80,6 @@ function airBubble:new(x, y)
   self:setLayer(2)
   self.off = 0
   self.timer = 0
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnCutscene")
   self.render = false
 end
 
@@ -106,6 +112,10 @@ kickParticle = entity:extend()
 
 function kickParticle:new(x, y, side)
   kickParticle.super.new(self)
+  self.added = function(self)
+    self:addToGroup("freezable")
+    self:addToGroup("removeOnCutscene")
+  end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(8, 8)
@@ -114,8 +124,6 @@ function kickParticle:new(x, y, side)
   self.layer = 2
   self.render = false
   self.side = side
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnCutscene")
   self.once = false
 end
 
@@ -152,14 +160,16 @@ angleParticle = entity:extend()
 
 function angleParticle:new(x, y, a)
   angleParticle.super.new(self)
+  self.added = function(self)
+    self:addToGroup("freezable")
+    self:addToGroup("removeOnCutscene")
+  end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(2, 8)
   self.tex = loader.get("particles")
   self.anim = anim8.newAnimation(loader.get("slide_particle_grid")("1-3",1), 1/10)
   self.layer = 2
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnCutscene")
   self.once = false
   self.velocity = velocity()
   self.velocity.velx = megautils.calcX(a)
@@ -191,6 +201,10 @@ harm = entity:extend()
 
 function harm:new(e)
   harm.super.new(self)
+  self.added = function(self)
+    self:addToGroup("freezable")
+    self:addToGroup("removeOnCutscene")
+  end
   self.transform.y = ((e.transform.y+e.collisionShape.h)/2)-24/2
   self.transform.x = ((e.transform.x+e.collisionShape.w)/2)-24/2
   self:setRectangleCollision(24, 24)
@@ -198,8 +212,6 @@ function harm:new(e)
   self.quad = love.graphics.newQuad(0, 22, 24, 24, 128, 98)
   self.layer = 2
   self.follow = e
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnCutscene")
   self.timer = 0
 end
 
@@ -226,11 +238,13 @@ explodeParticle = entity:extend()
 
 function explodeParticle:new(x, y, angle, spd)
   explodeParticle.super.new(self)
+  self.added = function(self)
+    self:addToGroup("freezable")
+    self:addToGroup("removeOnCutscene")
+  end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(24, 24)
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnCutscene")
   self.tex = loader.get("particles")
   self.anim = anim8.newAnimation(loader.get("explode_particle_grid")("1-5", 1), 1/10)
   self.velocity = velocity()
@@ -263,11 +277,13 @@ absorbParticle = entity:extend()
 
 function absorbParticle:new(x, y, towards, spd)
   explodeParticle.super.new(self)
+  self.added = function(self)
+    self:addToGroup("freezable")
+    self:addToGroup("removeOnCutscene")
+  end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(24, 24)
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnCutscene")
   self.tex = loader.get("particles")
   self.anim = anim8.newAnimation(loader.get("explode_particle_grid")("1-5", 1), 1/10)
   self.towards = towards
@@ -307,8 +323,10 @@ absorb = entity:extend()
 
 function absorb:new(towards, times, spd)
   absorb.super.new(self)
-  self:addToGroup("removeOnCutscene")
-  self:addToGroup("freezable")
+  self.added = function(self)
+    self:addToGroup("freezable")
+    self:addToGroup("removeOnCutscene")
+  end
   self.timer = 60
   self.times = 0
   self.maxTimes = times or 3
@@ -333,11 +351,13 @@ smallBlast = entity:extend()
 
 function smallBlast:new(x, y, spd)
   smallBlast.super.new(self)
+  self.added = function(self)
+    self:addToGroup("freezable")
+    self:addToGroup("removeOnCutscene")
+  end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(24, 24)
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnCutscene")
   self.tex = loader.get("particles")
   self.anim = anim8.newAnimation(loader.get("explode_particle_grid")("1-5", 1), spd or 0.065)
 end
@@ -358,10 +378,12 @@ blast = entity:extend()
 
 function blast:new(x, y, times)
   blast.super.new(self)
+  self.added = function(self)
+    self:addToGroup("freezable")
+    self:addToGroup("removeOnCutscene")
+  end
   self.transform.y = y
   self.transform.x = x
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnCutscene")
   self.deg = 0
   megautils.add(smallBlast(x, y))
   self.timer = 0

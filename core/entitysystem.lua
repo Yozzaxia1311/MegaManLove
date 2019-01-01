@@ -75,29 +75,21 @@ function entitysystem:removeStatic(e)
 end
 
 function entitysystem:setLayer(e, l)
-  if not e.isAdded or e.static then
-    e.layer = l
-  else
-    table.removevaluearray(self.entities[e.layer], e)
-    e.layer = l
-    if self.entities[e.layer] == nil then self.entities[e.layer] = {} end
-    self.entities[e.layer][#self.entities[e.layer]+1] = e
-    if self.last < e.layer then self.last = e.layer end
-    if self.first > e.layer then self.first = e.layer end
-  end
+  table.removevaluearray(self.entities[e.layer], e)
+  e.layer = l
+  if self.entities[e.layer] == nil then self.entities[e.layer] = {} end
+  self.entities[e.layer][#self.entities[e.layer]+1] = e
+  if self.last < e.layer then self.last = e.layer end
+  if self.first > e.layer then self.first = e.layer end
 end
 
 function entitysystem:setUpdateLayer(e, l)
-  if not e.isAdded or e.static then
-    e.updateLayer = l
-  else
-    table.removevaluearray(self.updates[e.updateLayer], e)
-    e.updateLayer = l
-    if self.updates[e.updateLayer] == nil then self.updates[e.updateLayer] = {} end
-    self.updates[e.updateLayer][#self.updates[e.updateLayer]+1] = e
-    if self.lastUpdate < e.updateLayer then self.lastUpdate = e.updateLayer end
-    if self.firsUpdate > e.updateLayer then self.firstUpdate = e.updateLayer end
-  end
+  table.removevaluearray(self.updates[e.updateLayer], e)
+  e.updateLayer = l
+  if self.updates[e.updateLayer] == nil then self.updates[e.updateLayer] = {} end
+  self.updates[e.updateLayer][#self.updates[e.updateLayer]+1] = e
+  if self.lastUpdate < e.updateLayer then self.lastUpdate = e.updateLayer end
+  if self.firsUpdate > e.updateLayer then self.firstUpdate = e.updateLayer end
 end
 
 function entitysystem:remove(e, queue)
@@ -328,7 +320,11 @@ function entity:updateIFrame()
 end
 
 function entity:setLayer(l)
-  megautils.state().system:setLayer(self, l)
+  if not self.isAdded or self.static then
+    self.layer = l
+  else
+    megautils.state().system:setLayer(self, l)
+  end
 end
 
 function entity:addStatic()
@@ -340,10 +336,10 @@ function entity:removeStatic()
 end
 
 function entity:setUpdateLayer(l)
-  if self.isAdded then
-    megautils.setUpdateLayer(self, l)
-  else
+  if not self.isAdded or self.static then
     self.updateLayer = l
+  else
+    megautils.state().system:setUpdateLayer(self, l)
   end
 end
 

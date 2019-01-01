@@ -2,7 +2,9 @@ weaponhandler = entity:extend()
 
 function weaponhandler:new(side, r, slots)
   weaponhandler.super.new(self)
-  self:addToGroup("freezable")
+  self.added = function(self)
+    self:addToGroup("freezable")
+  end
   self.current = "megaBuster"
   self.slotSize = slots
   self.currentSlot = 0

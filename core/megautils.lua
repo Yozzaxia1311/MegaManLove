@@ -202,7 +202,6 @@ function megautils.resetPlayer()
   globals.manageStageResources = true
   globals.checkpoint = "start"
   globals.lives = ternary(globals.lives > 3, globals.lives, 3)
-  globals.restart = true
   wTank.banIds = {}
   eTank.banIds = {}
   life.banIds = {}
@@ -213,6 +212,13 @@ function megautils.resetPlayer()
   megaman.colorOne = {0, 120, 248}
   megaman.colorTwo = {0, 232, 216}
   megaman.colorOutline = {0, 0, 0}
+  megaman.weaponHandler = weaponhandler(nil, nil, 10)
+  megaman.weaponHandler:register(0, "megaBuster", {0, 120, 248}, {0, 232, 216}, {0, 0, 0})
+  megaman.weaponHandler:register(9, "rushCoil", {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+  megaman.weaponHandler:register(10, "rushJet", {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+  if globals.defeats.stickMan then
+    megaman.weaponHandler:register(1, "stickWeapon", {255, 255, 255}, {128, 128, 128}, {0, 0, 0})
+  end
 end
 
 megautils.frozen = {}

@@ -74,7 +74,6 @@ function love.load()
   globals.maxLives = 10
   globals.maxETanks = 10
   globals.maxWTanks = 10
-  globals.restart = true
   
   globals.defeats = {}
   globals.defeats.stickMan = false
@@ -84,6 +83,7 @@ function love.load()
   if love.joystick then globals.gamepadCheck = {} end
   
   megautils.load()
+  megautils.resetPlayer()
   states.set("states/menus/disclaimerstate.lua")
 end
 

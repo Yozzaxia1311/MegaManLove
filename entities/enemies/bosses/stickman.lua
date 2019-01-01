@@ -9,12 +9,14 @@ end)
 
 function stickMan:new(x, y, s)
   stickMan.super.new(self)
+  self.added = function(self)
+    self:addToGroup("freezable")
+    self:addToGroup("hurtable")
+  end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(12, 24)
   self.t = loader.get("stick_man")
-  self:addToGroup("freezable")
-  self:addToGroup("hurtable")
   self.side = -1
   self.s = 0
   self:setLayer(1)

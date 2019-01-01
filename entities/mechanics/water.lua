@@ -2,6 +2,10 @@ splash = entity:extend()
 
 function splash:new(offx, offy, follow, side)
   splash.super.new(self)
+  self.added = function(self)
+    self:addToGroup("removeOnCutscene")
+    self:addToGroup("freezable")
+  end
   self.offx = offx
   self.offy = offy
   self.side = side
@@ -9,8 +13,6 @@ function splash:new(offx, offy, follow, side)
   self.tex = loader.get("particles")
   self.anim = anim8.newAnimation(loader.get("splash_grid")("1-4", 1), 1/8)
   self.rot = math.rad(ternary(side==-1, 0, 180))
-  self:addToGroup("removeOnCutscene")
-  self:addToGroup("freezable")
   self.follow = follow
 end
 

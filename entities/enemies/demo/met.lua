@@ -8,13 +8,15 @@ end)
 
 function met:new(x, y, s)
   met.super.new(self)
+  self.added = function(self)
+    self:addToGroup("hurtable")
+    self:addToGroup("removeOnCutscene")
+    self:addToGroup("freezable")
+  end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(14, 14)
   self.t = loader.get("demo_objects")
-  self:addToGroup("hurtable")
-  self:addToGroup("removeOnCutscene")
-  self:addToGroup("freezable")
   self.spawner = s
   self.c = "safe"
   self.quads = {}

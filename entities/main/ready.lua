@@ -2,7 +2,9 @@ ready = entity:extend()
 
 function ready:new(text)
   ready.super.new(self)
-  self:addToGroup("ready")
+  self.added = function(self)
+    self:addToGroup("ready")
+  end
   self:setLayer(9)
   self.once = false
   self.render = false

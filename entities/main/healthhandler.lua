@@ -2,7 +2,6 @@ healthhandler = entity:extend()
 
 function healthhandler:new(colorOne, colorTwo, colorOutline, side, r, segments)
   healthhandler.super.new(self)
-  --self:addToGroup("freezable")
   self.barOne = loader.get("bar_one")
   self.barTwo = loader.get("bar_two")
   self.barOutline = loader.get("bar_outline")
