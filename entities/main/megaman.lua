@@ -107,7 +107,9 @@ function megaman:transferState(to)
   to.slide = self.slide
   to.climb = self.climb
   to.currentLadder = self.currentLadder
-  to.slideTimer = self.slideTimer
+  if self.slideTimer ~= self.maxSlideTime then
+    to.slideTimer = to.maxSlideTime - 2
+  end
   to.collisionShape = self.collisionShape
   to.side = self.side
   to.onSlope = self.onSlope
@@ -560,18 +562,18 @@ function megaman:healthChanged(o, c, i)
       for i=1, #globals.allPlayers do
         local p = globals.allPlayers[i]
         if not p.rise and not p.drop and p ~= self then
-          if self.doScrollX then
-            avx = avx+(p.transform.x - (view.w/2) + (p.collisionShape.w/2))
-          end
-          if self.doScrollY then
-            avy = avy+(p.transform.y+(p.slide and -7 or 0) - (view.h/2) + (p.collisionShape.h/2))
-          end
+          avx = avx+(p.transform.x - (view.w/2) + (p.collisionShape.w/2))
+          avy = avy+(p.transform.y+(p.slide and -7 or 0) - (view.h/2) + (p.collisionShape.h/2))
         end
       end
-      newx = (avx/#globals.allPlayers)
-      newx = math.clamp(newx, camera.main.scrollx, camera.main.scrollx+camera.main.scrollw-view.w)
-      newy = (avy/#globals.allPlayers)
-      newy = math.clamp(newy, camera.main.scrolly, camera.main.scrolly+camera.main.scrollh-view.h)
+      if camera.main.scrollX then
+        newx = (avx/#globals.allPlayers)
+        newx = math.clamp(newx, camera.main.scrollx, camera.main.scrollx+camera.main.scrollw-view.w)
+      end
+      if camera.main.scrollY then
+        newy = (avy/#globals.allPlayers)
+        newy = math.clamp(newy, camera.main.scrolly, camera.main.scrolly+camera.main.scrollh-view.h)
+      end
       self.cameraTween = tween.new(0.4, camera.main.transform, {x=newx, y=newy})
       return
     end
@@ -1232,8 +1234,7 @@ end
 function megaman:afterUpdate(dt)
   if not self.dying and camera.main ~= nil and globals.mainPlayer == self and self.cameraFocus and not self.drop and not self.rise
     and self.collisionShape ~= nil then
-    camera.main:updateCam(self.cameraOffsetX, self.cameraOffsetY,
-      self.cameraWidth, self.cameraHeight)
+    camera.main:updateCam()
   end
 end
 
