@@ -89,17 +89,17 @@ function control.init()
   step = 0
   for i=1, globals.maxPlayerCount do
     if binds[1+step] then
-      inputHandler.bind(binds[1+step][1], 1+step, binds[1+step][2])
-      inputHandler.bind(binds[2+step][1], 2+step, binds[2+step][2])
-      inputHandler.bind(binds[3+step][1], 3+step, binds[3+step][2])
-      inputHandler.bind(binds[4+step][1], 4+step, binds[4+step][2])
-      inputHandler.bind(binds[5+step][1], 5+step, binds[5+step][2])
-      inputHandler.bind(binds[6+step][1], 6+step, binds[6+step][2])
-      inputHandler.bind(binds[7+step][1], 7+step, binds[7+step][2])
-      inputHandler.bind(binds[8+step][1], 8+step, binds[8+step][2])
-      inputHandler.bind(binds[9+step][1], 9+step, binds[9+step][2])
-      inputHandler.bind(binds[10+step][1], 10+step, binds[10+step][2])
-      inputHandler.bind(binds[11+step][1], 11+step, binds[11+step][2])
+      inputHandler.bind(binds[1+step][1], 1+step, binds[1+step][2], binds[1+step][3])
+      inputHandler.bind(binds[2+step][1], 2+step, binds[2+step][2], binds[1+step][3])
+      inputHandler.bind(binds[3+step][1], 3+step, binds[3+step][2], binds[1+step][3])
+      inputHandler.bind(binds[4+step][1], 4+step, binds[4+step][2], binds[1+step][3])
+      inputHandler.bind(binds[5+step][1], 5+step, binds[5+step][2], binds[1+step][3])
+      inputHandler.bind(binds[6+step][1], 6+step, binds[6+step][2], binds[1+step][3])
+      inputHandler.bind(binds[7+step][1], 7+step, binds[7+step][2], binds[1+step][3])
+      inputHandler.bind(binds[8+step][1], 8+step, binds[8+step][2], binds[1+step][3])
+      inputHandler.bind(binds[9+step][1], 9+step, binds[9+step][2], binds[1+step][3])
+      inputHandler.bind(binds[10+step][1], 10+step, binds[10+step][2], binds[1+step][3])
+      inputHandler.bind(binds[11+step][1], 11+step, binds[11+step][2], binds[1+step][3])
     end
     step = step + 11
   end

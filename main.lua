@@ -90,6 +90,10 @@ function love.load()
   megautils.load()
   megautils.resetGame()
   states.set("states/menus/disclaimerstate.lua")
+  local data = save.load("main.set")
+  if data ~= nil then
+    convar.setValue("r_fullscreen", data.fullscreen, true)
+  end
 end
 
 function love.resize(w, h)
@@ -122,7 +126,7 @@ function touchInput.touchPressed(b)
 end
 
 function love.gamepadpressed(j, b)
-  globals.lastKeyPressed = {b, "gamepad"}
+  globals.lastKeyPressed = {b, "gamepad", j:getName()}
 end
 
 function love.gamepadaxis(j, b, v)
@@ -131,12 +135,12 @@ function love.gamepadaxis(j, b, v)
     if (b == "leftx" or b == "lefty" or b == "rightx" or b == "righty") then
       globals.axisTmp = {}
       if b == "leftx" or b == "rightx" then
-        globals.axisTmp["x"] = {b .. ternary(v > 0,  "+", "-"), "axis", v}
+        globals.axisTmp["x"] = {b .. ternary(v > 0,  "+", "-"), "axis", v, j:getName()}
       elseif b == "lefty" or b == "righty" then
-        globals.axisTmp["y"] = {b .. ternary(v > 0,  "+", "-"), "axis", v}
+        globals.axisTmp["y"] = {b .. ternary(v > 0,  "+", "-"), "axis", v, j:getName()}
       end
     else
-      globals.lastKeyPressed =  {b .. ternary(v > 0,  "+", "-"), "axis"}
+      globals.lastKeyPressed =  {b .. ternary(v > 0,  "+", "-"), "axis", j:getName()}
     end
     globals.gamepadCheck[b] = true
   elseif globals.gamepadCheck[b] == true then
@@ -158,9 +162,9 @@ function love.update(dt)
     if globals.axisTmp ~= nil then
       if globals.axisTmp["x"] ~= nil and (globals.axisTmp["y"] == nil or
         math.abs(globals.axisTmp["x"][3]) > math.abs(globals.axisTmp["y"][3])) then
-        globals.lastKeyPressed = {globals.axisTmp["x"][1], globals.axisTmp["x"][2]}
+        globals.lastKeyPressed = {globals.axisTmp["x"][1], globals.axisTmp["x"][2], globals.axisTmp["x"][4]}
       elseif globals.axisTmp["y"] ~= nil then
-        globals.lastKeyPressed = {globals.axisTmp["y"][1], globals.axisTmp["y"][2]}
+        globals.lastKeyPressed = {globals.axisTmp["y"][1], globals.axisTmp["y"][2], globals.axisTmp["y"][4]}
       end
       globals.axisTmp = nil
     end

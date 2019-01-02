@@ -65,7 +65,7 @@ function rebinder:update(dt)
         self.done = true
         inputHandler.unbind()
         for k, v in pairs(self.data.controls) do
-          inputHandler.bind(v[1], k, v[2])
+          inputHandler.bind(v[1], k, v[2], v[3])
         end
         save.save("main.set", self.data)
         if globals.sendBackToDisclaimer then
