@@ -551,7 +551,6 @@ function megaman:healthChanged(o, c, i)
       megautils.remove(self, true)
       return
     else
-      --idk do something if theres more players left -- set respawning flag somewhere??
       healthhandler.playerTimers[self.player] = 200
       megautils.remove(megaman.weaponHandler[self.player], true)
       megautils.remove(self.healthHandler, true)
