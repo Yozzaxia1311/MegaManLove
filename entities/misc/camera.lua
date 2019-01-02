@@ -76,7 +76,7 @@ function camera:updateCam()
           self.toPos = math.clamp(self.toPos, self.scrollx, self.scrollx+self.scrollw-view.w)
         elseif self.transitiondirection == "left" or self.transitiondirection == "right" then
           self.toPos = math.round(self.player.transform.y) - (view.h/2) + (self.player.collisionShape.h/2)
-          self.toPos = math.clamp(self.toPos+(self.player.slide and -7 or 0), self.scrolly, self.scrolly+self.scrollh-view.h)
+          self.toPos = math.clamp(self.toPos+(self.player.slide and -3 or 0), self.scrolly, self.scrolly+self.scrollh-view.h)
         end
       end
       if self.transitiondirection == "up" or self.transitiondirection == "down" then
@@ -118,7 +118,7 @@ function camera:updateCam()
           if self.doScrollY then
             self.tween = tween.new(self.speed, self.transform, {x=self.transform.x+self.collisionShape.w,
               y=math.clamp(self.player.transform.y
-              - (view.h/2) + (self.player.collisionShape.h/2)+(self.player.slide and -7 or 0), sy, (sy+sh)-view.h)})
+              - (view.h/2) + (self.player.collisionShape.h/2)+(self.player.slide and -3 or 0), sy, (sy+sh)-view.h)})
           else
             self.tween = tween.new(self.speed, self.transform, {x=self.transform.x+self.collisionShape.w})
           end
@@ -130,7 +130,7 @@ function camera:updateCam()
           if self.doScrollY then
             self.tween = tween.new(self.speed, self.transform, {x=self.transform.x-self.collisionShape.w,
               y=math.clamp(self.player.transform.y
-              - (view.h/2) + (self.player.collisionShape.h/2)+(self.player.slide and -7 or 0), sy, (sy+sh)-view.h)})
+              - (view.h/2) + (self.player.collisionShape.h/2)+(self.player.slide and -3 or 0), sy, (sy+sh)-view.h)})
           else
             self.tween = tween.new(self.speed, self.transform, {x=self.transform.x-self.collisionShape.w})
           end
@@ -142,7 +142,7 @@ function camera:updateCam()
           if self.doScrollX then
             self.tween = tween.new(self.speed, self.transform, {y=self.transform.y+self.collisionShape.h,
               x=math.clamp(self.player.transform.x
-              - (view.w/2) + (self.player.collisionShape.w/2)+(self.player.slide and -7 or 0), sx, (sx+sw)-view.w)})
+              - (view.w/2) + (self.player.collisionShape.w/2)+(self.player.slide and -3 or 0), sx, (sx+sw)-view.w)})
           else
             self.tween = tween.new(self.speed, self.transform, {y=self.transform.y+self.collisionShape.h})
           end
@@ -154,7 +154,7 @@ function camera:updateCam()
           if self.doScrollX then
             self.tween = tween.new(self.speed, self.transform, {y=self.transform.y-self.collisionShape.h,
               x=math.clamp(self.player.transform.x
-              - (view.w/2) + (self.player.collisionShape.w/2)+(self.player.slide and -7 or 0), sx, (sx+sw)-view.w)})
+              - (view.w/2) + (self.player.collisionShape.w/2)+(self.player.slide and -3 or 0), sx, (sx+sw)-view.w)})
           else
             self.tween = tween.new(self.speed, self.transform, {y=self.transform.y-self.collisionShape.h})
           end
@@ -220,7 +220,7 @@ function camera:updateCam()
       end
       if self.doScrollY then
         self.transform.y = math.round(o.transform.y) - (view.h/2) + (o.collisionShape.h/2)
-        self.transform.y = math.clamp(self.transform.y+(o.slide and -7 or 0), self.scrolly, self.scrolly+self.scrollh-view.h)
+        self.transform.y = math.clamp(self.transform.y+(o.slide and -3 or 0), self.scrolly, self.scrolly+self.scrollh-view.h)
       end
     else
       local avx, avy = 0, 0
@@ -231,7 +231,7 @@ function camera:updateCam()
             avx = avx+(p.transform.x - (view.w/2) + (p.collisionShape.w/2))
           end
           if self.doScrollY then
-            avy = avy+(p.transform.y+(p.slide and -7 or 0) - (view.h/2) + (p.collisionShape.h/2))
+            avy = avy+(p.transform.y+(p.slide and -3 or 0) - (view.h/2) + (p.collisionShape.h/2))
           end
         end
       end

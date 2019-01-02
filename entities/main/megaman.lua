@@ -174,8 +174,8 @@ end
 
 function megaman:new(x, y, side, drop, p)
   megaman.super.new(self)
-  megaman.properties(self)
   megautils.registerPlayer(self, p)
+  megaman.properties(self)
   self.teleportOffY = 0
   self.side = side or 1
   self.transform.y = y
@@ -563,7 +563,7 @@ function megaman:healthChanged(o, c, i)
         local p = globals.allPlayers[i]
         if not p.rise and not p.drop and p ~= self then
           avx = avx+(p.transform.x - (view.w/2) + (p.collisionShape.w/2))
-          avy = avy+(p.transform.y+(p.slide and -7 or 0) - (view.h/2) + (p.collisionShape.h/2))
+          avy = avy+(p.transform.y+(p.slide and -3 or 0) - (view.h/2) + (p.collisionShape.h/2))
         end
       end
       if camera.main.scrollX then
