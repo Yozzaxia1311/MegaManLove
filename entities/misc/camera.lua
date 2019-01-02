@@ -210,7 +210,7 @@ function camera:updateCam(offX, offY, w, h, px, py, delay)
       end
       self.transform.x = (avx/#globals.allPlayers)
       self.transform.x = math.clamp(self.transform.x, self.scrollx, self.scrollx+self.scrollw-view.w)
-      self.transform.y = (avy/#globals.allPlayers)-8
+      self.transform.y = (avy/#globals.allPlayers)
       self.transform.y = math.clamp(self.transform.y, self.scrolly, self.scrolly+self.scrollh-view.h)
     end
     view.x, view.y = math.round(self.transform.x), math.round(self.transform.y)

@@ -570,7 +570,7 @@ function megaman:healthChanged(o, c, i)
       end
       newx = (avx/#globals.allPlayers)
       newx = math.clamp(newx, camera.main.scrollx, camera.main.scrollx+camera.main.scrollw-view.w)
-      newy = (avy/#globals.allPlayers)-8
+      newy = (avy/#globals.allPlayers)
       newy = math.clamp(newy, camera.main.scrolly, camera.main.scrolly+camera.main.scrollh-view.h)
       self.cameraTween = tween.new(0.4, camera.main.transform, {x=newx, y=newy})
       return
