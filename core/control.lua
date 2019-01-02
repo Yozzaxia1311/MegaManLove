@@ -106,38 +106,10 @@ function control.init()
 end
 
 function control.update()
-  local step = 0
-  for i=1, globals.playerCount do
-    control.leftDown[i] = false
-    control.leftPressed[i] = false
-    control.rightDown[i] = false
-    control.rightPressed[i] = false
-    control.upDown[i] = false
-    control.upPressed[i] = false
-    control.downDown[i] = false
-    control.downPressed[i] = false
-    control.startDown[i] = false
-    control.startPressed[i] = false
-    control.selectDown[i] = false
-    control.selectPressed[i] = false
-    control.jumpDown[i] = false
-    control.jumpPressed[i] = false
-    control.shootDown[i] = false
-    control.shootPressed[i] = false
-    control.prevDown[i] = false
-    control.prevPressed[i] = false
-    control.nextDown[i] = false
-    control.nextPressed[i] = false
-    control.dashDown[i] = false
-    control.dashPressed[i] = false
-    step = step + 11
-  end
-  
   if touchControls then
     touchInput.update()
   end
-  
-  step = 0
+  local step = 0
   for i=1, globals.playerCount do
     control.leftDown[i] = inputHandler.down(3+step)
     control.leftPressed[i] = inputHandler.pressed(3+step)
