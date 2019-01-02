@@ -189,21 +189,12 @@ function entitysystem:update(dt)
     if self.updates[i] ~= nil then
       for k=1, #self.updates[i] do
         local t = self.updates[i][k]
-        if table.length(t.otherUpdates) ~= 0 then
-          for s, h in pairs(t.otherUpdates) do
-            if not h then 
-              self.localUpdate = false
-              break
-            end
-          end
-        end
-        if t.updated and self.localUpdate and not t.isRemoved then
+        if t.updated and not t.isRemoved then
           if states.switched then
             return
           end
           t:afterUpdate(dt)
         end
-        self.localUpdate = true
       end
     end
   end

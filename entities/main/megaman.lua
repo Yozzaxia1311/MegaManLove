@@ -110,6 +110,7 @@ function megaman:transferState(to)
   to.slideTimer = self.slideTimer
   to.collisionShape = self.collisionShape
   to.side = self.side
+  to.onSlope = self.onSlope
 end
 
 function megaman:regBox()
@@ -516,18 +517,16 @@ function megaman:healthChanged(o, c, i)
   self.changeHealth = ternary(c < 0 and self.inv, 0, c)
   self.health = self.health + self.changeHealth
   if not self.inv and self.health <= 0 and self.control then
-    self.control = false
-    self.render = false
-    mmSfx.play("die")
-    if self.transform.y < view.y+view.h then
-      explodeParticle.createExplosion(self.transform.x+((self.collisionShape.w/2)-12),
-        self.transform.y+((self.collisionShape.h/2)-12))
-    end
     self.healthHandler.change = self.changeHealth
     self.healthHandler:updateThis()
     if #globals.allPlayers == 1 then
+      if self.transform.y < view.y+view.h then
+        explodeParticle.createExplosion(self.transform.x+((self.collisionShape.w/2)-12),
+          self.transform.y+((self.collisionShape.h/2)-12))
+      end
+      self.render = false
+      self.control = false
       healthhandler.playerTimers = {-2, -2, -2, -2}
-      mmMusic.stopMusic()
       megautils.add(timer(160, function(t)
         megautils.add(fade(true, nil, nil, function(s)
           globals.resetState = true
@@ -549,13 +548,31 @@ function megaman:healthChanged(o, c, i)
       end))
       megautils.unregisterPlayer(self)
       megautils.remove(self, true)
+      mmMusic.stopMusic()
+      mmSfx.play("die")
       return
     else
-      healthhandler.playerTimers[self.player] = 200
-      megautils.remove(megaman.weaponHandler[self.player], true)
-      megautils.remove(self.healthHandler, true)
-      megautils.unregisterPlayer(self)
-      megautils.remove(self, true)
+      self.dying = true
+      self.iFrame = self.maxIFrame
+      megautils.freeze({self})
+      local newx, newy = 0, 0
+      local avx, avy = 0, 0
+      for i=1, #globals.allPlayers do
+        local p = globals.allPlayers[i]
+        if not p.rise and not p.drop and p ~= self then
+          if self.doScrollX then
+            avx = avx+(p.transform.x - (view.w/2) + (p.collisionShape.w/2))
+          end
+          if self.doScrollY then
+            avy = avy+(p.transform.y+(p.slide and -7 or 0) - (view.h/2) + (p.collisionShape.h/2))
+          end
+        end
+      end
+      newx = (avx/#globals.allPlayers)
+      newx = math.clamp(newx, camera.main.scrollx, camera.main.scrollx+camera.main.scrollw-view.w)
+      newy = (avy/#globals.allPlayers)-8
+      newy = math.clamp(newy, camera.main.scrolly, camera.main.scrolly+camera.main.scrollh-view.h)
+      self.cameraTween = tween.new(0.4, camera.main.transform, {x=newx, y=newy})
       return
     end
   end
@@ -1118,7 +1135,7 @@ function megaman:animate()
         end
       end
     elseif self.slide then
-      self.curAnim = self.dashAnimation[shoot]
+      self.curAnim = self.dashAnimation[self.canDashShoot and shoot or "regular"]
     elseif self.ground then
       if self.canWalk and not self.step and self.runCheck then
         self.curAnim = self.nudgeAnimation[shoot]
@@ -1156,42 +1173,64 @@ function megaman:animate()
 end
 
 function megaman:update(dt)
-  self.runCheck = false
-  if self.rise then
-    self.control = false
-    if self.dropLanded then
-      self.dropLanded = not self.animations[self.dropLandAnimation["regular"]].looped
-      if not self.dropLanded then
-        mmSfx.play("ascend")
+  if self.dying then
+    if self.cameraTween:update(1/60) then
+      self.control = false
+      if self.transform.y < view.y+view.h then
+        explodeParticle.createExplosion(self.transform.x+((self.collisionShape.w/2)-12),
+          self.transform.y+((self.collisionShape.h/2)-12))
       end
-    else
-      self.teleportOffY = self.teleportOffY+self.riseSpeed
+      self.healthHandler.change = self.changeHealth
+      self.healthHandler:updateThis()
+      healthhandler.playerTimers[self.player] = 200
+      megautils.remove(megaman.weaponHandler[self.player], true)
+      megautils.remove(self.healthHandler, true)
+      megautils.unregisterPlayer(self)
+      megautils.remove(self, true)
+      megautils.unfreeze()
+      mmSfx.play("die")
+      return
     end
-  elseif self.drop then
-    if not self.render then
-      self.teleportOffY = view.y-self.transform.y
-    end
-    self.render = true
-    self.teleportOffY = math.min(self.teleportOffY+self.dropSpeed, 0)
-    if self.teleportOffY == 0 then
-      self.dropLanded = true
-      if self.animations[self.dropLandAnimation["regular"]].looped then
-        self.drop = false
-        self.animations[self.dropLandAnimation["regular"]]:gotoFrame(1)
-        self.control = true
-        mmSfx.play("start")
+    view.x, view.y = math.round(camera.main.transform.x), math.round(camera.main.transform.y)
+    camera.main:updateFuncs()
+  else
+    self.runCheck = false
+    if self.rise then
+      self.control = false
+      if self.dropLanded then
+        self.dropLanded = not self.animations[self.dropLandAnimation["regular"]].looped
+        if not self.dropLanded then
+          mmSfx.play("ascend")
+        end
+      else
+        self.teleportOffY = self.teleportOffY+self.riseSpeed
       end
+    elseif self.drop then
+      if not self.render then
+        self.teleportOffY = view.y-self.transform.y
+      end
+      self.render = true
+      self.teleportOffY = math.min(self.teleportOffY+self.dropSpeed, 0)
+      if self.teleportOffY == 0 then
+        self.dropLanded = true
+        if self.animations[self.dropLandAnimation["regular"]].looped then
+          self.drop = false
+          self.animations[self.dropLandAnimation["regular"]]:gotoFrame(1)
+          self.control = true
+          mmSfx.play("start")
+        end
+      end
+    elseif self.control then
+      self:code(dt)
     end
-  elseif self.control then
-    self:code(dt)
+    if self.doAnimation then self:animate(dt) end
+    if self.canSwitchWeapons then self:updatePallete() end
+    self.weaponSwitchTimer = math.min(self.weaponSwitchTimer+1, 70)
   end
-  if self.doAnimation then self:animate(dt) end
-  if self.canSwitchWeapons then self:updatePallete() end
-  self.weaponSwitchTimer = math.min(self.weaponSwitchTimer+1, 70)
 end
 
 function megaman:afterUpdate(dt)
-  if camera.main ~= nil and globals.mainPlayer == self and self.cameraFocus and not self.drop and not self.rise
+  if not self.dying and camera.main ~= nil and globals.mainPlayer == self and self.cameraFocus and not self.drop and not self.rise
     and self.collisionShape ~= nil then
     camera.main:updateCam(self.cameraOffsetX, self.cameraOffsetY,
       self.cameraWidth, self.cameraHeight)
