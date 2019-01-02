@@ -3,7 +3,6 @@ local menustate = states.state:extend()
 function menustate:begin()
   loader.load("assets/misc/select.png", "select", "texture")
   loader.load("assets/sfx/cursor_move.ogg", "cursor_move", "sound")
-  loader.load("assets/sfx/selected.ogg", "selected", "sound")
   megautils.loadStage(self, "assets/maps/menu.lua")
   megautils.add(menuSelect())
   megautils.add(fade(false):setAfter(fade.remove))
@@ -40,78 +39,112 @@ function menuSelect:new()
   self.added = function(self)
     self:addToGroup("freezable")
   end
-  self.transform.y = 96
+  self.transform.y = 9*8
   self.transform.x = 88
   self.tex = loader.get("select")
   self.pick = 0
   self.offY = self.transform.y
   self.picked = false
   self.quad = love.graphics.newQuad(81, 288, 5, 8, 96, 303)
+  self.section = 0
+  self.timer = 20
 end
 
 function menuSelect:update(dt)
-  local old = self.pick
-  if control.upPressed then
-    self.pick = math.wrap(self.pick-1, 0, 5)
-  elseif control.downPressed then
-    self.pick = math.wrap(self.pick+1, 0, 5)
-  end
-  if old ~= self.pick then
-    mmSfx.play("cursor_move")
-  end
-  if (control.jumpPressed or control.startPressed) and not self.picked then
-    if self.pick == 0 then
-      self.picked = true
-      self.render = false
-      mmMusic.stopMusic()
-      megautils.gotoState("states/menus/stageselectstate.lua")
-      globals.stopMusicMenu = nil
-    elseif self.pick == 1 then
-      if convar.getNumber("r_fullscreen") == 1 then
-        convar.setValue("r_fullscreen", 0, true)
-      else
-        convar.setValue("r_fullscreen", 1, true)
+  if self.section == 0 then
+    local old = self.pick
+    if control.upPressed[1] then
+      self.pick = math.wrap(self.pick-1, 0, 6)
+    elseif control.downPressed[1] then
+      self.pick = math.wrap(self.pick+1, 0, 6)
+    end
+    if old ~= self.pick then
+      mmSfx.play("cursor_move")
+    end
+    if (control.jumpPressed[1] or control.startPressed[1]) and not self.picked then
+      if self.pick == 0 then
+        self.picked = true
+        self.section = -1
+        mmMusic.stopMusic()
+        megautils.gotoState("states/menus/stageselectstate.lua")
+        globals.stopMusicMenu = nil
+      elseif self.pick == 1 then
+        if convar.getNumber("r_fullscreen") == 1 then
+          convar.setValue("r_fullscreen", 0, true)
+        else
+          convar.setValue("r_fullscreen", 1, true)
+        end
+      elseif self.pick == 2 then
+        self.picked = true
+        self.section = -1
+        mmMusic.stopMusic()
+        megautils.gotoState("states/menus/rebindstate.lua")
+        globals.stopMusicMenu = nil
+      elseif self.pick == 3 then
+        mmSfx.play("selected")
+        local data = save.load("save.txt")
+        if data ~= nil then
+          globals.defeats = data.defeats
+          globals.infiniteLives = data.infiniteLives
+          globals.lives = data.lives
+          globals.lifeSegments = data.lifeSegments
+          globals.eTanks = data.eTanks
+          globals.wTanks = data.wTanks
+        end
+      elseif self.pick == 4 then
+        local data = save.load("save.txt") or {}
+        data.defeats = globals.defeats
+        data.infiniteLives = globals.infiniteLives
+        data.lives = globals.lives
+        data.lifeSegments = globals.lifeSegments
+        data.eTanks = globals.eTanks
+        data.wTanks = globals.wTanks
+        save.save("save.txt", data)
+        mmSfx.play("selected")
+      elseif self.pick == 5 then
+        self.section = 1
+        self.timer = 0
+        mmSfx.play("selected")
+      elseif self.pick == 6 then
+        self.picked = true
+        self.section = -1
+        mmMusic.stopMusic()
+        megautils.gotoState("states/menus/titlestate.lua")
+        globals.stopMusicMenu = nil
       end
-    elseif self.pick == 2 then
-      self.picked = true
-      self.render = false
-      mmMusic.stopMusic()
-      megautils.gotoState("states/menus/rebindstate.lua")
-      globals.stopMusicMenu = nil
-    elseif self.pick == 3 then
+    end
+    self.transform.y = self.offY + self.pick*16
+  elseif self.section == 1 then
+    self.timer = math.wrap(self.timer+1, 0, 20)
+    local old = globals.playerCount
+    if control.leftPressed[1] then
+      globals.playerCount = math.wrap(globals.playerCount-1, 1, globals.maxPlayerCount)
+    elseif control.rightPressed[1] then
+      globals.playerCount = math.wrap(globals.playerCount+1, 1, globals.maxPlayerCount)
+    end
+    if old ~= globals.playerCount then
+      mmSfx.play("cursor_move")
+    end
+    if control.jumpPressed[1] or control.startPressed[1] then
+      self.section = 0
+      self.timer = 20
       mmSfx.play("selected")
-      local data = save.load("save.txt")
-      if data ~= nil then
-        globals.defeats = data.defeats
-        globals.infiniteLives = data.infiniteLives
-        globals.lives = data.lives
-        globals.lifeSegments = data.lifeSegments
-        globals.eTanks = data.eTanks
-        globals.wTanks = data.wTanks
-      end
-    elseif self.pick == 4 then
-      local data = save.load("save.txt") or {}
-      data.defeats = globals.defeats
-      data.infiniteLives = globals.infiniteLives
-      data.lives = globals.lives
-      data.lifeSegments = globals.lifeSegments
-      data.eTanks = globals.eTanks
-      data.wTanks = globals.wTanks
-      save.save("save.txt", data)
-      mmSfx.play("selected")
-    elseif self.pick == 5 then
-      self.picked = true
-      self.render = false
-      mmMusic.stopMusic()
-      megautils.gotoState("states/menus/titlestate.lua")
-      globals.stopMusicMenu = nil
     end
   end
-  self.transform.y = self.offY + self.pick*16
 end
 
 function menuSelect:draw()
-  love.graphics.draw(self.tex, self.quad, self.transform.x, self.transform.y)
+  love.graphics.setColor(1, 1, 1, 1)
+  if self.section == 0 then
+    love.graphics.draw(self.tex, self.quad, self.transform.x, self.transform.y)
+  end
+  if self.timer > 10 then
+    love.graphics.setFont(mmFont)
+    love.graphics.print(tostring(globals.playerCount), 12*8, 19*8)
+  end
+  if globals.playerCount > 1 then
+    love.graphics.print("s", 20*8, 19*8)
+  end
 end
 
 return menustate

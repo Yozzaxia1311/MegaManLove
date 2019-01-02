@@ -129,5 +129,6 @@ function mmMusic:update()
       not self.musicLoop:isPlaying() then
     self.musicLoop:play()
     self.playingLoop = true
+    print(1)
   end
 end

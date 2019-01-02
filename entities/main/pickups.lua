@@ -20,7 +20,7 @@ function smallHealth:new(x, y, despwn, id, spawner)
   self.spawner = spawner
   self.t = loader.get("particles")
   self.tOutline = loader.get("particles_outline")
-  self.despawn = (not despwn and self.id == nil) or despwn
+  self.despawn = ternary(despwn ~= nil, despwn, self.id == nil)
   self.added = function()
     self:addToGroup("removeOnCutscene")
     self:addToGroup("freezable")
@@ -54,15 +54,18 @@ function smallHealth:update(dt)
     self.velocity.velx, self.velocity.vely)
   self:block(self.velocity)
   self:moveBy(self.velocity.velx, self.velocity.vely)
-  if globals.mainPlayer ~= nil and self:collision(globals.mainPlayer) then
-    globals.mainPlayer:addHealth(2)
-    if not self.despawn then
-      smallHealth.banIds[#smallHealth.banIds+1] = self.id
+  for i=1, globals.playerCount do
+    local p = globals.allPlayers[i]
+    if self:collision(p) then
+      p:addHealth(2)
+      if not self.despawn then
+        smallHealth.banIds[#smallHealth.banIds+1] = self.id
+      end
+      megautils.state().sectionHandler:removeEntity(self.spawner)
+      megautils.remove(self.spawner, true)
+      megautils.remove(self, true)
+      return
     end
-    megautils.state().sectionHandler:removeEntity(self.spawner)
-    megautils.remove(self.spawner, true)
-    megautils.remove(self, true)
-    return
   end
   if self.despawn then
     self.timer = math.min(self.timer+1, 400)
@@ -87,9 +90,14 @@ end
 function smallHealth:draw()
   love.graphics.setColor(1, 1, 1, 1)
   self.anim:draw(self.t, math.round(self.transform.x), math.round(self.transform.y))
-  love.graphics.setColor(megaman.colorOutline[1]/255, megaman.colorOutline[2]/255,
-    megaman.colorOutline[3]/255, 1)
-  self.anim:draw(self.tOutline, self.transform.x, self.transform.y)
+  if globals.mainPlayer ~= nil then
+    love.graphics.setColor(megaman.colorOutline[globals.mainPlayer.player][1]/255, megaman.colorOutline[globals.mainPlayer.player][2]/255,
+      megaman.colorOutline[globals.mainPlayer.player][3]/255, 1)
+    self.anim:draw(self.tOutline, math.round(self.transform.x), math.round(self.transform.y))
+  else
+    love.graphics.setColor(0, 0, 0, 1)
+    self.anim:draw(self.tOutline, math.round(self.transform.x), math.round(self.transform.y))
+  end
 end
 
 health = entity:extend()
@@ -114,7 +122,7 @@ function health:new(x, y, despwn, id, spawner)
   self.spawner = spawner
   self.t = loader.get("particles")
   self.tOutline = loader.get("particles_outline")
-  self.despawn = (not despwn and self.id == nil) or despwn
+  self.despawn = ternary(despwn ~= nil, despwn, self.id == nil)
   self.added = function()
     self:addToGroup("removeOnCutscene")
     self:addToGroup("freezable")
@@ -148,15 +156,18 @@ function health:update(dt)
     self.velocity.velx, self.velocity.vely)
   self:block(self.velocity)
   self:moveBy(self.velocity.velx, self.velocity.vely)
-  if globals.mainPlayer ~= nil and self:collision(globals.mainPlayer) then
-    globals.mainPlayer:addHealth(10)
-    if not self.despawn then
-      health.banIds[#health.banIds+1] = self.id
+  for i=1, globals.playerCount do
+    local p = globals.allPlayers[i]
+    if self:collision(p) then
+      p:addHealth(10)
+      if not self.despawn then
+        health.banIds[#health.banIds+1] = self.id
+      end
+      megautils.state().sectionHandler:removeEntity(self.spawner)
+      megautils.remove(self.spawner, true)
+      megautils.remove(self, true)
+      return
     end
-    megautils.state().sectionHandler:removeEntity(self.spawner)
-    megautils.remove(self.spawner, true)
-    megautils.remove(self, true)
-    return
   end
   if self.despawn then
     self.timer = math.min(self.timer+1, 400)
@@ -181,9 +192,14 @@ end
 function health:draw()
   love.graphics.setColor(1, 1, 1, 1)
   self.anim:draw(self.t, math.round(self.transform.x), math.round(self.transform.y))
-  love.graphics.setColor(megaman.colorOutline[1]/255, megaman.colorOutline[2]/255,
-    megaman.colorOutline[3]/255, 1)
-  self.anim:draw(self.tOutline, self.transform.x, self.transform.y)
+  if globals.mainPlayer ~= nil then
+    love.graphics.setColor(megaman.colorOutline[globals.mainPlayer.player][1]/255, megaman.colorOutline[globals.mainPlayer.player][2]/255,
+      megaman.colorOutline[globals.mainPlayer.player][3]/255, 1)
+    self.anim:draw(self.tOutline, math.round(self.transform.x), math.round(self.transform.y))
+  else
+    love.graphics.setColor(0, 0, 0, 1)
+    self.anim:draw(self.tOutline, math.round(self.transform.x), math.round(self.transform.y))
+  end
 end
 
 smallEnergy = entity:extend()
@@ -209,7 +225,7 @@ function smallEnergy:new(x, y, despwn, id, spawner)
   self.texOutline = loader.get("particles_outline")
   self.texOne = loader.get("particles_one")
   self.texTwo = loader.get("particles_two")
-  self.despawn = (not despwn and self.id == nil) or despwn
+  self.despawn = ternary(despwn ~= nil, despwn, self.id == nil)
   self.added = function()
     self:addToGroup("removeOnCutscene")
     self:addToGroup("freezable")
@@ -243,16 +259,19 @@ function smallEnergy:update(dt)
     self.velocity.velx, self.velocity.vely)
   self:block(self.velocity)
   self:moveBy(self.velocity.velx, self.velocity.vely)
-  if globals.mainPlayer ~= nil and self:collision(globals.mainPlayer) then
-    globals.mainPlayer.weaponHandler.change = 2
-    globals.mainPlayer.weaponHandler:updateThis()
-    if not self.despawn then
-      smallEnergy.banIds[#smallEnergy.banIds+1] = self.id
+  for i=1, globals.playerCount do
+    local p = globals.allPlayers[i]
+    if self:collision(p) then
+      megaman.weaponHandler[p.player].change = 2
+      megaman.weaponHandler[p.player]:updateThis()
+      if not self.despawn then
+        smallEnergy.banIds[#smallEnergy.banIds+1] = self.id
+      end
+      megautils.state().sectionHandler:removeEntity(self.spawner)
+      megautils.remove(self.spawner, true)
+      megautils.remove(self, true)
+      return
     end
-    megautils.state().sectionHandler:removeEntity(self.spawner)
-    megautils.remove(self.spawner, true)
-    megautils.remove(self, true)
-    return
   end
   if self.despawn then
     self.timer = math.min(self.timer+1, 400)
@@ -275,15 +294,24 @@ function smallEnergy:removed()
 end
 
 function smallEnergy:draw()
-  love.graphics.setColor(megaman.colorTwo[1]/255, megaman.colorTwo[2]/255,
-    megaman.colorTwo[3]/255, 1)
-  self.anim:draw(self.texTwo, math.round(self.transform.x), math.round(self.transform.y))
-  love.graphics.setColor(megaman.colorOutline[1]/255, megaman.colorOutline[2]/255,
-    megaman.colorOutline[3]/255, 1)
-  self.anim:draw(self.texOutline, math.round(self.transform.x), math.round(self.transform.y))
-  love.graphics.setColor(megaman.colorOne[1]/255, megaman.colorOne[2]/255,
-    megaman.colorOne[3]/255, 1)
-  self.anim:draw(self.texOne, math.round(self.transform.x), math.round(self.transform.y))
+  if globals.mainPlayer ~= nil then
+    love.graphics.setColor(megaman.colorTwo[globals.mainPlayer.player][1]/255, megaman.colorTwo[globals.mainPlayer.player][2]/255,
+      megaman.colorTwo[globals.mainPlayer.player][3]/255, 1)
+    self.anim:draw(self.texTwo, math.round(self.transform.x), math.round(self.transform.y))
+    love.graphics.setColor(megaman.colorOutline[globals.mainPlayer.player][1]/255, megaman.colorOutline[globals.mainPlayer.player][2]/255,
+      megaman.colorOutline[globals.mainPlayer.player][3]/255, 1)
+    self.anim:draw(self.texOutline, math.round(self.transform.x), math.round(self.transform.y))
+    love.graphics.setColor(megaman.colorOne[globals.mainPlayer.player][1]/255, megaman.colorOne[globals.mainPlayer.player][2]/255,
+      megaman.colorOne[globals.mainPlayer.player][3]/255, 1)
+    self.anim:draw(self.texOne, math.round(self.transform.x), math.round(self.transform.y))
+  else
+    love.graphics.setColor(0, 232/255, 216/255, 1)
+    self.anim:draw(self.texTwo, math.round(self.transform.x), math.round(self.transform.y))
+    love.graphics.setColor(0, 0, 0, 1)
+    self.anim:draw(self.texOutline, math.round(self.transform.x), math.round(self.transform.y))
+    love.graphics.setColor(0, 120/255, 248/255, 1)
+    self.anim:draw(self.texOne, math.round(self.transform.x), math.round(self.transform.y))
+  end
 end
 
 energy = entity:extend()
@@ -309,7 +337,7 @@ function energy:new(x, y, despwn, id, spawner)
   self.texOutline = loader.get("particles_outline")
   self.texOne = loader.get("particles_one")
   self.texTwo = loader.get("particles_two")
-  self.despawn = (not despwn and self.id == nil) or despwn
+  self.despawn = ternary(despwn ~= nil, despwn, self.id == nil)
   self.added = function()
     self:addToGroup("removeOnCutscene")
     self:addToGroup("freezable")
@@ -343,16 +371,19 @@ function energy:update(dt)
     self.velocity.velx, self.velocity.vely)
   self:block(self.velocity)
   self:moveBy(self.velocity.velx, self.velocity.vely)
-  if globals.mainPlayer ~= nil and self:collision(globals.mainPlayer) then
-    globals.mainPlayer.weaponHandler.change = 10
-    globals.mainPlayer.weaponHandler:updateThis()
-    if not self.despawn then
-      energy.banIds[#energy.banIds+1] = self.id
+  for i=1, globals.playerCount do
+    local p = globals.allPlayers[i]
+    if self:collision(p) then
+      megaman.weaponHandler[p.player].change = 10
+      megaman.weaponHandler[p.player]:updateThis()
+      if not self.despawn then
+        energy.banIds[#energy.banIds+1] = self.id
+      end
+      megautils.state().sectionHandler:removeEntity(self.spawner)
+      megautils.remove(self.spawner, true)
+      megautils.remove(self, true)
+      return
     end
-    megautils.state().sectionHandler:removeEntity(self.spawner)
-    megautils.remove(self.spawner, true)
-    megautils.remove(self, true)
-    return
   end
   if self.despawn then
     self.timer = math.min(self.timer+1, 400)
@@ -375,15 +406,24 @@ function energy:removed()
 end
 
 function energy:draw()
-  love.graphics.setColor(megaman.colorTwo[1]/255, megaman.colorTwo[2]/255,
-    megaman.colorTwo[3]/255, 1)
-  self.anim:draw(self.texTwo, math.round(self.transform.x), math.round(self.transform.y))
-  love.graphics.setColor(megaman.colorOutline[1]/255, megaman.colorOutline[2]/255,
-    megaman.colorOutline[3]/255, 1)
-  self.anim:draw(self.texOutline, math.round(self.transform.x), math.round(self.transform.y))
-  love.graphics.setColor(megaman.colorOne[1]/255, megaman.colorOne[2]/255,
-    megaman.colorOne[3]/255, 1)
-  self.anim:draw(self.texOne, math.round(self.transform.x), math.round(self.transform.y))
+  if globals.mainPlayer ~= nil then
+    love.graphics.setColor(megaman.colorTwo[globals.mainPlayer.player][1]/255, megaman.colorTwo[globals.mainPlayer.player][2]/255,
+      megaman.colorTwo[globals.mainPlayer.player][3]/255, 1)
+    self.anim:draw(self.texTwo, math.round(self.transform.x), math.round(self.transform.y))
+    love.graphics.setColor(megaman.colorOutline[globals.mainPlayer.player][1]/255, megaman.colorOutline[globals.mainPlayer.player][2]/255,
+      megaman.colorOutline[globals.mainPlayer.player][3]/255, 1)
+    self.anim:draw(self.texOutline, math.round(self.transform.x), math.round(self.transform.y))
+    love.graphics.setColor(megaman.colorOne[globals.mainPlayer.player][1]/255, megaman.colorOne[globals.mainPlayer.player][2]/255,
+      megaman.colorOne[globals.mainPlayer.player][3]/255, 1)
+    self.anim:draw(self.texOne, math.round(self.transform.x), math.round(self.transform.y))
+  else
+    love.graphics.setColor(0, 232/255, 216/255, 1)
+    self.anim:draw(self.texTwo, math.round(self.transform.x), math.round(self.transform.y))
+    love.graphics.setColor(0, 0, 0, 1)
+    self.anim:draw(self.texOutline, math.round(self.transform.x), math.round(self.transform.y))
+    love.graphics.setColor(0, 120/255, 248/255, 1)
+    self.anim:draw(self.texOne, math.round(self.transform.x), math.round(self.transform.y))
+  end
 end
 
 life = entity:extend()
@@ -410,7 +450,7 @@ function life:new(x, y, despwn, id, spawner)
   self.texTwo = loader.get("particles_two")
   self.texOutline = loader.get("particles_outline")
   self.texOne = loader.get("particles_one")
-  self.despawn = (not despwn and self.id == nil) or despwn
+  self.despawn = ternary(despwn ~= nil, despwn, self.id == nil)
   self.added = function()
     self:addToGroup("removeOnCutscene")
     self:addToGroup("freezable")
@@ -444,16 +484,19 @@ function life:update(dt)
     self.velocity.velx, self.velocity.vely)
   self:block(self.velocity)
   self:moveBy(self.velocity.velx, self.velocity.vely)
-  if globals.mainPlayer ~= nil and self:collision(globals.mainPlayer) then
-    globals.lives = math.min(globals.lives+1, globals.maxLives)
-    if not self.despawn then
-      life.banIds[#life.banIds+1] = self.id
+  for i=1, globals.playerCount do
+    local p = globals.allPlayers[i]
+    if self:collision(p) then
+      globals.lives = math.min(globals.lives+1, globals.maxLives)
+      if not self.despawn then
+        life.banIds[#life.banIds+1] = self.id
+      end
+      mmSfx.play("life")
+      megautils.state().sectionHandler:removeEntity(self.spawner)
+      megautils.remove(self.spawner, true)
+      megautils.remove(self, true)
+      return
     end
-    mmSfx.play("life")
-    megautils.state().sectionHandler:removeEntity(self.spawner)
-    megautils.remove(self.spawner, true)
-    megautils.remove(self, true)
-    return
   end
   if self.despawn then
     self.timer = math.min(self.timer+1, 400)
@@ -475,17 +518,26 @@ function life:removed()
 end
 
 function life:draw()
+  if globals.mainPlayer ~= nil then
+    love.graphics.setColor(megaman.colorTwo[globals.mainPlayer.player][1]/255, megaman.colorTwo[globals.mainPlayer.player][2]/255,
+      megaman.colorTwo[globals.mainPlayer.player][3]/255, 1)
+    love.graphics.draw(self.texTwo, self.quad, math.round(self.transform.x), math.round(self.transform.y))
+    love.graphics.setColor(megaman.colorOutline[globals.mainPlayer.player][1]/255, megaman.colorOutline[globals.mainPlayer.player][2]/255,
+      megaman.colorOutline[globals.mainPlayer.player][3]/255, 1)
+    love.graphics.draw(self.texOutline, self.quad, math.round(self.transform.x), math.round(self.transform.y))
+    love.graphics.setColor(megaman.colorOne[globals.mainPlayer.player][1]/255, megaman.colorOne[globals.mainPlayer.player][2]/255,
+      megaman.colorOne[globals.mainPlayer.player][3]/255, 1)
+    love.graphics.draw(self.texOne, self.quad, math.round(self.transform.x), math.round(self.transform.y))
+  else
+    love.graphics.setColor(0, 232/255, 216/255, 1)
+    love.graphics.draw(self.texTwo, self.quad, math.round(self.transform.x), math.round(self.transform.y))
+    love.graphics.setColor(0, 0, 0, 1)
+    love.graphics.draw(self.texOutline, self.quad, math.round(self.transform.x), math.round(self.transform.y))
+    love.graphics.setColor(0, 120/255, 248/255, 1)
+    love.graphics.draw(self.texOne, self.quad, math.round(self.transform.x), math.round(self.transform.y))
+  end
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.draw(self.tex, self.quad, math.round(self.transform.x), math.round(self.transform.y))
-  love.graphics.setColor(megaman.colorTwo[1]/255, megaman.colorTwo[2]/255,
-    megaman.colorTwo[3]/255, 1)
-  love.graphics.draw(self.texTwo, self.quad, math.round(self.transform.x), math.round(self.transform.y))
-  love.graphics.setColor(megaman.colorOutline[1]/255, megaman.colorOutline[2]/255,
-    megaman.colorOutline[3]/255, 1)
-  love.graphics.draw(self.texOutline, self.quad, math.round(self.transform.x), math.round(self.transform.y))
-  love.graphics.setColor(megaman.colorOne[1]/255, megaman.colorOne[2]/255,
-    megaman.colorOne[3]/255, 1)
-  love.graphics.draw(self.texOne, self.quad, math.round(self.transform.x), math.round(self.transform.y))
 end
 
 eTank = entity:extend()
@@ -511,7 +563,7 @@ function eTank:new(x, y, despwn, id, spawner)
   self.texOutline = loader.get("particles_outline")
   self.texOne = loader.get("particles_one")
   self.texTwo = loader.get("particles_two")
-  self.despawn = (not despwn and self.id == nil) or despwn
+  self.despawn = ternary(despwn ~= nil, despwn, self.id == nil)
   self.added = function()
     self:addToGroup("removeOnCutscene")
     self:addToGroup("freezable")
@@ -545,16 +597,19 @@ function eTank:update(dt)
     self.velocity.velx, self.velocity.vely)
   self:block(self.velocity)
   self:moveBy(self.velocity.velx, self.velocity.vely)
-  if globals.mainPlayer ~= nil and self:collision(globals.mainPlayer) then
-    globals.eTanks = math.min(globals.eTanks+1, globals.maxETanks)
-    if not self.despawn then
-      eTank.banIds[#eTank.banIds+1] = self.id
+  for i=1, globals.playerCount do
+    local p = globals.allPlayers[i]
+    if self:collision(p) then
+      globals.eTanks = math.min(globals.eTanks+1, globals.maxETanks)
+      if not self.despawn then
+        eTank.banIds[#eTank.banIds+1] = self.id
+      end
+      mmSfx.play("life")
+      megautils.state().sectionHandler:removeEntity(self.spawner)
+      megautils.remove(self.spawner, true)
+      megautils.remove(self, true)
+      return
     end
-    mmSfx.play("life")
-    megautils.state().sectionHandler:removeEntity(self.spawner)
-    megautils.remove(self.spawner, true)
-    megautils.remove(self, true)
-    return
   end
   if self.despawn then
     self.timer = math.min(self.timer+1, 400)
@@ -577,15 +632,24 @@ function eTank:removed()
 end
 
 function eTank:draw()
-  love.graphics.setColor(megaman.colorTwo[1]/255, megaman.colorTwo[2]/255,
-    megaman.colorTwo[3]/255, 1)
-  self.anim:draw(self.texTwo, math.round(self.transform.x), math.round(self.transform.y))
-  love.graphics.setColor(megaman.colorOutline[1]/255, megaman.colorOutline[2]/255,
-    megaman.colorOutline[3]/255, 1)
-  self.anim:draw(self.texOutline, math.round(self.transform.x), math.round(self.transform.y))
-  love.graphics.setColor(megaman.colorOne[1]/255, megaman.colorOne[2]/255,
-    megaman.colorOne[3]/255, 1)
-  self.anim:draw(self.texOne, math.round(self.transform.x), math.round(self.transform.y))
+  if globals.mainPlayer ~= nil then
+    love.graphics.setColor(megaman.colorTwo[globals.mainPlayer.player][1]/255, megaman.colorTwo[globals.mainPlayer.player][2]/255,
+      megaman.colorTwo[globals.mainPlayer.player][3]/255, 1)
+    self.anim:draw(self.texTwo, math.round(self.transform.x), math.round(self.transform.y))
+    love.graphics.setColor(megaman.colorOutline[globals.mainPlayer.player][1]/255, megaman.colorOutline[globals.mainPlayer.player][2]/255,
+      megaman.colorOutline[globals.mainPlayer.player][3]/255, 1)
+    self.anim:draw(self.texOutline, math.round(self.transform.x), math.round(self.transform.y))
+    love.graphics.setColor(megaman.colorOne[globals.mainPlayer.player][1]/255, megaman.colorOne[globals.mainPlayer.player][2]/255,
+      megaman.colorOne[globals.mainPlayer.player][3]/255, 1)
+    self.anim:draw(self.texOne, math.round(self.transform.x), math.round(self.transform.y))
+  else
+    love.graphics.setColor(0, 232/255, 216/255, 1)
+    self.anim:draw(self.texTwo, math.round(self.transform.x), math.round(self.transform.y))
+    love.graphics.setColor(0, 0, 0, 1)
+    self.anim:draw(self.texOutline, math.round(self.transform.x), math.round(self.transform.y))
+    love.graphics.setColor(0, 120/255, 248/255, 1)
+    self.anim:draw(self.texOne, math.round(self.transform.x), math.round(self.transform.y))
+  end
 end
 
 wTank = entity:extend()
@@ -611,7 +675,7 @@ function wTank:new(x, y, despwn, id, spawner)
   self.texOutline = loader.get("particles_outline")
   self.texOne = loader.get("particles_one")
   self.texTwo = loader.get("particles_two")
-  self.despawn = (not despwn and self.id == nil) or despwn
+  self.despawn = ternary(despwn ~= nil, despwn, self.id == nil)
   self.added = function()
     self:addToGroup("removeOnCutscene")
     self:addToGroup("freezable")
@@ -645,16 +709,19 @@ function wTank:update(dt)
     self.velocity.velx, self.velocity.vely)
   self:block(self.velocity)
   self:moveBy(self.velocity.velx, self.velocity.vely)
-  if globals.mainPlayer ~= nil and self:collision(globals.mainPlayer) then
-    globals.wTanks = math.min(globals.wTanks+1, globals.maxWTanks)
-    if not self.despawn then
-      wTank.banIds[#wTank.banIds+1] = self.id
+  for i=1, globals.playerCount do
+    local p = globals.allPlayers[i]
+    if self:collision(p) then
+      globals.wTanks = math.min(globals.wTanks+1, globals.maxWTanks)
+      if not self.despawn then
+        wTank.banIds[#wTank.banIds+1] = self.id
+      end
+      mmSfx.play("life")
+      megautils.state().sectionHandler:removeEntity(self.spawner)
+      megautils.remove(self.spawner, true)
+      megautils.remove(self, true)
+      return
     end
-    mmSfx.play("life")
-    megautils.state().sectionHandler:removeEntity(self.spawner)
-    megautils.remove(self.spawner, true)
-    megautils.remove(self, true)
-    return
   end
   if self.despawn then
     self.timer = math.min(self.timer+1, 400)
@@ -677,13 +744,22 @@ function wTank:removed()
 end
 
 function wTank:draw()
-  love.graphics.setColor(megaman.colorTwo[1]/255, megaman.colorTwo[2]/255,
-    megaman.colorTwo[3]/255, 1)
-  self.anim:draw(self.texTwo, math.round(self.transform.x), math.round(self.transform.y))
-  love.graphics.setColor(megaman.colorOutline[1]/255, megaman.colorOutline[2]/255,
-    megaman.colorOutline[3]/255, 1)
-  self.anim:draw(self.texOutline, math.round(self.transform.x), math.round(self.transform.y))
-  love.graphics.setColor(megaman.colorOne[1]/255, megaman.colorOne[2]/255,
-    megaman.colorOne[3]/255, 1)
-  self.anim:draw(self.texOne, math.round(self.transform.x), math.round(self.transform.y))
+  if globals.mainPlayer ~= nil then
+    love.graphics.setColor(megaman.colorTwo[globals.mainPlayer.player][1]/255, megaman.colorTwo[globals.mainPlayer.player][2]/255,
+      megaman.colorTwo[globals.mainPlayer.player][3]/255, 1)
+    self.anim:draw(self.texTwo, math.round(self.transform.x), math.round(self.transform.y))
+    love.graphics.setColor(megaman.colorOutline[globals.mainPlayer.player][1]/255, megaman.colorOutline[globals.mainPlayer.player][2]/255,
+      megaman.colorOutline[globals.mainPlayer.player][3]/255, 1)
+    self.anim:draw(self.texOutline, math.round(self.transform.x), math.round(self.transform.y))
+    love.graphics.setColor(megaman.colorOne[globals.mainPlayer.player][1]/255, megaman.colorOne[globals.mainPlayer.player][2]/255,
+      megaman.colorOne[globals.mainPlayer.player][3]/255, 1)
+    self.anim:draw(self.texOne, math.round(self.transform.x), math.round(self.transform.y))
+  else
+    love.graphics.setColor(0, 232/255, 216/255, 1)
+    self.anim:draw(self.texTwo, math.round(self.transform.x), math.round(self.transform.y))
+    love.graphics.setColor(0, 0, 0, 1)
+    self.anim:draw(self.texOutline, math.round(self.transform.x), math.round(self.transform.y))
+    love.graphics.setColor(0, 120/255, 248/255, 1)
+    self.anim:draw(self.texOne, math.round(self.transform.x), math.round(self.transform.y))
+  end
 end

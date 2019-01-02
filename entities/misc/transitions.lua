@@ -20,20 +20,23 @@ function right:new(x, y, h, scrollx, scrolly, spd, p)
 end
 
 function right:update(dt)
-  if camera.main ~= nil and globals.mainPlayer ~= nil and
-    globals.mainPlayer.control and not camera.main.transition and self:collision(globals.mainPlayer)
-    and (not self.platform or (self.platform and globals.mainPlayer.onMovingFloor)) then
-    camera.main.transitiondirection = "right"
-    camera.main.transition = true
-    camera.main.doScrollY = ternary(self.scrolly ~= nil, self.scrolly, camera.main.doScrollY)
-    camera.main.doScrollX = ternary(self.scrollx ~= nil, self.scrollx, camera.main.doScrollX)
-    camera.main.player = globals.mainPlayer
-    camera.main.speed = self.spd
-    camera.main.transX = camera.main.scrollx+camera.main.scrollw+16
-    camera.main.toSection = self:collisionTable(megautils.state().sectionHandler.sections, 2)[1]
-    camera.main.transform.x = (camera.main.scrollx+camera.main.scrollw)-view.w
-    if camera.main.player.onMovingFloor and not camera.main.player.onMovingFloor:is(rushJet) then
-      camera.main.player.onMovingFloor.dontRemove = true
+  for i=1, #globals.allPlayers do
+    local player = globals.allPlayers[i]
+    if camera.main ~= nil and player.control and not camera.main.transition and self:collision(player)
+      and (not self.platform or (self.platform and player.onMovingFloor)) then
+      camera.main.transitiondirection = "right"
+      camera.main.transition = true
+      camera.main.doScrollY = ternary(self.scrolly ~= nil, self.scrolly, camera.main.doScrollY)
+      camera.main.doScrollX = ternary(self.scrollx ~= nil, self.scrollx, camera.main.doScrollX)
+      camera.main.player = player
+      camera.main.speed = self.spd
+      camera.main.transX = camera.main.scrollx+camera.main.scrollw+16
+      camera.main.toSection = self:collisionTable(megautils.state().sectionHandler.sections, 2)[1]
+      camera.main.transform.x = (camera.main.scrollx+camera.main.scrollw)-view.w
+      if camera.main.player.onMovingFloor and not camera.main.player.onMovingFloor:is(rushJet) then
+        camera.main.player.onMovingFloor.dontRemove = true
+      end
+      break
     end
   end
 end
@@ -60,19 +63,23 @@ function left:new(x, y, h, scrollx, scrolly, spd, p)
 end
 
 function left:update(dt)
-  if camera.main ~= nil and globals.mainPlayer ~= nil and globals.mainPlayer.control and not camera.main.transition
-    and self:collision(globals.mainPlayer) and (not self.platform or (self.platform and globals.mainPlayer.onMovingFloor)) then
-    camera.main.transitiondirection = "left"
-    camera.main.transition = true
-    camera.main.doScrollY = ternary(self.scrolly ~= nil, self.scrolly, camera.main.doScrollY)
-    camera.main.doScrollX = ternary(self.scrollx ~= nil, self.scrollx, camera.main.doScrollX)
-    camera.main.player = globals.mainPlayer
-    camera.main.speed = self.spd
-    camera.main.transX = camera.main.scrollx-camera.main.player.collisionShape.w-16
-    camera.main.toSection = self:collisionTable(megautils.state().sectionHandler.sections, -2)[1]
-    camera.main.transform.x = camera.main.scrollx
-    if camera.main.player.onMovingFloor and not camera.main.player.onMovingFloor:is(rushJet) then
-      camera.main.player.onMovingFloor.dontRemove = true
+  for i=1, #globals.allPlayers do
+    local player = globals.allPlayers[i]
+    if camera.main ~= nil and player.control and not camera.main.transition
+      and self:collision(player) and (not self.platform or (self.platform and player.onMovingFloor)) then
+      camera.main.transitiondirection = "left"
+      camera.main.transition = true
+      camera.main.doScrollY = ternary(self.scrolly ~= nil, self.scrolly, camera.main.doScrollY)
+      camera.main.doScrollX = ternary(self.scrollx ~= nil, self.scrollx, camera.main.doScrollX)
+      camera.main.player = player
+      camera.main.speed = self.spd
+      camera.main.transX = camera.main.scrollx-camera.main.player.collisionShape.w-16
+      camera.main.toSection = self:collisionTable(megautils.state().sectionHandler.sections, -2)[1]
+      camera.main.transform.x = camera.main.scrollx
+      if camera.main.player.onMovingFloor and not camera.main.player.onMovingFloor:is(rushJet) then
+        camera.main.player.onMovingFloor.dontRemove = true
+      end
+      break
     end
   end
 end
@@ -99,19 +106,23 @@ function down:new(x, y, w, scrollx, scrolly, spd, p)
 end
 
 function down:update(dt)
-  if camera.main ~= nil and globals.mainPlayer ~= nil and globals.mainPlayer.control and not camera.main.transition
-    and self:collision(globals.mainPlayer) and (not self.platform or (self.platform and globals.mainPlayer.onMovingFloor)) then
-    camera.main.transitiondirection = "down"
-    camera.main.transition = true
-    camera.main.doScrollY = ternary(self.scrolly ~= nil, self.scrolly, camera.main.doScrollY)
-    camera.main.doScrollX = ternary(self.scrollx ~= nil, self.scrollx, camera.main.doScrollX)
-    camera.main.player = globals.mainPlayer
-    camera.main.speed = self.spd
-    camera.main.transY = camera.main.scrolly+camera.main.scrollh+8
-    camera.main.toSection = self:collisionTable(megautils.state().sectionHandler.sections, 0, 2)[1]
-    camera.main.transform.y = (camera.main.scrolly+camera.main.scrollh)-view.h
-    if camera.main.player.onMovingFloor and not camera.main.player.onMovingFloor:is(rushJet) then
-      camera.main.player.onMovingFloor.dontRemove = true
+  for i=1, #globals.allPlayers do
+    local player = globals.allPlayers[i]
+    if camera.main ~= nil and player.control and not camera.main.transition
+      and self:collision(player) and (not self.platform or (self.platform and player.onMovingFloor)) then
+      camera.main.transitiondirection = "down"
+      camera.main.transition = true
+      camera.main.doScrollY = ternary(self.scrolly ~= nil, self.scrolly, camera.main.doScrollY)
+      camera.main.doScrollX = ternary(self.scrollx ~= nil, self.scrollx, camera.main.doScrollX)
+      camera.main.player = player
+      camera.main.speed = self.spd
+      camera.main.transY = camera.main.scrolly+camera.main.scrollh+8
+      camera.main.toSection = self:collisionTable(megautils.state().sectionHandler.sections, 0, 2)[1]
+      camera.main.transform.y = (camera.main.scrolly+camera.main.scrollh)-view.h
+      if camera.main.player.onMovingFloor and not camera.main.player.onMovingFloor:is(rushJet) then
+        camera.main.player.onMovingFloor.dontRemove = true
+      end
+      break
     end
   end
 end
@@ -138,20 +149,24 @@ function up:new(x, y, w, scrollx, scrolly, spd, p)
 end
 
 function up:update(dt)
-  if camera.main ~= nil and globals.mainPlayer ~= nil and globals.mainPlayer.control and not camera.main.transition
-    and self:collision(globals.mainPlayer) and (not self.platform or (self.platform and 
-      globals.mainPlayer.onMovingFloor)) then
-    camera.main.transitiondirection = "up"
-    camera.main.transition = true
-    camera.main.doScrollY = ternary(self.scrolly ~= nil, self.scrolly, camera.main.doScrollY)
-    camera.main.doScrollX = ternary(self.scrollx ~= nil, self.scrollx, camera.main.doScrollX)
-    camera.main.player = globals.mainPlayer
-    camera.main.speed = self.spd
-    camera.main.transY = camera.main.scrolly-camera.main.player.collisionShape.h-8
-    camera.main.toSection = self:collisionTable(megautils.state().sectionHandler.sections, 0, -2)[1]
-    camera.main.transform.y = camera.main.scrolly
-    if camera.main.player.onMovingFloor and not camera.main.player.onMovingFloor:is(rushJet) then
-      camera.main.player.onMovingFloor.dontRemove = true
+  for i=1, #globals.allPlayers do
+    local player = globals.allPlayers[i]
+    if camera.main ~= nil and player.control and not camera.main.transition
+      and self:collision(player) and (not self.platform or (self.platform and 
+        player.onMovingFloor)) then
+      camera.main.transitiondirection = "up"
+      camera.main.transition = true
+      camera.main.doScrollY = ternary(self.scrolly ~= nil, self.scrolly, camera.main.doScrollY)
+      camera.main.doScrollX = ternary(self.scrollx ~= nil, self.scrollx, camera.main.doScrollX)
+      camera.main.player = player
+      camera.main.speed = self.spd
+      camera.main.transY = camera.main.scrolly-camera.main.player.collisionShape.h-8
+      camera.main.toSection = self:collisionTable(megautils.state().sectionHandler.sections, 0, -2)[1]
+      camera.main.transform.y = camera.main.scrolly
+      if camera.main.player.onMovingFloor and not camera.main.player.onMovingFloor:is(rushJet) then
+        camera.main.player.onMovingFloor.dontRemove = true
+      end
+      break
     end
   end
 end
@@ -182,18 +197,22 @@ function upLadder:update(dt)
   if self.ladder == nil then
     self.ladder = self:collisionTable(megautils.groups()["ladder"])[1]
   end
-  if camera.main ~= nil and globals.mainPlayer ~= nil and not camera.main.transition and
-    (self.ladder ~= nil or (not self.platform or (self.platform and globals.mainPlayer.onMovingFloor))) then
-    if globals.mainPlayer.control and globals.mainPlayer.climb and globals.mainPlayer.transform.y < self.transform.y then
-      camera.main.transitiondirection = "up"
-      camera.main.transition = true
-      camera.main.doScrollY = ternary(self.scrolly ~= nil, self.scrolly, camera.main.doScrollY)
-      camera.main.doScrollX = ternary(self.scrollx ~= nil, self.scrollx, camera.main.doScrollX)
-      camera.main.player = globals.mainPlayer
-      camera.main.speed = self.spd
-      camera.main.transY = camera.main.scrolly-camera.main.player.collisionShape.h-8
-      camera.main.toSection = self:collisionTable(megautils.state().sectionHandler.sections, 0, -2)[1]
-      camera.main.transform.y = camera.main.scrolly
+  for i=1, #globals.allPlayers do
+    local player = globals.allPlayers[i]
+    if camera.main ~= nil and not camera.main.transition and
+      (self.ladder ~= nil or (not self.platform or (self.platform and player.onMovingFloor))) then
+      if player.control and player.climb and player.transform.y < self.transform.y then
+        camera.main.transitiondirection = "up"
+        camera.main.transition = true
+        camera.main.doScrollY = ternary(self.scrolly ~= nil, self.scrolly, camera.main.doScrollY)
+        camera.main.doScrollX = ternary(self.scrollx ~= nil, self.scrollx, camera.main.doScrollX)
+        camera.main.player = player
+        camera.main.speed = self.spd
+        camera.main.transY = camera.main.scrolly-camera.main.player.collisionShape.h-8
+        camera.main.toSection = self:collisionTable(megautils.state().sectionHandler.sections, 0, -2)[1]
+        camera.main.transform.y = camera.main.scrolly
+        break
+      end
     end
   end
 end
@@ -220,22 +239,22 @@ end
 
 function shiftYZone:update(dt)
   if not self.once and camera.main ~= nil and not camera.main.transition then
-    if globals.mainPlayer ~= nil and globals.mainPlayer.control and self:collision(globals.mainPlayer)
-      and not camera.main.doScrollY then
-      self.once = true
-      self.tween = tween.new(self.speed, camera.main.transform, {y=math.clamp(globals.mainPlayer.transform.y
-          - (view.h/2) + (globals.mainPlayer.collisionShape.h/2), camera.main.scrolly, 
-          camera.main.scrolly+camera.main.scrollh-view.h)})
-      globals.mainPlayer.control = false
-      megautils.freeze({globals.mainPlayer})
+    for i=1, #globals.allPlayers do
+      local player = globals.allPlayers[i]
+      if player.control and self:collision(player)
+        and not camera.main.doScrollY then
+        self.once = true
+        self.tween = tween.new(self.speed, camera.main.transform, {y=math.clamp(player.transform.y
+            - (view.h/2) + (player.collisionShape.h/2), camera.main.scrolly, 
+            camera.main.scrolly+camera.main.scrollh-view.h)})
+        megautils.freeze()
+        break
+      end
     end
   end
   if self.tween ~= nil and self.tween:update(1/60) then
     camera.main.doScrollY = true
-    if globals.mainPlayer ~= nil then
-      globals.mainPlayer.control = true
-    end
-    megautils.unfreeze({globals.mainPlayer})
+    megautils.unfreeze()
     megautils.remove(self, true)
   elseif self.tween ~= nil then
     camera.main.transform.y = math.round(camera.main.transform.y)
@@ -263,118 +282,25 @@ function shiftXZone:new(x, y, w, h, speed)
 end
 
 function shiftXZone:update(dt)
-  if not self.once and not camera.main.transition and globals.mainPlayer ~= nil and self:collision(globals.mainPlayer) and 
-  globals.mainPlayer.control and not camera.main.doScrollX then
-    self.once = true
-    self.tween = tween.new(self.speed, camera.main.transform, {x=math.clamp(globals.mainPlayer.transform.x
-        - (view.w/2) + (globals.mainPlayer.collisionShape.w/2), camera.main.scrollx,
-        camera.main.scrollx+camera.main.scrollw-view.w)})
-    globals.mainPlayer.control = false
-    megautils.freeze({globals.mainPlayer})
+  for i=1, #globals.allPlayers do
+    local player = globals.allPlayers[i]
+    if not self.once and not camera.main.transition and self:collision(player) and 
+      player.control and not camera.main.doScrollX then
+      self.once = true
+      self.tween = tween.new(self.speed, camera.main.transform, {x=math.clamp(player.transform.x
+          - (view.w/2) + (player.collisionShape.w/2), camera.main.scrollx,
+          camera.main.scrollx+camera.main.scrollw-view.w)})
+      megautils.freeze()
+      break
+    end
   end
   if self.tween ~= nil and self.tween:update(1/60) then
     self.once2 = true
     camera.main.doScrollX = true
-    globals.mainPlayer.control = true
-    megautils.unfreeze({globals.mainPlayer})
+    megautils.unfreeze()
     megautils.remove(self, true)
   elseif self.tween ~= nil then
     camera.main.transform.x = math.round(camera.main.transform.x)
-  end
-end
-
-shiftZone = entity:extend()
-
-addobjects.register("shift_zone", function(v)
-  megautils.add(shiftZone(v.x, v.y, v.width, v.height, v.properties["speed"],
-    v.properties["toX"], v.properties["toY"], v.properties["lockX"], v.properties["shiftX"], v.properties["shiftY"]))
-end)
-
-function shiftZone:new(x, y, w, h, speed, x2, y2, lockx, shiftx, shifty)
-  shiftZone.super.new(self)
-  self:setRectangleCollision(w, h)
-  self.transform.y = y
-  self.transform.x = x
-  self.speed = speed or 0.2
-  self.x, self.y = x2, y2
-  self.shiftX = ternary(shiftx ~= nil, shiftx, false)
-  self.shiftY = ternary(shifty ~= nil, shifty, false)
-  self.lockx = ternary(lockx ~= nil, lockx, false)
-  self.state = 0
-  self.player = nil
-  self.added = function(self)
-    self:addToGroup("despawnable")
-    self.once = false
-    self.updated = true
-    self.tween = nil
-  end
-end
-
-function shiftZone:update(dt)
-  if self.state == 0 then
-    if not self.once and camera.main ~= nil and not camera.main.transition then
-      local tmp = self:collisionTable(megautils.groups()["hurtableOther"])
-      if #tmp ~= 0 and tmp[1].control then
-        self.once = true
-        self.player = tmp[1]
-        camera.main.doScrollX = false
-        camera.main.doScrollY = false
-        self.tween = tween.new(self.speed, camera.main.transform, {x=self.x, y=self.y})
-        if globals.mainPlayer ~= nil then
-          globals.mainPlayer.control = false
-        end
-        megautils.freeze({self, globals.mainPlayer})
-        self.state = 1
-      end
-    end
-  elseif self.state == 1 then
-    if not self.once2 and self.tween ~= nil and self.tween:update(1/60) then
-      self.once2 = true
-      if self.shiftX or self.shiftY then
-        self.state = 2
-        if self.shiftX then
-          self.tween = tween.new(self.speed, camera.main.transform, {x=math.round(self.player.transform.x)
-            - (view.w/2) + (self.player.collisionShape.w/2)})
-        elseif self.shiftY then
-          self.tween = tween.new(self.speed, camera.main.transform, {y=math.round(self.player.transform.y)
-            - (view.h/2) + (self.player.collisionShape.h/2)})
-        end
-        return
-      else
-        self.state = -1
-      end
-      if self.lockx then
-        camera.main.doScrollX = false
-        camera.main.doScrollY = true
-      else
-        camera.main.doScrollX = true
-        camera.main.doScrollY = false
-      end
-      if globals.mainPlayer ~= nil then
-        globals.mainPlayer.control = true
-      end
-    elseif self.tween ~= nil then
-      camera.main.transform.x = math.round(camera.main.transform.x)
-      camera.main.transform.y = math.round(camera.main.transform.y)
-    end
-  elseif self.state == 2 then
-    if self.tween:update(1/60) then
-      if self.lockx then
-        camera.main.doScrollX = false
-        camera.main.doScrollY = true
-      else
-        camera.main.doScrollX = true
-        camera.main.doScrollY = false
-      end
-      for k, v in pairs(globals.mainPlayers) do
-        v.control = true
-      end
-      megautils.unfreeze({self, globals.mainPlayer})
-      megautils.remove(self, true)
-    else
-      camera.main.transform.x = math.round(camera.main.transform.x)
-      camera.main.transform.y = math.round(camera.main.transform.y)
-    end
   end
 end
 
@@ -398,8 +324,8 @@ end
 
 function lockXZone:update(dt)
   if not self.once and camera.main ~= nil and not camera.main.transition then
-    local tmp = self:collisionTable(megautils.groups()["hurtableOther"])
-    if #tmp ~= 0 and tmp[1].control then
+    local tmp = self:collisionTable(globals.allPlayers)
+    if #tmp ~= 0 then
       self.once = true
       camera.main.doScrollX = false
     end
@@ -426,8 +352,8 @@ end
 
 function lockYZone:update(dt)
   if not self.once and camera.main ~= nil and not camera.main.transition then
-    local tmp = self:collisionTable(megautils.groups()["hurtableOther"])
-    if #tmp ~= 0 and tmp[1].control then
+    local tmp = self:collisionTable(globals.allPlayers)
+    if #tmp ~= 0 then
       self.once = true
       camera.main.doScrollY = false
     end

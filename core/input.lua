@@ -136,7 +136,7 @@ function inputHandler.unbind(k)
 end
 
 function inputHandler.down(k)
-  if console and console.state == 1 then
+  if (console and console.state == 1) or not inputHandler.keys[k] then
     return false
   end
   if inputHandler.keys[k][1] == "keyboard" then

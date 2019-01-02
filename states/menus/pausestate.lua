@@ -20,7 +20,7 @@ end
 
 weaponSelect = entity:extend()
 
-function weaponSelect:new(w, h)
+function weaponSelect:new(w, h, p)
   weaponSelect.super.new(self)
   self.t = loader.get("weapon_select")
   self.w = w
@@ -77,6 +77,7 @@ function weaponSelect:new(w, h)
   self.inactive["eTank"] = love.graphics.newQuad(48, 32, 16, 16, 176, 48)
   self.active["wTank"] = love.graphics.newQuad(96, 32, 16, 16, 176, 48)
   self.inactive["wTank"] = love.graphics.newQuad(64, 32, 16, 16, 176, 48)
+  self.player = p
   globals.pauseUpdateFunc = function(dt)
     for k, v in pairs(self.fills) do
       for i, j in pairs(v) do
@@ -120,12 +121,12 @@ function weaponSelect:update(dt)
     end
     self.fills[self.y][self.x].colorOne = {0, 120, 248}
     self.fills[self.y][self.x].colorTwo = {0, 232, 216}
-    if control.startPressed then
+    if control.startPressed[self.player] then
       self.updated = false
       self.w:switch(self.list[self.y][self.x])
-      megaman.colorOutline = self.w.colorOutline[self.list[self.y][self.x]]
-      megaman.colorOne = self.w.colorOne[self.list[self.y][self.x]]
-      megaman.colorTwo = self.w.colorTwo[self.list[self.y][self.x]]
+      megaman.colorOutline[self.player] = self.w.colorOutline[self.list[self.y][self.x]]
+      megaman.colorOne[self.player] = self.w.colorOne[self.list[self.y][self.x]]
+      megaman.colorTwo[self.player] = self.w.colorTwo[self.list[self.y][self.x]]
       for k, v in pairs(self.fills) do
         for i, j in pairs(v) do
           if j.id ~= 0 then
@@ -146,8 +147,9 @@ function weaponSelect:update(dt)
         weaponSelect = nil
         collectgarbage()
       end, globals.pauseLastState)
+      mmSfx.play("selected")
       return
-    elseif control.rightPressed then
+    elseif control.rightPressed[self.player] then
       self.x = math.clamp(self.x+1, 1, 2)
       local ly = self.y
       while true do
@@ -182,7 +184,7 @@ function weaponSelect:update(dt)
           break
         end
       end
-    elseif control.leftPressed then
+    elseif control.leftPressed[self.player] then
       self.x = math.clamp(self.x-1, 1, 2)
       local ly = self.y
       while true do
@@ -217,7 +219,7 @@ function weaponSelect:update(dt)
           break
         end
       end
-    elseif control.upPressed then
+    elseif control.upPressed[self.player] then
       while true do
         if (self.fills[self.y] == nil or self.fills[self.y][self.x] == nil) and self.y == 1 and self.x == 2 then
           self.x = 1
@@ -228,7 +230,7 @@ function weaponSelect:update(dt)
           break
         end
       end
-    elseif control.downPressed then
+    elseif control.downPressed[self.player] then
       while true do
         if self.y >= 6 then
           self.section = 1
@@ -248,7 +250,7 @@ function weaponSelect:update(dt)
     end
   elseif self.section == 1 then
     local olx, oly = self.x, self.y
-    if control.startPressed then
+    if control.startPressed[self.player] then
       if self.x == 1 and globals.eTanks > 0 then
         self.fills[1][1].change = self.h.segments * 4
         self.fills[1][1]:updateThis()
@@ -265,7 +267,7 @@ function weaponSelect:update(dt)
         end
         globals.wTanks = math.clamp(globals.wTanks-1, 0, 9)
       end
-    elseif control.upPressed then
+    elseif control.upPressed[self.player] then
       self.section = 0
       self.x = 1
       self.y = #self.list
@@ -277,9 +279,9 @@ function weaponSelect:update(dt)
       end
       olx = -69
     end
-    if self.x == 1 and control.rightPressed then
+    if self.x == 1 and control.rightPressed[self.player] then
       self.x = 2
-    elseif self.x == 2 and control.leftPressed then
+    elseif self.x == 2 and control.leftPressed[self.player] then
       self.x = 1
     end
     if olx ~= self.x or oly ~= self.y then

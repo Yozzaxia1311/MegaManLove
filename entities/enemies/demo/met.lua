@@ -98,7 +98,7 @@ function met:update(dt)
       self.s = 0
     end
   end
-  self:hurt(self:collisionTable(megautils.groups()["hurtableOther"]), -2, 80)
+  self:hurt(self:collisionTable(globals.allPlayers), -2, 80)
   self:updateIFrame()
   self:updateFlash()
   if megautils.outside(self) then
@@ -145,7 +145,7 @@ end
 
 function metBullet:update(dt)
   self:moveBy(self.velocity.velx, self.velocity.vely)
-  self:hurt(self:collisionTable(megautils.groups()["hurtableOther"]), -2, 80)
+  self:hurt(self:collisionTable(globals.allPlayers), -2, 80)
   if megautils.outside(self) then
     megautils.remove(self, true)
   end

@@ -185,6 +185,28 @@ function entitysystem:update(dt)
       end
     end
   end
+  for i=self.firstUpdate, self.lastUpdate, 1 do
+    if self.updates[i] ~= nil then
+      for k=1, #self.updates[i] do
+        local t = self.updates[i][k]
+        if table.length(t.otherUpdates) ~= 0 then
+          for s, h in pairs(t.otherUpdates) do
+            if not h then 
+              self.localUpdate = false
+              break
+            end
+          end
+        end
+        if t.updated and self.localUpdate and not t.isRemoved then
+          if states.switched then
+            return
+          end
+          t:afterUpdate(dt)
+        end
+        self.localUpdate = true
+      end
+    end
+  end
   if self.afterUpdate then
     self.afterUpdate(self)
   end
@@ -452,6 +474,7 @@ function entity:collisionTable(t, x, y)
 end
 
 function entity:update(dt) end
+function entity:afterUpdate(dt) end
 function entity:draw() end
 function entity:drawQuality() end
 function entity:removed() end

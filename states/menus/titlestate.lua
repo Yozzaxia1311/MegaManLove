@@ -46,7 +46,7 @@ function title:update(dt)
   end
   if self.drawText then
     self.textTimer = math.wrap(self.textTimer+1, 0, 40)
-    if control.startDown and not self.cont then
+    if control.startDown[1] and not self.cont then
       self.cont = true
       mmMusic.stopMusic()
       self.drawText = false

@@ -41,6 +41,8 @@ function megautils.load()
   loader.load("assets/sfx/cursor_move.ogg", "cursor_move", "sound", nil, true)
   loader.load("assets/sfx/charge.ogg", "charge", "sound", nil, true)
   loader.load("assets/sfx/switch.ogg", "switch", "sound", nil, true)
+  loader.load("assets/sfx/selected.ogg", "selected", "sound", nil, true)
+  loader.load("assets/sfx/error.ogg", "error", "sound", nil, true)
   loader.load("assets/misc/mm.png", "font", "font", nil, true)
   loader.load("assets/misc/weapons/buster.png", "buster_tex", "texture", nil, true)
   loader.load("assets/misc/weapons/rush.png", "rush", "texture", nil, true)
@@ -198,10 +200,13 @@ function megautils.circlePathY(y, deg, dist)
   return y + (megautils.calcY(deg) * dist)
 end
 
-function megautils.resetPlayer()
+function megautils.resetGame()
+  globals.mainPlayer = nil
+  globals.allPlayers = {}
+  healthhandler.playerTimers = {-2, -2, -2, -2}
   globals.manageStageResources = true
   globals.checkpoint = "start"
-  globals.lives = ternary(globals.lives > 3, globals.lives, 3)
+  globals.lives = ternary(globals.lives > 2, globals.lives, 2)
   wTank.banIds = {}
   eTank.banIds = {}
   life.banIds = {}
@@ -209,15 +214,43 @@ function megautils.resetPlayer()
   smallEnergy.banIds = {}
   health.banIds = {}
   smallHealth.banIds = {}
-  megaman.colorOne = {0, 120, 248}
-  megaman.colorTwo = {0, 232, 216}
-  megaman.colorOutline = {0, 0, 0}
-  megaman.weaponHandler = weaponhandler(nil, nil, 10)
-  megaman.weaponHandler:register(0, "megaBuster", {0, 120, 248}, {0, 232, 216}, {0, 0, 0})
-  megaman.weaponHandler:register(9, "rushCoil", {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
-  megaman.weaponHandler:register(10, "rushJet", {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
-  if globals.defeats.stickMan then
-    megaman.weaponHandler:register(1, "stickWeapon", {255, 255, 255}, {128, 128, 128}, {0, 0, 0})
+  megaman.weaponHandler = {}
+  megaman.colorOutline = {}
+  megaman.colorOne = {}
+  megaman.colorTwo = {}
+  for i=1, globals.maxPlayerCount do
+    megaman.weaponHandler[i] = weaponhandler(nil, nil, 10)
+    megaman.weaponHandler[i]:register(0, "megaBuster", {0, 120, 248}, {0, 232, 216}, {0, 0, 0})
+    megaman.weaponHandler[i]:register(9, "rushCoil", {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+    megaman.weaponHandler[i]:register(10, "rushJet", {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+    if globals.defeats.stickMan then
+      megaman.weaponHandler[i]:register(1, "stickWeapon", {255, 255, 255}, {128, 128, 128}, {0, 0, 0})
+    end
+    megaman.colorOutline[i] = megaman.weaponHandler[i].colorOutline[0]
+    megaman.colorOne[i] = megaman.weaponHandler[i].colorOne[0]
+    megaman.colorTwo[i] = megaman.weaponHandler[i].colorTwo[0]
+  end
+end
+
+function megautils.revivePlayer(p)
+  megaman.weaponHandler[p]:switch(0)
+  megaman.colorOutline[p] = megaman.weaponHandler[p].colorOutline[0]
+  megaman.colorOne[p] = megaman.weaponHandler[p].colorOne[0]
+  megaman.colorTwo[p] = megaman.weaponHandler[p].colorTwo[0]
+end
+
+function megautils.registerPlayer(e, p)
+  if not globals.mainPlayer then
+    globals.mainPlayer = e
+  end
+  globals.allPlayers[#globals.allPlayers+1] = e
+  e.player = p
+end
+
+function megautils.unregisterPlayer(e)
+  table.removevaluearray(globals.allPlayers, e)
+  if globals.mainPlayer == e then
+    globals.mainPlayer = globals.allPlayers[1]
   end
 end
 
@@ -313,23 +346,23 @@ function megautils.dropItem(x, y)
   if math.between(rnd, 0, 39) then
     local rnd2 = love.math.random(0, 2)
     if rnd2 == 0 then
-      megautils.add(life(x, y, nil, true))
+      megautils.add(life(x, y, true))
     elseif rnd2 == 1 then
-      megautils.add(eTank(x, y, nil, true))
+      megautils.add(eTank(x, y, true))
     else
-      megautils.add(wTank(x, y, nil, true))
+      megautils.add(wTank(x, y, true))
     end
   elseif math.between(rnd, 50, 362) then
     if math.randomboolean() then
-      megautils.add(health(x, y, nil, true))
+      megautils.add(health(x, y, true))
     else
-      megautils.add(energy(x, y, nil, true))
+      megautils.add(energy(x, y, true))
     end
   elseif math.between(rnd, 370, 995) then
     if math.randomboolean() then
-      megautils.add(smallHealth(x, y, nil, true))
+      megautils.add(smallHealth(x, y, true))
     else
-      megautils.add(smallEnergy(x, y, nil, true))
+      megautils.add(smallEnergy(x, y, true))
     end
   end
 end

@@ -48,6 +48,11 @@ function love.load()
   cscreen.init(view.w*view.scale, view.h*view.scale, true)
   resized = false
   
+  globals.mainPlayer = nil
+  globals.allPlayers = {}
+  globals.playerCount = 1
+  globals.maxPlayerCount = 4
+  
   control.init()
   if touchControls then
     touchInput.add("left", "left-down", 16, -140, 64, 64)
@@ -66,7 +71,7 @@ function love.load()
   
   globals.checkpoint = "start"
   globals.infiniteLives = false
-  globals.lives = 3
+  globals.lives = 2
   globals.lifeSegments = 7
   globals.eTanks = 1
   globals.wTanks = 1
@@ -83,7 +88,7 @@ function love.load()
   if love.joystick then globals.gamepadCheck = {} end
   
   megautils.load()
-  megautils.resetPlayer()
+  megautils.resetGame()
   states.set("states/menus/disclaimerstate.lua")
 end
 

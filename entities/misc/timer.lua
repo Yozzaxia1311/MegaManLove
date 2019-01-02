@@ -41,7 +41,7 @@ function timer.winCutscene(func)
     elseif s.state == 0 then
       globals.mainPlayer.velocity.vely = globals.mainPlayer.velocity.vely + .25
       globals.mainPlayer:phys()
-      if globals.mainPlayer:solid(0, 1) then
+      if globals.mainPlayer:checkGround() or globals.mainPlayer.onSlope or globals.mainPlayer.onMovingFloor then
         globals.mainPlayer.ground = true
         globals.mainPlayer.velocity.vely = 0
         globals.mainPlayer.curAnim = "idle"
@@ -111,10 +111,14 @@ function timer.absorbCutscene(func)
             globals.mainPlayer.side = 1
             globals.mainPlayer.transform.x = math.min(globals.mainPlayer.transform.x+1.3, s.to)
           end
-          if globals.mainPlayer:solid(0, 1) then
+          if globals.mainPlayer:checkGround() or globals.mainPlayer.onSlope or globals.mainPlayer.onMovingFloor then
             globals.mainPlayer.ground = true
             globals.mainPlayer.velocity.vely = 0
             globals.mainPlayer.curAnim = "run"
+          elseif globals.mainPlayer:solid(globals.mainPlayer.side, 0) then
+            globals.mainPlayer.curAnim = "jump"
+            globals.mainPlayer.velocity.vely = globals.mainPlayer.jumpSpeed
+            globals.mainPlayer:face(globals.mainPlayer.side)
           else
             globals.mainPlayer:grav()
             globals.mainPlayer.curAnim = "jump"
@@ -133,7 +137,7 @@ function timer.absorbCutscene(func)
         globals.mainPlayer.animations[globals.mainPlayer.curAnim]:update(1/60)
         globals.mainPlayer:grav()
         globals.mainPlayer:phys()
-        if globals.mainPlayer:solid(0, 1) then
+        if globals.mainPlayer:checkGround() or globals.mainPlayer.onSlope or globals.mainPlayer.onMovingFloor then
           globals.mainPlayer.ground = true
           globals.mainPlayer.velocity.vely = 0
         else

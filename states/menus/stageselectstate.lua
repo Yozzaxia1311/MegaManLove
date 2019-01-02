@@ -3,7 +3,6 @@ local stageselectstate = states.state:extend()
 function stageselectstate:begin()
   loader.load("assets/misc/select.png", "mugshots", "texture")
   loader.load("assets/sfx/cursor_move.ogg", "cursor_move", "sound")
-  loader.load("assets/sfx/selected.ogg", "selected", "sound")
   megautils.loadStage(self, "assets/maps/stage_select.lua")
   megautils.add(stageSelect())
   megautils.add(fade(false):setAfter(fade.remove))
@@ -57,13 +56,13 @@ end
 function stageSelect:update(dt)
   local oldx, oldy = self.x, self.y
   
-  if control.leftPressed then
+  if control.leftPressed[1] then
     self.x = self.x-1
-  elseif control.rightPressed then
+  elseif control.rightPressed[1] then
     self.x = self.x+1
-  elseif control.upPressed then
+  elseif control.upPressed[1] then
     self.y = self.y-1
-  elseif control.downPressed then
+  elseif control.downPressed[1] then
     self.y = self.y+1
   end
   
@@ -109,7 +108,7 @@ function stageSelect:update(dt)
   self.transform.x = self.oldX + self.x*80
   self.transform.y = self.oldY + self.y*72
   
-  if (control.startPressed or control.jumpPressed) and not self.stop then
+  if (control.startPressed[1] or control.jumpPressed[1]) and not self.stop then
     if self.x == 2 and self.y == 1 then
       mmMusic.stopMusic()
       mmSfx.play("selected")
@@ -124,7 +123,7 @@ function stageSelect:update(dt)
       end))
       self.stop = true
     end
-  elseif control.selectPressed and not self.stop then
+  elseif control.selectPressed[1] and not self.stop then
     self.stop = true
     megautils.gotoState("states/menus/menustate.lua")
     mmMusic.stopMusic()

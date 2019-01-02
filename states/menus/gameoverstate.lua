@@ -71,15 +71,15 @@ end
 
 function contSelect:update(dt)
   local old = self.pick
-  if control.upPressed then
+  if control.upPressed[1] then
     self.pick = math.wrap(self.pick-1, 0, 1)
-  elseif control.downPressed then
+  elseif control.downPressed[1] then
     self.pick = math.wrap(self.pick+1, 0, 1)
   end
   if old ~= self.pick then
     mmSfx.play("cursor_move")
   end
-  if (control.jumpPressed or control.startPressed) and not self.picked then
+  if (control.jumpPressed[1] or control.startPressed[1]) and not self.picked then
     if self.pick == 1 then
       self.picked = true
       self.render = false

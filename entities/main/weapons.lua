@@ -4,6 +4,7 @@ function megaBuster:new(x, y, dir, wpn)
   megaBuster.super.new(self)
   self.added = function(self)
     self:addToGroup("megaBuster")
+    self:addToGroup("megaBuster" .. wpn.id)
     self:addToGroup("freezable")
     self:addToGroup("removeOnCutscene")
   end
@@ -46,6 +47,7 @@ function megaSemiBuster:new(x, y, dir, wpn)
   megaSemiBuster.super.new(self)
   self.added = function(self)
     self:addToGroup("megaBuster")
+    self:addToGroup("megaBuster" .. wpn.id)
     self:addToGroup("freezable")
     self:addToGroup("removeOnCutscene")
   end
@@ -93,6 +95,7 @@ function megaChargedBuster:new(x, y, dir, wpn)
   megaChargedBuster.super.new(self)
   self.added = function(self)
     self:addToGroup("megaChargedBuster")
+    self:addToGroup("megaChargedBuster" .. wpn.id)
     self:addToGroup("freezable")
     self:addToGroup("removeOnCutscene")
   end
@@ -140,7 +143,7 @@ rushJet = entity:extend()
 function rushJet:new(x, y, side, w)
   rushJet.super.new(self)
   self.added = function(self)
-    self:addToGroup("rushJet")
+    self:addToGroup("rush")
     self:addToGroup("freezable")
     self:addToGroup("removeOnCutscene")
   end
@@ -222,31 +225,37 @@ function rushJet:update(dt)
       self.s = 2
     end
   elseif self.s == 2 then
-    if globals.mainPlayer ~= nil and globals.mainPlayer.velocity ~= nil
-      and oneway.collision(globals.mainPlayer, self, globals.mainPlayer.velocity.velx, globals.mainPlayer.velocity.vely+1) then
-      self.s = 3
-      self.velocity.velx = self.side
-      self.user = globals.mainPlayer
-      self.user.canWalk = false
+    for i=1, globals.playerCount do
+      local player = globals.allPlayers[i]
+      if oneway.collision(player, self, player.velocity.velx, player.velocity.vely+1) then
+        self.s = 3
+        self.velocity.velx = self.side
+        self.user = player
+        self.user.canWalk = false
+        break
+      end
     end
     self:moveBy(self.velocity.velx, self.velocity.vely)
     movingOneway.shift(self, megautils.groups()["carry"])
   elseif self.s == 3 then
     if self.user ~= nil then
-      if control.upDown then
+      if control.upDown[self.user.player] then
         self.velocity.vely = -1
-      elseif control.downDown and not (self:checkGround() or self.onSlope) then
+      elseif control.downDown[self.user.player] and not (self:checkGround() or self.onSlope) then
         self.velocity.vely = 1
       else
         self.velocity.vely = 0
       end
     else
       self.velocity.vely = 0
-      if globals.mainPlayer ~= nil and globals.mainPlayer.velocity ~= nil and
-        oneway.collision(globals.mainPlayer, self, globals.mainPlayer.velocity.velx, globals.mainPlayer.velocity.vely+1) then
-        self.velocity.velx = self.side
-        self.user = globals.mainPlayer
-        self.user.canWalk = false
+      for i=1, globals.playerCount do
+        local player = globals.allPlayers[i]
+        if oneway.collision(player, self, player.velocity.velx, player.velocity.vely+1) then
+          self.velocity.velx = self.side
+          self.user = player
+          self.user.canWalk = false
+          break
+        end
       end
     end
     local dx, dy = self.transform.x, self.transform.y
@@ -309,7 +318,7 @@ rushCoil = entity:extend()
 function rushCoil:new(x, y, side, w)
   rushCoil.super.new(self)
   self.added = function(self)
-    self:addToGroup("rushCoil")
+    self:addToGroup("rush")
     self:addToGroup("freezable")
     self:addToGroup("removeOnCutscene")
   end
@@ -382,27 +391,29 @@ function rushCoil:update(dt)
       self.s = 3
     end
   elseif self.s == 3 then
-    if globals.mainPlayer ~= nil then
-      if not globals.mainPlayer.climb and globals.mainPlayer.velocity.vely > 0 and
-        math.between(globals.mainPlayer.transform.x+globals.mainPlayer.collisionShape.w/2, self.transform.x, self.transform.x+self.collisionShape.w) and
-        globals.mainPlayer:collision(self) then
-        globals.mainPlayer.canStopJump = false
-        globals.mainPlayer.velocity.vely = -10.5
-        globals.mainPlayer.step = false
-        globals.mainPlayer.stepTime = 0
-        globals.mainPlayer.ground = false
-        globals.mainPlayer.currentLadder = nil
-        globals.mainPlayer.wallJumping = false
-        globals.mainPlayer.dashJump = false
-        if globals.mainPlayer.slide then
+    for i=1, globals.playerCount do
+      local player = globals.allPlayers[i]
+      if not player.climb and player.velocity.vely > 0 and
+        math.between(player.transform.x+player.collisionShape.w/2, self.transform.x, self.transform.x+self.collisionShape.w) and
+        player:collision(self) then
+        player.canStopJump = false
+        player.velocity.vely = -10.5
+        player.step = false
+        player.stepTime = 0
+        player.ground = false
+        player.currentLadder = nil
+        player.wallJumping = false
+        player.dashJump = false
+        if player.slide then
           local lh = self.collisionShape.h
-          globals.mainPlayer:regBox()
-          globals.mainPlayer.transform.y = globals.mainPlayer.transform.y - (globals.mainPlayer.collisionShape.h - lh)
-          globals.mainPlayer.slide = false
+          player:regBox()
+          player.transform.y = player.transform.y - (player.collisionShape.h - lh)
+          player.slide = false
         end
         self.s = 4
         self.c = "coil"
         self.wpn.energy[self.wpn.currentSlot] = self.wpn.energy[self.wpn.currentSlot] - 7
+        break
       end
     end
   elseif self.s == 4 then

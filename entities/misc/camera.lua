@@ -66,7 +66,7 @@ function camera:updateBounds()
   end
 end
 
-function camera:updateCam(o, offX, offY, w, h, px, py, delay)
+function camera:updateCam(offX, offY, w, h, px, py, delay)
   if self.transition then
     self.transitionDone = false
     if not self.once then
@@ -78,8 +78,8 @@ function camera:updateCam(o, offX, offY, w, h, px, py, delay)
         end
       end
       if self.freeze then
-        megautils.freeze(megautils.groups()["hurtableOther"])
-        for k, v in pairs(megautils.groups()["hurtableOther"]) do
+        megautils.freeze(globals.allPlayers)
+        for k, v in pairs(globals.allPlayers) do
           v.control = false
         end
       end 
@@ -95,7 +95,10 @@ function camera:updateCam(o, offX, offY, w, h, px, py, delay)
           else
             self.tween = tween.new(self.speed, self.transform, {x=self.transform.x+self.collisionShape.w})
           end
-          self.tween2 = tween.new(self.speed, self.player.transform, {x=self.transX})
+          self.tween2 = {}
+          for i=1, #globals.allPlayers do
+            self.tween2[i] = tween.new(self.speed, globals.allPlayers[i].transform, {x=self.transX, y=self.player.transform.y})
+          end
         elseif self.transitiondirection == "left" then
           if self.doScrollY then
             self.tween = tween.new(self.speed, self.transform, {x=self.transform.x-self.collisionShape.w,
@@ -104,7 +107,10 @@ function camera:updateCam(o, offX, offY, w, h, px, py, delay)
           else
             self.tween = tween.new(self.speed, self.transform, {x=self.transform.x-self.collisionShape.w})
           end
-          self.tween2 = tween.new(self.speed, self.player.transform, {x=self.transX})
+          self.tween2 = {}
+          for i=1, #globals.allPlayers do
+            self.tween2[i] = tween.new(self.speed, globals.allPlayers[i].transform, {x=self.transX, y=self.player.transform.y})
+          end
         elseif self.transitiondirection == "down" then
           if self.doScrollX then
             self.tween = tween.new(self.speed, self.transform, {y=self.transform.y+self.collisionShape.h,
@@ -113,7 +119,10 @@ function camera:updateCam(o, offX, offY, w, h, px, py, delay)
           else
             self.tween = tween.new(self.speed, self.transform, {y=self.transform.y+self.collisionShape.h})
           end
-          self.tween2 = tween.new(self.speed, self.player.transform, {y=self.transY})
+          self.tween2 = {}
+          for i=1, #globals.allPlayers do
+            self.tween2[i] = tween.new(self.speed, globals.allPlayers[i].transform, {x=self.player.transform.x, y=self.transY})
+          end
         elseif self.transitiondirection == "up" then
           if self.doScrollX then
             self.tween = tween.new(self.speed, self.transform, {y=self.transform.y-self.collisionShape.h,
@@ -122,7 +131,10 @@ function camera:updateCam(o, offX, offY, w, h, px, py, delay)
           else
             self.tween = tween.new(self.speed, self.transform, {y=self.transform.y-self.collisionShape.h})
           end
-          self.tween2 = tween.new(self.speed, self.player.transform, {y=self.transY})
+          self.tween2 = {}
+          for i=1, #globals.allPlayers do
+            self.tween2[i] = tween.new(self.speed, globals.allPlayers[i].transform, {x=self.player.transform.x, y=self.transY})
+          end
         end
       end
       if self.player.onMovingFloor then
@@ -130,7 +142,9 @@ function camera:updateCam(o, offX, offY, w, h, px, py, delay)
       end
       self.once = true
       megautils.state().system.afterUpdate = function(s)
-        camera.main.tween2:update(1/60)
+        for i=1, #globals.allPlayers do
+          camera.main.tween2[i]:update(1/60)
+        end
         if camera.main.tween:update(1/60) then
           camera.main.transitionDone = true
           camera.main.transition = false
@@ -141,13 +155,18 @@ function camera:updateCam(o, offX, offY, w, h, px, py, delay)
             camera.main:updateBounds()
             camera.main.toSection = nil
             if camera.main.freeze then
-              megautils.unfreeze(megautils.groups()["hurtableOther"])
-              for k, v in pairs(megautils.groups()["hurtableOther"]) do
+              megautils.unfreeze(globals.allPlayers)
+              for k, v in pairs(globals.allPlayers) do
                 v.control = true
               end
             end
             if camera.main.player ~= nil and camera.main.player.onMovingFloor then
               camera.main.player.onMovingFloor.dontRemove = nil
+            end
+          end
+          for i=1, #globals.allPlayers do
+            if globals.allPlayers[i] ~= camera.main.player then
+              camera.main.player:transferState(globals.allPlayers[i])
             end
           end
           camera.main.tween = nil
@@ -166,13 +185,33 @@ function camera:updateCam(o, offX, offY, w, h, px, py, delay)
       end
     end
   else
-    if o ~= nil and self.doScrollX and o.collisionShape ~= nil then
-      self.transform.x = math.round(o.transform.x) - (view.w/2) + ((w or o.collisionShape.w)/2)
-      self.transform.x = math.clamp(self.transform.x+(offX or 0), self.scrollx, self.scrollx+self.scrollw-view.w)
-    end
-    if o ~= nil and self.doScrollY and o.collisionShape ~= nil then
-      self.transform.y = math.round(o.transform.y) - (view.h/2) + ((h or o.collisionShape.h)/2)
-      self.transform.y = math.clamp(self.transform.y+(offY or 0), self.scrolly, self.scrolly+self.scrollh-view.h)
+    if #globals.allPlayers == 1 then
+      local o = globals.allPlayers[1]
+      if self.doScrollX and o.collisionShape ~= nil then
+        self.transform.x = math.round(o.transform.x) - (view.w/2) + ((w or o.collisionShape.w)/2)
+        self.transform.x = math.clamp(self.transform.x, self.scrollx, self.scrollx+self.scrollw-view.w)
+      end
+      if self.doScrollY and o.collisionShape ~= nil then
+        self.transform.y = math.round(o.transform.y) - (view.h/2) + ((h or o.collisionShape.h)/2)
+        self.transform.y = math.clamp(self.transform.y+(o.slide and -7 or 0), self.scrolly, self.scrolly+self.scrollh-view.h)
+      end
+    else
+      local avx, avy = 0, 0
+      for i=1, #globals.allPlayers do
+        local p = globals.allPlayers[i]
+        if not p.rise and not p.drop then
+          if self.doScrollX then
+            avx = avx+(p.transform.x - (view.w/2) + ((w or p.collisionShape.w)/2))
+          end
+          if self.doScrollY then
+            avy = avy+(p.transform.y+(p.slide and -7 or 0) - (view.h/2) + ((h or p.collisionShape.h)/2))
+          end
+        end
+      end
+      self.transform.x = (avx/#globals.allPlayers)
+      self.transform.x = math.clamp(self.transform.x, self.scrollx, self.scrollx+self.scrollw-view.w)
+      self.transform.y = (avy/#globals.allPlayers)-8
+      self.transform.y = math.clamp(self.transform.y, self.scrolly, self.scrolly+self.scrollh-view.h)
     end
     view.x, view.y = math.round(self.transform.x), math.round(self.transform.y)
     self:updateFuncs()

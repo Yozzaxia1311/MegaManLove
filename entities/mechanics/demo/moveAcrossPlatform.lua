@@ -41,9 +41,11 @@ end
 
 function moveAcrossPlatform:update(dt)
   if self.state == 0 then
-    if globals.mainPlayer ~= nil and globals.mainPlayer.velocity ~= nil and
-    oneway.collision(globals.mainPlayer, self, globals.mainPlayer.velocity.velx, globals.mainPlayer.velocity.vely+1) then
-      self.state = 1
+    for i=1, #globals.allPlayers do
+      local player = globals.allPlayers[i]
+      if oneway.collision(player, self, player.velocity.velx, player.velocity.vely+1) then
+        self.state = 1
+      end
     end
   elseif self.state == 1 then
     local dx, dy = self.transform.x, self.transform.y

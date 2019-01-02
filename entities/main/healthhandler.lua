@@ -1,7 +1,12 @@
 healthhandler = entity:extend()
 
-function healthhandler:new(colorOne, colorTwo, colorOutline, side, r, segments)
+healthhandler.playerTimers = {-2, -2, -2, -2}
+
+function healthhandler:new(colorOne, colorTwo, colorOutline, side, r, segments, player)
   healthhandler.super.new(self)
+  self.added = function(self)
+    self:addToGroup("freezable")
+  end
   self.barOne = loader.get("bar_one")
   self.barTwo = loader.get("bar_two")
   self.barOutline = loader.get("bar_outline")
@@ -24,6 +29,7 @@ function healthhandler:new(colorOne, colorTwo, colorOutline, side, r, segments)
   self.rot = r or "y"
   self.onceA = false
   self.me = {self}
+  self.player = player
 end
 
 function healthhandler:updateThis()
@@ -55,10 +61,59 @@ function healthhandler:update(dt)
     end
   end
   self.health = math.clamp(self.health, 0, 4*self.segments)
+  if self.player == globals.mainPlayer and self.player.control and self.player.updated then
+    for i=1, globals.playerCount do
+      if healthhandler.playerTimers[i] > -1 then
+        healthhandler.playerTimers[i] = math.max(healthhandler.playerTimers[i]-1, 0)
+        if healthhandler.playerTimers[i] == 0 then
+          healthhandler.playerTimers[i] = -1
+        end
+      elseif healthhandler.playerTimers[i] == -1 and control.startPressed[i] then
+        if globals.lives > 0 then
+          healthhandler.playerTimers[i] = -2
+          local p = megaman(self.player.transform.x, self.player.transform.y, self.player.side, true, i)
+          self.player:transferState(p)
+          megautils.revivePlayer(i)
+          megautils.add(p)
+          if not globals.infiniteLives then
+            globals.lives = globals.lives - 1
+          end
+          mmSfx.play("selected")
+        else
+          mmSfx.play("error")
+        end
+      end
+    end
+  end
 end
 
 function healthhandler:draw()
-  love.graphics.setColor(1, 1, 1, 1)
+  if self.player == globals.mainPlayer or (not globals.mainPlayer and self.lifeRecord) then
+    if not globals.infiniteLives then
+      love.graphics.setColor(0, 0, 0, 1)
+      love.graphics.rectangle("fill", self.transform.x, self.transform.y, 8, 8)
+      love.graphics.setColor(1, 1, 1, 1)
+      love.graphics.setFont(mmFont)
+      self.lifeRecord = globals.lives
+      love.graphics.print(tostring(self.lifeRecord), self.transform.x, self.transform.y)
+    end
+    if globals.mainPlayer == self.player then
+      for i=1, globals.playerCount do
+        if healthhandler.playerTimers[i] == -1 then
+          if globals.lives <= 0 then
+            love.graphics.print("p" .. tostring(i) .. " x", self.transform.x, self.transform.y+(i*8))
+          else
+            love.graphics.print("p" .. tostring(i) .. " ok", self.transform.x, self.transform.y+(i*8))
+          end
+        elseif healthhandler.playerTimers[i] > -1 then
+          love.graphics.print("p" .. tostring(i) .. " " ..
+            tostring(math.abs(math.ceil(healthhandler.playerTimers[i]/20))), self.transform.x, self.transform.y+(i*8))
+        end
+      end
+    end
+  else
+    love.graphics.setColor(1, 1, 1, 1)
+  end
   local curSeg = math.ceil(self.health/4)
   for i=1, self.segments do
     local bit = 0

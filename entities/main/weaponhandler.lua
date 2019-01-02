@@ -1,5 +1,7 @@
 weaponhandler = entity:extend()
 
+weaponhandler.id = 0
+
 function weaponhandler:new(side, r, slots)
   weaponhandler.super.new(self)
   self.added = function(self)
@@ -24,6 +26,8 @@ function weaponhandler:new(side, r, slots)
   self.colorOne = {}
   self.colorTwo = {}
   self.colorOutline = {}
+  self.currentColorOne = {}
+  self.currentColorTwo = {}
   self:setLayer(9)
   self.riseTimer = 4
   self.rise = 0
@@ -32,6 +36,8 @@ function weaponhandler:new(side, r, slots)
   self.rot = r or "y"
   self.onceA = false
   self.me = {self}
+  self.id = tostring(weaponhandler.id)
+  weaponhandler.id = weaponhandler.id + 1
 end
 
 function weaponhandler:reinit()
@@ -56,11 +62,15 @@ end
 function weaponhandler:switch(slot)
   self.current = self.weapons[slot]
   self.currentSlot = self.slots[self.current]
+  self.currentColorOne = self.colorOne[self.currentSlot]
+  self.currentColorTwo = self.colorTwo[self.currentSlot]
 end
 
 function weaponhandler:switchName(name)
   self.current = name
   self.currentSlot = self.slots[self.current]
+  self.currentColorOne = self.colorOne[self.currentSlot]
+  self.currentColorTwo = self.colorTwo[self.currentSlot]
 end
 
 function weaponhandler:updateThis()
@@ -114,11 +124,11 @@ function weaponhandler:draw(x, y)
     love.graphics.draw(self.barOutline, self.quads[bit], 
       self.transform.x-ternary(self.rot=="x",(8*i)*self.side, 0), 
       self.transform.y-ternary(self.rot=="y",(8*i)*self.side, 0), math.rad(ternary(self.rot=="x",90, 0)))
-    love.graphics.setColor(megaman.colorOne[1]/255, megaman.colorOne[2]/255, megaman.colorOne[3]/255, 1)
+    love.graphics.setColor(self.currentColorOne[1]/255, self.currentColorOne[2]/255, self.currentColorOne[3]/255, 1)
     love.graphics.draw(self.barOne, self.quads[bit], 
       self.transform.x-ternary(self.rot=="x",(8*i)*self.side, 0), 
       self.transform.y-ternary(self.rot=="y",(8*i)*self.side, 0), math.rad(ternary(self.rot=="x",90, 0)))
-    love.graphics.setColor(megaman.colorTwo[1]/255, megaman.colorTwo[2]/255, megaman.colorTwo[3]/255, 1)
+    love.graphics.setColor(self.currentColorTwo[1]/255, self.currentColorTwo[2]/255, self.currentColorTwo[3]/255, 1)
     love.graphics.draw(self.barTwo, self.quads[bit], 
       self.transform.x-ternary(self.rot=="x",(8*i)*self.side, 0), 
       self.transform.y-ternary(self.rot=="y",(8*i)*self.side, 0), math.rad(ternary(self.rot=="x",90, 0)))

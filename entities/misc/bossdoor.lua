@@ -52,14 +52,19 @@ function bossdoor:update(dt)
   if self.state == 0 then
     self.timer = 0
     if camera.main ~= nil and not camera.main.transition then
-      if globals.mainPlayer ~= nil and globals.mainPlayer.control and self:collision(globals.mainPlayer) then
-        self.player = globals.mainPlayer
-        self.state = 1
-        self.player.control = false
-        self.player.doAnimation = false
-        megautils.freeze({globals.mainPlayer})
-        for k, v in pairs(megautils.groups()["removeOnCutscene"] or {}) do
-          megautils.remove(v, true)
+      for i=1, #globals.allPlayers do
+        local player = globals.allPlayers[i]
+        if player.control and self:collision(player) then
+          self.player = player
+          self.state = 1
+          for j=1, #globals.allPlayers do
+            globals.allPlayers[j].control = false
+            globals.allPlayers[j].doAnimation = false
+          end
+          megautils.freeze(globals.allPlayers)
+          for k, v in pairs(megautils.groups()["removeOnCutscene"] or {}) do
+            megautils.remove(v, true)
+          end
         end
       end
     end
@@ -110,14 +115,16 @@ function bossdoor:update(dt)
     end
     if self.segments >= self.maxSegments then
       self.timer = 0
-      self.player.control = true
-      self.player.doAnimation = true
+      for i=1, #globals.allPlayers do
+        globals.allPlayers[i].control = true
+        globals.allPlayers[i].doAnimation = true
+      end
       camera.main.freeze = true
       camera.main.updateSections = true
       megautils.state().system.afterUpdate = function()
         camera.main:updateBounds()
         camera.main.toSection = nil
-        megautils.unfreeze({globals.mainPlayer})
+        megautils.unfreeze(globals.allPlayers)
         megautils.state().system.afterUpdate = nil
       end
       self.state = -1

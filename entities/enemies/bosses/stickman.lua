@@ -72,7 +72,7 @@ function stickMan:healthChanged(o, c, i)
     timer.absorbCutscene(function()
       globals.defeats.stickMan = true
       globals.weaponGet = "stick"
-      megautils.resetPlayer()
+      megautils.resetGame()
       states.set("states/menus/weapongetstate.lua")
     end)
     megautils.remove(self, true)
@@ -97,7 +97,7 @@ function stickMan:update(dt)
   if self.s == 0 then
     if globals.defeats.stickMan then
       timer.winCutscene(function()
-        megautils.resetPlayer()
+        megautils.resetGame()
         states.set("states/menus/menustate.lua")
       end)
       megautils.remove(self, true)
@@ -142,7 +142,7 @@ function stickMan:update(dt)
       self.s = 3
     end
   end
-  self:hurt(self:collisionTable(megautils.groups()["hurtableOther"]), -4, 80)
+  self:hurt(self:collisionTable(globals.allPlayers), -4, 80)
   self:updateIFrame()
   self:updateFlash()
 end
