@@ -1,59 +1,47 @@
-require("requires")
-
 globals = {}
+
+--Configuration variables
+OSSystem = love.system.getOS()
+useConsole = false
+showEntityCount = false
+showFPS = false
+framerate = 1/60
+touchControls = OSSystem == "Android" or OSSystem == "iOS"
+deadZone = 0.8
+base64SaveFiles = false
+maxPlayerCount = 4
+defaultInputBinds =
+  {["up"]={"up", "keyboard"},
+  ["down"]={"down", "keyboard"},
+  ["left"]={"left", "keyboard"},
+  ["right"]={"right", "keyboard"},
+  ["jump"]={"z", "keyboard"},
+  ["shoot"]={"x", "keyboard"},
+  ["start"]={"return", "keyboard"},
+  ["select"]={"rshift", "keyboard"},
+  ["prev"]={"a", "keyboard"},
+  ["next"]={"s", "keyboard"},
+  ["dash"]={"c", "keyboard"}}
+  or touchControls and
+  {["up"]={"up", "touch"},
+  ["down"]={"down", "touch"},
+  ["left"]={"left", "touch"},
+  ["right"]={"right", "touch"},
+  ["jump"]={"jump", "touch"},
+  ["shoot"]={"shoot", "touch"},
+  ["start"]={"start", "touch"},
+  ["select"]={"select", "touch"},
+  ["prev"]={"prev", "touch"},
+  ["next"]={"next", "touch"},
+  ["dash"]={"dash", "touch"}}
+
+require("requires")
 
 function love.load()
   love.graphics.setDefaultFilter("nearest", "nearest")
-  OSSystem = love.system.getOS()
-  view.init(256, 224, 2)
-  useConsole = false
-  framerate = 1/60
-  showEntityCount = false
-  showFPS = false
-  touchControls = OSSystem == "Android" or OSSystem == "iOS"
-  deadZone = 0.8
-  
-  if touchControls then
-    control.inputBinds.up = {"up", "touch"}
-    control.inputBinds.down = {"down", "touch"}
-    control.inputBinds.left = {"left", "touch"}
-    control.inputBinds.right = {"right", "touch"}
-    control.inputBinds.jump = {"jump", "touch"}
-    control.inputBinds.shoot = {"shoot", "touch"}
-    control.inputBinds.start = {"start", "touch"}
-    control.inputBinds.select = {"select", "touch"}
-    control.inputBinds.prev = {"prev", "touch"}
-    control.inputBinds.next = {"next", "touch"}
-    control.inputBinds.dash = {"dash", "touch"}
-  else
-    control.inputBinds.up = {"up", "keyboard"}
-    control.inputBinds.down = {"down", "keyboard"}
-    control.inputBinds.left = {"left", "keyboard"}
-    control.inputBinds.right = {"right", "keyboard"}
-    control.inputBinds.jump = {"z", "keyboard"}
-    control.inputBinds.shoot = {"x", "keyboard"}
-    control.inputBinds.start = {"return", "keyboard"}
-    control.inputBinds.select = {"rshift", "keyboard"}
-    control.inputBinds.prev = {"a", "keyboard"}
-    control.inputBinds.next = {"s", "keyboard"}
-    control.inputBinds.dash = {"c", "keyboard"}
-  end
-  
-  if useConsole then console.init() end
-  
-  base64SaveFiles = false
-  consoleFont = love.graphics.getFont() -- needs to be preserved
-  mmFont = love.graphics.newImageFont("assets/misc/mm.png", "$abcdefghijklmnopqrstuvwxyz"
-        .. "1234567890!?<>;/ :,-.+()%'")
-  cscreen.init(view.w*view.scale, view.h*view.scale, true)
-  resized = false
-  
-  globals.mainPlayer = nil
-  globals.allPlayers = {}
-  globals.playerCount = 1
-  globals.maxPlayerCount = 4
   
   control.init()
+  
   if touchControls then
     touchInput.add("left", "left-down", 16, -140, 64, 64)
     touchInput.add("right", "left-down", 16+64, -140, 64, 64)
@@ -69,6 +57,19 @@ function love.load()
     touchInput.add("next", "right-up", -80, 60, 40, 40)
   end
   
+  view.init(256, 224, 1)
+  
+  if useConsole then console.init() end
+  
+  consoleFont = love.graphics.getFont() -- needs to be preserved
+  mmFont = love.graphics.newImageFont("assets/misc/mm.png", "$abcdefghijklmnopqrstuvwxyz"
+        .. "1234567890!?<>;/ :,-.+()%'")
+  
+  cscreen.init(view.w*view.scale, view.h*view.scale, true)
+  
+  globals.mainPlayer = nil
+  globals.allPlayers = {}
+  globals.playerCount = 1
   globals.checkpoint = "start"
   globals.infiniteLives = false
   globals.lives = 2

@@ -1,6 +1,6 @@
 control = {}
 
-control.inputBinds = {}
+defaultInputBinds = {}
 
 function control.init()
   control.leftDown = {}
@@ -27,7 +27,7 @@ function control.init()
   control.dashPressed = {}
   
   local step = 0
-  for i=1, globals.maxPlayerCount do
+  for i=1, maxPlayerCount do
     control.leftDown[i] = false
     control.leftPressed[i] = false
     control.rightDown[i] = false
@@ -59,19 +59,19 @@ function control.init()
   local binds = {}
   step = 0
   if data == nil then
-    binds[1] = control.inputBinds.up
-    binds[2] = control.inputBinds.down
-    binds[3] = control.inputBinds.left
-    binds[4] = control.inputBinds.right
-    binds[5] = control.inputBinds.start
-    binds[6] = control.inputBinds.select
-    binds[7] = control.inputBinds.jump
-    binds[8] = control.inputBinds.shoot
-    binds[9] = control.inputBinds.prev
-    binds[10] = control.inputBinds.next
-    binds[11] = control.inputBinds.dash
+    binds[1] = defaultInputBinds.up
+    binds[2] = defaultInputBinds.down
+    binds[3] = defaultInputBinds.left
+    binds[4] = defaultInputBinds.right
+    binds[5] = defaultInputBinds.start
+    binds[6] = defaultInputBinds.select
+    binds[7] = defaultInputBinds.jump
+    binds[8] = defaultInputBinds.shoot
+    binds[9] = defaultInputBinds.prev
+    binds[10] = defaultInputBinds.next
+    binds[11] = defaultInputBinds.dash
   else
-    for i=1, globals.maxPlayerCount do
+    for i=1, maxPlayerCount do
       binds[1+step] = data.controls[1+step]
       binds[2+step] = data.controls[2+step]
       binds[3+step] = data.controls[3+step]
@@ -87,7 +87,7 @@ function control.init()
     end
   end
   step = 0
-  for i=1, globals.maxPlayerCount do
+  for i=1, maxPlayerCount do
     if binds[1+step] then
       inputHandler.bind(binds[1+step][1], 1+step, binds[1+step][2], binds[1+step][3])
       inputHandler.bind(binds[2+step][1], 2+step, binds[2+step][2], binds[1+step][3])

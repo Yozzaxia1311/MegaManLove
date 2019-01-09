@@ -121,9 +121,9 @@ function menuSelect:update(dt)
     self.timer = math.wrap(self.timer+1, 0, 20)
     local old = globals.playerCount
     if control.leftPressed[1] then
-      globals.playerCount = math.wrap(globals.playerCount-1, 1, globals.maxPlayerCount)
+      globals.playerCount = math.wrap(globals.playerCount-1, 1, maxPlayerCount)
     elseif control.rightPressed[1] then
-      globals.playerCount = math.wrap(globals.playerCount+1, 1, globals.maxPlayerCount)
+      globals.playerCount = math.wrap(globals.playerCount+1, 1, maxPlayerCount)
     end
     if old ~= globals.playerCount then
       mmSfx.play("cursor_move")

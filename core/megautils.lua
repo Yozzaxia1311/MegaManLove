@@ -218,7 +218,7 @@ function megautils.resetGame()
   megaman.colorOutline = {}
   megaman.colorOne = {}
   megaman.colorTwo = {}
-  for i=1, globals.maxPlayerCount do
+  for i=1, maxPlayerCount do
     megaman.weaponHandler[i] = weaponhandler(nil, nil, 10)
     megaman.weaponHandler[i]:register(0, "megaBuster", {0, 120, 248}, {0, 232, 216}, {0, 0, 0})
     megaman.weaponHandler[i]:register(9, "rushCoil", {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
