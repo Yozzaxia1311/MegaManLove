@@ -21,12 +21,12 @@ function mmMusic.playFromFile(loop, intro, vol)
   mmMusic.stopMusic()
   if intro ~= nil then
     if loop ~= nil then
-      mmMusic.cur = mmMusic(love.audio.newSource(loop, "stream"), love.audio.newSource(intro, "stream"), true)
+      mmMusic.cur = mmMusic(love.audio.newSource(loop, "stream"), love.audio.newSource(intro, "stream"))
     else
       mmMusic.cur = mmMusic(nil, love.audio.newSource(intro, "stream"))
     end
   else
-    mmMusic.cur = mmMusic(love.audio.newSource(loop, "stream"), nil, true)
+    mmMusic.cur = mmMusic(love.audio.newSource(loop, "stream"), nil)
   end
   mmMusic.cur.id = tostring(loop) .. tostring(intro)
   mmMusic.cur.introFile = intro
@@ -42,23 +42,11 @@ function mmMusic.stopMusic()
   end
 end
 
-function mmMusic:new(path, pathIntro, preload)
+function mmMusic:new(path, pathIntro)
   self.musicLoop = path
   self.musicIntro = pathIntro
   self.playingLoop = false
   self.current = nil
-  if (preload == nil or preload) then
-    if self.musicIntro ~= nil then
-      self.musicIntro:play()
-      self.current = self.musicIntro
-      self.musicIntro:pause()
-    end
-    if self.musicLoop ~= nil then
-      self.musicLoop:play()
-      self.current = self.musicLoop
-      self.musicLoop:pause()
-    end
-  end
 end
 
 function mmMusic:pause()
@@ -107,7 +95,6 @@ function mmMusic:play(l, v)
     self.musicIntro:setVolume(v)
   end
   if self.musicIntro == nil then
-    self.musicLoop:seek(0)
     self.musicLoop:play()
     self.musicLoop:setLooping(ternary(l == nil, true, l))
     self.current = self.musicLoop
@@ -115,9 +102,7 @@ function mmMusic:play(l, v)
     self.musicIntro:setLooping(false)
     if self.musicLoop ~= nil then
       self.musicLoop:setLooping(true)
-      self.musicLoop:seek(0)
     end
-    self.musicIntro:seek(0)
     self.musicIntro:play()
     self.playingLoop = false
     self.current = self.musicIntro
