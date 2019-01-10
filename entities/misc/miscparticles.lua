@@ -205,13 +205,13 @@ function harm:new(e)
     self:addToGroup("freezable")
     self:addToGroup("removeOnCutscene")
   end
-  self.transform.y = ((e.transform.y+e.collisionShape.h)/2)-24/2
-  self.transform.x = ((e.transform.x+e.collisionShape.w)/2)-24/2
+  self.follow = e
+  self.transform.x = (self.follow.transform.x+self.follow.collisionShape.w/2)-24/2
+  self.transform.y = (self.follow.transform.y+self.follow.collisionShape.h/2)-24/2
   self:setRectangleCollision(24, 24)
   self.tex = loader.get("particles")
   self.quad = love.graphics.newQuad(0, 22, 24, 24, 128, 98)
   self.layer = 2
-  self.follow = e
   self.timer = 0
 end
 
