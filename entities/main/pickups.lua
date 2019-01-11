@@ -1,7 +1,7 @@
 smallHealth = entity:extend()
 
 addobjects.register("small_health", function(v)
-  local tmp = spawner(v.x, v.y+10, 8, 8, function(s)
+  local tmp = spawner(v.x, v.y+10, 8, 6, function(s)
     megautils.add(smallHealth(s.transform.x, s.transform.y, false, s.id, s))
   end)
   tmp.id = v.id
@@ -103,7 +103,7 @@ end
 health = entity:extend()
 
 addobjects.register("health", function(v)
-  local tmp = spawner(v.x, v.y, 16, 16, function(s)
+  local tmp = spawner(v.x, v.y, 16, 14, function(s)
     megautils.add(health(s.transform.x, s.transform.y, false, s.id, s))
   end)
   tmp.id = v.id
@@ -205,7 +205,7 @@ end
 smallEnergy = entity:extend()
 
 addobjects.register("small_energy", function(v)
-  local tmp = spawner(v.x, v.y+10, 8, 8, function(s)
+  local tmp = spawner(v.x, v.y+10, 8, 6, function(s)
     megautils.add(smallEnergy(s.transform.x, s.transform.y, false, s.id, s))
   end)
   tmp.id = v.id
@@ -317,7 +317,7 @@ end
 energy = entity:extend()
 
 addobjects.register("energy", function(v)
-  local tmp = spawner(v.x, v.y, 16, 16, function(s)
+  local tmp = spawner(v.x, v.y, 16, 10, function(s)
     megautils.add(energy(s.transform.x, s.transform.y, false, s.id, s))
   end)
   tmp.id = v.id
@@ -429,7 +429,7 @@ end
 life = entity:extend()
 
 addobjects.register("life", function(v)
-  local tmp = spawner(v.x, v.y, 16, 16, function(s)
+  local tmp = spawner(v.x, v.y, 16, 15, function(s)
     megautils.add(life(s.transform.x, s.transform.y, false, s.id, s))
   end)
   tmp.id = v.id
@@ -543,7 +543,7 @@ end
 eTank = entity:extend()
 
 addobjects.register("e_tank", function(v)
-  local tmp = spawner(v.x, v.y, 16, 16, function(s)
+  local tmp = spawner(v.x, v.y, 16, 15, function(s)
     megautils.add(eTank(s.transform.x, s.transform.y, false, s.id, s))
   end)
   tmp.id = v.id
@@ -556,7 +556,7 @@ function eTank:new(x, y, despwn, id, spawner)
   eTank.super.new(self)
   self.transform.y = y
   self.transform.x = x
-  self:setRectangleCollision(16, 14)
+  self:setRectangleCollision(16, 15)
   self.anim = anim8.newAnimation(loader.get("tank_grid")(1, 1, 2, 2), 1/8)
   self.id = id
   self.spawner = spawner
@@ -655,7 +655,7 @@ end
 wTank = entity:extend()
 
 addobjects.register("w_tank", function(v)
-  local tmp = spawner(v.x, v.y, 16, 16, function(s)
+  local tmp = spawner(v.x, v.y, 16, 15, function(s)
     megautils.add(wTank(s.transform.x, s.transform.y, false, s.id, s))
   end)
   tmp.id = v.id
@@ -668,7 +668,7 @@ function wTank:new(x, y, despwn, id, spawner)
   wTank.super.new(self)
   self.transform.y = y
   self.transform.x = x
-  self:setRectangleCollision(16, 14)
+  self:setRectangleCollision(16, 15)
   self.anim = anim8.newAnimation(loader.get("tank_grid")(2, 2, 2, 1), 1/8)
   self.id = id
   self.spawner = spawner
