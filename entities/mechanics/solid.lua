@@ -248,11 +248,9 @@ function movingOneway.shift(self, group)
       if v.velocity ~= nil then
         if (v.velocity.vely >= math.min(0, self.velocity.vely) and not v:collision(self, 0, self.velocity.vely-1) and
           v:collision(self, 0, self.velocity.vely+v.velocity.vely+1)) then
-          local x2, y2 = v.transform.x, v.transform.y
           v.transform.y = self.transform.y - v.collisionShape.h
           if v:solid(0, 0) then
-            v.transform.x = x2
-            v.transform.y = y2
+            v:snapToFloor()
           else
             self.shifted[k] = v
             local lx, ly = v.velocity.velx, v.velocity.vely

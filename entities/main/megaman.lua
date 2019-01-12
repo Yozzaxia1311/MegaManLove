@@ -344,6 +344,17 @@ function megaman:solid(x, y, d)
     #self:collisionTable(megautils.groups()["movingSolid"], x, y) ~= 0
 end
 
+function megaman:snapToFloor()
+  local tmp = table.merge({self:collisionTable(megautils.groups()["solid"], 0, 1),
+    self:collisionTable(megautils.groups()["death"], 0, 1),
+    oneway.collisionTable(self, megautils.groups()["oneway"], 0, 1),
+    self:collisionTable(megautils.groups()["movingSolid"], 0, 1)})
+  self.transform.y = math.round(self.transform.y)
+  while #self:collisionTable(tmp) ~= 0 do
+    self.transform.y = self.transform.y - 1
+  end
+end
+
 function megaman:checkGround()
   local tmp = table.merge({self:collisionTable(megautils.groups()["solid"], 0, 1),
     self:collisionTable(megautils.groups()["death"], 0, 1),
