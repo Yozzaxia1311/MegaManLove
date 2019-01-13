@@ -279,7 +279,6 @@ function megaman:new(x, y, side, drop, p)
   self.control = not self.drop
   self.bubbleTimer = 0
   self.runCheck = false
-  self.hitboxAlpha = 0
   
   self.groundUpdateFuncs = {}
   self.airUpdateFuncs = {}
