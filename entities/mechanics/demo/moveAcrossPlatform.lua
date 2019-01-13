@@ -24,7 +24,6 @@ function moveAcrossPlatform:new(x, y, toX, toY, s)
   self.velocity = velocity()
   self.tween = tween.new(1, self.transform, {x=toX, y=toY}, "inOutBack")
   self.state = 0
-  self:setUpdateLayer(-1)
 end
 
 function moveAcrossPlatform:removed()
@@ -39,7 +38,7 @@ function moveAcrossPlatform:draw()
   love.graphics.draw(self.tex, self.quad, math.round(self.transform.x), math.round(self.transform.y))
 end
 
-function moveAcrossPlatform:update(dt)
+function moveAcrossPlatform:afterUpdate(dt)
   if self.state == 0 then
     for i=1, #globals.allPlayers do
       local player = globals.allPlayers[i]

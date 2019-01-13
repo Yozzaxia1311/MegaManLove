@@ -250,7 +250,15 @@ function movingOneway.shift(self, group)
           v:collision(self, 0, self.velocity.vely+v.velocity.vely+1)) then
           v.transform.y = self.transform.y - v.collisionShape.h
           if v:solid(0, 0) then
-            v:snapToFloor()
+            if self.velocity.vely >= 0 then
+              v:snapToFloor()
+              v.onMovingFloor = nil
+              table.removevalue(self.shifted, v)
+            else
+              v:snapToCeiling()
+              v.onMovingFloor = nil
+              table.removevalue(self.shifted, v)
+            end
           else
             self.shifted[k] = v
             local lx, ly = v.velocity.velx, v.velocity.vely
@@ -259,10 +267,6 @@ function movingOneway.shift(self, group)
             v:phys()
             v.velocity.velx = lx
             v.velocity.vely = ly
-            if v:collision(self) and v.collisionChecks.ceiling then
-              v:hurt({v}, -999)
-              table.removevalue(self.shifted, v)
-            end
             v.onMovingFloor = self
             v.transform.y = self.transform.y - v.collisionShape.h
             v.velocity.vely = 0

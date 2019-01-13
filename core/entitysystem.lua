@@ -7,13 +7,10 @@ function entitysystem:new()
   self.updates = {}
   self.groups = {}
   self.static = {}
-  self.all = {}
   self.addQueue = nil
   self.removeQueue = nil
   self.last = 0
   self.first = 0
-  self.lastUpdate = 0
-  self.firstUpdate = 0
 end
 
 function entitysystem:add(e, queue)
@@ -26,15 +23,11 @@ function entitysystem:add(e, queue)
   else
     if not e.static then
       if self.entities[e.layer] == nil then self.entities[e.layer] = {} end
-      if self.updates[e.updateLayer] == nil then self.updates[e.updateLayer] = {} end
       self.entities[e.layer][#self.entities[e.layer]+1] = e
-      self.updates[e.updateLayer][#self.updates[e.updateLayer]+1] = e
+      self.updates[#self.updates+1] = e
       if self.last < e.layer then self.last = e.layer end
       if self.first > e.layer then self.first = e.layer end
-      if self.lastUpdate < e.updateLayer then self.lastUpdate = e.updateLayer end
-      if self.firstUpdate > e.updateLayer then self.firstUpdate = e.updateLayer end
     end
-    self.all[#self.all+1] = e
     e.isRemoved = false
     e.isAdded = true
     e:added()
@@ -55,23 +48,22 @@ function entitysystem:removeFromAllGroups(e)
 end
 
 function entitysystem:addStatic(e)
-  table.removevaluearray(self.updates[e.updateLayer], e)
+  table.removevaluearray(self.updates, e)
   table.removevaluearray(self.entities[e.layer], e)
   self.static[#self.static+1] = e
   e.static = true
 end
 
 function entitysystem:removeStatic(e)
-  table.removevaluearray(self.static, e)
-  if self.entities[e.layer] == nil then self.entities[e.layer] = {} end
-  if self.updates[e.updateLayer] == nil then self.updates[e.updateLayer] = {} end
-  self.entities[e.layer][#self.entities[e.layer]+1] = e
-  self.updates[e.updateLayer][#self.updates[e.updateLayer]+1] = e
-  if self.last < e.layer then self.last = e.layer end
-  if self.first > e.layer then self.first = e.layer end
-  if self.lastUpdate < e.updateLayer then self.lastUpdate = e.updateLayer end
-  if self.firstUpdate > e.updateLayer then self.firstUpdate = e.updateLayer end
-  e.static = false
+  if e.static then
+    table.removevaluearray(self.static, e)
+    if self.entities[e.layer] == nil then self.entities[e.layer] = {} end
+    self.entities[e.layer][#self.entities[e.layer]+1] = e
+    self.updates[#self.updates+1] = e
+    if self.last < e.layer then self.last = e.layer end
+    if self.first > e.layer then self.first = e.layer end
+    e.static = false
+  end
 end
 
 function entitysystem:setLayer(e, l)
@@ -81,15 +73,6 @@ function entitysystem:setLayer(e, l)
   self.entities[e.layer][#self.entities[e.layer]+1] = e
   if self.last < e.layer then self.last = e.layer end
   if self.first > e.layer then self.first = e.layer end
-end
-
-function entitysystem:setUpdateLayer(e, l)
-  table.removevaluearray(self.updates[e.updateLayer], e)
-  e.updateLayer = l
-  if self.updates[e.updateLayer] == nil then self.updates[e.updateLayer] = {} end
-  self.updates[e.updateLayer][#self.updates[e.updateLayer]+1] = e
-  if self.lastUpdate < e.updateLayer then self.lastUpdate = e.updateLayer end
-  if self.firsUpdate > e.updateLayer then self.firstUpdate = e.updateLayer end
 end
 
 function entitysystem:remove(e, queue)
@@ -105,16 +88,12 @@ function entitysystem:remove(e, queue)
     e:removeFromAllGroups()
     e:removeStatic()
     table.removevaluearray(self.entities[e.layer], e)
-    table.removevaluearray(self.updates[e.updateLayer], e)
-    table.removevaluearray(self.all, e)
+    table.removevaluearray(self.updates, e)
     e.isAdded = false
   end
 end
 
 function entitysystem:clear()
-  for i, j in ipairs(self.all) do
-    self:remove(j)
-  end
   section.sections = {}
   section.current = nil
   self.entities = {}
@@ -145,56 +124,22 @@ function entitysystem:draw()
   end
 end
 
-function entitysystem:drawQuality()
-  for i=self.first, self.last, 1 do
-    if self.entities[i] ~= nil then
-      for k=1, #self.entities[i] do
-        local v = self.entities[i][k]
-        if v.render and v.flashRender and not v.isRemoved then
-          if states.switched then
-            return
-          end
-          v:drawQuality()
-        end
-      end
-    end
-  end
-end
-
 function entitysystem:update(dt)
-  self.localUpdate = true
-  for i=self.firstUpdate, self.lastUpdate, 1 do
-    if self.updates[i] ~= nil then
-      for k=1, #self.updates[i] do
-        local t = self.updates[i][k]
-        if table.length(t.otherUpdates) ~= 0 then
-          for s, h in pairs(t.otherUpdates) do
-            if not h then 
-              self.localUpdate = false
-              break
-            end
-          end
-        end
-        if t.updated and self.localUpdate and not t.isRemoved then
-          if states.switched then
-            return
-          end
-          t:update(dt)
-        end
-        self.localUpdate = true
+  for i=1, #self.updates do
+    local t = self.updates[i]
+    if t.updated and not t.isRemoved then
+      t:update(dt)
+      if states.switched then
+        return
       end
     end
   end
-  for i=self.firstUpdate, self.lastUpdate, 1 do
-    if self.updates[i] ~= nil then
-      for k=1, #self.updates[i] do
-        local t = self.updates[i][k]
-        if t.updated and not t.isRemoved then
-          if states.switched then
-            return
-          end
-          t:afterUpdate(dt)
-        end
+  for i=1, #self.updates do
+    local t = self.updates[i]
+    if t.updated and not t.isRemoved then
+      t:afterUpdate(dt)
+      if states.switched then
+        return
       end
     end
   end
@@ -467,7 +412,6 @@ end
 function entity:update(dt) end
 function entity:afterUpdate(dt) end
 function entity:draw() end
-function entity:drawQuality() end
 function entity:removed() end
 function entity:added() end
 
