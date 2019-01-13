@@ -66,6 +66,7 @@ function love.load()
   
   cscreen.init(view.w*view.scale, view.h*view.scale, true)
   
+  globals.player = {"roll", "proto", "bass", "roll"}
   globals.mainPlayer = nil
   globals.allPlayers = {}
   globals.playerCount = 1

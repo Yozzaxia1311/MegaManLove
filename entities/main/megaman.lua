@@ -176,6 +176,27 @@ function megaman:new(x, y, side, drop, p)
   megaman.super.new(self)
   megautils.registerPlayer(self, p)
   megaman.properties(self)
+  if globals.player[self.player] == "mega" then
+    self.texOutline = loader.get("mega_man_outline")
+    self.texOne = loader.get("mega_man_one")
+    self.texTwo = loader.get("mega_man_two")
+    self.texFace = loader.get("mega_man_face")
+  elseif globals.player[self.player] == "proto" then
+    self.texOutline = loader.get("proto_man_outline")
+    self.texOne = loader.get("proto_man_one")
+    self.texTwo = loader.get("proto_man_two")
+    self.texFace = loader.get("proto_man_face")
+  elseif globals.player[self.player] == "bass" then
+    self.texOutline = loader.get("bass_outline")
+    self.texOne = loader.get("bass_one")
+    self.texTwo = loader.get("bass_two")
+    self.texFace = loader.get("bass_face")
+  elseif globals.player[self.player] == "roll" then
+    self.texOutline = loader.get("roll_outline")
+    self.texOne = loader.get("roll_one")
+    self.texTwo = loader.get("roll_two")
+    self.texFace = loader.get("roll_face")
+  end
   self.teleportOffY = 0
   self.side = side or 1
   self.transform.y = y
@@ -258,6 +279,7 @@ function megaman:new(x, y, side, drop, p)
   self.control = not self.drop
   self.bubbleTimer = 0
   self.runCheck = false
+  self.hitboxAlpha = 0
   
   self.groundUpdateFuncs = {}
   self.airUpdateFuncs = {}
@@ -299,30 +321,38 @@ function megaman:new(x, y, side, drop, p)
   self.wallJumpAnimation = {["regular"]="wallJump", ["shoot"]="wallJumpShoot"}
   self.dashAnimation = {["regular"]=ternary(self.canDashShoot, "dash", "slide"), ["shoot"]="dashShoot"}
   self.animations = {}
-  self.animations["idle"] = anim8.newAnimation(loader.get("mega_man_grid")(1, 1, 2, 1), {2.5, 0.1})
-  self.animations["idleShoot"] = anim8.newAnimation(loader.get("mega_man_grid")(1, 4), 1)
-  self.animations["idleThrow"] = anim8.newAnimation(loader.get("mega_man_grid")(4, 7), 1)
-  self.animations["nudge"] = anim8.newAnimation(loader.get("mega_man_grid")(3, 1), 1)
-  self.animations["jump"] = anim8.newAnimation(loader.get("mega_man_grid")(4, 2), 1)
-  self.animations["jumpShoot"] = anim8.newAnimation(loader.get("mega_man_grid")(1, 5), 1)
-  self.animations["jumpThrow"] = anim8.newAnimation(loader.get("mega_man_grid")(1, 8), 1)
-  self.animations["run"] = anim8.newAnimation(loader.get("mega_man_grid")(4, 1, "1-2", 2, 1, 2), 1/8)
-  self.animations["runShoot"] = anim8.newAnimation(loader.get("mega_man_grid")("2-4", 4, 3, 4), 1/8)
-  self.animations["runThrow"] = anim8.newAnimation(loader.get("mega_man_grid")("2-4", 8, 3, 8), 1/8)
-  self.animations["climb"] = anim8.newAnimation(loader.get("mega_man_grid")("1-2", 3), 1/8)
-  self.animations["climbShoot"] = anim8.newAnimation(loader.get("mega_man_grid")(2, 5), 1)
-  self.animations["climbThrow"] = anim8.newAnimation(loader.get("mega_man_grid")(1, 9), 1)
-  self.animations["climbTip"] = anim8.newAnimation(loader.get("mega_man_grid")(3, 3), 1)
-  self.animations["hit"] = anim8.newAnimation(loader.get("mega_man_grid")(4, 3), 1)
-  self.animations["wallJump"] = anim8.newAnimation(loader.get("mega_man_grid")(2, 9), 1)
-  self.animations["wallJumpShoot"] = anim8.newAnimation(loader.get("mega_man_grid")(3, 9), 1)
-  self.animations["wallJumpThrow"] = anim8.newAnimation(loader.get("mega_man_grid")(4, 9), 1)
-  self.animations["slide"] = anim8.newAnimation(loader.get("mega_man_grid")(3, 2), 1/14, "pauseAtEnd")
-  self.animations["dash"] = anim8.newAnimation(loader.get("mega_man_grid")("1-2", 10), 1/8, "pauseAtEnd")
-  self.animations["dashShoot"] = anim8.newAnimation(loader.get("mega_man_grid")(4, 10), 1)
-  self.animations["dashThrow"] = anim8.newAnimation(loader.get("mega_man_grid")(1, 11), 1)
-  self.animations["spawn"] = anim8.newAnimation(loader.get("mega_man_grid")("3-4", 5), 0.08)
-  self.animations["spawnLand"] = anim8.newAnimation(loader.get("mega_man_grid")("1-2", 6, 1, 6), 1/20)
+  local pp = "mega_man_grid"
+  if globals.player[self.player] == "bass" or globals.player[self.player] == "roll" then
+    pp = "bass_grid"
+  end
+  if globals.player[self.player] == "proto" then
+    self.animations["idle"] = anim8.newAnimation(loader.get(pp)(1, 1, 2, 1), 1/8)
+  else
+    self.animations["idle"] = anim8.newAnimation(loader.get(pp)(1, 1, 2, 1), {2.5, 0.1})
+  end
+  self.animations["idleShoot"] = anim8.newAnimation(loader.get(pp)(1, 4), 1)
+  self.animations["idleThrow"] = anim8.newAnimation(loader.get(pp)(4, 7), 1)
+  self.animations["nudge"] = anim8.newAnimation(loader.get(pp)(3, 1), 1)
+  self.animations["jump"] = anim8.newAnimation(loader.get(pp)(4, 2), 1)
+  self.animations["jumpShoot"] = anim8.newAnimation(loader.get(pp)(1, 5), 1)
+  self.animations["jumpThrow"] = anim8.newAnimation(loader.get(pp)(1, 8), 1)
+  self.animations["run"] = anim8.newAnimation(loader.get(pp)(4, 1, "1-2", 2, 1, 2), 1/8)
+  self.animations["runShoot"] = anim8.newAnimation(loader.get(pp)("2-4", 4, 3, 4), 1/8)
+  self.animations["runThrow"] = anim8.newAnimation(loader.get(pp)("2-4", 8, 3, 8), 1/8)
+  self.animations["climb"] = anim8.newAnimation(loader.get(pp)("1-2", 3), 1/8)
+  self.animations["climbShoot"] = anim8.newAnimation(loader.get(pp)(2, 5), 1)
+  self.animations["climbThrow"] = anim8.newAnimation(loader.get(pp)(1, 9), 1)
+  self.animations["climbTip"] = anim8.newAnimation(loader.get(pp)(3, 3), 1)
+  self.animations["hit"] = anim8.newAnimation(loader.get(pp)(4, 3), 1)
+  self.animations["wallJump"] = anim8.newAnimation(loader.get(pp)(2, 9), 1)
+  self.animations["wallJumpShoot"] = anim8.newAnimation(loader.get(pp)(3, 9), 1)
+  self.animations["wallJumpThrow"] = anim8.newAnimation(loader.get(pp)(4, 9), 1)
+  self.animations["slide"] = anim8.newAnimation(loader.get(pp)(3, 2), 1/14, "pauseAtEnd")
+  self.animations["dash"] = anim8.newAnimation(loader.get(pp)("1-2", 10), 1/8, "pauseAtEnd")
+  self.animations["dashShoot"] = anim8.newAnimation(loader.get(pp)(4, 10), 1)
+  self.animations["dashThrow"] = anim8.newAnimation(loader.get(pp)(1, 11), 1)
+  self.animations["spawn"] = anim8.newAnimation(loader.get(pp)("3-4", 5), 0.08)
+  self.animations["spawnLand"] = anim8.newAnimation(loader.get(pp)("1-2", 6, 1, 6), 1/20)
   self:face(self.side)
   self.added = function(self)
     self:addToGroup("freezable")
@@ -345,10 +375,10 @@ function megaman:solid(x, y, d)
 end
 
 function megaman:snapToFloor()
-  local tmp = table.merge({self:collisionTable(megautils.groups()["solid"], 0, 1),
-    self:collisionTable(megautils.groups()["death"], 0, 1),
-    oneway.collisionTable(self, megautils.groups()["oneway"], 0, 1),
-    self:collisionTable(megautils.groups()["movingSolid"], 0, 1)})
+  local tmp = table.merge({self:collisionTable(megautils.groups()["solid"]),
+    self:collisionTable(megautils.groups()["death"]),
+    oneway.collisionTable(self, megautils.groups()["oneway"]),
+    self:collisionTable(megautils.groups()["movingSolid"])})
   self.transform.y = math.round(self.transform.y)
   while #self:collisionTable(tmp) ~= 0 do
     self.transform.y = self.transform.y - 1
@@ -423,8 +453,19 @@ function megaman:attemptWeaponUsage()
         self.shootTimer = 0
         self:useShootAnimation()
       else
-        megautils.add(megaBuster(self.transform.x+(self.side==1 and 17 or -14), 
+        if globals.player[self.player] == "mega" then
+          megautils.add(megaBuster(self.transform.x+(self.side==1 and 17 or -14), 
             ternary(self.slide, self.transform.y+3, self.transform.y+6), self.side, w))
+        elseif globals.player[self.player] == "proto" then
+          megautils.add(megaBuster(self.transform.x+(self.side==1 and 14 or -12), 
+            ternary(self.slide, self.transform.y+3, self.transform.y+9), self.side, w))
+        elseif globals.player[self.player] == "bass" then
+          megautils.add(megaBuster(self.transform.x+(self.side==1 and 18 or -15), 
+            ternary(self.climb, self.transform.y+2, self.transform.y+6), self.side, w))
+        elseif globals.player[self.player] == "roll" then
+          megautils.add(megaBuster(self.transform.x+(self.side==1 and 17 or -14), 
+            ternary(self.climb, self.transform.y+5, self.transform.y+6), self.side, w))
+        end
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
@@ -466,15 +507,37 @@ function megaman:attemptWeaponUsage()
   if not control.shootDown[self.player] and self.chargeState ~= 0 then
     if w.current == "megaBuster" then
       if self.chargeState == 1 then
-        megautils.add(megaSemiBuster(self.transform.x+(self.side==1 and 17 or -20), 
+        if globals.player[self.player] == "mega" then
+          megautils.add(megaSemiBuster(self.transform.x+(self.side==1 and 17 or -20), 
             ternary(self.slide, self.transform.y+1, self.transform.y+4), self.side, w))
+        elseif globals.player[self.player] == "proto" then
+          megautils.add(megaSemiBuster(self.transform.x+(self.side==1 and 15 or -20), 
+            ternary(self.slide, self.transform.y+1, self.transform.y+8), self.side, w))
+        elseif globals.player[self.player] == "bass" then
+          megautils.add(megaSemiBuster(self.transform.x+(self.side==1 and 18 or -21), 
+            ternary(self.climb, self.transform.y, self.transform.y+4), self.side, w))
+        elseif globals.player[self.player] == "roll" then
+          megautils.add(megaSemiBuster(self.transform.x+(self.side==1 and 17 or -20), 
+            ternary(self.slide, self.transform.y+1, self.transform.y+4), self.side, w))
+        end
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
         self:useShootAnimation()
       elseif self.chargeState == 2 then
-        megautils.add(megaChargedBuster(self.transform.x+(self.side==1 and 17 or -20), 
+        if globals.player[self.player] == "mega" then
+          megautils.add(megaChargedBuster(self.transform.x+(self.side==1 and 17 or -20), 
             ternary(self.slide, self.transform.y-6, self.transform.y-2), self.side, w))
+        elseif globals.player[self.player] == "proto" then
+          megautils.add(megaChargedBuster(self.transform.x+(self.side==1 and 14 or -19), 
+            ternary(self.slide, self.transform.y-6, self.transform.y+2), self.side, w))
+        elseif globals.player[self.player] == "bass" then
+          megautils.add(megaChargedBuster(self.transform.x+(self.side==1 and 19 or -23), 
+            ternary(self.climb, self.transform.y-6, self.transform.y-2), self.side, w))
+        elseif globals.player[self.player] == "roll" then
+          megautils.add(megaChargedBuster(self.transform.x+(self.side==1 and 17 or -20), 
+            ternary(self.slide, self.transform.y-6, self.transform.y-2), self.side, w))
+        end
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
@@ -587,7 +650,7 @@ function megaman:healthChanged(o, c, i)
         local p = globals.allPlayers[i]
         if not p.rise and not p.drop and p ~= self then
           avx = avx+(p.transform.x - (view.w/2) + (p.collisionShape.w/2))
-          avy = avy+(p.transform.y+(p.slide and -3 or 0) - (view.h/2) + (p.collisionShape.h/2))
+          avy = avy+(p.transform.y+(p.slide and -7 or 0) - (view.h/2) + (p.collisionShape.h/2))
         end
       end
       if camera.main.scrollX then
@@ -1263,52 +1326,77 @@ function megaman:afterUpdate(dt)
 end
 
 function megaman:draw()
+  local roundx, roundy = math.round(self.transform.x), math.round(self.transform.y)
   if self.weaponSwitchTimer ~= 70 then
     love.graphics.setColor(1, 1, 1, 1)
     if self.threeWeaponIcons then
       self.iconQuad:setViewport(self.icons[self.nextWeapon][1],
         self.icons[self.nextWeapon][2], 16, 16)
-      love.graphics.draw(self.icoTex, self.iconQuad, math.round(self.transform.x+math.round(self.collisionShape.w/2))+8,
-        math.round(self.transform.y-18), 0, 1, 1)
+      love.graphics.draw(self.icoTex, self.iconQuad, roundx+math.round(math.round(self.collisionShape.w/2))+8,
+        roundy-18, 0, 1, 1)
       self.iconQuad:setViewport(self.icons[self.prevWeapon][1],
         self.icons[self.prevWeapon][2], 16, 16)
-      love.graphics.draw(self.icoTex, self.iconQuad, math.round(self.transform.x+math.round(self.collisionShape.w/2))-24,
-        math.round(self.transform.y-18), 0, 1, 1)
+      love.graphics.draw(self.icoTex, self.iconQuad, roundx+math.round(math.round(self.collisionShape.w/2))-24,
+        roundy-18, 0, 1, 1)
     end
     self.iconQuad:setViewport(self.icons[megaman.weaponHandler[self.player].currentSlot][1],
       self.icons[megaman.weaponHandler[self.player].currentSlot][2], 16, 16)
-    love.graphics.draw(self.icoTex, self.iconQuad, math.round(self.transform.x+math.round(self.collisionShape.w/2))-8,
-      math.round(self.transform.y-20))
+    love.graphics.draw(self.icoTex, self.iconQuad, roundx+math.round(math.round(self.collisionShape.w/2))-8,
+      roundy-20)
   end
   local offsety, offsetx = 0, 0
-  if table.contains(self.climbAnimation, self.curAnim) or 
-    table.contains(self.jumpAnimation, self.curAnim) or 
-    table.contains(self.wallJumpAnimation, self.curAnim) then
-    offsety = 6
-  elseif table.contains(self.hitAnimation, self.curAnim) then
-    offsety = 4
-  elseif table.contains(self.dashAnimation, self.curAnim) then
-    offsety = -5
+  if globals.player[self.player] == "bass" or globals.player[self.player] == "roll" then
+    offsetx = -2
+    offsety = -2
+    if table.contains(self.climbAnimation, self.curAnim) or 
+      table.contains(self.jumpAnimation, self.curAnim) or 
+      table.contains(self.wallJumpAnimation, self.curAnim) then
+      offsety = 0
+    elseif table.contains(self.hitAnimation, self.curAnim) then
+      offsety = 2
+    elseif table.contains(self.dashAnimation, self.curAnim) then
+      offsety = -9
+    end
+  else
+    if table.contains(self.climbAnimation, self.curAnim) or 
+      table.contains(self.jumpAnimation, self.curAnim) or 
+      table.contains(self.wallJumpAnimation, self.curAnim) then
+      offsety = 6
+    elseif table.contains(self.hitAnimation, self.curAnim) then
+      offsety = 4
+    elseif table.contains(self.dashAnimation, self.curAnim) then
+      offsety = -5
+    end
   end
   offsety = offsety + self.teleportOffY
-  if self.curAnim == "climbShoot" or self.curAnim == "climbThrow" then
-    offsetx = ternary(self.side == -1, 0, -1)
-  elseif self.curAnim == "climb" then
-    offsetx = ternary(self.animations["climb"].position==1, -1, 0)
-  elseif self.curAnim == "slide" then
-    offsetx = ternary(self.side==1, 3, -3)
+  if globals.player[self.player] == "bass" or globals.player[self.player] == "roll" then
+    if self.curAnim == "climbShoot" or self.curAnim == "climbThrow" then
+      offsetx = ternary(self.side == -1, -2, -3)
+    elseif self.curAnim == "climb" then
+      offsetx = ternary(self.animations["climb"].position==1, -3, -2)
+    elseif self.curAnim == "slide" then
+      offsetx = ternary(self.side==1, 1, -5)
+    end
+  else
+    if self.curAnim == "climbShoot" or self.curAnim == "climbThrow" then
+      offsetx = ternary(self.side == -1, 0, -1)
+    elseif self.curAnim == "climb" then
+      offsetx = ternary(self.animations["climb"].position==1, -1, 0)
+    elseif self.curAnim == "slide" then
+      offsetx = ternary(self.side==1, 3, -3)
+    end
   end
   love.graphics.setColor(megaman.colorOutline[self.player][1]/255, megaman.colorOutline[self.player][2]/255, megaman.colorOutline[self.player][3]/255, 1)
-  self.animations[self.curAnim]:draw(loader.get("mega_man_outline"), math.round(self.transform.x-15)+offsetx,
-    math.round(self.transform.y-8+offsety))
+  self.animations[self.curAnim]:draw(self.texOutline, roundx-15+offsetx,
+    roundy-8+offsety)
   love.graphics.setColor(megaman.colorOne[self.player][1]/255, megaman.colorOne[self.player][2]/255, megaman.colorOne[self.player][3]/255, 1)
-  self.animations[self.curAnim]:draw(loader.get("mega_man_one"), math.round(self.transform.x-15)+offsetx,
-    math.round(self.transform.y-8+offsety))
+  self.animations[self.curAnim]:draw(self.texOne, roundx-15+offsetx,
+    roundy-8+offsety)
   love.graphics.setColor(megaman.colorTwo[self.player][1]/255, megaman.colorTwo[self.player][2]/255, megaman.colorTwo[self.player][3]/255, 1)
-  self.animations[self.curAnim]:draw(loader.get("mega_man_two"), math.round(self.transform.x-15)+offsetx,
-    math.round(self.transform.y-8+offsety))
+  self.animations[self.curAnim]:draw(self.texTwo, roundx-15+offsetx,
+    roundy-8+offsety)
   love.graphics.setColor(1, 1, 1, 1)
-  self.animations[self.curAnim]:draw(loader.get("mega_man_face"), math.round(self.transform.x-15)+offsetx,
-    math.round(self.transform.y-8+offsety))
+  self.animations[self.curAnim]:draw(self.texFace, roundx-15+offsetx,
+    roundy-8+offsety)
   --self:drawCollision()
 end

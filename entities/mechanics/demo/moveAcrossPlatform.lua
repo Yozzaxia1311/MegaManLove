@@ -38,7 +38,7 @@ function moveAcrossPlatform:draw()
   love.graphics.draw(self.tex, self.quad, math.round(self.transform.x), math.round(self.transform.y))
 end
 
-function moveAcrossPlatform:afterUpdate(dt)
+function moveAcrossPlatform:update(dt)
   if self.state == 0 then
     for i=1, #globals.allPlayers do
       local player = globals.allPlayers[i]
