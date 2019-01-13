@@ -3,7 +3,6 @@ globals = {}
 --Configuration variables
 OSSystem = love.system.getOS()
 useConsole = false
-showEntityCount = false
 showFPS = false
 framerate = 1/60
 touchControls = OSSystem == "Android" or OSSystem == "iOS"
