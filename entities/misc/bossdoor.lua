@@ -13,6 +13,7 @@ function bossdoor:new(x, y, seg, dir, scrollx, scrolly, spd)
   bossdoor.super.new(self)
   self.added = function(self)
     self:addToGroup("boss_door")
+    self:addToGroup("despawnable")
   end
   self.transform.y = y
   self.transform.x = x

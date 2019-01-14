@@ -1,13 +1,14 @@
 return {
-  version = "1.1",
+  version = "1.2",
   luaversion = "5.1",
-  tiledversion = "1.0.3",
+  tiledversion = "1.2.1",
   orientation = "orthogonal",
   renderorder = "right-down",
   width = 64,
   height = 84,
   tilewidth = 16,
   tileheight = 16,
+  nextlayerid = 5,
   nextobjectid = 139,
   properties = {},
   tilesets = {
@@ -19,6 +20,7 @@ return {
       tileheight = 16,
       spacing = 0,
       margin = 0,
+      columns = 4,
       image = "tilesets/demo_tileset.png",
       imagewidth = 64,
       imageheight = 64,
@@ -40,6 +42,7 @@ return {
   layers = {
     {
       type = "tilelayer",
+      id = 1,
       name = "bg",
       x = 0,
       y = 0,
@@ -140,6 +143,7 @@ return {
     },
     {
       type = "tilelayer",
+      id = 2,
       name = "layout",
       x = 0,
       y = 0,
@@ -240,6 +244,7 @@ return {
     },
     {
       type = "objectgroup",
+      id = 3,
       name = "sections",
       visible = false,
       opacity = 1,
@@ -434,6 +439,7 @@ return {
     },
     {
       type = "objectgroup",
+      id = 4,
       name = "objs",
       visible = false,
       opacity = 1,

@@ -113,7 +113,6 @@ function megautils.unload(self)
       v()
     end
     self.system:clear()
-    globals.mainPlayer = nil
     if globals.manageStageResources then
       for k, v in pairs(megautils.cleanFuncs) do
         v()
@@ -127,22 +126,20 @@ end
 
 function megautils.loadStage(self, path, call)
   self.sectionHandler = sectionHandler()
-  local map = sti(path)
+  local map = cartographer.load(path)
   local tLayers = {}
   local objs = {}
   for k, v in pairs(map.layers) do
-    if type(k) == "number" then
-      if v.type == "tilelayer" then
-        tLayers[#tLayers+1] = v
-      elseif v.type == "objectgroup" then
-        for i, j in pairs(v.objects) do
-          objs[#objs+1] = j
-        end
+    if v.type == "tilelayer" then
+      tLayers[#tLayers+1] = v
+    elseif v.type == "objectgroup" then
+      for i, j in pairs(v.objects) do
+        objs[#objs+1] = j
       end
     end
   end
   for k, v in pairs(tLayers) do
-    local l = mapentity(v, map)
+    local l = mapentity(v.name, map)
     if call ~= nil then call(l) end
     megautils.add(l)
   end
@@ -150,7 +147,6 @@ function megautils.loadStage(self, path, call)
   local tmp = trigger(function(s, dt)
     s.map:update(1/60)
   end)
-  tmp:addToGroup("freezable")
   tmp.map = map
   megautils.add(tmp)
 end

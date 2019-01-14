@@ -54,9 +54,9 @@ function menuSelect:update(dt)
   if self.section == 0 then
     local old = self.pick
     if control.upPressed[1] then
-      self.pick = math.wrap(self.pick-1, 0, 6)
+      self.pick = math.wrap(self.pick-1, 0, 4)
     elseif control.downPressed[1] then
-      self.pick = math.wrap(self.pick+1, 0, 6)
+      self.pick = math.wrap(self.pick+1, 0, 4)
     end
     if old ~= self.pick then
       mmSfx.play("cursor_move")
@@ -84,31 +84,10 @@ function menuSelect:update(dt)
         megautils.gotoState("states/menus/rebindstate.lua")
         globals.stopMusicMenu = nil
       elseif self.pick == 3 then
-        mmSfx.play("selected")
-        local data = save.load("save.txt")
-        if data ~= nil then
-          globals.defeats = data.defeats
-          globals.infiniteLives = data.infiniteLives
-          globals.lives = data.lives
-          globals.lifeSegments = data.lifeSegments
-          globals.eTanks = data.eTanks
-          globals.wTanks = data.wTanks
-        end
-      elseif self.pick == 4 then
-        local data = save.load("save.txt") or {}
-        data.defeats = globals.defeats
-        data.infiniteLives = globals.infiniteLives
-        data.lives = globals.lives
-        data.lifeSegments = globals.lifeSegments
-        data.eTanks = globals.eTanks
-        data.wTanks = globals.wTanks
-        save.save("save.txt", data)
-        mmSfx.play("selected")
-      elseif self.pick == 5 then
         self.section = 1
         self.timer = 0
         mmSfx.play("selected")
-      elseif self.pick == 6 then
+      elseif self.pick == 4 then
         self.picked = true
         self.section = -1
         mmMusic.stopMusic()
@@ -143,10 +122,10 @@ function menuSelect:draw()
   end
   if self.timer > 10 then
     love.graphics.setFont(mmFont)
-    love.graphics.print(tostring(globals.playerCount), 12*8, 19*8)
+    love.graphics.print(tostring(globals.playerCount), 12*8, 15*8)
   end
   if globals.playerCount > 1 then
-    love.graphics.print("s", 20*8, 19*8)
+    love.graphics.print("s", 20*8, 15*8)
   end
 end
 

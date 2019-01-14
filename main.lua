@@ -1,42 +1,41 @@
-globals = {}
-
---Configuration variables
-OSSystem = love.system.getOS()
-useConsole = false
-showFPS = false
-framerate = 1/60
-touchControls = OSSystem == "Android" or OSSystem == "iOS"
-deadZone = 0.8
-base64SaveFiles = false
-maxPlayerCount = 4
-defaultInputBinds =
-  {["up"]={"up", "keyboard"},
-  ["down"]={"down", "keyboard"},
-  ["left"]={"left", "keyboard"},
-  ["right"]={"right", "keyboard"},
-  ["jump"]={"z", "keyboard"},
-  ["shoot"]={"x", "keyboard"},
-  ["start"]={"return", "keyboard"},
-  ["select"]={"rshift", "keyboard"},
-  ["prev"]={"a", "keyboard"},
-  ["next"]={"s", "keyboard"},
-  ["dash"]={"c", "keyboard"}}
-  or touchControls and
-  {["up"]={"up", "touch"},
-  ["down"]={"down", "touch"},
-  ["left"]={"left", "touch"},
-  ["right"]={"right", "touch"},
-  ["jump"]={"jump", "touch"},
-  ["shoot"]={"shoot", "touch"},
-  ["start"]={"start", "touch"},
-  ["select"]={"select", "touch"},
-  ["prev"]={"prev", "touch"},
-  ["next"]={"next", "touch"},
-  ["dash"]={"dash", "touch"}}
-
-require("requires")
-
-function love.load()
+function initEngine()
+  love.filesystem.load("requires.lua")()
+  
+  globals = {}
+  
+  OSSystem = love.system.getOS()
+  useConsole = false
+  showFPS = false
+  framerate = 1/60
+  touchControls = OSSystem == "Android" or OSSystem == "iOS"
+  deadZone = 0.8
+  base64SaveFiles = false
+  maxPlayerCount = 4
+  defaultInputBinds =
+    {["up"]={"up", "keyboard"},
+    ["down"]={"down", "keyboard"},
+    ["left"]={"left", "keyboard"},
+    ["right"]={"right", "keyboard"},
+    ["jump"]={"z", "keyboard"},
+    ["shoot"]={"x", "keyboard"},
+    ["start"]={"return", "keyboard"},
+    ["select"]={"rshift", "keyboard"},
+    ["prev"]={"a", "keyboard"},
+    ["next"]={"s", "keyboard"},
+    ["dash"]={"c", "keyboard"}}
+    or touchControls and
+    {["up"]={"up", "touch"},
+    ["down"]={"down", "touch"},
+    ["left"]={"left", "touch"},
+    ["right"]={"right", "touch"},
+    ["jump"]={"jump", "touch"},
+    ["shoot"]={"shoot", "touch"},
+    ["start"]={"start", "touch"},
+    ["select"]={"select", "touch"},
+    ["prev"]={"prev", "touch"},
+    ["next"]={"next", "touch"},
+    ["dash"]={"dash", "touch"}}
+  
   love.graphics.setDefaultFilter("nearest", "nearest")
   
   control.init()
@@ -88,13 +87,18 @@ function love.load()
   globals.manageStageResources = true
   if love.joystick then globals.gamepadCheck = {} end
   
+  for k, v in pairs(megautils.cleanFuncs) do
+    v()
+  end
+  loader.clear()
   megautils.load()
   megautils.resetGame()
+  collectgarbage()
+end
+
+function love.load()
+  initEngine()
   states.set("states/menus/disclaimerstate.lua")
-  local data = save.load("main.set")
-  if data ~= nil then
-    convar.setValue("r_fullscreen", data.fullscreen, true)
-  end
 end
 
 function love.resize(w, h)
@@ -121,6 +125,8 @@ function love.keypressed(k, s, r)
 	end
   globals.lastKeyPressed = {k, "keyboard"}
 end
+
+touchInput = {}
 
 function touchInput.touchPressed(b)
   globals.lastKeyPressed = {b, "touch"}

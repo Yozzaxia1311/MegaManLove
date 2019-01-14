@@ -423,17 +423,20 @@ megautils.cleanFuncs["mapentity_clean"] = function()
   mapentity.layers = {}
 end
 
-function mapentity:new(l, map, tran)
-  mapentity.super.new(self, tran)
-  self.l = l
+function mapentity:new(name, map)
+  mapentity.super.new(self)
+  self.added = function(self)
+    self:addToGroup("freezable")
+  end
+  self.name = name
   self.map = map
-  mapentity.layers[self.l.name] = self
+  mapentity.layers[self.name] = self
 end
 
 function mapentity:drawAt(x, y)
   love.graphics.push()
   love.graphics.translate(x, y)
-  self.map:drawTileLayer(self.l)
+  self.map.layers[self.name]:draw()
   love.graphics.pop()
 end
 
