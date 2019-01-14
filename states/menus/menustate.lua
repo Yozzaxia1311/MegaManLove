@@ -39,8 +39,6 @@ function menuSelect:new()
   self.added = function(self)
     self:addToGroup("freezable")
   end
-  self.transform.y = 9*8
-  self.transform.x = 88
   self.tex = loader.get("select")
   self.pick = 0
   self.offY = self.transform.y
@@ -66,7 +64,7 @@ function menuSelect:update(dt)
         self.picked = true
         self.section = -1
         mmMusic.stopMusic()
-        megautils.gotoState("states/menus/stageselectstate.lua")
+        megautils.gotoState("states/menus/gameloaderstate.lua")
         globals.stopMusicMenu = nil
       elseif self.pick == 1 then
         if convar.getNumber("r_fullscreen") == 1 then
@@ -95,7 +93,6 @@ function menuSelect:update(dt)
         globals.stopMusicMenu = nil
       end
     end
-    self.transform.y = self.offY + self.pick*16
   elseif self.section == 1 then
     self.timer = math.wrap(self.timer+1, 0, 20)
     local old = globals.playerCount
@@ -118,7 +115,7 @@ end
 function menuSelect:draw()
   love.graphics.setColor(1, 1, 1, 1)
   if self.section == 0 then
-    love.graphics.draw(self.tex, self.quad, self.transform.x, self.transform.y)
+    love.graphics.draw(self.tex, self.quad, 88, (9*8)+self.offY+self.pick*16)
   end
   if self.timer > 10 then
     love.graphics.setFont(mmFont)
