@@ -3,6 +3,13 @@ megautils = {}
 megautils.resetStateFuncs = {}
 megautils.cleanFuncs = {}
 
+function megautils.resetBack()
+  gamePath = ""
+  megautils.gotoState("states/disclaimerstate.lua", function()
+    initEngine()
+  end)
+end
+
 function megautils.load()
   loader.load("assets/players/megaman/mega_man_one.png", "mega_man_one", "texture", nil, true)
   loader.load("assets/players/megaman/mega_man_two.png", "mega_man_two", "texture", nil, true)

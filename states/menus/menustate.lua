@@ -2,7 +2,6 @@ local menustate = states.state:extend()
 
 function menustate:begin()
   loader.load("assets/misc/select.png", "select", "texture")
-  loader.load("assets/sfx/cursor_move.ogg", "cursor_move", "sound")
   megautils.loadStage(self, "assets/maps/menu.lua")
   megautils.add(menuSelect())
   megautils.add(fade(false):setAfter(fade.remove))
@@ -95,13 +94,13 @@ function menuSelect:update(dt)
     end
   elseif self.section == 1 then
     self.timer = math.wrap(self.timer+1, 0, 20)
-    local old = globals.playerCount
+    local old = playerCount
     if control.leftPressed[1] then
-      globals.playerCount = math.wrap(globals.playerCount-1, 1, maxPlayerCount)
+      playerCount = math.wrap(playerCount-1, 1, maxPlayerCount)
     elseif control.rightPressed[1] then
-      globals.playerCount = math.wrap(globals.playerCount+1, 1, maxPlayerCount)
+      playerCount = math.wrap(playerCount+1, 1, maxPlayerCount)
     end
-    if old ~= globals.playerCount then
+    if old ~= playerCount then
       mmSfx.play("cursor_move")
     end
     if control.jumpPressed[1] or control.startPressed[1] then
@@ -119,9 +118,9 @@ function menuSelect:draw()
   end
   if self.timer > 10 then
     love.graphics.setFont(mmFont)
-    love.graphics.print(tostring(globals.playerCount), 12*8, 15*8)
+    love.graphics.print(tostring(playerCount), 12*8, 15*8)
   end
-  if globals.playerCount > 1 then
+  if playerCount > 1 then
     love.graphics.print("s", 20*8, 15*8)
   end
 end

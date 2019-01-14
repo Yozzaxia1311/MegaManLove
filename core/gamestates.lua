@@ -17,7 +17,7 @@ function states.set(n, s)
     states.currentstate:stop()
   end
   if s == nil and (states.currentChunk == nil or states.current ~= nick) then
-    states.currentChunk = love.filesystem.load(nick)
+    states.currentChunk = love.filesystem.load(gamePath .. "/" .. nick)
   end
   states.current = nick
   states.currentstate = s or states.currentChunk()

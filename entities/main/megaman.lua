@@ -32,7 +32,7 @@ end, 2)
 
 addobjects.register("player_one", function(v)
   if v.properties["checkpoint"] == globals.checkpoint then
-    for i=1, globals.playerCount do
+    for i=1, playerCount do
       megautils.add(megaman(v.x, v.y-5, v.properties["side"], v.properties["drop"], i))
     end
   end

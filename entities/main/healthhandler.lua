@@ -62,7 +62,7 @@ function healthhandler:update(dt)
   end
   self.health = math.clamp(self.health, 0, 4*self.segments)
   if self.player == globals.mainPlayer and self.player.control and self.player.updated then
-    for i=1, globals.playerCount do
+    for i=1, playerCount do
       if healthhandler.playerTimers[i] > -1 then
         healthhandler.playerTimers[i] = math.max(healthhandler.playerTimers[i]-1, 0)
         if healthhandler.playerTimers[i] == 0 then
@@ -98,7 +98,7 @@ function healthhandler:draw()
       love.graphics.print(tostring(self.lifeRecord), self.transform.x, self.transform.y)
     end
     if globals.mainPlayer == self.player then
-      for i=1, globals.playerCount do
+      for i=1, playerCount do
         if healthhandler.playerTimers[i] == -1 then
           if globals.lives <= 0 then
             love.graphics.print("p" .. tostring(i) .. " x", self.transform.x, self.transform.y+(i*8))

@@ -1,41 +1,11 @@
 function initEngine()
-  love.filesystem.load("requires.lua")()
-  
-  globals = {}
-  
-  OSSystem = love.system.getOS()
+  base64SaveFiles = false
   useConsole = false
   showFPS = false
   framerate = 1/60
-  touchControls = OSSystem == "Android" or OSSystem == "iOS"
-  deadZone = 0.8
-  base64SaveFiles = false
-  maxPlayerCount = 4
-  defaultInputBinds =
-    {["up"]={"up", "keyboard"},
-    ["down"]={"down", "keyboard"},
-    ["left"]={"left", "keyboard"},
-    ["right"]={"right", "keyboard"},
-    ["jump"]={"z", "keyboard"},
-    ["shoot"]={"x", "keyboard"},
-    ["start"]={"return", "keyboard"},
-    ["select"]={"rshift", "keyboard"},
-    ["prev"]={"a", "keyboard"},
-    ["next"]={"s", "keyboard"},
-    ["dash"]={"c", "keyboard"}}
-    or touchControls and
-    {["up"]={"up", "touch"},
-    ["down"]={"down", "touch"},
-    ["left"]={"left", "touch"},
-    ["right"]={"right", "touch"},
-    ["jump"]={"jump", "touch"},
-    ["shoot"]={"shoot", "touch"},
-    ["start"]={"start", "touch"},
-    ["select"]={"select", "touch"},
-    ["prev"]={"prev", "touch"},
-    ["next"]={"next", "touch"},
-    ["dash"]={"dash", "touch"}}
   
+  globals = {}
+  love.filesystem.load("requires.lua")()
   love.graphics.setDefaultFilter("nearest", "nearest")
   
   control.init()
@@ -68,7 +38,6 @@ function initEngine()
   globals.player = {"roll", "proto", "bass", "roll"}
   globals.mainPlayer = nil
   globals.allPlayers = {}
-  globals.playerCount = 1
   globals.checkpoint = "start"
   globals.infiniteLives = false
   globals.lives = 2
@@ -97,6 +66,36 @@ function initEngine()
 end
 
 function love.load()
+  OSSystem = love.system.getOS()
+  touchControls = OSSystem == "Android" or OSSystem == "iOS"
+  deadZone = 0.8
+  maxPlayerCount = 4
+  playerCount = 1
+  defaultInputBinds =
+    {["up"]={"up", "keyboard"},
+    ["down"]={"down", "keyboard"},
+    ["left"]={"left", "keyboard"},
+    ["right"]={"right", "keyboard"},
+    ["jump"]={"z", "keyboard"},
+    ["shoot"]={"x", "keyboard"},
+    ["start"]={"return", "keyboard"},
+    ["select"]={"rshift", "keyboard"},
+    ["prev"]={"a", "keyboard"},
+    ["next"]={"s", "keyboard"},
+    ["dash"]={"c", "keyboard"}}
+    or touchControls and
+    {["up"]={"up", "touch"},
+    ["down"]={"down", "touch"},
+    ["left"]={"left", "touch"},
+    ["right"]={"right", "touch"},
+    ["jump"]={"jump", "touch"},
+    ["shoot"]={"shoot", "touch"},
+    ["start"]={"start", "touch"},
+    ["select"]={"select", "touch"},
+    ["prev"]={"prev", "touch"},
+    ["next"]={"next", "touch"},
+    ["dash"]={"dash", "touch"}}
+  gamePath = ""
   initEngine()
   states.set("states/menus/disclaimerstate.lua")
 end

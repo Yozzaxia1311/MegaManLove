@@ -110,7 +110,7 @@ function control.update()
     touchInput.update()
   end
   local step = 0
-  for i=1, globals.playerCount do
+  for i=1, playerCount do
     control.leftDown[i] = inputHandler.down(3+step)
     control.leftPressed[i] = inputHandler.pressed(3+step)
     control.rightDown[i] = inputHandler.down(4+step)

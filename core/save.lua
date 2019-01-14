@@ -9,7 +9,7 @@ function save.save(file, data)
 end
 
 function save.load(file)
-  local sv = love.filesystem.read(file)
+  local sv = love.filesystem.read(gamePath .. "/" .. file)
   if sv == nil then
     return nil
   end
