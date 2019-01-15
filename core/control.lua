@@ -1,7 +1,5 @@
 control = {}
 
-defaultInputBinds = {}
-
 function control.init()
   control.leftDown = {}
   control.leftPressed = {}
@@ -58,7 +56,7 @@ function control.init()
   local data = save.load("main.set", true)
   local binds = {}
   step = 0
-  if data == nil then
+  if not data or not data.controls then
     binds[1] = defaultInputBinds.up
     binds[2] = defaultInputBinds.down
     binds[3] = defaultInputBinds.left
