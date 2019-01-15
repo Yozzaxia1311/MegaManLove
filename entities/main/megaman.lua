@@ -1,3 +1,22 @@
+megautils.resetGameObjectsFuncs["megaman"] = function()
+  megaman.weaponHandler = {}
+  megaman.colorOutline = {}
+  megaman.colorOne = {}
+  megaman.colorTwo = {}
+end
+
+megautils.resetGameObjectsFuncs["megaman_weapons"] = function()
+  for i=1, maxPlayerCount do
+    megaman.weaponHandler[i] = weaponhandler(nil, nil, 10)
+    megaman.weaponHandler[i]:register(0, "megaBuster", {0, 120, 248}, {0, 232, 216}, {0, 0, 0})
+    megaman.weaponHandler[i]:register(9, "rushCoil", {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+    megaman.weaponHandler[i]:register(10, "rushJet", {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+    megaman.colorOutline[i] = megaman.weaponHandler[i].colorOutline[0]
+    megaman.colorOne[i] = megaman.weaponHandler[i].colorOne[0]
+    megaman.colorTwo[i] = megaman.weaponHandler[i].colorTwo[0]
+  end
+end
+
 megaman = entity:extend()
 
 megaman.weaponHandler = {}
@@ -620,9 +639,9 @@ function megaman:healthChanged(o, c, i)
           globals.resetState = true
           globals.mainPlayer = nil
           if not globals.infiniteLives and globals.lives <= 0 then
-            megautils.resetGame()
+            megautils.resetGameObjects()
             globals.gameOverContinueState = states.current
-            states.set("states/menus/gameoverstate.lua")
+            states.set("states/menus/gameoverstate.lua", nil, true)
           else
             globals.manageStageResources = false
             if not globals.infiniteLives then
@@ -1019,7 +1038,7 @@ function megaman:code(dt)
     globals.lastCamPosY = view.y
     self.weaponSwitchTimer = 70
     globals.manageStageResources = false
-    megautils.gotoState("states/menus/pausestate.lua", nil, nil, love.filesystem.load("states/menus/pausestate.lua")())
+    megautils.gotoState("states/menus/pausestate.lua", nil, nil, love.filesystem.load("states/menus/pausestate.lua")(), true)
     globals.pauseWeaponSelect = weaponSelect(megaman.weaponHandler[self.player], self.healthHandler, self.player)
     mmSfx.play("pause")
   end

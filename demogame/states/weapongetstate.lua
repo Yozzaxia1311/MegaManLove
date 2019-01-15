@@ -3,8 +3,7 @@ local weapongetstate = states.state:extend()
 function weapongetstate:begin()
   loader.clear()
   megautils.load()
-  loader.load("assets/misc/star_field.png", "star_field", "texture")
-  loader.load("assets/misc/star_field_one.png", "star_field_one", "texture")
+  megautils.runFile("entities/starfield.lua")
   megautils.add(banner())
   megautils.add(smallStar(32, 32, 180, 2))
   megautils.add(smallStar(112, 200, 180, 2))
@@ -17,12 +16,12 @@ function weapongetstate:begin()
   megautils.add(largeStar(0, 32, 180, 6))
   megautils.add(largeStar(90, 220, 180, 6))
   if globals.weaponGet == "stick" then
-    love.filesystem.load("entities/enemies/bosses/stickman.lua")()
+    megautils.runFile("entities/stickman.lua")
     megautils.add(megamanStick())
   end
   view.x, view.y = 0, 0
   megautils.add(fade(false):setAfter(fade.remove))
-  mmMusic.playFromFile("assets/sfx/music/get.ogg")
+  mmMusic.playFromFile("assets/get.ogg")
 end
 
 function weapongetstate:update(dt)

@@ -3,11 +3,18 @@ megautils = {}
 megautils.resetStateFuncs = {}
 megautils.cleanFuncs = {}
 
-function megautils.resetBack()
+function megautils.runFile(path, ignoreGamePath)
+  if ignoreGamePath then
+    love.filesystem.load(path)()
+  else
+    love.filesystem.load(gamePath .. "/" .. path)()
+  end
+end
+
+function megautils.resetToGameLoader()
   gamePath = ""
-  megautils.gotoState("states/disclaimerstate.lua", function()
-    initEngine()
-  end)
+  initEngine()
+  states.set("states/menus/disclaimerstate.lua", nil, true)
 end
 
 function megautils.load()
@@ -37,6 +44,7 @@ function megautils.load()
   loader.load("assets/misc/particles_one.png", "particles_one", "texture", nil, true)
   loader.load("assets/misc/particles_two.png", "particles_two", "texture", nil, true)
   loader.load("assets/global/bossdoors/boss_door.png", "boss_door", "texture", nil, true)
+  loader.load("assets/misc/menu_select.png", "menu_select", "texture", nil, true)
   loader.load("assets/sfx/mm_start.ogg", "start", "sound", nil, true)
   loader.load("assets/sfx/semi.ogg", "semi_charged", "sound", nil, true)
   loader.load("assets/sfx/charged.ogg", "charged", "sound", nil, true)
@@ -131,9 +139,14 @@ function megautils.unload(self)
   collectgarbage()
 end
 
-function megautils.loadStage(self, path, call)
+function megautils.loadStage(self, path, call, ignoreGamePath)
   self.sectionHandler = sectionHandler()
-  local map = cartographer.load(path)
+  local map
+  if ignoreGamePath then
+    map = cartographer.load(path)
+  else
+    map = cartographer.load(gamePath .. "/" .. path)
+  end
   local tLayers = {}
   local objs = {}
   for k, v in pairs(map.layers) do
@@ -158,11 +171,11 @@ function megautils.loadStage(self, path, call)
   megautils.add(tmp)
 end
 
-function megautils.gotoState(s, before, after, chunk)
+function megautils.gotoState(s, before, after, chunk, ignoreGamePath)
   megautils.add(fade(true, nil, nil, function(se)
         if before ~= nil then before() end
         megautils.remove(se)
-        states.set(s, chunk)
+        states.set(s, chunk, ignoreGamePath)
         if after ~= nil then after() end
       end))
 end
@@ -203,7 +216,9 @@ function megautils.circlePathY(y, deg, dist)
   return y + (megautils.calcY(deg) * dist)
 end
 
-function megautils.resetGame()
+megautils.resetGameObjectsFuncs = {}
+
+function megautils.resetGameObjects()
   globals.mainPlayer = nil
   globals.allPlayers = {}
   healthhandler.playerTimers = {-2, -2, -2, -2}
@@ -217,21 +232,8 @@ function megautils.resetGame()
   smallEnergy.banIds = {}
   health.banIds = {}
   smallHealth.banIds = {}
-  megaman.weaponHandler = {}
-  megaman.colorOutline = {}
-  megaman.colorOne = {}
-  megaman.colorTwo = {}
-  for i=1, maxPlayerCount do
-    megaman.weaponHandler[i] = weaponhandler(nil, nil, 10)
-    megaman.weaponHandler[i]:register(0, "megaBuster", {0, 120, 248}, {0, 232, 216}, {0, 0, 0})
-    megaman.weaponHandler[i]:register(9, "rushCoil", {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
-    megaman.weaponHandler[i]:register(10, "rushJet", {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
-    if globals.defeats.stickMan then
-      megaman.weaponHandler[i]:register(1, "stickWeapon", {255, 255, 255}, {128, 128, 128}, {0, 0, 0})
-    end
-    megaman.colorOutline[i] = megaman.weaponHandler[i].colorOutline[0]
-    megaman.colorOne[i] = megaman.weaponHandler[i].colorOne[0]
-    megaman.colorTwo[i] = megaman.weaponHandler[i].colorTwo[0]
+  for k, v in pairs(megautils.resetGameObjectsFuncs) do
+    v()
   end
 end
 

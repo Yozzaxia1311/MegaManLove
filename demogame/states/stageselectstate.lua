@@ -1,13 +1,12 @@
 local stageselectstate = states.state:extend()
 
 function stageselectstate:begin()
-  loader.load("assets/misc/select.png", "mugshots", "texture")
-  loader.load("assets/sfx/cursor_move.ogg", "cursor_move", "sound")
-  megautils.loadStage(self, "assets/maps/stage_select.lua")
+  loader.load("assets/select.png", "mugshots", "texture")
+  megautils.loadStage(self, "assets/stage_select.lua")
   megautils.add(stageSelect())
   megautils.add(fade(false):setAfter(fade.remove))
   view.x, view.y = 0, 0
-  mmMusic.playFromFile("assets/sfx/music/select_loop.ogg", "assets/sfx/music/select_intro.ogg")
+  mmMusic.playFromFile("assets/select_loop.ogg", "assets/select_intro.ogg")
 end
 
 function stageselectstate:update(dt)
@@ -114,10 +113,10 @@ function stageSelect:update(dt)
       mmSfx.play("selected")
       megautils.add(fade(false, 4, {255, 255, 255}, function(s)
         if globals.defeats.stickMan then
-          megautils.gotoState("states/stages/demostate.lua")
+          megautils.gotoState("states/demostate.lua")
         else
           globals.bossIntroBoss = "stick"
-          megautils.gotoState("states/menus/bossintrostate.lua")
+          megautils.gotoState("states/bossintrostate.lua")
         end
         megautils.remove(s, true)
       end))
@@ -125,7 +124,7 @@ function stageSelect:update(dt)
     end
   elseif control.selectPressed[1] and not self.stop then
     self.stop = true
-    megautils.gotoState("states/menus/menustate.lua")
+    megautils.gotoState("states/menustate.lua")
     mmMusic.stopMusic()
   end
 end

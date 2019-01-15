@@ -1,7 +1,7 @@
 local pausestate = states.state:extend()
 
 function pausestate:begin()
-  megautils.loadStage(self, "assets/maps/weapon_select.lua")
+  megautils.loadStage(self, "assets/maps/weapon_select.lua", nil, true)
   megautils.add(globals.pauseWeaponSelect)
   megautils.add(fade(false):setAfter(fade.remove))
   view.x, view.y = 0, 0

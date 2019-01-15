@@ -55,7 +55,7 @@ function control.init()
   
   inputHandler.init()
   
-  local data = save.load("main.set")
+  local data = save.load("main.set", true)
   local binds = {}
   step = 0
   if data == nil then

@@ -1,10 +1,8 @@
 local bossintrostate = states.state:extend()
 
 function bossintrostate:begin()
-  loader.load("assets/global/objects/bosses/stick_man.png", "stick_man", "texture")
-  loader.load("assets/misc/star_field.png", "star_field", "texture")
-  loader.load("assets/misc/star_field_one.png", "star_field_one", "texture")
-  loader.load("assets/misc/title.png", "title", "texture")
+  loader.load("assets/title.png", "title", "texture")
+  megautils.runFile("entities/starfield.lua")
   megautils.add(banner())
   megautils.add(smallStar(32, 32, 180, 2))
   megautils.add(smallStar(112, 200, 180, 2))
@@ -17,11 +15,11 @@ function bossintrostate:begin()
   megautils.add(largeStar(0, 32, 180, 6))
   megautils.add(largeStar(90, 220, 180, 6))
   if globals.bossIntroBoss == "stick" then
-    love.filesystem.load("entities/enemies/bosses/stickman.lua")()
+    megautils.runFile("entities/stickman.lua")
     megautils.add(stickManIntro())
   end
   megautils.add(fade(false):setAfter(fade.remove))
-  mmMusic.playFromFile(nil, "assets/sfx/music/stage_start.ogg")
+  mmMusic.playFromFile(nil, "assets/stage_start.ogg")
 end
 
 function bossintrostate:update(dt)

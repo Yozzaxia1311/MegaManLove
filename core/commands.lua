@@ -51,7 +51,7 @@ function cmdMap(cmd)
 	if map == nil then console.print("No such map \""..cmd[2].."\"") return end
 	megautils.gotoState("states/stages/"..map, function()
     globals.resetState = true
-    megautils.resetGame()
+    megautils.resetGameObjects()
     mmMusic.stopMusic()
   end)
 end

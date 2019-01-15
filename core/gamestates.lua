@@ -11,13 +11,17 @@ function states.state:update(dt) end
 function states.state:draw() end
 function states.state:stop() end
 
-function states.set(n, s)
+function states.set(n, s, ignoreGamePath)
   local nick = n
   if states.currentstate ~= nil then
     states.currentstate:stop()
   end
   if s == nil and (states.currentChunk == nil or states.current ~= nick) then
-    states.currentChunk = love.filesystem.load(gamePath .. "/" .. nick)
+    if ignoreGamePath then
+      states.currentChunk = love.filesystem.load(nick)
+    else
+      states.currentChunk = love.filesystem.load(gamePath .. "/" .. nick)
+    end
   end
   states.current = nick
   states.currentstate = s or states.currentChunk()

@@ -1,7 +1,6 @@
 local rebindstate = states.state:extend()
 
 function rebindstate:begin()
-  loader.load("assets/sfx/cursor_move.ogg", "cursor_move", "sound")
   megautils.add(rebinder())
   megautils.add(fade(false):setAfter(fade.remove))
 end
@@ -38,7 +37,7 @@ function rebinder:new()
   globals.lastKeyPressed = nil
   self.step = 0
   self.done = false
-  self.data = save.load("main.set") or {}
+  self.data = save.load("main.set", true) or {}
   self.data.controls = {}
   inputHandler.refreshGamepads()
 end
@@ -47,7 +46,8 @@ function rebinder:update(dt)
   if globals.lastKeyPressed ~= nil and globals.lastKeyPressed[1] == "escape" and not self.done then
     globals.lastKeyPressed = nil
     megautils.add(fade(true, nil, nil, function(s)
-      states.set(ternary(globals.sendBackToDisclaimer, "states/menus/disclaimerstate.lua", "states/menus/menustate.lua"))
+      globals.lastState()
+      states.set(ternary(globals.sendBackToDisclaimer, "states/menus/disclaimerstate.lua", globals.lastStateName), globals.lastState)
       if not globals.sendBackToDisclaimer then
         megautils.add(fade(false, nil, nil, fade.remove))
       end
@@ -67,7 +67,7 @@ function rebinder:update(dt)
         for k, v in pairs(self.data.controls) do
           inputHandler.bind(v[1], k, v[2], v[3])
         end
-        save.save("main.set", self.data)
+        save.save("main.set", self.data, true)
         if globals.sendBackToDisclaimer then
           megautils.add(fade(true, nil, nil, function(s)
             states.set("states/menus/disclaimerstate.lua")

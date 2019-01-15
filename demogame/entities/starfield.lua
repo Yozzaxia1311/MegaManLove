@@ -1,3 +1,6 @@
+loader.load("assets/star_field.png", "star_field", "texture")
+loader.load("assets/star_field_one.png", "star_field_one", "texture")
+
 banner = entity:extend()
 
 banner.colorOutline = {0, 0, 0}
@@ -104,4 +107,12 @@ end
 function largeStar:draw()
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.draw(self.t, self.quad, self.transform.x, self.transform.y)
+end
+
+megautils.cleanFuncs["unload_starfield"] = function()
+  smallStar = nil
+  star = nil
+  largeStar = nil
+  banner = nil
+  megautils.cleanFuncs["unload_starfield"] = nil
 end

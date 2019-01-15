@@ -49,9 +49,6 @@ function initEngine()
   globals.maxETanks = 10
   globals.maxWTanks = 10
   
-  globals.defeats = {}
-  globals.defeats.stickMan = false
-  
   globals.resetState = true
   globals.manageStageResources = true
   if love.joystick then globals.gamepadCheck = {} end
@@ -61,7 +58,7 @@ function initEngine()
   end
   loader.clear()
   megautils.load()
-  megautils.resetGame()
+  megautils.resetGameObjects()
   collectgarbage()
 end
 
@@ -98,6 +95,10 @@ function love.load()
   gamePath = ""
   initEngine()
   states.set("states/menus/disclaimerstate.lua")
+  local data = save.load("main.set", true)
+  if data ~= nil then
+    convar.setValue("r_fullscreen", data.fullscreen, true)
+  end
 end
 
 function love.resize(w, h)

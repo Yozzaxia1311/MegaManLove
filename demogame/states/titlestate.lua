@@ -1,7 +1,7 @@
 local titlestate = states.state:extend()
 
 function titlestate:begin()
-  loader.load("assets/misc/title.png", "title", "texture")
+  loader.load("assets/title.png", "title", "texture")
   megautils.add(title())
 end
 
@@ -42,7 +42,7 @@ function title:update(dt)
   if self.transform.y == 32 and not self.once then
     self.once = true
     self.drawText = true
-    mmMusic.playFromFile(nil, "assets/sfx/music/title.ogg")
+    mmMusic.playFromFile(nil, "assets/title.ogg")
   end
   if self.drawText then
     self.textTimer = math.wrap(self.textTimer+1, 0, 40)
@@ -50,7 +50,14 @@ function title:update(dt)
       self.cont = true
       mmMusic.stopMusic()
       self.drawText = false
-      megautils.gotoState("states/menus/menustate.lua")
+      megautils.gotoState("states/menustate.lua")
+    elseif control.selectDown[1] and not self.cont then
+      self.cont = true
+      self.drawText = false
+      mmMusic.stopMusic()
+      megautils.add(fade(true):setAfter(function()
+        megautils.resetToGameLoader()
+      end))
     end
   end
 end

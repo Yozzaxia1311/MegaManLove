@@ -1,10 +1,8 @@
 local gameoverstate = states.state:extend()
 
 function gameoverstate:begin()
-  loader.load("assets/misc/select.png", "select", "texture")
   loader.load("assets/misc/cont.png", "cont", "texture")
-  loader.load("assets/sfx/cursor_move.ogg", "cursor_move", "sound")
-  megautils.loadStage(self, "assets/maps/cont.lua")
+  megautils.loadStage(self, "assets/maps/cont.lua", nil, true)
   megautils.add(contPanels())
   self.wait = 0
   megautils.add(fade(false):setAfter(fade.remove))
@@ -62,11 +60,10 @@ function contSelect:new()
   contSelect.super.new(self)
   self.transform.x = 56
   self.transform.y = 144
-  self.tex = loader.get("select")
+  self.tex = loader.get("menu_select")
   self.pick = 0
   self.offY = self.transform.y
   self.picked = false
-  self.quad = love.graphics.newQuad(81, 288, 5, 8, 96, 303)
 end
 
 function contSelect:update(dt)
@@ -96,7 +93,7 @@ function contSelect:update(dt)
 end
 
 function contSelect:draw()
-  love.graphics.draw(self.tex, self.quad, self.transform.x, self.transform.y)
+  love.graphics.draw(self.tex, self.transform.x, self.transform.y)
 end
 
 return gameoverstate

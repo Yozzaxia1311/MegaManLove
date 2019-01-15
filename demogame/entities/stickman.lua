@@ -1,3 +1,5 @@
+loader.load("assets/stick_man.png", "stick_man", "texture")
+
 stickMan = entity:extend()
 
 addobjects.register("stick_man", function(v)
@@ -72,7 +74,7 @@ function stickMan:healthChanged(o, c, i)
     timer.absorbCutscene(function()
       globals.defeats.stickMan = true
       globals.weaponGet = "stick"
-      megautils.resetGame()
+      megautils.resetGameObjects()
       states.set("states/menus/weapongetstate.lua")
     end)
     megautils.remove(self, true)
@@ -97,7 +99,7 @@ function stickMan:update(dt)
   if self.s == 0 then
     if globals.defeats.stickMan then
       timer.winCutscene(function()
-        megautils.resetGame()
+        megautils.resetGameObjects()
         states.set("states/menus/menustate.lua")
       end)
       megautils.remove(self, true)
@@ -209,7 +211,7 @@ function stickManIntro:update(dt)
     self.timer = math.min(self.timer+1, 300)
     if self.timer == 300 then
       mmMusic.stopMusic()
-      megautils.gotoState("states/stages/demostate.lua")
+      megautils.gotoState("states/demostate.lua")
       self.updated = false
     end
   end
@@ -327,7 +329,7 @@ function megamanStick:update(dt)
     self.timer = math.min(self.timer+1, 60)
     if self.timer == 60 then
       globals.stopMusicMenu = true
-      megautils.gotoState("states/menus/menustate.lua")
+      megautils.gotoState("states/menustate.lua")
       self.updated = false
     end
   end

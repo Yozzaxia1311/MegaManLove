@@ -1,8 +1,7 @@
 local gameloaderstate = states.state:extend()
 
 function gameloaderstate:begin()
-  loader.load("assets/misc/select.png", "select", "texture")
-  megautils.loadStage(self, "assets/maps/game_loader.lua")
+  megautils.loadStage(self, "assets/maps/game_loader.lua", nil, true)
   megautils.add(menuSelect())
   megautils.add(fade(false):setAfter(fade.remove))
   view.x, view.y = 0, 0
@@ -36,11 +35,10 @@ function menuSelect:new()
   self.added = function(self)
     self:addToGroup("freezable")
   end
-  self.tex = loader.get("select")
+  self.tex = loader.get("menu_select")
   self.pick = 1
   self.offY = self.transform.y
   self.picked = false
-  self.quad = love.graphics.newQuad(81, 288, 5, 8, 96, 303)
   self.section = 0
   self.timer = 20
   self.heldTimer = 0
@@ -75,19 +73,25 @@ function menuSelect:update(dt)
         mmSfx.play("cursor_move")
       end
     end
-    if control.shootPressed[1] and self.games[self.pick].state then
+    if control.startPressed[1] and self.games[self.pick].run then
       gamePath = self.games[self.pick].path
-      megautils.gotoState(self.games[self.pick].initState)
+      megautils.add(fade(true):setAfter(function()
+        self.games[self.pick].run()
+        states.set(self.games[self.pick].initState)
+      end))
+      self.picked = true
+    elseif control.shootPressed[1] then
+      megautils.gotoState("states/menus/menustate.lua")
+      self.picked = true
+    elseif control.selectPressed[1] then
+      love.system.openURL(love.filesystem.getSaveDirectory())
     end
-  end
-  if control.selectPressed[1] then
-    love.system.openURL(love.filesystem.getSaveDirectory())
   end
 end
 
 function menuSelect:draw()
   love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.draw(self.tex, self.quad, 32, 64)
+  love.graphics.draw(self.tex, 32, 64)
   love.graphics.setFont(mmFont)
   if #self.games ~= 0 then
     for i=1, #self.games do
@@ -99,7 +103,7 @@ function menuSelect:draw()
   love.graphics.setColor(0, 0, 0, 1)
   love.graphics.rectangle("fill", 32, 0, 20*8, 32)
   love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.print("jump:load game\nshoot:back\nselect:map directory", 32, 8)
+  love.graphics.print("start:load game\nshoot:back\nselect:map directory", 32, 8)
 end
 
 return gameloaderstate
