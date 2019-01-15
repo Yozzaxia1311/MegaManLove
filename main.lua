@@ -35,8 +35,8 @@ function initEngine()
   
   cscreen.init(view.w*view.scale, view.h*view.scale, true)
   
-  globals.player = {"roll", "proto", "bass", "roll"}
   globals.mainPlayer = nil
+  globals.player = {"mega", "proto", "bass", "roll"}
   globals.allPlayers = {}
   globals.checkpoint = "start"
   globals.infiniteLives = false

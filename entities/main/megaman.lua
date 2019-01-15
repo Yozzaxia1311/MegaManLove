@@ -1,11 +1,8 @@
 megautils.resetGameObjectsFuncs["megaman"] = function()
-  megaman.weaponHandler = {}
   megaman.colorOutline = {}
   megaman.colorOne = {}
   megaman.colorTwo = {}
-end
-
-megautils.resetGameObjectsFuncs["megaman_weapons"] = function()
+  megaman.weaponHandler = {}
   for i=1, maxPlayerCount do
     megaman.weaponHandler[i] = weaponhandler(nil, nil, 10)
     megaman.weaponHandler[i]:register(0, "megaBuster", {0, 120, 248}, {0, 232, 216}, {0, 0, 0})

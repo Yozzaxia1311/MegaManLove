@@ -5,6 +5,10 @@ data.run = function()
   globals.defeats = {}
   globals.defeats.stickMan = false
   megautils.resetGameObjectsFuncs["megaman_weapons"] = function()
+    megaman.colorOutline = {}
+    megaman.colorOne = {}
+    megaman.colorTwo = {}
+    megaman.weaponHandler = {}
     for i=1, maxPlayerCount do
       megaman.weaponHandler[i] = weaponhandler(nil, nil, 10)
       megaman.weaponHandler[i]:register(0, "megaBuster", {0, 120, 248}, {0, 232, 216}, {0, 0, 0})
