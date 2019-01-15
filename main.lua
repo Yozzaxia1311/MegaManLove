@@ -95,8 +95,10 @@ function love.load()
   gamePath = ""
   initEngine()
   local data = save.load("main.set", true)
-  if data ~= nil then
+  if data then
     convar.setValue("r_fullscreen", data.fullscreen, true)
+  else
+    save.save("main.set", {}, true)
   end
   states.set("states/menus/disclaimerstate.lua") --megautils.loadGame("path/to/game/directory/if/standalone/game/is/desired")
 end
