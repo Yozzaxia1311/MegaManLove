@@ -94,11 +94,11 @@ function love.load()
     ["dash"]={"dash", "touch"}}
   gamePath = ""
   initEngine()
-  states.set("states/menus/disclaimerstate.lua")
   local data = save.load("main.set", true)
   if data ~= nil then
     convar.setValue("r_fullscreen", data.fullscreen, true)
   end
+  states.set("states/menus/disclaimerstate.lua") --megautils.loadGame("path/to/game/directory/if/standalone/game/is/desired")
 end
 
 function love.resize(w, h)
