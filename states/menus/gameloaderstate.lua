@@ -95,7 +95,7 @@ function menuSelect:draw()
   love.graphics.setFont(mmFont)
   if #self.games ~= 0 then
     for i=1, #self.games do
-      love.graphics.print(self.games[i].name, 48, 72-(self.pick*8))
+      love.graphics.print(self.games[i].name, 48, 64+(i*8)-(self.pick*8))
     end
   else
     love.graphics.print("(no games)", 48, 64)
