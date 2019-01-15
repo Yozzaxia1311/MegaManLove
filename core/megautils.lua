@@ -11,6 +11,13 @@ function megautils.runFile(path, ignoreGamePath)
   end
 end
 
+function megautils.loadGame(path)
+	gamePath = path
+	local data = love.filesystem.load(path .. "/init.lua")()
+	data.run()
+	states.set(data.initState)
+end
+
 function megautils.resetToGameLoader()
   gamePath = ""
   initEngine()
