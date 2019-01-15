@@ -86,7 +86,7 @@ function contSelect:update(dt)
       self.picked = true
       self.render = false
       globals.stopMusicMenu = true
-      megautils.gotoState("states/menus/menustate.lua")
+      megautils.gotoState(globals.gameOverMenuState)
     end
   end
   self.transform.y = self.offY + self.pick*16

@@ -23,6 +23,7 @@ data.run = function()
     end
   end
   megautils.resetGameObjects()
+  globals.gameOverMenuState = "states/menustate.lua"
 end
 
 return data
