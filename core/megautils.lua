@@ -378,3 +378,30 @@ function megautils.dropItem(x, y)
     end
   end
 end
+
+function megautils.closest(e, group)
+  if #group == 1 then return group[1] end
+  local closest = math.huge
+  local result
+  for i=1, #group do
+    local p = group[i]
+    local dist = math.sqrt(math.pow(e.transform.x-p.transform.x, 2)+math.pow(e.transform.y-p.transform.y, 2))
+    if closest > dist then
+      result = p
+      closest = dist
+    end
+  end
+  return result
+end
+
+function megautils.autoFace(e)
+  local closest = megautils.closest(e, globals.allPlayers)
+    if closest then
+      if closest.transform.x+closest.collisionShape.w/2 > e.transform.x then
+      e.side = 1
+    elseif closest.transform.x+closest.collisionShape.w/2 < e.transform.x then
+      e.side = -1
+    end
+  end
+  return closest
+end
