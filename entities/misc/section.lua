@@ -64,14 +64,14 @@ function sectionHandler:updateAll()
   else
     self.current.group = self.current:collisionTable(megautils.groups()["despawnable"])
     for k, v in pairs(self.current.group) do
-      if not v.dontRemove then
+      if not v.dontRemove and not table.contains(self.next.group, v) then
         megautils.remove(v)
       end
     end
   end
-  if self.next ~= nil then
+  if self.next then
     for k, v in pairs(self.next.group) do
-      if not v.dontRemove then
+      if not v.dontRemove and not (self.current and table.contains(self.current.group, v)) then
         megautils.add(v)
       end
     end

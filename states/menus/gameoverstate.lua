@@ -1,13 +1,13 @@
 local gameoverstate = states.state:extend()
 
 function gameoverstate:begin()
-  loader.load("assets/misc/cont.png", "cont", "texture")
+  loader.load("assets/misc/cont.png", "cont", "texture", nil, nil, true)
   megautils.loadStage(self, "assets/maps/cont.lua", nil, true)
   megautils.add(contPanels())
   self.wait = 0
   megautils.add(fade(false):setAfter(fade.remove))
   view.x, view.y = 0, 0
-  mmMusic.playFromFile(nil, "assets/sfx/music/game_over.ogg")
+  mmMusic.playFromFile(nil, "assets/sfx/music/game_over.ogg", nil, true)
 end
 
 function gameoverstate:update(dt)
@@ -42,7 +42,9 @@ function contPanels:update(dt)
   self.timer = math.min(self.timer+1, 199)
   if self.timer == 198 then
     self.state = 1
-    mmMusic.playFromFile("assets/sfx/music/menu.ogg")
+    if globals.gameOverMenuMusic then
+      mmMusic.playFromFile(globals.gameOverMenuMusic[1], globals.gameOverMenuMusic[2])
+    end
     megautils.add(contSelect())
   end
 end

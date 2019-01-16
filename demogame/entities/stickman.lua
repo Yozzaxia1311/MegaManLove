@@ -75,7 +75,7 @@ function stickMan:healthChanged(o, c, i)
       globals.defeats.stickMan = true
       globals.weaponGet = "stick"
       megautils.resetGameObjects()
-      states.set("states/menus/weapongetstate.lua")
+      states.set("states/weapongetstate.lua")
     end)
     megautils.remove(self, true)
   elseif self.changeHealth < 0 then
@@ -100,7 +100,7 @@ function stickMan:update(dt)
     if globals.defeats.stickMan then
       timer.winCutscene(function()
         megautils.resetGameObjects()
-        states.set("states/menus/menustate.lua")
+        states.set("states/menustate.lua")
       end)
       megautils.remove(self, true)
     elseif globals.mainPlayer ~= nil and globals.mainPlayer.control then
@@ -130,7 +130,7 @@ function stickMan:update(dt)
           self.ss = 0
           globals.mainPlayer.curAnim = "idle"
           self.s = 2
-          mmMusic.playFromFile("assets/sfx/music/boss_loop.ogg", "assets/sfx/music/boss_intro.ogg")
+          mmMusic.playFromFile("assets/boss_loop.ogg", "assets/boss_intro.ogg")
           self.render = true
         end
       end

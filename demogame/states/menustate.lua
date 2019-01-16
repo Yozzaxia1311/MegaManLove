@@ -6,7 +6,7 @@ function menustate:begin()
   megautils.add(fade(false):setAfter(fade.remove))
   view.x, view.y = 0, 0
   if globals.stopMusicMenu == nil then
-    mmMusic.playFromFile("assets/menu.ogg")
+    mmMusic.playFromFile(globals.gameOverMenuMusic[1], globals.gameOverMenuMusic[2])
   end
 end
 
@@ -93,6 +93,7 @@ function menuSelect:update(dt)
           globals.eTanks = data.eTanks
           globals.wTanks = data.wTanks
         end
+        megautils.resetGameObjects()
       elseif self.pick == 4 then
         local data = save.load("save.txt") or {}
         data.defeats = globals.defeats

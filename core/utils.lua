@@ -169,24 +169,31 @@ function math.wrap(v, min, max)
 end
 
 function table.contains(t, va)
-  for k, v in pairs(t or {}) do
+  if type(t) ~= "table" then return false end
+  for k, v in pairs(t) do
     if v == va then return true end
   end
   return false
 end
 
-function table.clone(t, cache)
+function table.clone(t, shallow, cache)
   if type(t) ~= 'table' then
     return t
+  end
+  local new = {}
+  if shallow then
+    for key, value in pairs(t) do
+      new[key] = value
+    end
+    return new
   end
   table.copycache = cache or {}
   if table.copycache[t] then
     return table.copycache[t]
   end
-  local new = {}
   table.copycache[t] = New
   for key, value in pairs(t) do
-    new[table.clone(key, table.copycache)] = table.clone(value, table.copycache)
+    new[table.clone(key, nil, table.copycache)] = table.clone(value, nil, table.copycache)
   end
   return new
 end

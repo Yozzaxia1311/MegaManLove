@@ -4,7 +4,7 @@ data.initState = "states/titlestate.lua"
 data.run = function()
   globals.defeats = {}
   globals.defeats.stickMan = false
-  megautils.resetGameObjectsFuncs["megaman_weapons"] = function()
+  megautils.resetGameObjectsFuncs["megaman"] = function()
     megaman.colorOutline = {}
     megaman.colorOne = {}
     megaman.colorTwo = {}
@@ -24,6 +24,7 @@ data.run = function()
   end
   megautils.resetGameObjects()
   globals.gameOverMenuState = "states/menustate.lua"
+  globals.gameOverMenuMusic = {"assets/menu.ogg"}
 end
 
 return data

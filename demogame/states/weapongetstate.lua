@@ -2,7 +2,6 @@ local weapongetstate = states.state:extend()
 
 function weapongetstate:begin()
   loader.clear()
-  megautils.load()
   megautils.runFile("entities/starfield.lua")
   megautils.add(banner())
   megautils.add(smallStar(32, 32, 180, 2))
