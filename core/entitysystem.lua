@@ -293,14 +293,6 @@ function entity:removeStatic()
   megautils.state().system:removeStatic(self)
 end
 
-function entity:setUpdateLayer(l)
-  if not self.isAdded or self.static then
-    self.updateLayer = l
-  else
-    megautils.state().system:setUpdateLayer(self, l)
-  end
-end
-
 function entity:removeFromGroup(g)
   megautils.state().system:removeFromGroup(self, g)
 end
