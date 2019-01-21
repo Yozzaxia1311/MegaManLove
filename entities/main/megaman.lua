@@ -385,8 +385,7 @@ end
 function megaman:solid(x, y, d)
   return #self:collisionTable(megautils.groups()["solid"], x, y) ~= 0 or
     (ternary(d~=nil, d, true) and #self:collisionTable(megautils.groups()["death"], x, y)) ~= 0 or
-    #oneway.collisionTable(self, megautils.groups()["oneway"], x, y) ~= 0 or
-    #self:collisionTable(megautils.groups()["slope"], x, y) ~= 0
+    #oneway.collisionTable(self, megautils.groups()["oneway"], x, y) ~= 0
 end
 
 function megaman:snapToFloor()
