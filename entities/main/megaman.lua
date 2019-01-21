@@ -386,14 +386,14 @@ function megaman:solid(x, y, d)
   return #self:collisionTable(megautils.groups()["solid"], x, y) ~= 0 or
     (ternary(d~=nil, d, true) and #self:collisionTable(megautils.groups()["death"], x, y)) ~= 0 or
     #oneway.collisionTable(self, megautils.groups()["oneway"], x, y) ~= 0 or
-    #self:collisionTable(megautils.groups()["movingSolid"], x, y) ~= 0
+    #self:collisionTable(megautils.groups()["slope"], x, y) ~= 0
 end
 
 function megaman:snapToFloor()
   local tmp = table.merge({self:collisionTable(megautils.groups()["solid"]),
     self:collisionTable(megautils.groups()["death"]),
     oneway.collisionTable(self, megautils.groups()["oneway"]),
-    self:collisionTable(megautils.groups()["movingSolid"])})
+    self:collisionTable(megautils.groups()["slope"])})
   self.transform.y = math.round(self.transform.y)
   while #self:collisionTable(tmp) ~= 0 do
     self.transform.y = self.transform.y - 1
@@ -404,7 +404,7 @@ function megaman:snapToCeiling()
   local tmp = table.merge({self:collisionTable(megautils.groups()["solid"]),
     self:collisionTable(megautils.groups()["death"]),
     oneway.collisionTable(self, megautils.groups()["oneway"]),
-    self:collisionTable(megautils.groups()["movingSolid"])})
+    self:collisionTable(megautils.groups()["slope"])})
   self.transform.y = math.round(self.transform.y)
   while #self:collisionTable(tmp) ~= 0 do
     self.transform.y = self.transform.y + 1
@@ -414,8 +414,7 @@ end
 function megaman:checkGround()
   local tmp = table.merge({self:collisionTable(megautils.groups()["solid"], 0, 1),
     self:collisionTable(megautils.groups()["death"], 0, 1),
-    oneway.collisionTable(self, megautils.groups()["oneway"], 0, 1),
-    self:collisionTable(megautils.groups()["movingSolid"], 0, 1)})
+    oneway.collisionTable(self, megautils.groups()["oneway"], 0, 1)})
   local result = false
   for k, v in ipairs(tmp) do
     if self.transform.y == v.transform.y - self.collisionShape.h then
