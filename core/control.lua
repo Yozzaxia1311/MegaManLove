@@ -68,6 +68,18 @@ function control.init()
     binds[9] = defaultInputBinds.prev
     binds[10] = defaultInputBinds.next
     binds[11] = defaultInputBinds.dash
+    
+    binds[12] = defaultInputBinds2.up
+    binds[13] = defaultInputBinds2.down
+    binds[14] = defaultInputBinds2.left
+    binds[15] = defaultInputBinds2.right
+    binds[16] = defaultInputBinds2.start
+    binds[17] = defaultInputBinds2.select
+    binds[18] = defaultInputBinds2.jump
+    binds[19] = defaultInputBinds2.shoot
+    binds[20] = defaultInputBinds2.prev
+    binds[21] = defaultInputBinds2.next
+    binds[22] = defaultInputBinds2.dash
   else
     for i=1, maxPlayerCount do
       binds[1+step] = data.controls[1+step]

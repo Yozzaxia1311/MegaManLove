@@ -106,11 +106,26 @@ function love.load()
     ["prev"]={"prev", "touch"},
     ["next"]={"next", "touch"},
     ["dash"]={"dash", "touch"}})
+  defaultInputBinds2 =
+    joysticks[2] and
+    {["up"]={"lefty-", "axis", joysticks[2]:getName()},
+    ["down"]={"lefty+", "axis", joysticks[2]:getName()},
+    ["left"]={"leftx-", "axis", joysticks[2]:getName()},
+    ["right"]={"leftx+", "axis", joysticks[2]:getName()},
+    ["jump"]={"a", "gamepad", joysticks[2]:getName()},
+    ["shoot"]={"x", "gamepad", joysticks[2]:getName()},
+    ["start"]={"start", "gamepad", joysticks[2]:getName()},
+    ["select"]={"back", "gamepad", joysticks[2]:getName()},
+    ["prev"]={"leftshoulder", "gamepad", joysticks[2]:getName()},
+    ["next"]={"rightshoulder", "gamepad", joysticks[2]:getName()},
+    ["dash"]={"b", "gamepad", joysticks[2]:getName()}} or {}
   gamePath = ""
   initEngine()
   local data = save.load("main.set", true)
   if data then
-    convar.setValue("r_fullscreen", data.fullscreen, true)
+    if data.fullscreen then
+      convar.setValue("r_fullscreen", data.fullscreen, true)
+    end
   else
     save.save("main.set", {}, true)
   end

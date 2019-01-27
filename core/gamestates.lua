@@ -13,10 +13,10 @@ function states.state:stop() end
 
 function states.set(n, s, ignoreGamePath)
   local nick = n
-  if states.currentstate ~= nil then
+  if states.currentstate then
     states.currentstate:stop()
   end
-  if s == nil and (states.currentChunk == nil or states.current ~= nick) then
+  if not s and (not states.currentChunk or states.current ~= nick) then
     if ignoreGamePath then
       states.currentChunk = love.filesystem.load(nick)
     else

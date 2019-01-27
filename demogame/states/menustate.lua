@@ -78,9 +78,8 @@ function menuSelect:update(dt)
         self.picked = true
         self.section = -1
         mmMusic.stopMusic()
-        globals.lastState = states.currentstate
         globals.lastStateName = states.current
-        megautils.gotoState("states/menus/rebindstate.lua", nil, nil, true)
+        megautils.gotoState("states/menus/rebindstate.lua", nil, nil, nil, true)
         globals.stopMusicMenu = nil
       elseif self.pick == 3 then
         mmSfx.play("selected")

@@ -212,7 +212,7 @@ function camera:updateCam()
       end
     end
   else
-    if #globals.allPlayers == 1 then
+    if #globals.allPlayers <= 1 then
       local o = globals.allPlayers[1]
       if self.doScrollX then
         self.transform.x = math.round(o.transform.x) - (view.w/2) + (o.collisionShape.w/2)
@@ -235,11 +235,11 @@ function camera:updateCam()
           end
         end
       end
-      if self.scrollX then
+      if self.doScrollX then
         self.transform.x = (avx/#globals.allPlayers)
         self.transform.x = math.clamp(self.transform.x, self.scrollx, self.scrollx+self.scrollw-view.w)
       end
-      if self.scrollY then
+      if self.doScrollY then
         self.transform.y = (avy/#globals.allPlayers)
         self.transform.y = math.clamp(self.transform.y, self.scrolly, self.scrolly+self.scrollh-view.h)
       end

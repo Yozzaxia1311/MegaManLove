@@ -70,7 +70,6 @@ function menuSelect:update(dt)
       elseif self.pick == 2 then
         self.picked = true
         self.section = -1
-        globals.lastState = states.currentstate
         globals.lastStateName = states.current
         megautils.gotoState("states/menus/rebindstate.lua")
       elseif self.pick == 3 then

@@ -31,7 +31,7 @@ end, -1)
 
 addobjects.register("player_one", function(v)
   if (v.properties["spawnCamera"] == nil or v.properties["spawnCamera"]) and
-    v.properties["checkpoint"] == globals.checkpoint and not camera.once and camera.main ~= nil then
+    v.properties["checkpoint"] == globals.checkpoint and not camera.once and camera.main then
     camera.once = true
     camera.main:setRectangleCollision(8, 8)
     camera.main:updateBounds()
@@ -1332,8 +1332,8 @@ function megaman:update(dt)
 end
 
 function megaman:afterUpdate(dt)
-  if not self.dying and camera.main ~= nil and globals.mainPlayer == self and self.cameraFocus and not self.drop and not self.rise
-    and self.collisionShape ~= nil then
+  if not self.dying and camera.main and globals.mainPlayer == self and self.cameraFocus and not self.drop and not self.rise
+    and self.collisionShape then
     camera.main:updateCam()
   end
 end
