@@ -68,8 +68,22 @@ function love.load()
   deadZone = 0.8
   maxPlayerCount = 4
   playerCount = 1
+  local joysticks = love.joystick.getJoysticks()
   defaultInputBinds =
-    {["up"]={"up", "keyboard"},
+    #joysticks > 0 and
+    {["up"]={"lefty-", "axis", joysticks[1]:getName()},
+    ["down"]={"lefty+", "axis", joysticks[1]:getName()},
+    ["left"]={"leftx-", "axis", joysticks[1]:getName()},
+    ["right"]={"leftx+", "axis", joysticks[1]:getName()},
+    ["jump"]={"a", "gamepad", joysticks[1]:getName()},
+    ["shoot"]={"x", "gamepad", joysticks[1]:getName()},
+    ["start"]={"start", "gamepad", joysticks[1]:getName()},
+    ["select"]={"back", "gamepad", joysticks[1]:getName()},
+    ["prev"]={"leftshoulder", "gamepad", joysticks[1]:getName()},
+    ["next"]={"rightshoulder", "gamepad", joysticks[1]:getName()},
+    ["dash"]={"b", "gamepad", joysticks[1]:getName()}}
+    or
+    ({["up"]={"up", "keyboard"},
     ["down"]={"down", "keyboard"},
     ["left"]={"left", "keyboard"},
     ["right"]={"right", "keyboard"},
@@ -91,7 +105,7 @@ function love.load()
     ["select"]={"select", "touch"},
     ["prev"]={"prev", "touch"},
     ["next"]={"next", "touch"},
-    ["dash"]={"dash", "touch"}}
+    ["dash"]={"dash", "touch"}})
   gamePath = ""
   initEngine()
   local data = save.load("main.set", true)
