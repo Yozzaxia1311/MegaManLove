@@ -51,7 +51,8 @@ function initEngine()
   
   globals.resetState = true
   globals.manageStageResources = true
-  if love.joystick then globals.gamepadCheck = {} end
+  globals.keyboardCheck = {}
+  globals.gamepadCheck = {}
   
   for k, v in pairs(megautils.cleanFuncs) do
     v()
@@ -154,7 +155,10 @@ function love.keypressed(k, s, r)
 		end
 		return
 	end
-  globals.lastKeyPressed = {k, "keyboard"}
+  if not globals.keyboardCheck[k] then
+    globals.lastKeyPressed = {k, "keyboard"}
+  end
+  globals.keyboardCheck[k] = 5
 end
 
 touchInput = {}
@@ -164,24 +168,26 @@ function touchInput.touchPressed(b)
 end
 
 function love.gamepadpressed(j, b)
-  globals.lastKeyPressed = {b, "gamepad", j:getName()}
+  if not globals.gamepadCheck[b] then
+    globals.lastKeyPressed = {b, "gamepad", j:getName()}
+  end
+  globals.gamepadCheck[b] = 5
 end
 
 function love.gamepadaxis(j, b, v)
-  if not globals.gamepadCheck[b]
-    and not math.between(v, -deadZone, deadZone) then
-    if (b == "leftx" or b == "lefty" or b == "rightx" or b == "righty") then
-      globals.axisTmp = {}
-      if b == "leftx" or b == "rightx" then
-        globals.axisTmp["x"] = {b .. ternary(v > 0,  "+", "-"), "axis", v, j:getName()}
-      elseif b == "lefty" or b == "righty" then
-        globals.axisTmp["y"] = {b .. ternary(v > 0,  "+", "-"), "axis", v, j:getName()}
+  if not math.between(v, -deadZone, deadZone) then
+    if not globals.gamepadCheck[b] then
+      if (b == "leftx" or b == "lefty" or b == "rightx" or b == "righty") then
+        globals.axisTmp = {}
+        if b == "leftx" or b == "rightx" then
+          globals.axisTmp["x"] = {b .. ternary(v > 0,  "+", "-"), "axis", v, j:getName()}
+        elseif b == "lefty" or b == "righty" then
+          globals.axisTmp["y"] = {b .. ternary(v > 0,  "+", "-"), "axis", v, j:getName()}
+        end
+      else
+        globals.lastKeyPressed =  {b .. ternary(v > 0,  "+", "-"), "axis", j:getName()}
       end
-    else
-      globals.lastKeyPressed =  {b .. ternary(v > 0,  "+", "-"), "axis", j:getName()}
     end
-    globals.gamepadCheck[b] = true
-  elseif globals.gamepadCheck[b] == true then
     globals.gamepadCheck[b] = 10
   end
 end
@@ -207,11 +213,17 @@ function love.update(dt)
       globals.axisTmp = nil
     end
     for k, v in pairs(globals.gamepadCheck) do
-      if type(globals.gamepadCheck[k]) == "number" then
-        globals.gamepadCheck[k] = globals.gamepadCheck[k] - 1
-        if globals.gamepadCheck[k] < 0 then
-          globals.gamepadCheck[k] = nil
-        end
+      globals.gamepadCheck[k] = globals.gamepadCheck[k] - 1
+      if globals.gamepadCheck[k] < 0 then
+        globals.gamepadCheck[k] = nil
+      end
+    end
+  end
+  if love.keyboard then
+    for k, v in pairs(globals.keyboardCheck) do
+      globals.keyboardCheck[k] = globals.keyboardCheck[k] - 1
+      if globals.keyboardCheck[k] < 0 then
+        globals.keyboardCheck[k] = nil
       end
     end
   end
