@@ -5,9 +5,9 @@ megautils.cleanFuncs = {}
 
 function megautils.runFile(path, ignoreGamePath)
   if ignoreGamePath then
-    love.filesystem.load(path)()
+    return love.filesystem.load(path)()
   else
-    love.filesystem.load(gamePath .. "/" .. path)()
+    return love.filesystem.load(gamePath .. "/" .. path)()
   end
 end
 
