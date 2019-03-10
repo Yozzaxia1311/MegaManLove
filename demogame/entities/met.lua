@@ -10,7 +10,7 @@ function met:new(x, y, s)
   met.super.new(self)
   self.added = function(self)
     self:addToGroup("hurtable")
-    self:addToGroup("removeOnCutscene")
+    self:addToGroup("removeOnTransition")
     self:addToGroup("freezable")
   end
   self.transform.y = y
@@ -132,7 +132,7 @@ function metBullet:new(x, y, vx, vy)
   self.tex = loader.get("demo_objects")
   self.quad = love.graphics.newQuad(68, 0, 6, 6, 100, 100)
   self:addToGroup("freezable")
-  self:addToGroup("removeOnCutscene")
+  self:addToGroup("removeOnTransition")
   self.velocity = velocity()
   self.velocity.velx = vx
   self.velocity.vely = vy

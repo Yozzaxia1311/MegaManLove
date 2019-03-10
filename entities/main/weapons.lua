@@ -6,7 +6,7 @@ function megaBuster:new(x, y, dir, wpn)
     self:addToGroup("megaBuster")
     self:addToGroup("megaBuster" .. wpn.id)
     self:addToGroup("freezable")
-    self:addToGroup("removeOnCutscene")
+    self:addToGroup("removeOnTransition")
   end
   self.transform.y = y
   self.transform.x = x
@@ -49,7 +49,7 @@ function megaSemiBuster:new(x, y, dir, wpn)
     self:addToGroup("megaBuster")
     self:addToGroup("megaBuster" .. wpn.id)
     self:addToGroup("freezable")
-    self:addToGroup("removeOnCutscene")
+    self:addToGroup("removeOnTransition")
   end
   self.transform.y = y
   self.transform.x = x
@@ -97,7 +97,7 @@ function megaChargedBuster:new(x, y, dir, wpn)
     self:addToGroup("megaChargedBuster")
     self:addToGroup("megaChargedBuster" .. wpn.id)
     self:addToGroup("freezable")
-    self:addToGroup("removeOnCutscene")
+    self:addToGroup("removeOnTransition")
   end
   self.tex = loader.get("buster_tex")
   self.anim = anim8.newAnimation(loader.get("charge_grid")("1-4", 1), 1/20)
@@ -145,7 +145,7 @@ function rushJet:new(x, y, side, w)
   self.added = function(self)
     self:addToGroup("rush")
     self:addToGroup("freezable")
-    self:addToGroup("removeOnCutscene")
+    self:addToGroup("removeOnTransition")
   end
   self.transform.x = x
   self.transform.y = view.y-8
@@ -320,7 +320,7 @@ function rushCoil:new(x, y, side, w)
   self.added = function(self)
     self:addToGroup("rush")
     self:addToGroup("freezable")
-    self:addToGroup("removeOnCutscene")
+    self:addToGroup("removeOnTransition")
   end
   self.transform.x = x
   self.transform.y = view.y-16
@@ -450,7 +450,7 @@ function stickWeapon:new(x, y, dir, wpn)
   self.added = function(self)
     self:addToGroup("stickWeapon")
     self:addToGroup("freezable")
-    self:addToGroup("removeOnCutscene")
+    self:addToGroup("removeOnTransition")
   end
   self.transform.y = y
   self.transform.x = x

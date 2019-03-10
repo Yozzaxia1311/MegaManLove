@@ -63,8 +63,10 @@ function bossdoor:update(dt)
             globals.allPlayers[j].doAnimation = false
           end
           megautils.freeze(globals.allPlayers)
-          for k, v in pairs(megautils.groups()["removeOnCutscene"] or {}) do
-            megautils.remove(v, true)
+          if megautils.groups()["removeOnTransition"] ~= nil then
+            for k, v in pairs(megautils.groups()["removeOnTransition"]) do
+              megautils.remove(v, true)
+            end
           end
         end
       end

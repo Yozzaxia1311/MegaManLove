@@ -13,7 +13,7 @@ function moveAcrossPlatform:new(x, y, toX, toY, s)
   moveAcrossPlatform.super.new(self)
   self.added = function(self)
     self:addToGroup("freezable")
-    self:addToGroup("removeOnCutscene")
+    self:addToGroup("removeOnTransition")
   end
   self.transform.x = x
   self.transform.y = y

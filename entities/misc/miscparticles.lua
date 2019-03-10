@@ -4,7 +4,7 @@ function slideParticle:new(x, y, side)
   slideParticle.super.new(self)
   self.added = function(self)
     self:addToGroup("freezable")
-    self:addToGroup("removeOnCutscene")
+    self:addToGroup("removeOnTransition")
   end
   self.transform.y = y
   self.transform.x = x
@@ -40,7 +40,7 @@ function damageSteam:new(x, y)
   damageSteam.super.new(self)
   self.added = function(self)
     self:addToGroup("freezable")
-    self:addToGroup("removeOnCutscene")
+    self:addToGroup("removeOnTransition")
   end
   self.transform.y = y
   self.transform.x = x
@@ -70,7 +70,7 @@ function airBubble:new(x, y)
   airBubble.super.new(self)
   self.added = function(self)
     self:addToGroup("freezable")
-    self:addToGroup("removeOnCutscene")
+    self:addToGroup("removeOnTransition")
   end
   self.transform.y = y
   self.transform.x = x
@@ -114,7 +114,7 @@ function kickParticle:new(x, y, side)
   kickParticle.super.new(self)
   self.added = function(self)
     self:addToGroup("freezable")
-    self:addToGroup("removeOnCutscene")
+    self:addToGroup("removeOnTransition")
   end
   self.transform.y = y
   self.transform.x = x
@@ -162,7 +162,7 @@ function angleParticle:new(x, y, a)
   angleParticle.super.new(self)
   self.added = function(self)
     self:addToGroup("freezable")
-    self:addToGroup("removeOnCutscene")
+    self:addToGroup("removeOnTransition")
   end
   self.transform.y = y
   self.transform.x = x
@@ -203,7 +203,7 @@ function harm:new(e)
   harm.super.new(self)
   self.added = function(self)
     self:addToGroup("freezable")
-    self:addToGroup("removeOnCutscene")
+    self:addToGroup("removeOnTransition")
   end
   self.follow = e
   self.transform.x = (self.follow.transform.x+self.follow.collisionShape.w/2)-24/2
@@ -240,7 +240,7 @@ function explodeParticle:new(x, y, angle, spd)
   explodeParticle.super.new(self)
   self.added = function(self)
     self:addToGroup("freezable")
-    self:addToGroup("removeOnCutscene")
+    self:addToGroup("removeOnTransition")
   end
   self.transform.y = y
   self.transform.x = x
@@ -279,7 +279,7 @@ function absorbParticle:new(x, y, towards, spd)
   explodeParticle.super.new(self)
   self.added = function(self)
     self:addToGroup("freezable")
-    self:addToGroup("removeOnCutscene")
+    self:addToGroup("removeOnTransition")
   end
   self.transform.y = y
   self.transform.x = x
@@ -325,7 +325,7 @@ function absorb:new(towards, times, spd)
   absorb.super.new(self)
   self.added = function(self)
     self:addToGroup("freezable")
-    self:addToGroup("removeOnCutscene")
+    self:addToGroup("removeOnTransition")
   end
   self.timer = 60
   self.times = 0
@@ -353,7 +353,7 @@ function smallBlast:new(x, y, spd)
   smallBlast.super.new(self)
   self.added = function(self)
     self:addToGroup("freezable")
-    self:addToGroup("removeOnCutscene")
+    self:addToGroup("removeOnTransition")
   end
   self.transform.y = y
   self.transform.x = x
@@ -380,7 +380,7 @@ function blast:new(x, y, times)
   blast.super.new(self)
   self.added = function(self)
     self:addToGroup("freezable")
-    self:addToGroup("removeOnCutscene")
+    self:addToGroup("removeOnTransition")
   end
   self.transform.y = y
   self.transform.x = x

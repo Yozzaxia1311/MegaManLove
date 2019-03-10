@@ -97,8 +97,8 @@ function camera:updateCam()
       view.x, view.y = math.round(camera.main.transform.x), math.round(camera.main.transform.y)
       camera.main:updateFuncs()
     elseif not self.once then
-      if megautils.groups()["removeOnCutscene"] ~= nil then
-        for k, v in pairs(megautils.groups()["removeOnCutscene"]) do
+      if megautils.groups()["removeOnTransition"] ~= nil then
+        for k, v in pairs(megautils.groups()["removeOnTransition"]) do
           if not v.dontRemove then
             megautils.remove(v, true)
           end

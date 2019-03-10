@@ -3,7 +3,7 @@ splash = entity:extend()
 function splash:new(offx, offy, follow, side)
   splash.super.new(self)
   self.added = function(self)
-    self:addToGroup("removeOnCutscene")
+    self:addToGroup("removeOnTransition")
     self:addToGroup("freezable")
   end
   self.offx = offx

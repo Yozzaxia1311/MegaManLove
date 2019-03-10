@@ -7,10 +7,24 @@ function entitysystem:new()
   self.updates = {}
   self.groups = {}
   self.static = {}
+  self.layers = {}
   self.addQueue = nil
   self.removeQueue = nil
-  self.last = 0
-  self.first = 0
+  self.doSort = false
+end
+
+function entitysystem:sortLayers()
+  local keys = {}
+  local vals = {}
+  for k, v in pairs(self.entities) do
+    keys[#keys+1] = v.layer
+    vals[v.layer] = v
+    self.entities[k] = nil
+  end
+  table.sort(keys)
+  for i=1, #keys do
+    self.entities[i] = vals[keys[i]]
+  end
 end
 
 function entitysystem:add(e, queue)
@@ -22,11 +36,22 @@ function entitysystem:add(e, queue)
     end
   else
     if not e.static then
-      if self.entities[e.layer] == nil then self.entities[e.layer] = {} end
-      self.entities[e.layer][#self.entities[e.layer]+1] = e
+      local done = false
+      for k, v in pairs(self.entities) do
+        if v.layer == e.layer then
+          v.data[#v.data+1] = e
+          e.actualLayer = v
+          done = true
+          break
+        end
+      end
+      if not done then
+        self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}}
+        e.actualLayer = self.entities[#self.entities]
+        e.layer = e.actualLayer.layer
+        self.doSort = true
+      end
       self.updates[#self.updates+1] = e
-      if self.last < e.layer then self.last = e.layer end
-      if self.first > e.layer then self.first = e.layer end
     end
     e.isRemoved = false
     e.isAdded = true
@@ -49,7 +74,7 @@ end
 
 function entitysystem:addStatic(e)
   table.removevaluearray(self.updates, e)
-  table.removevaluearray(self.entities[e.layer], e)
+  table.removevaluearray(e.actualLayer.data, e)
   self.static[#self.static+1] = e
   e.static = true
 end
@@ -57,22 +82,44 @@ end
 function entitysystem:removeStatic(e)
   if e.static then
     table.removevaluearray(self.static, e)
-    if self.entities[e.layer] == nil then self.entities[e.layer] = {} end
-    self.entities[e.layer][#self.entities[e.layer]+1] = e
+    local done = false
+    for k, v in pairs(self.entities) do
+      if v.layer == e.layer then
+        v.data[#v.data+1] = e
+        e.actualLayer = v
+        done = true
+        break
+      end
+    end
+    if not done then
+      self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}}
+      e.actualLayer = self.entities[#self.entities]
+      e.layer = e.actualLayer.layer
+      self.doSort = true
+    end
     self.updates[#self.updates+1] = e
-    if self.last < e.layer then self.last = e.layer end
-    if self.first > e.layer then self.first = e.layer end
     e.static = false
   end
 end
 
 function entitysystem:setLayer(e, l)
-  table.removevaluearray(self.entities[e.layer], e)
+  table.removevaluearray(e.actualLayer.data, e)
   e.layer = l
-  if self.entities[e.layer] == nil then self.entities[e.layer] = {} end
-  self.entities[e.layer][#self.entities[e.layer]+1] = e
-  if self.last < e.layer then self.last = e.layer end
-  if self.first > e.layer then self.first = e.layer end
+  local done = false
+  for k, v in pairs(self.entities) do
+    if v.layer == e.layer then
+      v.data[#v.data+1] = e
+      e.actualLayer = v
+      done = true
+      break
+    end
+  end
+  if not done then
+    self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}}
+    e.actualLayer = self.entities[#self.entities]
+    e.layer = e.actualLayer.layer
+    self.doSort = true
+  end
 end
 
 function entitysystem:remove(e, queue)
@@ -87,7 +134,7 @@ function entitysystem:remove(e, queue)
     e:removed()
     e:removeFromAllGroups()
     e:removeStatic()
-    table.removevaluearray(self.entities[e.layer], e)
+    table.removevaluearray(e.actualLayer.data, e)
     table.removevaluearray(self.updates, e)
     e.isAdded = false
   end
@@ -105,19 +152,17 @@ function entitysystem:clear()
 end
 
 function entitysystem:draw()
-  for i=self.first, self.last, 1 do
-    if self.entities[i] ~= nil then
-      for k=1, #self.entities[i] do
-        local v = self.entities[i][k]
-        if v.render and v.flashRender and not v.isRemoved then
-          if states.switched then
-            return
-          end
-          v:draw()
-          love.graphics.setColor(1, 1, 1, 1)
-          if entitysystem.drawCollision then
-            v:drawCollision()
-          end
+  for i=1, #self.entities do
+    for k=1, #self.entities[i].data do
+      local v = self.entities[i].data[k]
+      if v.render and v.flashRender and not v.isRemoved then
+        if states.switched then
+          return
+        end
+        v:draw()
+        love.graphics.setColor(1, 1, 1, 1)
+        if entitysystem.drawCollision then
+          v:drawCollision()
         end
       end
     end
@@ -157,6 +202,10 @@ function entitysystem:update(dt)
       self:remove(v)
     end
     self.removeQueue = nil
+  end
+  if self.doSort then
+    self.doSort = false
+    self:sortLayers()
   end
 end
 
