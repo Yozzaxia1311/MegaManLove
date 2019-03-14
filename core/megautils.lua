@@ -226,7 +226,6 @@ megautils.resetGameObjectsFuncs = {}
 function megautils.resetGameObjects()
   globals.mainPlayer = nil
   globals.allPlayers = {}
-  healthhandler.playerTimers = {-2, -2, -2, -2}
   globals.manageStageResources = true
   globals.checkpoint = "start"
   globals.lives = ternary(globals.lives > 2, globals.lives, 2)
