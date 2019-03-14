@@ -1,6 +1,10 @@
 healthhandler = entity:extend()
 
-healthhandler.playerTimers = {-2, -2, -2, -2}
+healthhandler.playerTimers = {}
+
+for i=1, maxPlayerCount do
+  healthhandler.playerTimers[i] = -2
+end
 
 function healthhandler:new(colorOne, colorTwo, colorOutline, side, r, segments, player)
   healthhandler.super.new(self)
