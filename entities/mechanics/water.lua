@@ -18,7 +18,7 @@ end
 
 function splash:update(dt)
   self.anim:update(1/60)
-  if self.follow ~= nil then
+  if self.follow then
     self.transform.x = self.follow.transform.x + self.offx
     self.transform.y = self.follow.transform.y + self.offy
   end
@@ -52,7 +52,7 @@ function water:new(x, y, w, h)
 end
 
 function water:removed()
-  if megautils.groups()["submergable"] ~= nil and self.current then
+  if megautils.groups()["submergable"] and self.current then
     for k, v in ipairs(megautils.groups()["submergable"]) do
       v.isInWater = #v:collisionTable(megautils.groups()["water"]) ~= 0
       if not v.isInWater then
@@ -65,7 +65,7 @@ function water:removed()
 end
 
 function water:update(dt)
-  if megautils.groups()["submergable"] ~= nil then
+  if megautils.groups()["submergable"] then
     for k, v in ipairs(megautils.groups()["submergable"]) do
       if v:collision(self) and not v.isInWater then
         self.current = true

@@ -51,7 +51,7 @@ function disclaimer:update()
   if control.startPressed[1] and self.check then
     megautils.gotoState("states/menus/menustate.lua")
     self.updated = false
-  elseif globals.lastKeyPressed ~= nil and globals.lastKeyPressed[1] == "escape" and self.check then
+  elseif globals.lastKeyPressed and globals.lastKeyPressed[1] == "escape" and self.check then
     globals.lastKeyPressed = nil
     globals.sendBackToDisclaimer = true
     megautils.gotoState("states/menus/rebindstate.lua")

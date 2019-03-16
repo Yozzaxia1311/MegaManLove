@@ -109,7 +109,7 @@ function megautils.load()
 end
 
 function megautils.update(self, dt)
-  if mmMusic.cur ~= nil then
+  if mmMusic.cur then
     mmMusic.cur:update()
   end
   self.system:update(dt)
@@ -165,7 +165,7 @@ function megautils.loadStage(self, path, call, ignoreGamePath)
   end
   for k, v in pairs(tLayers) do
     local l = mapentity(v.name, map)
-    if call ~= nil then call(l) end
+    if call then call(l) end
     megautils.add(l)
   end
   addobjects.add(objs)
@@ -178,10 +178,10 @@ end
 
 function megautils.gotoState(s, before, after, chunk, ignoreGamePath)
   megautils.add(fade(true, nil, nil, function(se)
-        if before ~= nil then before() end
+        if before then before() end
         megautils.remove(se)
         states.set(s, chunk, ignoreGamePath)
-        if after ~= nil then after() end
+        if after then after() end
       end))
 end
 
@@ -267,9 +267,9 @@ megautils.frozen = {}
 
 function megautils.freeze(e, name)
   for k, v in pairs(megautils.groups()["freezable"] or {}) do
-    if e == nil or not table.contains(e, v) then
+    if not e or not table.contains(e, v) then
       megautils.frozen[#megautils.frozen+1] = v
-      if name ~= nil and v.otherUpdates[name] ~= nil then
+      if name and v.otherUpdates[name] then
         v.otherUpdates[name] = false
       else
         v.updated = false
@@ -279,9 +279,9 @@ function megautils.freeze(e, name)
 end
 function megautils.unfreeze(e, name)
   for k, v in pairs(megautils.groups()["freezable"] or {}) do
-    if e == nil or not table.contains(e, v) then
+    if not e or not table.contains(e, v) then
       table.removevalue(megautils.frozen, v)
-      if name ~= nil and v.otherUpdates[name] ~= nil then
+      if name and v.otherUpdates[name] then
         v.otherUpdates[name] = true
       else
         v.updated = true
@@ -291,10 +291,10 @@ function megautils.unfreeze(e, name)
 end
 
 function megautils.outside(o)
-  if o.collisionShape == nil then
+  if not o.collisionShape then
     return false
   end
-  if camera.main ~= nil and not camera.main.isRemoved then
+  if camera.main and not camera.main.isRemoved then
     return not o:collision(camera.main)
   end
   return not rectOverlaps(view.x, view.y, view.w, view.h, 
@@ -302,7 +302,7 @@ function megautils.outside(o)
 end
 
 function megautils.outsideSection(o)
-  if o.collisionShape ~= nil and camera.main ~= nil and not camera.main.isRemoved then
+  if o.collisionShape and camera.main and not camera.main.isRemoved then
     return not rectOverlaps(camera.main.scrollx, camera.main.scrolly, camera.main.scrollw, camera.main.scrollh, 
       o.transform.x, o.transform.y, o.collisionShape.w, o.collisionShape.h)
   end

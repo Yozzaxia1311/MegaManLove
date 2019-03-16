@@ -102,14 +102,14 @@ function weaponhandler:update(dt)
       mmSfx.stop("heal")
     end
   end
-  if self.energy[self.currentSlot] ~= nil and self.segments[self.currentSlot] ~= nil then
+  if self.energy[self.currentSlot] and self.segments[self.currentSlot] then
     self.energy[self.currentSlot] = math.clamp(self.energy[self.currentSlot], 0, self.segments[self.currentSlot]*4)
   end
 end
 
 function weaponhandler:draw(x, y)
   love.graphics.setColor(1, 1, 1, 1)
-  if self.currentSlot == 0 and self.energy[self.currentSlot] ~= nil then return end
+  if self.currentSlot == 0 and self.energy[self.currentSlot] then return end
   local curSeg = math.ceil(self.energy[self.currentSlot]/4)
   for i=1, self.segments[self.currentSlot] do
     local bit = 0

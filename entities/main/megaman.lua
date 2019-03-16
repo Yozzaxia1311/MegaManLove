@@ -22,7 +22,7 @@ megaman.colorOne = {}
 megaman.colorTwo = {}
 
 addobjects.register("player_one", function(v)
-  if (v.properties["spawnCamera"] == nil or v.properties["spawnCamera"]) and
+  if (not v.properties["spawnCamera"] or v.properties["spawnCamera"]) and
     v.properties["checkpoint"] == globals.checkpoint then
     megautils.add(camera(v.x, v.y, v.properties["doScrollX"], v.properties["doScrollY"]))
     camera.once = false
@@ -30,7 +30,7 @@ addobjects.register("player_one", function(v)
 end, -1)
 
 addobjects.register("player_one", function(v)
-  if (v.properties["spawnCamera"] == nil or v.properties["spawnCamera"]) and
+  if (not v.properties["spawnCamera"] or v.properties["spawnCamera"]) and
     v.properties["checkpoint"] == globals.checkpoint and not camera.once and camera.main then
     camera.once = true
     camera.main:setRectangleCollision(8, 8)
@@ -309,11 +309,11 @@ function megaman:new(x, y, side, drop, p)
   megautils.add(self.healthHandler)
   self.health = self.healthHandler.health
   self.healthHandler:updateThis()
-  if camera.main.funcs["megaman"] == nil then
+  if not camera.main.funcs["megaman"] then
     camera.main.funcs["megaman"] = function(s)
       for i=0, #globals.allPlayers-1 do
         local player = globals.allPlayers[i+1]
-        if player ~= nil then
+        if player then
           player.healthHandler.render = not player.drop
           player.healthHandler.transform.x = view.x+24 + (i*32)
           player.healthHandler.transform.y = view.y+80
@@ -448,18 +448,18 @@ function megaman:attemptWeaponUsage()
   local w = megaman.weaponHandler[self.player]
   if control.shootPressed[self.player] then
     if (w.current == "megaBuster" or w.current == "rushJet" or w.current == "rushCoil")
-    and (megautils.groups()["megaBuster" .. w.id] == nil or
-    #megautils.groups()["megaBuster" .. w.id] < self.maxNormalBusterShots) and (megautils.groups()["megaChargedBuster" .. w.id] == nil or
+    and (not megautils.groups()["megaBuster" .. w.id] or
+    #megautils.groups()["megaBuster" .. w.id] < self.maxNormalBusterShots) and (not megautils.groups()["megaChargedBuster" .. w.id] or
     #megautils.groups()["megaChargedBuster" .. w.id] == 0) then
       if w.current == "rushCoil" and w.energy[w.currentSlot] > 0 and
-      (megautils.groups()["rush"] == nil or #megautils.groups()["rush"] < 1) then
+      (not megautils.groups()["rush"] or #megautils.groups()["rush"] < 1) then
         megautils.add(rushCoil(self.transform.x+(self.side==1 and 18 or -32),
           self.transform.y, self.side, w))
         self.maxShootTime = 14
         self.shootTimer = 0
         self:useShootAnimation()
       elseif w.current == "rushJet" and w.energy[w.currentSlot] > 0 and
-      (megautils.groups()["rush"] == nil or #megautils.groups()["rush"] < 1) then
+      (not megautils.groups()["rush"] or #megautils.groups()["rush"] < 1) then
         megautils.add(rushJet(self.transform.x+(self.side==1 and 18 or -32),
             self.transform.y+6, self.side, w))
         self.maxShootTime = 14
@@ -485,7 +485,7 @@ function megaman:attemptWeaponUsage()
         self:useShootAnimation()
       end
     elseif w.current == "babyRattle" and w.energy[w.currentSlot] > 0 and
-      (megautils.groups()[w.current .. w.id] == nil or
+      (not megautils.groups()[w.current .. w.id] or
         #megautils.groups()[w.current .. w.id] < 1) and self.shootTimer == self.maxShootTime then
       megautils.add(babyRattle(self, -30, -4, 6, -4, function(s)
         if self.curAnim == "runThrow" or self.curAnim == "jumpThrow" or 
@@ -506,7 +506,7 @@ function megaman:attemptWeaponUsage()
       self.stopOnShot = true
       self:useThrowAnimation()
     elseif w.current == "stickWeapon" and w.energy[w.currentSlot] > 0 and
-      (megautils.groups()[w.current .. w.id] == nil or
+      (not megautils.groups()[w.current .. w.id] or
         #megautils.groups()[w.current .. w.id] < 1) and self.shootTimer == self.maxShootTime then
       megautils.add(stickWeapon(self.transform.x+(self.side==1 and 17 or -14), 
         self.slide and self.transform.y+3 or self.transform.y+6, self.side, w))
@@ -1063,9 +1063,9 @@ function megaman:resetCharge()
   self.chargeFrame = 1
   self.chargeTimer = 0
   self.chargeTimer2 = 0
-  if self.chargeColorOutlines[megaman.weaponHandler[self.player].current] ~= nil
-   and self.chargeColorOnes[megaman.weaponHandler[self.player].current] ~= nil
-    and self.chargeColorTwos[megaman.weaponHandler[self.player].current] ~= nil then
+  if self.chargeColorOutlines[megaman.weaponHandler[self.player].current]
+   and self.chargeColorOnes[megaman.weaponHandler[self.player].current]
+    and self.chargeColorTwos[megaman.weaponHandler[self.player].current] then
     megaman.colorOutline[self.player] = self.chargeColorOutlines[megaman.weaponHandler[self.player].current][self.chargeState][self.chargeFrame]
     megaman.colorOne[self.player] = self.chargeColorOnes[megaman.weaponHandler[self.player].current][self.chargeState][self.chargeFrame]
     megaman.colorTwo[self.player] = self.chargeColorTwos[megaman.weaponHandler[self.player].current][self.chargeState][self.chargeFrame]
@@ -1074,16 +1074,16 @@ function megaman:resetCharge()
 end
 
 function megaman:charge(animOnly)
-  if self.chargeColorOutlines[megaman.weaponHandler[self.player].current] ~= nil then
+  if self.chargeColorOutlines[megaman.weaponHandler[self.player].current] then
     self.chargeTimer2 = math.min(self.chargeTimer2+1, 4)
-    if self.chargeTimer2 == 4 and self.chargeColorOutlines[megaman.weaponHandler[self.player].current] ~= nil
-    and self.chargeColorOnes[megaman.weaponHandler[self.player].current] ~= nil
-      and self.chargeColorTwos[megaman.weaponHandler[self.player].current] ~= nil then
+    if self.chargeTimer2 == 4 and self.chargeColorOutlines[megaman.weaponHandler[self.player].current]
+    and self.chargeColorOnes[megaman.weaponHandler[self.player].current]
+      and self.chargeColorTwos[megaman.weaponHandler[self.player].current] then
       self.chargeTimer2 = 0
       self.chargeFrame = math.wrap(self.chargeFrame+1, 1,
         table.length(self.chargeColorOutlines[megaman.weaponHandler[self.player].current][self.chargeState]))
     end
-    if animOnly == nil or not animOnly then
+    if not animOnly then
       self.chargeTimer = math.min(self.chargeTimer+1, self.maxChargeTime)
     end
     if self.chargeTimer == self.maxChargeTime and self.chargeState <
@@ -1098,9 +1098,9 @@ function megaman:charge(animOnly)
           table.length(self.chargeColorOutlines[megaman.weaponHandler[self.player].current])-1)
       end
     end
-    if self.chargeColorOutlines[megaman.weaponHandler[self.player].current] ~= nil
-    and self.chargeColorOnes[megaman.weaponHandler[self.player].current] ~= nil
-      and self.chargeColorTwos[megaman.weaponHandler[self.player].current] ~= nil then
+    if self.chargeColorOutlines[megaman.weaponHandler[self.player].current]
+    and self.chargeColorOnes[megaman.weaponHandler[self.player].current]
+      and self.chargeColorTwos[megaman.weaponHandler[self.player].current] then
       megaman.colorOutline[self.player] = self.chargeColorOutlines[megaman.weaponHandler[self.player].current][self.chargeState][self.chargeFrame]
       megaman.colorOne[self.player] = self.chargeColorOnes[megaman.weaponHandler[self.player].current][self.chargeState][self.chargeFrame]
       megaman.colorTwo[self.player] = self.chargeColorTwos[megaman.weaponHandler[self.player].current][self.chargeState][self.chargeFrame]
@@ -1151,12 +1151,12 @@ function megaman:updatePallete()
     megaman.colorOne[self.player] = megaman.weaponHandler[self.player].colorOne[0]
     megaman.colorTwo[self.player] = megaman.weaponHandler[self.player].colorTwo[0]
     local w = math.wrap(megaman.weaponHandler[self.player].currentSlot+1, 0, megaman.weaponHandler[self.player].slotSize)
-    while megaman.weaponHandler[self.player].weapons[w] == nil do
+    while not megaman.weaponHandler[self.player].weapons[w] do
       w = math.wrap(w+1, 0, megaman.weaponHandler[self.player].slotSize)
     end
     self.nextWeapon = w
     w = math.wrap(megaman.weaponHandler[self.player].currentSlot-1, 0, megaman.weaponHandler[self.player].slotSize)
-    while megaman.weaponHandler[self.player].weapons[w] == nil do
+    while not megaman.weaponHandler[self.player].weapons[w] do
       w = math.wrap(w-1, 0, megaman.weaponHandler[self.player].slotSize)
     end
     self.prevWeapon = w
@@ -1166,7 +1166,7 @@ function megaman:updatePallete()
   elseif control.nextPressed[self.player] and not control.prevDown[self.player] then
     self.prevWeapon = megaman.weaponHandler[self.player].currentSlot
     local w = math.wrap(megaman.weaponHandler[self.player].currentSlot+1, 0, megaman.weaponHandler[self.player].slotSize)
-    while megaman.weaponHandler[self.player].weapons[w] == nil do
+    while not megaman.weaponHandler[self.player].weapons[w] do
       w = math.wrap(w+1, 0, megaman.weaponHandler[self.player].slotSize)
     end
     megaman.weaponHandler[self.player]:switch(w)
@@ -1174,7 +1174,7 @@ function megaman:updatePallete()
     megaman.colorOne[self.player] = megaman.weaponHandler[self.player].colorOne[w]
     megaman.colorTwo[self.player] = megaman.weaponHandler[self.player].colorTwo[w]
     w = math.wrap(megaman.weaponHandler[self.player].currentSlot+1, 0, megaman.weaponHandler[self.player].slotSize)
-    while megaman.weaponHandler[self.player].weapons[w] == nil do
+    while not megaman.weaponHandler[self.player].weapons[w] do
       w = math.wrap(w+1, 0, megaman.weaponHandler[self.player].slotSize)
     end
     self.nextWeapon = w
@@ -1184,7 +1184,7 @@ function megaman:updatePallete()
   elseif control.prevPressed[self.player] and not control.nextDown[self.player] then
     self.nextWeapon = megaman.weaponHandler[self.player].currentSlot
     local w = math.wrap(megaman.weaponHandler[self.player].currentSlot-1, 0, megaman.weaponHandler[self.player].slotSize)
-    while megaman.weaponHandler[self.player].weapons[w] == nil do
+    while not megaman.weaponHandler[self.player].weapons[w] do
       w = math.wrap(w-1, 0, megaman.weaponHandler[self.player].slotSize)
     end
     megaman.weaponHandler[self.player]:switch(w)
@@ -1192,7 +1192,7 @@ function megaman:updatePallete()
     megaman.colorOne[self.player] = megaman.weaponHandler[self.player].colorOne[w]
     megaman.colorTwo[self.player] = megaman.weaponHandler[self.player].colorTwo[w]
     w = math.wrap(megaman.weaponHandler[self.player].currentSlot-1, 0, megaman.weaponHandler[self.player].slotSize)
-    while megaman.weaponHandler[self.player].weapons[w] == nil do
+    while not megaman.weaponHandler[self.player].weapons[w] do
       w = math.wrap(w-1, 0, megaman.weaponHandler[self.player].slotSize)
     end
     self.prevWeapon = w

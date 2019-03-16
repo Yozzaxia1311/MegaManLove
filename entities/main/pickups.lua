@@ -82,7 +82,7 @@ function smallHealth:update(dt)
 end
 
 function smallHealth:removed()
-  if self.spawner ~= nil then
+  if self.spawner then
     self.spawner.canSpawn = true
   end
 end
@@ -90,7 +90,7 @@ end
 function smallHealth:draw()
   love.graphics.setColor(1, 1, 1, 1)
   self.anim:draw(self.t, math.round(self.transform.x), math.round(self.transform.y))
-  if globals.mainPlayer ~= nil then
+  if globals.mainPlayer then
     love.graphics.setColor(megaman.colorOutline[globals.mainPlayer.player][1]/255, megaman.colorOutline[globals.mainPlayer.player][2]/255,
       megaman.colorOutline[globals.mainPlayer.player][3]/255, 1)
     self.anim:draw(self.tOutline, math.round(self.transform.x), math.round(self.transform.y))
@@ -184,7 +184,7 @@ function health:update(dt)
 end
 
 function health:removed()
-  if self.spawner ~= nil then
+  if self.spawner then
     self.spawner.canSpawn = true
   end
 end
@@ -192,7 +192,7 @@ end
 function health:draw()
   love.graphics.setColor(1, 1, 1, 1)
   self.anim:draw(self.t, math.round(self.transform.x), math.round(self.transform.y))
-  if globals.mainPlayer ~= nil then
+  if globals.mainPlayer then
     love.graphics.setColor(megaman.colorOutline[globals.mainPlayer.player][1]/255, megaman.colorOutline[globals.mainPlayer.player][2]/255,
       megaman.colorOutline[globals.mainPlayer.player][3]/255, 1)
     self.anim:draw(self.tOutline, math.round(self.transform.x), math.round(self.transform.y))
@@ -288,13 +288,13 @@ function smallEnergy:update(dt)
 end
 
 function smallEnergy:removed()
-  if self.spawner ~= nil then
+  if self.spawner then
     self.spawner.canSpawn = true
   end
 end
 
 function smallEnergy:draw()
-  if globals.mainPlayer ~= nil then
+  if globals.mainPlayer then
     love.graphics.setColor(megaman.colorTwo[globals.mainPlayer.player][1]/255, megaman.colorTwo[globals.mainPlayer.player][2]/255,
       megaman.colorTwo[globals.mainPlayer.player][3]/255, 1)
     self.anim:draw(self.texTwo, math.round(self.transform.x), math.round(self.transform.y))
@@ -400,13 +400,13 @@ function energy:update(dt)
 end
 
 function energy:removed()
-  if self.spawner ~= nil then
+  if self.spawner then
     self.spawner.canSpawn = true
   end
 end
 
 function energy:draw()
-  if globals.mainPlayer ~= nil then
+  if globals.mainPlayer then
     love.graphics.setColor(megaman.colorTwo[globals.mainPlayer.player][1]/255, megaman.colorTwo[globals.mainPlayer.player][2]/255,
       megaman.colorTwo[globals.mainPlayer.player][3]/255, 1)
     self.anim:draw(self.texTwo, math.round(self.transform.x), math.round(self.transform.y))
@@ -512,13 +512,13 @@ function life:update(dt)
 end
 
 function life:removed()
-  if self.spawner ~= nil then
+  if self.spawner then
     self.spawner.canSpawn = true
   end
 end
 
 function life:draw()
-  if globals.mainPlayer ~= nil then
+  if globals.mainPlayer then
     love.graphics.setColor(megaman.colorTwo[globals.mainPlayer.player][1]/255, megaman.colorTwo[globals.mainPlayer.player][2]/255,
       megaman.colorTwo[globals.mainPlayer.player][3]/255, 1)
     love.graphics.draw(self.texTwo, self.quad, math.round(self.transform.x), math.round(self.transform.y))
@@ -626,13 +626,13 @@ function eTank:update(dt)
 end
 
 function eTank:removed()
-  if self.spawner ~= nil then
+  if self.spawner then
     self.spawner.canSpawn = true
   end
 end
 
 function eTank:draw()
-  if globals.mainPlayer ~= nil then
+  if globals.mainPlayer then
     love.graphics.setColor(megaman.colorTwo[globals.mainPlayer.player][1]/255, megaman.colorTwo[globals.mainPlayer.player][2]/255,
       megaman.colorTwo[globals.mainPlayer.player][3]/255, 1)
     self.anim:draw(self.texTwo, math.round(self.transform.x), math.round(self.transform.y))
@@ -738,13 +738,13 @@ function wTank:update(dt)
 end
 
 function wTank:removed()
-  if self.spawner ~= nil then
+  if self.spawner then
     self.spawner.canSpawn = true
   end
 end
 
 function wTank:draw()
-  if globals.mainPlayer ~= nil then
+  if globals.mainPlayer then
     love.graphics.setColor(megaman.colorTwo[globals.mainPlayer.player][1]/255, megaman.colorTwo[globals.mainPlayer.player][2]/255,
       megaman.colorTwo[globals.mainPlayer.player][3]/255, 1)
     self.anim:draw(self.texTwo, math.round(self.transform.x), math.round(self.transform.y))

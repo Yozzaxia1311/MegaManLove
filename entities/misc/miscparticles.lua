@@ -216,7 +216,7 @@ function harm:new(e)
 end
 
 function harm:update(dt)
-  if self.follow == nil or self.follow.isRemoved then
+  if not self.follow or self.follow.isRemoved then
     megautils.remove(self, true)
     return
   end
@@ -294,7 +294,7 @@ function absorbParticle:new(x, y, towards, spd)
 end
 
 function absorbParticle:update(dt)
-  if self.towards ~= nil and not self.towards.isRemoved then
+  if self.towards and not self.towards.isRemoved then
     self.transform.x = math.lerp(self.startX, self.towards.transform.x, self.pos)
     self.transform.y = math.lerp(self.startY, self.towards.transform.y, self.pos)
     self.pos = math.min(self.pos+(self.spd/view.w), 1)

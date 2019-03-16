@@ -18,7 +18,7 @@ function solid:new(x, y, w, h)
 end
 
 function solid.blockFromGroup(self, group, x, y)
-  if group ~= nil and #group ~= 0 then
+  if group and #group ~= 0 then
     local tmp = self:collisionTable(group, 0, y)
     if #tmp ~= 0 then
       if y > 0 then
@@ -81,13 +81,13 @@ function slope:new(x, y, mask, invert, left)
 end
 
 function slope.blockFromGroup(self, group, x, y)
-  if group ~= nil and #group ~= 0 then
+  if group and #group ~= 0 then
     if not self.onSlope and not self.slopeCeiling then
       self.slope = self:collisionTable(group, 0, y)
-      if self.slope ~= nil and self.slope[1] ~= nil and not self.slope[1].invert then
+      if self.slope and self.slope[1] and not self.slope[1].invert then
         self.slope = self:collisionTable(group, 0, y>=0 and y+1 or -8)
       end
-      if self.slope ~= nil and self.slope[1] ~= nil then
+      if self.slope and self.slope[1] then
         if self.slope[1].invert then
           self.transform.y = self.slope[1].transform.y
           while #self:collisionTable(self.slope) == 0 do
@@ -120,9 +120,9 @@ function slope.blockFromGroup(self, group, x, y)
           self.collisionChecks.ground = true
         end
       end
-    elseif self.onSlope and self.slope ~= nil and self.slope[1] ~= nil then
+    elseif self.onSlope and self.slope and self.slope[1] then
       self.slope = self:collisionTable(group, 0, y>=0 and y+math.abs(x)+4 or y)
-      if self.slope ~= nil and self.slope[1] ~= nil and y >= 0 then
+      if self.slope and self.slope[1] and y >= 0 then
         self.transform.y = self.slope[1].transform.y - self.collisionShape.h
         while #self:collisionTable(self.slope, 0, 1) == 0 do
           self:moveBy(0, 1)
@@ -135,7 +135,7 @@ function slope.blockFromGroup(self, group, x, y)
         if #tmp2 ~= 0 and self.transform.y+(self.collisionShape.h-1)-math.abs(x) < tmp2[1].transform.y then
           self.transform.y = self.slope[1].transform.y - self.collisionShape.h
         end
-      elseif self.slope == nil or #self.slope == 0 then
+      elseif not self.slope or #self.slope == 0 then
         local tmp = self:collisionTable(table.merge({megautils.groups()["solid"],
           oneway.collisionTable(self, megautils.groups()["oneway"], 0, y+math.abs(x)+4)}), 0, y+math.abs(x)+4)
         if #tmp ~= 0 then
@@ -149,7 +149,7 @@ function slope.blockFromGroup(self, group, x, y)
         end
         self.onSlope = false
       end
-    elseif self.slope ~= nil and self.slope[1] ~= nil and self.slopeCeiling then
+    elseif self.slope and self.slope[1] and self.slopeCeiling then
         self.transform.y = self.slope[1].transform.y
         while not self:collision(self.slope[1], 0, -1) do
           self:moveBy(0, -1)
@@ -195,7 +195,7 @@ function oneway:new(x, y, w, h)
 end
 
 function oneway.blockFromGroup(self, group, y)
-  if group ~= nil and #group ~= 0 then
+  if group and #group ~= 0 then
     local tmp = self:collisionTable(group, 0, y)
     if #tmp ~= 0 then
       for k, v in pairs(tmp) do
@@ -211,7 +211,7 @@ function oneway.blockFromGroup(self, group, y)
 end
 
 function oneway.collision(self, e, x, y)
-  if e == nil or self.collisionShape == nil or e.collisionShape == nil then return false end
+  if not e or not self.collisionShape or not e.collisionShape then return false end
   if self.collisionShape.type == 0 then
     if e.collisionShape.type == 0 then
       return self.transform.y < e.transform.y - (self.collisionShape.h - 1) and self:collision(e, x, y)
@@ -230,7 +230,7 @@ end
 
 function oneway.collisionTable(self, t, x, y)
   local result = {}
-  if t == nil then return result end
+  if not t then return result end
   for k, v in pairs(t) do
     if oneway.collision(self, v, x, y) then
       result[#result+1] = v
@@ -242,10 +242,10 @@ end
 movingOneway = {}
 
 function movingOneway.shift(self, group)
-  if self.shifted == nil then self.shifted = {} end
-  if group ~= nil and #group ~= 0 then
+  if not self.shifted then self.shifted = {} end
+  if group and #group ~= 0 then
     for k, v in pairs(group) do
-      if v.velocity ~= nil then
+      if v.velocity then
         if (v.velocity.vely >= math.min(0, self.velocity.vely) and not v:collision(self, 0, self.velocity.vely-1) and
           v:collision(self, 0, self.velocity.vely+v.velocity.vely+1)) then
           v.transform.y = self.transform.y - v.collisionShape.h
@@ -278,13 +278,13 @@ function movingOneway.shift(self, group)
       end
     end
   end
-  if self.isRemoved and self.shifted ~= nil and #self.shifted ~= 0 then
+  if self.isRemoved and self.shifted and #self.shifted ~= 0 then
     movingOneway.clean(self)
   end
 end
 
 function movingOneway.clean(self)
-  if self.shifted ~= nil then
+  if self.shifted then
     for k, v in pairs(self.shifted) do
       v.onMovingFloor = false
     end

@@ -62,7 +62,7 @@ function stickMan:healthChanged(o, c, i)
   self.maxIFrame = 60
   self.iFrame = 0
   if self.health <= 0 then
-    if megautils.groups()["removeOnDefeat"] ~= nil then
+    if megautils.groups()["removeOnDefeat"] then
       for k, v in ipairs(megautils.groups()["removeOnDefeat"]) do
         megautils.remove(v, true)
       end
@@ -103,13 +103,13 @@ function stickMan:update(dt)
         states.set("states/menustate.lua")
       end)
       megautils.remove(self, true)
-    elseif globals.mainPlayer ~= nil and globals.mainPlayer.control then
+    elseif globals.mainPlayer and globals.mainPlayer.control then
       self.s = 1
       globals.mainPlayer.control = false
     end
   elseif self.s == 1 then
     if self.ss == 0 then
-      if globals.mainPlayer ~= nil then
+      if globals.mainPlayer then
         local ly = globals.mainPlayer.velocity.vely
         globals.mainPlayer:resetStates()
         globals.mainPlayer.velocity.vely = ly
@@ -122,7 +122,7 @@ function stickMan:update(dt)
         self.ss = 1
       end
     elseif self.ss == 1 then
-      if globals.mainPlayer ~= nil then
+      if globals.mainPlayer then
         globals.mainPlayer:grav()
         globals.mainPlayer:phys()
         globals.mainPlayer.curAnim = "jump"
@@ -150,7 +150,7 @@ function stickMan:update(dt)
 end
 
 function stickMan:removed()
-  if self.spawner ~= nil then
+  if self.spawner then
     self.spawner.canSpawn = true
   end
 end

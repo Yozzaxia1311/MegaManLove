@@ -7,9 +7,9 @@ function trigger:new(call, drawCall)
 end
 
 function trigger:update(dt)
-  if self.call ~= nil then self.call(self, dt) end
+  if self.call then self.call(self, dt) end
 end
 
 function trigger:draw()
-  if self.drawCall ~= nil then self.drawCall(self) end
+  if self.drawCall then self.drawCall(self) end
 end

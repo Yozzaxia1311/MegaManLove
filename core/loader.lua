@@ -90,7 +90,7 @@ function loader.get(nick)
 end
 
 function loader.unload(nick)
-  if loader.resources[nick] ~= nil then
+  if loader.resources[nick] then
     if loader.resources[nick]:type() == "Source" then
       loader.resources[nick]:stop()
     end

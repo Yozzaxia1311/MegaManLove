@@ -238,7 +238,7 @@ function rushJet:update(dt)
     self:moveBy(self.velocity.velx, self.velocity.vely)
     movingOneway.shift(self, megautils.groups()["carry"])
   elseif self.s == 3 then
-    if self.user ~= nil then
+    if self.user then
       if control.upDown[self.user.player] then
         self.velocity.vely = -1
       elseif control.downDown[self.user.player] and not (self:checkGround() or self.onSlope) then
@@ -266,13 +266,13 @@ function rushJet:update(dt)
     movingOneway.shift(self, megautils.groups()["carry"])
     self.velocity.velx = lvx
     self.velocity.vely = lvy
-    if self.user ~= nil and not self.user:collision(self, 0, 1) then
+    if self.user and not self.user:collision(self, 0, 1) then
       self.user.canWalk = true
       self.user = nil
     end
     if self.collisionChecks.leftWall or self.collisionChecks.rightWall or
-      (self.user ~= nil and self:solid(0, -self.user.collisionShape.h-4)) then
-      if self.user ~= nil then self.user.canWalk = true self.user.onMovingFloor = false end
+      (self.user and self:solid(0, -self.user.collisionShape.h-4)) then
+      if self.user then self.user.canWalk = true self.user.onMovingFloor = false end
       self.c = "spawn_land"
       self.anims["spawn_land"]:gotoFrame(1)
       self.s = 4
@@ -298,7 +298,7 @@ function rushJet:update(dt)
 end
 
 function rushJet:removed()
-  if self.user ~= nil then
+  if self.user then
     self.user.canWalk = true
   end
   movingOneway.clean(self)

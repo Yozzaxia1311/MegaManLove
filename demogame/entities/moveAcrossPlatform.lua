@@ -27,7 +27,7 @@ function moveAcrossPlatform:new(x, y, toX, toY, s)
 end
 
 function moveAcrossPlatform:removed()
-  if self.spawner ~= nil then
+  if self.spawner then
     self.spawner.canSpawn = true
   end
    movingOneway.clean(self)

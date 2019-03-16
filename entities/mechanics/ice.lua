@@ -33,9 +33,9 @@ end
 
 function ice:update(dt)
   if megautils.outside(self) then return end
-  if globals.mainPlayer ~= nil and globals.mainPlayer:collision(self, 0, 1) then
+  if globals.mainPlayer and globals.mainPlayer:collision(self, 0, 1) then
     if not ice.active then
-      if ice.active == nil then
+      if not ice.active then
         ice.init()
       end
       ice.leftDecel = globals.mainPlayer.leftDecel

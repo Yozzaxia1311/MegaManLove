@@ -31,11 +31,11 @@ function states.set(n, s, ignoreGamePath)
 end
 
 function states.update(dt)
-  if states.currentstate == nil then return end
+  if not states.currentstate then return end
   states.currentstate:update(dt)
 end
 
 function states.draw()
-  if states.currentstate == nil then return end
+  if not states.currentstate then return end
   states.currentstate:draw()
 end

@@ -17,10 +17,10 @@ mmMusic.cur = nil
 mmMusic.lock = false
 
 function mmMusic.playFromFile(loop, intro, vol, ignoreGamePath)
-  if mmMusic.lock or (mmMusic.cur ~= nil and mmMusic.cur.id == tostring(loop) .. tostring(intro)) then return end
+  if mmMusic.lock or (mmMusic.cur and mmMusic.cur.id == tostring(loop) .. tostring(intro)) then return end
   mmMusic.stopMusic()
-  if intro ~= nil then
-    if loop ~= nil then
+  if intro then
+    if loop then
       if ignoreGamePath then
         mmMusic.cur = mmMusic(love.audio.newSource(loop, "stream"), love.audio.newSource(intro, "stream"))
       else
@@ -48,7 +48,7 @@ function mmMusic.playFromFile(loop, intro, vol, ignoreGamePath)
 end
 
 function mmMusic.stopMusic()
-  if not mmMusic.lock and mmMusic.cur ~= nil then
+  if not mmMusic.lock and mmMusic.cur then
     mmMusic.cur:pause()
     mmMusic.cur = nil
   end
@@ -62,19 +62,19 @@ function mmMusic:new(path, pathIntro)
 end
 
 function mmMusic:pause()
-  if self.musicLoop ~= nil then
+  if self.musicLoop then
     self.musicLoop:pause()
   end
-  if self.musicIntro ~= nil then
+  if self.musicIntro then
     self.musicIntro:pause()
   end
 end
 
 function mmMusic:setVolume(v)
-  if self.musicLoop ~= nil then
+  if self.musicLoop then
     self.musicLoop:setVolume(v)
   end
-  if self.musicIntro ~= nil then
+  if self.musicIntro then
     self.musicIntro:setVolume(v)
   end
 end
@@ -88,9 +88,9 @@ function mmMusic:stopped()
 end
 
 function mmMusic:unpause()
-  if self.musicLoop ~= nil and self.musicIntro == nil then
+  if self.musicLoop and not self.musicIntro then
     self.musicLoop:resume()
-  elseif self.musicLoop ~= nil and self.musicIntro ~= nil then
+  elseif self.musicLoop and self.musicIntro then
     if not self.musicIntro:isPlaying() then
       self.musicIntro:resume()
     elseif not self.musicLoop:isPlaying() then
@@ -100,19 +100,19 @@ function mmMusic:unpause()
 end
 
 function mmMusic:play(l, v)
-  if self.musicLoop ~= nil and v ~= nil then
+  if self.musicLoop and v then
     self.musicLoop:setVolume(v)
   end
-  if self.musicIntro ~= nil and v ~= nil then
+  if self.musicIntro and v then
     self.musicIntro:setVolume(v)
   end
-  if self.musicIntro == nil then
+  if not self.musicIntro then
     self.musicLoop:play()
     self.musicLoop:setLooping(l == nil and true or l)
     self.current = self.musicLoop
   else
     self.musicIntro:setLooping(false)
-    if self.musicLoop ~= nil then
+    if self.musicLoop then
       self.musicLoop:setLooping(true)
     end
     self.musicIntro:play()
@@ -122,7 +122,7 @@ function mmMusic:play(l, v)
 end
 
 function mmMusic:update()
-  if not self.playingLoop and self.musicIntro ~= nil and not self.musicIntro:isPlaying() and self.musicLoop ~= nil and
+  if not self.playingLoop and self.musicIntro and not self.musicIntro:isPlaying() and self.musicLoop and
       not self.musicLoop:isPlaying() then
     self.musicLoop:play()
     self.playingLoop = true

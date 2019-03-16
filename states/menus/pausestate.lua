@@ -8,7 +8,7 @@ function pausestate:begin()
 end
 
 function pausestate:update(dt)
-  if globals.pauseUpdateFunc ~= nil then
+  if globals.pauseUpdateFunc then
     globals.pauseUpdateFunc(dt)
   end
   megautils.update(self, dt)
@@ -47,7 +47,7 @@ function weaponSelect:new(w, h, p)
   end
   for y=1, #self.list do
     for x=1, #self.list[y] do
-      if self.w.weapons[self.list[y][x]] ~= nil then
+      if self.w.weapons[self.list[y][x]] then
         local h = healthhandler({124, 124, 124}, {188, 188, 188}, {0, 0, 0}, nil, "x", 8)
         if y == 1 and x == 1 then
           h.segments = self.h.segments
@@ -65,7 +65,7 @@ function weaponSelect:new(w, h, p)
         h.gridX = x
         h.gridY = y
         h.id = self.list[y][x]
-        if self.fills[y] == nil then
+        if not self.fills[y] then
           self.fills[y] = {}
         end
         self.fills[y][x] = h
@@ -154,7 +154,7 @@ function weaponSelect:update(dt)
       local ly = self.y
       while true do
         local highSteps = 0
-        while self.fills[self.y+highSteps] == nil or self.fills[self.y+highSteps][self.x] == nil do
+        while not self.fills[self.y+highSteps] or not self.fills[self.y+highSteps][self.x] do
           highSteps = highSteps - 1
           if self.y+highSteps <= 0 then
             highSteps = -42
@@ -162,7 +162,7 @@ function weaponSelect:update(dt)
           end
         end
         local steps = 0
-        while self.fills[self.y+steps] == nil or self.fills[self.y+steps][self.x] == nil do
+        while not self.fills[self.y+steps] or not self.fills[self.y+steps][self.x] do
           steps = steps + 1
           if self.y+steps >= 7 then
             steps = 42
@@ -189,7 +189,7 @@ function weaponSelect:update(dt)
       local ly = self.y
       while true do
         local highSteps = 0
-        while self.fills[self.y+highSteps] == nil or self.fills[self.y+highSteps][self.x] == nil do
+        while not self.fills[self.y+highSteps] or not self.fills[self.y+highSteps][self.x] do
           highSteps = highSteps - 1
           if self.y+highSteps <= 0 then
             highSteps = -42
@@ -197,7 +197,7 @@ function weaponSelect:update(dt)
           end
         end
         local steps = 0
-        while self.fills[self.y+steps] == nil or self.fills[self.y+steps][self.x] == nil do
+        while not self.fills[self.y+steps] or not self.fills[self.y+steps][self.x] do
           steps = steps + 1
           if self.y+steps >= 7 then
             steps = 42
@@ -221,12 +221,12 @@ function weaponSelect:update(dt)
       end
     elseif control.upPressed[self.player] then
       while true do
-        if (self.fills[self.y] == nil or self.fills[self.y][self.x] == nil) and self.y == 1 and self.x == 2 then
+        if (not self.fills[self.y] or not self.fills[self.y][self.x]) and self.y == 1 and self.x == 2 then
           self.x = 1
           break
         end
         self.y = math.clamp(self.y-1, 1, 6)
-        if self.fills[self.y] ~= nil and self.fills[self.y] ~= nil and self.fills[self.y][self.x] ~= nil then
+        if self.fills[self.y] and self.fills[self.y] and self.fills[self.y][self.x] then
           break
         end
       end
@@ -240,7 +240,7 @@ function weaponSelect:update(dt)
          return
         end
         self.y = math.clamp(self.y+1, 1, 6)
-        if self.fills[self.y] ~= nil and self.fills[self.y][self.x] ~= nil then
+        if self.fills[self.y] and self.fills[self.y][self.x] then
           break
         end
       end
@@ -272,7 +272,7 @@ function weaponSelect:update(dt)
       self.x = 1
       self.y = #self.list
       while true do
-        if self.fills[self.y] ~= nil and self.fills[self.y][self.x] ~= nil then
+        if self.fills[self.y] and self.fills[self.y][self.x] then
           break
         end
         self.y = self.y-1

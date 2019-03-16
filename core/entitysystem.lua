@@ -28,9 +28,9 @@ function entitysystem:sortLayers()
 end
 
 function entitysystem:add(e, queue)
-  if e == nil then return end
+  if not e then return end
   if queue then
-    if self.addQueue == nil then self.addQueue = {} end
+    if not self.addQueue then self.addQueue = {} end
     if not table.contains(self.addQueue, e) then
       self.addQueue[#self.addQueue+1] = e
     end
@@ -123,9 +123,9 @@ function entitysystem:setLayer(e, l)
 end
 
 function entitysystem:remove(e, queue)
-  if e == nil then return end
+  if not e then return end
   if queue then
-    if self.removeQueue == nil then self.removeQueue = {} end
+    if not self.removeQueue then self.removeQueue = {} end
     if not table.contains(self.removeQueue, e) then
       self.removeQueue[#self.removeQueue+1] = e
     end
@@ -364,7 +364,7 @@ function entity:block(velocity)
 end
 
 function entity:addToGroup(g)
-  if states.currentstate.system.groups[g] == nil then
+  if not states.currentstate.system.groups[g] then
     states.currentstate.system.groups[g] = {}
   end
   if not table.contains(states.currentstate.system.groups[g], self) then
@@ -377,7 +377,6 @@ function entity:setRectangleCollision(w, h)
   self.collisionShape.type = 0
   self.collisionShape.w = w
   self.collisionShape.h = h
-  if w == nil then error() end
 end
 
 function entity:setImageCollision(data)
@@ -403,7 +402,7 @@ function entity:moveBy(xx, yy, round)
 end
 
 function entity:collision(e, x, y)
-  if e == nil or self.collisionShape == nil or e.collisionShape == nil then return false end
+  if not e or not self.collisionShape or not e.collisionShape then return false end
   if self.collisionShape.type == 0 then
     if e.collisionShape.type == 0 then
       return rectOverlaps(self.transform.x + (x or 0), self.transform.y + (y or 0),
@@ -425,7 +424,7 @@ function entity:collision(e, x, y)
 end
 
 function entity:drawCollision()
-  if self.collisionShape == nil then return false end
+  if not self.collisionShape then return false end
   if self.collisionShape.type == 0 then
     love.graphics.rectangle("line", self.transform.x, self.transform.y, self.collisionShape.w, self.collisionShape.h)
   elseif self.collisionShape.type == 1 then
@@ -440,7 +439,7 @@ end
 
 function entity:collisionTable(t, x, y)
   local result = {}
-  if t == nil then return result end
+  if not t then return result end
   for k=1, #t do
     local v = t[k]
     if self:collision(v, x, y) then

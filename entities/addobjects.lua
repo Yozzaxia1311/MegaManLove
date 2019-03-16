@@ -10,7 +10,7 @@ function addobjects.register(name, func, ord)
   elseif order > addobjects.highestRegister then
     addobjects.highestRegister = order
   end
-  if addobjects.registered[order] == nil then
+  if not addobjects.registered[order] then
     addobjects.registered[order] = {}
   end
   addobjects.registered[order][name] = func
@@ -29,7 +29,7 @@ end
 function addobjects.add(ol)
   for i=addobjects.lowestRegister, addobjects.highestRegister do
     for k, v in pairs(ol) do
-      if addobjects.registered[i] ~= nil and addobjects.registered[i][v.name] ~= nil then
+      if addobjects.registered[i] and addobjects.registered[i][v.name] then
         addobjects.registered[i][v.name](v)
       end
     end

@@ -126,7 +126,7 @@ function inputHandler.bind(v, k, t, n)
 end
 
 function inputHandler.unbind(k)
-  if k == nil then
+  if not k then
     inputHandler.keys = {}
     inputHandler.pressedTable = {}
   else

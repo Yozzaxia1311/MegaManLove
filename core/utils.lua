@@ -54,7 +54,7 @@ function table.stringtonumberkeys(t)
     else
       result[k] = v
     end
-    if type(k) == "string" and tonumber(k) ~= nil then
+    if type(k) == "string" and tonumber(k) then
       result[tonumber(k)] = result[k]
       result[k] = nil
     end

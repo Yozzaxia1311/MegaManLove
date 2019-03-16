@@ -38,7 +38,7 @@ function bossdoor:setDirection(dir)
 end
 
 function bossdoor:update(dt)
-  if camera.main == nil or not rectOverlaps(self.transform.x, self.transform.y, self.collisionShape.w,
+  if not camera.main or not rectOverlaps(self.transform.x, self.transform.y, self.collisionShape.w,
     self.collisionShape.h, camera.main.scrollx, camera.main.scrolly, camera.main.scrollw, camera.main.scrollh) then return end
   if ((self.transform.x < camera.main.scrollx and self.dir == "left") or
     (self.transform.x+self.collisionShape.w > camera.main.scrollx+camera.main.scrollw and self.dir == "right") or
@@ -52,7 +52,7 @@ function bossdoor:update(dt)
   end
   if self.state == 0 then
     self.timer = 0
-    if camera.main ~= nil and not camera.main.transition then
+    if camera.main and not camera.main.transition then
       for i=1, #globals.allPlayers do
         local player = globals.allPlayers[i]
         if player.control and self:collision(player) then
@@ -63,7 +63,7 @@ function bossdoor:update(dt)
             globals.allPlayers[j].doAnimation = false
           end
           megautils.freeze(globals.allPlayers)
-          if megautils.groups()["removeOnTransition"] ~= nil then
+          if megautils.groups()["removeOnTransition"] then
             for k, v in pairs(megautils.groups()["removeOnTransition"]) do
               megautils.remove(v, true)
             end

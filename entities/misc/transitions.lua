@@ -22,7 +22,7 @@ end
 function right:update(dt)
   for i=1, #globals.allPlayers do
     local player = globals.allPlayers[i]
-    if camera.main ~= nil and player.control and not camera.main.transition and self:collision(player)
+    if camera.main and player.control and not camera.main.transition and self:collision(player)
       and (not self.platform or (self.platform and player.onMovingFloor)) then
       camera.main.transitiondirection = "right"
       camera.main.transition = true
@@ -65,7 +65,7 @@ end
 function left:update(dt)
   for i=1, #globals.allPlayers do
     local player = globals.allPlayers[i]
-    if camera.main ~= nil and player.control and not camera.main.transition
+    if camera.main and player.control and not camera.main.transition
       and self:collision(player) and (not self.platform or (self.platform and player.onMovingFloor)) then
       camera.main.transitiondirection = "left"
       camera.main.transition = true
@@ -108,7 +108,7 @@ end
 function down:update(dt)
   for i=1, #globals.allPlayers do
     local player = globals.allPlayers[i]
-    if camera.main ~= nil and player.control and not camera.main.transition
+    if camera.main and player.control and not camera.main.transition
       and self:collision(player) and (not self.platform or (self.platform and player.onMovingFloor)) then
       camera.main.transitiondirection = "down"
       camera.main.transition = true
@@ -151,7 +151,7 @@ end
 function up:update(dt)
   for i=1, #globals.allPlayers do
     local player = globals.allPlayers[i]
-    if camera.main ~= nil and player.control and not camera.main.transition
+    if camera.main and player.control and not camera.main.transition
       and self:collision(player) and (not self.platform or (self.platform and 
         player.onMovingFloor)) then
       camera.main.transitiondirection = "up"
@@ -194,13 +194,13 @@ function upLadder:new(x, y, w, scrollx, scrolly, spd, p)
 end
 
 function upLadder:update(dt)
-  if self.ladder == nil then
+  if not self.ladder then
     self.ladder = self:collisionTable(megautils.groups()["ladder"])[1]
   end
   for i=1, #globals.allPlayers do
     local player = globals.allPlayers[i]
-    if camera.main ~= nil and not camera.main.transition and
-      (self.ladder ~= nil or (not self.platform or (self.platform and player.onMovingFloor))) then
+    if camera.main and not camera.main.transition and
+      (self.ladder or (not self.platform or (self.platform and player.onMovingFloor))) then
       if player.control and player.climb and player.transform.y < self.transform.y then
         camera.main.transitiondirection = "up"
         camera.main.transition = true
@@ -238,7 +238,7 @@ function shiftYZone:new(x, y, w, h, speed)
 end
 
 function shiftYZone:update(dt)
-  if not self.once and camera.main ~= nil and not camera.main.transition then
+  if not self.once and camera.main and not camera.main.transition then
     for i=1, #globals.allPlayers do
       local player = globals.allPlayers[i]
       if player.control and self:collision(player)
@@ -252,11 +252,11 @@ function shiftYZone:update(dt)
       end
     end
   end
-  if self.tween ~= nil and self.tween:update(1/60) then
+  if self.tween and self.tween:update(1/60) then
     camera.main.doScrollY = true
     megautils.unfreeze()
     megautils.remove(self, true)
-  elseif self.tween ~= nil then
+  elseif self.tween then
     camera.main.transform.y = math.round(camera.main.transform.y)
   end
 end
@@ -294,12 +294,12 @@ function shiftXZone:update(dt)
       break
     end
   end
-  if self.tween ~= nil and self.tween:update(1/60) then
+  if self.tween and self.tween:update(1/60) then
     self.once2 = true
     camera.main.doScrollX = true
     megautils.unfreeze()
     megautils.remove(self, true)
-  elseif self.tween ~= nil then
+  elseif self.tween then
     camera.main.transform.x = math.round(camera.main.transform.x)
   end
 end
@@ -323,7 +323,7 @@ function lockXZone:new(x, y, w, h)
 end
 
 function lockXZone:update(dt)
-  if not self.once and camera.main ~= nil and not camera.main.transition then
+  if not self.once and camera.main and not camera.main.transition then
     local tmp = self:collisionTable(globals.allPlayers)
     if #tmp ~= 0 then
       self.once = true
@@ -351,7 +351,7 @@ function lockYZone:new(x, y, w, h)
 end
 
 function lockYZone:update(dt)
-  if not self.once and camera.main ~= nil and not camera.main.transition then
+  if not self.once and camera.main and not camera.main.transition then
     local tmp = self:collisionTable(globals.allPlayers)
     if #tmp ~= 0 then
       self.once = true

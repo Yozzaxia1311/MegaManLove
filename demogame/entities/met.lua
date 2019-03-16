@@ -61,13 +61,13 @@ function met:healthChanged(o, c, i)
 end
 
 function met:update(dt)
-  if globals.mainPlayer ~= nil and globals.mainPlayer.transform.x+globals.mainPlayer.collisionShape.w/2 > self.transform.x then
+  if globals.mainPlayer and globals.mainPlayer.transform.x+globals.mainPlayer.collisionShape.w/2 > self.transform.x then
     self.side = 1
-  elseif globals.mainPlayer ~= nil and globals.mainPlayer.transform.x+globals.mainPlayer.collisionShape.w/2 < self.transform.x then
+  elseif globals.mainPlayer and globals.mainPlayer.transform.x+globals.mainPlayer.collisionShape.w/2 < self.transform.x then
     self.side = -1
   end
   if self.s == 0 then
-    if globals.mainPlayer ~= nil and math.between(globals.mainPlayer.transform.x, 
+    if globals.mainPlayer and math.between(globals.mainPlayer.transform.x, 
       self.transform.x - 120, self.transform.x + 120) then
       self.timer = math.min(self.timer+1, 80)
     else
@@ -117,7 +117,7 @@ function met:draw()
 end
 
 function met:removed()
-  if self.spawner ~= nil then
+  if self.spawner then
     self.spawner.canSpawn = true
   end
 end

@@ -14,7 +14,7 @@ end
 
 function gameloaderstate:stop()
   self.system:clear()
-  if globals.stopMusicMenu == nil then
+  if not globals.stopMusicMenu then
     megautils.unload(self)
   end
 end

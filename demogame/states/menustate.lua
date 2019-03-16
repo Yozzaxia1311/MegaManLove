@@ -5,7 +5,7 @@ function menustate:begin()
   megautils.add(menuSelect())
   megautils.add(fade(false):setAfter(fade.remove))
   view.x, view.y = 0, 0
-  if globals.stopMusicMenu == nil then
+  if not globals.stopMusicMenu then
     mmMusic.playFromFile(globals.gameOverMenuMusic[1], globals.gameOverMenuMusic[2])
   end
 end
@@ -16,7 +16,7 @@ end
 
 function menustate:stop()
   self.system:clear()
-  if globals.stopMusicMenu == nil then
+  if not globals.stopMusicMenu then
     megautils.unload(self)
   end
 end
@@ -84,7 +84,7 @@ function menuSelect:update(dt)
       elseif self.pick == 3 then
         mmSfx.play("selected")
         local data = save.load("save.txt")
-        if data ~= nil then
+        if data then
           globals.defeats = data.defeats
           globals.infiniteLives = data.infiniteLives
           globals.lives = data.lives

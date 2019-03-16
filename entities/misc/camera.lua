@@ -8,7 +8,7 @@ addobjects.register("megacam", function(v)
 end, -1)
 
 addobjects.register("megacam", function(v)
-  if v.properties["checkpoint"] == globals.checkpoint and not camera.once and camera.main ~= nil then
+  if v.properties["checkpoint"] == globals.checkpoint and not camera.once and camera.main then
     camera.once = true
     camera.main:updateBounds()
   end
@@ -48,10 +48,10 @@ function camera:new(x, y, doScrollX, doScrollY)
 end
 
 function camera:updateBounds()
-  if self.toSection == nil then
+  if not self.toSection then
     self.toSection = self:collisionTable(megautils.state().sectionHandler.sections)[1]
   end
-  if self.toSection ~= nil then
+  if self.toSection then
     megautils.state().sectionHandler.next = self.toSection
     megautils.state().sectionHandler:updateAll()
     self.scrollx = self.toSection.transform.x
@@ -97,7 +97,7 @@ function camera:updateCam()
       view.x, view.y = math.round(camera.main.transform.x), math.round(camera.main.transform.y)
       camera.main:updateFuncs()
     elseif not self.once then
-      if megautils.groups()["removeOnTransition"] ~= nil then
+      if megautils.groups()["removeOnTransition"] then
         for k, v in pairs(megautils.groups()["removeOnTransition"]) do
           if not v.dontRemove then
             megautils.remove(v, true)
@@ -110,8 +110,8 @@ function camera:updateCam()
           v.control = false
         end
       end 
-      if self.player ~= nil then
-        if self.toSection == nil then self.toSection = megautils.state().sectionHandler.current end
+      if self.player then
+        if not self.toSection then self.toSection = megautils.state().sectionHandler.current end
         local sx, sy, sw, sh = self.toSection.transform.x, self.toSection.transform.y,
           self.toSection.collisionShape.w, self.toSection.collisionShape.h
         if self.transitiondirection == "right" then
@@ -186,7 +186,7 @@ function camera:updateCam()
                 v.control = true
               end
             end
-            if camera.main.player ~= nil and camera.main.player.onMovingFloor then
+            if camera.main.player and camera.main.player.onMovingFloor then
               camera.main.player.onMovingFloor.dontRemove = nil
             end
           end
@@ -201,7 +201,7 @@ function camera:updateCam()
           megautils.state().system.afterUpdate = nil
           camera.main.preTrans = nil
         end
-        if camera.main.player ~= nil and camera.main.player.onMovingFloor then
+        if camera.main.player and camera.main.player.onMovingFloor then
           camera.main.player.onMovingFloor.transform.x = camera.main.player.transform.x + camera.main.flx
           camera.main.player.onMovingFloor.transform.y = camera.main.player.transform.y + camera.main.player.collisionShape.h
         end

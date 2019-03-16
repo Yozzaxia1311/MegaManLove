@@ -16,8 +16,8 @@ end
 
 function timer.winCutscene(func)
   megautils.add(timer(150, function(s)
-    if s.state == nil then
-      if globals.mainPlayer ~= nil then
+    if not s.state then
+      if globals.mainPlayer then
         s.timer = 0
         s.state = 0
         mmMusic.stopMusic()
@@ -68,9 +68,9 @@ end
 
 function timer.absorbCutscene(func, music)
   megautils.add(timer(150, function(s)
-      if s.state == nil then
+      if not s.state then
         mmMusic.playFromFile(nil, music or "assets/sfx/music/win.ogg", nil, not music)
-        if globals.mainPlayer ~= nil then
+        if globals.mainPlayer then
           s.state = 0
           s.timer = 0
           s.to = (view.x+view.w/2)-globals.mainPlayer.collisionShape.w/2
@@ -84,7 +84,7 @@ function timer.absorbCutscene(func, music)
           globals.mainPlayer.animations[globals.mainPlayer.curAnim]:update(1/60)
         end
       elseif s.state == 0 then
-        if globals.mainPlayer ~= nil then
+        if globals.mainPlayer then
           s.state = 1
           globals.mainPlayer.velocity.velx = 0
         if globals.mainPlayer.slide then

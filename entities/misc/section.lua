@@ -55,7 +55,7 @@ function sectionHandler:add(s)
 end
 
 function sectionHandler:updateAll()
-  if self.current == nil then
+  if not self.current then
     for k, v in pairs(self.sections) do
       for i, j in pairs(v.group) do
         megautils.remove(j)

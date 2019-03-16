@@ -204,11 +204,11 @@ function love.update(dt)
   states.switched = false
   control.flush()
   if love.joystick then
-    if globals.axisTmp ~= nil then
-      if globals.axisTmp["x"] ~= nil and (globals.axisTmp["y"] == nil or
+    if globals.axisTmp then
+      if globals.axisTmp["x"] and (not globals.axisTmp["y"] or
         math.abs(globals.axisTmp["x"][3]) > math.abs(globals.axisTmp["y"][3])) then
         globals.lastKeyPressed = {globals.axisTmp["x"][1], globals.axisTmp["x"][2], globals.axisTmp["x"][4]}
-      elseif globals.axisTmp["y"] ~= nil then
+      elseif globals.axisTmp["y"] then
         globals.lastKeyPressed = {globals.axisTmp["y"][1], globals.axisTmp["y"][2], globals.axisTmp["y"][4]}
       end
       globals.axisTmp = nil

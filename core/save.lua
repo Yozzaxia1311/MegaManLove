@@ -22,7 +22,7 @@ function save.load(file, ignoreGamePath)
   else
     sv = love.filesystem.read(gamePath .. "/" .. file)
   end
-  if sv == nil then
+  if not sv then
     return nil
   end
   if base64SaveFiles then
