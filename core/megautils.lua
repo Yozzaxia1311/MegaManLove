@@ -228,7 +228,7 @@ function megautils.resetGameObjects()
   globals.allPlayers = {}
   globals.manageStageResources = true
   globals.checkpoint = "start"
-  globals.lives = ternary(globals.lives > 2, globals.lives, 2)
+  globals.lives = globals.lives > 2 and globals.lives or globals.startingLives
   wTank.banIds = {}
   eTank.banIds = {}
   life.banIds = {}
@@ -335,8 +335,8 @@ function megautils.updateShake()
       megautils.shakeTimer = 0
       megautils.shakeSide = not megautils.shakeSide
     end
-    love.graphics.translate(ternary(megautils.shakeSide, megautils.shakeX, -megautils.shakeX),
-      ternary(megautils.shakeSide, megautils.shakeY, -megautils.shakeY))
+    love.graphics.translate(megautils.shakeSide and megautils.shakeX or -megautils.shakeX,
+      megautils.shakeSide and megautils.shakeY or -megautils.shakeY)
   else
     megautils.shakeSide = false
     megautils.shakeTimer = 0

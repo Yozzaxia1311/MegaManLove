@@ -2,7 +2,7 @@ fade = entity:extend()
 
 function fade:new(fadeToColor, gap, color, after)
   fade.super.new(self)
-  self.alpha = ternary(fadeToColor, 0, 255)
+  self.alpha = fadeToColor and 0 or 255
   self.fadeToColor = fadeToColor
   self.gap = gap or 4
   self.after = after
@@ -31,7 +31,7 @@ function fade:update(dt)
   self.timer = math.min(self.timer+1, self.gap)
   if self.timer == self.gap then
     self.timer = 0
-    self.alpha = ternary(self.fadeToColor, math.min(self.alpha+(255/3), 255), math.max(self.alpha-(255/3), 0))
+    self.alpha = self.fadeToColor and math.min(self.alpha+(255/3), 255) or math.max(self.alpha-(255/3), 0)
   end
 end
 

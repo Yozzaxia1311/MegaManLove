@@ -108,7 +108,7 @@ function mmMusic:play(l, v)
   end
   if self.musicIntro == nil then
     self.musicLoop:play()
-    self.musicLoop:setLooping(ternary(l == nil, true, l))
+    self.musicLoop:setLooping(l == nil and true or l)
     self.current = self.musicLoop
   else
     self.musicIntro:setLooping(false)

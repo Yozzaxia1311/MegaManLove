@@ -168,7 +168,7 @@ end
 
 function rushJet:solid(x, y, d)
   return #self:collisionTable(megautils.groups()["solid"], x, y) ~= 0 or
-    (ternary(d~=nil, d, true) and #self:collisionTable(megautils.groups()["death"], x, y)) ~= 0 or
+    ((d==nil and true or d) and #self:collisionTable(megautils.groups()["death"], x, y)) ~= 0 or
     #oneway.collisionTable(self, megautils.groups()["oneway"], x, y) ~= 0 or
     #self:collisionTable(megautils.groups()["movingSolid"], x, y) ~= 0
 end
@@ -343,7 +343,7 @@ end
 
 function rushCoil:solid(x, y, d)
   return #self:collisionTable(megautils.groups()["solid"], x, y) ~= 0 or
-    (ternary(d~=nil, d, true) and #self:collisionTable(megautils.groups()["death"], x, y)) ~= 0 or
+    ((d==nil and true or d) and #self:collisionTable(megautils.groups()["death"], x, y)) ~= 0 or
     #oneway.collisionTable(self, megautils.groups()["oneway"], x, y) ~= 0 or
     #self:collisionTable(megautils.groups()["movingSolid"], x, y) ~= 0
 end

@@ -30,7 +30,7 @@ end
 
 smallStar = entity:extend()
 
-function smallStar:new(x, y, angle, spd, wrap)
+function smallStar:new(x, y, angle, spd)
   smallStar.super.new(self)
   self.transform.y = y
   self.transform.x = x
@@ -39,15 +39,11 @@ function smallStar:new(x, y, angle, spd, wrap)
   self.velocity = velocity()
   self.velocity.velx = megautils.calcX(angle) * spd
   self.velocity.vely = megautils.calcY(angle) * spd
-  self.wrap = ternary(wrap ~= nil, wrap, true)
 end
 
 function smallStar:update()
-  self:moveBy(self.velocity.velx, self.velocity.vely)
-  if self.wrap then
-    self.transform.x = math.wrap(self.transform.x, -3, view.w)
-    self.transform.y = math.wrap(self.transform.y, -3, view.h)
-  end
+  self.transform.x = math.wrap(self.transform.x+self.velocity.velx, -3, view.w)
+  self.transform.y = math.wrap(self.transform.y+self.velocity.vely, -3, view.h)
 end
 
 function smallStar:draw()
@@ -57,7 +53,7 @@ end
 
 star = entity:extend()
 
-function star:new(x, y, angle, spd, wrap)
+function star:new(x, y, angle, spd)
   star.super.new(self)
   self.transform.y = y
   self.transform.x = x
@@ -66,15 +62,11 @@ function star:new(x, y, angle, spd, wrap)
   self.velocity = velocity()
   self.velocity.velx = megautils.calcX(angle) * spd
   self.velocity.vely = megautils.calcY(angle) * spd
-  self.wrap = ternary(wrap ~= nil, wrap, true)
 end
 
 function star:update()
-  self:moveBy(self.velocity.velx, self.velocity.vely)
-  if self.wrap then
-    self.transform.x = math.wrap(self.transform.x, -10, view.w)
-    self.transform.y = math.wrap(self.transform.y, -6, view.h)
-  end
+  self.transform.x = math.wrap(self.transform.x+self.velocity.velx, -10, view.w)
+  self.transform.y = math.wrap(self.transform.y+self.velocity.vely, -6, view.h)
 end
 
 function star:draw()
@@ -84,7 +76,7 @@ end
 
 largeStar = entity:extend()
 
-function largeStar:new(x, y, angle, spd, wrap)
+function largeStar:new(x, y, angle, spd)
   largeStar.super.new(self)
   self.transform.y = y
   self.transform.x = x
@@ -93,20 +85,16 @@ function largeStar:new(x, y, angle, spd, wrap)
   self.velocity = velocity()
   self.velocity.velx = megautils.calcX(angle) * spd
   self.velocity.vely = megautils.calcY(angle) * spd
-  self.wrap = ternary(wrap ~= nil, wrap, true)
 end
 
 function largeStar:update()
-  self:moveBy(self.velocity.velx, self.velocity.vely)
-  if self.wrap then
-    self.transform.x = math.wrap(self.transform.x, -15, view.w)
-    self.transform.y = math.wrap(self.transform.y, -11, view.h)
-  end
+  self.transform.x = math.wrap(self.transform.x+self.velocity.velx, -15, view.w)
+  self.transform.y = math.wrap(self.transform.y+self.velocity.vely, -11, view.h)
 end
 
 function largeStar:draw()
   love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.draw(self.t, self.quad, self.transform.x, self.transform.y)
+  love.graphics.draw(self.t, self.quad, math.round(self.transform.x), math.round(self.transform.y))
 end
 
 megautils.cleanFuncs["unload_starfield"] = function()

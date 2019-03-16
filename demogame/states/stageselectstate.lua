@@ -103,7 +103,7 @@ function stageSelect:update(dt)
   end
   
   self.timer = math.wrap(self.timer+1, 0, 14)
-  self.blink = ternary(self.timer < 7, true, false)
+  self.blink = self.timer < 7
   self.transform.x = self.oldX + self.x*80
   self.transform.y = self.oldY + self.y*72
   

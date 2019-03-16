@@ -1,20 +1,12 @@
-function ternary(c, t, f)
-  if c then
-    return t
-  else
-    return f
-  end
-end
-
 function toboolean(v)
   if type(v) == "string" then
-    return ternary(v=="true", true, false)
+    return v=="true"
   end
 end
 
 function booleanToString(v)
   if type(v) == "boolean" then
-    return ternary(v, "true", "false")
+    return v and "true" or "false"
   end
 end
 

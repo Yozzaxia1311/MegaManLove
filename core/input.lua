@@ -152,31 +152,25 @@ function inputHandler.down(k)
   elseif inputHandler.keys[k][1] == "axis" then
     for i, v in ipairs(inputHandler.gamepads) do
       if inputHandler.keys[k][3] == v:getName() then
-        if math.abs(v:getGamepadAxis("leftx")) > math.abs(v:getGamepadAxis("lefty")) then
-          if inputHandler.keys[k][2] == "leftx+" and v:getGamepadAxis("leftx") > deadZone then
-            return true
-          elseif inputHandler.keys[k][2] == "leftx-" and v:getGamepadAxis("leftx") < -deadZone then
-            return true
-          end
-        else
-          if inputHandler.keys[k][2] == "lefty+" and v:getGamepadAxis("lefty") > deadZone then
-            return true
-          elseif inputHandler.keys[k][2] == "lefty-" and v:getGamepadAxis("lefty") < -deadZone then
-            return true
-          end
+        if inputHandler.keys[k][2] == "leftx+" and v:getGamepadAxis("leftx") > deadZone then
+          return true
+        elseif inputHandler.keys[k][2] == "leftx-" and v:getGamepadAxis("leftx") < -deadZone then
+          return true
         end
-        if math.abs(v:getGamepadAxis("rightx")) > math.abs(v:getGamepadAxis("righty")) then
-          if inputHandler.keys[k][2] == "rightx+" and v:getGamepadAxis("rightx") > deadZone then
-            return true
-          elseif inputHandler.keys[k][2] == "rightx-" and v:getGamepadAxis("rightx") < -deadZone then
-            return true
-          end
-        else
-          if inputHandler.keys[k][2] == "righty+" and v:getGamepadAxis("righty") > deadZone then
-            return true
-          elseif inputHandler.keys[k][2] == "righty-" and v:getGamepadAxis("righty") < -deadZone then
-            return true
-          end
+        if inputHandler.keys[k][2] == "lefty+" and v:getGamepadAxis("lefty") > deadZone then
+          return true
+        elseif inputHandler.keys[k][2] == "lefty-" and v:getGamepadAxis("lefty") < -deadZone then
+          return true
+        end
+        if inputHandler.keys[k][2] == "rightx+" and v:getGamepadAxis("rightx") > deadZone then
+          return true
+        elseif inputHandler.keys[k][2] == "rightx-" and v:getGamepadAxis("rightx") < -deadZone then
+          return true
+        end
+        if inputHandler.keys[k][2] == "righty+" and v:getGamepadAxis("righty") > deadZone then
+          return true
+        elseif inputHandler.keys[k][2] == "righty-" and v:getGamepadAxis("righty") < -deadZone then
+          return true
         end
         if inputHandler.keys[k][2] == "triggerleft+" and v:getGamepadAxis("triggerleft") > deadZone then
           return true

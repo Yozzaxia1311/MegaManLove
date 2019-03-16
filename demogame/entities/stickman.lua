@@ -114,7 +114,7 @@ function stickMan:update(dt)
         globals.mainPlayer:resetStates()
         globals.mainPlayer.velocity.vely = ly
         globals.mainPlayer.control = false
-        globals.mainPlayer.side = ternary(self.transform.x>globals.mainPlayer.transform.x, 1, -1)
+        globals.mainPlayer.side = self.transform.x>globals.mainPlayer.transform.x and 1 or -1
         globals.mainPlayer:face(globals.mainPlayer.side)
         if not globals.mainPlayer:solid(0, 1) then
           globals.mainPlayer.curAnim = "jump"
@@ -230,7 +230,7 @@ function megamanStick:new()
   megamanStick.super.new(self)
   self.transform.y = -60
   self.transform.x = 100
-  self.curAnim = ternary(pose, "pose", "idle")
+  self.curAnim = pose and "pose" or "idle"
   self.animations = {}
   self.animations["idle"] = anim8.newAnimation(loader.get("mega_man_grid")(1, 1, 2, 1), {2.5, 0.1})
   self.animations["idleShoot"] = anim8.newAnimation(loader.get("mega_man_grid")(1, 4), 1)

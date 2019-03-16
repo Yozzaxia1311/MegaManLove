@@ -70,8 +70,8 @@ function slope:new(x, y, mask, invert, left)
   slope.super.new(self, true)
   self.transform.x = x
   self.transform.y = y
-  self.left = ternary(left ~= nil, left, false)
-  self.invert = ternary(invert ~= nil, invert, false)
+  self.left = left
+  self.invert = invert
   self:setImageCollision(mask)
   self.added = function(self)
     self:addToGroup("slope")
@@ -85,7 +85,7 @@ function slope.blockFromGroup(self, group, x, y)
     if not self.onSlope and not self.slopeCeiling then
       self.slope = self:collisionTable(group, 0, y)
       if self.slope ~= nil and self.slope[1] ~= nil and not self.slope[1].invert then
-        self.slope = self:collisionTable(group, 0, ternary(y>=0, y+1, -8))
+        self.slope = self:collisionTable(group, 0, y>=0 and y+1 or -8)
       end
       if self.slope ~= nil and self.slope[1] ~= nil then
         if self.slope[1].invert then
@@ -121,7 +121,7 @@ function slope.blockFromGroup(self, group, x, y)
         end
       end
     elseif self.onSlope and self.slope ~= nil and self.slope[1] ~= nil then
-      self.slope = self:collisionTable(group, 0, ternary(y>=0, y+math.abs(x)+4, y))
+      self.slope = self:collisionTable(group, 0, y>=0 and y+math.abs(x)+4 or y)
       if self.slope ~= nil and self.slope[1] ~= nil and y >= 0 then
         self.transform.y = self.slope[1].transform.y - self.collisionShape.h
         while #self:collisionTable(self.slope, 0, 1) == 0 do

@@ -135,23 +135,19 @@ function healthhandler:draw()
     elseif i < curSeg then
       bit = 4
     end
+    local tx, ty, tr = self.transform.x-(self.rot=="x" and (8*i)*self.side or 0), 
+      self.transform.y-(self.rot=="y" and (8*i)*self.side or 0), math.rad(self.rot=="x" and 90 or 0)
     love.graphics.setColor(self.colorOutline[1]/255, 
       self.colorOutline[2]/255,
       self.colorOutline[3]/255, 1)
-    love.graphics.draw(self.barOutline, self.quads[bit], 
-      self.transform.x-ternary(self.rot=="x",(8*i)*self.side, 0), 
-      self.transform.y-ternary(self.rot=="y",(8*i)*self.side, 0), math.rad(ternary(self.rot=="x",90, 0)))
+    love.graphics.draw(self.barOutline, self.quads[bit], tx, ty, tr)
     love.graphics.setColor(self.colorOne[1]/255, 
       self.colorOne[2]/255,
       self.colorOne[3]/255, 1)
-    love.graphics.draw(self.barOne, self.quads[bit], 
-      self.transform.x-ternary(self.rot=="x",(8*i)*self.side, 0), 
-      self.transform.y-ternary(self.rot=="y",(8*i)*self.side, 0), math.rad(ternary(self.rot=="x",90, 0)))
+    love.graphics.draw(self.barOne, self.quads[bit], tx, ty, tr)
     love.graphics.setColor(self.colorTwo[1]/255, 
       self.colorTwo[2]/255,
       self.colorTwo[3]/255, 1)
-    love.graphics.draw(self.barTwo, self.quads[bit], 
-      self.transform.x-ternary(self.rot=="x",(8*i)*self.side, 0), 
-      self.transform.y-ternary(self.rot=="y",(8*i)*self.side, 0), math.rad(ternary(self.rot=="x",90, 0)))
+    love.graphics.draw(self.barTwo, self.quads[bit], tx, ty, tr)
   end
 end

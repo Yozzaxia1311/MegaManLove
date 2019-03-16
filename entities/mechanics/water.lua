@@ -12,7 +12,7 @@ function splash:new(offx, offy, follow, side)
   self:setRectangleCollision(32, 28)
   self.tex = loader.get("particles")
   self.anim = anim8.newAnimation(loader.get("splash_grid")("1-4", 1), 1/8)
-  self.rot = math.rad(ternary(side==-1, 0, 180))
+  self.rot = math.rad(side==-1 and 0 or 180)
   self.follow = follow
 end
 

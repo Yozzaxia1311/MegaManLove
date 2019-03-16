@@ -48,6 +48,7 @@ function initEngine()
   globals.maxLives = 10
   globals.maxETanks = 10
   globals.maxWTanks = 10
+  globals.startingLives = 2
   
   globals.resetState = true
   globals.manageStageResources = true
@@ -180,12 +181,12 @@ function love.gamepadaxis(j, b, v)
       if (b == "leftx" or b == "lefty" or b == "rightx" or b == "righty") then
         globals.axisTmp = {}
         if b == "leftx" or b == "rightx" then
-          globals.axisTmp["x"] = {b .. ternary(v > 0,  "+", "-"), "axis", v, j:getName()}
+          globals.axisTmp["x"] = {b .. (v > 0 and "+" or "-"), "axis", v, j:getName()}
         elseif b == "lefty" or b == "righty" then
-          globals.axisTmp["y"] = {b .. ternary(v > 0,  "+", "-"), "axis", v, j:getName()}
+          globals.axisTmp["y"] = {b .. (v > 0 and "+" or "-"), "axis", v, j:getName()}
         end
       else
-        globals.lastKeyPressed =  {b .. ternary(v > 0,  "+", "-"), "axis", j:getName()}
+        globals.lastKeyPressed =  {b .. (v > 0 and "+" or "-"), "axis", j:getName()}
       end
     end
     globals.gamepadCheck[b] = 10

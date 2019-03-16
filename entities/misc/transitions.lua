@@ -12,7 +12,7 @@ function right:new(x, y, h, scrollx, scrolly, spd, p)
   self.transform.y = y
   self.scrollx = scrollx
   self.scrolly = scrolly
-  self.spd = spd or 1
+  self.spd = spd or 0.8
   self.platform = p
   self.added = function(self)
     self:addToGroup("despawnable")
@@ -26,8 +26,8 @@ function right:update(dt)
       and (not self.platform or (self.platform and player.onMovingFloor)) then
       camera.main.transitiondirection = "right"
       camera.main.transition = true
-      camera.main.doScrollY = ternary(self.scrolly ~= nil, self.scrolly, camera.main.doScrollY)
-      camera.main.doScrollX = ternary(self.scrollx ~= nil, self.scrollx, camera.main.doScrollX)
+      camera.main.doScrollY = self.scrolly and self.scrolly or camera.main.doScrollY
+      camera.main.doScrollX = self.scrollx and self.scrollx or camera.main.doScrollX
       camera.main.player = player
       camera.main.speed = self.spd
       camera.main.transX = camera.main.scrollx+camera.main.scrollw+16
@@ -55,7 +55,7 @@ function left:new(x, y, h, scrollx, scrolly, spd, p)
   self.transform.y = y
   self.scrollx = scrollx
   self.scrolly = scrolly
-  self.spd = spd or 1
+  self.spd = spd or 0.8
   self.platform = p
   self.added = function(self)
     self:addToGroup("despawnable")
@@ -69,8 +69,8 @@ function left:update(dt)
       and self:collision(player) and (not self.platform or (self.platform and player.onMovingFloor)) then
       camera.main.transitiondirection = "left"
       camera.main.transition = true
-      camera.main.doScrollY = ternary(self.scrolly ~= nil, self.scrolly, camera.main.doScrollY)
-      camera.main.doScrollX = ternary(self.scrollx ~= nil, self.scrollx, camera.main.doScrollX)
+      camera.main.doScrollY = self.scrolly and self.scrolly or camera.main.doScrollY
+      camera.main.doScrollX = self.scrollx and self.scrollx or camera.main.doScrollX
       camera.main.player = player
       camera.main.speed = self.spd
       camera.main.transX = camera.main.scrollx-camera.main.player.collisionShape.w-16
@@ -98,7 +98,7 @@ function down:new(x, y, w, scrollx, scrolly, spd, p)
   self.transform.x = x
   self.scrollx = scrollx
   self.scrolly = scrolly
-  self.spd = spd or 1
+  self.spd = spd or 0.8
   self.platform = p
   self.added = function(self)
     self:addToGroup("despawnable")
@@ -112,8 +112,8 @@ function down:update(dt)
       and self:collision(player) and (not self.platform or (self.platform and player.onMovingFloor)) then
       camera.main.transitiondirection = "down"
       camera.main.transition = true
-      camera.main.doScrollY = ternary(self.scrolly ~= nil, self.scrolly, camera.main.doScrollY)
-      camera.main.doScrollX = ternary(self.scrollx ~= nil, self.scrollx, camera.main.doScrollX)
+      camera.main.doScrollY = self.scrolly and self.scrolly or camera.main.doScrollY
+      camera.main.doScrollX = self.scrollx and self.scrollx or camera.main.doScrollX
       camera.main.player = player
       camera.main.speed = self.spd
       camera.main.transY = camera.main.scrolly+camera.main.scrollh+8
@@ -141,7 +141,7 @@ function up:new(x, y, w, scrollx, scrolly, spd, p)
   self.transform.x = x
   self.scrollx = scrollx
   self.scrolly = scrolly
-  self.spd = spd or 1
+  self.spd = spd or 0.8
   self.platform = p
   self.added = function(self)
     self:addToGroup("despawnable")
@@ -156,8 +156,8 @@ function up:update(dt)
         player.onMovingFloor)) then
       camera.main.transitiondirection = "up"
       camera.main.transition = true
-      camera.main.doScrollY = ternary(self.scrolly ~= nil, self.scrolly, camera.main.doScrollY)
-      camera.main.doScrollX = ternary(self.scrollx ~= nil, self.scrollx, camera.main.doScrollX)
+      camera.main.doScrollY = self.scrolly and self.scrolly or camera.main.doScrollY
+      camera.main.doScrollX = self.scrollx and self.scrollx or camera.main.doScrollX
       camera.main.player = player
       camera.main.speed = self.spd
       camera.main.transY = camera.main.scrolly-camera.main.player.collisionShape.h-8
@@ -185,7 +185,7 @@ function upLadder:new(x, y, w, scrollx, scrolly, spd, p)
   self.transform.x = x
   self.scrollx = scrollx
   self.scrolly = scrolly
-  self.spd = spd or 1
+  self.spd = spd or 0.8
   self.platform = p
   self.added = function(self)
     self:addToGroup("despawnable")
@@ -204,8 +204,8 @@ function upLadder:update(dt)
       if player.control and player.climb and player.transform.y < self.transform.y then
         camera.main.transitiondirection = "up"
         camera.main.transition = true
-        camera.main.doScrollY = ternary(self.scrolly ~= nil, self.scrolly, camera.main.doScrollY)
-        camera.main.doScrollX = ternary(self.scrollx ~= nil, self.scrollx, camera.main.doScrollX)
+        camera.main.doScrollY = self.scrolly and self.scrolly or camera.main.doScrollY
+        camera.main.doScrollX = self.scrollx and self.scrollx or camera.main.doScrollX
         camera.main.player = player
         camera.main.speed = self.spd
         camera.main.transY = camera.main.scrolly-camera.main.player.collisionShape.h-8

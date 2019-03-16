@@ -299,7 +299,7 @@ end
 function weaponSelect:draw()
   love.graphics.setFont(mmFont)
   love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.print(tostring(ternary(globals.infiniteLives, "inf", globals.lives)), 24*8, 23*8)
+  love.graphics.print((globals.infiniteLives and "inf" or tostring(globals.lives)), 24*8, 23*8)
   love.graphics.print(tostring(globals.eTanks), 8*8, 23*8)
   love.graphics.print(tostring(globals.wTanks), 12*8, 23*8)
   if self.section == 0 then

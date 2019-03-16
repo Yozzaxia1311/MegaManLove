@@ -1,10 +1,10 @@
 bossdoor = entity:extend()
 
 addobjects.register("boss_door", function(v)
-  local seg = ternary(v.properties["dir"]=="up" or v.properties["dir"]=="down", 
-    math.round(v.width/16), math.round(v.height/16))
-    megautils.add(bossdoor(v.x, v.y, seg, v.properties["dir"],
-    v.properties["doScrollX"], v.properties["doScrollY"]))
+  local seg = (v.properties["dir"]=="up" or v.properties["dir"]=="down") and 
+    math.round(v.width/16) or math.round(v.height/16)
+  megautils.add(bossdoor(v.x, v.y, seg, v.properties["dir"],
+  v.properties["doScrollX"], v.properties["doScrollY"]))
 end)
 
 bossdoor.animGrid = anim8.newGrid(32, 64, 160, 64)
@@ -32,8 +32,8 @@ function bossdoor:new(x, y, seg, dir, scrollx, scrolly, spd)
 end
 
 function bossdoor:setDirection(dir)
-  self:setRectangleCollision(ternary(dir=="up" or dir=="down", self.maxSegments*16, 32),
-    ternary(dir=="up" or dir=="down", 32, self.maxSegments*16))
+  self:setRectangleCollision((dir=="up" or dir=="down") and self.maxSegments*16 or 32,
+    (dir=="up" or dir=="down") and 32 or self.maxSegments*16)
   self.dir = dir or "right"
 end
 
@@ -83,20 +83,19 @@ function bossdoor:update(dt)
       self.timer = 0
       self.c = "open"
       self.player.doAnimation = true
-      camera.main.transX = ternary(self.dir=="up" or self.dir=="down", 0, 
-        ternary(self.dir=="left", camera.main.scrollx-self.player.collisionShape.w-28,
-          camera.main.scrollx+camera.main.scrollw+28))
-      camera.main.transY = ternary(self.dir=="up" or self.dir=="down",
-        ternary(self.dir=="up", camera.main.scrolly-self.player.collisionShape.h-28,
-          camera.main.scrolly+camera.main.scrollh+28), 0)
+      camera.main.transX = (self.dir=="up" or self.dir=="down") and 0 or 
+        (self.dir=="left" and camera.main.scrollx-self.player.collisionShape.w-28 or
+          camera.main.scrollx+camera.main.scrollw+28)
+      camera.main.transY = (self.dir=="up" or self.dir=="down") and
+        (self.dir=="up" and camera.main.scrolly-self.player.collisionShape.h-28 or
+          camera.main.scrolly+camera.main.scrollh+28) or 0
       camera.main.transitiondirection = self.dir
-      camera.main.doScrollY = ternary(self.scrolly ~= nil, self.scrolly, camera.main.doScrollY)
-      camera.main.doScrollX = ternary(self.scrollx ~= nil, self.scrollx, camera.main.doScrollX)
+      camera.main.doScrollY = self.scrolly and self.scrolly or camera.main.doScrollY
+      camera.main.doScrollX = self.scrollx and self.scrollx or camera.main.doScrollX
       camera.main.transition = true
       camera.main.toSection = self:collisionTable(megautils.state().sectionHandler.sections, 
-        ternary(self.dir=="left" or self.dir=="right", ternary(self.dir=="left", -16, 16),
-          0), ternary(self.dir=="up" or self.dir=="down", ternary(self.dir=="up", -16, 16),
-          0))[1]
+        (self.dir=="left" or self.dir=="right") and (self.dir=="left" and -16 or 16) or 0,
+        (self.dir=="up" or self.dir=="down") and (self.dir=="up" and -16 or 16) or 0)[1]
       camera.main.speed = self.spd
       camera.main.player = self.player
       camera.main.updateSections = false

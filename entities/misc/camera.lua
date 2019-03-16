@@ -32,8 +32,8 @@ function camera:new(x, y, doScrollX, doScrollY)
   self.scrollw = 0
   self.scrolly = 0
   self.scrollh = 0
-  self.doScrollY = ternary(doScrollY ~= nil, doScrollY, true)
-  self.doScrollX = ternary(doScrollX ~= nil, doScrollX, true)
+  self.doScrollY = doScrollY == nil and true or doScrollY
+  self.doScrollX = doScrollX == nil and true or doScrollX
   self.transX = 0
   self.transY = 0
   self.speed = 1

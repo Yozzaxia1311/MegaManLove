@@ -174,7 +174,7 @@ function angleParticle:new(x, y, a)
   self.velocity = velocity()
   self.velocity.velx = megautils.calcX(a)
   self.velocity.vely = megautils.calcY(a)
-  self.side = ternary(self.velocity.velx>0, -1, 1)
+  self.side = self.velocity.velx>0 and -1 or 1
 end
 
 function angleParticle:face(n)
@@ -388,7 +388,7 @@ function blast:new(x, y, times)
   megautils.add(smallBlast(x, y))
   self.timer = 0
   self.times = 0
-  self.max = ternary(times == nil, 4, times)
+  self.max = times == nil and 4 or times
 end
 
 function blast:update(dt)

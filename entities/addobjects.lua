@@ -4,7 +4,7 @@ addobjects.lowestRegister = 0
 addobjects.highestRegister = 0
 
 function addobjects.register(name, func, ord)
-  local order = ternary(ord ~= nil, ord, 0)
+  local order = ord == nil and 0 or ord
   if order < addobjects.lowestRegister then
     addobjects.lowestRegister = order
   elseif order > addobjects.highestRegister then
