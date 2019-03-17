@@ -12,6 +12,8 @@ function megautils.runFile(path, ignoreGamePath)
 end
 
 function megautils.loadGame(path)
+  megautils.unload()
+  initEngine()
   gamePath = path
   local data = love.filesystem.load(path .. "/init.lua")()
   data.run()
@@ -21,7 +23,7 @@ end
 function megautils.resetToGameLoader()
   gamePath = ""
   initEngine()
-  states.set("states/menus/disclaimerstate.lua", nil, true)
+  states.set("states/disclaimer.state.lua", nil, true)
 end
 
 function megautils.load()
@@ -127,18 +129,16 @@ function megautils.draw(self)
   end
 end
 
-function megautils.unload(self)
+function megautils.unload()
   if globals.resetState then
     for k, v in pairs(megautils.resetStateFuncs) do
       v()
     end
-    self.system:clear()
     if globals.manageStageResources then
       for k, v in pairs(megautils.cleanFuncs) do
         v()
       end
       loader.clear()
-      self.sectionHandler = nil
     end
   end
   collectgarbage()

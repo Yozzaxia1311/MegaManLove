@@ -62,6 +62,19 @@ function table.stringtonumberkeys(t)
   return result
 end
 
+function iterateDirs(func, path)
+  local results = {}
+  path = path or ""
+  for k, v in pairs(love.filesystem.getDirectoryItems(path)) do
+    if v:sub(1, 1) ~= "." and love.filesystem.getInfo(path .. (path ~= "" and "/" or path) .. v).type == "directory" then
+      results = table.merge({results, iterateDirs(func, path .. (path ~= "" and "/" or path) .. v)})
+    else
+      if func(v) then results[#results+1] = path .. (path ~= "" and "/" or path) .. v end
+    end
+  end
+  return results
+end
+
 function string.split(self, inSplitPattern, outResults)
   if not outResults then
     outResults = {}

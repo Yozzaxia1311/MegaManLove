@@ -15,7 +15,7 @@ end
 function gameloaderstate:stop()
   self.system:clear()
   if not globals.stopMusicMenu then
-    megautils.unload(self)
+    megautils.unload()
   end
 end
 
@@ -81,7 +81,7 @@ function menuSelect:update(dt)
       end))
       self.picked = true
     elseif control.shootPressed[1] then
-      megautils.gotoState("states/menus/menustate.lua")
+      megautils.gotoState("states/menu.state.lua")
       self.picked = true
     elseif control.selectPressed[1] then
       love.system.openURL(love.filesystem.getSaveDirectory())

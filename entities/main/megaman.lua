@@ -636,7 +636,7 @@ function megaman:healthChanged(o, c, i)
           if not globals.infiniteLives and globals.lives <= 0 then
             megautils.resetGameObjects()
             globals.gameOverContinueState = states.current
-            states.set("states/menus/gameoverstate.lua", nil, true)
+            states.set("states/gameover.state.lua", nil, true)
           else
             globals.manageStageResources = false
             if not globals.infiniteLives then
@@ -1032,7 +1032,7 @@ function megaman:code(dt)
     globals.lastCamPosY = view.y
     self.weaponSwitchTimer = 70
     globals.manageStageResources = false
-    megautils.gotoState("states/menus/pausestate.lua", nil, nil, love.filesystem.load("states/menus/pausestate.lua")(), true)
+    megautils.gotoState("states/pause.state.lua", nil, nil, love.filesystem.load("states/pause.state.lua")(), true)
     globals.pauseWeaponSelect = weaponSelect(megaman.weaponHandler[self.player], self.healthHandler, self.player)
     mmSfx.play("pause")
   end

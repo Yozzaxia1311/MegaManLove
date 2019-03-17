@@ -1,6 +1,6 @@
 local data = {}
 data.name = "demo game"
-data.initState = "states/titlestate.lua"
+data.initState = "states/title.state.lua"
 data.run = function()
   globals.defeats = {}
   globals.defeats.stickMan = false
@@ -23,7 +23,7 @@ data.run = function()
     end
   end
   megautils.resetGameObjects()
-  globals.gameOverMenuState = "states/menustate.lua"
+  globals.gameOverMenuState = "states/menu.state.lua"
   globals.gameOverMenuMusic = {"assets/menu.ogg"}
   loader.load("assets/stick_weapon.png", "stick_weapon", "texture", nil, true)
 end

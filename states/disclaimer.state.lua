@@ -12,7 +12,7 @@ function disclaimerstate:update(dt)
 end
 
 function disclaimerstate:stop()
-  megautils.unload(self)
+  megautils.unload()
 end
 
 function disclaimerstate:draw()
@@ -49,12 +49,12 @@ end
 
 function disclaimer:update()
   if control.startPressed[1] and self.check then
-    megautils.gotoState("states/menus/menustate.lua")
+    megautils.gotoState("states/menu.state.lua")
     self.updated = false
   elseif globals.lastKeyPressed and globals.lastKeyPressed[1] == "escape" and self.check then
     globals.lastKeyPressed = nil
     globals.sendBackToDisclaimer = true
-    megautils.gotoState("states/menus/rebindstate.lua")
+    megautils.gotoState("states/rebind.state.lua")
   end
   globals.lastKeyPressed = nil
   self.timer = math.min(self.timer+1, 80)

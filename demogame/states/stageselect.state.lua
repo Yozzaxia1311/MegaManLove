@@ -14,7 +14,7 @@ function stageselectstate:update(dt)
 end
 
 function stageselectstate:stop()
-  megautils.unload(self)
+  megautils.unload()
 end
 
 function stageselectstate:draw()
@@ -113,10 +113,10 @@ function stageSelect:update(dt)
       mmSfx.play("selected")
       megautils.add(fade(false, 4, {255, 255, 255}, function(s)
         if globals.defeats.stickMan then
-          megautils.gotoState("states/demostate.lua")
+          megautils.gotoState("states/demo.state.lua")
         else
           globals.bossIntroBoss = "stick"
-          megautils.gotoState("states/bossintrostate.lua")
+          megautils.gotoState("states/bossintro.state.lua")
         end
         megautils.remove(s, true)
       end))
@@ -124,7 +124,7 @@ function stageSelect:update(dt)
     end
   elseif control.selectPressed[1] and not self.stop then
     self.stop = true
-    megautils.gotoState("states/menustate.lua")
+    megautils.gotoState("states/menu.state.lua")
     mmMusic.stopMusic()
   end
 end

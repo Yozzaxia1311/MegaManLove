@@ -21,7 +21,7 @@ function demostate:update(dt)
 end
 
 function demostate:stop()
-  megautils.unload(self) 
+  megautils.unload() 
 end
 
 function demostate:draw()

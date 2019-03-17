@@ -27,7 +27,7 @@ function bossintrostate:update(dt)
 end
 
 function bossintrostate:stop()
-  megautils.unload(self)
+  megautils.unload()
 end
 
 function bossintrostate:draw()

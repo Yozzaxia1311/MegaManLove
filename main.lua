@@ -1,6 +1,5 @@
 function initEngine()
   base64SaveFiles = false
-  useConsole = false
   showFPS = false
   framerate = 1/60
   
@@ -27,9 +26,6 @@ function initEngine()
   
   view.init(256, 224, 1)
   
-  if useConsole then console.init() end
-  
-  consoleFont = love.graphics.getFont() -- needs to be preserved
   mmFont = love.graphics.newImageFont("assets/misc/mm.png", "$abcdefghijklmnopqrstuvwxyz"
         .. "1234567890!?<>;/ :,-.+()%'")
   
@@ -65,11 +61,13 @@ function initEngine()
 end
 
 function love.load()
+  consoleFont = love.graphics.getFont() -- needs to be preserved
   OSSystem = love.system.getOS()
   touchControls = OSSystem == "Android" or OSSystem == "iOS"
   deadZone = 0.8
   maxPlayerCount = 4
   playerCount = 1
+  useConsole = love.keyboard
   local joysticks = love.joystick.getJoysticks()
   defaultInputBinds =
     #joysticks > 0 and
@@ -123,6 +121,7 @@ function love.load()
     ["dash"]={"b", "gamepad", joysticks[2]:getName()}} or {}
   gamePath = ""
   initEngine()
+  if useConsole then console.init() end
   local data = save.load("main.sav", true)
   if data then
     if data.fullscreen then
@@ -131,7 +130,7 @@ function love.load()
   else
     save.save("main.sav", {}, true)
   end
-  states.set("states/menus/disclaimerstate.lua") --megautils.loadGame("path/to/game/directory/if/standalone/game/is/desired")
+  states.set("states/disclaimer.state.lua") --megautils.loadGame("path/to/game/directory/if/standalone/game/is/desired")
 end
 
 function love.resize(w, h)

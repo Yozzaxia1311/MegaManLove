@@ -10,7 +10,7 @@ function titlestate:update(dt)
 end
 
 function titlestate:stop()
-  megautils.unload(self)
+  megautils.unload()
 end
 
 function titlestate:draw()
@@ -50,7 +50,7 @@ function title:update(dt)
       self.cont = true
       mmMusic.stopMusic()
       self.drawText = false
-      megautils.gotoState("states/menustate.lua")
+      megautils.gotoState("states/menu.state.lua")
     elseif control.selectDown[1] and not self.cont then
       self.cont = true
       self.drawText = false

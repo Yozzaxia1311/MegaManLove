@@ -75,7 +75,7 @@ function stickMan:healthChanged(o, c, i)
       globals.defeats.stickMan = true
       globals.weaponGet = "stick"
       megautils.resetGameObjects()
-      states.set("states/weapongetstate.lua")
+      states.set("states/weaponget.state.lua")
     end)
     megautils.remove(self, true)
   elseif self.changeHealth < 0 then
@@ -100,7 +100,7 @@ function stickMan:update(dt)
     if globals.defeats.stickMan then
       timer.winCutscene(function()
         megautils.resetGameObjects()
-        states.set("states/menustate.lua")
+        states.set("states/menu.state.lua")
       end)
       megautils.remove(self, true)
     elseif globals.mainPlayer and globals.mainPlayer.control then
@@ -211,7 +211,7 @@ function stickManIntro:update(dt)
     self.timer = math.min(self.timer+1, 300)
     if self.timer == 300 then
       mmMusic.stopMusic()
-      megautils.gotoState("states/demostate.lua")
+      megautils.gotoState("states/demo.state.lua")
       self.updated = false
     end
   end
@@ -329,7 +329,7 @@ function megamanStick:update(dt)
     self.timer = math.min(self.timer+1, 60)
     if self.timer == 60 then
       globals.stopMusicMenu = true
-      megautils.gotoState("states/menustate.lua")
+      megautils.gotoState("states/menu.state.lua")
       self.updated = false
     end
   end

@@ -7,7 +7,7 @@ console = {
   wait = 0,
   waitBuffer = {},
   x = 0,
-  y = -112,
+  y = -112*2,
   w = 256,
   h = 112,
   ignoreKeys = {
@@ -163,7 +163,7 @@ end
 function console.init()
   -- todo: exec autoexec.cfg for binds(?)
   --console.parse("exec autoexec")
-  console.print("Welcome to Mega Man LOVE")
+  console.print("Welcome to Mega Man Love")
   console.print("Run \"findcmd\" for a list of commands")
 end
 
