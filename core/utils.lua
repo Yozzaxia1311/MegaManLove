@@ -77,17 +77,6 @@ function string.split(self, inSplitPattern, outResults)
   return outResults
 end
 
-function io.scandir(directory)
-    local i, t, popen = 0, {}, io.popen
-    local pfile = popen('ls -a "'..directory..'"')
-    for filename in pfile:lines() do
-        i = i + 1
-        t[i] = filename
-    end
-    pfile:close()
-    return t
-end
-
 function table.merge(tables)
   local result = {}
   for k, v in pairs(tables) do
@@ -96,6 +85,10 @@ function table.merge(tables)
     end
   end
   return result
+end
+
+function math.dist2d(x, y, x2, y2)
+  return math.sqrt(math.pow(x-x2, 2)+math.pow(y-y2, 2))
 end
 
 function math.approach(v, to, am)
