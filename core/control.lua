@@ -53,7 +53,7 @@ function control.init()
   
   inputHandler.init()
   
-  local data = save.load("main.set", true)
+  local data = save.load("main.sav", true)
   local binds = {}
   step = 0
   if not data or not data.controls then

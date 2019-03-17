@@ -123,13 +123,13 @@ function love.load()
     ["dash"]={"b", "gamepad", joysticks[2]:getName()}} or {}
   gamePath = ""
   initEngine()
-  local data = save.load("main.set", true)
+  local data = save.load("main.sav", true)
   if data then
     if data.fullscreen then
       convar.setValue("r_fullscreen", data.fullscreen, true)
     end
   else
-    save.save("main.set", {}, true)
+    save.save("main.sav", {}, true)
   end
   states.set("states/menus/disclaimerstate.lua") --megautils.loadGame("path/to/game/directory/if/standalone/game/is/desired")
 end

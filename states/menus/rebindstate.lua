@@ -37,7 +37,7 @@ function rebinder:new()
   globals.lastKeyPressed = nil
   self.step = 0
   self.done = false
-  self.data = save.load("main.set", true) or {}
+  self.data = save.load("main.sav", true) or {}
   self.data.controls = {}
   inputHandler.refreshGamepads()
 end
@@ -67,7 +67,7 @@ function rebinder:update(dt)
         for k, v in pairs(self.data.controls) do
           inputHandler.bind(v[1], k, v[2], v[3])
         end
-        save.save("main.set", self.data, true)
+        save.save("main.sav", self.data, true)
         states.set(globals.sendBackToDisclaimer and "states/menus/disclaimerstate.lua" or globals.lastStateName, nil,
           globals.sendBackToDisclaimer)
         globals.sendBackToDisclaimer = nil
