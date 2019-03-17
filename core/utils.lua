@@ -98,6 +98,10 @@ function table.merge(tables)
   return result
 end
 
+function math.dist2d(x, y, x2, y2)
+  return math.sqrt(math.pow(x-x2, 2)+math.pow(y-y2, 2))
+end
+
 function math.approach(v, to, am)
   if v < to then 
 		v = math.min(v + am, to)
