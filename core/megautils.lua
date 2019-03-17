@@ -376,13 +376,25 @@ function megautils.dropItem(x, y)
   end
 end
 
-function megautils.closest(e, group)
+function megautils.dist(e, e1)
+  local path = megautils.calcPath(e.transform.x+e.collisionShape.w/2, e.transform.y+e.collisionShape.h/2,
+    e1.transform.x+e1.collisionShape.w/2, e1.transform.y+e1.collisionShape.h/2)
+  local path2 = megautils.calcPath(e1.transform.x+e1.collisionShape.w/2, e1.transform.y+e1.collisionShape.h/2,
+    e.transform.x+e1.collisionShape.w/2, e.transform.y+e.collisionShape.h/2)
+  return math.dist2d(megautils.circlePathX(e.transform.x+e.collisionShape.w/2, path2, e.collisionShape.w/2),
+    megautils.circlePathY(e.transform.y+e.collisionShape.h/2, path2, e.collisionShape.h/2),
+    megautils.circlePathX(e1.transform.x+e1.collisionShape.w/2, path2, e1.collisionShape.w/2),
+    megautils.circlePathY(e1.transform.y+e1.collisionShape.h/2, path2, e1.collisionShape.h/2))
+end
+
+function megautils.closest(e, group, single)
+  if not group or single then return group end
   if #group == 1 then return group[1] end
   local closest = math.huge
   local result
   for i=1, #group do
     local p = group[i]
-    local dist = math.sqrt(math.pow(e.transform.x-p.transform.x, 2)+math.pow(e.transform.y-p.transform.y, 2))
+    local dist = megautils.dist(e, p)
     if closest > dist then
       result = p
       closest = dist
@@ -391,10 +403,10 @@ function megautils.closest(e, group)
   return result
 end
 
-function megautils.autoFace(e)
-  local closest = megautils.closest(e, globals.allPlayers)
-    if closest then
-      if closest.transform.x+closest.collisionShape.w/2 > e.transform.x then
+function megautils.autoFace(e, to, single)
+  local closest = megautils.closest(e, to, single)
+  if closest then
+    if closest.transform.x+closest.collisionShape.w/2 > e.transform.x then
       e.side = 1
     elseif closest.transform.x+closest.collisionShape.w/2 < e.transform.x then
       e.side = -1
