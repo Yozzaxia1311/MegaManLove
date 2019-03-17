@@ -5,19 +5,15 @@ addobjects.register("ice", function(v)
 end)
 
 megautils.resetStateFuncs["ice"] = function()
-  ice.active = nil
-  ice.leftDecel = nil
-  ice.rightDecel = nil
-  ice.leftSpeed = nil
-  ice.rightSpeed = nil
-  ice.stepVelocity = nil
-  ice.stepLeftSpeed = nil
-  ice.stepRightSpeed = nil
-  ice.current = nil
-end
-
-function ice.init()
-  ice.active = false
+  ice.active = {}
+  ice.leftDecel = {}
+  ice.rightDecel = {}
+  ice.leftSpeed = {}
+  ice.rightSpeed = {}
+  ice.stepVelocity = {}
+  ice.stepLeftSpeed = {}
+  ice.stepRightSpeed = {}
+  ice.current = {}
 end
 
 function ice:new(x, y, w, h)
@@ -33,37 +29,37 @@ end
 
 function ice:update(dt)
   if megautils.outside(self) then return end
-  if globals.mainPlayer and globals.mainPlayer:collision(self, 0, 1) then
-    if not ice.active then
-      if not ice.active then
-        ice.init()
+  for i=1, #globals.allPlayers do
+    local p = globals.allPlayers[i]
+    if p:collision(self, 0, 1) then
+      if not ice.active[p] then
+        ice.leftDecel[p] = p.leftDecel
+        ice.rightDecel[p] = p.rightDecel
+        ice.leftSpeed[p] = p.leftSpeed
+        ice.rightSpeed[p] = p.rightSpeed
+        ice.stepVelocity[p] = p.stepVelocity
+        ice.stepLeftSpeed[p] = p.stepLeftSpeed
+        ice.stepRightSpeed[p] = p.stepRightSpeed
+        
+        p.leftDecel = 0.02
+        p.rightDecel = 0.02
+        p.leftSpeed = -0.1
+        p.rightSpeed = 0.1
+        p.stepVelocity = true
+        p.stepLeftSpeed = 0
+        p.stepRightSpeed = 0
       end
-      ice.leftDecel = globals.mainPlayer.leftDecel
-      ice.rightDecel = globals.mainPlayer.rightDecel
-      ice.leftSpeed = globals.mainPlayer.leftSpeed
-      ice.rightSpeed = globals.mainPlayer.rightSpeed
-      ice.stepVelocity = globals.mainPlayer.stepVelocity
-      ice.stepLeftSpeed = globals.mainPlayer.stepLeftSpeed
-      ice.stepRightSpeed = globals.mainPlayer.stepRightSpeed
-      
-      globals.mainPlayer.leftDecel = 0.02
-      globals.mainPlayer.rightDecel = 0.02
-      globals.mainPlayer.leftSpeed = -0.1
-      globals.mainPlayer.rightSpeed = 0.1
-      globals.mainPlayer.stepVelocity = true
-      globals.mainPlayer.stepLeftSpeed = 0
-      globals.mainPlayer.stepRightSpeed = 0
+      ice.active[p] = true
+      ice.current[p] = self
+    elseif ice.active[p] and self == ice.current[p] then
+      ice.active[p] = false
+      p.leftDecel = ice.leftDecel[p]
+      p.rightDecel = ice.rightDecel[p]
+      p.leftSpeed = ice.leftSpeed[p]
+      p.rightSpeed = ice.rightSpeed[p]
+      p.stepVelocity = ice.stepVelocity[p]
+      p.stepLeftSpeed = ice.stepLeftSpeed[p]
+      p.stepRightSpeed = ice.stepRightSpeed[p]
     end
-    ice.active = true
-    ice.current = self
-  elseif ice.active and self == ice.current then
-    ice.active = false
-    globals.mainPlayer.leftDecel = ice.leftDecel
-    globals.mainPlayer.rightDecel = ice.rightDecel
-    globals.mainPlayer.leftSpeed = ice.leftSpeed
-    globals.mainPlayer.rightSpeed = ice.rightSpeed
-    globals.mainPlayer.stepVelocity = ice.stepVelocity
-    globals.mainPlayer.stepLeftSpeed = ice.stepLeftSpeed
-    globals.mainPlayer.stepRightSpeed = ice.stepRightSpeed
   end
 end

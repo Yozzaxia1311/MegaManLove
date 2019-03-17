@@ -35,6 +35,28 @@ concmd["game"] = {
   fun = cmdGame,
 }
 
+function cmdGames(cmd)
+  local result = {}
+  for k, v in pairs(love.filesystem.getDirectoryItems("/")) do
+    local info = love.filesystem.getInfo(v)
+    if info and info.type == "directory" and love.filesystem.getInfo(v .. "/init.lua") then
+      result[#result+1] = v
+    end
+  end
+  if #result == 0 then
+    console.print("No games available")
+  else
+    for i=1, #result do
+      console.print(result[i])
+    end
+  end
+end
+concmd["games"] = {
+  helptext = "gives a list of games",
+  flags = {},
+  fun = cmdGames,
+}
+
 function cmdEcho(cmd)
   if not cmd[2] then return end
   console.print(cmd[2])
@@ -116,6 +138,37 @@ concmd["states"] = {
   helptext = "gives a list of states",
   flags = {},
   fun = cmdStates,
+}
+
+function cmdCheckpoint(cmd)
+  if not cmd[2] then return end
+  globals.checkpoint = cmd[2]
+end
+concmd["checkpoint"] = {
+  helptext = "set the checkpoint",
+  flags = {"cheat"},
+  fun = cmdCheckpoint,
+}
+
+function cmdCheckpoints(cmd)
+  if megautils.state().sectionHandler then
+    local result = {globals.checkpoint}
+    megautils.state().sectionHandler:iterate(function(e)
+        if e:is(checkpoint) and e.name ~= globals.checkpoint then
+          result[#result+1] = e.name
+        end
+      end)
+    for i=1, #result do
+      console.print(result[i])
+    end
+  else
+    console.print("This state does not have a section handler")
+  end
+end
+concmd["checkpoints"] = {
+  helptext = "gives a list of checkpoints",
+  flags = {},
+  fun = cmdCheckpoints,
 }
 
 function cmdGivehealth(cmd)

@@ -18,8 +18,6 @@ love.filesystem.load("core/audio.lua")()
 love.filesystem.load("core/loader.lua")()
 love.filesystem.load("core/gamestates.lua")()
 love.filesystem.load("core/entitysystem.lua")()
-love.filesystem.load("core/console.lua")()
-love.filesystem.load("core/commands.lua")()
 
 --Objects
 love.filesystem.load("entities/addobjects.lua")()

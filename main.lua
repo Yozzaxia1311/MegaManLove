@@ -57,6 +57,7 @@ function initEngine()
   loader.clear()
   megautils.load()
   megautils.resetGameObjects()
+  if love.keyboard then megautils.enableConsole() end
   collectgarbage()
 end
 
@@ -67,7 +68,7 @@ function love.load()
   deadZone = 0.8
   maxPlayerCount = 4
   playerCount = 1
-  useConsole = love.keyboard
+  useConsole = true
   local joysticks = love.joystick.getJoysticks()
   defaultInputBinds =
     #joysticks > 0 and
@@ -120,8 +121,9 @@ function love.load()
     ["next"]={"rightshoulder", "gamepad", joysticks[2]:getName()},
     ["dash"]={"b", "gamepad", joysticks[2]:getName()}} or {}
   gamePath = ""
+  love.filesystem.load("core/console.lua")()
+  love.filesystem.load("core/commands.lua")()
   initEngine()
-  if useConsole then console.init() end
   local data = save.load("main.sav", true)
   if data then
     if data.fullscreen then

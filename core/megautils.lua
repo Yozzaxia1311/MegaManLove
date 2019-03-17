@@ -3,6 +3,18 @@ megautils = {}
 megautils.resetStateFuncs = {}
 megautils.cleanFuncs = {}
 
+function megautils.enableConsole()
+  useConsole = true
+  console.init()
+end
+
+function megautils.disableConsole()
+  console.close()
+  console.lines = {}
+  console.y = -112*2
+  useConsole = false
+end
+
 function megautils.runFile(path, ignoreGamePath)
   if ignoreGamePath then
     return love.filesystem.load(path)()
