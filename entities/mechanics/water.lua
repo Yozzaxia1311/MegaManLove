@@ -48,6 +48,15 @@ function water:new(x, y, w, h)
     self:addToGroup("despawnable")
     self:addToGroup("water")
     self:addToGroup("freezable")
+    if megautils.groups()["submergable"] then
+      for k, v in pairs(self:collisionTable(megautils.groups()["submergable"])) do
+        if not v.isInWater then
+          self.current = true
+          v.gravity = v.gravity - .15
+          v.isInWater = true
+        end
+      end
+    end
   end
 end
 
