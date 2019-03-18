@@ -44,19 +44,11 @@ function water:new(x, y, w, h)
   self.transform.y = y
   self:setRectangleCollision(w, h)
   self.current = false
+  self.checked = false
   self.added = function(self)
     self:addToGroup("despawnable")
     self:addToGroup("water")
     self:addToGroup("freezable")
-    if megautils.groups()["submergable"] then
-      for k, v in pairs(self:collisionTable(megautils.groups()["submergable"])) do
-        if not v.isInWater then
-          self.current = true
-          v.gravity = v.gravity - .15
-          v.isInWater = true
-        end
-      end
-    end
   end
 end
 
@@ -75,6 +67,16 @@ end
 
 function water:update(dt)
   if megautils.groups()["submergable"] then
+    if not self.checked then
+      self.checked = true
+      for k, v in pairs(self:collisionTable(megautils.groups()["submergable"])) do
+        if not v.isInWater then
+          self.current = true
+          v.gravity = v.gravity - .15
+          v.isInWater = true
+        end
+      end
+    end
     for k, v in ipairs(megautils.groups()["submergable"]) do
       if v:collision(self) and not v.isInWater then
         self.current = true
