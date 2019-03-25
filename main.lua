@@ -4,8 +4,8 @@ function initEngine()
   framerate = 1/60
   
   globals = {}
-  love.filesystem.load("requires.lua")()
   love.graphics.setDefaultFilter("nearest", "nearest")
+  love.filesystem.load("requires.lua")()
   
   control.init()
   
