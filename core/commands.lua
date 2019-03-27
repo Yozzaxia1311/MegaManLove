@@ -77,7 +77,7 @@ concmd["exit"] = concmd["quit"]
 function cmdState(cmd)
   if not cmd[2] then return end
   local map
-  if love.filesystem.getInfo(cmd[2] .. "state.lua") then
+  if love.filesystem.getInfo(cmd[2] .. ".state.lua") then
     local path = cmd[2]:split("/")
     if #path > 1 then
       local d = love.filesystem.getInfo(path[1])
@@ -131,7 +131,7 @@ function cmdStates(cmd)
     return
   end
   for i=1, #result do
-    console.print(result[i]:sub(-10))
+    console.print(result[i]:sub(1, -11))
   end
 end
 concmd["states"] = {
