@@ -305,6 +305,7 @@ function megaman:new(x, y, side, drop, p)
   self.healthHandler = healthhandler({252, 224, 168}, {255, 255, 255}, {0, 0, 0}, nil, nil, globals.lifeSegments, self)
   self.healthHandler.render = false
   megaman.weaponHandler[self.player]:reinit()
+  megaman.weaponHandler[self.player].render = false
   megautils.add(megaman.weaponHandler[self.player])
   megautils.add(self.healthHandler)
   self.health = self.healthHandler.health
@@ -315,6 +316,7 @@ function megaman:new(x, y, side, drop, p)
         local player = globals.allPlayers[i+1]
         if player then
           player.healthHandler.render = not player.drop
+          megaman.weaponHandler[player.player].render = not player.drop
           player.healthHandler.transform.x = view.x+24 + (i*32)
           player.healthHandler.transform.y = view.y+80
           megaman.weaponHandler[player.player].transform.x = view.x+32 + (i*32)
