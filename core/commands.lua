@@ -97,14 +97,13 @@ function cmdState(cmd)
       else
         gamePath = ""
         map = cmd[2] .. ".state.lua"
-        globals.resetState = true
-        globals.manageStageResources = true
         megautils.resetGameObjects()
       end
     end
   end
   if map == nil then console.print("No such state \""..cmd[2].."\"") return end
   love.audio.stop()
+  mmMusic.stopMusic()
   globals.manageStageResources = true
   globals.resetState = true
   states.set(map)
