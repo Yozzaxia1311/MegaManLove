@@ -97,6 +97,8 @@ function cmdState(cmd)
       else
         gamePath = ""
         map = cmd[2] .. ".state.lua"
+        globals.resetState = true
+        globals.manageStageResources = true
         megautils.resetGameObjects()
       end
     end
