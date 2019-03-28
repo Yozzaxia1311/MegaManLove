@@ -99,7 +99,7 @@ function healthhandler:update(dt)
 end
 
 function healthhandler:draw()
-  if self.player == globals.mainPlayer or (not globals.mainPlayer and self.lifeRecord) then
+  if self.player and (self.player == globals.mainPlayer or (not globals.mainPlayer and self.lifeRecord)) then
     if not globals.infiniteLives then
       love.graphics.setColor(0, 0, 0, 1)
       love.graphics.rectangle("fill", self.transform.x, self.transform.y, 8, 8)
