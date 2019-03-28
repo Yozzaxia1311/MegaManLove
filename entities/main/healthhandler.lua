@@ -72,7 +72,7 @@ function healthhandler:update(dt)
     end
   end
   self.health = math.clamp(self.health, 0, 4*self.segments)
-  if self.player == globals.mainPlayer and self.player.control and self.player.updated then
+  if self.player and self.player == globals.mainPlayer and self.player.control and self.player.updated then
     for i=1, playerCount do
       if healthhandler.playerTimers[i] > -1 then
         healthhandler.playerTimers[i] = math.max(healthhandler.playerTimers[i]-1, 0)
