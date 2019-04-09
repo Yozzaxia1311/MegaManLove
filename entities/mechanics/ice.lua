@@ -16,6 +16,16 @@ megautils.resetStateFuncs["ice"] = function()
   ice.current = {}
 end
 
+ice.active = {}
+ice.leftDecel = {}
+ice.rightDecel = {}
+ice.leftSpeed = {}
+ice.rightSpeed = {}
+ice.stepVelocity = {}
+ice.stepLeftSpeed = {}
+ice.stepRightSpeed = {}
+ice.current = {}
+
 function ice:new(x, y, w, h)
   ice.super.new(self)
   self.transform.y = y

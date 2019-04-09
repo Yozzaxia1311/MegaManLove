@@ -56,7 +56,8 @@ end)
 
 function megaman.properties(self)
   self.gravityType = 0
-  self.gravity = 0.25
+  self.normalGravity = 0.25
+  self.gravity = self.normalGravity
   self.maxChargeTime = 50
   self.jumpSpeed = -5.25
   self.jumpDecel = 5.25

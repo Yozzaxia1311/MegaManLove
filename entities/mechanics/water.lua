@@ -35,16 +35,17 @@ end
 water = entity:extend()
 
 addobjects.register("water", function(v)
-  megautils.add(water(v.x, v.y, v.width, v.height))
+  megautils.add(water(v.x, v.y, v.width, v.height, v.properties["grav"]))
 end)
 
-function water:new(x, y, w, h)
+function water:new(x, y, w, h, grav)
   water.super.new(self)
   self.transform.x = x
   self.transform.y = y
   self:setRectangleCollision(w, h)
   self.current = false
   self.checked = false
+  self.grav = grav or 0.1
   self.added = function(self)
     self:addToGroup("despawnable")
     self:addToGroup("water")
@@ -57,7 +58,7 @@ function water:removed()
     for k, v in ipairs(megautils.groups()["submergable"]) do
       v.isInWater = #v:collisionTable(megautils.groups()["water"]) ~= 0
       if not v.isInWater then
-        v.gravity = 0.25
+        v.gravity = v.normalGravity
         self.current = false
       end
     end
@@ -72,7 +73,7 @@ function water:update(dt)
       for k, v in pairs(self:collisionTable(megautils.groups()["submergable"])) do
         if not v.isInWater then
           self.current = true
-          v.gravity = v.gravity - .15
+          v.gravity = self.grav
           v.isInWater = true
         end
       end
@@ -80,7 +81,7 @@ function water:update(dt)
     for k, v in ipairs(megautils.groups()["submergable"]) do
       if v:collision(self) and not v.isInWater then
         self.current = true
-        v.gravity = v.gravity - .15
+        v.gravity = self.grav
         if v.transform.y < self.transform.y then
           megautils.add(splash((v.transform.x-self.transform.x)+(v.collisionShape.w/2), -8, self, -1))
           mmSfx.play("splash")
@@ -91,7 +92,7 @@ function water:update(dt)
         end
         v.isInWater = true
       elseif self.current and v.isInWater and #v:collisionTable(megautils.groups()["water"]) == 0 then
-        v.gravity = v.gravity + .15
+        v.gravity = v.normalGravity
         if v.transform.y < self.transform.y then
           megautils.add(splash((v.transform.x-self.transform.x)+(v.collisionShape.w/2), -8, self, -1))
           mmSfx.play("splash")
@@ -105,6 +106,72 @@ function water:update(dt)
       end
       if not self.current and v.isInWater and v:collision(self) then
         for k, i in ipairs(megautils.groups()["water"]) do
+          i.current = false
+        end
+        self.current = true
+      end
+    end
+  end
+end
+
+space = entity:extend()
+
+addobjects.register("space", function(v)
+  megautils.add(space(v.x, v.y, v.width, v.height, v.properties["grav"]))
+end)
+
+function space:new(x, y, w, h, grav)
+  space.super.new(self)
+  self.transform.x = x
+  self.transform.y = y
+  self:setRectangleCollision(w, h)
+  self.current = false
+  self.checked = false
+  self.grav = grav or 0.1
+  self.added = function(self)
+    self:addToGroup("despawnable")
+    self:addToGroup("space")
+    self:addToGroup("freezable")
+  end
+end
+
+function space:removed()
+  if megautils.groups()["submergable"] and self.current then
+    for k, v in ipairs(megautils.groups()["submergable"]) do
+      v.isInWater = #v:collisionTable(megautils.groups()["space"]) ~= 0
+      if not v.isInWater then
+        v.gravity = v.normalGravity
+        self.current = false
+      end
+    end
+  end
+  self:removeFromAllGroups()
+end
+
+function space:update(dt)
+  if megautils.groups()["submergable"] then
+    if not self.checked then
+      self.checked = true
+      for k, v in pairs(self:collisionTable(megautils.groups()["submergable"])) do
+        if not v.isInSpace then
+          self.current = true
+          v.gravity = self.grav
+          v.isInSpace = true
+        end
+      end
+    end
+    for k, v in ipairs(megautils.groups()["submergable"]) do
+      if v:collision(self) and not v.isInSpace then
+        self.current = true
+        v.gravity = self.grav
+        v.isInSpace = true
+      elseif self.current and v.isInSpace and #v:collisionTable(megautils.groups()["space"]) == 0 then
+        v.gravity = v.normalGravity
+        v.isInSpace = false
+        self.current = false
+      end
+      if not self.current and v.isInSpace and v:collision(self) then
+        for k, i in ipairs(megautils.groups()["space"]) do
           i.current = false
         end
         self.current = true

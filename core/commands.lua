@@ -106,6 +106,7 @@ function cmdState(cmd)
   mmMusic.stopMusic()
   globals.manageStageResources = true
   globals.resetState = true
+  if cmd[3] then globals.checkpoint = cmd[3] end
   states.set(map)
 end
 concmd["state"] = {
