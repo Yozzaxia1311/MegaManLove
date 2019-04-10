@@ -21,7 +21,7 @@ megaman.colorOutline = {}
 megaman.colorOne = {}
 megaman.colorTwo = {}
 
-addobjects.register("player_one", function(v)
+addobjects.register("player", function(v)
   if (not v.properties["spawnCamera"] or v.properties["spawnCamera"]) and
     v.properties["checkpoint"] == globals.checkpoint then
     megautils.add(camera(v.x, v.y, v.properties["doScrollX"], v.properties["doScrollY"]))
@@ -29,7 +29,7 @@ addobjects.register("player_one", function(v)
   end
 end, -1)
 
-addobjects.register("player_one", function(v)
+addobjects.register("player", function(v)
   if (not v.properties["spawnCamera"] or v.properties["spawnCamera"]) and
     v.properties["checkpoint"] == globals.checkpoint and not camera.once and camera.main then
     camera.once = true
@@ -46,10 +46,14 @@ addobjects.register("player_one", function(v)
   end
 end, 2)
 
-addobjects.register("player_one", function(v)
+addobjects.register("player", function(v)
   if v.properties["checkpoint"] == globals.checkpoint then
-    for i=1, playerCount do
-      megautils.add(megaman(v.x, v.y-5, v.properties["side"], v.properties["drop"], i))
+    if v.properties["individual"] then
+      megautils.add(megaman(v.x, v.y-5, v.properties["side"], v.properties["drop"], #globals.allPlayers+1))
+    else
+      for i=1, playerCount do
+        megautils.add(megaman(v.x, v.y-5, v.properties["side"], v.properties["drop"], i))
+      end
     end
   end
 end)

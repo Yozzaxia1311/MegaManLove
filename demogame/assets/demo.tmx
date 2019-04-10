@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.2" orientation="orthogonal" renderorder="right-down" width="64" height="84" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="140">
+<map version="1.2" tiledversion="1.2.2" orientation="orthogonal" renderorder="right-down" width="64" height="84" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="143">
  <tileset firstgid="1" source="tilesets/demo_tileset.tsx"/>
  <layer id="1" name="bg" width="64" height="84">
   <data encoding="csv">
@@ -177,7 +177,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="3" name="sections" visible="0">
+ <objectgroup id="3" name="sections">
   <object id="5" name="section" x="0" y="224" width="512" height="224"/>
   <object id="6" name="section" x="256" y="0" width="256" height="224"/>
   <object id="7" name="section" x="512" y="0" width="256" height="224"/>
@@ -194,9 +194,10 @@
   <object id="111" name="section" x="256" y="896" width="256" height="224"/>
  </objectgroup>
  <objectgroup id="4" name="objs">
-  <object id="2" name="player_one" x="64" y="400" width="16" height="16">
+  <object id="2" name="player" x="64" y="400" width="16" height="16">
    <properties>
     <property name="checkpoint" value="start"/>
+    <property name="individual" type="bool" value="true"/>
    </properties>
   </object>
   <object id="4" name="solid" x="0" y="416" width="352" height="16"/>
@@ -311,7 +312,7 @@
   <object id="91" name="left" x="256" y="448" width="16" height="64"/>
   <object id="92" name="down" x="176" y="656" width="48" height="16"/>
   <object id="94" name="ladder" x="304" y="512" width="16" height="64"/>
-  <object id="96" name="player_one" x="528" y="64" width="16" height="16">
+  <object id="96" name="player" x="528" y="64" width="16" height="16">
    <properties>
     <property name="checkpoint" value="one"/>
    </properties>
@@ -326,7 +327,7 @@
     <property name="name" value="boss"/>
    </properties>
   </object>
-  <object id="100" name="player_one" x="288" y="848" width="16" height="16">
+  <object id="100" name="player" x="288" y="848" width="16" height="16">
    <properties>
     <property name="checkpoint" value="boss"/>
    </properties>
@@ -390,5 +391,23 @@
   <object id="135" name="solid" x="400" y="864" width="192" height="32"/>
   <object id="136" name="solid" x="368" y="864" width="16" height="32"/>
   <object id="139" name="space" x="416" y="528" width="64" height="112"/>
+  <object id="140" name="player" x="96" y="400" width="16" height="16">
+   <properties>
+    <property name="checkpoint" value="start"/>
+    <property name="individual" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="141" name="player" x="32" y="400" width="16" height="16">
+   <properties>
+    <property name="checkpoint" value="start"/>
+    <property name="individual" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="142" name="player" x="128" y="400" width="16" height="16">
+   <properties>
+    <property name="checkpoint" value="start"/>
+    <property name="individual" type="bool" value="true"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>
