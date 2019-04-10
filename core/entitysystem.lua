@@ -261,7 +261,7 @@ function entity:new(basic)
   self.render = true
   self.isSolid = 0
   self.velocity = velocity()
-  self.gravity = 0.12
+  self.gravity = 0.25
   self.blockCollision = false
   self.ground = false
   self.xcoll = 0
