@@ -385,25 +385,25 @@
   <object id="135" name="solid" x="400" y="864" width="192" height="32"/>
   <object id="136" name="solid" x="368" y="864" width="16" height="32"/>
   <object id="139" name="space" x="416" y="528" width="64" height="112"/>
-  <object id="142" name="player" x="128" y="400" width="16" height="16">
+  <object id="142" name="player" x="64" y="400" width="16" height="16">
    <properties>
     <property name="checkpoint" value="start"/>
     <property name="individual" type="int" value="1"/>
    </properties>
   </object>
-  <object id="143" name="player" x="96" y="400" width="16" height="16">
+  <object id="143" name="player" x="48" y="400" width="16" height="16">
    <properties>
     <property name="checkpoint" value="start"/>
     <property name="individual" type="int" value="2"/>
    </properties>
   </object>
-  <object id="144" name="player" x="64" y="400" width="16" height="16">
+  <object id="144" name="player" x="32" y="400" width="16" height="16">
    <properties>
     <property name="checkpoint" value="start"/>
     <property name="individual" type="int" value="3"/>
    </properties>
   </object>
-  <object id="145" name="player" x="32" y="400" width="16" height="16">
+  <object id="145" name="player" x="16" y="400" width="16" height="16">
    <properties>
     <property name="checkpoint" value="start"/>
     <property name="individual" type="int" value="4"/>

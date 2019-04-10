@@ -175,8 +175,9 @@ concmd["checkpoints"] = {
 
 function cmdGivehealth(cmd)
   if not cmd[2] then return end
-  if globals.mainPlayer then
-    globals.mainPlayer:hurt({globals.mainPlayer}, numberSanitize(cmd[2]), 1)
+  for i=1, playerCount do
+    globals.allPlayers[i].iFrame = globals.allPlayers[i].maxIFrame
+    globals.allPlayers[i]:hurt({globals.allPlayers[i]}, numberSanitize(cmd[2]))
   end
 end
 concmd["givehealth"] = {
@@ -186,8 +187,9 @@ concmd["givehealth"] = {
 }
 
 function cmdKill(cmd)
-  if globals.mainPlayer then
-    globals.mainPlayer:hurt({globals.mainPlayer}, -999, 1)
+  for i=1, playerCount do
+    globals.allPlayers[i].iFrame = globals.allPlayers[i].maxIFrame
+    globals.allPlayers[i]:hurt({globals.allPlayers[i]}, -9999)
   end
 end
 concmd["kill"] = {
