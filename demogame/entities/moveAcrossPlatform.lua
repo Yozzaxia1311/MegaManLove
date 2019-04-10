@@ -15,6 +15,7 @@ function moveAcrossPlatform:new(x, y, toX, toY, s)
     self:addToGroup("freezable")
     self:addToGroup("removeOnTransition")
   end
+  self.isSolid = 1
   self.transform.x = x
   self.transform.y = y
   self:setRectangleCollision(32, 16)
@@ -30,7 +31,6 @@ function moveAcrossPlatform:removed()
   if self.spawner then
     self.spawner.canSpawn = true
   end
-   movingOneway.clean(self)
 end
 
 function moveAcrossPlatform:draw()
@@ -41,20 +41,15 @@ end
 function moveAcrossPlatform:update(dt)
   if self.state == 0 then
     for i=1, #globals.allPlayers do
-      local player = globals.allPlayers[i]
-      if oneway.collision(player, self, player.velocity.velx, player.velocity.vely+1) then
+      local p = globals.allPlayers[i]
+      if p.transform.y == self.transform.y - p.collisionShape.h then
         self.state = 1
       end
     end
   elseif self.state == 1 then
-    local dx, dy = self.transform.x, self.transform.y
     self.tween:update(1/60)
-    self.transform.x = math.round(self.transform.x)
-    self.transform.y = math.round(self.transform.y)
-    self.velocity.velx = self.transform.x - dx
-    self.velocity.vely = self.transform.y - dy
   end
-  movingOneway.shift(self, megautils.groups()["carry"])
+  collision.doCollision(self)
   if megautils.outside(self) then
     megautils.remove(self, true)
   end

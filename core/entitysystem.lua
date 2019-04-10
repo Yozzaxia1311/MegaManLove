@@ -8,6 +8,7 @@ function entitysystem:new()
   self.groups = {}
   self.static = {}
   self.layers = {}
+  self.all = {}
   self.addQueue = nil
   self.removeQueue = nil
   self.doSort = false
@@ -28,9 +29,9 @@ function entitysystem:sortLayers()
 end
 
 function entitysystem:add(e, queue)
-  if not e then return end
+  if e == nil then return end
   if queue then
-    if not self.addQueue then self.addQueue = {} end
+    if self.addQueue == nil then self.addQueue = {} end
     if not table.contains(self.addQueue, e) then
       self.addQueue[#self.addQueue+1] = e
     end
@@ -53,9 +54,12 @@ function entitysystem:add(e, queue)
       end
       self.updates[#self.updates+1] = e
     end
+    self.all[#self.all+1] = e
     e.isRemoved = false
     e.isAdded = true
     e:added()
+    e.previousX = e.transform.x
+    e.previousY = e.transform.y
   end
 end
 
@@ -123,9 +127,9 @@ function entitysystem:setLayer(e, l)
 end
 
 function entitysystem:remove(e, queue)
-  if not e then return end
+  if e == nil then return end
   if queue then
-    if not self.removeQueue then self.removeQueue = {} end
+    if self.removeQueue == nil then self.removeQueue = {} end
     if not table.contains(self.removeQueue, e) then
       self.removeQueue[#self.removeQueue+1] = e
     end
@@ -136,6 +140,7 @@ function entitysystem:remove(e, queue)
     e:removeStatic()
     table.removevaluearray(e.actualLayer.data, e)
     table.removevaluearray(self.updates, e)
+    table.removevaluearray(self.all, e)
     e.isAdded = false
   end
 end
@@ -172,6 +177,8 @@ end
 function entitysystem:update(dt)
   for i=1, #self.updates do
     local t = self.updates[i]
+    t.previousX = t.transform.x
+    t.previousY = t.transform.y
     if t.updated and not t.isRemoved then
       t:update(dt)
       if states.switched then
@@ -245,35 +252,35 @@ function entity:new(basic)
   self.transform.x = 0
   self.transform.y = 0
   self.collisionShape = nil
+  self.flashRender = true
   self.layer = 0
   self.updateLayer = 0
   self.isRemoved = false
   self.updated = true
   self.otherUpdates = {["global"]=true}
   self.render = true
-  self.flashRender = true
-  
-  if not basic then
-    self.maxIFrame = 80
-    self.iFrame = self.maxIFrame
-    self.health = 28
-    self.changeHealth = 0
-    self.collisionChecks = {}
-    self.collisionChecks.ground = false
-    self.collisionChecks.ceiling = false
-    self.collisionChecks.leftWall = false
-    self.collisionChecks.rightWall = false
-    self.collisionChecks.touching = false
-    self.shakeX = 0
-    self.shakeY = 0
-    self.shakeTime = 0
-    self.maxShakeTime = 5
-    self.shakeSide = 1
-    self.doShake = false
-    self.moveByMoveX = 0
-    self.moveByMoveY = 0
-  end
+  self.isSolid = 0
+  self.velocity = velocity()
+  self.gravity = 0.25
+  self.blockCollision = false
+  self.ground = false
+  self.xcoll = 0
+  self.ycoll = 0
+  self.maxIFrame = 80
+  self.iFrame = self.maxIFrame
+  self.health = 28
+  self.changeHealth = 0
+  self.shakeX = 0
+  self.shakeY = 0
+  self.shakeTime = 0
+  self.maxShakeTime = 5
+  self.shakeSide = 1
+  self.doShake = false
+  self.moveByMoveX = 0
+  self.moveByMoveY = 0
 end
+
+function entity:grav() end
 
 function entity:updateShake()
   if self.doShake then
@@ -292,14 +299,6 @@ function entity:setShake(x, y, t)
   self.shakeY = y
   self.maxShakeTime = t or self.maxShakeTime
   self.doShake = x ~= 0 or y ~= 0
-end
-
-function entity:resetCollisionChecks()
-  self.collisionChecks.ground = false
-  self.collisionChecks.ceiling = false
-  self.collisionChecks.leftWall = false
-  self.collisionChecks.rightWall = false
-  self.collisionChecks.touching = false
 end
 
 function entity:updateFlash(length, range)
@@ -354,17 +353,8 @@ function entity:removeFromAllGroups()
   megautils.state().system:removeFromAllGroups(self, g)
 end
 
-function entity:block(velocity)
-  if self.collisionChecks.ground or self.collisionChecks.ceiling then
-    velocity.vely = 0
-  end
-  if self.collisionChecks.leftWall or self.collisionChecks.rightWall then
-    velocity.velx = 0
-  end
-end
-
 function entity:addToGroup(g)
-  if not states.currentstate.system.groups[g] then
+  if states.currentstate.system.groups[g] == nil then
     states.currentstate.system.groups[g] = {}
   end
   if not table.contains(states.currentstate.system.groups[g], self) then
@@ -402,7 +392,7 @@ function entity:moveBy(xx, yy, round)
 end
 
 function entity:collision(e, x, y)
-  if not e or not self.collisionShape or not e.collisionShape then return false end
+  if e == nil or self.collisionShape == nil or e.collisionShape == nil then return false end
   if self.collisionShape.type == 0 then
     if e.collisionShape.type == 0 then
       return rectOverlaps(self.transform.x + (x or 0), self.transform.y + (y or 0),
@@ -414,7 +404,8 @@ function entity:collision(e, x, y)
     end
   elseif self.collisionShape.type == 1 then
     if e.collisionShape.type == 0 then
-      return rectOverlaps(self.transform.x + (x or 0), self.transform.y + (y or 0), self.collisionShape.data,
+      return imageRectOverlaps(self.transform.x + (x or 0), self.transform.y + (y or 0),
+        e.collisionShape.w, e.collisionShape.h, self.collisionShape.data,
         e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h)
     elseif e.collisionShape.type == 1 then
       return false --image/image collision
@@ -424,7 +415,7 @@ function entity:collision(e, x, y)
 end
 
 function entity:drawCollision()
-  if not self.collisionShape then return false end
+  if self.collisionShape == nil then return false end
   if self.collisionShape.type == 0 then
     love.graphics.rectangle("line", self.transform.x, self.transform.y, self.collisionShape.w, self.collisionShape.h)
   elseif self.collisionShape.type == 1 then
@@ -437,12 +428,12 @@ function entity:collisionRect(e, x, y)
     e.transform.x, e.transform.y, e:width(), e:height())
 end
 
-function entity:collisionTable(t, x, y)
+function entity:collisionTable(t, x, y, func)
   local result = {}
-  if not t then return result end
+  if t == nil then return result end
   for k=1, #t do
     local v = t[k]
-    if self:collision(v, x, y) then
+    if self:collision(v, x, y) and (func == nil and true or func(v)) then
       result[#result+1] = v
     end
   end

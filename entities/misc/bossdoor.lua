@@ -26,7 +26,6 @@ function bossdoor:new(x, y, seg, dir, scrollx, scrolly, spd)
   self.maxSegments = seg
   self.spd = spd or 1
   self.state = 0
-  self.once = false
   self.player = nil
   self:setDirection(dir)
 end
@@ -44,11 +43,9 @@ function bossdoor:update(dt)
     (self.transform.x+self.collisionShape.w > camera.main.scrollx+camera.main.scrollw and self.dir == "right") or
     (self.transform.y < camera.main.scrolly and self.dir == "up") or
     (self.transform.y+self.collisionShape.h > camera.main.scrolly+camera.main.scrollh and self.dir == "down")) then
-    self.once = false
-    self:removeFromGroup("solid")
-  elseif not self.once then
-    self.once = true
-    self:addToGroup("solid")
+    self.isSolid = 0
+  else
+    self.isSolid = 1
   end
   if self.state == 0 then
     self.timer = 0
@@ -129,7 +126,7 @@ function bossdoor:update(dt)
         megautils.unfreeze(globals.allPlayers)
         megautils.state().system.afterUpdate = nil
       end
-      self.state = -1
+      self.state = 0
     end
   end
 end

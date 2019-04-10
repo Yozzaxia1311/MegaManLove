@@ -32,6 +32,11 @@ function smallHealth:new(x, y, despwn, id, spawner)
   self.timer = 0
   self.render = false
   self.once = false
+  self.blockCollision = true
+end
+
+function smallHealth:grav()
+  self.velocity.vely = self.velocity.vely + self.gravity
 end
 
 function smallHealth:update(dt)
@@ -42,18 +47,7 @@ function smallHealth:update(dt)
     self.once = true
     self.render = true
   end
-  if not self.onSlope then
-    self.velocity.vely = math.min(self.velocity.vely + .25, 7)
-  end
-  self:resetCollisionChecks()
-  slope.blockFromGroup(self, megautils.groups()["slope"], self.velocity.velx, self.velocity.vely)
-  self:block(self.velocity)
-  oneway.blockFromGroup(self, megautils.groups()["oneway"], self.velocity.vely)
-  self:block(self.velocity)
-  solid.blockFromGroup(self, table.merge({megautils.groups()["solid"], megautils.groups()["death"]}),
-    self.velocity.velx, self.velocity.vely)
-  self:block(self.velocity)
-  self:moveBy(self.velocity.velx, self.velocity.vely)
+  collision.doCollision(self)
   for i=1, playerCount do
     local p = globals.allPlayers[i]
     if self:collision(p) then
@@ -134,6 +128,11 @@ function health:new(x, y, despwn, id, spawner)
   self.timer = 0
   self.render = false
   self.once = false
+  self.blockCollision = true
+end
+
+function health:grav()
+  self.velocity.vely = self.velocity.vely + self.gravity
 end
 
 function health:update(dt)
@@ -144,18 +143,7 @@ function health:update(dt)
     self.once = true
     self.render = true
   end
-  if not self.onSlope then
-    self.velocity.vely = math.min(self.velocity.vely + .25, 7)
-  end
-  self:resetCollisionChecks()
-  slope.blockFromGroup(self, megautils.groups()["slope"], self.velocity.velx, self.velocity.vely)
-  self:block(self.velocity)
-  oneway.blockFromGroup(self, megautils.groups()["oneway"], self.velocity.vely)
-  self:block(self.velocity)
-  solid.blockFromGroup(self, table.merge({megautils.groups()["solid"], megautils.groups()["death"]}),
-    self.velocity.velx, self.velocity.vely)
-  self:block(self.velocity)
-  self:moveBy(self.velocity.velx, self.velocity.vely)
+  collision.doCollision(self)
   for i=1, playerCount do
     local p = globals.allPlayers[i]
     if self:collision(p) then
@@ -237,6 +225,11 @@ function smallEnergy:new(x, y, despwn, id, spawner)
   self.timer = 0
   self.render = false
   self.once = false
+  self.blockCollision = true
+end
+
+function smallEnergy:grav()
+  self.velocity.vely = self.velocity.vely + self.gravity
 end
 
 function smallEnergy:update(dt)
@@ -247,18 +240,7 @@ function smallEnergy:update(dt)
     self.once = true
     self.render = true
   end
-  if not self.onSlope then
-    self.velocity.vely = math.min(self.velocity.vely + .25, 7)
-  end
-  self:resetCollisionChecks()
-  slope.blockFromGroup(self, megautils.groups()["slope"], self.velocity.velx, self.velocity.vely)
-  self:block(self.velocity)
-  oneway.blockFromGroup(self, megautils.groups()["oneway"], self.velocity.vely)
-  self:block(self.velocity)
-  solid.blockFromGroup(self, table.merge({megautils.groups()["solid"], megautils.groups()["death"]}),
-    self.velocity.velx, self.velocity.vely)
-  self:block(self.velocity)
-  self:moveBy(self.velocity.velx, self.velocity.vely)
+  collision.doCollision(self)
   for i=1, playerCount do
     local p = globals.allPlayers[i]
     if self:collision(p) then
@@ -349,6 +331,11 @@ function energy:new(x, y, despwn, id, spawner)
   self.timer = 0
   self.render = false
   self.once = false
+  self.blockCollision = true
+end
+
+function energy:grav()
+  self.velocity.vely = self.velocity.vely + self.gravity
 end
 
 function energy:update(dt)
@@ -359,18 +346,7 @@ function energy:update(dt)
     self.once = true
     self.render = true
   end
-  if not self.onSlope then
-    self.velocity.vely = math.min(self.velocity.vely + .25, 7)
-  end
-  self:resetCollisionChecks()
-  slope.blockFromGroup(self, megautils.groups()["slope"], self.velocity.velx, self.velocity.vely)
-  self:block(self.velocity)
-  oneway.blockFromGroup(self, megautils.groups()["oneway"], self.velocity.vely)
-  self:block(self.velocity)
-  solid.blockFromGroup(self, table.merge({megautils.groups()["solid"], megautils.groups()["death"]}),
-    self.velocity.velx, self.velocity.vely)
-  self:block(self.velocity)
-  self:moveBy(self.velocity.velx, self.velocity.vely)
+  collision.doCollision(self)
   for i=1, playerCount do
     local p = globals.allPlayers[i]
     if self:collision(p) then
@@ -462,6 +438,11 @@ function life:new(x, y, despwn, id, spawner)
   self.timer = 0
   self.render = false
   self.once = false
+  self.blockCollision = true
+end
+
+function life:grav()
+  self.velocity.vely = self.velocity.vely + self.gravity
 end
 
 function life:update(dt)
@@ -472,29 +453,28 @@ function life:update(dt)
     self.once = true
     self.render = true
   end
-  if not self.onSlope then
-    self.velocity.vely = math.min(self.velocity.vely + .25, 7)
-  end
-  self:resetCollisionChecks()
-  slope.blockFromGroup(self, megautils.groups()["slope"], self.velocity.velx, self.velocity.vely)
-  self:block(self.velocity)
-  oneway.blockFromGroup(self, megautils.groups()["oneway"], self.velocity.vely)
-  self:block(self.velocity)
-  solid.blockFromGroup(self, table.merge({megautils.groups()["solid"], megautils.groups()["death"]}),
-    self.velocity.velx, self.velocity.vely)
-  self:block(self.velocity)
-  self:moveBy(self.velocity.velx, self.velocity.vely)
+  collision.doCollision(self)
   for i=1, playerCount do
     local p = globals.allPlayers[i]
     if self:collision(p) then
-      globals.lives = math.min(globals.lives+1, globals.maxLives)
-      if not self.despawn then
-        life.banIds[#life.banIds+1] = self.id
+      if globals.infiniteLives then
+        p:addHealth(9999)
+        if not self.despawn then
+          life.banIds[#life.banIds+1] = self.id
+        end
+        megautils.state().sectionHandler:removeEntity(self.spawner)
+        megautils.remove(self.spawner, true)
+        megautils.remove(self, true)
+      else
+        globals.lives = math.min(globals.lives+1, globals.maxLives)
+        if not self.despawn then
+          life.banIds[#life.banIds+1] = self.id
+        end
+        mmSfx.play("life")
+        megautils.state().sectionHandler:removeEntity(self.spawner)
+        megautils.remove(self.spawner, true)
+        megautils.remove(self, true)
       end
-      mmSfx.play("life")
-      megautils.state().sectionHandler:removeEntity(self.spawner)
-      megautils.remove(self.spawner, true)
-      megautils.remove(self, true)
       return
     end
   end
@@ -575,6 +555,11 @@ function eTank:new(x, y, despwn, id, spawner)
   self.timer = 0
   self.render = false
   self.once = false
+  self.blockCollision = true
+end
+
+function eTank:grav()
+  self.velocity.vely = self.velocity.vely + self.gravity
 end
 
 function eTank:update(dt)
@@ -585,18 +570,7 @@ function eTank:update(dt)
     self.once = true
     self.render = true
   end
-  if not self.onSlope then
-    self.velocity.vely = math.min(self.velocity.vely + .25, 7)
-  end
-  self:resetCollisionChecks()
-  slope.blockFromGroup(self, megautils.groups()["slope"], self.velocity.velx, self.velocity.vely)
-  self:block(self.velocity)
-  oneway.blockFromGroup(self, megautils.groups()["oneway"], self.velocity.vely)
-  self:block(self.velocity)
-  solid.blockFromGroup(self, table.merge({megautils.groups()["solid"], megautils.groups()["death"]}),
-    self.velocity.velx, self.velocity.vely)
-  self:block(self.velocity)
-  self:moveBy(self.velocity.velx, self.velocity.vely)
+  collision.doCollision(self)
   for i=1, playerCount do
     local p = globals.allPlayers[i]
     if self:collision(p) then
@@ -687,6 +661,11 @@ function wTank:new(x, y, despwn, id, spawner)
   self.timer = 0
   self.render = false
   self.once = false
+  self.blockCollision = true
+end
+
+function wTank:grav()
+  self.velocity.vely = self.velocity.vely + self.gravity
 end
 
 function wTank:update(dt)
@@ -697,18 +676,7 @@ function wTank:update(dt)
     self.once = true
     self.render = true
   end
-  if not self.onSlope then
-    self.velocity.vely = math.min(self.velocity.vely + .25, 7)
-  end
-  self:resetCollisionChecks()
-  slope.blockFromGroup(self, megautils.groups()["slope"], self.velocity.velx, self.velocity.vely)
-  self:block(self.velocity)
-  oneway.blockFromGroup(self, megautils.groups()["oneway"], self.velocity.vely)
-  self:block(self.velocity)
-  solid.blockFromGroup(self, table.merge({megautils.groups()["solid"], megautils.groups()["death"]}),
-    self.velocity.velx, self.velocity.vely)
-  self:block(self.velocity)
-  self:moveBy(self.velocity.velx, self.velocity.vely)
+  collision.doCollision(self)
   for i=1, playerCount do
     local p = globals.allPlayers[i]
     if self:collision(p) then

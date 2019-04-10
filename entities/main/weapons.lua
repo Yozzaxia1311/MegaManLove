@@ -162,46 +162,13 @@ function rushJet:new(x, y, side, w)
   self.velocity = velocity()
   self.wpn = w
   self.timer = 0
+  self.isSolid = 2
+  self.blockCollision = true
   self:setLayer(2)
-  self:setUpdateLayer(-1)
-end
-
-function rushJet:solid(x, y, d)
-  return #self:collisionTable(megautils.groups()["solid"], x, y) ~= 0 or
-    ((d==nil and true or d) and #self:collisionTable(megautils.groups()["death"], x, y)) ~= 0 or
-    #oneway.collisionTable(self, megautils.groups()["oneway"], x, y) ~= 0 or
-    #self:collisionTable(megautils.groups()["movingSolid"], x, y) ~= 0
 end
 
 function rushJet:face(n)
   self.anims[self.c].flippedH = (n ~= 1) and true or false
-end
-
-function rushJet:phys()
-  self:resetCollisionChecks()
-  slope.blockFromGroup(self, megautils.groups()["slope"], self.velocity.velx, self.velocity.vely)
-  self:block(self.velocity)
-  oneway.blockFromGroup(self, megautils.groups()["oneway"], self.velocity.vely)
-  self:block(self.velocity)
-  solid.blockFromGroup(self, table.merge({megautils.groups()["solid"], megautils.groups()["death"]}),
-    self.velocity.velx, self.velocity.vely)
-  self:block(self.velocity)
-  self:moveBy(self.velocity.velx, self.velocity.vely)
-end
-
-function rushJet:checkGround()
-  local tmp = table.merge({self:collisionTable(megautils.groups()["solid"], 0, 1),
-    self:collisionTable(megautils.groups()["death"], 0, 1),
-    oneway.collisionTable(self, megautils.groups()["oneway"], 0, 1),
-    self:collisionTable(megautils.groups()["movingSolid"], 0, 1)})
-  local result = false
-  for k, v in ipairs(tmp) do
-    if self.transform.y == v.transform.y - self.collisionShape.h then
-      result = true
-      break
-    end
-  end
-  return result
 end
 
 function rushJet:update(dt)
@@ -211,7 +178,7 @@ function rushJet:update(dt)
   elseif self.s == 0 then
     self.transform.y = math.min(self.transform.y+8, self.toY)
     if self.transform.y == self.toY then
-      if not (self:solid(0, 0) or #self:collisionTable(megautils.groups()["slope"]) ~= 0) then
+      if not collision.checkSolid(self) then
         self.c = "spawn_land"
         self.s = 1
       else
@@ -226,22 +193,22 @@ function rushJet:update(dt)
     end
   elseif self.s == 2 then
     for i=1, playerCount do
-      local player = globals.allPlayers[i]
-      if oneway.collision(player, self, player.velocity.velx, player.velocity.vely+1) then
+      local p = globals.allPlayers[i]
+      if p.transform.y == self.transform.y - p.collisionShape.h then
         self.s = 3
         self.velocity.velx = self.side
-        self.user = player
+        self.user = p
         self.user.canWalk = false
         break
       end
     end
     self:moveBy(self.velocity.velx, self.velocity.vely)
-    movingOneway.shift(self, megautils.groups()["carry"])
+    collision.doCollision(self)
   elseif self.s == 3 then
     if self.user then
       if control.upDown[self.user.player] then
         self.velocity.vely = -1
-      elseif control.downDown[self.user.player] and not (self:checkGround() or self.onSlope) then
+      elseif control.downDown[self.user.player] then
         self.velocity.vely = 1
       else
         self.velocity.vely = 0
@@ -249,33 +216,27 @@ function rushJet:update(dt)
     else
       self.velocity.vely = 0
       for i=1, playerCount do
-        local player = globals.allPlayers[i]
-        if oneway.collision(player, self, player.velocity.velx, player.velocity.vely+1) then
+        local p = globals.allPlayers[i]
+        if p.transform.y == self.transform.y - p.collisionShape.h then
           self.velocity.velx = self.side
-          self.user = player
+          self.user = p
           self.user.canWalk = false
           break
         end
       end
     end
-    local dx, dy = self.transform.x, self.transform.y
-    self:phys()
-    local lvx, lvy = self.velocity.velx, self.velocity.vely
-    self.velocity.velx = self.transform.x - dx
-    self.velocity.vely = self.transform.y - dy
-    movingOneway.shift(self, megautils.groups()["carry"])
-    self.velocity.velx = lvx
-    self.velocity.vely = lvy
+    collision.doCollision(self)
     if self.user and not self.user:collision(self, 0, 1) then
       self.user.canWalk = true
       self.user = nil
     end
-    if self.collisionChecks.leftWall or self.collisionChecks.rightWall or
-      (self.user and self:solid(0, -self.user.collisionShape.h-4)) then
-      if self.user then self.user.canWalk = true self.user.onMovingFloor = false end
+    if self.xcoll ~= 0 or
+      (self.user and collision.checkSolid(self, 0, -self.user.collisionShape.h-4)) then
+      if self.user then self.user.canWalk = true self.user.onMovingFloor = nil end
       self.c = "spawn_land"
       self.anims["spawn_land"]:gotoFrame(1)
       self.s = 4
+      self.isSolid = 0
       mmSfx.play("ascend")
     end
     self.timer = math.min(self.timer+1, 60)
@@ -301,7 +262,6 @@ function rushJet:removed()
   if self.user then
     self.user.canWalk = true
   end
-  movingOneway.clean(self)
 end
 
 function rushJet:draw()
@@ -338,26 +298,8 @@ function rushCoil:new(x, y, side, w)
   self.timer = 0
   self.velocity = velocity()
   self.wpn = w
+  self.blockCollision = true
   self:setLayer(2)
-end
-
-function rushCoil:solid(x, y, d)
-  return #self:collisionTable(megautils.groups()["solid"], x, y) ~= 0 or
-    ((d==nil and true or d) and #self:collisionTable(megautils.groups()["death"], x, y)) ~= 0 or
-    #oneway.collisionTable(self, megautils.groups()["oneway"], x, y) ~= 0 or
-    #self:collisionTable(megautils.groups()["movingSolid"], x, y) ~= 0
-end
-
-function rushCoil:phys()
-  self:resetCollisionChecks()
-  slope.blockFromGroup(self, megautils.groups()["slope"], self.velocity.velx, self.velocity.vely)
-  self:block(self.velocity)
-  oneway.blockFromGroup(self, megautils.groups()["oneway"], self.velocity.vely)
-  self:block(self.velocity)
-  solid.blockFromGroup(self, table.merge({megautils.groups()["solid"], megautils.groups()["death"]}),
-    self.velocity.velx, self.velocity.vely)
-  self:block(self.velocity)
-  self:moveBy(self.velocity.velx, self.velocity.vely)
 end
 
 function rushCoil:face(n)
@@ -371,7 +313,7 @@ function rushCoil:update(dt)
   elseif self.s == 0 then
     self.transform.y = math.min(self.transform.y+8, self.toY)
     if self.transform.y == self.toY then
-      if not (self:solid(0, 0) or #self:collisionTable(megautils.groups()["slope"]) ~= 0) then
+      if not collision.checkSolid(self) then
         self.s = 1
         self.velocity.vely = 8
       else
@@ -379,8 +321,8 @@ function rushCoil:update(dt)
       end
     end
   elseif self.s == 1 then
-    self:phys()
-    if self.collisionChecks.ground then
+    collision.doCollision(self)
+    if self.ground then
       self.c = "spawn_land"
       self.s = 2
     end

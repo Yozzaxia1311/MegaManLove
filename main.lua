@@ -1,6 +1,7 @@
 function initEngine()
   base64SaveFiles = false
   showFPS = false
+  showEntityCount = false
   framerate = 1/60
   
   globals = {}
@@ -133,6 +134,7 @@ function love.load()
     save.save("main.sav", {}, true)
   end
   states.set("states/disclaimer.state.lua") --megautils.loadGame("path/to/game/directory/if/standalone/game/is/desired")
+  console.parse("exec autoexec")
 end
 
 function love.resize(w, h)
