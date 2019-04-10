@@ -26,7 +26,6 @@ function bossdoor:new(x, y, seg, dir, scrollx, scrolly, spd)
   self.maxSegments = seg
   self.spd = spd or 1
   self.state = 0
-  self.once = false
   self.player = nil
   self:setDirection(dir)
 end
