@@ -66,6 +66,7 @@ function love.load()
   consoleFont = love.graphics.getFont() -- needs to be preserved
   OSSystem = love.system.getOS()
   touchControls = OSSystem == "Android" or OSSystem == "iOS"
+  altEnterOnce = false
   deadZone = 0.8
   maxPlayerCount = 4
   playerCount = 1
@@ -201,6 +202,28 @@ function love.textinput(k)
 end
 
 function love.update(dt)
+  if love.keyboard then
+    if (love.keyboard.isDown("ralt") or love.keyboard.isDown("lalt")) and love.keyboard.isDown("return") then
+      if not altEnterOnce then
+        if convar.getNumber("r_fullscreen") == 1 then
+          convar.setValue("r_fullscreen", 0, true)
+        else
+          convar.setValue("r_fullscreen", 1, true)
+        end
+        local data = save.load("main.sav") or {}
+        data.fullscreen = convar.getNumber("r_fullscreen")
+        save.save("main.sav", data)
+      end
+      altEnterOnce = 10
+      return
+    elseif altEnterOnce then
+      altEnterOnce = altEnterOnce - 1
+      if altEnterOnce == 0 then
+        altEnterOnce = false
+      end
+      return
+    end
+  end
   control.update()
   if useConsole then console.update(dt) end
   states.update(dt)

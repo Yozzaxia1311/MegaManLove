@@ -84,7 +84,7 @@ function disclaimer:draw()
   love.graphics.setFont(mmFont)
   love.graphics.printf(self.disclaimerText, 4, 24, 248, "center")
   love.graphics.setColor(1, 1, 1, self.alpha/255)
-  love.graphics.printf("press start to continue\npress escape to rebind controls", -21, 200, 300, "center")
+  love.graphics.printf("press start to continue\npress atl+enter for fullscreen\npress escape to rebind controls", -21, 200, 300, "center")
 end
 
 return disclaimerstate
