@@ -278,6 +278,7 @@ function entity:new(basic)
   self.doShake = false
   self.moveByMoveX = 0
   self.moveByMoveY = 0
+  self.inv = false
 end
 
 function entity:grav() end

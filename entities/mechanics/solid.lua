@@ -117,6 +117,7 @@ function collision.entityPlatform(self)
                 if resolid == 1 then
                   if epCanCrush and v:collision(self) then
                     v.crushed = self
+                    v.inv = false
                     v.iFrame = v.maxIFrame
                     v:hurt({v}, -999)
                   end
