@@ -36,20 +36,16 @@ addobjects.register("player", function(v)
     camera.main:setRectangleCollision(8, 8)
     camera.main:updateBounds()
     camera.main:setRectangleCollision(view.w, view.h)
-    camera.main.transform.x = math.round(v.x) - (view.w/2) + ((11)/2)
-    camera.main.transform.x = math.clamp(camera.main.transform.x, camera.main.scrollx,
-      camera.main.scrollx+camera.main.scrollw-view.w)
-    camera.main.transform.y = math.round(v.y-5) - (view.h/2) + ((21)/2)
-    camera.main.transform.y = math.clamp(camera.main.transform.y, camera.main.scrolly,
-      camera.main.scrolly+camera.main.scrollh-view.h)
-    view.x, view.y = camera.main.transform.x, camera.main.transform.y
+    camera.main:doView()
   end
 end, 2)
 
 addobjects.register("player", function(v)
   if v.properties["checkpoint"] == globals.checkpoint then
     if v.properties["individual"] then
-      megautils.add(megaman(v.x, v.y-5, v.properties["side"], v.properties["drop"], #globals.allPlayers+1))
+      if v.properties["individual"] <= playerCount then
+        megautils.add(megaman(v.x, v.y-5, v.properties["side"], v.properties["drop"], v.properties["individual"]))
+      end
     else
       for i=1, playerCount do
         megautils.add(megaman(v.x, v.y-5, v.properties["side"], v.properties["drop"], i))

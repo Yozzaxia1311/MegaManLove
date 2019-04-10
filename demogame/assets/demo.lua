@@ -9,7 +9,7 @@ return {
   tilewidth = 16,
   tileheight = 16,
   nextlayerid = 5,
-  nextobjectid = 143,
+  nextobjectid = 146,
   properties = {},
   tilesets = {
     {
@@ -448,22 +448,6 @@ return {
       draworder = "topdown",
       properties = {},
       objects = {
-        {
-          id = 2,
-          name = "player",
-          type = "",
-          shape = "rectangle",
-          x = 64,
-          y = 400,
-          width = 16,
-          height = 16,
-          rotation = 0,
-          visible = true,
-          properties = {
-            ["checkpoint"] = "start",
-            ["individual"] = true
-          }
-        },
         {
           id = 4,
           name = "solid",
@@ -1786,38 +1770,6 @@ return {
           properties = {}
         },
         {
-          id = 140,
-          name = "player",
-          type = "",
-          shape = "rectangle",
-          x = 96,
-          y = 400,
-          width = 16,
-          height = 16,
-          rotation = 0,
-          visible = true,
-          properties = {
-            ["checkpoint"] = "start",
-            ["individual"] = true
-          }
-        },
-        {
-          id = 141,
-          name = "player",
-          type = "",
-          shape = "rectangle",
-          x = 32,
-          y = 400,
-          width = 16,
-          height = 16,
-          rotation = 0,
-          visible = true,
-          properties = {
-            ["checkpoint"] = "start",
-            ["individual"] = true
-          }
-        },
-        {
           id = 142,
           name = "player",
           type = "",
@@ -1830,7 +1782,55 @@ return {
           visible = true,
           properties = {
             ["checkpoint"] = "start",
-            ["individual"] = true
+            ["individual"] = 1
+          }
+        },
+        {
+          id = 143,
+          name = "player",
+          type = "",
+          shape = "rectangle",
+          x = 96,
+          y = 400,
+          width = 16,
+          height = 16,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["checkpoint"] = "start",
+            ["individual"] = 2
+          }
+        },
+        {
+          id = 144,
+          name = "player",
+          type = "",
+          shape = "rectangle",
+          x = 64,
+          y = 400,
+          width = 16,
+          height = 16,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["checkpoint"] = "start",
+            ["individual"] = 3
+          }
+        },
+        {
+          id = 145,
+          name = "player",
+          type = "",
+          shape = "rectangle",
+          x = 32,
+          y = 400,
+          width = 16,
+          height = 16,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["checkpoint"] = "start",
+            ["individual"] = 4
           }
         }
       }
