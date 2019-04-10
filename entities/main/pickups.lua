@@ -457,14 +457,24 @@ function life:update(dt)
   for i=1, playerCount do
     local p = globals.allPlayers[i]
     if self:collision(p) then
-      globals.lives = math.min(globals.lives+1, globals.maxLives)
-      if not self.despawn then
-        life.banIds[#life.banIds+1] = self.id
+      if globals.infiniteLives then
+        p:addHealth(9999)
+        if not self.despawn then
+          life.banIds[#life.banIds+1] = self.id
+        end
+        megautils.state().sectionHandler:removeEntity(self.spawner)
+        megautils.remove(self.spawner, true)
+        megautils.remove(self, true)
+      else
+        globals.lives = math.min(globals.lives+1, globals.maxLives)
+        if not self.despawn then
+          life.banIds[#life.banIds+1] = self.id
+        end
+        mmSfx.play("life")
+        megautils.state().sectionHandler:removeEntity(self.spawner)
+        megautils.remove(self.spawner, true)
+        megautils.remove(self, true)
       end
-      mmSfx.play("life")
-      megautils.state().sectionHandler:removeEntity(self.spawner)
-      megautils.remove(self.spawner, true)
-      megautils.remove(self, true)
       return
     end
   end

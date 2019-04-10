@@ -111,7 +111,7 @@ function cmdState(cmd)
 end
 concmd["state"] = {
   helptext = "load a state",
-  flags = {},
+  flags = {"cheat"},
   fun = cmdState,
 }
 
@@ -216,6 +216,18 @@ concmd["clear"] = {
   fun = cmdClear,
 }
 
+function cmdLockCheats(cmd)
+  if convar.getValue("cheats") ~= 0 then
+    convar.setValue("cheats", 0)
+  end
+  if convar.isValid("cheats") and not table.contains(convar["cheats"].flags, "cheat") then table.insert(convar["cheats"].flags, "cheat") end
+end
+concmd["lock_cheats"] = {
+  helptext = "lock cheats for the rest of the game",
+  flags = {},
+  fun = cmdLockCheats,
+}
+
 function cmdGive(cmd)
   if globals.mainPlayer and cmd[2] then
     addobjects.add({{["name"]=cmd[2], ["x"]=globals.mainPlayer.transform.x+numberSanitize(cmd[3]),
@@ -224,7 +236,7 @@ function cmdGive(cmd)
 end
 concmd["give"] = {
   helptext = "spawn registered entity",
-  flags = {},
+  flags = {"cheat"},
   fun = cmdGive,
 }
 

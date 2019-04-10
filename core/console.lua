@@ -41,8 +41,8 @@ convar["cl_test"] = {
 convar["cheats"] = {
   helptext = "enable cheats",
   flags = {},
-  value = 1,
-};
+  value = 0,
+}
 convar["r_fullscreen"] = {
   helptext = "fullscreen mode",
   flags = {"client"},
@@ -74,6 +74,13 @@ convar["show_entity_count"] = {
   flags = {"client"},
   value = 0,
   fun = function(arg) local n = numberSanitize(arg) showEntityCount = n == 1 end
+}
+
+convar["infinite_lives"] = {
+  helptext = "never gameover",
+  flags = {"cheat"},
+  value = 0,
+  fun = function(arg) local n = numberSanitize(arg) globals.infiniteLives = n == 1 end
 }
 
 conaction = {}
@@ -156,10 +163,6 @@ function convar.getNumber(str, nan)
     return nan == nil and 0 or nan
   end
   return val
-end
-
-function convar.getBool(str, nan)
-  return val == 1 and true or false
 end
 
 function convar.setValue(str, val, call)
@@ -270,6 +273,8 @@ function console.parse(str, noalias)
       if concmd.getFlag(cmd[1], "cheat") then
         if tonumber(convar.getValue("cheats")) == 1 then
           concmd[cmd[1]].fun(cmd)
+        else
+          console.print("Cheating is disabled")
         end
       else
         concmd[cmd[1]].fun(cmd)
@@ -284,13 +289,23 @@ function console.parse(str, noalias)
       if nstr then console.parse(nstr) end
       return
     else
-      convar.setValue(cmd[1], cmd[2])
-      -- old/new args maybe?
-      if convar[cmd[1]].fun then
-        -- should *always* expect a string
-        convar[cmd[1]].fun(tostring(cmd[2]))
+      if convar.getFlag(cmd[1], "cheat") then
+        if tonumber(convar.getValue("cheats")) == 1 then
+          convar.setValue(cmd[1], cmd[2])
+          if convar[cmd[1]].fun then
+            convar[cmd[1]].fun(tostring(cmd[2]))
+          end
+          if nstr then console.parse(nstr) end
+        else
+          console.print("Cheating is disabled")
+        end
+      else
+        convar.setValue(cmd[1], cmd[2])
+        if convar[cmd[1]].fun then
+          convar[cmd[1]].fun(tostring(cmd[2]))
+        end
+        if nstr then console.parse(nstr) end
       end
-      if nstr then console.parse(nstr) end
       return
     end
   end
