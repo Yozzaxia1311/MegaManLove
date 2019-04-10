@@ -175,8 +175,6 @@ function convar.setValue(str, val, call)
 end
 
 function console.init()
-  -- todo: exec autoexec.cfg for binds(?)
-  --console.parse("exec autoexec")
   console.print("Welcome to Mega Man Love")
   console.print("Run \"findcmd\" for a list of commands")
 end
