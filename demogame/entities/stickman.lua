@@ -110,6 +110,7 @@ function stickMan:update(dt)
         globals.mainPlayer.control = false
         globals.mainPlayer.side = self.transform.x>globals.mainPlayer.transform.x and 1 or -1
         globals.mainPlayer:face(globals.mainPlayer.side)
+        collision.checkGround(globals.mainPlayer)
         if not globals.mainPlayer.ground then
           globals.mainPlayer.curAnim = "jump"
         end

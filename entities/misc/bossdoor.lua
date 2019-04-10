@@ -126,7 +126,7 @@ function bossdoor:update(dt)
         megautils.unfreeze(globals.allPlayers)
         megautils.state().system.afterUpdate = nil
       end
-      self.state = -1
+      self.state = 0
     end
   end
 end

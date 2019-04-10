@@ -32,7 +32,6 @@ function timer.winCutscene(func)
         end
       end
     elseif s.state == 0 then
-      globals.mainPlayer.velocity.vely = globals.mainPlayer.velocity.vely + .25
       globals.mainPlayer:phys()
       if globals.mainPlayer.ground then
         globals.mainPlayer.curAnim = "idle"

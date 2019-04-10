@@ -715,7 +715,6 @@ function megaman:code(dt)
           self.transform.y = self.transform.y + 1
         end
         self.climb = false
-        self.ground = true
     end
     if self.transform.x == view.x-self.collisionShape.w/2 or
       self.transform.x == (view.x+view.w)-self.collisionShape.w/2 or not self:collision(self.currentLadder) then
@@ -723,7 +722,6 @@ function megaman:code(dt)
     end
     if self.ground and control.downDown[self.player] then
       self.climb = false
-      self.ground = true
     end
     if control.jumpPressed[self.player] and not (control.downDown[self.player] or
       control.upDown[self.player]) then
@@ -750,7 +748,6 @@ function megaman:code(dt)
     end
     self.velocity.velx = self.side==1 and self.slideRightSpeed or self.slideLeftSpeed
     self.velocity.velx = math.clamp(self.velocity.velx, self.slideLeftSpeed, self.slideRightSpeed)
-    self:phys()
     local jumped = false
     if self:checkRegBox() and not (self.ground or self:checkSlideBox(0, 1)) then
       self.slide = false
@@ -802,6 +799,7 @@ function megaman:code(dt)
         self:slideToReg()
       end
     end
+    self:phys()
     if not self.slide and not jumped then self.velocity.vely = 0 end
     if self.canShoot and not self.canDashShoot and control.shootDown[self.player] then
       self:charge()
@@ -1050,7 +1048,7 @@ function megaman:charge(animOnly)
 end
 
 function megaman:grav()
-  if self.climb then return end
+  if self.climb or self.slide then return end
   if self.gravityType == 0 then
     self.velocity.vely = self.velocity.vely+self.gravity
   elseif self.gravityType == 1 then
