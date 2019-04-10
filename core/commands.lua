@@ -240,6 +240,20 @@ concmd["give"] = {
   fun = cmdGive,
 }
 
+function cmdRunLua(cmd)
+  if not cmd[2] then return end
+  if not love.filesystem.getInfo(cmd[2]) then
+    console.print("\""..cmd[2].."\" does not exist")
+    return
+  end
+  love.filesystem.load(cmd[2])()
+end
+concmd["run_lua"] = {
+  helptext = "run a lua file",
+  flags = {"cheat"},
+  fun = cmdRunLua,
+}
+
 function cmdExec(cmd)
   if not cmd[2] then return end
   if not love.filesystem.getInfo("cfg/"..cmd[2]..".cfg") then
