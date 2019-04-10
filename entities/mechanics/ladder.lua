@@ -10,9 +10,9 @@ function ladder:new(x, y, w, h)
   self.transform.x = x
   self:setRectangleCollision(w, h)
   self.dspwn = dspwn
+  self.isSolid = 2
   self.added = function(self)
     self:addToGroup("ladder")
-    self:addToGroup("oneway")
     self:addToGroup("despawnable")
   end
 end

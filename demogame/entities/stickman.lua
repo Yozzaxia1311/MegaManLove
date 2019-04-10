@@ -35,6 +35,7 @@ function stickMan:new(x, y, s)
   end
   self.velocity = velocity()
   self.velocity.vely = 8
+  self.blockCollision = true
   mmMusic.stopMusic()
 end
 
@@ -88,13 +89,6 @@ function stickMan:healthChanged(o, c, i)
   end
 end
 
-function stickMan:phys()
-  self:resetCollisionChecks()
-  solid.blockFromGroup(self, megautils.groups()["solid"], self.velocity.velx, self.velocity.vely)
-  self:block(self.velocity)
-  self:moveBy(self.velocity.velx, self.velocity.vely)
-end
-
 function stickMan:update(dt)
   if self.s == 0 then
     if globals.defeats.stickMan then
@@ -116,17 +110,16 @@ function stickMan:update(dt)
         globals.mainPlayer.control = false
         globals.mainPlayer.side = self.transform.x>globals.mainPlayer.transform.x and 1 or -1
         globals.mainPlayer:face(globals.mainPlayer.side)
-        if not globals.mainPlayer:solid(0, 1) then
+        if not globals.mainPlayer.ground then
           globals.mainPlayer.curAnim = "jump"
         end
         self.ss = 1
       end
     elseif self.ss == 1 then
       if globals.mainPlayer then
-        globals.mainPlayer:grav()
         globals.mainPlayer:phys()
         globals.mainPlayer.curAnim = "jump"
-        if globals.mainPlayer.collisionChecks.ground then
+        if globals.mainPlayer.ground then
           self.ss = 0
           globals.mainPlayer.curAnim = "idle"
           self.s = 2
@@ -136,8 +129,8 @@ function stickMan:update(dt)
       end
     end
   elseif self.s == 2 then
-    self:phys()
-    if self.collisionChecks.ground then
+    collision.doCollision(self)
+    if self.ground then
       megautils.add(self.hBar)
       self.hBar:updateThis()
       globals.mainPlayer.control = true

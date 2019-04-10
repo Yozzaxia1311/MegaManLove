@@ -21,7 +21,7 @@ function imageRectOverlaps(x, y, w, h, data, x2, y2, w2, h2)
     local clmh = math.clamp(math.round(y2-y)+h2, 0, newh)
     for xi=clmx, clmw do
       for yi=clmy, clmh do
-        if data[yi+1][xi+1] ~= 0 and pointRectOverlaps(x + xi, y + yi, x2, y2, w2, h2) then
+        if data[yi+1] and data[yi+1][xi+1] ~= 0 and pointRectOverlaps(x + xi, y + yi, x2, y2, w2, h2) then
           return true
         end
       end

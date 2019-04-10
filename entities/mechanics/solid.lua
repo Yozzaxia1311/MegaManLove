@@ -15,7 +15,7 @@ function collision.doCollision(self)
   collision.checkGround(self)
 end
 
-function collision.checkSolid(self, dx, dy, noSlope, always)
+function collision.checkSolid(self, dx, dy, noSlope)
   local xs = dx or 0
   local ys = dy or 0
   local solid = {}
@@ -26,9 +26,18 @@ function collision.checkSolid(self, dx, dy, noSlope, always)
   for i=1, #megautils.state().system.all do
     local v = megautils.state().system.all[i]
     if v.isSolid ~= 0 then
-      if always or not v:collision(self, 0, cgrav) then
-        if v.isSolid ~= 2 or v:collision(self, -xs, -cgrav * math.abs(ys)) then
-          solid[#solid+1] = v
+      if v.isSolid ~= 2 or v:collision(self, -xs, -cgrav * math.abs(ys)) then
+        solid[#solid+1] = v
+      end
+    end
+  end
+  
+  if megautils.groups()["death"] then
+    for i=1, #megautils.groups()["death"] do
+      local v = megautils.groups()["death"][i]
+      if v ~= self and v.collisionShape then
+        if self.iFrame == self.maxIFrame then
+          table.removevaluearray(solid, v)
         end
       end
     end
@@ -237,6 +246,17 @@ function collision.checkGround(self, noSlopeEffect)
     end
   end
   
+  if megautils.groups()["death"] then
+    for i=1, #megautils.groups()["death"] do
+      local v = megautils.groups()["death"][i]
+      if v ~= self and v.collisionShape then
+        if self.iFrame == self.maxIFrame then
+          table.removevaluearray(solid, v)
+        end
+      end
+    end
+  end
+  
   if #self:collisionTable(solid) == 0 then
     local i = 1
     while i <= slp do
@@ -264,8 +284,6 @@ function collision.generalCollision(self, noSlopeEffect)
   local solid = {}
   local cgrav = math.sign(self.gravity)
   cgrav = cgrav == 0 and 1 or cgrav
-  local deth
-  local func1, func2
   
   for i=1, #megautils.state().system.all do
     local v = megautils.state().system.all[i]
@@ -277,6 +295,18 @@ function collision.generalCollision(self, noSlopeEffect)
       end
     end
   end
+  
+  if megautils.groups()["death"] then
+    for i=1, #megautils.groups()["death"] do
+      local v = megautils.groups()["death"][i]
+      if v ~= self and v.collisionShape then
+        if self.iFrame == self.maxIFrame then
+          table.removevaluearray(solid, v)
+        end
+      end
+    end
+  end
+  
   if self.velocity.velx ~= 0 then
     local slp = (math.ceil(math.abs(self.velocity.velx)) * collision.maxSlope * cgrav) * ((self.velocity.vely * cgrav) <= 0 and 1 or 0)
     if slp ~= 0 then
@@ -302,29 +332,8 @@ function collision.generalCollision(self, noSlopeEffect)
       self.transform.x = math.round(self.transform.x)
       self.xcoll = -math.sign(self.velocity.velx)
       
-      func1 = function(col)
-            if col:is(death) then
-              return false
-            end
-            return true
-          end
       for ii=0, math.max(32, math.abs(self.velocity.velx) * 4) do
-        if #self:collisionTable(solid, nil, nil, func1) ~= 0 then
-          self.transform.x = self.transform.x + self.xcoll
-        else
-          break
-        end
-      end
-      
-      func2 = function(col)
-            if col:is(death) then
-              deth = col
-              return true
-            end
-            return false
-          end
-      for ii=0, math.max(32, math.abs(self.velocity.velx) * 4) do
-        if #self:collisionTable(solid, nil, nil, func2) ~= 0 then
+        if #self:collisionTable(solid) ~= 0 then
           self.transform.x = self.transform.x + self.xcoll
         else
           break
@@ -383,33 +392,8 @@ function collision.generalCollision(self, noSlopeEffect)
       
       self.ycoll = math.sign(self.velocity.vely) * -1
       
-      if not func1 then
-        func1 = function(col)
-            if col:is(death) then
-              return false
-            end
-            return true
-          end
-      end
       for i=0, math.max(32, math.abs(self.velocity.vely) * 4) do
-        if #self:collisionTable(solid, nil, nil, func1) ~= 0 then
-          self.transform.y = self.transform.y + self.ycoll
-        else
-          break
-        end
-      end
-      
-      if not func2 then
-        func2 = function(col)
-            if col:is(death) then
-              deth = col
-              return true
-            end
-            return false
-          end
-      end
-      for i=0, math.max(32, math.abs(self.velocity.vely) * 4) do
-        if #self:collisionTable(solid, nil, nil, func2) ~= 0 then
+        if #self:collisionTable(solid) ~= 0 then
           self.transform.y = self.transform.y + self.ycoll
         else
           break
@@ -425,8 +409,11 @@ function collision.generalCollision(self, noSlopeEffect)
     end
   end
   
-  if self.spikesHurt and deth then
-    self:hurt({self}, deth.harm)
+  if self.spikesHurt then
+    local deth = self:collisionTable(megautils.groups()["death"])
+    if #deth ~= 0 then
+      self:hurt({self}, -99999)
+    end
   end
 end
 

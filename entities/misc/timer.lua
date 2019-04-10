@@ -27,23 +27,14 @@ function timer.winCutscene(func)
         globals.mainPlayer.canSwitchWeapons = false
         if globals.mainPlayer.slide then
           globals.mainPlayer.slide = false
-          globals.mainPlayer:regBox()
-          globals.mainPlayer.transform.y = math.round(globals.mainPlayer.transform.y)
-          while globals.mainPlayer:solid(0, 0) do
-            globals.mainPlayer.transform.y = globals.mainPlayer.transform.y - 1
-          end
-          while not globals.mainPlayer:solid(0, 1) do
-            globals.mainPlayer.transform.y = globals.mainPlayer.transform.y + 1
-          end
+          globals.mainPlayer:slideToReg()
           globals.mainPlayer.curAnim = "idle"
         end
       end
     elseif s.state == 0 then
       globals.mainPlayer.velocity.vely = globals.mainPlayer.velocity.vely + .25
       globals.mainPlayer:phys()
-      if globals.mainPlayer:checkGround() or globals.mainPlayer.onSlope or globals.mainPlayer.onMovingFloor then
-        globals.mainPlayer.ground = true
-        globals.mainPlayer.velocity.vely = 0
+      if globals.mainPlayer.ground then
         globals.mainPlayer.curAnim = "idle"
       else
         globals.mainPlayer.curAnim = "jump"
@@ -77,7 +68,7 @@ function timer.absorbCutscene(func, music)
           globals.mainPlayer.control = false
           globals.mainPlayer.doAnimation = false
           globals.mainPlayer.canSwitchWeapons = false
-          if not globals.mainPlayer:solid(0, 1) then
+          if not globals.mainPlayer.ground then
             globals.mainPlayer.curAnim = "jump"
           end
           globals.mainPlayer:face(globals.mainPlayer.side)
@@ -89,14 +80,7 @@ function timer.absorbCutscene(func, music)
           globals.mainPlayer.velocity.velx = 0
         if globals.mainPlayer.slide then
           globals.mainPlayer.slide = false
-          globals.mainPlayer:regBox()
-          globals.mainPlayer.transform.y = math.round(globals.mainPlayer.transform.y)
-          while globals.mainPlayer:solid(0, 0) do
-            globals.mainPlayer.transform.y = globals.mainPlayer.transform.y - 1
-          end
-          while not globals.mainPlayer:solid(0, 1) do
-            globals.mainPlayer.transform.y = globals.mainPlayer.transform.y + 1
-          end
+          globals.mainPlayer:slideToReg()
           globals.mainPlayer.curAnim = "idle"
         end
           s.timer = 0
@@ -111,16 +95,13 @@ function timer.absorbCutscene(func, music)
             globals.mainPlayer.side = 1
             globals.mainPlayer.transform.x = math.min(globals.mainPlayer.transform.x+1.3, s.to)
           end
-          if globals.mainPlayer:checkGround() or globals.mainPlayer.onSlope or globals.mainPlayer.onMovingFloor then
-            globals.mainPlayer.ground = true
-            globals.mainPlayer.velocity.vely = 0
+          if globals.mainPlayer.ground then
             globals.mainPlayer.curAnim = "run"
-          elseif globals.mainPlayer:solid(globals.mainPlayer.side, 0) then
+          elseif collision.checkSolid(self, globals.mainPlayer.side, 0) then
             globals.mainPlayer.curAnim = "jump"
             globals.mainPlayer.velocity.vely = globals.mainPlayer.jumpSpeed
             globals.mainPlayer:face(globals.mainPlayer.side)
           else
-            globals.mainPlayer:grav()
             globals.mainPlayer.curAnim = "jump"
           end
           if globals.mainPlayer.transform.x == s.to then
@@ -135,12 +116,8 @@ function timer.absorbCutscene(func, music)
           globals.mainPlayer.curAnim = "idle"
         end
         globals.mainPlayer.animations[globals.mainPlayer.curAnim]:update(1/60)
-        globals.mainPlayer:grav()
         globals.mainPlayer:phys()
-        if globals.mainPlayer:checkGround() or globals.mainPlayer.onSlope or globals.mainPlayer.onMovingFloor then
-          globals.mainPlayer.ground = true
-          globals.mainPlayer.velocity.vely = 0
-        else
+        if not globals.mainPlayer.ground then
           globals.mainPlayer.curAnim = "jump"
         end
         globals.mainPlayer:face(globals.mainPlayer.side)
