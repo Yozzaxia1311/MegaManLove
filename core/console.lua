@@ -55,11 +55,25 @@ convar["volume"] = {
   value = 1,
   fun = function(arg) local n = numberSanitize(arg) love.audio.setVolume(n) end
 }
-convar["r_hitboxes"] = {
+convar["hitboxes"] = {
   helptext = "draw hitboxes",
-  flags = {"cheat"},
+  flags = {"client"},
   value = 0,
   fun = function(arg) local n = numberSanitize(arg) entitysystem.drawCollision = n == 1 end
+}
+
+convar["show_fps"] = {
+  helptext = "draw framerate",
+  flags = {"client"},
+  value = 0,
+  fun = function(arg) local n = numberSanitize(arg) showFPS = n == 1 end
+}
+
+convar["show_entity_count"] = {
+  helptext = "draw entity count (top) and static entity count (bottom)",
+  flags = {"client"},
+  value = 0,
+  fun = function(arg) local n = numberSanitize(arg) showEntityCount = n == 1 end
 }
 
 conaction = {}

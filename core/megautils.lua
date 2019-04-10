@@ -131,13 +131,26 @@ end
 
 function megautils.draw(self)
   view.draw(self.system)
+  if showEntityCount then
+    local count = #megautils.state().system.all
+    love.graphics.setFont(mmFont)
+    love.graphics.setColor(0, 0, 0, 255)
+    love.graphics.print(count, 10, 26)
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.print(count, 9, 25)
+    count = #megautils.state().system.static
+    love.graphics.setColor(0, 0, 0, 255)
+    love.graphics.print(count, 10, 44)
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.print(count, 9, 43)
+  end
   if showFPS then
     local fps = love.timer.getFPS()
     love.graphics.setFont(mmFont)
     love.graphics.setColor(0, 0, 0, 255)
     love.graphics.print(fps, 10, 10)
     love.graphics.setColor(1, 1, 1, 1)
-    love.graphics.print(fps, 8, 8)
+    love.graphics.print(fps, 9, 9)
   end
 end
 
