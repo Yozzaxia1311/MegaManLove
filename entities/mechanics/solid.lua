@@ -412,10 +412,10 @@ function collision.generalCollision(self, noSlopeEffect)
   
   if not self.ground and self.canSink then
     if megautils.groups()["sink"] and #self:collisionTable(megautils.groups()["sink"], 0, cgrav) ~= 0 then
-      if yspeed * cgrav > 0 then
+      if self.velocity.vely * cgrav > 0 then
         self.ground = true
         self.ycoll = yspeed
-        yspeed = 0
+        self.velocity.vely = 0
       end
     end
   end
