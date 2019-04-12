@@ -279,6 +279,8 @@ function entity:new(basic)
   self.moveByMoveX = 0
   self.moveByMoveY = 0
   self.inv = false
+  self.spikesHurt = false
+  self.canSink = true
 end
 
 function entity:grav() end
