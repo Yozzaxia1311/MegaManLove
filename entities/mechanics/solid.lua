@@ -214,7 +214,9 @@ function collision.shiftObject(self, dx, dy, checkforcol)
   self.previousY = self.transform.y
   
   if checkforcol then
+    self.canSink = false
     collision.generalCollision(self)
+    self.canSink = true
   else
     self.transform.x = self.transform.x + self.velocity.velx
     self.transform.y = self.transform.y + self.velocity.vely
@@ -255,6 +257,12 @@ function collision.checkGround(self, noSlopeEffect)
           table.removevaluearray(solid, v)
         end
       end
+    end
+  end
+  
+  if megautils.groups()["sink"] then
+    for i=1, #megautils.groups()["sink"] do
+      solid[#solid+1] = megautils.groups()["sink"][i]
     end
   end
   
