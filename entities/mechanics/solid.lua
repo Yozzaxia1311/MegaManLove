@@ -410,6 +410,16 @@ function collision.generalCollision(self, noSlopeEffect)
     end
   end
   
+  if not self.ground and self.canSink then
+    if megautils.groups()["sink"] and #self:collisionTable(megautils.groups()["sink"], 0, cgrav) ~= 0 then
+      if yspeed * cgrav > 0 then
+        self.ground = true
+        self.ycoll = yspeed
+        yspeed = 0
+      end
+    end
+  end
+  
   if self.spikesHurt then
     local deth = self:collisionTable(megautils.groups()["death"])
     if #deth ~= 0 then
