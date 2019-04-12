@@ -119,6 +119,7 @@ function megaman.properties(self)
   self.canSwitchWeapons = true
   self.spikesHurt = true
   self.blockCollision = true
+  self.canSink = true
 end
 
 function megaman:transferState(to)
