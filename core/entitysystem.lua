@@ -177,6 +177,15 @@ end
 function entitysystem:update(dt)
   for i=1, #self.updates do
     local t = self.updates[i]
+    if t.updated and not t.isRemoved then
+      t:beforeUpdate(dt)
+      if states.switched then
+        return
+      end
+    end
+  end
+  for i=1, #self.updates do
+    local t = self.updates[i]
     t.previousX = t.transform.x
     t.previousY = t.transform.y
     if t.updated and not t.isRemoved then
@@ -408,7 +417,7 @@ function entity:collision(e, x, y)
   elseif self.collisionShape.type == 1 then
     if e.collisionShape.type == 0 then
       return imageRectOverlaps(self.transform.x + (x or 0), self.transform.y + (y or 0),
-        e.collisionShape.w, e.collisionShape.h, self.collisionShape.data,
+        self.collisionShape.w, self.collisionShape.h, self.collisionShape.data,
         e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h)
     elseif e.collisionShape.type == 1 then
       return false --image/image collision
@@ -443,6 +452,7 @@ function entity:collisionTable(t, x, y, func)
   return result
 end
 
+function entity:beforeUpdate(dt) end
 function entity:update(dt) end
 function entity:afterUpdate(dt) end
 function entity:draw() end

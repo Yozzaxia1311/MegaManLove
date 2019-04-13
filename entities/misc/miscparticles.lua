@@ -84,9 +84,7 @@ function airBubble:new(x, y)
 end
 
 function airBubble:check(x, y)
-  return #self:collisionTable(megautils.groups()["solid"], x, y) ~= 0 or
-    #self:collisionTable(megautils.groups()["death"], x, y) ~= 0 or
-    #self:collisionTable(megautils.groups()["movingSolid"], x, y) ~= 0 or
+  return collision.checkSolid(self) or
     #self:collisionTable(megautils.groups()["water"], x, y) == 0
 end
 

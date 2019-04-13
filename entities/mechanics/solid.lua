@@ -1,6 +1,6 @@
 collision = {}
 
-collision.maxSlope = 1
+collision.maxSlope = 2
 
 function collision.doCollision(self)
   collision.checkGround(self)
@@ -15,7 +15,7 @@ function collision.doCollision(self)
   collision.checkGround(self)
 end
 
-function collision.checkSolid(self, dx, dy, noSlope)
+function collision.getTable(self, dx, dy)
   local xs = dx or 0
   local ys = dy or 0
   local solid = {}
@@ -27,6 +27,48 @@ function collision.checkSolid(self, dx, dy, noSlope)
     local v = megautils.state().system.all[i]
     if v.isSolid ~= 0 then
       if v.isSolid ~= 2 or v:collision(self, -xs, -cgrav * math.abs(ys)) then
+        solid[#solid+1] = v
+      end
+    end
+  end
+  
+  if megautils.groups()["death"] then
+    for i=1, #megautils.groups()["death"] do
+      local v = megautils.groups()["death"][i]
+      if v ~= self and v.collisionShape then
+        if not self.inv and self.iFrame == self.maxIFrame then
+          table.removevaluearray(solid, v)
+        end
+      end
+    end
+  end
+  
+  local ret = {}
+  for i=1, #solid do
+    if self:collision(solid[i], xs, ys) then
+      ret[#ret+1] = solid[i]
+    elseif not noSlope and xs ~= 0 and ys ~= 0 then
+      if #self:collisionTable(solid, xs, math.min(4, math.ceil(math.abs(xs)) * collision.maxSlope)) ~= 0 or
+        #self:collisionTable(solid, xs, -math.max(-4, math.ceil(math.abs(xs)) * collision.maxSlope)) ~= 0 then
+        ret[#ret+1] = solid[i]
+      end
+    end
+  end
+  return ret
+end
+
+function collision.checkSolid(self, dx, dy, noSlope)
+  local xs = dx or 0
+  local ys = dy or 0
+  local solid = {}
+  
+  local cgrav = math.sign(self.gravity)
+  cgrav = cgrav == 0 and 1 or cgrav
+  
+  for i=1, #megautils.state().system.all do
+    local v = megautils.state().system.all[i]
+    if v.isSolid ~= 0 then
+      if v.isSolid ~= 2 or (not v:collision(self) and v:collision(self, -xs, -(cgrav * math.abs(ys)))) then
         solid[#solid+1] = v
       end
     end
@@ -451,8 +493,35 @@ function solid:new(x, y, w, h)
   self.isSolid = 1
   self.added = function(self)
     self:addToGroup("despawnable")
-    self:addToGroup("solid")
     self:addStatic()
+  end
+end
+
+sinkIn = entity:extend()
+
+addobjects.register("sink_in", function(v)
+  megautils.add(sinkIn(v.x, v.y, v.width, v.height, v.properties["speed"]))
+end)
+
+function sinkIn:new(x, y, w, h, s)
+  sinkIn.super.new(self, true)
+  self.transform.y = y
+  self.transform.x = x
+  self:setRectangleCollision(w, h)
+  self:setLayer(9)
+  self.sink = s or 0.125
+  self.added = function(self)
+    self:addToGroup("despawnable")
+    self:addToGroup("sink")
+  end
+end
+
+function sinkIn:update(dt)
+  for i=1, #globals.allPlayers do
+    local p = globals.allPlayers[i]
+    if p:collision(self, 0, 1) or p:collision(self) then
+      collision.shiftObject(p, 0, self.sink, true)
+    end
   end
 end
 
@@ -471,7 +540,6 @@ function slope:new(x, y, mask, invert, left)
   self:setImageCollision(mask)
   self.isSolid = 1
   self.added = function(self)
-    self:addToGroup("slope")
     self:addToGroup("despawnable")
     self:addStatic()
   end
@@ -490,7 +558,6 @@ function oneway:new(x, y, w, h)
   self:setRectangleCollision(w, h)
   self.isSolid = 2
   self.added = function(self)
-    self:addToGroup("oneway")
     self:addToGroup("despawnable")
     self:addStatic()
   end

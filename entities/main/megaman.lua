@@ -150,14 +150,13 @@ function megaman:checkRegBox(ox, oy)
   local w, h, oly = self.collisionShape.w, self.collisionShape.h, self.transform.y
   self:regBox()
   self.transform.y = self.transform.y + (h-self.collisionShape.h)
-  local result = collision.checkSolid(self, ox, oy, nil, true)
+  local result = collision.checkSolid(self, ox, oy)
   self.transform.y = oly
   self:setRectangleCollision(w, h)
   return result
 end
 
 function megaman:checkSlideBox(ox, oy)
-  local s = side
   local w, h, olx, oly = self.collisionShape.w, self.collisionShape.h, self.transform.x, self.transform.y
   self:slideBox()
   self.transform.x = self.transform.x + (w-self.collisionShape.w)/2
@@ -169,7 +168,7 @@ function megaman:checkSlideBox(ox, oy)
   return result
 end
 
-function megaman:checkBasicSlideBox(ox, oy)
+function megaman:checkBasicSlideBox(side)
   local w, h, oly = self.collisionShape.w, self.collisionShape.h, self.transform.y
   self:basicSlideBox()
   self.transform.y = self.transform.y + (h-self.collisionShape.h)
@@ -702,7 +701,6 @@ function megaman:code(dt)
     elseif control.downDown[self.player] and self.shootTimer == self.maxShootTime then
       self.velocity.vely = self.climbDownSpeed
     end
-    self:phys()
     if not self:collision(self.currentLadder) and self.transform.y >= self.currentLadder.transform.y then
       self.climb = false
     elseif self.transform.y+math.round(self.collisionShape.h/2) < self.currentLadder.transform.y+2
@@ -728,6 +726,7 @@ function megaman:code(dt)
       control.upDown[self.player]) then
       self.climb = false
     end
+    self:phys()
     self:attemptWeaponUsage()
     if self.shootTimer ~= self.maxShootTime then
       self.velocity.vely = 0      
@@ -750,14 +749,14 @@ function megaman:code(dt)
     self.velocity.velx = self.side==1 and self.slideRightSpeed or self.slideLeftSpeed
     self.velocity.velx = math.clamp(self.velocity.velx, self.slideLeftSpeed, self.slideRightSpeed)
     local jumped = false
-    if self:checkRegBox() and not (self.ground or self:checkSlideBox(0, 1)) then
+    if self:checkRegBox() and not (self.ground or self:checkSlideBox(self.velocity.velx, 1)) then
       self.slide = false
       local w = self.collisionShape.w
       self:regBox()
       while collision.checkSolid(self, 0, -1) do
         self.transform.y = self.transform.y + 1
       end
-    elseif not (self.ground or self:checkSlideBox(0, 1)) then
+    elseif not (self.ground or self:checkSlideBox(self.velocity.velx, 1)) then
       self.slide = false
       self.velocity.velx = 0
       local w = self.collisionShape.w
@@ -766,7 +765,7 @@ function megaman:code(dt)
     else
       self.slideTimer = math.min(self.slideTimer+1, self.maxSlideTime)
       if self.slideTimer == self.maxSlideTime and not self:checkRegBox()
-        and (self.ground or self:checkSlideBox(0, 1)) then
+        and (self.ground or self:checkSlideBox(self.velocity.velx, 1)) then
         self.slide = false
         self:slideToReg()
       elseif not self:checkRegBox() and self.xcoll ~= 0 and self:checkSlideBox(0, 1) then
@@ -784,7 +783,7 @@ function megaman:code(dt)
         self.hitTimer = self.maxHitTime
         self:slideToReg()
         self.dashJump = self.canDashJump
-      elseif not (self.ground or self:checkSlideBox(0, 1))
+      elseif not (self.ground or self:checkSlideBox(self.velocity.velx, 1))
         and self:checkRegBox() then
         self.slide = false
         self.slideTimer = self.maxSlideTime
@@ -800,8 +799,8 @@ function megaman:code(dt)
         self:slideToReg()
       end
     end
-    self:phys()
     if not self.slide and not jumped then self.velocity.vely = 0 end
+    self:phys()
     if self.canShoot and not self.canDashShoot and control.shootDown[self.player] then
       self:charge()
     elseif self.canShoot and self.canDashShoot then
