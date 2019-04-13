@@ -11,12 +11,14 @@ function checkpoint:new(x, y, w, h, c)
   self:setRectangleCollision(w, h)
   self.added = function(self)
     self:addToGroup("despawnable")
+    self.once = false
   end
   self.name = c
 end
 
 function checkpoint:update(dt)
-  if not megautils.outside(self) then
+  if not megautils.outside(self) and not self.once then
     globals.checkpoint = self.name
+    self.once = true
   end
 end

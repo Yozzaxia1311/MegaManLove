@@ -316,7 +316,10 @@ function collision.checkGround(self, noSlopeEffect)
         self.onMovingFloor = nil
       elseif self.velocity.vely * cgrav >= 0 then
         self.ground = true
-        self.transform.y = self.transform.y + (i - 1) * cgrav
+        self.transform.y = math.round(self.transform.y+cgrav) + (i - 1) * cgrav
+        while #self:collisionTable(solid) ~= 0 do
+          self.transform.y = self.transform.y - cgrav
+        end
         break
       end
       if noSlopeEffect then
