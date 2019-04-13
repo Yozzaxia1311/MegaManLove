@@ -168,7 +168,7 @@ function megaman:checkSlideBox(ox, oy)
   return result
 end
 
-function megaman:checkBasicSlideBox(side)
+function megaman:checkBasicSlideBox(ox, oy)
   local w, h, oly = self.collisionShape.w, self.collisionShape.h, self.transform.y
   self:basicSlideBox()
   self.transform.y = self.transform.y + (h-self.collisionShape.h)

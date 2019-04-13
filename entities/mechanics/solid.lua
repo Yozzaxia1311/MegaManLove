@@ -1,6 +1,6 @@
 collision = {}
 
-collision.maxSlope = 2
+collision.maxSlope = 1
 
 function collision.doCollision(self)
   collision.checkGround(self)
@@ -47,7 +47,7 @@ function collision.getTable(self, dx, dy)
   for i=1, #solid do
     if self:collision(solid[i], xs, ys) then
       ret[#ret+1] = solid[i]
-    elseif not noSlope and xs ~= 0 and ys ~= 0 then
+    elseif not noSlope and xs ~= 0 and ys == 0 then
       if #self:collisionTable(solid, xs, math.min(4, math.ceil(math.abs(xs)) * collision.maxSlope)) ~= 0 or
         #self:collisionTable(solid, xs, -math.max(-4, math.ceil(math.abs(xs)) * collision.maxSlope)) ~= 0 then
         ret[#ret+1] = solid[i]
@@ -88,7 +88,7 @@ function collision.checkSolid(self, dx, dy, noSlope)
   local ret = true
   if #self:collisionTable(solid, xs, ys) == 0 then
     ret = false
-  elseif not noSlope and xs ~= 0 and ys ~= 0 then
+  elseif not noSlope and xs ~= 0 and ys == 0 then
     if #self:collisionTable(solid, xs, math.min(4, math.ceil(math.abs(xs)) * collision.maxSlope)) == 0 or
       #self:collisionTable(solid, xs, -math.max(-4, math.ceil(math.abs(xs)) * collision.maxSlope)) == 0 then
       ret = false
