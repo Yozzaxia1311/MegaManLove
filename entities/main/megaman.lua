@@ -675,14 +675,14 @@ function megaman:code(dt)
   self.runCheck = ((control.leftDown[self.player] and not control.rightDown[self.player]) or (control.rightDown[self.player] and not control.leftDown[self.player]))
   if self.hitTimer ~= self.maxHitTime then
     self.hitTimer = math.min(self.hitTimer+1, self.maxHitTime)
+    for k, v in pairs(self.knockbackUpdateFuncs) do
+      v(self)
+    end
     self:phys()
     if self.canShoot and control.shootDown[self.player] then
       self:charge()
     else
       self:charge(true)
-    end
-    for k, v in pairs(self.knockbackUpdateFuncs) do
-      v(self)
     end
   elseif self.climb then
     if control.leftDown[self.player] then
@@ -726,15 +726,15 @@ function megaman:code(dt)
       control.upDown[self.player]) then
       self.climb = false
     end
+    for k, v in pairs(self.climbUpdateFuncs) do
+      v(self)
+    end
     self:phys()
     self:attemptWeaponUsage()
     if self.shootTimer ~= self.maxShootTime then
       self.velocity.vely = 0      
     end
     self.climbTip = self.transform.y+math.round(self.collisionShape.h/6) < self.currentLadder.transform.y
-    for k, v in pairs(self.climbUpdateFuncs) do
-      v(self)
-    end
   elseif self.slide then
     local lastSide = self.side
     if control.leftDown[self.player] then
@@ -800,6 +800,9 @@ function megaman:code(dt)
       end
     end
     if not self.slide and not jumped then self.velocity.vely = 0 end
+    for k, v in pairs(self.slideUpdateFuncs) do
+      v(self)
+    end
     self:phys()
     if self.canShoot and not self.canDashShoot and control.shootDown[self.player] then
       self:charge()
@@ -809,9 +812,6 @@ function megaman:code(dt)
       self:charge(true)
     end
     self:attemptClimb()
-    for k, v in pairs(self.slideUpdateFuncs) do
-      v(self)
-    end
   elseif self.ground then
     if self.canWalk and not (self.stopOnShot and self.shootTimer ~= self.maxShootTime) then
       if self.runCheck and not self.step then
@@ -865,15 +865,15 @@ function megaman:code(dt)
       jumped = true
     end
     self.velocity.velx = math.clamp(self.velocity.velx, self.maxLeftSpeed, self.maxRightSpeed)
+    for k, v in pairs(self.groundUpdateFuncs) do
+      v(self)
+    end
     self:phys()
     if not self.ground and not jumped and self.velocity.vely == 1 then self.velocity.vely = 0 end
     if self.canShoot then
       self:attemptWeaponUsage()
     end
     self:attemptClimb()
-    for k, v in pairs(self.groundUpdateFuncs) do
-      v(self)
-    end
   else
     self.wallJumping = false
     local ns = control.leftDown[self.player] and -1 or (control.rightDown[self.player] and 1 or 0)
@@ -918,6 +918,9 @@ function megaman:code(dt)
     if self.canStopJump and not control.jumpDown[self.player] and self.velocity.vely < 0 then
       self.velocity:slowY(self.jumpDecel)
     end
+    for k, v in pairs(self.airUpdateFuncs) do
+      v(self)
+    end
     self:phys()
     if self.died then return end
     if self.ground then
@@ -929,9 +932,6 @@ function megaman:code(dt)
     end
     if self.canShoot then
       self:attemptWeaponUsage()
-    end
-    for k, v in pairs(self.airUpdateFuncs) do
-      v(self)
     end
   end
   if #self:collisionTable(megautils.groups()["water"]) ~= 0 then
