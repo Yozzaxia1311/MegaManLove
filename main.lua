@@ -136,6 +136,7 @@ function love.load()
   end
   states.set("states/disclaimer.state.lua") --megautils.loadGame("path/to/game/directory/if/standalone/game/is/desired")
   console.parse("exec autoexec")
+  save.save("fuf/sss/fucker.txt", {["fff"]=69})
 end
 
 function love.resize(w, h)

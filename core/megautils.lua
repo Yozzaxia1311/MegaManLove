@@ -18,7 +18,7 @@ function megautils.runFile(path, ignoreGamePath)
   if ignoreGamePath then
     return love.filesystem.load(path)()
   else
-    return love.filesystem.load(gamePath .. "/" .. path)()
+    return love.filesystem.load(gamePath .. (gamePath == "" and "" or "/") .. path)()
   end
 end
 
@@ -181,7 +181,7 @@ function megautils.loadStage(self, path, call, ignoreGamePath)
   if ignoreGamePath then
     map = cartographer.load(path)
   else
-    map = cartographer.load(gamePath .. "/" .. path)
+    map = cartographer.load(gamePath .. (gamePath == "" and "" or "/") .. path)
   end
   local tLayers = {}
   local objs = {}

@@ -47,30 +47,30 @@ function loader.load(path, nick, t, parameters, lock, ignoreGamePath)
       if t == "texture" then
         if lock then
           if parameters and parameters[1] then
-            loader.locked[nick] = {table.stringtonumbervalues(love.data.decompress("string", "zlib", love.filesystem.read(gamePath .. "/" .. path)):split(",")),
+            loader.locked[nick] = {table.stringtonumbervalues(love.data.decompress("string", "zlib", love.filesystem.read(gamePath .. (gamePath == "" and "" or "/") .. path)):split(",")),
               parameters[2]}
           else
-            loader.locked[nick] = love.graphics.newImage(gamePath .. "/" .. path)
+            loader.locked[nick] = love.graphics.newImage(gamePath .. (gamePath == "" and "" or "/") .. path)
           end
         else
           if parameters and parameters[1] then
-            loader.resources[nick] = {table.stringtonumbervalues(love.data.decompress("string", "zlib", love.filesystem.read(gamePath .. "/" .. path)):split(",")),
+            loader.resources[nick] = {table.stringtonumbervalues(love.data.decompress("string", "zlib", love.filesystem.read(gamePath .. (gamePath == "" and "" or "/") .. path)):split(",")),
               parameters[2]}
           else
-            loader.resources[nick] = love.graphics.newImage(gamePath .. "/" .. path)
+            loader.resources[nick] = love.graphics.newImage(gamePath .. (gamePath == "" and "" or "/") .. path)
           end
         end
       elseif t == "music" then
         if lock then
-          loader.locked[nick] = love.audio.newSource(gamePath .. "/" .. path)
+          loader.locked[nick] = love.audio.newSource(gamePath .. (gamePath == "" and "" or "/") .. path)
         else
-          loader.resources[nick] = love.audio.newSource(gamePath .. "/" .. path)
+          loader.resources[nick] = love.audio.newSource(gamePath .. (gamePath == "" and "" or "/") .. path)
         end
       elseif t == "sound" then
         if lock then
-          loader.locked[nick] = love.audio.newSource(gamePath .. "/" .. path, "static")
+          loader.locked[nick] = love.audio.newSource(gamePath .. (gamePath == "" and "" or "/") .. path, "static")
         else
-          loader.resources[nick] = love.audio.newSource(gamePath .. "/" .. path, "static")
+          loader.resources[nick] = love.audio.newSource(gamePath .. (gamePath == "" and "" or "/") .. path, "static")
         end
       elseif t == "grid" then
         if lock then

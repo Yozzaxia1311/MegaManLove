@@ -42,7 +42,7 @@ function states.set(n, s, after)
     if ignoreGamePath then
       states.currentChunk = love.filesystem.load(nick)
     else
-      states.currentChunk = love.filesystem.load(gamePath .. "/" .. nick)
+      states.currentChunk = love.filesystem.load(gamePath .. (gamePath == "" and "" or "/") .. nick)
     end
   end
   states.current = nick

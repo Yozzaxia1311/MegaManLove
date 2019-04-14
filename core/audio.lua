@@ -24,20 +24,20 @@ function mmMusic.playFromFile(loop, intro, vol, ignoreGamePath)
       if ignoreGamePath then
         mmMusic.cur = mmMusic(love.audio.newSource(loop, "stream"), love.audio.newSource(intro, "stream"))
       else
-        mmMusic.cur = mmMusic(love.audio.newSource(gamePath .. "/" .. loop, "stream"), love.audio.newSource(gamePath .. "/" .. intro, "stream"))
+        mmMusic.cur = mmMusic(love.audio.newSource(gamePath .. (gamePath == "" and "" or "/") .. loop, "stream"), love.audio.newSource(gamePath .. (gamePath == "" and "" or "/") .. intro, "stream"))
       end
     else
       if ignoreGamePath then
         mmMusic.cur = mmMusic(nil, love.audio.newSource(intro, "stream"))
       else
-        mmMusic.cur = mmMusic(nil, love.audio.newSource(gamePath .. "/" .. intro, "stream"))
+        mmMusic.cur = mmMusic(nil, love.audio.newSource(gamePath .. (gamePath == "" and "" or "/") .. intro, "stream"))
       end
     end
   else
     if ignoreGamePath then
       mmMusic.cur = mmMusic(love.audio.newSource(loop, "stream"), nil)
     else
-      mmMusic.cur = mmMusic(love.audio.newSource(gamePath .. "/" .. loop, "stream"), nil)
+      mmMusic.cur = mmMusic(love.audio.newSource(gamePath .. (gamePath == "" and "" or "/") .. loop, "stream"), nil)
     end
   end
   mmMusic.cur.id = tostring(loop) .. tostring(intro)
