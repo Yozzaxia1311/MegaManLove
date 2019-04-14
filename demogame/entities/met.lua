@@ -61,13 +61,9 @@ function met:healthChanged(o, c, i)
 end
 
 function met:update(dt)
-  if globals.mainPlayer and globals.mainPlayer.transform.x+globals.mainPlayer.collisionShape.w/2 > self.transform.x then
-    self.side = 1
-  elseif globals.mainPlayer and globals.mainPlayer.transform.x+globals.mainPlayer.collisionShape.w/2 < self.transform.x then
-    self.side = -1
-  end
+  local near = megautils.autoFace(self, globals.allPlayers)
   if self.s == 0 then
-    if globals.mainPlayer and math.between(globals.mainPlayer.transform.x, 
+    if math.between(near.transform.x, 
       self.transform.x - 120, self.transform.x + 120) then
       self.timer = math.min(self.timer+1, 80)
     else

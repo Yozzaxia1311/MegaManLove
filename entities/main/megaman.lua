@@ -625,24 +625,14 @@ function megaman:healthChanged(o, c, i)
       self.dying = true
       self.iFrame = self.maxIFrame
       megautils.freeze({self})
-      local newx, newy = 0, 0
-      local avx, avy = 0, 0
-      for i=1, #globals.allPlayers do
-        local p = globals.allPlayers[i]
-        if not p.rise and not p.drop and p ~= self then
-          avx = avx+(p.transform.x - (view.w/2) + (p.collisionShape.w/2))
-          avy = avy+(p.transform.y+(p.slide and -7 or 0) - (view.h/2) + (p.collisionShape.h/2))
-        end
-      end
-      if camera.main.scrollX then
-        newx = (avx/#globals.allPlayers)
-        newx = math.clamp(newx, camera.main.scrollx, camera.main.scrollx+camera.main.scrollw-view.w)
-      end
-      if camera.main.scrollY then
-        newy = (avy/#globals.allPlayers)
-        newy = math.clamp(newy, camera.main.scrolly, camera.main.scrolly+camera.main.scrollh-view.h)
-      end
-      self.cameraTween = tween.new(0.4, camera.main.transform, {x=newx, y=newy})
+      local dx, dy
+      local ox, oy = camera.main.transform.x, camera.main.transform.y
+      camera.main:doView(self)
+      dx = camera.main.transform.x
+      dy = camera.main.transform.y
+      camera.main.transform.x = ox
+      camera.main.transform.y = oy
+      self.cameraTween = tween.new(0.4, camera.main.transform, {x=dx, y=dy})
       return
     end
   end
@@ -1209,7 +1199,7 @@ function megaman:update(dt)
       end
       self.healthHandler.change = self.changeHealth
       self.healthHandler:updateThis()
-      healthhandler.playerTimers[self.player] = 200
+      healthhandler.playerTimers[self.player] = 180
       megautils.remove(megaman.weaponHandler[self.player], true)
       megautils.remove(self.healthHandler, true)
       megautils.unregisterPlayer(self)

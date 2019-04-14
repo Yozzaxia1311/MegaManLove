@@ -216,7 +216,7 @@ function camera:updateCam()
   end
 end
 
-function camera:doView()
+function camera:doView(without)
   if #globals.allPlayers <= 1 then
     local o = globals.allPlayers[1]
     if self.doScrollX then
@@ -231,7 +231,7 @@ function camera:doView()
     local avx, avy = 0, 0
     for i=1, #globals.allPlayers do
       local p = globals.allPlayers[i]
-      if not p.rise and not p.drop then
+      if not p.rise and not p.drop and p ~= without then
         if self.doScrollX then
           avx = avx+(p.transform.x - (view.w/2) + (p.collisionShape.w/2))
         end

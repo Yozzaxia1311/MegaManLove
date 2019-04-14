@@ -28,7 +28,7 @@ function initEngine()
   view.init(256, 224, 1)
   
   mmFont = love.graphics.newImageFont("assets/misc/mm.png", "$abcdefghijklmnopqrstuvwxyz"
-        .. "1234567890!?<>;/ :,-.+()%'")
+        .. "1234567890!?<>;/ :,-.+()%'`")
   
   cscreen.init(view.w*view.scale, view.h*view.scale, true)
   
