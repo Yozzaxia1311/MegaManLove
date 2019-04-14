@@ -5,7 +5,6 @@ megautils.cleanFuncs = {}
 
 function megautils.enableConsole()
   useConsole = true
-  console.init()
 end
 
 function megautils.disableConsole()
@@ -26,10 +25,15 @@ end
 function megautils.loadGame(path)
   megautils.unload()
   initEngine()
-  gamePath = path
-  local data = love.filesystem.load(path .. "/init.lua")()
-  data.run()
-  states.set(data.initState)
+  if love.filesystem.getInfo(path .. "/init.lua") then
+    gamePath = path
+    local data = love.filesystem.load(path .. "/init.lua")()
+    data.run()
+    states.set(data.initState)
+  else
+    gamePath = ""
+    states.set("states/disclaimer.state.lua")
+  end
 end
 
 function megautils.resetToGameLoader()

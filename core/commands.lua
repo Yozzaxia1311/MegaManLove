@@ -57,6 +57,100 @@ concmd["games"] = {
   fun = cmdGames,
 }
 
+function cmdRec(cmd)
+  if states.recordOnSwitch then
+    states.recordOnSwitch = false
+    console.print("Recording disabled")
+  else
+    states.recordOnSwitch = true
+    console.print("Recording on state switch...")
+  end
+end
+concmd["rec"] = {
+  helptext = "record after the state switches",
+  flags = {},
+  fun = cmdRec,
+}
+
+function cmdRecEnd(cmd)
+  control.recordInput = false
+  console.print("Recording ended")
+  console.print("Remember to save with recsave")
+end
+concmd["recend"] = {
+  helptext = "stop recording",
+  flags = {},
+  fun = cmdRecEnd,
+}
+
+function cmdRecSave(cmd)
+  if not cmd[2] then return end
+  control.recordInput = false
+  control.recordName = cmd[2]
+  control.finishRecord()
+  console.print("Recording saved")
+end
+concmd["recsave"] = {
+  helptext = "stop recording",
+  flags = {},
+  fun = cmdRecSave,
+}
+
+function cmdRecOpen(cmd)
+  if not cmd[2] then return end
+  if love.filesystem.getInfo(cmd[2] .. ".rd") then
+    states.openRecord = cmd[2] .. ".rd"
+    megautils.add(fade(true):setAfter(function(s)
+          states.set()
+        end))
+    console.close()
+    console.y = -112*2
+  else
+    console.print("No such record file \""..cmd[2].."\"")
+  end
+end
+concmd["recopen"] = {
+  helptext = "stop recording",
+  flags = {},
+  fun = cmdRecOpen,
+}
+
+function cmdOpenDir(cmd)
+  love.system.openURL(love.filesystem.getSaveDirectory())
+end
+concmd["opendir"] = {
+  helptext = "open save directory",
+  flags = {},
+  fun = cmdOpenDir,
+}
+
+function cmdRecs(cmd)
+  local check
+  if cmd[2] then
+    check = cmd[2]
+    if not love.filesystem.getInfo(check) then console.print("No such directory \""..cmd[2].."\"") return end
+  end
+  local result = iterateDirs(function(f)
+      return f:sub(-3) == ".rd"
+    end, check)
+  if #result == 0 then
+    if check then
+      console.print("No recordings in directory \""..cmd[2].."\"")
+    else
+      console.print("No recordings exist")
+    end
+    return
+  end
+  for i=1, #result do
+    console.print(result[i]:sub(1, -4))
+  end
+end
+concmd["recs"] = {
+  helptext = "gives a list of recordings",
+  flags = {},
+  fun = cmdRecs,
+}
+
 function cmdEcho(cmd)
   if not cmd[2] then return end
   console.print(cmd[2])
@@ -128,7 +222,7 @@ function cmdStates(cmd)
     if check then
       console.print("No states in directory \""..cmd[2].."\"")
     else
-      console.print("No states at all??")
+      console.print("No states exist")
     end
     return
   end
