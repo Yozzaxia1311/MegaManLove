@@ -240,7 +240,7 @@ function control.playRecord()
 end
 
 function control.loadRecord(file)
-  control.record = table.stringtonumberkeys(save.load(file))
+  control.record = table.stringtonumberkeys(save.load(file, true))
   control.recPos = 1
 end
 
