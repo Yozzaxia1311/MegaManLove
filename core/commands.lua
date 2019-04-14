@@ -104,6 +104,7 @@ function cmdRecOpen(cmd)
           states.set()
         end))
     console.close()
+    console.y = -112*2
   else
     console.print("No such record file \""..cmd[2].."\"")
   end
