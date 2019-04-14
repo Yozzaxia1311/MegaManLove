@@ -115,6 +115,15 @@ concmd["recopen"] = {
   fun = cmdRecOpen,
 }
 
+function cmdOpenDir(cmd)
+  love.system.openURL(love.filesystem.getSaveDirectory())
+end
+concmd["opendir"] = {
+  helptext = "open save directory",
+  flags = {},
+  fun = cmdOpenDir,
+}
+
 function cmdRecs(cmd)
   local check
   if cmd[2] then
