@@ -1,4 +1,9 @@
 io.stdout:setvbuf("no")
+io.open = nil
+io.read = nil
+io.write = nil
+io.popen = nil
+io.lines = nil
 
 function love.conf(t)
   t.identity = "MMLOVE"                    -- The name of the save directory (string)
