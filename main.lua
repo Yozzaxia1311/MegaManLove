@@ -8,8 +8,6 @@ function initEngine()
   love.graphics.setDefaultFilter("nearest", "nearest")
   love.filesystem.load("requires.lua")()
   
-  control.init()
-  
   if touchControls then
     touchInput.add("left", "left-down", 16, -140, 64, 64)
     touchInput.add("right", "left-down", 16+64, -140, 64, 64)
@@ -124,7 +122,9 @@ function love.load()
     ["next"]={"rightshoulder", "gamepad", joysticks[2]:getName()},
     ["dash"]={"b", "gamepad", joysticks[2]:getName()}} or {}
   gamePath = ""
-  love.filesystem.load("requireLibs.lua")()
+  love.filesystem.load("requirelibs.lua")()
+  control.init()
+  console.init()
   initEngine()
   local data = save.load("main.sav", true)
   if data then
@@ -164,12 +164,14 @@ function love.keypressed(k, s, r)
     globals.lastKeyPressed = {k, "keyboard"}
   end
   globals.keyboardCheck[k] = 5
+  control.anyPressed = true
 end
 
 touchInput = {}
 
 function touchInput.touchPressed(b)
   globals.lastKeyPressed = {b, "touch"}
+  control.anyPressed = true
 end
 
 function love.gamepadpressed(j, b)
@@ -177,6 +179,7 @@ function love.gamepadpressed(j, b)
     globals.lastKeyPressed = {b, "gamepad", j:getName()}
   end
   globals.gamepadCheck[b] = 5
+  control.anyPressed = true
 end
 
 function love.gamepadaxis(j, b, v)

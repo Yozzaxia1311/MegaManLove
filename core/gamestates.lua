@@ -19,10 +19,15 @@ function states.set(n, s, after)
     states.currentstate:stop()
   end
   if states.openRecord then
+    control.lastGame = gamePath
     control.loadRecord(states.openRecord)
-    nick = control.record.save.saveRoom.state
-    control.demo = true
+    nick = control.record.state
     states.openRecord = nil
+    megautils.loadGame(control.record.gamePath)
+    globals = control.record.globals
+    control.demo = true
+    states.set(nick)
+    return
   end
   if states.recordOnSwitch then
     states.recordOnSwitch = false
@@ -31,6 +36,7 @@ function states.set(n, s, after)
     control.recPos = 1
     control.record.globals = table.clone(globals)
     control.record.gamePath = gamePath
+    control.record.state = nick
   end
   if states.currentChunk == nil or states.current ~= nick then
     if ignoreGamePath then

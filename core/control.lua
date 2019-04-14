@@ -55,8 +55,7 @@ function control.init()
   control.record = {}
   control.recPos = 1
   control.recordInput = false
-  control.startDemo = false
-  control.tmpInput = {}
+  control.anyPressed = false
   
   inputHandler.init()
   
@@ -155,22 +154,18 @@ function control.update()
     end
   else
     control.playRecord()
-    local result = inputHandler.anyDown()
+    local result = control.anyPressed
     if control.record.last <= control.recPos then
       result = true
     end
     if result and not control.once then
       control.once = true
-      megautils.state().system.afterUpdate = nil
-      fade.gotoState("states/menus/titlestate.lua", "imageWipeCenter", "imageWipeCenter", function()
-        control.demo = false
-        control.recPos[i] = 1
-        control.record = {}
-        control.once = nil
-      end, nil, globals.titlestate)
+      control.demo = false
+      control.recPos = 1
+      control.record = {}
+      megautils.loadGame(control.lastGame)
     end
   end
-  
   if control.recordInput then
     control.doRecording()
   end
@@ -182,7 +177,7 @@ function control.finishRecord()
   result.last = control.recPos
   result.globals = control.record.globals
   result.gamePath = control.record.gamePath
-  save.save(control.recordName .. ".rd", result)
+  save.save(control.recordName .. ".rd", result, true)
   control.record = {}
   control.recPos = 1
   control.globals = nil
@@ -192,28 +187,53 @@ end
 function control.playRecord()
   if control.record[control.recPos] then
     for i=1, maxPlayerCount do
-      control.leftDown = control.record[control.recPos].leftDown and control.record[control.recPos].leftDown[i]
-      control.leftPressed = control.record[control.recPos].leftPressed and control.record[control.recPos].leftPressed[i]
-      control.rightDown = control.record[control.recPos].rightDown and control.record[control.recPos].rightDown[i]
-      control.rightPressed = control.record[control.recPos].rightPressed and control.record[control.recPos].rightPressed[i]
-      control.upDown = control.record[control.recPos].upDown and control.record[control.recPos].upDown[i]
-      control.upPressed = control.record[control.recPos].upPressed and control.record[control.recPos].upPressed[i]
-      control.downDown = control.record[control.recPos].downDown and control.record[control.recPos].downDown[i]
-      control.downPressed = control.record[control.recPos].downPressed and control.record[control.recPos].downPressed[i]
-      control.startDown = control.record[control.recPos].startDown and control.record[control.recPos].startDown[i]
-      control.startPressed = control.record[control.recPos].startPressed and control.record[control.recPos].startPressed[i]
-      control.startDown = control.record[control.recPos].selectDown and control.record[control.recPos].selectDown[i]
-      control.startPressed = control.record[control.recPos].selectPressed and control.record[control.recPos].selectPressed[i]
-      control.jumpDown = control.record[control.recPos].jumpDown and control.record[control.recPos].jumpDown[i]
-      control.jumpPressed = control.record[control.recPos].jumpPressed and control.record[control.recPos].jumpPressed[i]
-      control.shootDown = control.record[control.recPos].shootDown and control.record[control.recPos].shootDown[i]
-      control.shootPressed = control.record[control.recPos].shootPressed and control.record[control.recPos].shootPressed[i]
-      control.prevDown = control.record[control.recPos].prevDown and control.record[control.recPos].prevDown[i]
-      control.prevPressed = control.record[control.recPos].prevPressed and control.record[control.recPos].prevPressed[i]
-      control.nextDown = control.record[control.recPos].nextDown and control.record[control.recPos].nextDown[i]
-      control.nextPressed = control.record[control.recPos].nextPressed and control.record[control.recPos].nextPressed[i]
-      control.dashDown = control.record[control.recPos].dashDown and control.record[control.recPos].dashDown[i]
-      control.dashPressed = control.record[control.recPos].dashPressed and control.record[control.recPos].dashPressed[i]
+      control.leftDown[i] = control.record[control.recPos].leftDown and control.record[control.recPos].leftDown[i] == 1
+      control.leftPressed[i] = control.record[control.recPos].leftPressed and control.record[control.recPos].leftPressed[i] == 1
+      control.rightDown[i] = control.record[control.recPos].rightDown and control.record[control.recPos].rightDown[i] == 1
+      control.rightPressed[i] = control.record[control.recPos].rightPressed and control.record[control.recPos].rightPressed[i] == 1
+      control.upDown[i] = control.record[control.recPos].upDown and control.record[control.recPos].upDown[i] == 1
+      control.upPressed[i] = control.record[control.recPos].upPressed and control.record[control.recPos].upPressed[i] == 1
+      control.downDown[i] = control.record[control.recPos].downDown and control.record[control.recPos].downDown[i] == 1
+      control.downPressed[i] = control.record[control.recPos].downPressed and control.record[control.recPos].downPressed[i] == 1
+      control.startDown[i] = control.record[control.recPos].startDown and control.record[control.recPos].startDown[i] == 1
+      control.startPressed[i] = control.record[control.recPos].startPressed and control.record[control.recPos].startPressed[i] == 1
+      control.startDown[i] = control.record[control.recPos].selectDown and control.record[control.recPos].selectDown[i] == 1
+      control.startPressed[i] = control.record[control.recPos].selectPressed and control.record[control.recPos].selectPressed[i] == 1
+      control.jumpDown[i] = control.record[control.recPos].jumpDown and control.record[control.recPos].jumpDown[i] == 1
+      control.jumpPressed[i] = control.record[control.recPos].jumpPressed and control.record[control.recPos].jumpPressed[i] == 1
+      control.shootDown[i] = control.record[control.recPos].shootDown and control.record[control.recPos].shootDown[i] == 1
+      control.shootPressed[i] = control.record[control.recPos].shootPressed and control.record[control.recPos].shootPressed[i] == 1
+      control.prevDown[i] = control.record[control.recPos].prevDown and control.record[control.recPos].prevDown[i] == 1
+      control.prevPressed[i] = control.record[control.recPos].prevPressed and control.record[control.recPos].prevPressed[i] == 1
+      control.nextDown[i] = control.record[control.recPos].nextDown and control.record[control.recPos].nextDown[i] == 1
+      control.nextPressed[i] = control.record[control.recPos].nextPressed and control.record[control.recPos].nextPressed[i] == 1
+      control.dashDown[i] = control.record[control.recPos].dashDown and control.record[control.recPos].dashDown[i] == 1
+      control.dashPressed[i] = control.record[control.recPos].dashPressed and control.record[control.recPos].dashPressed[i] == 1
+    end
+  else
+    for i=1, maxPlayerCount do
+      control.leftDown[i] = false
+      control.leftPressed[i] = false
+      control.rightDown[i] = false
+      control.rightPressed[i] = false
+      control.upDown[i] = false
+      control.upPressed[i] = false
+      control.downDown[i] = false
+      control.downPressed[i] = false
+      control.startDown[i] = false
+      control.startPressed[i] = false
+      control.startDown[i] = false
+      control.startPressed[i] = false
+      control.jumpDown[i] = false
+      control.jumpPressed[i] = false
+      control.shootDown[i] = false
+      control.shootPressed[i] = false
+      control.prevDown[i] = false
+      control.prevPressed[i] = false
+      control.nextDown[i] = false
+      control.nextPressed[i] = false
+      control.dashDown[i] = false
+      control.dashPressed[i] = false
     end
   end
   control.recPos = control.recPos + 1
@@ -221,7 +241,6 @@ end
 
 function control.loadRecord(file)
   control.record = table.stringtonumberkeys(save.load(file))
-  globals = control.record.globals
   control.recPos = 1
 end
 
@@ -444,4 +463,5 @@ end
 function control.flush()
   inputHandler.flush()
   touchInput.flush()
+  control.anyPressed = false
 end
