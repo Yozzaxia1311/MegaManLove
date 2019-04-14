@@ -123,8 +123,7 @@ function love.load()
     ["next"]={"rightshoulder", "gamepad", joysticks[2]:getName()},
     ["dash"]={"b", "gamepad", joysticks[2]:getName()}} or {}
   gamePath = ""
-  love.filesystem.load("core/console.lua")()
-  love.filesystem.load("core/commands.lua")()
+  love.filesystem.load("requireLibs.lua")()
   initEngine()
   local data = save.load("main.sav", true)
   if data then
@@ -260,6 +259,7 @@ function love.draw()
   love.graphics.push()
   states.draw()
   love.graphics.pop()
+  control.drawDemo()
   if useConsole then console.draw() end
   if touchControls then
     touchInput.draw()

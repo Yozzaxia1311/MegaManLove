@@ -3,6 +3,8 @@ states = {}
 states.currentstate = nil
 states.current = nil
 states.switched = false
+states.recordOnSwitch = false
+states.openRecord = nil
 
 states.state = class:extend()
 
@@ -11,12 +13,26 @@ function states.state:update(dt) end
 function states.state:draw() end
 function states.state:stop() end
 
-function states.set(n, s, ignoreGamePath)
+function states.set(n, s, after)
   local nick = n
   if states.currentstate then
     states.currentstate:stop()
   end
-  if not s and (not states.currentChunk or states.current ~= nick) then
+  if states.openRecord then
+    control.loadRecord(states.openRecord)
+    nick = control.record.save.saveRoom.state
+    control.demo = true
+    states.openRecord = nil
+  end
+  if states.recordOnSwitch then
+    states.recordOnSwitch = false
+    control.recordInput = true
+    control.record = {}
+    control.recPos = 1
+    control.record.globals = table.clone(globals)
+    control.record.gamePath = gamePath
+  end
+  if states.currentChunk == nil or states.current ~= nick then
     if ignoreGamePath then
       states.currentChunk = love.filesystem.load(nick)
     else
@@ -27,15 +43,16 @@ function states.set(n, s, ignoreGamePath)
   states.currentstate = s or states.currentChunk()
   states.currentstate.system = states.currentstate.system or entitysystem()
   states.switched = true
+  if after then after() end
   states.currentstate:begin()
 end
 
 function states.update(dt)
-  if not states.currentstate then return end
+  if states.currentstate == nil then return end
   states.currentstate:update(dt)
 end
 
 function states.draw()
-  if not states.currentstate then return end
+  if states.currentstate == nil then return end
   states.currentstate:draw()
 end

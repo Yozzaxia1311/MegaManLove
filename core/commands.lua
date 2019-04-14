@@ -57,6 +57,40 @@ concmd["games"] = {
   fun = cmdGames,
 }
 
+function cmdRecord(cmd)
+  states.recordOnSwitch = true
+  console.print("Recording on state switch...")
+end
+concmd["record"] = {
+  helptext = "record after the state switches",
+  flags = {},
+  fun = cmdRecord,
+}
+
+function cmdRecEnd(cmd)
+  control.recordInput = false
+  console.print("Recording ended")
+  console.print("Remember to save with recsave")
+end
+concmd["recend"] = {
+  helptext = "stop recording",
+  flags = {},
+  fun = cmdRecEnd,
+}
+
+function cmdRecSave(cmd)
+  if not cmd[2] then return end
+  control.recordInput = false
+  control.recordName = cmd[2]
+  control.finishRecord()
+  console.print("Recording saved")
+end
+concmd["recsave"] = {
+  helptext = "stop recording",
+  flags = {},
+  fun = cmdRecSave,
+}
+
 function cmdEcho(cmd)
   if not cmd[2] then return end
   console.print(cmd[2])
