@@ -4,6 +4,7 @@ io.read = nil
 io.write = nil
 io.popen = nil
 io.lines = nil
+io.output = nil
 
 function love.conf(t)
   t.identity = "MMLOVE"                    -- The name of the save directory (string)
