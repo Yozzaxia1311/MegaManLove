@@ -593,7 +593,10 @@ function megaman:healthChanged(o, c, i)
       self.render = false
       self.control = false
       self.died = true
-      healthhandler.playerTimers = {-2, -2, -2, -2}
+      healthhandler.playerTimers = {}
+      for i=1, maxPlayerCount do
+        healthhandler.playerTimers[i] = -2
+      end
       megautils.add(timer(160, function(t)
         megautils.add(fade(true, nil, nil, function(s)
           globals.resetState = true
