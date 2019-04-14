@@ -128,7 +128,7 @@ function cmdRecs(cmd)
     if check then
       console.print("No recordings in directory \""..cmd[2].."\"")
     else
-      console.print("No recordings at all??")
+      console.print("No recordings exist")
     end
     return
   end
@@ -213,7 +213,7 @@ function cmdStates(cmd)
     if check then
       console.print("No states in directory \""..cmd[2].."\"")
     else
-      console.print("No states at all??")
+      console.print("No states exist")
     end
     return
   end
