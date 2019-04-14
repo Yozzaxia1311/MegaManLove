@@ -63,6 +63,7 @@ function initEngine()
 end
 
 function love.load()
+  love.keyboard.setKeyRepeat(true)
   consoleFont = love.graphics.getFont() -- needs to be preserved
   OSSystem = love.system.getOS()
   touchControls = OSSystem == "Android" or OSSystem == "iOS"
