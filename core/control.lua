@@ -177,6 +177,9 @@ function control.finishRecord()
   result.last = control.recPos
   result.globals = control.record.globals
   result.gamePath = control.record.gamePath
+  if love.filesystem.getInfo(control.recordName .. ".rd") then
+    love.filesystem.remove(control.recordName .. ".rd")
+  end
   save.save(control.recordName .. ".rd", result, true)
   control.record = {}
   control.recPos = 1
@@ -197,8 +200,8 @@ function control.playRecord()
       control.downPressed[i] = control.record[control.recPos].downPressed and control.record[control.recPos].downPressed[i] == 1
       control.startDown[i] = control.record[control.recPos].startDown and control.record[control.recPos].startDown[i] == 1
       control.startPressed[i] = control.record[control.recPos].startPressed and control.record[control.recPos].startPressed[i] == 1
-      control.startDown[i] = control.record[control.recPos].selectDown and control.record[control.recPos].selectDown[i] == 1
-      control.startPressed[i] = control.record[control.recPos].selectPressed and control.record[control.recPos].selectPressed[i] == 1
+      control.selectDown[i] = control.record[control.recPos].selectDown and control.record[control.recPos].selectDown[i] == 1
+      control.selectPressed[i] = control.record[control.recPos].selectPressed and control.record[control.recPos].selectPressed[i] == 1
       control.jumpDown[i] = control.record[control.recPos].jumpDown and control.record[control.recPos].jumpDown[i] == 1
       control.jumpPressed[i] = control.record[control.recPos].jumpPressed and control.record[control.recPos].jumpPressed[i] == 1
       control.shootDown[i] = control.record[control.recPos].shootDown and control.record[control.recPos].shootDown[i] == 1
@@ -222,8 +225,8 @@ function control.playRecord()
       control.downPressed[i] = false
       control.startDown[i] = false
       control.startPressed[i] = false
-      control.startDown[i] = false
-      control.startPressed[i] = false
+      control.selectDown[i] = false
+      control.selectPressed[i] = false
       control.jumpDown[i] = false
       control.jumpPressed[i] = false
       control.shootDown[i] = false
