@@ -82,31 +82,49 @@ function healthhandler:update(dt)
         end
       elseif healthhandler.playerTimers[i] == -1 and control.startPressed[i] then
         if globals.lives > 0 then
-          healthhandler.playerTimers[i] = -3
-          self.t2 = {}
-          self.t2.x = self.transform.x
-          self.t2.y = self.transform.y+(i*8)
-          self.t2.player = i
-          self.tween = tween.new(0.4, self.t2, {x=view.x + 24 + (#globals.allPlayers*32) - 4, y=view.y + 72})
-          megautils.freeze(self.me)
+          healthhandler.playerTimers[i] = -2
+          local p = megaman(self.player.transform.x, self.player.transform.y, self.player.side, true, i)
+          self.player:transferState(p)
+          megautils.revivePlayer(i)
+          megautils.add(p)
+          
+          local keys = {}
+          local vals = {}
+          for k, v in pairs(globals.allPlayers) do
+            keys[#keys+1] = v.player
+            vals[v.player] = v
+            globals.allPlayers[k] = nil
+          end
+          table.sort(keys)
+          for j=1, #keys do
+            globals.allPlayers[j] = vals[keys[j]]
+          end
+          
+          for j=0, #globals.allPlayers-1 do
+            local player = globals.allPlayers[j+1]
+            if player then
+              player.healthHandler.transform.x = view.x+24 + (j*32)
+              player.healthHandler.transform.y = view.y+80
+              megaman.weaponHandler[player.player].transform.x = view.x+32 + (j*32)
+              megaman.weaponHandler[player.player].transform.y = view.y+80
+            end
+          end
+          
+          if globals.allPlayers[1] == p then
+            globals.mainPlayer = p
+          end
+          if not globals.infiniteLives then
+            globals.lives = globals.lives - 1
+          end
+          self.t2 = nil
+          self.tween = nil
+          megautils.unfreeze()
           mmSfx.play("selected")
         else
           mmSfx.play("error")
         end
       end
     end
-  elseif self.player and self.player == globals.mainPlayer and self.tween and self.tween:update(1/60) then
-    healthhandler.playerTimers[self.t2.player] = -2
-    local p = megaman(self.player.transform.x, self.player.transform.y, self.player.side, true, self.t2.player)
-    self.player:transferState(p)
-    megautils.revivePlayer(self.t2.player)
-    megautils.add(p)
-    if not globals.infiniteLives then
-      globals.lives = globals.lives - 1
-    end
-    self.t2 = nil
-    self.tween = nil
-    megautils.unfreeze()
   end
 end
 
@@ -131,14 +149,6 @@ function healthhandler:draw()
           else
             love.graphics.print("p" .. tostring(i) .. " `", self.transform.x, self.transform.y+(i*8))
           end
-        elseif healthhandler.playerTimers[i] == -3 then
-          if self.render3 < 10 then
-            love.graphics.setColor(0, 0, 0, 1)
-            love.graphics.rectangle("fill", math.round(self.t2.x), math.round(self.t2.y), 16, 8)
-            love.graphics.setColor(1, 1, 1, 1)
-            love.graphics.print("p" .. tostring(i), math.round(self.t2.x), math.round(self.t2.y))
-          end
-          self.render3 = math.wrap(self.render3+1, 0, 20)
         elseif healthhandler.playerTimers[i] > -1 then
           love.graphics.setColor(0, 0, 0, 1)
           love.graphics.rectangle("fill", self.transform.x, self.transform.y+(i*8), 32, 8)
