@@ -100,18 +100,17 @@ function healthhandler:update(dt)
             globals.allPlayers[j] = vals[keys[j]]
           end
           
-          for j=0, #globals.allPlayers-1 do
-            local player = globals.allPlayers[j+1]
-            if player then
-              player.healthHandler.transform.x = view.x+24 + (j*32)
-              player.healthHandler.transform.y = view.y+80
-              megaman.weaponHandler[player.player].transform.x = view.x+32 + (j*32)
-              megaman.weaponHandler[player.player].transform.y = view.y+80
-            end
-          end
-          
           if globals.allPlayers[1] == p then
             globals.mainPlayer = p
+            for j=0, #globals.allPlayers-1 do
+              local player = globals.allPlayers[j+1]
+              if player then
+                player.healthHandler.transform.x = view.x+24 + (j*32)
+                player.healthHandler.transform.y = view.y+80
+                megaman.weaponHandler[player.player].transform.x = view.x+32 + (j*32)
+                megaman.weaponHandler[player.player].transform.y = view.y+80
+              end
+            end
           end
           if not globals.infiniteLives then
             globals.lives = globals.lives - 1
