@@ -58,8 +58,13 @@ concmd["games"] = {
 }
 
 function cmdRecord(cmd)
-  states.recordOnSwitch = true
-  console.print("Recording on state switch...")
+  if states.recordOnSwitch then
+    states.recordOnSwitch = false
+    console.print("Recording disabled")
+  else
+    states.recordOnSwitch = true
+    console.print("Recording on state switch...")
+  end
 end
 concmd["record"] = {
   helptext = "record after the state switches",
