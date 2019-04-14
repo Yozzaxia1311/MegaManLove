@@ -186,4 +186,11 @@ function healthhandler:draw()
       self.colorTwo[3]/255, 1)
     love.graphics.draw(self.barTwo, self.quads[bit], tx, ty, tr)
   end
+  if self.player and playerCount > 1 then
+    love.graphics.setColor(0, 0, 0, 1)
+    love.graphics.rectangle("fill", self.transform.x, self.transform.y-(self.segments*8)-8, 8, 8)
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.setFont(mmFont)
+    love.graphics.print(tostring(self.player.player), self.transform.x, self.transform.y-(self.segments*8)-8)
+  end
 end
