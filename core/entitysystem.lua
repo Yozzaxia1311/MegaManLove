@@ -266,7 +266,6 @@ function entity:new(basic)
   self.updateLayer = 0
   self.isRemoved = false
   self.updated = true
-  self.otherUpdates = {["global"]=true}
   self.render = true
   self.isSolid = 0
   self.velocity = velocity()

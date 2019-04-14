@@ -36,7 +36,7 @@ function collision.getTable(self, dx, dy)
     for i=1, #megautils.groups()["death"] do
       local v = megautils.groups()["death"][i]
       if v ~= self and v.collisionShape then
-        if not self.inv and self.iFrame == self.maxIFrame then
+        if not self.inv and self.spikesHurt and self.iFrame == self.maxIFrame then
           table.removevaluearray(solid, v)
         end
       end
@@ -78,7 +78,7 @@ function collision.checkSolid(self, dx, dy, noSlope)
     for i=1, #megautils.groups()["death"] do
       local v = megautils.groups()["death"][i]
       if v ~= self and v.collisionShape then
-        if not self.inv and self.iFrame == self.maxIFrame then
+        if not self.inv and self.spikesHurt and self.iFrame == self.maxIFrame then
           table.removevaluearray(solid, v)
         end
       end
@@ -295,7 +295,7 @@ function collision.checkGround(self, noSlopeEffect)
     for i=1, #megautils.groups()["death"] do
       local v = megautils.groups()["death"][i]
       if v ~= self and v.collisionShape then
-        if not self.inv and self.iFrame == self.maxIFrame then
+        if not self.inv and self.spikesHurt and self.iFrame == self.maxIFrame then
           table.removevaluearray(solid, v)
         end
       end
@@ -354,7 +354,7 @@ function collision.generalCollision(self, noSlopeEffect)
     for i=1, #megautils.groups()["death"] do
       local v = megautils.groups()["death"][i]
       if v ~= self and v.collisionShape then
-        if not self.inv and self.iFrame == self.maxIFrame then
+        if not self.inv and self.spikesHurt and self.iFrame == self.maxIFrame then
           table.removevaluearray(solid, v)
         end
       end

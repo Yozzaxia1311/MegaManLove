@@ -5,6 +5,9 @@ function timer:new(time, func)
   self.time = 0
   self.max = time
   self.func = func
+  self.added = function(self)
+    self:addToGroup("freezable")
+  end
 end
 
 function timer:update(dt)

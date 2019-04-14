@@ -120,6 +120,7 @@ function megaman.properties(self)
   self.spikesHurt = true
   self.blockCollision = true
   self.canSink = true
+  self.canPause = true
 end
 
 function megaman:transferState(to)
@@ -600,7 +601,7 @@ function megaman:healthChanged(o, c, i)
           if not globals.infiniteLives and globals.lives <= 0 then
             megautils.resetGameObjects()
             globals.gameOverContinueState = states.current
-            states.set("states/gameover.state.lua", nil, true)
+            states.set(globals.gameOverState or "states/gameover.state.lua", nil, not globals.gameOverState)
           else
             globals.manageStageResources = false
             if not globals.infiniteLives then
@@ -963,16 +964,20 @@ function megaman:code(dt)
   if self.stopOnShot and self.shootTimer == self.maxShootTime then
     self.stopOnShot = false
   end
-  if control.startPressed[self.player] and self.control and globals.mainPlayer.control and globals.mainPlayer.updated then
-    globals.resetState = false
-    globals.pauseLastState = states.currentstate
-    globals.pauseLastStateName = states.current
-    globals.lastCamPosX = view.x
-    globals.lastCamPosY = view.y
+  if globals.mainPlayer and control.startPressed[self.player] and self.control and globals.mainPlayer.control and globals.mainPlayer.updated
+    and self.canPause then
     self.weaponSwitchTimer = 70
-    globals.manageStageResources = false
-    megautils.gotoState("states/pause.state.lua", nil, nil, love.filesystem.load("states/pause.state.lua")(), true)
-    globals.pauseWeaponSelect = weaponSelect(megaman.weaponHandler[self.player], self.healthHandler, self.player)
+    self.pauseMenu = weaponSelect(megaman.weaponHandler[self.player], self.healthHandler, self.player)
+    megautils.add(fade(true):setAfter(function(s)
+          megautils.add(self.pauseMenu)
+          local ff = fade(false):setAfter(function(ss)
+                megautils.freeze({self.pauseMenu})
+                megautils.remove(ss, true)
+              end)
+          ff:setLayer(11)
+          megautils.add(ff)
+          megautils.remove(s, true)
+          end))
     mmSfx.play("pause")
   end
 end

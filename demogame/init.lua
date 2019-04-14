@@ -25,6 +25,7 @@ data.run = function()
   megautils.resetGameObjects()
   globals.gameOverMenuState = "states/menu.state.lua"
   globals.gameOverMenuMusic = {"assets/menu.ogg"}
+  --globals.gameOverState = "???"
   loader.load("assets/stick_weapon.png", "stick_weapon", "texture", nil, true)
 end
 

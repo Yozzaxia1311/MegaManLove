@@ -64,6 +64,7 @@ function megautils.load()
   loader.load("assets/misc/particles_outline.png", "particles_outline", "texture", nil, true, true)
   loader.load("assets/misc/particles_one.png", "particles_one", "texture", nil, true, true)
   loader.load("assets/misc/particles_two.png", "particles_two", "texture", nil, true, true)
+  loader.load("assets/misc/weapon_select.png", "weapon_select_img", "texture", nil, true, true)
   loader.load("assets/global/bossdoors/boss_door.png", "boss_door", "texture", nil, true, true)
   loader.load("assets/misc/menu_select.png", "menu_select", "texture", nil, true, true)
   loader.load("assets/sfx/mm_start.ogg", "start", "sound", nil, true, true)
@@ -165,6 +166,7 @@ function megautils.unload()
       end
       loader.clear()
     end
+    megautils.frozen = {}
   end
   collectgarbage()
 end
@@ -290,15 +292,11 @@ end
 
 megautils.frozen = {}
 
-function megautils.freeze(e, name)
+function megautils.freeze(e)
   for k, v in pairs(megautils.groups()["freezable"] or {}) do
     if not e or not table.contains(e, v) then
       megautils.frozen[#megautils.frozen+1] = v
-      if name and v.otherUpdates[name] then
-        v.otherUpdates[name] = false
-      else
-        v.updated = false
-      end
+      v.updated = false
     end
   end
 end
@@ -306,11 +304,7 @@ function megautils.unfreeze(e, name)
   for k, v in pairs(megautils.groups()["freezable"] or {}) do
     if not e or not table.contains(e, v) then
       table.removevalue(megautils.frozen, v)
-      if name and v.otherUpdates[name] then
-        v.otherUpdates[name] = true
-      else
-        v.updated = true
-      end
+      v.updated = true
     end
   end
 end

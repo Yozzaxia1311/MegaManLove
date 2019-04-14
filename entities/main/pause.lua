@@ -1,28 +1,9 @@
-local pausestate = states.state:extend()
-
-function pausestate:begin()
-  megautils.loadStage(self, "assets/maps/weapon_select.lua", nil, true)
-  megautils.add(globals.pauseWeaponSelect)
-  megautils.add(fade(false):setAfter(fade.remove))
-  view.x, view.y = 0, 0
-end
-
-function pausestate:update(dt)
-  if globals.pauseUpdateFunc then
-    globals.pauseUpdateFunc(dt)
-  end
-  megautils.update(self, dt)
-end
-
-function pausestate:draw()
-  megautils.draw(self)
-end
-
 weaponSelect = entity:extend()
 
 function weaponSelect:new(w, h, p)
   weaponSelect.super.new(self)
   self.t = loader.get("weapon_select")
+  self.bg = loader.get("weapon_select_img")
   self.w = w
   self.h = h
   self.section = 0
@@ -58,13 +39,14 @@ function weaponSelect:new(w, h, p)
         end
         h.side = -1
         --h:removeFromGroup("freezable")
-        h.transform.x = (x*80)-16
-        h.transform.y = 40+(y*16)
+        h.transform.x = view.x+((x*80)-16)
+        h.transform.y = view.y+(40+(y*16))
         h.icoX = (x*80)-32
         h.icoY = 32+(y*16)
         h.gridX = x
         h.gridY = y
         h.id = self.list[y][x]
+        h:setLayer(10)
         if not self.fills[y] then
           self.fills[y] = {}
         end
@@ -78,13 +60,18 @@ function weaponSelect:new(w, h, p)
   self.active["wTank"] = love.graphics.newQuad(96, 32, 16, 16, 176, 48)
   self.inactive["wTank"] = love.graphics.newQuad(64, 32, 16, 16, 176, 48)
   self.player = p
-  globals.pauseUpdateFunc = function(dt)
+  local trig = trigger(function(s, dt)
     for k, v in pairs(self.fills) do
       for i, j in pairs(v) do
-        j:update(dt)
+        if not j.updated then
+          j:update(dt)
+        end
       end
     end
-  end
+  end)
+  trig:removeFromGroup("freezable")
+  megautils.add(trig)
+  self:setLayer(10)
   self.added = function(self)
     self:addToGroup("freezable")
   end
@@ -136,17 +123,13 @@ function weaponSelect:update(dt)
           end
         end 
       end
-      megautils.gotoState(globals.pauseLastStateName, nil, function()
-        view.x, view.y = globals.lastCamPosX, globals.lastCamPosY
-        megautils.add(fade(false, nil, nil, fade.remove):setAfter(fade.remove))
-        globals.resetState = true
-        globals.pauseLastStateName = nil
-        globals.pauseLastState = nil
-        globals.pauseWeaponSelect = nil
-        globals.pauseUpdateFunc = nil
-        weaponSelect = nil
-        collectgarbage()
-      end, globals.pauseLastState)
+      local ff = fade(true):setAfter(function(s)
+            megautils.remove(self, true)
+            megautils.remove(s, true)
+            megautils.add(fade(false):setAfter(fade.remove))
+          end)
+      ff:setLayer(11)
+      megautils.add(ff)
       mmSfx.play("selected")
       return
     elseif control.rightPressed[self.player] then
@@ -299,22 +282,23 @@ end
 function weaponSelect:draw()
   love.graphics.setFont(mmFont)
   love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.print((globals.infiniteLives and "inf" or tostring(globals.lives)), 24*8, 23*8)
-  love.graphics.print(tostring(globals.eTanks), 8*8, 23*8)
-  love.graphics.print(tostring(globals.wTanks), 12*8, 23*8)
+  love.graphics.draw(self.bg, view.x, view.y)
+  love.graphics.print((globals.infiniteLives and "inf" or tostring(globals.lives)), view.x+(24*8), view.y+(23*8))
+  love.graphics.print(tostring(globals.eTanks), view.x+(8*8), view.y+(23*8))
+  love.graphics.print(tostring(globals.wTanks), view.x+(12*8), view.y+(23*8))
   if self.section == 0 then
-    love.graphics.draw(self.t, self.inactive["eTank"], 8*6, 22*8)
-    love.graphics.draw(self.t, self.inactive["wTank"], 8*10, 22*8)
+    love.graphics.draw(self.t, self.inactive["eTank"], view.x+(8*6), view.y+(22*8))
+    love.graphics.draw(self.t, self.inactive["wTank"], view.x+(8*10), view.y+(22*8))
     for k, v in pairs(self.fills) do
       for i, j in pairs(v) do
         j:draw()
         love.graphics.setColor(1, 1, 1, 1)
         if self.x == j.gridX and self.y == j.gridY then
-          love.graphics.draw(self.t, self.active[j.id], j.icoX, j.icoY)
+          love.graphics.draw(self.t, self.active[j.id], view.x+(j.icoX), view.y+(j.icoY))
         else
-          love.graphics.draw(self.t, self.inactive[j.id], j.icoX, j.icoY)
+          love.graphics.draw(self.t, self.inactive[j.id], view.x+(j.icoX), view.y+(j.icoY))
         end
-        love.graphics.print(self.text[j.id], j.icoX+16, j.icoY)
+        love.graphics.print(self.text[j.id], view.x+(j.icoX+16), view.y+(j.icoY))
       end
     end
   else
@@ -322,19 +306,17 @@ function weaponSelect:draw()
       for i, j in pairs(v) do
         j:draw()
         love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.draw(self.t, self.inactive[j.id], j.icoX, j.icoY)
-        love.graphics.print(self.text[j.id], j.icoX+16, j.icoY)
+        love.graphics.draw(self.t, self.inactive[j.id], view.x+(j.icoX), view.y+(j.icoY))
+        love.graphics.print(self.text[j.id], view.x+(j.icoX+16), view.y+(j.icoY))
       end
     end
     love.graphics.setColor(1, 1, 1, 1)
     if self.x == 1 then
-      love.graphics.draw(self.t, self.active["eTank"], 8*6, 22*8)
-      love.graphics.draw(self.t, self.inactive["wTank"], 8*10, 22*8)
+      love.graphics.draw(self.t, self.active["eTank"], view.x+(8*6), view.y+(22*8))
+      love.graphics.draw(self.t, self.inactive["wTank"], view.x+(8*10), view.y+(22*8))
     elseif self.x == 2 then
-      love.graphics.draw(self.t, self.inactive["eTank"], 8*6, 22*8)
-      love.graphics.draw(self.t, self.active["wTank"], 8*10, 22*8)
+      love.graphics.draw(self.t, self.inactive["eTank"], view.x+(8*6), view.y+(22*8))
+      love.graphics.draw(self.t, self.active["wTank"], view.x+(8*10), view.y+(22*8))
     end
   end
 end
-
-return pausestate
