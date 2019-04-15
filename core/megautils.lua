@@ -185,11 +185,11 @@ function megautils.loadStage(self, path, call)
   megautils.add(tmp)
 end
 
-function megautils.gotoState(s, before, after, chunk, ignoreGamePath)
+function megautils.gotoState(s, before, after, chunk)
   megautils.add(fade(true, nil, nil, function(se)
         if before then before() end
         megautils.remove(se)
-        states.set(s, chunk, ignoreGamePath)
+        states.set(s, chunk)
         if after then after() end
       end))
 end
