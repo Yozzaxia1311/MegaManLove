@@ -56,8 +56,13 @@ end
 function camera:updateBounds()
   if not self.toSection then
     self.toSection = self:collisionTable(megautils.state().sectionHandler.sections)[1]
+    local tmp = self:collisionTable(megautils.groups()["lock"])
+    self.curLock = #tmp ~= 0 and tmp[1].name
   end
   if self.toSection then
+    if self.toSection:is(lockSection) then
+      self.toSection = self.toSection.section
+    end
     megautils.state().sectionHandler.next = self.toSection
     megautils.state().sectionHandler:updateAll()
     self.scrollx = self.toSection.transform.x
@@ -274,7 +279,7 @@ function camera:doView(without)
         self.lockx = v.transform.x
         self.locky = v.transform.y
         self.lockw = v.collisionShape.w
-        self.lockh = v.collisiohShape.h
+        self.lockh = v.collisionShape.h
         result = true
         break
       end

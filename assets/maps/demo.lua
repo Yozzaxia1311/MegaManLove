@@ -9,7 +9,7 @@ return {
   tilewidth = 16,
   tileheight = 16,
   nextlayerid = 5,
-  nextobjectid = 147,
+  nextobjectid = 151,
   properties = {},
   tilesets = {
     {
@@ -286,20 +286,7 @@ return {
           shape = "rectangle",
           x = 512,
           y = 0,
-          width = 256,
-          height = 224,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 8,
-          name = "section",
-          type = "",
-          shape = "rectangle",
-          x = 768,
-          y = 0,
-          width = 256,
+          width = 512,
           height = 448,
           rotation = 0,
           visible = true,
@@ -434,6 +421,36 @@ return {
           rotation = 0,
           visible = true,
           properties = {}
+        },
+        {
+          id = 147,
+          name = "lock_section",
+          type = "",
+          shape = "rectangle",
+          x = 512,
+          y = 0,
+          width = 512,
+          height = 224,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["name"] = "one"
+          }
+        },
+        {
+          id = 148,
+          name = "lock_section",
+          type = "",
+          shape = "rectangle",
+          x = 768,
+          y = 0,
+          width = 256,
+          height = 448,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["name"] = "two"
+          }
         }
       }
     },
@@ -1845,6 +1862,36 @@ return {
           rotation = 0,
           visible = true,
           properties = {}
+        },
+        {
+          id = 149,
+          name = "lock_shift",
+          type = "",
+          shape = "rectangle",
+          x = 912,
+          y = 0,
+          width = 16,
+          height = 160,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["name"] = "two"
+          }
+        },
+        {
+          id = 150,
+          name = "lock_shift",
+          type = "",
+          shape = "rectangle",
+          x = 880,
+          y = 0,
+          width = 16,
+          height = 128,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["name"] = "one"
+          }
         }
       }
     }
