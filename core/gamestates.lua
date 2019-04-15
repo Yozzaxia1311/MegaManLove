@@ -19,8 +19,8 @@ function states.set(n, s, after)
     states.currentstate:stop()
   end
   if states.openRecord then
+    control.resetRec()
     control.record = table.stringtonumberkeys(save.load(states.openRecord))
-    control.recPos = 1
     nick = control.record.state
     states.openRecord = nil
     globals = control.record.globals
@@ -31,9 +31,8 @@ function states.set(n, s, after)
   end
   if states.recordOnSwitch then
     states.recordOnSwitch = false
+    control.resetRec()
     control.recordInput = true
-    control.record = {}
-    control.recPos = 1
     control.record.globals = table.clone(globals)
     control.record.state = nick
     control.record.seed = love.math.getRandomSeed()
