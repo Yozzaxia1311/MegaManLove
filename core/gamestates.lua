@@ -14,6 +14,7 @@ function states.state:draw() end
 function states.state:stop() end
 
 function states.set(n, s, after)
+  love.math.setRandomSeed(924975)
   local nick = n
   if states.currentstate then
     states.currentstate:stop()
