@@ -14,16 +14,17 @@ function states.state:draw() end
 function states.state:stop() end
 
 function states.set(n, s, after)
-  love.math.setRandomSeed(924975)
   local nick = n
   if states.currentstate then
     states.currentstate:stop()
   end
   if states.openRecord then
-    control.loadRecord(states.openRecord)
+    control.record = table.stringtonumberkeys(save.load(file, true))
+    control.recPos = 1
     nick = control.record.state
     states.openRecord = nil
     globals = control.record.globals
+    love.math.setRandomSeed(control.record.seed)
     control.demo = true
     states.set(nick)
     return
@@ -35,6 +36,7 @@ function states.set(n, s, after)
     control.recPos = 1
     control.record.globals = table.clone(globals)
     control.record.state = nick
+    control.record.seed = love.math.getRandomSeed()
   end
   if states.currentChunk == nil or states.current ~= nick then
     states.currentChunk = love.filesystem.load(nick)
