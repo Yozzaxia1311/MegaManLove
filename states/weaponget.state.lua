@@ -15,7 +15,7 @@ function weapongetstate:begin()
   megautils.add(largeStar(0, 32, 180, 6))
   megautils.add(largeStar(90, 220, 180, 6))
   if globals.weaponGet == "stick" then
-    megautils.runFile("entities/stickman.lua")
+    megautils.runFile("entities/demo/stickman.lua")
     megautils.add(megamanStick())
   end
   view.x, view.y = 0, 0
