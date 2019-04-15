@@ -128,13 +128,9 @@ function love.load()
   control.init()
   console.init()
   initEngine()
-  local data = save.load("main.sav", true)
-  if data then
-    if data.fullscreen then
-      convar.setValue("r_fullscreen", data.fullscreen, true)
-    end
-  else
-    save.save("main.sav", {}, true)
+  local data = save.load("main.sav", true) or {}
+  if data.fullscreen then
+    convar.setValue("r_fullscreen", data.fullscreen, true)
   end
   states.set("states/disclaimer.state.lua")
   console.parse("exec autoexec")

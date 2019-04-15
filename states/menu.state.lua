@@ -71,7 +71,7 @@ function menuSelect:update(dt)
         else
           convar.setValue("r_fullscreen", 1, true)
         end
-        local data = save.load("main.sav", true) or {}
+        local data = save.load("main.sav") or {}
         data.fullscreen = convar.getNumber("r_fullscreen")
         save.save("main.sav", data, true)
       elseif self.pick == 2 then
@@ -83,7 +83,7 @@ function menuSelect:update(dt)
         globals.stopMusicMenu = nil
       elseif self.pick == 3 then
         mmSfx.play("selected")
-        local data = save.load("save.txt")
+        local data = save.load("save.sav")
         if data then
           globals.defeats = data.defeats
           globals.infiniteLives = data.infiniteLives
@@ -94,7 +94,7 @@ function menuSelect:update(dt)
         end
         megautils.resetGameObjects()
       elseif self.pick == 4 then
-        local data = save.load("save.txt") or {}
+        local data = save.load("save.sav") or {}
         data.defeats = globals.defeats
         data.infiniteLives = globals.infiniteLives
         data.lives = globals.lives
