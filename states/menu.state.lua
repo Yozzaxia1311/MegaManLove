@@ -100,7 +100,7 @@ function menuSelect:update(dt)
         data.lifeSegments = globals.lifeSegments
         data.eTanks = globals.eTanks
         data.wTanks = globals.wTanks
-        save.save("save.txt", data)
+        save.save("save.sav", data)
         mmSfx.play("selected")
       elseif self.pick == 5 then
         self.section = 1

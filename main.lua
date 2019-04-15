@@ -1,5 +1,4 @@
 function initEngine()
-  base64SaveFiles = false
   showFPS = false
   showEntityCount = false
   framerate = 1/60

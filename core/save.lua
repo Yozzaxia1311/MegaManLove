@@ -1,5 +1,7 @@
 save = {}
 
+save.compress = true
+
 function save.createDirChain(p)
   local part = p:split("/")
   local whole = ""
@@ -22,8 +24,8 @@ end
 
 function save.save(file, data)
   local sv = json.encode(data)
-  if base64SaveFiles then
-    sv = to_base64(sv)
+  if save.compress then
+    sv = love.data.compress("string", "zlib", sv)
   end
   save.createDirChain(file)
   love.filesystem.write(file, sv)
@@ -34,8 +36,8 @@ function save.load(file)
   if not sv then
     return nil
   end
-  if base64SaveFiles then
-    sv = from_base64(sv)
+  if save.compress then
+    sv = love.data.decompress("string", "zlib", sv)
   end
   return json.decode(sv)
 end

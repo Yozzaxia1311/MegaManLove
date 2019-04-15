@@ -295,6 +295,15 @@ concmd["run_lua"] = {
   fun = cmdRunLua,
 }
 
+function cmdReset(cmd)
+  megautils.resetGame()
+end
+concmd["reset"] = {
+  helptext = "reset the game",
+  flags = {},
+  fun = cmdReset,
+}
+
 function cmdExec(cmd)
   if not cmd[2] then return end
   if not love.filesystem.getInfo("cfg/"..cmd[2]..".cfg") then
