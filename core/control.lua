@@ -291,15 +291,6 @@ function control.doRecording()
       end
       control.record[control.recPos].ld[i] = 1
     end
-    if control.leftPressed[i] then
-      if control.record[control.recPos] == nil then
-        control.record[control.recPos] = {}
-      end
-      if control.record[control.recPos].lp == nil then
-        control.record[control.recPos].lp = {}
-      end
-      control.record[control.recPos].lp[i] = 1
-    end
     if control.rightDown[i] then
       if control.record[control.recPos] == nil then
         control.record[control.recPos] = {}
@@ -308,15 +299,6 @@ function control.doRecording()
         control.record[control.recPos].rd = {}
       end
       control.record[control.recPos].rd[i] = 1
-    end
-    if control.rightPressed[i] then
-      if control.record[control.recPos] == nil then
-        control.record[control.recPos] = {}
-      end
-      if control.record[control.recPos].rp == nil then
-        control.record[control.recPos].rp = {}
-      end
-      control.record[control.recPos].rp[i] = 1
     end
     if control.upDown[i] then
       if control.record[control.recPos] == nil then
@@ -327,15 +309,6 @@ function control.doRecording()
       end
       control.record[control.recPos].ud[i] = 1
     end
-    if control.upPressed[i] then
-      if control.record[control.recPos] == nil then
-        control.record[control.recPos] = {}
-      end
-      if control.record[control.recPos].up == nil then
-        control.record[control.recPos].up = {}
-      end
-      control.record[control.recPos].up[i] = 1
-    end
     if control.downDown[i] then
       if control.record[control.recPos] == nil then
         control.record[control.recPos] = {}
@@ -344,15 +317,6 @@ function control.doRecording()
         control.record[control.recPos].dd = {}
       end
       control.record[control.recPos].dd[i] = 1
-    end
-    if control.downPressed[i] then
-      if control.record[control.recPos] == nil then
-        control.record[control.recPos] = {}
-      end
-      if control.record[control.recPos].dp == nil then
-        control.record[control.recPos].dp = {}
-      end
-      control.record[control.recPos].dp[i] = 1
     end
     if control.startDown[i] then
       if control.record[control.recPos] == nil then
@@ -363,15 +327,6 @@ function control.doRecording()
       end
       control.record[control.recPos].sd[i] = 1
     end
-    if control.startPressed[i] then
-      if control.record[control.recPos] == nil then
-        control.record[control.recPos] = {}
-      end
-      if control.record[control.recPos].sp == nil then
-        control.record[control.recPos].sp = {}
-      end
-      control.record[control.recPos].sp[i] = 1
-    end
     if control.selectDown[i] then
       if control.record[control.recPos] == nil then
         control.record[control.recPos] = {}
@@ -380,15 +335,6 @@ function control.doRecording()
         control.record[control.recPos].sld = {}
       end
       control.record[control.recPos].sld[i] = 1
-    end
-    if control.selectPressed[i] then
-      if control.record[control.recPos] == nil then
-        control.record[control.recPos] = {}
-      end
-      if control.record[control.recPos].slp == nil then
-        control.record[control.recPos].slp = {}
-      end
-      control.record[control.recPos].slp[i] = 1
     end
     if control.jumpDown[i] then
       if control.record[control.recPos] == nil then
@@ -399,15 +345,6 @@ function control.doRecording()
       end
       control.record[control.recPos].jd[i] = 1
     end
-    if control.jumpPressed[i] then
-      if control.record[control.recPos] == nil then
-        control.record[control.recPos] = {}
-      end
-      if control.record[control.recPos].jp == nil then
-        control.record[control.recPos].jp = {}
-      end
-      control.record[control.recPos].jp[i] = 1
-    end
     if control.shootDown[i] then
       if control.record[control.recPos] == nil then
         control.record[control.recPos] = {}
@@ -416,15 +353,6 @@ function control.doRecording()
         control.record[control.recPos].shd = {}
       end
       control.record[control.recPos].shd[i] = 1
-    end
-    if control.shootPressed[i] then
-      if control.record[control.recPos] == nil then
-        control.record[control.recPos] = {}
-      end
-      if control.record[control.recPos].shp == nil then
-        control.record[control.recPos].shp = {}
-      end
-      control.record[control.recPos].shp[i] = 1
     end
     if control.prevDown[i] then
       if control.record[control.recPos] == nil then
@@ -435,15 +363,6 @@ function control.doRecording()
       end
       control.record[control.recPos].pd[i] = 1
     end
-    if control.prevPressed[i] then
-      if control.record[control.recPos] == nil then
-        control.record[control.recPos] = {}
-      end
-      if control.record[control.recPos].pp == nil then
-        control.record[control.recPos].pp = {}
-      end
-      control.record[control.recPos].pp[i] = 1
-    end
     if control.nextDown[i] then
       if control.record[control.recPos] == nil then
         control.record[control.recPos] = {}
@@ -453,15 +372,6 @@ function control.doRecording()
       end
       control.record[control.recPos].nd[i] = 1
     end
-    if control.nextPressed[i] then
-      if control.record[control.recPos] == nil then
-        control.record[control.recPos] = {}
-      end
-      if control.record[control.recPos].np == nil then
-        control.record[control.recPos].np = {}
-      end
-      control.record[control.recPos].np[i] = 1
-    end
     if control.dashDown[i] then
       if control.record[control.recPos] == nil then
         control.record[control.recPos] = {}
@@ -470,15 +380,6 @@ function control.doRecording()
         control.record[control.recPos].dad = {}
       end
       control.record[control.recPos].dad[i] = 1
-    end
-    if control.dashPressed[i] then
-      if control.record[control.recPos] == nil then
-        control.record[control.recPos] = {}
-      end
-      if control.record[control.recPos].dap == nil then
-        control.record[control.recPos].dap = {}
-      end
-      control.record[control.recPos].dap[i] = 1
     end
   end
   control.recPos = control.recPos + 1
