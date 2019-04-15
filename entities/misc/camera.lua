@@ -57,7 +57,7 @@ function camera:updateBounds()
   if not self.toSection then
     self.toSection = self:collisionTable(megautils.state().sectionHandler.sections)[1]
     local tmp = self:collisionTable(megautils.groups()["lock"])
-    self.curLock = #tmp ~= 0 and tmp[1].name
+    self.curLock = #tmp ~= 0 and tmp[1].name or ""
   end
   if self.toSection then
     if self.toSection:is(lockSection) then
@@ -267,27 +267,20 @@ function camera:doView(without)
       self.transform.y = math.clamp(self.transform.y, self.scrolly, self.scrolly+self.scrollh-view.h)
     end
   end
-  if megautils.groups()["lock"] then
-    self.locked = self:collisionTable(megautils.groups()["lock"])
-    if #self.locked == 0 then self.locked = nil end
-    local result = false
-    for i=1, #self.locked do
-      local v = self.locked[i]
-      if not v.name then
-        break
-      elseif v.name == self.curLock then
-        self.lockx = v.transform.x
-        self.locky = v.transform.y
-        self.lockw = v.collisionShape.w
-        self.lockh = v.collisionShape.h
-        result = true
-        break
-      end
+  self.locked = self:collisionTable(megautils.groups()["lock"])
+  local result = false
+  for i=1, #self.locked do
+    local v = self.locked[i]
+    if v.name == self.curLock then
+      self.lockx = v.transform.x
+      self.locky = v.transform.y
+      self.lockw = v.collisionShape.w
+      self.lockh = v.collisionShape.h
+      result = true
+      break
     end
-    if not result then self.locked = nil end
-  else
-    self.locked = nil
   end
+  if not result then self.locked = nil end
   if self.locked then
     self.transform.x = math.clamp(self.transform.x, self.lockx, self.lockx+self.lockw)
     self.transform.y = math.clamp(self.transform.y, self.locky, self.locky+self.lockh)

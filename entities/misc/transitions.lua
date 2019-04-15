@@ -241,24 +241,25 @@ function lockSection:new(x, y, w, h, name)
   end
 end
 
-lockShift = entity:extend()
+lockBorder = entity:extend()
 
-addobjects.register("lock_shift", function(v)
-  megautils.add(lockShift(v.x, v.y, v.width, v.height, v.properties["name"], v.properties["dir"]))
+addobjects.register("lock_border", function(v)
+  megautils.add(lockBorder(v.x, v.y, v.width, v.height, v.properties["name"], v.properties["dir"]))
 end)
 
-function lockShift:new(x, y, w, h, name)
-  lockShift.super.new(self)
+function lockBorder:new(x, y, w, h, name, dir)
+  lockBorder.super.new(self)
   self:setRectangleCollision(w, h)
   self.transform.y = y
   self.transform.x = x
   self.name = name
+  self.dir = dir
   self.added = function(self)
     self:addToGroup("despawnable")
   end
 end
 
-function lockShift:update(dt)
+function lockBorder:update(dt)
   if #self:collisionTable(globals.allPlayers) ~= 0 and self.name ~= camera.main.curLock and not self.tween then
     megautils.freeze(globals.allPlayers)
     for k, v in pairs(globals.allPlayers) do
@@ -280,6 +281,6 @@ function lockShift:update(dt)
       v.cameraFocus = true
     end
     self.curLock = self.name
-    self:doView()
+    camera.main:doView()
   end
 end
