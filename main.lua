@@ -259,7 +259,6 @@ function love.draw()
   love.graphics.push()
   states.draw()
   love.graphics.pop()
-  control.drawDemo()
   if useConsole then console.draw() end
   if touchControls then
     touchInput.draw()

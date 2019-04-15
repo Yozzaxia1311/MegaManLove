@@ -48,10 +48,13 @@ concmd["recend"] = {
 
 function cmdRecSave(cmd)
   if not cmd[2] then return end
-  control.recordInput = false
-  control.recordName = cmd[2]
-  control.finishRecord()
-  console.print("Recording saved")
+  if not control.recordInput and #control.record > 0 then
+    control.recordName = cmd[2]
+    control.finishRecord()
+    console.print("Recording saved")
+  else
+    console.print("No recording ready to save")
+  end
 end
 concmd["recsave"] = {
   helptext = "stop recording",
