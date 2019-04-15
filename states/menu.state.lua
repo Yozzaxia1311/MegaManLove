@@ -77,7 +77,6 @@ function menuSelect:update(dt)
       elseif self.pick == 2 then
         self.picked = true
         self.section = -1
-        mmMusic.stopMusic()
         globals.lastStateName = states.current
         megautils.gotoState("states/rebind.state.lua")
         globals.stopMusicMenu = nil
