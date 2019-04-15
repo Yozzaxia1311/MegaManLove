@@ -217,145 +217,60 @@ function upLadder:update(dt)
   end
 end
 
-shiftYZone = entity:extend()
+lockSection = entity:extend()
 
-addobjects.register("shift_y_zone", function(v)
-  megautils.add(shiftYZone(v.x, v.y, v.width, v.height, v.properties["speed"]))
+addobjects.register("lock_section", function(v)
+  megautils.add(lockSection(v.x, v.y, v.width, v.height, v.properties["name"]))
 end)
 
-function shiftYZone:new(x, y, w, h, speed)
-  shiftYZone.super.new(self)
+function lockSection:new(x, y, w, h, name)
+  lockSection.super.new(self)
   self:setRectangleCollision(w, h)
   self.transform.y = y
   self.transform.x = x
-  self.speed = speed or 0.2
+  self.name = name
   self.added = function(self)
     self:addToGroup("despawnable")
-    self.once = false
-    self.updated = true
-    self.tween = nil
+    self:addToGroup("lock")
+    self:addStatic()
   end
 end
 
-function shiftYZone:update(dt)
-  if not self.once and camera.main and not camera.main.transition then
-    for i=1, #globals.allPlayers do
-      local player = globals.allPlayers[i]
-      if player.control and self:collision(player)
-        and not camera.main.doScrollY then
-        self.once = true
-        self.tween = tween.new(self.speed, camera.main.transform, {y=math.clamp(player.transform.y
-            - (view.h/2) + (player.collisionShape.h/2), camera.main.scrolly, 
-            camera.main.scrolly+camera.main.scrollh-view.h)})
-        megautils.freeze()
-        break
+lockShift = entity:extend()
+
+addobjects.register("lock_shift", function(v)
+  megautils.add(lockShift(v.x, v.y, v.width, v.height, v.properties["name"], v.properties["dir"]))
+end)
+
+function lockShift:new(x, y, w, h, name)
+  lockShift.super.new(self)
+  self:setRectangleCollision(w, h)
+  self.transform.y = y
+  self.transform.x = x
+  self.name = name
+  self.added = function(self)
+    self:addToGroup("despawnable")
+  end
+end
+
+function lockShift:update(dt)
+  if #self:collisionTable(globals.allPlayers) ~= 0 and self.name ~= camera.main.curLock then
+    if not self.tween then
+      megautils.freeze(globals.allPlayers)
+      for k, v in pairs(globals.allPlayers) do
+        v.control = false
+        v.cameraFocus = false
       end
-    end
-  end
-  if self.tween and self.tween:update(1/60) then
-    camera.main.doScrollY = true
-    megautils.unfreeze()
-    megautils.remove(self, true)
-  elseif self.tween then
-    camera.main.transform.y = math.round(camera.main.transform.y)
-  end
-end
-
-shiftXZone = entity:extend()
-
-addobjects.register("shift_x_zone", function(v)
-  megautils.add(shiftXZone(v.x, v.y, v.width, v.height, v.properties["speed"]))
-end)
-
-function shiftXZone:new(x, y, w, h, speed)
-  shiftXZone.super.new(self)
-  self:setRectangleCollision(w, h)
-  self.transform.y = y
-  self.transform.x = x
-  self.speed = speed or 0.2
-  self.added = function(self)
-    self:addToGroup("despawnable")
-    self.once = false
-    self.tween = nil
-    self.updated = true
-  end
-end
-
-function shiftXZone:update(dt)
-  for i=1, #globals.allPlayers do
-    local player = globals.allPlayers[i]
-    if not self.once and not camera.main.transition and self:collision(player) and 
-      player.control and not camera.main.doScrollX then
-      self.once = true
-      self.tween = tween.new(self.speed, camera.main.transform, {x=math.clamp(player.transform.x
-          - (view.w/2) + (player.collisionShape.w/2), camera.main.scrollx,
-          camera.main.scrollx+camera.main.scrollw-view.w)})
-      megautils.freeze()
-      break
-    end
-  end
-  if self.tween and self.tween:update(1/60) then
-    self.once2 = true
-    camera.main.doScrollX = true
-    megautils.unfreeze()
-    megautils.remove(self, true)
-  elseif self.tween then
-    camera.main.transform.x = math.round(camera.main.transform.x)
-  end
-end
-
-lockXZone = entity:extend()
-
-addobjects.register("lock_x_zone", function(v)
-  megautils.add(lockXZone(v.x, v.y, v.width, v.height))
-end)
-
-function lockXZone:new(x, y, w, h)
-  lockXZone.super.new(self)
-  self:setRectangleCollision(w, h)
-  self.transform.y = y
-  self.transform.x = x
-  self.added = function(self)
-    self:addToGroup("despawnable")
-    self.once = false
-    self.updated = true
-  end
-end
-
-function lockXZone:update(dt)
-  if not self.once and camera.main and not camera.main.transition then
-    local tmp = self:collisionTable(globals.allPlayers)
-    if #tmp ~= 0 then
-      self.once = true
-      camera.main.doScrollX = false
-    end
-  end
-end
-
-lockYZone = entity:extend()
-
-addobjects.register("lock_y_zone", function(v)
-  megautils.add(lockYZone(v.x, v.y, v.width, v.height))
-end)
-
-function lockYZone:new(x, y, w, h)
-  lockYZone.super.new(self)
-  self:setRectangleCollision(w, h)
-  self.transform.y = y
-  self.transform.x = x
-  self.added = function(self)
-    self:addToGroup("despawnable")
-    self.once = false
-    self.updated = true
-  end
-end
-
-function lockYZone:update(dt)
-  if not self.once and camera.main and not camera.main.transition then
-    local tmp = self:collisionTable(globals.allPlayers)
-    if #tmp ~= 0 then
-      self.once = true
-      camera.main.doScrollY = false
+      local l = camera.main.curLock
+      camera.main.curLock = self.name
+      camera.main:doView()
+      self.tween = tween.new(0.4, camera.main.transform, {x=camera.main.transform.x, y=camera.main.transform.y})
+      camera.main.curLock = l
+      camera.main:doView()
+    elseif self.tween:update(1/60) then
+      self.tween = nil
+      self.curLock = self.name
+      self:doView()
     end
   end
 end

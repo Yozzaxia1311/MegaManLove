@@ -32,6 +32,12 @@ function camera:new(x, y, doScrollX, doScrollY)
   self.scrollw = 0
   self.scrolly = 0
   self.scrollh = 0
+  self.lockx = 0
+  self.locky = 0
+  self.lockw = 0
+  self.lockh = 0
+  self.locked = false
+  self.curLock = ""
   self.doScrollY = doScrollY == nil and true or doScrollY
   self.doScrollX = doScrollX == nil and true or doScrollX
   self.transX = 0
@@ -205,6 +211,8 @@ function camera:updateCam()
           camera.main.transitionDone = true
           megautils.state().system.afterUpdate = nil
           camera.main.preTrans = nil
+          camera.main.locked = nil
+          camera.main.curLock = ""
         end
         if camera.main.player and camera.main.player.onMovingFloor then
           camera.main.player.onMovingFloor.transform.x = camera.main.player.transform.x + camera.main.flx
@@ -253,6 +261,31 @@ function camera:doView(without)
       self.transform.y = (avy/#globals.allPlayers)
       self.transform.y = math.clamp(self.transform.y, self.scrolly, self.scrolly+self.scrollh-view.h)
     end
+  end
+  if megautils.groups()["lock"] then
+    self.locked = self:collisionTable(megautils.groups()["lock"])
+    if #self.locked == 0 then self.locked = nil end
+    local result = false
+    for i=1, #self.locked do
+      local v = self.locked[i]
+      if not v.name then
+        break
+      elseif v.name == self.curLock then
+        self.lockx = v.transform.x
+        self.locky = v.transform.y
+        self.lockw = v.collisionShape.w
+        self.lockh = v.collisiohShape.h
+        result = true
+        break
+      end
+    end
+    if not result then self.locked = nil end
+  else
+    self.locked = nil
+  end
+  if self.locked then
+    self.transform.x = math.clamp(self.transform.x, self.lockx, self.lockx+self.lockw)
+    self.transform.y = math.clamp(self.transform.y, self.locky, self.locky+self.lockh)
   end
   view.x, view.y = math.round(self.transform.x), math.round(self.transform.y)
   self:updateFuncs()
