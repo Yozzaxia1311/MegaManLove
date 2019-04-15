@@ -45,6 +45,9 @@ function initEngine()
   globals.maxWTanks = 10
   globals.startingLives = 2
   
+  globals.defeats = {}
+  globals.defeats.stickMan = false
+  
   globals.resetState = true
   globals.manageStageResources = true
   globals.keyboardCheck = {}
@@ -133,7 +136,7 @@ function love.load()
   else
     save.save("main.sav", {}, true)
   end
-  states.set("states/disclaimer.state.lua") --megautils.loadGame("path/to/game/directory/if/standalone/game/is/desired")
+  states.set("states/disclaimer.state.lua")
   console.parse("exec autoexec")
 end
 

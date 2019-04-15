@@ -7,7 +7,7 @@ function gameoverstate:begin()
   self.wait = 0
   megautils.add(fade(false):setAfter(fade.remove))
   view.x, view.y = 0, 0
-  mmMusic.playFromFile(nil, "assets/sfx/music/game_over.ogg", nil, true)
+  mmMusic.playFromFile(nil, "assets/sfx/music/game_over.ogg")
 end
 
 function gameoverstate:update(dt)
@@ -43,7 +43,7 @@ function contPanels:update(dt)
   if self.timer == 198 then
     self.state = 1
     if globals.gameOverMenuMusic then
-      mmMusic.playFromFile(globals.gameOverMenuMusic[1], globals.gameOverMenuMusic[2])
+      mmMusic.playFromFile("assets/sfx/music/menu.ogg")
     end
     megautils.add(contSelect())
   end
@@ -88,7 +88,7 @@ function contSelect:update(dt)
       self.picked = true
       self.render = false
       globals.stopMusicMenu = true
-      megautils.gotoState(globals.gameOverMenuState)
+      megautils.gotoState("states/menu.state.lua")
     end
   end
   self.transform.y = self.offY + self.pick*16
