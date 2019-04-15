@@ -20,43 +20,6 @@ concmd["help"] = {
   fun = cmdHelp,
 }
 
-function cmdGame(cmd)
-  if not cmd[2] then return end
-  local d = love.filesystem.getInfo(cmd[2])
-  if d and d.type == "directory" and love.filesystem.getInfo(cmd[2] .. "/init.lua") then
-    megautils.loadGame(cmd[2])
-  else
-    console.print("No such game \""..cmd[2].."\"")
-  end
-end
-concmd["game"] = {
-  helptext = "load a game",
-  flags = {},
-  fun = cmdGame,
-}
-
-function cmdGames(cmd)
-  local result = {}
-  for k, v in pairs(love.filesystem.getDirectoryItems("/")) do
-    local info = love.filesystem.getInfo(v)
-    if info and info.type == "directory" and love.filesystem.getInfo(v .. "/init.lua") then
-      result[#result+1] = v
-    end
-  end
-  if #result == 0 then
-    console.print("No games available")
-  else
-    for i=1, #result do
-      console.print(result[i])
-    end
-  end
-end
-concmd["games"] = {
-  helptext = "gives a list of games",
-  flags = {},
-  fun = cmdGames,
-}
-
 function cmdRec(cmd)
   if states.recordOnSwitch then
     states.recordOnSwitch = false

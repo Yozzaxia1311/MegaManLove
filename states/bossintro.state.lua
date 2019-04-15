@@ -1,8 +1,8 @@
 local bossintrostate = states.state:extend()
 
 function bossintrostate:begin()
-  loader.load("assets/title.png", "title", "texture")
-  megautils.runFile("entities/starfield.lua")
+  loader.load("assets/misc/title.png", "title", "texture")
+  megautils.runFile("entities/misc/starfield.lua")
   megautils.add(banner())
   megautils.add(smallStar(32, 32, 180, 2))
   megautils.add(smallStar(112, 200, 180, 2))
@@ -15,7 +15,7 @@ function bossintrostate:begin()
   megautils.add(largeStar(0, 32, 180, 6))
   megautils.add(largeStar(90, 220, 180, 6))
   if globals.bossIntroBoss == "stick" then
-    megautils.runFile("entities/stickman.lua")
+    megautils.runFile("entities/demo/stickman.lua")
     megautils.add(stickManIntro())
   end
   megautils.add(fade(false):setAfter(fade.remove))
