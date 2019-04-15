@@ -390,18 +390,20 @@ end
 function control.flush()
   inputHandler.flush()
   touchInput.flush()
-  for i=1, playerCount do
-    if not control.leftDown[i] then control.pressed[i].left = true end
-    if not control.rightDown[i] then control.pressed[i].right = true end
-    if not control.upDown[i] then control.pressed[i].up = true end
-    if not control.downDown[i] then control.pressed[i].down = true end
-    if not control.jumpDown[i] then control.pressed[i].jump = true end
-    if not control.shootDown[i] then control.pressed[i].shoot = true end
-    if not control.startDown[i] then control.pressed[i].start = true end
-    if not control.selectDown[i] then control.pressed[i].selec = true end
-    if not control.prevDown[i] then control.pressed[i].prev = true end
-    if not control.nextDown[i] then control.pressed[i].nex = true end
-    if not control.dashDown[i] then control.pressed[i].dash = true end
+  if control.demo then
+    for i=1, playerCount do
+      if not control.leftDown[i] then control.pressed[i].left = true end
+      if not control.rightDown[i] then control.pressed[i].right = true end
+      if not control.upDown[i] then control.pressed[i].up = true end
+      if not control.downDown[i] then control.pressed[i].down = true end
+      if not control.jumpDown[i] then control.pressed[i].jump = true end
+      if not control.shootDown[i] then control.pressed[i].shoot = true end
+      if not control.startDown[i] then control.pressed[i].start = true end
+      if not control.selectDown[i] then control.pressed[i].selec = true end
+      if not control.prevDown[i] then control.pressed[i].prev = true end
+      if not control.nextDown[i] then control.pressed[i].nex = true end
+      if not control.dashDown[i] then control.pressed[i].dash = true end
+    end
   end
   control.anyPressed = false
 end
