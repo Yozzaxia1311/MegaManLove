@@ -17,9 +17,22 @@ function view.draw(sys)
   love.graphics.translate(-view.x, -view.y)
   sys:draw()
   love.graphics.pop()
-  love.graphics.setColor(1, 1, 1, 1)
   megautils.updateShake()
+  love.graphics.setColor(1, 1, 1, 1)
   control.drawDemo()
+  if showEntityCount then
+    local count = #megautils.state().system.all
+    love.graphics.setFont(mmFont)
+    love.graphics.setColor(1, 1, 1, 0.8)
+    love.graphics.print(count, view.w - 24, 24)
+  end
+  if showFPS then
+    local fps = love.timer.getFPS()
+    love.graphics.setFont(mmFont)
+    love.graphics.setColor(1, 1, 1, 0.8)
+    love.graphics.print(fps, view.w - 16, 8)
+  end
+  love.graphics.setColor(1, 1, 1, 1)
   love.graphics.setCanvas()
   cscreen.apply()
   love.graphics.draw(view.canvas)

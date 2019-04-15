@@ -70,7 +70,7 @@ convar["show_fps"] = {
 }
 
 convar["show_entity_count"] = {
-  helptext = "draw entity count (top) and static entity count (bottom)",
+  helptext = "draw entity count",
   flags = {"client"},
   value = 0,
   fun = function(arg) local n = numberSanitize(arg) showEntityCount = n == 1 end

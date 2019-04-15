@@ -194,7 +194,7 @@ function rushJet:update(dt)
   elseif self.s == 2 then
     for i=1, globals.playerCount do
       local p = globals.allPlayers[i]
-      if p.transform.y == self.transform.y - p.collisionShape.h then
+      if p:collision(self, 0, 1) and p.transform.y == self.transform.y - p.collisionShape.h then
         self.s = 3
         self.velocity.velx = self.side
         self.user = p
@@ -217,7 +217,7 @@ function rushJet:update(dt)
       self.velocity.vely = 0
       for i=1, globals.playerCount do
         local p = globals.allPlayers[i]
-        if p.transform.y == self.transform.y - p.collisionShape.h then
+        if p:collision(self, 0, 1) and p.transform.y == self.transform.y - p.collisionShape.h then
           self.velocity.velx = self.side
           self.user = p
           self.user.canWalk = false

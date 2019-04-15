@@ -272,12 +272,12 @@ end
 
 function control.drawDemo()
   if control.demo and math.wrap(control.recPos, 0, 40) < 20 then
-    love.graphics.setColor(1, 1, 1, 1)
     love.graphics.setFont(mmFont)
+    love.graphics.setColor(1, 1, 1, 1)
     love.graphics.print("replay", view.w - 64, view.h - 16)
-  elseif control.recordInput and control.recPos < 120 then
-    love.graphics.setColor(1, 1, 1, 1)
+  elseif control.recordInput then
     love.graphics.setFont(mmFont)
+    love.graphics.setColor(1, 1, 1, 0.8)
     love.graphics.print("recording", view.w - 88, view.h - 16)
   end
 end
