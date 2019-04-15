@@ -3,6 +3,7 @@ local titlestate = states.state:extend()
 function titlestate:begin()
   loader.load("assets/misc/title.png", "title", "texture")
   megautils.add(title())
+  mmMusic.lock = false
 end
 
 function titlestate:update(dt)
@@ -35,6 +36,8 @@ function title:new()
   self.cont = false
   self.text = "name + year"
   self.textPos = 128-(self.text:len()*8)/2
+  self.timer = 0
+  self:addToGroup("freezable")
 end
 
 function title:update(dt)
@@ -45,19 +48,22 @@ function title:update(dt)
     mmMusic.playFromFile(nil, "assets/sfx/music/title.ogg")
   end
   if self.drawText then
+    self.timer = self.timer + 1
+    if self.timer == 400 then
+      states.openRecord = "assets/demo.rd"
+      megautils.add(fade(true):setAfter(function(s)
+          mmMusic.lock = true
+          control.returning = function()
+              megautils.add(fade(true):setAfter(function(s) megautils.resetGame() states.set("states/title.state.lua") end))
+            end
+          states.set()
+        end))
+    end
     self.textTimer = math.wrap(self.textTimer+1, 0, 40)
-    if control.startDown[1] and not self.cont then
-      self.cont = true
+    if control.startDown[1] then
       mmMusic.stopMusic()
       self.drawText = false
       megautils.gotoState("states/menu.state.lua")
-    elseif control.selectDown[1] and not self.cont then
-      self.cont = true
-      self.drawText = false
-      mmMusic.stopMusic()
-      megautils.add(fade(true):setAfter(function()
-        megautils.resetToGameLoader()
-      end))
     end
   end
 end

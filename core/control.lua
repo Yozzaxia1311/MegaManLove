@@ -163,7 +163,7 @@ function control.update()
       control.demo = false
       control.recPos = 1
       control.record = {}
-      megautils.resetGame()
+      if control.returning then control.returning() control.returning = nil else megautils.resetGame() end
     end
   end
   if control.recordInput then
