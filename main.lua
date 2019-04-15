@@ -1,10 +1,5 @@
 function initEngine()
-  showFPS = false
-  showEntityCount = false
-  framerate = 1/60
-  
   globals = {}
-  love.graphics.setDefaultFilter("nearest", "nearest")
   love.filesystem.load("requires.lua")()
   
   if touchControls then
@@ -43,6 +38,7 @@ function initEngine()
   globals.maxETanks = 10
   globals.maxWTanks = 10
   globals.startingLives = 2
+  globals.playerCount = 1
   
   globals.defeats = {}
   globals.defeats.stickMan = false
@@ -64,14 +60,17 @@ end
 
 function love.load()
   love.keyboard.setKeyRepeat(true)
+  love.graphics.setDefaultFilter("nearest", "nearest")
   consoleFont = love.graphics.getFont() -- needs to be preserved
   OSSystem = love.system.getOS()
   touchControls = OSSystem == "Android" or OSSystem == "iOS"
   altEnterOnce = false
   deadZone = 0.8
   maxPlayerCount = 4
-  playerCount = 1
   useConsole = true
+  showFPS = false
+  showEntityCount = false
+  framerate = 1/60
   local joysticks = love.joystick.getJoysticks()
   defaultInputBinds =
     #joysticks > 0 and

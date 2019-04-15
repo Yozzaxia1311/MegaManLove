@@ -57,7 +57,7 @@ function rebinder:update(dt)
     globals.lastKeyPressed = nil
     
     if self.currentKey == table.length(self.keysToSet) then
-      if (self.step/11)+1 == playerCount then
+      if (self.step/11)+1 == globals.playerCount then
         self.done = true
         inputHandler.unbind()
         for k, v in pairs(self.data.controls) do

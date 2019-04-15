@@ -119,9 +119,9 @@ function menuSelect:update(dt)
     self.timer = math.wrap(self.timer+1, 0, 20)
     local old = globals.playerCount
     if control.leftPressed[1] then
-      playerCount = math.wrap(playerCount-1, 1, maxPlayerCount)
+      globals.playerCount = math.wrap(globals.playerCount-1, 1, maxPlayerCount)
     elseif control.rightPressed[1] then
-      playerCount = math.wrap(playerCount+1, 1, maxPlayerCount)
+      globals.playerCount = math.wrap(globals.playerCount+1, 1, maxPlayerCount)
     end
     if old ~= globals.playerCount then
       mmSfx.play("cursor_move")
@@ -141,9 +141,9 @@ function menuSelect:draw()
   end
   if self.timer > 10 then
     love.graphics.setFont(mmFont)
-    love.graphics.print(tostring(playerCount), 12*8, 19*8)
+    love.graphics.print(tostring(globals.playerCount), 12*8, 19*8)
   end
-  if playerCount > 1 then
+  if globals.playerCount > 1 then
     love.graphics.print("s", 20*8, 19*8)
   end
 end

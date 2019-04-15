@@ -192,7 +192,7 @@ function rushJet:update(dt)
       self.s = 2
     end
   elseif self.s == 2 then
-    for i=1, playerCount do
+    for i=1, globals.playerCount do
       local p = globals.allPlayers[i]
       if p.transform.y == self.transform.y - p.collisionShape.h then
         self.s = 3
@@ -215,7 +215,7 @@ function rushJet:update(dt)
       end
     else
       self.velocity.vely = 0
-      for i=1, playerCount do
+      for i=1, globals.playerCount do
         local p = globals.allPlayers[i]
         if p.transform.y == self.transform.y - p.collisionShape.h then
           self.velocity.velx = self.side
@@ -333,7 +333,7 @@ function rushCoil:update(dt)
       self.s = 3
     end
   elseif self.s == 3 then
-    for i=1, playerCount do
+    for i=1, globals.playerCount do
       local player = globals.allPlayers[i]
       if not player.climb and player.velocity.vely > 0 and
         math.between(player.transform.x+player.collisionShape.w/2, self.transform.x, self.transform.x+self.collisionShape.w) and

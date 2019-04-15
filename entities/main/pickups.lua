@@ -48,7 +48,7 @@ function smallHealth:update(dt)
     self.render = true
   end
   collision.doCollision(self)
-  for i=1, playerCount do
+  for i=1, globals.playerCount do
     local p = globals.allPlayers[i]
     if self:collision(p) then
       p:addHealth(2)
@@ -144,7 +144,7 @@ function health:update(dt)
     self.render = true
   end
   collision.doCollision(self)
-  for i=1, playerCount do
+  for i=1, globals.playerCount do
     local p = globals.allPlayers[i]
     if self:collision(p) then
       p:addHealth(10)
@@ -241,7 +241,7 @@ function smallEnergy:update(dt)
     self.render = true
   end
   collision.doCollision(self)
-  for i=1, playerCount do
+  for i=1, globals.playerCount do
     local p = globals.allPlayers[i]
     if self:collision(p) then
       megaman.weaponHandler[p.player].change = 2
@@ -347,7 +347,7 @@ function energy:update(dt)
     self.render = true
   end
   collision.doCollision(self)
-  for i=1, playerCount do
+  for i=1, globals.playerCount do
     local p = globals.allPlayers[i]
     if self:collision(p) then
       megaman.weaponHandler[p.player].change = 10
@@ -454,7 +454,7 @@ function life:update(dt)
     self.render = true
   end
   collision.doCollision(self)
-  for i=1, playerCount do
+  for i=1, globals.playerCount do
     local p = globals.allPlayers[i]
     if self:collision(p) then
       if globals.infiniteLives then
@@ -571,7 +571,7 @@ function eTank:update(dt)
     self.render = true
   end
   collision.doCollision(self)
-  for i=1, playerCount do
+  for i=1, globals.playerCount do
     local p = globals.allPlayers[i]
     if self:collision(p) then
       globals.eTanks = math.min(globals.eTanks+1, globals.maxETanks)
@@ -677,7 +677,7 @@ function wTank:update(dt)
     self.render = true
   end
   collision.doCollision(self)
-  for i=1, playerCount do
+  for i=1, globals.playerCount do
     local p = globals.allPlayers[i]
     if self:collision(p) then
       globals.wTanks = math.min(globals.wTanks+1, globals.maxWTanks)

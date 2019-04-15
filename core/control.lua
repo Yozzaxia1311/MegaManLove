@@ -145,7 +145,7 @@ function control.update()
       touchInput.update()
     end
     local step = 0
-    for i=1, playerCount do
+    for i=1, globals.playerCount do
       control.leftDown[i] = inputHandler.down(3+step)
       control.leftPressed[i] = inputHandler.pressed(3+step)
       control.rightDown[i] = inputHandler.down(4+step)
@@ -206,7 +206,7 @@ end
 
 function control.playRecord()
   if control.record[control.recPos] then
-    for i=1, maxPlayerCount do
+    for i=1, globals.playerCount do
       control.leftDown[i] = control.record[control.recPos].ld and control.record[control.recPos].ld[i] == 1
       control.leftPressed[i] = control.leftDown[i] and control.pressed[i].left
       if control.leftPressed[i] then control.pressed[i].left = false end
@@ -242,7 +242,7 @@ function control.playRecord()
       if control.dashPressed[i] then control.pressed[i].dash = false end
     end
   else
-    for i=1, maxPlayerCount do
+    for i=1, globals.playerCount do
       control.leftDown[i] = false
       control.leftPressed[i] = false
       control.rightDown[i] = false
@@ -283,7 +283,7 @@ function control.drawDemo()
 end
 
 function control.doRecording()
-  for i=1, playerCount do
+  for i=1, globals.playerCount do
     if control.leftDown[i] then
       if control.record[control.recPos] == nil then
         control.record[control.recPos] = {}
@@ -391,7 +391,7 @@ function control.flush()
   inputHandler.flush()
   touchInput.flush()
   if control.demo then
-    for i=1, playerCount do
+    for i=1, globals.playerCount do
       if not control.leftDown[i] then control.pressed[i].left = true end
       if not control.rightDown[i] then control.pressed[i].right = true end
       if not control.upDown[i] then control.pressed[i].up = true end
