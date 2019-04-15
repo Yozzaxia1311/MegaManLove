@@ -30,7 +30,7 @@ function view.draw(sys)
     local fps = love.timer.getFPS()
     love.graphics.setFont(mmFont)
     love.graphics.setColor(1, 1, 1, 0.8)
-    love.graphics.print(fps, view.w - 16, 8)
+    love.graphics.print(fps, view.w - 24, 8)
   end
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.setCanvas()
