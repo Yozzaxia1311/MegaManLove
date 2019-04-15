@@ -241,11 +241,6 @@ function control.playRecord()
   control.recPos = control.recPos + 1
 end
 
-function control.loadRecord(file)
-  control.record = table.stringtonumberkeys(save.load(file, true))
-  control.recPos = 1
-end
-
 function control.drawDemo()
   if control.demo and math.wrap(control.recPos, 0, 40) < 20 then
     love.graphics.setColor(1, 1, 1, 1)
