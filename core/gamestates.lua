@@ -19,7 +19,7 @@ function states.set(n, s, after)
     states.currentstate:stop()
   end
   if states.openRecord then
-    control.record = table.stringtonumberkeys(save.load(file, true))
+    control.record = table.stringtonumberkeys(save.load(states.openRecord))
     control.recPos = 1
     nick = control.record.state
     states.openRecord = nil
