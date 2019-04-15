@@ -20,27 +20,17 @@ function save.createDirChain(p)
   end
 end
 
-function save.save(file, data, ignoreGamePath)
+function save.save(file, data)
   local sv = json.encode(data)
   if base64SaveFiles then
     sv = to_base64(sv)
   end
-  if ignoreGamePath then
-    save.createDirChain(file)
-    love.filesystem.write(file, sv)
-  else
-    save.createDirChain(gamePath .. (gamePath == "" and "" or "/") .. file)
-    love.filesystem.write(gamePath .. (gamePath == "" and "" or "/") .. file, sv)
-  end
+  save.createDirChain(file)
+  love.filesystem.write(file, sv)
 end
 
-function save.load(file, ignoreGamePath)
-  local sv
-  if ignoreGamePath then
-    sv = love.filesystem.read(file)
-  else
-    sv = love.filesystem.read(gamePath .. (gamePath == "" and "" or "/") .. file)
-  end
+function save.load(file)
+  local sv = love.filesystem.read(file)
   if not sv then
     return nil
   end

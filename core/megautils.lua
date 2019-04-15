@@ -14,30 +14,13 @@ function megautils.disableConsole()
   useConsole = false
 end
 
-function megautils.runFile(path, ignoreGamePath)
-  if ignoreGamePath then
-    return love.filesystem.load(path)()
-  else
-    return love.filesystem.load(gamePath .. (gamePath == "" and "" or "/") .. path)()
-  end
+function megautils.runFile(path)
+  return love.filesystem.load(path)()
 end
 
-function megautils.loadGame(path)
-  megautils.unload()
-  initEngine()
-  if love.filesystem.getInfo(path .. "/init.lua") then
-    gamePath = path
-    local data = love.filesystem.load(path .. "/init.lua")()
-    data.run()
-    states.set(data.initState)
-  else
-    gamePath = ""
-    states.set("states/disclaimer.state.lua")
-  end
-end
-
-function megautils.resetToGameLoader()
+function megautils.resetGame()
   gamePath = ""
+  megautils.unload()
   initEngine()
   states.set("states/disclaimer.state.lua", nil, true)
 end
@@ -175,14 +158,9 @@ function megautils.unload()
   collectgarbage()
 end
 
-function megautils.loadStage(self, path, call, ignoreGamePath)
+function megautils.loadStage(self, path, call)
   self.sectionHandler = sectionHandler()
-  local map
-  if ignoreGamePath then
-    map = cartographer.load(path)
-  else
-    map = cartographer.load(gamePath .. (gamePath == "" and "" or "/") .. path)
-  end
+  local map = cartographer.load(path)
   local tLayers = {}
   local objs = {}
   for k, v in pairs(map.layers) do

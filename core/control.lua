@@ -176,7 +176,6 @@ function control.finishRecord()
   local result =  table.numbertostringkeys(control.record)
   result.last = control.recPos
   result.globals = control.record.globals
-  result.gamePath = control.record.gamePath
   if love.filesystem.getInfo(control.recordName .. ".rd") then
     love.filesystem.remove(control.recordName .. ".rd")
   end
@@ -184,7 +183,6 @@ function control.finishRecord()
   control.record = {}
   control.recPos = 1
   control.globals = nil
-  control.gamePath = nil
 end
 
 function control.playRecord()

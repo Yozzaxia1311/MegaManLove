@@ -172,28 +172,8 @@ function cmdState(cmd)
   if not cmd[2] then return end
   local map
   if love.filesystem.getInfo(cmd[2] .. ".state.lua") then
-    local path = cmd[2]:split("/")
-    if #path > 1 then
-      local d = love.filesystem.getInfo(path[1])
-      if d and d.type == "directory" and love.filesystem.getInfo(path[1] .. "/init.lua") then
-        if gamePath ~= path[1] then
-          megautils.unload()
-          initEngine()
-          gamePath = path[1]
-        end
-        local data = love.filesystem.load(path[1] .. "/init.lua")()
-        data.run()
-        local result = path[2]
-        for i=3, #path do
-          result = result .. "/" .. path[i]
-        end
-        map = result .. ".state.lua"
-      else
-        gamePath = ""
-        map = cmd[2] .. ".state.lua"
-        megautils.resetGameObjects()
-      end
-    end
+    map = cmd[2] .. ".state.lua"
+    megautils.resetGameObjects()
   end
   if map == nil then console.print("No such state \""..cmd[2].."\"") return end
   love.audio.stop()

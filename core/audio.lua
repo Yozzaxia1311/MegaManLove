@@ -16,29 +16,17 @@ mmMusic = class:extend()
 mmMusic.cur = nil
 mmMusic.lock = false
 
-function mmMusic.playFromFile(loop, intro, vol, ignoreGamePath)
+function mmMusic.playFromFile(loop, intro, vol)
   if mmMusic.lock or (mmMusic.cur and mmMusic.cur.id == tostring(loop) .. tostring(intro)) then return end
   mmMusic.stopMusic()
   if intro then
     if loop then
-      if ignoreGamePath then
-        mmMusic.cur = mmMusic(love.audio.newSource(loop, "stream"), love.audio.newSource(intro, "stream"))
-      else
-        mmMusic.cur = mmMusic(love.audio.newSource(gamePath .. (gamePath == "" and "" or "/") .. loop, "stream"), love.audio.newSource(gamePath .. (gamePath == "" and "" or "/") .. intro, "stream"))
-      end
+      mmMusic.cur = mmMusic(love.audio.newSource(loop, "stream"), love.audio.newSource(intro, "stream"))
     else
-      if ignoreGamePath then
-        mmMusic.cur = mmMusic(nil, love.audio.newSource(intro, "stream"))
-      else
-        mmMusic.cur = mmMusic(nil, love.audio.newSource(gamePath .. (gamePath == "" and "" or "/") .. intro, "stream"))
-      end
+      mmMusic.cur = mmMusic(nil, love.audio.newSource(intro, "stream"))
     end
   else
-    if ignoreGamePath then
-      mmMusic.cur = mmMusic(love.audio.newSource(loop, "stream"), nil)
-    else
-      mmMusic.cur = mmMusic(love.audio.newSource(gamePath .. (gamePath == "" and "" or "/") .. loop, "stream"), nil)
-    end
+    mmMusic.cur = mmMusic(love.audio.newSource(loop, "stream"), nil)
   end
   mmMusic.cur.id = tostring(loop) .. tostring(intro)
   mmMusic.cur.introFile = intro
