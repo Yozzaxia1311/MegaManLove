@@ -59,6 +59,21 @@ concmd["recsave"] = {
   fun = cmdRecSave,
 }
 
+function cmdRecDel(cmd)
+  if not cmd[2] then return end
+  if not love.filesystem.getInfo(cmd[2] .. ".rd") then
+    console.print("No such record file \""..cmd[2].."\"")
+  else
+    love.filesystem.remove(cmd[2] .. ".rd")
+    console.print("Recording deleted")
+  end
+end
+concmd["recdel"] = {
+  helptext = "delete recording",
+  flags = {},
+  fun = cmdRecDel,
+}
+
 function cmdRecOpen(cmd)
   if not cmd[2] then return end
   if love.filesystem.getInfo(cmd[2] .. ".rd") then
