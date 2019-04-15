@@ -176,6 +176,7 @@ function control.finishRecord()
   local result =  table.numbertostringkeys(control.record)
   result.last = control.recPos
   result.globals = control.record.globals
+  result.seed = control.record.seed
   if love.filesystem.getInfo(control.recordName .. ".rd") then
     love.filesystem.remove(control.recordName .. ".rd")
   end
