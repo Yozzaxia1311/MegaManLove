@@ -46,8 +46,7 @@ function rebinder:update(dt)
   if globals.lastKeyPressed and globals.lastKeyPressed[1] == "escape" and not self.done then
     globals.lastKeyPressed = nil
     megautils.add(fade(true, nil, nil, function(s)
-      states.set(globals.sendBackToDisclaimer and "states/disclaimer.state.lua" or globals.lastStateName, nil,
-        globals.sendBackToDisclaimer)
+      states.set(globals.sendBackToDisclaimer and "states/disclaimer.state.lua" or globals.lastStateName)
       if not globals.sendBackToDisclaimer then
         megautils.add(fade(false, nil, nil, fade.remove))
       end
@@ -68,8 +67,7 @@ function rebinder:update(dt)
           inputHandler.bind(v[1], k, v[2], v[3])
         end
         save.save("main.sav", self.data)
-        states.set(globals.sendBackToDisclaimer and "states/disclaimer.state.lua" or globals.lastStateName, nil,
-          globals.sendBackToDisclaimer)
+        states.set(globals.sendBackToDisclaimer and "states/disclaimer.state.lua" or globals.lastStateName)
         globals.sendBackToDisclaimer = nil
       else
         self.currentKey = 1
