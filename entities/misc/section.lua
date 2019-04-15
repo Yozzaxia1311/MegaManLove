@@ -71,7 +71,7 @@ function sectionHandler:updateAll()
   end
   if self.next then
     for k, v in pairs(self.next.group) do
-      if not v.dontRemove and not (self.current and table.contains(self.current.group, v)) then
+      if not v.dontRemove and not v.isAdded and not (self.current and table.contains(self.current.group, v)) then
         megautils.add(v)
       end
     end

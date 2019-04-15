@@ -28,6 +28,7 @@ function bossdoor:new(x, y, seg, dir, scrollx, scrolly, spd)
   self.state = 0
   self.player = nil
   self:setDirection(dir)
+  self.spawnEarlyDuringTransition = true
 end
 
 function bossdoor:setDirection(dir)

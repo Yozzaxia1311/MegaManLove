@@ -112,6 +112,11 @@ function camera:updateCam()
       end 
       if self.player then
         if not self.toSection then self.toSection = megautils.state().sectionHandler.current end
+        for k, v in pairs(self.toSection.group) do
+          if v.spawnEarlyDuringTransition and not v.isAdded then
+            megautils.add(v)
+          end
+        end
         local sx, sy, sw, sh = self.toSection.transform.x, self.toSection.transform.y,
           self.toSection.collisionShape.w, self.toSection.collisionShape.h
         if self.transitiondirection == "right" then

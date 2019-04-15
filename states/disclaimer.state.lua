@@ -49,7 +49,7 @@ end
 
 function disclaimer:update()
   if control.startPressed[1] and self.check then
-    megautils.gotoState("states/menu.state.lua")
+    megautils.gotoState("states/title.state.lua")
     self.updated = false
   elseif globals.lastKeyPressed and globals.lastKeyPressed[1] == "escape" and self.check then
     globals.lastKeyPressed = nil

@@ -45,6 +45,9 @@ function initEngine()
   globals.maxWTanks = 10
   globals.startingLives = 2
   
+  globals.defeats = {}
+  globals.defeats.stickMan = false
+  
   globals.resetState = true
   globals.manageStageResources = true
   globals.keyboardCheck = {}
@@ -121,22 +124,16 @@ function love.load()
     ["prev"]={"leftshoulder", "gamepad", joysticks[2]:getName()},
     ["next"]={"rightshoulder", "gamepad", joysticks[2]:getName()},
     ["dash"]={"b", "gamepad", joysticks[2]:getName()}} or {}
-  gamePath = ""
   love.filesystem.load("requirelibs.lua")()
   control.init()
   console.init()
   initEngine()
-  local data = save.load("main.sav", true)
-  if data then
-    if data.fullscreen then
-      convar.setValue("r_fullscreen", data.fullscreen, true)
-    end
-  else
-    save.save("main.sav", {}, true)
+  local data = save.load("main.sav", true) or {}
+  if data.fullscreen then
+    convar.setValue("r_fullscreen", data.fullscreen, true)
   end
-  states.set("states/disclaimer.state.lua") --megautils.loadGame("path/to/game/directory/if/standalone/game/is/desired")
+  states.set("states/disclaimer.state.lua")
   console.parse("exec autoexec")
-  save.save("fuf/sss/fucker.txt", {["fff"]=69})
 end
 
 function love.resize(w, h)
