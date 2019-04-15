@@ -118,7 +118,9 @@ function control.init()
 end
 
 function control.resetRec()
+  control.pressed = {}
   for i=1, maxPlayerCount do
+    control.pressed[i] = {}
     control.pressed[i].left = true
     control.pressed[i].right = true
     control.pressed[i].up = true
@@ -207,37 +209,37 @@ function control.playRecord()
     for i=1, maxPlayerCount do
       control.leftDown[i] = control.record[control.recPos].ld and control.record[control.recPos].ld[i] == 1
       control.leftPressed[i] = control.leftDown[i] and control.pressed[i].left
-      if control.leftPressed[i] then control.pressed[i].left = false
+      if control.leftPressed[i] then control.pressed[i].left = false end
       control.rightDown[i] = control.record[control.recPos].rd and control.record[control.recPos].rd[i] == 1
       control.rightPressed[i] = control.rightDown[i] and control.pressed[i].right
-      if control.rightPressed[i] then control.pressed[i].right = false
+      if control.rightPressed[i] then control.pressed[i].right = false end
       control.upDown[i] = control.record[control.recPos].ud and control.record[control.recPos].ud[i] == 1
       control.upPressed[i] = control.upDown[i] and control.pressed[i].up
-      if control.upPressed[i] then control.pressed[i].up = false
+      if control.upPressed[i] then control.pressed[i].up = false end
       control.downDown[i] = control.record[control.recPos].dd and control.record[control.recPos].dd[i] == 1
       control.downPressed[i] = control.downDown[i] and control.pressed[i].down
-      if control.downPressed[i] then control.pressed[i].down = false
+      if control.downPressed[i] then control.pressed[i].down = false end
       control.startDown[i] = control.record[control.recPos].sd and control.record[control.recPos].sd[i] == 1
       control.startPressed[i] = control.startDown[i] and control.pressed[i].start
-      if control.startPressed[i] then control.pressed[i].start = false
+      if control.startPressed[i] then control.pressed[i].start = false end
       control.selectDown[i] = control.record[control.recPos].sld and control.record[control.recPos].sld[i] == 1
       control.selectPressed[i] = control.selectDown[i] and control.pressed[i].selec
-      if control.selectPressed[i] then control.pressed[i].selec = false
+      if control.selectPressed[i] then control.pressed[i].selec = false end
       control.jumpDown[i] = control.record[control.recPos].jd and control.record[control.recPos].jd[i] == 1
       control.jumpPressed[i] = control.jumpDown[i] and control.pressed[i].jump
-      if control.jumpPressed[i] then control.pressed[i].jump = false
+      if control.jumpPressed[i] then control.pressed[i].jump = false end
       control.shootDown[i] = control.record[control.recPos].shd and control.record[control.recPos].shd[i] == 1
       control.shootPressed[i] = control.shootDown[i] and control.pressed[i].shoot
-      if control.shootPressed[i] then control.pressed[i].shoot = false
+      if control.shootPressed[i] then control.pressed[i].shoot = false end
       control.prevDown[i] = control.record[control.recPos].pd and control.record[control.recPos].pd[i] == 1
       control.prevPressed[i] = control.prevDown[i] and control.pressed[i].prev
-      if control.prevPressed[i] then control.pressed[i].prev = false
+      if control.prevPressed[i] then control.pressed[i].prev = false end
       control.nextDown[i] = control.record[control.recPos].nd and control.record[control.recPos].nd[i] == 1
       control.nextPressed[i] = control.nextDown[i] and control.pressed[i].nex
-      if control.nextPressed[i] then control.pressed[i].nex = false
+      if control.nextPressed[i] then control.pressed[i].nex = false end
       control.dashDown[i] = control.record[control.recPos].dad and control.record[control.recPos].dad[i] == 1
       control.dashPressed[i] = control.dashDown[i] and control.pressed[i].dash
-      if control.dashPressed[i] then control.pressed[i].dash = false
+      if control.dashPressed[i] then control.pressed[i].dash = false end
     end
   else
     for i=1, maxPlayerCount do
