@@ -64,6 +64,8 @@ function cmdRecOpen(cmd)
   if love.filesystem.getInfo(cmd[2] .. ".rd") then
     states.openRecord = cmd[2] .. ".rd"
     megautils.add(fade(true):setAfter(function(s)
+          mmMusic.stopMusic()
+          love.audio.stop()
           states.set()
         end))
     console.close()

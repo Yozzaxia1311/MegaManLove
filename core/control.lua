@@ -155,7 +155,7 @@ function control.update()
   else
     control.playRecord()
     local result = control.anyPressed
-    if control.record.last <= control.recPos then
+    if control.recPos >= control.record.last then
       result = true
     end
     if result and not control.once then
@@ -163,7 +163,7 @@ function control.update()
       control.demo = false
       control.recPos = 1
       control.record = {}
-      megautils.loadGame(control.lastGame)
+      megautils.resetGame()
     end
   end
   if control.recordInput then
