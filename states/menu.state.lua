@@ -73,7 +73,7 @@ function menuSelect:update(dt)
         end
         local data = save.load("main.sav") or {}
         data.fullscreen = convar.getNumber("r_fullscreen")
-        save.save("main.sav", data, true)
+        save.save("main.sav", data)
       elseif self.pick == 2 then
         self.picked = true
         self.section = -1

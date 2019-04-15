@@ -67,7 +67,7 @@ function rebinder:update(dt)
         for k, v in pairs(self.data.controls) do
           inputHandler.bind(v[1], k, v[2], v[3])
         end
-        save.save("main.sav", self.data, true)
+        save.save("main.sav", self.data)
         states.set(globals.sendBackToDisclaimer and "states/disclaimer.state.lua" or globals.lastStateName, nil,
           globals.sendBackToDisclaimer)
         globals.sendBackToDisclaimer = nil

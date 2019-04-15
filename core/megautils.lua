@@ -21,7 +21,7 @@ end
 function megautils.resetGame()
   megautils.unload()
   initEngine()
-  states.set("states/disclaimer.state.lua", nil, true)
+  states.set("states/disclaimer.state.lua")
 end
 
 function megautils.load()

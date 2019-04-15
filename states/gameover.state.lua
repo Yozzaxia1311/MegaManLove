@@ -1,8 +1,8 @@
 local gameoverstate = states.state:extend()
 
 function gameoverstate:begin()
-  loader.load("assets/misc/cont.png", "cont", "texture", nil, nil, true)
-  megautils.loadStage(self, "assets/maps/cont.lua", nil, true)
+  loader.load("assets/misc/cont.png", "cont", "texture")
+  megautils.loadStage(self, "assets/maps/cont.lua")
   megautils.add(contPanels())
   self.wait = 0
   megautils.add(fade(false):setAfter(fade.remove))
