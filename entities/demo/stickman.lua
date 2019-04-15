@@ -124,7 +124,7 @@ function stickMan:update(dt)
           self.ss = 0
           globals.mainPlayer.curAnim = "idle"
           self.s = 2
-          mmMusic.playFromFile("assets/sfx/music/boss_loop.ogg", "assets/boss_intro.ogg")
+          mmMusic.playFromFile("assets/sfx/music/boss_loop.ogg", "assets/sfx/music/boss_intro.ogg")
           self.render = true
         end
       end
