@@ -63,7 +63,7 @@ end
 function met:update(dt)
   local near = megautils.autoFace(self, globals.allPlayers)
   if self.s == 0 then
-    if math.between(near.transform.x, 
+    if near and math.between(near.transform.x, 
       self.transform.x - 120, self.transform.x + 120) then
       self.timer = math.min(self.timer+1, 80)
     else
