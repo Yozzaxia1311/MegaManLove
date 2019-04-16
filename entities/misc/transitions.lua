@@ -287,11 +287,20 @@ function lockShift:update(dt)
     self.pTween = {}
     for i=1, #globals.allPlayers do
       local v = globals.allPlayers[i]
-      if v.transform.x < camera.main.lockx+(-self.collisionShape.w/2)+2 or
-        v.transform.x > (camera.main.lockx+camera.main.lockw)+(-self.collisionShape.w/2)-2 or
-        v.transform.y < camera.main.locky-(self.collisionShape.h*1.4) or
+      if v.transform.x < camera.main.lockx+(-v.collisionShape.w/2)+2 or
+        v.transform.x > (camera.main.lockx+camera.main.lockw)+(-v.collisionShape.w/2)-2 or
+        v.transform.y < camera.main.locky-(v.collisionShape.h*1.4) or
         v.transform.y > camera.main.locky+camera.main.lockh+4 then
-        local p = globals.allPlayers[1]
+        local p
+        for j=1 #globals.allPlayers do
+          p = globals.allPlayers[i]
+          if p ~= v and p.transform.x < camera.main.lockx+(-p.collisionShape.w/2)+2 or
+            p.transform.x > (camera.main.lockx+camera.main.lockw)+(-p.collisionShape.w/2)-2 or
+            p.transform.y < camera.main.locky-(p.collisionShape.h*1.4) or
+            p.transform.y > camera.main.locky+camera.main.lockh+4 then
+            break
+          end
+        end
         self.pTween[#self.pTween+1] = tween.new(self.spd, v.transform, {x=p.transform.x, y=p.transform.y})
       end
     end
