@@ -274,7 +274,7 @@ function lockShift:new(x, y, w, h, name, spd)
 end
 
 function lockShift:update(dt)
-  if #self:collisionTable(globals.allPlayers) >= math.ceil(globals.playerCount/2) and self.name ~= camera.main.curLock and not self.tween then
+  if #self:collisionTable(globals.allPlayers) >= math.floor(globals.playerCount/2)+1 and self.name ~= camera.main.curLock and not self.tween then
     megautils.freeze(globals.allPlayers)
     for k, v in pairs(globals.allPlayers) do
       v.control = false
