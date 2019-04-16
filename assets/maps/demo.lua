@@ -9,7 +9,7 @@ return {
   tilewidth = 16,
   tileheight = 16,
   nextlayerid = 5,
-  nextobjectid = 151,
+  nextobjectid = 152,
   properties = {},
   tilesets = {
     {
@@ -1855,14 +1855,29 @@ return {
           name = "lock_shift",
           type = "",
           shape = "rectangle",
-          x = 864,
+          x = 880,
           y = 0,
-          width = 16,
-          height = 176,
+          width = 144,
+          height = 224,
           rotation = 0,
           visible = true,
           properties = {
             ["name"] = "two"
+          }
+        },
+        {
+          id = 151,
+          name = "lock_shift",
+          type = "",
+          shape = "rectangle",
+          x = 768,
+          y = 0,
+          width = 80,
+          height = 96,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["name"] = "one"
           }
         }
       }
