@@ -294,10 +294,10 @@ function lockShift:update(dt)
         local p
         for j=1 #globals.allPlayers do
           p = globals.allPlayers[i]
-          if p ~= v and p.transform.x < camera.main.lockx+(-p.collisionShape.w/2)+2 or
-            p.transform.x > (camera.main.lockx+camera.main.lockw)+(-p.collisionShape.w/2)-2 or
-            p.transform.y < camera.main.locky-(p.collisionShape.h*1.4) or
-            p.transform.y > camera.main.locky+camera.main.lockh+4 then
+          if p ~= v and p.transform.x >= camera.main.lockx+(-p.collisionShape.w/2)+2 or
+            p.transform.x <= (camera.main.lockx+camera.main.lockw)+(-p.collisionShape.w/2)-2 or
+            p.transform.y >= camera.main.locky-(p.collisionShape.h*1.4) or
+            p.transform.y <= camera.main.locky+camera.main.lockh+4 then
             break
           end
         end
