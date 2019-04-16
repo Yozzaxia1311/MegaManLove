@@ -180,7 +180,7 @@
  <objectgroup id="3" name="sections">
   <object id="5" name="section" x="0" y="224" width="512" height="224"/>
   <object id="6" name="section" x="256" y="0" width="256" height="224"/>
-  <object id="7" name="section" x="512" y="-112" width="512" height="560"/>
+  <object id="7" name="section" x="512" y="0" width="512" height="448"/>
   <object id="9" name="section" x="256" y="448" width="592" height="224"/>
   <object id="10" name="section" x="0" y="448" width="256" height="224"/>
   <object id="11" name="section" x="0" y="672" width="256" height="224"/>
