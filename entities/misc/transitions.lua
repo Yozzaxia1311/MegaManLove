@@ -284,12 +284,29 @@ function lockShift:update(dt)
     camera.main.curLock = self.name
     camera.main:doView()
     self.tween = tween.new(self.spd, camera.main.transform, {x=camera.main.transform.x, y=camera.main.transform.y})
+    self.pTween = {}
+    for i=1, #globals.allPlayers do
+      local v = globals.allPlayers[i]
+      if v.transform.x < camera.main.lockx+(-self.collisionShape.w/2)+2 or
+        v.transform.x > (camera.main.lockx+camera.main.lockw)+(-self.collisionShape.w/2)-2 or
+        v.transform.y < camera.main.locky-(self.collisionShape.h*1.4) or
+        v.transform.y > camera.main.locky+camera.main.lockh+4 then
+        local p = globals.allPlayers[1]
+        self.pTween[#self.pTween+1] = tween.new(self.spd, v.transform, {x=p.transform.x, y=p.transform.y})
+      end
+    end
     camera.main.curLock = l
     camera.main:doView()
+  end
+  if self.pTween then
+    for i=1, #self.pTween do
+      self.pTween[i]:update(1/60)
+    end
   end
   if self.tween then
     if self.tween:update(1/60) then
       self.tween = nil
+      self.pTween = nil
       megautils.unfreeze()
       for k, v in pairs(globals.allPlayers) do
         v.control = true
