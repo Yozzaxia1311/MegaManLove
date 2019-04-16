@@ -418,5 +418,10 @@
    </properties>
   </object>
   <object id="146" name="sink_in" x="176" y="640" width="48" height="80"/>
+  <object id="150" name="lock_shift" x="864" y="0" width="16" height="176">
+   <properties>
+    <property name="name" value="two"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

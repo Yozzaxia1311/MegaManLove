@@ -61,6 +61,7 @@ function camera:updateBounds()
   end
   if self.toSection then
     if self.toSection:is(lockSection) then
+      self.curLock = self.toSection.name or ""
       self.toSection = self.toSection.section
     end
     megautils.state().sectionHandler.next = self.toSection
@@ -82,12 +83,22 @@ function camera:updateCam()
     self.transitionDone = false
     if not self.preTrans then
       if not self.toPos then
-        if self.transitiondirection == "up" or self.transitiondirection == "down" then
-          self.toPos = math.round(self.player.transform.x) - (view.w/2) + (self.player.collisionShape.w/2)
-          self.toPos = math.clamp(self.toPos, self.scrollx, self.scrollx+self.scrollw-view.w)
-        elseif self.transitiondirection == "left" or self.transitiondirection == "right" then
-          self.toPos = math.round(self.player.transform.y) - (view.h/2) + (self.player.collisionShape.h/2)
-          self.toPos = math.clamp(self.toPos+(self.player.slide and -3 or 0), self.scrolly, self.scrolly+self.scrollh-view.h)
+        if self.lockw ~= 0 and self.lockh ~= 0 then
+          if self.transitiondirection == "up" or self.transitiondirection == "down" then
+            self.toPos = math.round(self.player.transform.x) - (view.w/2) + (self.player.collisionShape.w/2)
+            self.toPos = math.clamp(self.toPos, self.lockx, self.lockx+self.lockh-view.w)
+          elseif self.transitiondirection == "left" or self.transitiondirection == "right" then
+            self.toPos = math.round(self.player.transform.y) - (view.h/2) + (self.player.collisionShape.h/2)
+            self.toPos = math.clamp(self.toPos+(self.player.slide and -3 or 0), self.locky, self.locky+self.lockh-view.h)
+          end
+        else
+          if self.transitiondirection == "up" or self.transitiondirection == "down" then
+            self.toPos = math.round(self.player.transform.x) - (view.w/2) + (self.player.collisionShape.w/2)
+            self.toPos = math.clamp(self.toPos, self.scrollx, self.scrollx+self.scrollw-view.w)
+          elseif self.transitiondirection == "left" or self.transitiondirection == "right" then
+            self.toPos = math.round(self.player.transform.y) - (view.h/2) + (self.player.collisionShape.h/2)
+            self.toPos = math.clamp(self.toPos+(self.player.slide and -3 or 0), self.scrolly, self.scrolly+self.scrollh-view.h)
+          end
         end
       end
       if self.transitiondirection == "up" or self.transitiondirection == "down" then
@@ -269,6 +280,10 @@ function camera:doView(without)
   end
   self.locked = self:collisionTable(megautils.groups()["lock"])
   local result = false
+  self.lockx = 0
+  self.locky = 0
+  self.lockw = 0
+  self.lockh = 0
   for i=1, #self.locked do
     local v = self.locked[i]
     if v.name == self.curLock then

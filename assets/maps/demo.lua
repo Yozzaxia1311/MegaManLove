@@ -1849,6 +1849,21 @@ return {
           rotation = 0,
           visible = true,
           properties = {}
+        },
+        {
+          id = 150,
+          name = "lock_shift",
+          type = "",
+          shape = "rectangle",
+          x = 864,
+          y = 0,
+          width = 16,
+          height = 176,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["name"] = "two"
+          }
         }
       }
     }

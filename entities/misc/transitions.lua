@@ -31,7 +31,7 @@ function right:update(dt)
       camera.main.player = player
       camera.main.speed = self.spd
       camera.main.transX = camera.main.scrollx+camera.main.scrollw+16
-      camera.main.toSection = megautils.groups()["lock"] and self:collisionTable(megautils.groups()["lock"], 2)[1] or
+      camera.main.toSection = self:collisionTable(megautils.groups()["lock"], 2)[1] or
         self:collisionTable(megautils.state().sectionHandler.sections, 2)[1]
       camera.main.transform.x = (camera.main.scrollx+camera.main.scrollw)-view.w
       if camera.main.player.onMovingFloor and not camera.main.player.onMovingFloor:is(rushJet) then
@@ -75,7 +75,7 @@ function left:update(dt)
       camera.main.player = player
       camera.main.speed = self.spd
       camera.main.transX = camera.main.scrollx-camera.main.player.collisionShape.w-16
-      camera.main.toSection = megautils.groups()["lock"] and self:collisionTable(megautils.groups()["lock"], -2)[1] or
+      camera.main.toSection = self:collisionTable(megautils.groups()["lock"], -2)[1] or
         self:collisionTable(megautils.state().sectionHandler.sections, -2)[1]
       camera.main.transform.x = camera.main.scrollx
       if camera.main.player.onMovingFloor and not camera.main.player.onMovingFloor:is(rushJet) then
@@ -119,7 +119,7 @@ function down:update(dt)
       camera.main.player = player
       camera.main.speed = self.spd
       camera.main.transY = camera.main.scrolly+camera.main.scrollh+8
-      camera.main.toSection = megautils.groups()["lock"] and self:collisionTable(megautils.groups()["lock"], 0, 2)[1] or
+      camera.main.toSection = self:collisionTable(megautils.groups()["lock"], 0, 2)[1] or
         self:collisionTable(megautils.state().sectionHandler.sections, 0, 2)[1]
       camera.main.transform.y = (camera.main.scrolly+camera.main.scrollh)-view.h
       if camera.main.player.onMovingFloor and not camera.main.player.onMovingFloor:is(rushJet) then
@@ -164,7 +164,7 @@ function up:update(dt)
       camera.main.player = player
       camera.main.speed = self.spd
       camera.main.transY = camera.main.scrolly-camera.main.player.collisionShape.h-8
-      camera.main.toSection = megautils.groups()["lock"] and self:collisionTable(megautils.groups()["lock"], 0, -2)[1] or
+      camera.main.toSection = self:collisionTable(megautils.groups()["lock"], 0, -2)[1] or
         self:collisionTable(megautils.state().sectionHandler.sections, 0, -2)[1]
       camera.main.transform.y = camera.main.scrolly
       if camera.main.player.onMovingFloor and not camera.main.player.onMovingFloor:is(rushJet) then
@@ -213,7 +213,7 @@ function upLadder:update(dt)
         camera.main.player = player
         camera.main.speed = self.spd
         camera.main.transY = camera.main.scrolly-camera.main.player.collisionShape.h-8
-        camera.main.toSection = megautils.groups()["lock"] and self:collisionTable(megautils.groups()["lock"], 0, -2)[1] or
+        camera.main.toSection = self:collisionTable(megautils.groups()["lock"], 0, -2)[1] or
           self:collisionTable(megautils.state().sectionHandler.sections, 0, -2)[1]
         camera.main.transform.y = camera.main.scrolly
         break
@@ -241,25 +241,24 @@ function lockSection:new(x, y, w, h, name)
   end
 end
 
-lockBorder = entity:extend()
+lockShift = entity:extend()
 
-addobjects.register("lock_border", function(v)
-  megautils.add(lockBorder(v.x, v.y, v.width, v.height, v.properties["name"], v.properties["dir"]))
+addobjects.register("lock_shift", function(v)
+  megautils.add(lockShift(v.x, v.y, v.width, v.height, v.properties["name"], v.properties["dir"]))
 end)
 
-function lockBorder:new(x, y, w, h, name, dir)
-  lockBorder.super.new(self)
+function lockShift:new(x, y, w, h, name)
+  lockShift.super.new(self)
   self:setRectangleCollision(w, h)
   self.transform.y = y
   self.transform.x = x
   self.name = name
-  self.dir = dir
   self.added = function(self)
     self:addToGroup("despawnable")
   end
 end
 
-function lockBorder:update(dt)
+function lockShift:update(dt)
   if #self:collisionTable(globals.allPlayers) ~= 0 and self.name ~= camera.main.curLock and not self.tween then
     megautils.freeze(globals.allPlayers)
     for k, v in pairs(globals.allPlayers) do
@@ -273,14 +272,21 @@ function lockBorder:update(dt)
     camera.main.curLock = l
     camera.main:doView()
   end
-  if self.tween and self.tween:update(1/60) then
-    self.tween = nil
-    megautils.unfreeze()
-    for k, v in pairs(globals.allPlayers) do
-      v.control = true
-      v.cameraFocus = true
+  if self.tween then
+    if self.tween:update(1/60) then
+      self.tween = nil
+      megautils.unfreeze()
+      for k, v in pairs(globals.allPlayers) do
+        v.control = true
+        v.cameraFocus = true
+      end
+      camera.main.curLock = self.name
+      camera.main:doView()
+    else
+      camera.main.transform.x = math.round(camera.main.transform.x)
+      camera.main.transform.y = math.round(camera.main.transform.y)
+      view.x, view.y = math.round(camera.main.transform.x), math.round(camera.main.transform.y)
+      camera.main:updateFuncs()
     end
-    self.curLock = self.name
-    camera.main:doView()
   end
 end
