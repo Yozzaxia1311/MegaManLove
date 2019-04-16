@@ -119,6 +119,10 @@ function camera:updateCam()
       view.x, view.y = math.round(camera.main.transform.x), math.round(camera.main.transform.y)
       camera.main:updateFuncs()
     elseif not self.once then
+      if self.toSection:is(lockSection) then
+        self.curLock = self.toSection.name or ""
+        self.toSection = self.toSection.section
+      end
       if megautils.groups()["removeOnTransition"] then
         for k, v in pairs(megautils.groups()["removeOnTransition"]) do
           if not v.dontRemove then

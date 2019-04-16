@@ -33,6 +33,9 @@ function right:update(dt)
       camera.main.transX = camera.main.scrollx+camera.main.scrollw+16
       camera.main.toSection = self:collisionTable(megautils.groups()["lock"], 2)[1] or
         self:collisionTable(megautils.state().sectionHandler.sections, 2)[1]
+      if camera.main.toSection:is(lockSection) then
+      camera.main.toSection.section = self:collisionTable(megautils.state().sectionHandler.sections, 2)[1]
+      end
       camera.main.transform.x = (camera.main.scrollx+camera.main.scrollw)-view.w
       if camera.main.player.onMovingFloor and not camera.main.player.onMovingFloor:is(rushJet) then
         camera.main.player.onMovingFloor.dontRemove = true
@@ -77,6 +80,9 @@ function left:update(dt)
       camera.main.transX = camera.main.scrollx-camera.main.player.collisionShape.w-16
       camera.main.toSection = self:collisionTable(megautils.groups()["lock"], -2)[1] or
         self:collisionTable(megautils.state().sectionHandler.sections, -2)[1]
+      if camera.main.toSection:is(lockSection) then
+        camera.main.toSection.section = self:collisionTable(megautils.state().sectionHandler.sections, -2)[1]
+      end
       camera.main.transform.x = camera.main.scrollx
       if camera.main.player.onMovingFloor and not camera.main.player.onMovingFloor:is(rushJet) then
         camera.main.player.onMovingFloor.dontRemove = true
@@ -121,6 +127,9 @@ function down:update(dt)
       camera.main.transY = camera.main.scrolly+camera.main.scrollh+8
       camera.main.toSection = self:collisionTable(megautils.groups()["lock"], 0, 2)[1] or
         self:collisionTable(megautils.state().sectionHandler.sections, 0, 2)[1]
+      if camera.main.toSection:is(lockSection) then
+        camera.main.toSection.section = self:collisionTable(megautils.state().sectionHandler.sections, 0, 2)[1]
+      end
       camera.main.transform.y = (camera.main.scrolly+camera.main.scrollh)-view.h
       if camera.main.player.onMovingFloor and not camera.main.player.onMovingFloor:is(rushJet) then
         camera.main.player.onMovingFloor.dontRemove = true
@@ -166,6 +175,9 @@ function up:update(dt)
       camera.main.transY = camera.main.scrolly-camera.main.player.collisionShape.h-8
       camera.main.toSection = self:collisionTable(megautils.groups()["lock"], 0, -2)[1] or
         self:collisionTable(megautils.state().sectionHandler.sections, 0, -2)[1]
+      if camera.main.toSection:is(lockSection) then
+        camera.main.toSection.section = self:collisionTable(megautils.state().sectionHandler.sections, 0, -2)[1]
+      end
       camera.main.transform.y = camera.main.scrolly
       if camera.main.player.onMovingFloor and not camera.main.player.onMovingFloor:is(rushJet) then
         camera.main.player.onMovingFloor.dontRemove = true
@@ -215,6 +227,9 @@ function upLadder:update(dt)
         camera.main.transY = camera.main.scrolly-camera.main.player.collisionShape.h-8
         camera.main.toSection = self:collisionTable(megautils.groups()["lock"], 0, -2)[1] or
           self:collisionTable(megautils.state().sectionHandler.sections, 0, -2)[1]
+        if camera.main.toSection:is(lockSection) then
+          camera.main.toSection.section = self:collisionTable(megautils.state().sectionHandler.sections, 0, -2)[1]
+        end
         camera.main.transform.y = camera.main.scrolly
         break
       end
@@ -237,7 +252,6 @@ function lockSection:new(x, y, w, h, name)
   self.added = function(self)
     self:addToGroup("lock")
     self:addStatic()
-    self.section = self:collisionTable(megautils.state().sectionHandler.sections)[1]
   end
 end
 
