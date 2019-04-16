@@ -46,7 +46,6 @@ function camera:new(x, y, doScrollX, doScrollY)
   self.toSection = nil
   self.once = false
   self.updateOnce = false
-  self.transitionDone = false
   camera.main = self
   self.player = nil
   view.x, view.y = self.transform.x, self.transform.y
@@ -80,7 +79,6 @@ end
 
 function camera:updateCam()
   if self.transition then
-    self.transitionDone = false
     if not self.preTrans then
       if not self.toPos then
         if self.lockw ~= 0 and self.lockh ~= 0 then
@@ -224,7 +222,6 @@ function camera:updateCam()
           end
           camera.main.tween = nil
           camera.main.tween2 = nil
-          camera.main.transitionDone = true
           megautils.state().system.afterUpdate = nil
           camera.main.preTrans = nil
           camera.main.locked = nil
