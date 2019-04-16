@@ -119,10 +119,6 @@ function camera:updateCam()
       view.x, view.y = math.round(camera.main.transform.x), math.round(camera.main.transform.y)
       camera.main:updateFuncs()
     elseif not self.once then
-      if self.toSection:is(lockSection) then
-        self.curLock = self.toSection.name or ""
-        self.toSection = self.toSection.section
-      end
       if megautils.groups()["removeOnTransition"] then
         for k, v in pairs(megautils.groups()["removeOnTransition"]) do
           if not v.dontRemove then
@@ -138,7 +134,7 @@ function camera:updateCam()
       end 
       if self.player then
         if not self.toSection then self.toSection = megautils.state().sectionHandler.current end
-        for k, v in pairs(self.toSection.group) do
+        for k, v in pairs(self.toSection:is(lockSection) and self.toSection.section.group or self.toSection.group) do
           if v.spawnEarlyDuringTransition and not v.isAdded then
             megautils.add(v)
           end
@@ -232,7 +228,6 @@ function camera:updateCam()
           megautils.state().system.afterUpdate = nil
           camera.main.preTrans = nil
           camera.main.locked = nil
-          camera.main.curLock = ""
         end
         if camera.main.player and camera.main.player.onMovingFloor then
           camera.main.player.onMovingFloor.transform.x = camera.main.player.transform.x + camera.main.flx

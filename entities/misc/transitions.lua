@@ -34,7 +34,7 @@ function right:update(dt)
       camera.main.toSection = self:collisionTable(megautils.groups()["lock"], 2)[1] or
         self:collisionTable(megautils.state().sectionHandler.sections, 2)[1]
       if camera.main.toSection:is(lockSection) then
-      camera.main.toSection.section = self:collisionTable(megautils.state().sectionHandler.sections, 2)[1]
+        camera.main.toSection.section = self:collisionTable(megautils.state().sectionHandler.sections, 2)[1]
       end
       camera.main.transform.x = (camera.main.scrollx+camera.main.scrollw)-view.w
       if camera.main.player.onMovingFloor and not camera.main.player.onMovingFloor:is(rushJet) then
