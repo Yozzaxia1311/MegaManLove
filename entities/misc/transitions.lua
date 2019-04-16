@@ -258,15 +258,16 @@ end
 lockShift = entity:extend()
 
 addobjects.register("lock_shift", function(v)
-  megautils.add(lockShift(v.x, v.y, v.width, v.height, v.properties["name"], v.properties["dir"]))
+  megautils.add(lockShift(v.x, v.y, v.width, v.height, v.properties["name"], v.properties["dir"], v.properties["speed"]))
 end)
 
-function lockShift:new(x, y, w, h, name)
+function lockShift:new(x, y, w, h, name, spd)
   lockShift.super.new(self)
   self:setRectangleCollision(w, h)
   self.transform.y = y
   self.transform.x = x
   self.name = name
+  self.spd = spd or 0.4
   self.added = function(self)
     self:addToGroup("despawnable")
   end
@@ -282,7 +283,7 @@ function lockShift:update(dt)
     local l = camera.main.curLock
     camera.main.curLock = self.name
     camera.main:doView()
-    self.tween = tween.new(0.4, camera.main.transform, {x=camera.main.transform.x, y=camera.main.transform.y})
+    self.tween = tween.new(self.spd, camera.main.transform, {x=camera.main.transform.x, y=camera.main.transform.y})
     camera.main.curLock = l
     camera.main:doView()
   end
