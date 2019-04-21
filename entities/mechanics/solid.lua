@@ -26,7 +26,7 @@ function collision.getTable(self, dx, dy)
   for i=1, #megautils.state().system.all do
     local v = megautils.state().system.all[i]
     if v.isSolid ~= 0 then
-      if v.isSolid ~= 2 or v:collision(self, -xs, -cgrav * math.abs(ys)) then
+      if v.isSolid ~= 2 or (not v:collision(self) and v:collision(self, -xs, -(cgrav * math.abs(ys)))) then
         solid[#solid+1] = v
       end
     end
@@ -193,6 +193,7 @@ function collision.entityPlatform(self)
                 ((v.ground and 1 or 0)*0.5*math.sign(v.gravity))) then
                 collision.shiftObject(v, myxspeed, 0, true)
                 epIsOnPlat = true
+                v.onMovingFloor = self
               end
               
               if resolid == 1 then
