@@ -148,6 +148,10 @@ end
 function entitysystem:clear()
   section.sections = {}
   section.current = nil
+  for i=1, #self.all do
+    self.all[i].isRemoved = true
+    self.all[i]:removed()
+  end
   self.entities = {}
   self.updates = {}
   self.groups = {}
