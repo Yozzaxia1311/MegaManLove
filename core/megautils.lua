@@ -13,13 +13,12 @@ function megautils.createServer(p)
       return storage.netAdd
     end)
   megautils.net:addProcessOnServer("nu", function(self,peer,arg,storage)
-      local result = {}
       for i=1, #self.all do
-        if not self.all[i].inputFromNetwork then
-          result[#result+1] = self.all[i].id
+        if self.all[i].networkID == arg.id then
+          self.all[i].networkData = arg.data
+          return {id=arg.id, data=arg.data}
         end
       end
-      return result
     end)
   megautils.networkMode = "server"
 end

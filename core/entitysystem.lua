@@ -213,15 +213,6 @@ function entitysystem:update(dt)
       end
       megautils.net:clearCache("na")
     end
-    megautils.net:pushData("nu", {})
-    if megautils.net:getCache("nu") then
-      for k, v in pairs(megautils.net:getCache("nu")) do
-        for i=1, #self.all do
-          self.all[i]:netUpdate(v)
-        end
-      end
-      megautils.net:clearCache("nu")
-    end
   end
   for i=1, #self.updates do
     local t = self.updates[i]
@@ -238,6 +229,17 @@ function entitysystem:update(dt)
     t.previousY = t.transform.y
     if t.updated and not t.isRemoved then
       t:update(dt)
+      if megautils.networkMode == "client" then
+        megautils.net:pushData("nu", {id=t.networkID, data=t.networkData or {}})
+        if megautils.net:getCache("nu") then
+          for k, v in pairs(megautils.net:getCache("nu")) do
+            if t.networkID == v.id then
+              t.networkData = v.data
+            end
+          end
+          megautils.clearCache("nu")
+        end
+      end
       if states.switched then
         return
       end
