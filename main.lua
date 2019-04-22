@@ -269,8 +269,8 @@ function love.draw()
 end
 
 function love.quit()
-  if megautils and megautils.net then
-    megautils.net:disconnect()
+  if megautils then
+    megautils.disconnectNetwork()
   end
 end
 

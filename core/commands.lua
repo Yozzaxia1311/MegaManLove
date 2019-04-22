@@ -81,11 +81,11 @@ function cmdRecOpen(cmd)
   if not cmd[2] then return end
   if love.filesystem.getInfo(cmd[2] .. ".rd") then
     states.openRecord = cmd[2] .. ".rd"
-    megautils.add(fade(true):setAfter(function(s)
+    megautils.add(fade, {true, nil, nil, function(s)
           mmMusic.stopMusic()
           love.audio.stop()
           states.set()
-        end))
+        end})
     console.close()
     console.y = -112*2
   else

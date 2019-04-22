@@ -1,7 +1,7 @@
 checkpoint = entity:extend()
 
 addobjects.register("checkpoint", function(v)
-  megautils.add(checkpoint(v.x, v.y, v.width, v.height, v.properties["name"]))
+  megautils.add(checkpoint, {v.x, v.y, v.width, v.height, v.properties["name"]})
 end)
 
 function checkpoint:new(x, y, w, h, c)

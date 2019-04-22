@@ -1,8 +1,8 @@
 right = entity:extend()
 
 addobjects.register("right", function(v)
-  megautils.add(right(v.x, v.y, v.height,
-    v.properties["doScrollX"], v.properties["doScrollY"], v.properties["speed"], v.properties["platform"]))
+  megautils.add(right, {v.x, v.y, v.height,
+    v.properties["doScrollX"], v.properties["doScrollY"], v.properties["speed"], v.properties["platform"]})
 end)
 
 function right:new(x, y, h, scrollx, scrolly, spd, p)
@@ -48,8 +48,8 @@ end
 left = entity:extend()
 
 addobjects.register("left", function(v)
-  megautils.add(left(v.x, v.y, v.height,
-    v.properties["doScrollX"], v.properties["doScrollY"], v.properties["speed"], v.properties["platform"]))
+  megautils.add(left, {v.x, v.y, v.height,
+    v.properties["doScrollX"], v.properties["doScrollY"], v.properties["speed"], v.properties["platform"]})
 end)
 
 function left:new(x, y, h, scrollx, scrolly, spd, p)
@@ -95,8 +95,8 @@ end
 down = entity:extend()
 
 addobjects.register("down", function(v)
-  megautils.add(down(v.x, v.y, v.width,
-    v.properties["doScrollX"], v.properties["doScrollY"], v.properties["speed"], v.properties["platform"]))
+  megautils.add(down, {v.x, v.y, v.width,
+    v.properties["doScrollX"], v.properties["doScrollY"], v.properties["speed"], v.properties["platform"]})
 end)
 
 function down:new(x, y, w, scrollx, scrolly, spd, p)
@@ -142,8 +142,8 @@ end
 up = entity:extend()
 
 addobjects.register("up", function(v)
-  megautils.add(up(v.x, v.y, v.width,
-    v.properties["doScrollX"], v.properties["doScrollY"], v.properties["speed"], v.properties["platform"]))
+  megautils.add(up, {v.x, v.y, v.width,
+    v.properties["doScrollX"], v.properties["doScrollY"], v.properties["speed"], v.properties["platform"]})
 end)
 
 function up:new(x, y, w, scrollx, scrolly, spd, p)
@@ -190,8 +190,8 @@ end
 upLadder = entity:extend()
 
 addobjects.register("up_ladder", function(v)
-  megautils.add(upLadder(v.x, v.y, v.width,
-    v.properties["doScrollX"], v.properties["doScrollY"], v.properties["speed"], v.properties["platform"]))
+  megautils.add(upLadder, {v.x, v.y, v.width,
+    v.properties["doScrollX"], v.properties["doScrollY"], v.properties["speed"], v.properties["platform"]})
 end)
 
 function upLadder:new(x, y, w, scrollx, scrolly, spd, p)
@@ -240,7 +240,7 @@ end
 lockSection = entity:extend()
 
 addobjects.register("lock_section", function(v)
-  megautils.add(lockSection(v.x, v.y, v.width, v.height, v.properties["name"]))
+  megautils.add(lockSection, {v.x, v.y, v.width, v.height, v.properties["name"]})
 end)
 
 function lockSection:new(x, y, w, h, name)
@@ -258,7 +258,7 @@ end
 lockShift = entity:extend()
 
 addobjects.register("lock_shift", function(v)
-  megautils.add(lockShift(v.x, v.y, v.width, v.height, v.properties["name"], v.properties["dir"], v.properties["speed"]))
+  megautils.add(lockShift, {v.x, v.y, v.width, v.height, v.properties["name"], v.properties["dir"], v.properties["speed"]})
 end)
 
 function lockShift:new(x, y, w, h, name, spd)

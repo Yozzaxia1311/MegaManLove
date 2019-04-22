@@ -2,8 +2,8 @@ local menustate = states.state:extend()
 
 function menustate:begin()
   megautils.loadStage(self, "assets/maps/menu.lua")
-  megautils.add(menuSelect())
-  megautils.add(fade(false):setAfter(fade.remove))
+  megautils.add(menuSelect)
+  megautils.add(fade, {false, nil, nil, fade.remove})
   view.x, view.y = 0, 0
   if not globals.stopMusicMenu then
     mmMusic.playFromFile("assets/sfx/music/menu.ogg")

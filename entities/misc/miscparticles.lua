@@ -266,7 +266,7 @@ end
 function explodeParticle.createExplosion(x, y)
   for j=1, 2 do
     for i=1, 8 do
-      megautils.add(explodeParticle(x, y, i*45, j*1.8))
+      megautils.add(explodeParticle, {x, y, i*45, j*1.8})
     end
   end
 end
@@ -310,10 +310,10 @@ end
 
 function absorbParticle.createAbsorbtion(towards, spd)
   for i=1, 8 do
-    megautils.add(absorbParticle((view.x+view.w/2)+megautils.calcX(i*45)*view.w,
-        (view.y+view.h/2)+megautils.calcY(i*45)*view.w, towards, (spd or 5)))
-    megautils.add(absorbParticle((view.x+view.w/2)+megautils.calcX(i*45)*view.w,
-        (view.y+view.h/2)+megautils.calcY(i*45)*view.w, towards, ((spd or 5)*1.5)))
+    megautils.add(absorbParticle, {(view.x+view.w/2)+megautils.calcX(i*45)*view.w,
+        (view.y+view.h/2)+megautils.calcY(i*45)*view.w, towards, (spd or 5)})
+    megautils.add(absorbParticle, {(view.x+view.w/2)+megautils.calcX(i*45)*view.w,
+        (view.y+view.h/2)+megautils.calcY(i*45)*view.w, towards, ((spd or 5)*1.5)})
   end
 end
 
@@ -383,7 +383,7 @@ function blast:new(x, y, times)
   self.transform.y = y
   self.transform.x = x
   self.deg = 0
-  megautils.add(smallBlast(x, y))
+  megautils.add(smallBlast, {x, y})
   self.timer = 0
   self.times = 0
   self.max = times == nil and 4 or times
@@ -393,10 +393,10 @@ function blast:update(dt)
   self.timer = math.min(self.timer+1, 5)
   if self.timer == 5 then
     self.timer = 0
-    megautils.add(smallBlast(megautils.circlePathX(self.transform.x, self.deg, 20), 
-        megautils.circlePathY(self.transform.y, self.deg, 20)))
-    megautils.add(smallBlast(megautils.circlePathX(self.transform.x, self.deg-180, 20), 
-        megautils.circlePathY(self.transform.y, self.deg-180, 20)))
+    megautils.add(smallBlast, {megautils.circlePathX(self.transform.x, self.deg, 20), 
+        megautils.circlePathY(self.transform.y, self.deg, 20)})
+    megautils.add(smallBlast, {megautils.circlePathX(self.transform.x, self.deg-180, 20), 
+        megautils.circlePathY(self.transform.y, self.deg-180, 20)})
     self.deg = math.wrap(self.deg+360/6, 0, 360)
     self.times = self.times + 1
   end

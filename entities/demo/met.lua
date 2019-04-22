@@ -41,7 +41,7 @@ met.netName = "met"
 megautils.netNames[met.netName] = met
 
 addobjects.register("met", function(v)
-  megautils.add(spawner(v.x, v.y+2, 14, 14, function(s)
+  megautils.add(spawner, {v.x, v.y+2, 14, 14, function(s)
     megautils.add(met, {s.transform.x, s.transform.y, s})
   end))
 end)
@@ -87,7 +87,7 @@ function met:healthChanged(o, c, i)
   self.maxIFrame = i
   self.iFrame = 0
   if self.health <= 0 then
-    megautils.add(smallBlast(self.transform.x-4, self.transform.y-4))
+    megautils.add(smallBlast, {self.transform.x-4, self.transform.y-4})
     megautils.dropItem(self.transform.x, self.transform.y-4)
     megautils.remove(self, true)
     mmSfx.play("enemy_explode")
@@ -120,9 +120,9 @@ function met:update(dt)
     if self.timer == 20 then
       self.timer = 0
       self.s = 2
-      megautils.add(metBullet(self.transform.x+4, self.transform.y+4, self.side*megautils.calcX(45)*2, -megautils.calcY(45)*2))
-      megautils.add(metBullet(self.transform.x+4, self.transform.y+4, self.side*megautils.calcX(45)*2, megautils.calcY(45)*2))
-      megautils.add(metBullet(self.transform.x+4, self.transform.y+4, self.side*2, 0))
+      megautils.add(metBullet, {self.transform.x+4, self.transform.y+4, self.side*megautils.calcX(45)*2, -megautils.calcY(45)*2})
+      megautils.add(metBullet, {self.transform.x+4, self.transform.y+4, self.side*megautils.calcX(45)*2, megautils.calcY(45)*2})
+      megautils.add(metBullet, {self.transform.x+4, self.transform.y+4, self.side*2, 0})
       mmSfx.play("buster")
     end
   elseif self.s == 2 then

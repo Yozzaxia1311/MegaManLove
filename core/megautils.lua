@@ -7,19 +7,26 @@ function megautils.createServer(p)
   megautils.net = lovernet.new{type=lovernet.mode.server, port=p or 5555}
   megautils.net:addOp("add")
   megautils.net:addOp("na")
+  megautils.net:addValidateOnServer("na", "table")
   megautils.net:addOp("nu")
+  megautils.net:addValidateOnServer("nu", "table")
   megautils.net:addProcessOnServer("add", function(self,peer,arg,storage)
       if arg and arg.name then
         error()
         megautils.add(megautils.netNames[arg.name], arg.args, nil, "server")
-        return arg
       end
     end)
   megautils.net:addProcessOnServer("na", function(self,peer,arg,storage)
       return arg
     end)
   megautils.net:addProcessOnServer("nu", function(self,peer,arg,storage)
-      return arg
+      local result = {}
+      for i=1, #self.all do
+        if not self.all[i].inputFromNetwork then
+          result[#result+1] = self.all[i].id
+        end
+      end
+      return result
     end)
   megautils.networkMode = "server"
 end
@@ -30,6 +37,14 @@ function megautils.connectToServer(i, p)
   megautils.net:addOp("na")
   megautils.net:addOp("nu")
   megautils.networkMode = "client"
+end
+
+function megautils.disconnectNetwork()
+  if megautils.net then
+    megautils.net:disconnect()
+    megautils.networkMode = nil
+    megautils.net = nil
+  end
 end
 
 megautils.resetStateFuncs = {}
@@ -184,25 +199,23 @@ function megautils.loadStage(self, path, call)
     end
   end
   for k, v in pairs(tLayers) do
-    local l = mapentity(v.name, map)
-    if call then call(l) end
-    megautils.add(l)
+    local e = megautils.add(mapentity, {v.name, map})
+    if e and call then call(e) end
   end
   addobjects.add(objs)
-  local tmp = trigger(function(s, dt)
+  local tmp = megautils.add(trigger, {function(s, dt)
     s.map:update(1/60)
-  end)
+  end}, nil, nil, true)
   tmp.map = map
-  megautils.add(tmp, nil, nil, nil, true)
 end
 
 function megautils.gotoState(s, before, after, chunk)
-  megautils.add(fade(true, nil, nil, function(se)
+  megautils.add(fade, {true, nil, nil, function(se)
         if before then before() end
         megautils.remove(se)
         states.set(s, chunk)
         if after then after() end
-      end))
+      end})
 end
 
 function megautils.remove(o, queue)
@@ -367,23 +380,23 @@ function megautils.dropItem(x, y)
   if math.between(rnd, 0, 39) then
     local rnd2 = love.math.random(0, 2)
     if rnd2 == 0 then
-      megautils.add(life(x, y, true))
+      megautils.add(life, {x, y, true})
     elseif rnd2 == 1 then
-      megautils.add(eTank(x, y, true))
+      megautils.add(eTank, {x, y, true})
     else
-      megautils.add(wTank(x, y, true))
+      megautils.add(wTank, {x, y, true})
     end
   elseif math.between(rnd, 50, 362) then
     if math.randomboolean() then
-      megautils.add(health(x, y, true))
+      megautils.add(health, {x, y, true})
     else
-      megautils.add(energy(x, y, true))
+      megautils.add(energy, {x, y, true})
     end
   elseif math.between(rnd, 370, 995) then
     if math.randomboolean() then
-      megautils.add(smallHealth(x, y, true))
+      megautils.add(smallHealth, {x, y, true})
     else
-      megautils.add(smallEnergy(x, y, true))
+      megautils.add(smallEnergy, {x, y, true})
     end
   end
 end

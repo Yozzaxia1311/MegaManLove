@@ -9,6 +9,7 @@ function entitysystem:new()
   self.static = {}
   self.layers = {}
   self.all = {}
+  self.netAdd = {}
   self.addQueue = nil
   self.removeQueue = nil
   self.doSort = false
@@ -29,7 +30,7 @@ function entitysystem:sortLayers()
   end
 end
 
-function entitysystem:add(c, args, queue, network, overrideNet)
+function entitysystem:add(c, arguments, queue, network, overrideNet, netID)
   if not c then return end
   if queue then
     if self.addQueue == nil then self.addQueue = {} end
@@ -38,13 +39,23 @@ function entitysystem:add(c, args, queue, network, overrideNet)
     end
   else
     local e
-    if not overrideNet and network == "client" and megautils.netNames[e.networkName].clientModeVersion then
-      c = megautils.netNames[e.networkName].clientModeVersion
-      megautils.net:pushData("add", {name=c.netName, args=args})
+    if args == true then
+      e = c
+    elseif network == "clientsync" then
+      c = c.clientModeVersion or c
+      e = c(unpack(arguments))
+      e.networkID = netID
+    elseif not overrideNet and network == "client" then
+      c = c.clientModeVersion
+      megautils.net:pushData("add", {name=c.netName, args=arguments})
+      return
     else
-      c = (network ~= "server" or network == nil) and e or e.serverModeVersion
-      e = c(unpack(args))
+      c = (network ~= "server" or network == nil) or overrideNet and c or c.serverModeVersion
+      e = c(unpack(arguments))
       e.networkID = self.id
+      if network == "server" then
+        self.netAdd[#self.netAdd+1] = {id=e.networkID, name=c.netName, args=arguments}
+      end
       self.id = self.id + 1
     end
     if megautils.networkMode and not e then
@@ -74,6 +85,7 @@ function entitysystem:add(c, args, queue, network, overrideNet)
     e:added()
     e.previousX = e.transform.x
     e.previousY = e.transform.y
+    return e
   end
 end
 
@@ -194,12 +206,14 @@ end
 
 function entitysystem:update(dt)
   if megautils.networkMode == "client" then
+    megautils.net:pushData("na", {})
     if megautils.net:getCache("na") then
       for k, v in pairs(megautils.net:getCache("na")) do
-        megautils.add(megautils.netNames[v.name](unpack(v.args)), nil, "server")
+        megautils.add(megautils.netNames[v.name], v.args, nil, "clientsync", nil, v.id)
       end
       megautils.net:clearCache("na")
     end
+    megautils.net:pushData("nu", {})
     if megautils.net:getCache("nu") then
       for k, v in pairs(megautils.net:getCache("nu")) do
         for i=1, #self.all do

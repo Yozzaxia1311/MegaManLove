@@ -58,21 +58,21 @@ function sectionHandler:updateAll()
   if not self.current then
     for k, v in pairs(self.sections) do
       for i, j in pairs(v.group) do
-        megautils.remove(j)
+        j:addStatic()
       end
     end
   else
     self.current.group = self.current:collisionTable(megautils.groups()["despawnable"])
     for k, v in pairs(self.current.group) do
       if not v.dontRemove and not table.contains(self.next.group, v) then
-        megautils.remove(v)
+        v:addStatic()
       end
     end
   end
   if self.next then
     for k, v in pairs(self.next.group) do
-      if not v.dontRemove and not v.isAdded and not (self.current and table.contains(self.current.group, v)) then
-        megautils.add(v)
+      if not v.dontRemove and v.static and not (self.current and table.contains(self.current.group, v)) then
+        v:removeStatic()
       end
     end
     self.current = self.next

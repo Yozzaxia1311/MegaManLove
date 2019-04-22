@@ -1,11 +1,9 @@
 smallHealth = entity:extend()
 
 addobjects.register("small_health", function(v)
-  local tmp = spawner(v.x, v.y+10, 8, 6, function(s)
-    megautils.add(smallHealth, {s.transform.x, s.transform.y, false, s.id, s})
-  end)
-  tmp.id = v.id
-  megautils.add(tmp)
+  megautils.add(spawner, {v.x, v.y+10, 8, 6, function(s)
+    megautils.add(smallHealth, {s.transform.x, s.transform.y, false, v.id, s})
+  end})
 end)
 
 smallHealth.banIds = {}
@@ -97,11 +95,9 @@ end
 health = entity:extend()
 
 addobjects.register("health", function(v)
-  local tmp = spawner(v.x, v.y, 16, 14, function(s)
-    megautils.add(health, {s.transform.x, s.transform.y, false, s.id, s})
-  end)
-  tmp.id = v.id
-  megautils.add(tmp)
+  megautils.add(spawner, {v.x, v.y, 16, 15, function(s)
+    megautils.add(health, {s.transform.x, s.transform.y, false, v.id, s})
+  end})
 end)
 
 health.banIds = {}
@@ -193,11 +189,9 @@ end
 smallEnergy = entity:extend()
 
 addobjects.register("small_energy", function(v)
-  local tmp = spawner(v.x, v.y+10, 8, 6, function(s)
-    megautils.add(smallEnergy, {s.transform.x, s.transform.y, false, s.id, s})
-  end)
-  tmp.id = v.id
-  megautils.add(tmp)
+  megautils.add(spawner, {v.x, v.y+10, 8, 6, function(s)
+    megautils.add(smallEnergy, {s.transform.x, s.transform.y, false, v.id, s})
+  end})
 end)
 
 smallEnergy.banIds = {}
@@ -299,11 +293,9 @@ end
 energy = entity:extend()
 
 addobjects.register("energy", function(v)
-  local tmp = spawner(v.x, v.y, 16, 10, function(s)
-    megautils.add(energy, {s.transform.x, s.transform.y, false, s.id, s})
-  end)
-  tmp.id = v.id
-  megautils.add(tmp)
+  megautils.add(spawner, {v.x, v.y, 16, 10, function(s)
+    megautils.add(energy, {s.transform.x, s.transform.y, false, v.id, s})
+  end})
 end)
 
 energy.banIds = {}
@@ -405,11 +397,9 @@ end
 life = entity:extend()
 
 addobjects.register("life", function(v)
-  local tmp = spawner(v.x, v.y, 16, 15, function(s)
-    megautils.add(life, {s.transform.x, s.transform.y, false, s.id, s})
-  end)
-  tmp.id = v.id
-  megautils.add(tmp)
+  megautils.add(spawner, {v.x, v.y, 16, 15, function(s)
+    megautils.add(life, {s.transform.x, s.transform.y, false, v.id, s})
+  end})
 end)
 
 life.banIds = {}
@@ -523,11 +513,9 @@ end
 eTank = entity:extend()
 
 addobjects.register("e_tank", function(v)
-  local tmp = spawner(v.x, v.y, 16, 15, function(s)
-    megautils.add(eTank(s.transform.x, s.transform.y, false, s.id, s))
-  end)
-  tmp.id = v.id
-  megautils.add(tmp)
+  megautils.add(spawner, {v.x, v.y, 16, 15, function(s)
+    megautils.add(eTank, {s.transform.x, s.transform.y, false, v.id, s})
+  end})
 end)
 
 eTank.banIds = {}
@@ -629,11 +617,9 @@ end
 wTank = entity:extend()
 
 addobjects.register("w_tank", function(v)
-  local tmp = spawner(v.x, v.y, 16, 15, function(s)
-    megautils.add(wTank(s.transform.x, s.transform.y, false, s.id, s))
-  end)
-  tmp.id = v.id
-  megautils.add(tmp)
+  megautils.add(spawner, {v.x, v.y, 16, 15, function(s)
+    megautils.add(wTank, {s.transform.x, s.transform.y, false, v.id, s})
+  end})
 end)
 
 wTank.banIds = {}

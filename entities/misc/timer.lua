@@ -18,7 +18,7 @@ function timer:update(dt)
 end
 
 function timer.winCutscene(func)
-  megautils.add(timer(150, function(s)
+  megautils.add(timer, {150, function(s)
     if not s.state then
       if globals.mainPlayer then
         s.timer = 0
@@ -53,14 +53,14 @@ function timer.winCutscene(func)
       s.timer = math.min(s.timer+1, 80)
       if s.timer == 80 then
         s.state = -1
-        megautils.add(fade(true, nil, nil, func))
+        megautils.add(fade, {true, nil, nil, func})
       end
     end
-  end))
+  end})
 end
 
 function timer.absorbCutscene(func, music)
-  megautils.add(timer(150, function(s)
+  megautils.add(timer, {150, function(s)
       if not s.state then
         mmMusic.playFromFile(nil, music or "assets/sfx/music/win.ogg", nil, not music)
         if globals.mainPlayer then
@@ -127,7 +127,7 @@ function timer.absorbCutscene(func, music)
         globals.mainPlayer.velocity:slowY(0.25)
         globals.mainPlayer:moveBy(globals.mainPlayer.velocity.velx, globals.mainPlayer.velocity.vely)
         if globals.mainPlayer.velocity.vely == 0 then
-          megautils.add(absorb(globals.mainPlayer))
+          megautils.add(absorb, {globals.mainPlayer})
           s.state = 3
           s.timer = 0
         end
@@ -143,8 +143,8 @@ function timer.absorbCutscene(func, music)
         s.timer = math.min(s.timer+1, 80)
         if s.timer == 80 then
           s.state = -1
-          megautils.add(fade(true, nil, nil, func))
+          megautils.add(fade, {true, nil, nil, func})
         end
       end
-    end))
+    end})
 end

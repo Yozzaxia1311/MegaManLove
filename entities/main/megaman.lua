@@ -3,15 +3,6 @@ megautils.resetGameObjectsFuncs["megaman"] = function()
   megaman.colorOne = {}
   megaman.colorTwo = {}
   megaman.weaponHandler = {}
-  for i=1, maxPlayerCount do
-    megaman.weaponHandler[i] = weaponhandler(nil, nil, 10)
-    megaman.weaponHandler[i]:register(0, "megaBuster", {0, 120, 248}, {0, 232, 216}, {0, 0, 0})
-    megaman.weaponHandler[i]:register(9, "rushCoil", {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
-    megaman.weaponHandler[i]:register(10, "rushJet", {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
-    megaman.colorOutline[i] = megaman.weaponHandler[i].colorOutline[0]
-    megaman.colorOne[i] = megaman.weaponHandler[i].colorOne[0]
-    megaman.colorTwo[i] = megaman.weaponHandler[i].colorTwo[0]
-  end
 end
 
 megaman = entity:extend()
@@ -304,12 +295,18 @@ function megaman:new(x, y, side, drop, p)
   self.climbUpdateFuncs = {}
   self.knockbackUpdateFuncs = {}
   
-  self.healthHandler = healthhandler({252, 224, 168}, {255, 255, 255}, {0, 0, 0}, nil, nil, globals.lifeSegments, self)
+  self.healthHandler = megautils.add(healthhandler, {{252, 224, 168}, {255, 255, 255}, {0, 0, 0}, nil, nil, globals.lifeSegments, self})
   self.healthHandler.render = false
-  megaman.weaponHandler[self.player]:reinit()
+  
+  megaman.weaponHandler[self.player] = megautils.add(weaponhandler, {nil, nil, 10})
+  megaman.weaponHandler[self.player]:register(0, "megaBuster", {0, 120, 248}, {0, 232, 216}, {0, 0, 0})
+  megaman.weaponHandler[self.player]:register(9, "rushCoil", {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+  megaman.weaponHandler[self.player]:register(10, "rushJet", {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+  megaman.colorOutline[self.player] = megaman.weaponHandler[self.player].colorOutline[0]
+  megaman.colorOne[self.player] = megaman.weaponHandler[self.player].colorOne[0]
+  megaman.colorTwo[self.player] = megaman.weaponHandler[self.player].colorTwo[0]
+  --megaman.weaponHandler[self.player]:reinit()
   megaman.weaponHandler[self.player].render = false
-  megautils.add(megaman.weaponHandler[self.player])
-  megautils.add(self.healthHandler)
   self.health = self.healthHandler.health
   self.healthHandler:updateThis()
   if not camera.main.funcs["megaman"] then
@@ -415,63 +412,42 @@ function megaman:attemptWeaponUsage()
     #megautils.groups()["megaChargedBuster" .. w.id] == 0) then
       if w.current == "rushCoil" and w.energy[w.currentSlot] > 0 and
       (not megautils.groups()["rush"] or #megautils.groups()["rush"] < 1) then
-        megautils.add(rushCoil(self.transform.x+(self.side==1 and 18 or -32),
-          self.transform.y, self.side, w))
+        megautils.add(rushCoil, {self.transform.x+(self.side==1 and 18 or -32),
+          self.transform.y, self.side, w})
         self.maxShootTime = 14
         self.shootTimer = 0
         self:useShootAnimation()
       elseif w.current == "rushJet" and w.energy[w.currentSlot] > 0 and
       (not megautils.groups()["rush"] or #megautils.groups()["rush"] < 1) then
-        megautils.add(rushJet(self.transform.x+(self.side==1 and 18 or -32),
-            self.transform.y+6, self.side, w))
+        megautils.add(rushJet, {self.transform.x+(self.side==1 and 18 or -32),
+            self.transform.y+6, self.side, w})
         self.maxShootTime = 14
         self.shootTimer = 0
         self:useShootAnimation()
       else
         if globals.player[self.player] == "mega" then
-          megautils.add(megaBuster(self.transform.x+(self.side==1 and 17 or -14), 
-            self.slide and self.transform.y+3 or self.transform.y+6, self.side, w))
+          megautils.add(megaBuster, {self.transform.x+(self.side==1 and 17 or -14), 
+            self.slide and self.transform.y+3 or self.transform.y+6, self.side, w})
         elseif globals.player[self.player] == "proto" then
-          megautils.add(megaBuster(self.transform.x+(self.side==1 and 14 or -12), 
-            self.slide and self.transform.y+3 or self.transform.y+9, self.side, w))
+          megautils.add(megaBuster, {self.transform.x+(self.side==1 and 14 or -12), 
+            self.slide and self.transform.y+3 or self.transform.y+9, self.side, w})
         elseif globals.player[self.player] == "bass" then
-          megautils.add(megaBuster(self.transform.x+(self.side==1 and 18 or -15), 
-            self.climb and self.transform.y+2 or self.transform.y+6, self.side, w))
+          megautils.add(megaBuster, {self.transform.x+(self.side==1 and 18 or -15), 
+            self.climb and self.transform.y+2 or self.transform.y+6, self.side, w})
         elseif globals.player[self.player] == "roll" then
-          megautils.add(megaBuster(self.transform.x+(self.side==1 and 17 or -14), 
-            self.climb and self.transform.y+5 or self.transform.y+6, self.side, w))
+          megautils.add(megaBuster, {self.transform.x+(self.side==1 and 17 or -14), 
+            self.climb and self.transform.y+5 or self.transform.y+6, self.side, w})
         end
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
         self:useShootAnimation()
       end
-    elseif w.current == "babyRattle" and w.energy[w.currentSlot] > 0 and
-      (not megautils.groups()[w.current .. w.id] or
-        #megautils.groups()[w.current .. w.id] < 1) and self.shootTimer == self.maxShootTime then
-      megautils.add(babyRattle(self, -30, -4, 6, -4, function(s)
-        if self.curAnim == "runThrow" or self.curAnim == "jumpThrow" or 
-          self.curAnim == "climbThrow" then
-          s.righty = -12
-          s.lefty = -12
-        elseif self.curAnim == "dashShoot" or self.curAnim == "dashThrow" then
-          s.righty = -15
-          s.lefty = -15
-        else
-          s.righty = -4
-          s.lefty = -4
-        end
-      end, w))
-      w.energy[w.currentSlot] = w.energy[w.currentSlot] - 1
-      self.maxShootTime = 14
-      self.shootTimer = 0
-      self.stopOnShot = true
-      self:useThrowAnimation()
     elseif w.current == "stickWeapon" and w.energy[w.currentSlot] > 0 and
       (not megautils.groups()[w.current .. w.id] or
         #megautils.groups()[w.current .. w.id] < 1) and self.shootTimer == self.maxShootTime then
-      megautils.add(stickWeapon(self.transform.x+(self.side==1 and 17 or -14), 
-        self.slide and self.transform.y+3 or self.transform.y+6, self.side, w))
+      megautils.add(stickWeapon, {self.transform.x+(self.side==1 and 17 or -14), 
+        self.slide and self.transform.y+3 or self.transform.y+6, self.side, w})
       self.maxShootTime = 14
       self.shootTimer = 0
       self:resetCharge()
@@ -483,17 +459,17 @@ function megaman:attemptWeaponUsage()
     if w.current == "megaBuster" then
       if self.chargeState == 1 then
         if globals.player[self.player] == "mega" then
-          megautils.add(megaSemiBuster(self.transform.x+(self.side==1 and 17 or -20), 
-            self.slide and self.transform.y+1 or self.transform.y+4, self.side, w))
+          megautils.add(megaSemiBuster, {self.transform.x+(self.side==1 and 17 or -20), 
+            self.slide and self.transform.y+1 or self.transform.y+4, self.side, w})
         elseif globals.player[self.player] == "proto" then
-          megautils.add(megaSemiBuster(self.transform.x+(self.side==1 and 15 or -20), 
-            self.slide and self.transform.y+1 or self.transform.y+8, self.side, w))
+          megautils.add(megaSemiBuster, {self.transform.x+(self.side==1 and 15 or -20), 
+            self.slide and self.transform.y+1 or self.transform.y+8, self.side, w})
         elseif globals.player[self.player] == "bass" then
-          megautils.add(megaSemiBuster(self.transform.x+(self.side==1 and 18 or -21), 
-            self.climb and self.transform.y or self.transform.y+4, self.side, w))
+          megautils.add(megaSemiBuster, {self.transform.x+(self.side==1 and 18 or -21), 
+            self.climb and self.transform.y or self.transform.y+4, self.side, w})
         elseif globals.player[self.player] == "roll" then
-          megautils.add(megaSemiBuster(self.transform.x+(self.side==1 and 17 or -20), 
-            self.slide and self.transform.y+1 or self.transform.y+4, self.side, w))
+          megautils.add(megaSemiBuster, {self.transform.x+(self.side==1 and 17 or -20), 
+            self.slide and self.transform.y+1 or self.transform.y+4, self.side, w})
         end
         self.maxShootTime = 14
         self.shootTimer = 0
@@ -501,17 +477,17 @@ function megaman:attemptWeaponUsage()
         self:useShootAnimation()
       elseif self.chargeState == 2 then
         if globals.player[self.player] == "mega" then
-          megautils.add(megaChargedBuster(self.transform.x+(self.side==1 and 17 or -20), 
-            self.slide and self.transform.y-6 or self.transform.y-2, self.side, w))
+          megautils.add(megaChargedBuster, {self.transform.x+(self.side==1 and 17 or -20), 
+            self.slide and self.transform.y-6 or self.transform.y-2, self.side, w})
         elseif globals.player[self.player] == "proto" then
-          megautils.add(megaChargedBuster(self.transform.x+(self.side==1 and 14 or -19), 
-            self.slide and self.transform.y-6 or self.transform.y+2, self.side, w))
+          megautils.add(megaChargedBuster, {self.transform.x+(self.side==1 and 14 or -19), 
+            self.slide and self.transform.y-6 or self.transform.y+2, self.side, w})
         elseif globals.player[self.player] == "bass" then
-          megautils.add(megaChargedBuster(self.transform.x+(self.side==1 and 19 or -23), 
-            self.climb and self.transform.y-6 or self.transform.y-2, self.side, w))
+          megautils.add(megaChargedBuster, {self.transform.x+(self.side==1 and 19 or -23), 
+            self.climb and self.transform.y-6 or self.transform.y-2, self.side, w})
         elseif globals.player[self.player] == "roll" then
-          megautils.add(megaChargedBuster(self.transform.x+(self.side==1 and 17 or -20), 
-            self.slide and self.transform.y-6 or self.transform.y-2, self.side, w))
+          megautils.add(megaChargedBuster, {self.transform.x+(self.side==1 and 17 or -20), 
+            self.slide and self.transform.y-6 or self.transform.y-2, self.side, w})
         end
         self.maxShootTime = 14
         self.shootTimer = 0
@@ -596,8 +572,8 @@ function megaman:healthChanged(o, c, i)
       for i=1, maxPlayerCount do
         healthhandler.playerTimers[i] = -2
       end
-      megautils.add(timer(160, function(t)
-        megautils.add(fade(true, nil, nil, function(s)
+      megautils.add(timer, {160, function(t)
+        megautils.add(fade, {true, nil, nil, function(s)
           globals.resetState = true
           globals.mainPlayer = nil
           if not globals.infiniteLives and globals.lives <= 0 then
@@ -612,9 +588,9 @@ function megaman:healthChanged(o, c, i)
             states.set(states.current)
           end
           megautils.remove(s, true)
-        end))
+        end})
         megautils.remove(t, true)
-      end))
+      end})
       megautils.unregisterPlayer(self)
       megautils.remove(self, true)
       mmMusic.stopMusic()
@@ -653,9 +629,9 @@ function megaman:healthChanged(o, c, i)
     self.dashJump = false
     mmSfx.play("hurt")
     megautils.add(harm(self))
-    megautils.add(damageSteam(self.transform.x+((self.collisionShape.w/2)+2)-11, self.transform.y-8))
-    megautils.add(damageSteam(self.transform.x+((self.collisionShape.w/2)+2), self.transform.y-8))
-    megautils.add(damageSteam(self.transform.x+((self.collisionShape.w/2)+2)+11, self.transform.y-8))
+    megautils.add(damageSteam, {self.transform.x+((self.collisionShape.w/2)+2)-11, self.transform.y-8})
+    megautils.add(damageSteam, {self.transform.x+((self.collisionShape.w/2)+2), self.transform.y-8})
+    megautils.add(damageSteam, {self.transform.x+((self.collisionShape.w/2)+2)+11, self.transform.y-8})
     self.healthHandler.change = self.changeHealth
     self.healthHandler:updateThis()
   elseif self.changeHealth > 0 then
@@ -850,8 +826,8 @@ function megaman:code(dt)
       self.slide = true
       self:regToSlide()
       self.slideTimer = 0
-      megautils.add(slideParticle(self.transform.x+(self.side==-1 and self.collisionShape.w or 4),
-        self.transform.y+self.collisionShape.h-6, self.side))
+      megautils.add(slideParticle, {self.transform.x+(self.side==-1 and self.collisionShape.w or 4),
+        self.transform.y+self.collisionShape.h-6, self.side})
     elseif self.canJump and control.jumpPressed[self.player] and
       not (control.downDown[self.player] and self:checkBasicSlideBox(self.side, 0)) then
       self.velocity.vely = self.jumpSpeed
@@ -886,8 +862,8 @@ function megaman:code(dt)
         self.wallJumpTimer = self.maxWallJumpTime
         self.velocity.vely = self.wallJumpSpeed
         self.dashJump = true
-        megautils.add(kickParticle(self.transform.x+(self.side==1 and -4 or self.collisionShape.w-4),
-          self.transform.y+self.collisionShape.h-10, -self.side))
+        megautils.add(kickParticle, {self.transform.x+(self.side==1 and -4 or self.collisionShape.w-4),
+          self.transform.y+self.collisionShape.h-10, -self.side})
       end
     elseif self.runCheck then
       self.side = control.leftDown[self.player] and -1 or 1
@@ -931,7 +907,7 @@ function megaman:code(dt)
     self.bubbleTimer = math.min(self.bubbleTimer+1, self.maxBubbleTime)
     if self.bubbleTimer == self.maxBubbleTime then
       self.bubbleTimer = 0
-      megautils.add(airBubble(self.transform.x+(self.side==-1 and -4 or self.collisionShape.w), self.transform.y+4))
+      megautils.add(airBubble, {self.transform.x+(self.side==-1 and -4 or self.collisionShape.w), self.transform.y+4})
     end
   end
   self.transform.x = math.clamp(self.transform.x, view.x+(-self.collisionShape.w/2)+2,
@@ -960,16 +936,16 @@ function megaman:code(dt)
     and self.canPause then
     self.weaponSwitchTimer = 70
     self.pauseMenu = weaponSelect(megaman.weaponHandler[self.player], self.healthHandler, self.player)
-    megautils.add(fade(true):setAfter(function(s)
+    megautils.add(fade, {true, nil, nil, function(s)
           megautils.add(self.pauseMenu)
-          local ff = fade(false):setAfter(function(ss)
+          local ff = megautils.add(fade, {false, nil, nil, function(ss)
                 megautils.freeze({self.pauseMenu})
                 megautils.remove(ss, true)
-              end)
+              end})
           ff:setLayer(11)
           megautils.add(ff)
           megautils.remove(s, true)
-          end))
+          end})
     mmSfx.play("pause")
   end
 end

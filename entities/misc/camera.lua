@@ -2,7 +2,7 @@ camera = entity:extend()
 
 addobjects.register("megacam", function(v)
   if v.properties["checkpoint"] == globals.checkpoint then
-    megautils.add(camera(v.x, v.y, v.properties["doScrollX"], v.properties["doScrollY"]))
+    megautils.add(camera, {v.x, v.y, v.properties["doScrollX"], v.properties["doScrollY"]})
     camera.once = false
   end
 end, -1)
@@ -133,8 +133,8 @@ function camera:updateCam()
       if self.player then
         if not self.toSection then self.toSection = megautils.state().sectionHandler.current end
         for k, v in pairs(self.toSection:is(lockSection) and self.toSection.section.group or self.toSection.group) do
-          if v.spawnEarlyDuringTransition and not v.isAdded then
-            megautils.add(v)
+          if v.spawnEarlyDuringTransition and v.static then
+            v:removeStatic()
           end
         end
         local sx, sy, sw, sh = self.toSection.transform.x, self.toSection.transform.y,

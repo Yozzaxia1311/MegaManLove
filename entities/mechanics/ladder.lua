@@ -1,7 +1,7 @@
 ladder = entity:extend()
 
 addobjects.register("ladder", function(v)
-  megautils.add(ladder(v.x, v.y, v.width, v.height))
+  megautils.add(ladder, {v.x, v.y, v.width, v.height})
 end)
 
 function ladder:new(x, y, w, h)
