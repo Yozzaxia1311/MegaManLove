@@ -1,4 +1,41 @@
+client_met = entity:extend()
+
+function client_met:new(x, y, id)
+  client_met.super.new(self)
+  self.t = loader.get("demo_objects")
+  self.quads = {}
+  self.quads["safe"] = love.graphics.newQuad(32, 0, 18, 15, 100, 100)
+  self.quads["up"] = love.graphics.newQuad(50, 0, 18, 15, 100, 100)
+  self:setLayer(2)
+  
+  self.side = -1
+  self.c = "safe"
+  self.transform.y = x
+  self.transform.x = y
+  self.networkID = id
+end
+
+function client_met:netUpdate(data)
+  if data.args and data.args.id == self.networkID then
+    --self.side = ???
+    --self.c = ???
+    self.transform.y = data.args.x
+    self.transform.x = data.args.y
+  end
+end
+
+function client_met:draw()
+  love.graphics.setColor(1, 1, 1, 1)
+  if self.side == -1 then
+    love.graphics.draw(self.t, self.quads[self.c], self.transform.x-2, self.transform.y)
+  else
+    love.graphics.draw(self.t, self.quads[self.c], self.transform.x+16, self.transform.y, 0, -1, 1)
+  end
+end
+
 met = entity:extend()
+
+megautils.netNames["met"] = met
 
 addobjects.register("met", function(v)
   megautils.add(spawner(v.x, v.y+2, 14, 14, function(s)
@@ -8,6 +45,7 @@ end)
 
 function met:new(x, y, s)
   met.super.new(self)
+  self.clientModeVersion = client_met
   self.added = function(self)
     self:addToGroup("hurtable")
     self:addToGroup("removeOnTransition")

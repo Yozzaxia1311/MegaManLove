@@ -1,5 +1,37 @@
 megautils = {}
 
+megautils.networkMode = nil
+megautils.netNames = {}
+
+function megautils.createServer(p)
+  megautils.net = lovernet.new{type=lovernet.mode.server, port=p or 5555}
+  megautils.net:addOp("add")
+  megautils.net:addOp("na")
+  megautils.net:addOp("nu")
+  megautils.net:addProcessOnServer("add", function(self,peer,arg,storage)
+      if arg and arg.name then
+        error()
+        megautils.add(megautils.netNames[arg.name](unpack(arg.args)), nil, "server")
+        return arg
+      end
+    end)
+  megautils.net:addProcessOnServer("na", function(self,peer,arg,storage)
+      return arg
+    end)
+  megautils.net:addProcessOnServer("nu", function(self,peer,arg,storage)
+      return arg
+    end)
+  megautils.networkMode = "server"
+end
+
+function megautils.connectToServer(i, p)
+  megautils.net = lovernet.new{type=lovernet.mode.client, ip=i, port=p or 5555}
+  megautils.net:addOp("add")
+  megautils.net:addOp("na")
+  megautils.net:addOp("nu")
+  megautils.networkMode = "client"
+end
+
 megautils.resetStateFuncs = {}
 megautils.cleanFuncs = {}
 

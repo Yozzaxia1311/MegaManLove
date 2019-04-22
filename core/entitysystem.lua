@@ -12,6 +12,7 @@ function entitysystem:new()
   self.addQueue = nil
   self.removeQueue = nil
   self.doSort = false
+  self.id = 0
 end
 
 function entitysystem:sortLayers()
@@ -28,14 +29,25 @@ function entitysystem:sortLayers()
   end
 end
 
-function entitysystem:add(e, queue)
-  if e == nil then return end
-  if queue then
+function entitysystem:add(e, queue, network, args)
+  if not e or (megautils.networkMode == "client" and not network) then return end
+  if megautils.networkMode ~= "client" and queue then
     if self.addQueue == nil then self.addQueue = {} end
     if not table.contains(self.addQueue, e) then
       self.addQueue[#self.addQueue+1] = e
     end
   else
+    if network == "client" and e.clientModeVersion then
+      e = e.clientModeVersion
+      megautils.net:pushData("add", {name=e.netName, args=args})
+    elseif network == "server" and e.serverMoveVersion then
+      e = e.serverModeVersion
+      e.networkID = self.id
+      self.id = self.id + 1
+    end
+    if megautils.networkMode and not e then
+      return
+    end
     if not e.static then
       local done = false
       for k, v in pairs(self.entities) do
@@ -179,6 +191,22 @@ function entitysystem:draw()
 end
 
 function entitysystem:update(dt)
+  if megautils.networkMode == "client" then
+    if megautils.net:getCache("na") then
+      for k, v in pairs(megautils.net:getCache("na")) do
+        megautils.add(megautils.netNames[v.name](unpack(v.args)), nil, "server")
+      end
+      megautils.net:clearCache("na")
+    end
+    if megautils.net:getCache("nu") then
+      for k, v in pairs(megautils.net:getCache("nu")) do
+        for i=1, #self.all do
+          self.all[i]:netUpdate(v)
+        end
+      end
+      megautils.net:clearCache("nu")
+    end
+  end
   for i=1, #self.updates do
     local t = self.updates[i]
     if t.updated and not t.isRemoved then
@@ -458,6 +486,7 @@ end
 function entity:beforeUpdate(dt) end
 function entity:update(dt) end
 function entity:afterUpdate(dt) end
+function entity:netUpdate() end
 function entity:draw() end
 function entity:removed() end
 function entity:added() end

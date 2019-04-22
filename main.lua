@@ -125,6 +125,8 @@ function love.load()
   love.filesystem.load("requirelibs.lua")()
   control.init()
   console.init()
+  --megautils.createServer()
+  megautils.connectToServer("localhost")
   initEngine()
   local data = save.load("main.sav", true) or {}
   if data.fullscreen then
@@ -201,6 +203,7 @@ function love.textinput(k)
 end
 
 function love.update(dt)
+  if megautils.net then megautils.net:update(dt) end
   if love.keyboard then
     if (love.keyboard.isDown("ralt") or love.keyboard.isDown("lalt")) and love.keyboard.isDown("return") then
       if not altEnterOnce then
@@ -262,6 +265,12 @@ function love.draw()
   if useConsole then console.draw() end
   if touchControls then
     touchInput.draw()
+  end
+end
+
+function love.quit()
+  if megautils and megautils.net then
+    megautils.net:disconnect()
   end
 end
 
