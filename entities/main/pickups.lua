@@ -2,7 +2,7 @@ smallHealth = entity:extend()
 
 addobjects.register("small_health", function(v)
   local tmp = spawner(v.x, v.y+10, 8, 6, function(s)
-    megautils.add(smallHealth(s.transform.x, s.transform.y, false, s.id, s))
+    megautils.add(smallHealth, {s.transform.x, s.transform.y, false, s.id, s})
   end)
   tmp.id = v.id
   megautils.add(tmp)
@@ -98,7 +98,7 @@ health = entity:extend()
 
 addobjects.register("health", function(v)
   local tmp = spawner(v.x, v.y, 16, 14, function(s)
-    megautils.add(health(s.transform.x, s.transform.y, false, s.id, s))
+    megautils.add(health, {s.transform.x, s.transform.y, false, s.id, s})
   end)
   tmp.id = v.id
   megautils.add(tmp)
@@ -194,7 +194,7 @@ smallEnergy = entity:extend()
 
 addobjects.register("small_energy", function(v)
   local tmp = spawner(v.x, v.y+10, 8, 6, function(s)
-    megautils.add(smallEnergy(s.transform.x, s.transform.y, false, s.id, s))
+    megautils.add(smallEnergy, {s.transform.x, s.transform.y, false, s.id, s})
   end)
   tmp.id = v.id
   megautils.add(tmp)
@@ -300,7 +300,7 @@ energy = entity:extend()
 
 addobjects.register("energy", function(v)
   local tmp = spawner(v.x, v.y, 16, 10, function(s)
-    megautils.add(energy(s.transform.x, s.transform.y, false, s.id, s))
+    megautils.add(energy, {s.transform.x, s.transform.y, false, s.id, s})
   end)
   tmp.id = v.id
   megautils.add(tmp)
@@ -406,7 +406,7 @@ life = entity:extend()
 
 addobjects.register("life", function(v)
   local tmp = spawner(v.x, v.y, 16, 15, function(s)
-    megautils.add(life(s.transform.x, s.transform.y, false, s.id, s))
+    megautils.add(life, {s.transform.x, s.transform.y, false, s.id, s})
   end)
   tmp.id = v.id
   megautils.add(tmp)

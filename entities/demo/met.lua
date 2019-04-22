@@ -35,17 +35,19 @@ end
 
 met = entity:extend()
 
-megautils.netNames["met"] = met
+met.clientModeVerison = client_met
+met.netName = "met"
+
+megautils.netNames[met.netName] = met
 
 addobjects.register("met", function(v)
   megautils.add(spawner(v.x, v.y+2, 14, 14, function(s)
-    megautils.add(met(s.transform.x, s.transform.y, s))
+    megautils.add(met, {s.transform.x, s.transform.y, s})
   end))
 end)
 
 function met:new(x, y, s)
   met.super.new(self)
-  self.clientModeVersion = client_met
   self.added = function(self)
     self:addToGroup("hurtable")
     self:addToGroup("removeOnTransition")

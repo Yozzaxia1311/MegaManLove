@@ -11,7 +11,7 @@ function megautils.createServer(p)
   megautils.net:addProcessOnServer("add", function(self,peer,arg,storage)
       if arg and arg.name then
         error()
-        megautils.add(megautils.netNames[arg.name](unpack(arg.args)), nil, "server")
+        megautils.add(megautils.netNames[arg.name], arg.args, nil, "server")
         return arg
       end
     end)
@@ -193,7 +193,7 @@ function megautils.loadStage(self, path, call)
     s.map:update(1/60)
   end)
   tmp.map = map
-  megautils.add(tmp)
+  megautils.add(tmp, nil, nil, nil, true)
 end
 
 function megautils.gotoState(s, before, after, chunk)

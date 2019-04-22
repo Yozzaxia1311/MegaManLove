@@ -29,19 +29,21 @@ function entitysystem:sortLayers()
   end
 end
 
-function entitysystem:add(e, queue, network, args)
-  if not e or (megautils.networkMode == "client" and not network) then return end
-  if megautils.networkMode ~= "client" and queue then
+function entitysystem:add(c, args, queue, network, overrideNet)
+  if not c then return end
+  if queue then
     if self.addQueue == nil then self.addQueue = {} end
-    if not table.contains(self.addQueue, e) then
-      self.addQueue[#self.addQueue+1] = e
+    if not table.contains(self.addQueue, c) then
+      self.addQueue[#self.addQueue+1] = c
     end
   else
-    if network == "client" and e.clientModeVersion then
-      e = e.clientModeVersion
-      megautils.net:pushData("add", {name=e.netName, args=args})
-    elseif network == "server" and e.serverMoveVersion then
-      e = e.serverModeVersion
+    local e
+    if not overrideNet and network == "client" and megautils.netNames[e.networkName].clientModeVersion then
+      c = megautils.netNames[e.networkName].clientModeVersion
+      megautils.net:pushData("add", {name=c.netName, args=args})
+    else
+      c = (network ~= "server" or network == nil) and e or e.serverModeVersion
+      e = c(unpack(args))
       e.networkID = self.id
       self.id = self.id + 1
     end
