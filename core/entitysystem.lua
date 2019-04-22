@@ -9,7 +9,7 @@ function entitysystem:new()
   self.static = {}
   self.layers = {}
   self.all = {}
-  self.netAdd = {}
+  self.netAdd = nil
   self.addQueue = nil
   self.removeQueue = nil
   self.doSort = false
@@ -54,7 +54,8 @@ function entitysystem:add(c, arguments, queue, network, overrideNet, netID)
       e = c(unpack(arguments))
       e.networkID = self.id
       if network == "server" then
-        self.netAdd[#self.netAdd+1] = {id=e.networkID, name=c.netName, args=arguments}
+        local storage = megautils.net:getStorage()
+        storage.netAdd = {name=c.netName, id=e.networkID, args=arguments}
       end
       self.id = self.id + 1
     end
@@ -206,8 +207,7 @@ end
 
 function entitysystem:update(dt)
   if megautils.networkMode == "client" then
-    megautils.net:pushData("na", {})
-    if megautils.net:getCache("na") then
+    if megautils.net:getCache("add") then
       for k, v in pairs(megautils.net:getCache("na")) do
         megautils.add(megautils.netNames[v.name], v.args, nil, "clientsync", nil, v.id)
       end
