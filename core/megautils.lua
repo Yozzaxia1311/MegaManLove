@@ -5,11 +5,18 @@ megautils.netNames = {}
 
 function megautils.createServer(p)
   megautils.net = lovernet.new{type=lovernet.mode.server, port=p or 5555}
-  megautils.net:addOp("add")
+  megautils.net:addOp("a")
+  megautils.net:addOp("ac")
   megautils.net:addOp("nu")
-  megautils.net:addProcessOnServer("add", function(self,peer,arg,storage)
+  megautils.net:addOp("cu")
+  megautils.net:addProcessOnServer("a", function(self,peer,arg,storage)
       storage.netAdd = arg
       megautils.add(megautils.netNames[arg.name], arg.args, nil, "server")
+      return storage.netAdd
+    end)
+  megautils.net:addProcessOnServer("ac", function(self,peer,arg,storage)
+      storage.netAdd = arg
+      megautils.add(megautils.netNames[arg.name], arg.args, nil, "clientcontrol")
       return storage.netAdd
     end)
   megautils.net:addProcessOnServer("nu", function(self,peer,arg,storage)
@@ -17,6 +24,13 @@ function megautils.createServer(p)
         if self.all[i].networkID == arg.id then
           self.all[i].networkData = arg.data
           return {id=arg.id, data=arg.data}
+        end
+      end
+    end)
+  megautils.net:addProcessOnServer("cu", function(self,peer,arg,storage)
+      for i=1, #self.all do
+        if self.all[i].networkID == arg.id then
+          self.all[i].networkData = arg.data
         end
       end
     end)

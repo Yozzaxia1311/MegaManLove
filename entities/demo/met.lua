@@ -1,6 +1,6 @@
 client_met = entity:extend()
 
-function client_met:new(x, y, id)
+function client_met:new(x, y)
   client_met.super.new(self)
   self.t = loader.get("demo_objects")
   self.quads = {}
@@ -12,15 +12,14 @@ function client_met:new(x, y, id)
   self.c = "safe"
   self.transform.y = x
   self.transform.x = y
-  self.networkID = id
 end
 
-function client_met:netUpdate(data)
-  if data.args and data.args.id == self.networkID then
+function client_met:update(dt)
+  if self.networkData then
     --self.side = ???
     --self.c = ???
-    self.transform.y = data.args.x
-    self.transform.x = data.args.y
+    self.transform.y = self.networkData.x
+    self.transform.x = self.networkData.y
   end
 end
 
