@@ -16,8 +16,16 @@ function demostate:begin()
       end
     end 
     megautils.loadStage(self, "assets/maps/demo.lua") --Load lua exported tmx stage
-    megautils.add(ready) --READY
-    megautils.add(fade, {false, nil, nil, fade.ready}) --Fade in from black
+    local id = megautils.nextID()
+    megautils.add(ready, {nil, id}) --READY
+    if megautils.networkMode == "server" and megautils.networkGameStarted then
+      megautils.sendEntityToClients(client_ready, {nil, id})
+    end
+    id = megautils.nextID()
+    megautils.add(fade, {false, nil, nil, fade.ready, id}) --Fade in from black
+    if megautils.networkMode == "server" and megautils.networkGameStarted then
+      megautils.sendEntityToClients(client_fade, {false, nil, id})
+    end
     mmMusic.playFromFile("assets/sfx/music/cut_loop.ogg", "assets/sfx/music/cut_intro.ogg") --Play music after everything is set up
     if megautils.networkGameStarted and megautils.networkMode == "server" then
       --megautils.net:sendToAll("m", {l=loop, i=intro, v=vol})

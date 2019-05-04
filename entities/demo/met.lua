@@ -22,8 +22,8 @@ function client_met:update(dt)
   if self.networkData then
     self.side = self.networkData.s or -1
     self.c = self.networkData.c == 0 and "safe" or "up"
-    self.transform.x = self.networkData.x or 0
-    self.transform.y = self.networkData.y or 0
+    self.transform.x = self.networkData.x or self.transform.x
+    self.transform.y = self.networkData.y or self.transform.y
     if self.networkData.r then
       megautils.remove(self, true)
     end
@@ -48,7 +48,7 @@ addobjects.register("met", function(v)
   megautils.add(spawner, {v.x, v.y+2, 14, 14, function(s)
       local id = megautils.nextID()
       megautils.add(met, {s.transform.x, s.transform.y, s, id})
-      if megautils.networkMode == "server" then
+      if megautils.networkMode == "server" and megautils.networkGameStarted then
         megautils.sendEntityToClients(client_met, {s.transform.x, s.transform.y, id})
       end
     end})
@@ -154,12 +154,6 @@ function met:update(dt)
   end
 end
 
-function met:removed()
-  if megautils.networkGameStarted and megautils.networkMode == "server" then
-    megautils.net:sendToAll("u", {r=true})
-  end
-end
-
 function met:draw()
   love.graphics.setColor(1, 1, 1, 1)
   if self.side == -1 then
@@ -173,6 +167,9 @@ end
 function met:removed()
   if self.spawner then
     self.spawner.canSpawn = true
+  end
+  if megautils.networkGameStarted and megautils.networkMode == "server" then
+    megautils.net:sendToAll("u", {r=true, id=self.networkID})
   end
 end
 

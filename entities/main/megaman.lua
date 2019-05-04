@@ -3,6 +3,8 @@ megautils.resetGameObjectsFuncs["megaman"] = function()
   megaman.colorOne = {}
   megaman.colorTwo = {}
   megaman.weaponHandler = {}
+  globals.mainPlayer = nil
+  globals.allPlayers = {}
 end
 
 megaman = entity:extend()
@@ -17,7 +19,7 @@ addobjects.register("player", function(v)
     v.properties["checkpoint"] == globals.checkpoint then
     local id = megautils.nextID()
     megautils.add(camera, {v.x, v.y, v.properties["doScrollX"], v.properties["doScrollY"], id})
-    if megautils.networkMode == "server" then
+    if megautils.networkMode == "server" and megautils.networkGameStarted then
       megautils.sendEntityToClients(client_camera, {v.x, v.y, id})
     end
     camera.once = false
@@ -632,7 +634,7 @@ function megaman:healthChanged(o, c, i)
     self.climb = false
     self.dashJump = false
     mmSfx.play("hurt")
-    megautils.add(harm(self))
+    megautils.add(harm, {self})
     megautils.add(damageSteam, {self.transform.x+((self.collisionShape.w/2)+2)-11, self.transform.y-8})
     megautils.add(damageSteam, {self.transform.x+((self.collisionShape.w/2)+2), self.transform.y-8})
     megautils.add(damageSteam, {self.transform.x+((self.collisionShape.w/2)+2)+11, self.transform.y-8})
@@ -1187,6 +1189,9 @@ function megaman:update(dt)
     end
     view.x, view.y = math.round(camera.main.transform.x), math.round(camera.main.transform.y)
     camera.main:updateFuncs()
+    if megautils.networkGameStarted and megautils.networkMode == "server" then
+      megautils.net:sendToAll("u", {x=camera.main.transform.x, y=camera.main.transform.y, id=camera.main.networkID})
+    end
   else
     self.runCheck = false
     if self.rise then

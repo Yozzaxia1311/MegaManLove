@@ -328,6 +328,9 @@ function lockShift:update(dt)
       camera.main.transform.y = math.round(camera.main.transform.y)
       view.x, view.y = math.round(camera.main.transform.x), math.round(camera.main.transform.y)
       camera.main:updateFuncs()
+      if megautils.networkGameStarted and megautils.networkMode == "server" then
+        megautils.net:sendToAll("u", {x=camera.main.transform.x, y=camera.main.transform.y, id=camera.main.networkID})
+      end
     end
   end
 end

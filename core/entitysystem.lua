@@ -468,20 +468,36 @@ function entity:added() end
 
 mapentity = entity:extend()
 
+mapentity.netName = "map"
+megautils.netNames[mapentity.netName] = mapentity
+
 mapentity.layers = {}
 
 megautils.cleanFuncs["mapentity_clean"] = function()
   mapentity.layers = {}
 end
 
-function mapentity:new(name, map)
+function mapentity:new(name, map, id)
   mapentity.super.new(self)
   self.added = function(self)
     self:addToGroup("freezable")
   end
   self.name = name
-  self.map = map
+  self.map = type(map) == "string" and cartographer.load(map) or map
   mapentity.layers[self.name] = self
+  self.networkID = id
+end
+
+function mapentity:update(dt)
+  if self.networkData and self.networkData.r then
+    megautils.remove(self, true)
+  end
+end
+
+function mapentity:removed()
+  if megautils.networkGameStarted and megautils.networkMode == "server" then
+    megautils.net:sendToAll("u", {r=true, id=self.networkID})
+  end
 end
 
 function mapentity:drawAt(x, y)

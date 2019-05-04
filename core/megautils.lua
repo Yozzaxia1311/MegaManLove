@@ -12,8 +12,13 @@ end
 function megautils.createServer(p)
   megautils.net = sock.newServer("*", p or 5555)
   megautils.net:on("start", function(data)
-      megautils.networkGameStarted = true
-      megautils.gotoState("states/demo.state.lua")
+      megautils.gotoState("states/demo.state.lua", function()
+          megautils.networkGameStarted = true
+          globals.resetState = true
+          globals.manageStageResources = true
+          megautils.unload()
+          megautils.resetGameObjects()
+        end)
     end)
   megautils.net:on("a", function(data)
       megautils.add(megautils.netNames[data[#data]], data)
@@ -33,7 +38,11 @@ end
 function megautils.connectToServer(i, p)
   megautils.net = sock.newClient(i, p or 5555)
   megautils.net:on("connect", function(data)
-      megautils.gotoState("states/netplay.state.lua", nil, function()
+      megautils.gotoState("states/netplay.state.lua", function()
+          globals.resetState = true
+          globals.manageStageResources = true
+          megautils.unload()
+        end, function()
           megautils.networkGameStarted = true
           megautils.net:send("start")
         end)
@@ -261,7 +270,11 @@ function megautils.loadStage(self, path, call)
     end
   end
   for k, v in pairs(tLayers) do
-    local e = megautils.add(mapentity, {v.name, map})
+    local id = megautils.nextID()
+    local e = megautils.add(mapentity, {v.name, map, id})
+    if megautils.networkMode == "server" and megautils.networkGameStarted then
+      megautils.sendEntityToClients(mapentity, {v.name, path, id})
+    end
     if e and call then call(e) end
   end
   addobjects.add(objs)

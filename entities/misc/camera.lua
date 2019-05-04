@@ -12,8 +12,8 @@ end
 
 function client_camera:update(dt)
   if self.networkData then
-    view.x = self.networkData.x or 0
-    view.y = self.networkData.y or 0
+    view.x = math.round(self.networkData.x) or view.x
+    view.y = math.round(self.networkData.y) or view.y
     if self.networkData.r then
       megautils.remove(self, true)
     end
@@ -29,7 +29,7 @@ addobjects.register("camera", function(v)
   if v.properties["checkpoint"] == globals.checkpoint then
     local id = megautils.nextID()
     megautils.add(camera, {v.x, v.y, v.properties["doScrollX"], v.properties["doScrollY"], id})
-    if megautils.networkMode == "server" then
+    if megautils.networkMode == "server" and megautils.networkGameStarted then
       megautils.sendEntityToClients(client_camera, {v.x, v.y, id})
     end
     camera.once = false
@@ -281,6 +281,9 @@ function camera:updateCam(ox, oy)
         camera.main.transform.y = math.round(camera.main.transform.y)
         view.x, view.y = math.round(camera.main.transform.x), math.round(camera.main.transform.y)
         camera.main:updateFuncs()
+        if megautils.networkGameStarted and megautils.networkMode == "server" then
+          megautils.net:sendToAll("u", {x=camera.main.transform.x, y=camera.main.transform.y, id=camera.main.networkID})
+        end
       end
     end
   else
@@ -352,7 +355,7 @@ end
 
 function camera:removed()
   if megautils.networkGameStarted and megautils.networkMode == "server" then
-    megautils.net:sendToAll("u", {r=true})
+    megautils.net:sendToAll("u", {r=true, id=self.networkID})
   end
 end
 
