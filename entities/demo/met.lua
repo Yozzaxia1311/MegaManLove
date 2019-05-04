@@ -43,7 +43,7 @@ megautils.netNames[met.netName] = met
 addobjects.register("met", function(v)
   megautils.add(spawner, {v.x, v.y+2, 14, 14, function(s)
     megautils.add(met, {s.transform.x, s.transform.y, s})
-  end))
+  end})
 end)
 
 function met:new(x, y, s)

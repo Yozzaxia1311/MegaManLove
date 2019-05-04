@@ -218,7 +218,7 @@ function megautils.state()
 end
 
 function megautils.add(o, queue)
-  states.currentstate.system:add(o, queue)
+  return states.currentstate.system:add(o, queue)
 end
 
 function megautils.groups()

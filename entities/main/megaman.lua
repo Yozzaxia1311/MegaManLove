@@ -935,15 +935,13 @@ function megaman:code(dt)
   if globals.mainPlayer and control.startPressed[self.player] and self.control and globals.mainPlayer.control and globals.mainPlayer.updated
     and self.canPause then
     self.weaponSwitchTimer = 70
-    self.pauseMenu = weaponSelect(megaman.weaponHandler[self.player], self.healthHandler, self.player)
     megautils.add(fade, {true, nil, nil, function(s)
-          megautils.add(self.pauseMenu)
+          self.pauseMenu = megautils.add(weaponSelect, {megaman.weaponHandler[self.player], self.healthHandler, self.player})
           local ff = megautils.add(fade, {false, nil, nil, function(ss)
                 megautils.freeze({self.pauseMenu})
                 megautils.remove(ss, true)
               end})
           ff:setLayer(11)
-          megautils.add(ff)
           megautils.remove(s, true)
           end})
     mmSfx.play("pause")

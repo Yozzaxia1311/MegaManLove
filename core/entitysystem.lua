@@ -39,19 +39,17 @@ function entitysystem:add(c, arguments, queue, network, overrideNet, netID)
     end
   else
     local e
-    if args == true then
-      e = c
-    elseif network == "clientsync" then
+    if network == "clientsync" then
       c = c.clientModeVersion or c
-      e = c(unpack(arguments))
+      e = c(unpack(arguments or {}))
       e.networkID = netID
     elseif not overrideNet and network == "client" then
       c = c.clientModeVersion
       megautils.net:pushData("add", {name=c.netName, args=arguments})
       return
     else
-      c = (network ~= "server" or network == nil) or overrideNet and c or c.serverModeVersion
-      e = c(unpack(arguments))
+      c = ((network ~= "server" or network == nil) or overrideNet) and c or c.serverModeVersion
+      e = c(unpack(arguments or {}))
       e.networkID = self.id
       if network == "server" then
         local storage = megautils.net:getStorage()
