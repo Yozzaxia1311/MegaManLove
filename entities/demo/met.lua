@@ -1,6 +1,9 @@
 client_met = entity:extend()
 
-function client_met:new(x, y)
+client_met.netName = "c_met"
+megautils.netNames[client_met.netName] = client_met
+
+function client_met:new(x, y, id)
   client_met.super.new(self)
   self.t = loader.get("demo_objects")
   self.quads = {}
@@ -12,14 +15,18 @@ function client_met:new(x, y)
   self.c = "safe"
   self.transform.y = x
   self.transform.x = y
+  self.networkID = id
 end
 
 function client_met:update(dt)
   if self.networkData then
-    --self.side = ???
-    --self.c = ???
+    self.side = self.networkData.s
+    self.c = self.networkData.c == 0 and "safe" or "up"
     self.transform.y = self.networkData.x
     self.transform.x = self.networkData.y
+    if self.networkData.r then
+      megautils.remove(self, true)
+    end
   end
 end
 
@@ -34,18 +41,18 @@ end
 
 met = entity:extend()
 
-met.clientModeVerison = client_met
 met.netName = "met"
-
 megautils.netNames[met.netName] = met
 
 addobjects.register("met", function(v)
   megautils.add(spawner, {v.x, v.y+2, 14, 14, function(s)
-    megautils.add(met, {s.transform.x, s.transform.y, s})
-  end})
+      local id = megautils.nextID()
+      megautils.add(met, {s.transform.x, s.transform.y, s, id})
+      megautils.sendEntityToClients("c_met", {s.transform.x, s.transform.y, id})
+    end})
 end)
 
-function met:new(x, y, s)
+function met:new(x, y, s, id)
   met.super.new(self)
   self.added = function(self)
     self:addToGroup("hurtable")
@@ -67,6 +74,7 @@ function met:new(x, y, s)
   self.inv = true
   self.timer = 0
   self:setLayer(2)
+  self.networkID = id
 end
 
 function met:healthChanged(o, c, i)
@@ -138,6 +146,15 @@ function met:update(dt)
   self:updateFlash()
   if megautils.outside(self) then
     megautils.remove(self, true)
+  end
+  if megautils.networkMode == "server" then
+    megautils.net:sendToAll("u", {id=self.networkID, data={x=self.transform.x, y=self.transform.y, s=self.side, c=self.c=="safe" and 0 or 1}})
+  end
+end
+
+function met:removed()
+  if megautils.networkMode == "server" then
+    megautils.net:sendToAll("u", {r=true})
   end
 end
 

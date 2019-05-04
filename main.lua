@@ -128,7 +128,7 @@ function love.load()
   control.init()
   console.init()
   --megautils.createServer()
-  --megautils.connectToServer("localhost")
+  megautils.connectToServer("localhost")
   initEngine()
   local data = save.load("main.sav", true) or {}
   if data.fullscreen then
@@ -205,7 +205,7 @@ function love.textinput(k)
 end
 
 function love.update(dt)
-  if megautils.net then megautils.net:update(dt) end
+  if megautils.net then megautils.net:update() end
   if love.keyboard then
     if (love.keyboard.isDown("ralt") or love.keyboard.isDown("lalt")) and love.keyboard.isDown("return") then
       if not altEnterOnce then

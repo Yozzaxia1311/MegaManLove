@@ -30,7 +30,7 @@ function entitysystem:sortLayers()
   end
 end
 
-function entitysystem:add(c, arguments, queue, network, overrideNet, netID, ccon)
+function entitysystem:add(c, arguments, queue)
   if not c then return end
   if queue then
     if self.addQueue == nil then self.addQueue = {} end
@@ -38,30 +38,7 @@ function entitysystem:add(c, arguments, queue, network, overrideNet, netID, ccon
       self.addQueue[#self.addQueue+1] = c
     end
   else
-    local e
-    if network == "clientsync" then
-      c = c.clientModeVersion or c
-      e = c(unpack(arguments or {}))
-      e.networkID = netID
-    elseif not overrideNet and network == "client" then
-      if ccon then
-        megautils.net:pushData("ac", {name=c.netName, args=arguments})
-      else
-        megautils.net:pushData("a", {name=c.netName, args=arguments})
-      end
-      return
-    elseif not overrideNet and (network == "server" or network == "clientcontrol") then
-      e = network == "server" and c(unpack(arguments or {})) or c.serverModeVersion(unpack(arguments or {}))
-      e.networkID = self.id
-      local storage = megautils.net:getStorage()
-      storage.netAdd = {name=c.netName, id=e.networkID, args=arguments, ccon=network=="clientcontrol"}
-      self.id = self.id + 1
-    else
-      e = c(unpack(arguments or {}))
-    end
-    if megautils.networkMode and not e then
-      return
-    end
+    local e = c(unpack(arguments or {}))
     if not e.static then
       local done = false
       for k, v in pairs(self.entities) do
@@ -206,16 +183,6 @@ function entitysystem:draw()
 end
 
 function entitysystem:update(dt)
-  if megautils.networkMode == "client" then
-    if megautils.net:getCache("a") then
-      for k, v in pairs(megautils.net:getCache("a")) do
-        if not v.ccon then
-          megautils.add(megautils.netNames[v.name], v.args, nil, "clientsync", nil, v.id)
-        end
-      end
-      megautils.net:clearCache("a")
-    end
-  end
   for i=1, #self.updates do
     local t = self.updates[i]
     if t.updated and not t.isRemoved then
@@ -231,17 +198,6 @@ function entitysystem:update(dt)
     t.previousY = t.transform.y
     if t.updated and not t.isRemoved then
       t:update(dt)
-      if megautils.networkMode == "client" then
-        megautils.net:pushData("nu", {id=t.networkID, data=t.networkData or {}})
-        if megautils.net:getCache("nu") then
-          for k, v in pairs(megautils.net:getCache("nu")) do
-            if t.networkID == v.id then
-              t.networkData = v.data
-            end
-          end
-          megautils.clearCache("nu")
-        end
-      end
       if states.switched then
         return
       end

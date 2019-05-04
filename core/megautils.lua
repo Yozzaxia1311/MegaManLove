@@ -2,53 +2,84 @@ megautils = {}
 
 megautils.networkMode = nil
 megautils.netNames = {}
+megautils.id = -1
+
+function megautils.nextID()
+  megautils.id = megautils.id + 1
+  return (megautils.networkMode == "client" and tostring(megautils.net:getConnectId()) or "") .. tostring(megautils.id)
+end
 
 function megautils.createServer(p)
-  megautils.net = lovernet.new{type=lovernet.mode.server, port=p or 5555}
-  megautils.net:addOp("a")
-  megautils.net:addOp("ac")
-  megautils.net:addOp("nu")
-  megautils.net:addOp("cu")
-  megautils.net:addProcessOnServer("a", function(self,peer,arg,storage)
-      storage.netAdd = arg
-      megautils.add(megautils.netNames[arg.name], arg.args, nil, "server")
-      return storage.netAdd
+  megautils.net = sock.newServer("*", p or 5555)
+  megautils.net:on("start", function(data, client)
+      megautils.gotoState("states/demo.state.lua")
     end)
-  megautils.net:addProcessOnServer("ac", function(self,peer,arg,storage)
-      storage.netAdd = arg
-      megautils.add(megautils.netNames[arg.name], arg.args, nil, "clientcontrol")
-      return storage.netAdd
+  megautils.net:on("a", function(data)
+      megautils.add(megautils.netNames[data.name], data.args)
     end)
-  megautils.net:addProcessOnServer("nu", function(self,peer,arg,storage)
-      for i=1, #self.all do
-        if self.all[i].networkID == arg.id then
-          self.all[i].networkData = arg.data
-          return {id=arg.id, data=arg.data}
+  megautils.net:on("u", function(data)
+      for i=1, #megautils.state().all do
+        if self.all[i].networkID == data.id then
+          self.all[i].networkData = data.data
         end
       end
     end)
-  megautils.net:addProcessOnServer("cu", function(self,peer,arg,storage)
-      for i=1, #self.all do
-        if self.all[i].networkID == arg.id then
-          self.all[i].networkData = arg.data
-        end
-      end
-    end)
+  print("Server started on port " .. tostring(p or 5555))
   megautils.networkMode = "server"
 end
 
 function megautils.connectToServer(i, p)
-  megautils.net = lovernet.new{type=lovernet.mode.client, ip=i, port=p or 5555}
-  megautils.net:addOp("add")
-  megautils.net:addOp("nu")
+  megautils.net = sock.newClient(i, p or 5555)
+  megautils.net:on("connect", function(data, client)
+      megautils.gotoState("states/netplay.state.lua", nil, function()
+          megautils.net:send("start")
+        end)
+    end)
+  megautils.net:on("a", function(data)
+      megautils.add(megautils.netNames[data.name], data.arg)
+    end)
+  megautils.net:on("u", function(data)
+      for i=1, #megautils.state().all do
+        if self.all[i].networkID == data.id then
+          self.all[i].networkData = data.data
+        end
+      end
+    end)
+  megautils.net:connect()
   megautils.networkMode = "client"
 end
 
 function megautils.disconnectNetwork()
   if megautils.net then
-    megautils.net:disconnect()
+    if megautils.networkMode == "server" then
+      for k, v in pairs(megautils.net:getClients()) do
+        v:disconnectNow()
+      end
+      megautils.net:destroy()
+    elseif megautils.networkMode == "client" and megautils.net:isConnected() then
+      megautils.net:disconnectNow()
+    end
     megautils.networkMode = nil
     megautils.net = nil
+  end
+end
+
+function megautils.sendEntityToClient(id, c, args)
+  if megautils.networkMode == "server" then
+    megautils.net:sendToPeer(megautils.net:getClientByConnectionId(id), "a",
+      {name=c.netName, arg=args})
+  end
+end
+
+function megautils.sendEntityToClients(c, args)
+  if megautils.networkMode == "server" then
+    megautils.net:sendToAll("a", {name=c.netName, arg=args})
+  end
+end
+
+function megautils.sendEntityToServer(c, args)
+  if megautils.networkMode == "server" then
+    megautils.net:send("a", {name=c.netName, arg=args})
   end
 end
 
