@@ -1,8 +1,37 @@
+client_camera = entity:extend()
+
+client_camera.netName = "c_cam"
+megautils.netNames[client_camera.netName] = client_camera
+
+function client_camera:new(x, y, id)
+  client_camera.super.new(self)
+  self.transform.y = x
+  self.transform.x = y
+  self.networkID = id
+end
+
+function client_camera:update(dt)
+  if self.networkData then
+    view.x = self.networkData.x or 0
+    view.y = self.networkData.y or 0
+    if self.networkData.r then
+      megautils.remove(self, true)
+    end
+  end
+end
+
 camera = entity:extend()
 
-addobjects.register("megacam", function(v)
+camera.netName = "cam"
+megautils.netNames[camera.netName] = camera
+
+addobjects.register("camera", function(v)
   if v.properties["checkpoint"] == globals.checkpoint then
-    megautils.add(camera, {v.x, v.y, v.properties["doScrollX"], v.properties["doScrollY"]})
+    local id = megautils.nextID()
+    megautils.add(camera, {v.x, v.y, v.properties["doScrollX"], v.properties["doScrollY"], id})
+    if megautils.networkMode == "server" then
+      megautils.sendEntityToClients(client_camera, {v.x, v.y, id})
+    end
     camera.once = false
   end
 end, -1)
@@ -16,8 +45,9 @@ end, 2)
 
 megautils.resetStateFuncs["camera"] = function() camera.main = nil end
 
-function camera:new(x, y, doScrollX, doScrollY)
+function camera:new(x, y, doScrollX, doScrollY, id)
   camera.super.new(self)
+  self.networkID = id
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(view.w, view.h)
@@ -315,6 +345,15 @@ function camera:doView(ox, oy, without)
   end
   view.x, view.y = math.round(self.transform.x), math.round(self.transform.y)
   self:updateFuncs()
+  if megautils.networkGameStarted and megautils.networkMode == "server" then
+    megautils.net:sendToAll("u", {x=self.transform.x, y=self.transform.y, id=self.networkID})
+  end
+end
+
+function camera:removed()
+  if megautils.networkGameStarted and megautils.networkMode == "server" then
+    megautils.net:sendToAll("u", {r=true})
+  end
 end
 
 function camera:updateFuncs()

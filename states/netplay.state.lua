@@ -8,7 +8,7 @@ function netplaystate:update(dt)
 end
 
 function netplaystate:stop()
-  megautils.unload(self)
+  megautils.unload()
 end
 
 function netplaystate:draw()

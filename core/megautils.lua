@@ -11,16 +11,18 @@ end
 
 function megautils.createServer(p)
   megautils.net = sock.newServer("*", p or 5555)
-  megautils.net:on("start", function(data, client)
+  megautils.net:on("start", function(data)
+      megautils.networkGameStarted = true
       megautils.gotoState("states/demo.state.lua")
     end)
   megautils.net:on("a", function(data)
-      megautils.add(megautils.netNames[data.name], data.args)
+      megautils.add(megautils.netNames[data[#data]], data)
     end)
   megautils.net:on("u", function(data)
-      for i=1, #megautils.state().all do
-        if self.all[i].networkID == data.id then
-          self.all[i].networkData = data.data
+      if not megautils.state() or not megautils.state().system.all then return end
+      for i=1, #megautils.state().system.all do
+        if megautils.state().system.all[i].networkID == data.id then
+          megautils.state().system.all[i].networkData = data
         end
       end
     end)
@@ -30,18 +32,40 @@ end
 
 function megautils.connectToServer(i, p)
   megautils.net = sock.newClient(i, p or 5555)
-  megautils.net:on("connect", function(data, client)
+  megautils.net:on("connect", function(data)
       megautils.gotoState("states/netplay.state.lua", nil, function()
+          megautils.networkGameStarted = true
           megautils.net:send("start")
         end)
     end)
-  megautils.net:on("a", function(data)
-      megautils.add(megautils.netNames[data.name], data.arg)
+  megautils.net:on("l", function(data)
+      loader.load(data.p, data.n, data.t, data.e, data.l)
+    end)
+  megautils.net:on("rf", function(data)
+      megautils.runFile(data)
+    end)
+  megautils.net:on("sm", function(data)
+      mmMusic.stopMusic()
+    end)
+  megautils.net:on("m", function(data)
+      mmMusic.playFromFile(data.l, data.t, data.v)
+    end)
+  megautils.net:on("s", function(data)
+      mmSfx.play(data.p, data.l, data.v)
     end)
   megautils.net:on("u", function(data)
-      for i=1, #megautils.state().all do
-        if self.all[i].networkID == data.id then
-          self.all[i].networkData = data.data
+      globals.resetState = data.rs
+      globals.manageStageResources = data.msr
+      megautils.unload()
+    end)
+  megautils.net:on("a", function(data)
+      megautils.add(megautils.netNames[data[#data]], data)
+    end)
+  megautils.net:on("u", function(data)
+      if not megautils.state() or not megautils.state().system.all then return end
+      for i=1, #megautils.state().system.all do
+        if megautils.state().system.all[i].networkID == data.id then
+          megautils.state().system.all[i].networkData = data
         end
       end
     end)
@@ -61,19 +85,21 @@ function megautils.disconnectNetwork()
     end
     megautils.networkMode = nil
     megautils.net = nil
+    megautils.networkGameStarted = false
   end
 end
 
 function megautils.sendEntityToClient(id, c, args)
   if megautils.networkMode == "server" then
-    megautils.net:sendToPeer(megautils.net:getClientByConnectionId(id), "a",
-      {name=c.netName, arg=args})
+    args[#args+1] = c.netName
+    megautils.net:sendToPeer(megautils.net:getClientByConnectionId(id), "a", args)
   end
 end
 
 function megautils.sendEntityToClients(c, args)
   if megautils.networkMode == "server" then
-    megautils.net:sendToAll("a", {name=c.netName, arg=args})
+    args[#args+1] = c.netName
+    megautils.net:sendToAll("a", args)
   end
 end
 

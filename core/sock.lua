@@ -406,7 +406,6 @@ end
 --    server:log("error", "Something bad happened!")
 --end
 function Server:log(event, data)
-  print(event .. " : " .. data)
     return self.logger:log(event, data)
 end
 

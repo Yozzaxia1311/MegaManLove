@@ -15,7 +15,11 @@ megaman.colorTwo = {}
 addobjects.register("player", function(v)
   if (not v.properties["spawnCamera"] or v.properties["spawnCamera"]) and
     v.properties["checkpoint"] == globals.checkpoint then
-    megautils.add(camera, {v.x, v.y, v.properties["doScrollX"], v.properties["doScrollY"]})
+    local id = megautils.nextID()
+    megautils.add(camera, {v.x, v.y, v.properties["doScrollX"], v.properties["doScrollY"], id})
+    if megautils.networkMode == "server" then
+      megautils.sendEntityToClients(client_camera, {v.x, v.y, id})
+    end
     camera.once = false
   end
 end, -1)
