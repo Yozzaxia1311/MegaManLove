@@ -472,9 +472,11 @@ mapentity.netName = "map"
 megautils.netNames[mapentity.netName] = mapentity
 
 mapentity.layers = {}
+mapentity.cache = {}
 
 megautils.cleanFuncs["mapentity_clean"] = function()
   mapentity.layers = {}
+  mapentity.cache = {}
 end
 
 function mapentity:new(name, map, id)
@@ -483,7 +485,10 @@ function mapentity:new(name, map, id)
     self:addToGroup("freezable")
   end
   self.name = name
-  self.map = type(map) == "string" and cartographer.load(map) or map
+  if type(map) == "string" and not mapentity.cache[map] then
+    mapentity.cache[map] = cartographer.load(map)
+  end
+  self.map = type(map) == "string" and mapentity.cache[map] or map
   mapentity.layers[self.name] = self
   self.networkID = id
 end
