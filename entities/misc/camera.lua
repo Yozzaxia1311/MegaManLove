@@ -313,8 +313,8 @@ function camera:doView(without)
     self.transform.x = math.clamp(self.transform.x, self.lockx, self.lockx+self.lockw)
     self.transform.y = math.clamp(self.transform.y, self.locky, self.locky+self.lockh)
   end
-  view.x, view.y = math.round(self.transform.x), math.round(self.transform.y)
   self:updateFuncs()
+  view.x, view.y = math.round(self.transform.x), math.round(self.transform.y)
 end
 
 function camera:updateFuncs()
