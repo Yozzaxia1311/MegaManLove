@@ -77,6 +77,23 @@ function camera:updateBounds()
   end
 end
 
+function camera:setSection(s)
+  self.toSection = s
+  if megautils.groups()["removeOnTransition"] then
+    for k, v in pairs(megautils.groups()["removeOnTransition"]) do
+      if not v.dontRemove then
+        megautils.remove(v, true)
+      end
+    end
+  end
+  for k, v in pairs(self.toSection:is(lockSection) and self.toSection.section.group or self.toSection.group) do
+    if v.spawnEarlyDuringTransition and not v.isAdded then
+      megautils.add(v)
+    end
+  end
+  self:updateBounds()
+end
+
 function camera:updateCam()
   if self.transition then
     if not self.preTrans then
