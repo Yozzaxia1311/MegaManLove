@@ -602,7 +602,7 @@ function megaman:healthChanged(o, c, i)
       megautils.freeze({self})
       local dx, dy
       local ox, oy = camera.main.transform.x, camera.main.transform.y
-      camera.main:doView(self)
+      camera.main:doView(nil, nil, self)
       dx = camera.main.transform.x
       dy = camera.main.transform.y
       camera.main.transform.x = ox
@@ -1224,7 +1224,7 @@ end
 function megaman:afterUpdate(dt)
   if not self.dying and camera.main and globals.mainPlayer == self and self.cameraFocus and not self.drop and not self.rise
     and self.collisionShape then
-    camera.main:updateCam()
+    camera.main:updateCam(0, self.slide and -3 or 0)
   end
 end
 
