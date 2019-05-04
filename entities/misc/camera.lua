@@ -94,7 +94,7 @@ function camera:setSection(s)
   self:updateBounds()
 end
 
-function camera:updateCam()
+function camera:updateCam(ox, oy)
   if self.transition then
     if not self.preTrans then
       if not self.toPos then
@@ -254,20 +254,20 @@ function camera:updateCam()
       end
     end
   else
-    self:doView()
+    self:doView(ox, oy)
   end
 end
 
-function camera:doView(without)
+function camera:doView(ox, oy, without)
   if #globals.allPlayers <= 1 then
     local o = globals.allPlayers[1]
     if self.doScrollX then
       self.transform.x = math.round(o.transform.x) - (view.w/2) + (o.collisionShape.w/2)
-      self.transform.x = math.clamp(self.transform.x, self.scrollx, self.scrollx+self.scrollw-view.w)
+      self.transform.x = math.clamp(self.transform.x + (ox or 0), self.scrollx, self.scrollx+self.scrollw-view.w)
     end
     if self.doScrollY then
       self.transform.y = math.round(o.transform.y) - (view.h/2) + (o.collisionShape.h/2)
-      self.transform.y = math.clamp(self.transform.y+(o.slide and -3 or 0), self.scrolly, self.scrolly+self.scrollh-view.h)
+      self.transform.y = math.clamp(self.transform.y + (oy or 0), self.scrolly, self.scrolly+self.scrollh-view.h)
     end
   else
     local avx, avy = 0, 0
@@ -275,10 +275,10 @@ function camera:doView(without)
       local p = globals.allPlayers[i]
       if not p.rise and not p.drop and p ~= without then
         if self.doScrollX then
-          avx = avx+(p.transform.x - (view.w/2) + (p.collisionShape.w/2))
+          avx = avx+(p.transform.x + (ox or 0) - (view.w/2) + (p.collisionShape.w/2))
         end
         if self.doScrollY then
-          avy = avy+(p.transform.y+(p.slide and -3 or 0) - (view.h/2) + (p.collisionShape.h/2))
+          avy = avy+(p.transform.y + (oy or 0) - (view.h/2) + (p.collisionShape.h/2))
         end
       end
     end
@@ -313,8 +313,8 @@ function camera:doView(without)
     self.transform.x = math.clamp(self.transform.x, self.lockx, self.lockx+self.lockw)
     self.transform.y = math.clamp(self.transform.y, self.locky, self.locky+self.lockh)
   end
-  self:updateFuncs()
   view.x, view.y = math.round(self.transform.x), math.round(self.transform.y)
+  self:updateFuncs()
 end
 
 function camera:updateFuncs()
