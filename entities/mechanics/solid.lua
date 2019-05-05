@@ -25,7 +25,7 @@ function collision.getTable(self, dx, dy)
   
   for i=1, #megautils.state().system.all do
     local v = megautils.state().system.all[i]
-    if v.isSolid ~= 0 then
+    if v.isSolid == 1 or v.isSolid == 2 then
       if v.isSolid ~= 2 or (not v:collision(self) and v:collision(self, -xs, -(cgrav * math.abs(ys)))) then
         solid[#solid+1] = v
       end
@@ -67,7 +67,7 @@ function collision.checkSolid(self, dx, dy, noSlope)
   
   for i=1, #megautils.state().system.all do
     local v = megautils.state().system.all[i]
-    if v.isSolid ~= 0 then
+    if v.isSolid == 1 or v.isSolid == 2 then
       if v.isSolid ~= 2 or (not v:collision(self) and v:collision(self, -xs, -(cgrav * math.abs(ys)))) then
         solid[#solid+1] = v
       end
@@ -257,9 +257,9 @@ function collision.shiftObject(self, dx, dy, checkforcol)
   self.previousY = self.transform.y
   
   if checkforcol then
-    self.canSink = false
+    self.canStandSolid = false
     collision.generalCollision(self)
-    self.canSink = true
+    self.canStandSolid = true
   else
     self.transform.x = self.transform.x + self.velocity.velx
     self.transform.y = self.transform.y + self.velocity.vely
@@ -282,12 +282,14 @@ function collision.checkGround(self, noSlopeEffect)
   for i=1, #megautils.state().system.all do
     local v = megautils.state().system.all[i]
     if v ~= self and v.collisionShape then
-      if v.isSolid ~= 0 then
+      if v.isSolid == 1 or v.isSolid == 2 then
         if not v:collision(self, 0, cgrav) then
           if v.isSolid ~= 2 or v:collision(self, 0, -cgrav * slp) then
             solid[#solid+1] = v
           end
         end
+      elseif v.isSolid == 3 then
+        solid[#solid+1] = v
       end
     end
   end
@@ -303,18 +305,13 @@ function collision.checkGround(self, noSlopeEffect)
     end
   end
   
-  if megautils.groups()["sink"] then
-    for i=1, #megautils.groups()["sink"] do
-      solid[#solid+1] = megautils.groups()["sink"][i]
-    end
-  end
-  
   if #self:collisionTable(solid) == 0 then
     local i = 1
     while i <= slp do
       if #self:collisionTable(solid, 0, cgrav * i) == 0 then
         self.ground = false
         self.onMovingFloor = nil
+        self.inStandSolid = false
       elseif self.velocity.vely * cgrav >= 0 then
         self.ground = true
         self.transform.y = math.round(self.transform.y+cgrav) + (i - 1) * cgrav
@@ -337,16 +334,19 @@ function collision.generalCollision(self, noSlopeEffect)
   
   local xprev = self.transform.x
   local solid = {}
+  local stand = {}
   local cgrav = math.sign(self.gravity)
   cgrav = cgrav == 0 and 1 or cgrav
   
   for i=1, #megautils.state().system.all do
     local v = megautils.state().system.all[i]
-    if v ~= self then
-      if v.collisionShape and v.isSolid == 1 then
+    if v ~= self and v.collisionShape then
+      if v.isSolid == 1 then
         if not v:collision(self) and not table.contains(solid, v) then
           solid[#solid+1] = v
         end
+      elseif v.isSolid == 3 then
+        stand[#stand+1] = v
       end
     end
   end
@@ -464,14 +464,13 @@ function collision.generalCollision(self, noSlopeEffect)
     end
   end
   
-  if not self.ground and self.canSink then
-    if megautils.groups()["sink"] and #self:collisionTable(megautils.groups()["sink"], 0, cgrav) ~= 0 then
-      if self.velocity.vely * cgrav > 0 then
-        self.ground = true
-        self.ycoll = self.velocity.vely
-        self.velocity.vely = 0
-      end
+  if self.canStandSolid and #self:collisionTable(stand, 0, cgrav) ~= 0 then
+    if self.velocity.vely * cgrav > 0 then
+      self.ground = true
+      self.ycoll = self.velocity.vely
+      self.velocity.vely = 0
     end
+    self.inStandSolid = true
   end
   
   if self.spikesHurt then
@@ -514,9 +513,10 @@ function sinkIn:new(x, y, w, h, s)
   self:setRectangleCollision(w, h)
   self:setLayer(9)
   self.sink = s or 0.125
+  self.isSolid = 3
   self.added = function(self)
     self:addToGroup("despawnable")
-    self:addToGroup("sink")
+    self:addToGroup("freezable")
   end
 end
 

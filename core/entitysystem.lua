@@ -56,8 +56,8 @@ function entitysystem:add(c, arguments, queue)
         self.doSort = true
       end
       self.updates[#self.updates+1] = e
+      self.all[#self.all+1] = e
     end
-    self.all[#self.all+1] = e
     e.isRemoved = false
     e.isAdded = true
     e:added()
@@ -83,8 +83,10 @@ end
 function entitysystem:addStatic(e)
   table.removevaluearray(self.updates, e)
   table.removevaluearray(e.actualLayer.data, e)
+  table.removevaluearray(self.all, e)
   self.static[#self.static+1] = e
   e.static = true
+  e:staticToggled()
 end
 
 function entitysystem:removeStatic(e)
@@ -106,7 +108,9 @@ function entitysystem:removeStatic(e)
       self.doSort = true
     end
     self.updates[#self.updates+1] = e
+    self.all[#self.all+1] = e
     e.static = false
+    e:staticToggled()
   end
 end
 
@@ -296,7 +300,7 @@ function entity:new(basic)
   self.moveByMoveY = 0
   self.inv = false
   self.spikesHurt = false
-  self.canSink = true
+  self.canStandSolid = true
 end
 
 function entity:grav() end
@@ -465,6 +469,7 @@ function entity:afterUpdate(dt) end
 function entity:draw() end
 function entity:removed() end
 function entity:added() end
+function entity:staticToggled() end
 
 mapentity = entity:extend()
 

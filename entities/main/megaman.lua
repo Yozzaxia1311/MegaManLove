@@ -116,7 +116,7 @@ function megaman.properties(self)
   self.canSwitchWeapons = true
   self.spikesHurt = true
   self.blockCollision = true
-  self.canSink = true
+  self.canStandSolid = true
   self.canPause = true
 end
 
@@ -817,7 +817,7 @@ function megaman:code(dt)
       self.stepTime = 0
       self.step = false
     end
-    local jumped = false
+    self.jumpCheck = false
     if self.canDash and (control.dashPressed[self.player] or
       (control.downDown[self.player] and control.jumpPressed[self.player])) and
       not self:checkBasicSlideBox(self.side, 0) then
@@ -834,17 +834,18 @@ function megaman:code(dt)
       self.slideTimer = 0
       megautils.add(slideParticle, {self.transform.x+(self.side==-1 and self.collisionShape.w or 4),
         self.transform.y+self.collisionShape.h-6, self.side})
-    elseif self.canJump and control.jumpPressed[self.player] and
+    elseif self.canJump and (control.jumpPressed[self.player] or (control.jumpDown[self.player] and self.inStandSolid)) and
       not (control.downDown[self.player] and self:checkBasicSlideBox(self.side, 0)) then
       self.velocity.vely = self.jumpSpeed
-      jumped = true
+    else
+      self.velocity.vely = 0
     end
+    print(self.inStandSolid)
     self.velocity.velx = math.clamp(self.velocity.velx, self.maxLeftSpeed, self.maxRightSpeed)
     for k, v in pairs(self.groundUpdateFuncs) do
       v(self)
     end
     self:phys()
-    if not self.ground and not jumped and self.velocity.vely == 1 then self.velocity.vely = 0 end
     if self.canShoot then
       self:attemptWeaponUsage()
     end
@@ -930,7 +931,6 @@ function megaman:code(dt)
         (self.canGetCrushed and self.transform.x <= view.x-self.collisionShape.w/2 and collision.checkSolid(self, 1, 0)) then
     self.iFrame = self.maxIFrame
     self:hurt({self}, -999, 1)
-    self.control = false
   end
   self:updateIFrame()
   self:updateFlash()

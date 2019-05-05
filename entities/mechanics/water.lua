@@ -83,7 +83,7 @@ function water:update(dt)
         self.current = true
         v.gravity = self.grav
         if v.transform.y < self.transform.y then
-          megautils.add(splash{(v.transform.x-self.transform.x)+(v.collisionShape.w/2), -8, self, -1})
+          megautils.add(splash, {(v.transform.x-self.transform.x)+(v.collisionShape.w/2), -8, self, -1})
           mmSfx.play("splash")
         elseif v.transform.y-v.velocity.vely > self.transform.y+self.collisionShape.h then
           megautils.add(splash, {(v.transform.x-self.transform.x)+(v.collisionShape.w/2), 
