@@ -163,6 +163,8 @@ function entitysystem:clear()
   self.updates = {}
   self.groups = {}
   self.static = {}
+  self.addQueue = {}
+  self.removeQueue = {}
   self.afterUpdate = nil
 end
 
