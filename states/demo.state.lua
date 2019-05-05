@@ -19,7 +19,7 @@ function demostate:begin()
     local id = megautils.nextID()
     megautils.add(ready, {nil, id}) --READY
     if megautils.networkMode == "server" and megautils.networkGameStarted then
-      megautils.sendEntityToClients(client_ready, {nil, id})
+      megautils.sendEntityToClients(ready, {nil, id})
     end
     id = megautils.nextID()
     megautils.add(fade, {false, nil, nil, fade.ready, id}) --Fade in from black
