@@ -500,7 +500,6 @@ function basicEntity:new(basic)
   self.isRemoved = false
   self.updated = true
   self.render = true
-  self.isSolid = 0
 end
 
 function basicEntity:hurt(t, h, f)
