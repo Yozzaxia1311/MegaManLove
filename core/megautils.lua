@@ -11,6 +11,12 @@ end
 
 function megautils.createServer(p)
   megautils.net = sock.newServer("*", p or 5555)
+  megautils.net:on("connect", function(data, client)
+      if megautils.networkGameStarted then
+        megautils.net:sendToPeer(megautils.net:getPeerByIndex(client:getIndex()), "kick")
+        return
+      end
+    end)
   megautils.net:on("start", function(data)
       megautils.gotoState("states/demo.state.lua", function()
           megautils.networkGameStarted = true
@@ -39,7 +45,14 @@ end
 
 function megautils.connectToServer(i, p)
   megautils.net = sock.newClient(i, p or 5555)
+  megautils.net:on("kick", function(data)
+      megautils.kicked = true
+      megautils.disconnectNetwork()
+      print("Kicked: game already in progress")
+    end)
   megautils.net:on("connect", function(data)
+      megautils.kicked = false
+      megautils.networkMode = "client"
       megautils.gotoState("states/netplay.state.lua", function()
           globals.resetState = true
           globals.manageStageResources = true
@@ -88,7 +101,6 @@ function megautils.connectToServer(i, p)
       end
     end)
   megautils.net:connect()
-  megautils.networkMode = "client"
 end
 
 function megautils.disconnectNetwork()
