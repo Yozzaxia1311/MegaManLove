@@ -9,13 +9,16 @@ function client_fade:new(fadeToColor, color, id)
   self.fadeToColor = fadeToColor
   self.color = color or {0, 0, 0}
   self.networkID = id
+  megautils.freeze()
 end
 
 function client_fade:update(dt)
+  megautils.freeze()
   if self.networkData then
     self.alpha = self.networkData.a or self.alpha
     if self.networkData.r then
       megautils.remove(self, true)
+      megautils.unfreeze()
     end
   end
 end

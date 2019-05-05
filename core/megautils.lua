@@ -6,7 +6,7 @@ megautils.id = -1
 
 function megautils.nextID()
   megautils.id = megautils.id + 1
-  return (megautils.networkMode == "client" and tostring(megautils.net:getConnectId()) or "") .. tostring(megautils.id)
+  return (megautils.networkMode == "client" and tostring(megautils.net:getConnectId()) .. ":" or "") .. tostring(megautils.id)
 end
 
 function megautils.createServer(p)

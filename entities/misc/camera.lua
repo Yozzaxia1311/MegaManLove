@@ -171,6 +171,9 @@ function camera:updateCam(ox, oy)
           end
         end
       end
+      if megautils.networkMode == "server" and megautils.networkGameStarted then
+        megautils.net:sendToAll("rt")
+      end
       if self.freeze then
         megautils.freeze(globals.allPlayers)
         for k, v in pairs(globals.allPlayers) do
