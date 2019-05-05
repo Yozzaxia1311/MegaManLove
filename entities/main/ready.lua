@@ -1,6 +1,9 @@
 ready = entity:extend()
 
-function ready:new(text, id)
+ready.netName = "ready"
+megautils.netNames[ready.netName] = ready
+
+function ready:new(text, net, id)
   ready.super.new(self)
   self.added = function(self)
     self:addToGroup("ready")
@@ -15,6 +18,7 @@ function ready:new(text, id)
   self.text = text or "ready"
   self.width = self.text:len() * 8
   megautils.freeze()
+  self.net = net
   self.networkID = id
 end
 
@@ -25,12 +29,13 @@ function ready:update(dt)
     self.blinkTimer = 0
     self.blinkCount = self.blinkCount + 1
     self.render = not self.render
-    if self.blinkCount == self.blinks then
+    if self.blinkCount == self.blinks and not self.net then
       megautils.unfreeze()
       megautils.remove(self, true)
     end
   end
   if self.networkData and self.networkData.r then
+    megautils.unfreeze()
     megautils.remove(self, true)
   end
 end

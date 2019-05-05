@@ -11,6 +11,7 @@ function entitysystem:new()
   self.groups = {}
   self.static = {}
   self.layers = {}
+  self.all = {}
   self.addQueue = {}
   self.removeQueue = {}
   self.doSort = false
@@ -51,6 +52,36 @@ function entitysystem:add(c, ...)
     end
     self.updates[#self.updates+1] = e
   end
+  self.all[#self.all+1] = e
+  e.isRemoved = false
+  e.isAdded = true
+  e:added()
+  e.previousX = e.transform.x
+  e.previousY = e.transform.y
+  return e
+end
+
+function entitysystem:adde(e)
+  if not e then return end
+  if not e.static then
+    local done = false
+    for k, v in pairs(self.entities) do
+      if v.layer == e.layer then
+        v.data[#v.data+1] = e
+        e.actualLayer = v
+        done = true
+        break
+      end
+    end
+    if not done then
+      self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}}
+      e.actualLayer = self.entities[#self.entities]
+      e.layer = e.actualLayer.layer
+      self.doSort = true
+    end
+    self.updates[#self.updates+1] = e
+  end
+  self.all[#self.all+1] = e
   e.isRemoved = false
   e.isAdded = true
   e:added()
@@ -62,7 +93,8 @@ end
 function entitysystem:addq(c, ...)
   if not c then return end
   if not table.contains(self.addQueue, c) then
-    self.addQueue[#self.addQueue+1] = {c, ...}
+    self.addQueue[#self.addQueue+1] = c(...)
+    return self.addQueue[#self.addQueue]
   end
 end
 
@@ -144,18 +176,15 @@ function entitysystem:remove(e, queue)
     e:removeStatic()
     table.removevaluearray(e.actualLayer.data, e)
     table.removevaluearray(self.updates, e)
+    table.removevaluearray(self.all, e)
     e.isAdded = false
   end
 end
 
 function entitysystem:clear()
-  for i=1, #self.updates do
+  for i=1, #self.all do
     self.updates[i].isRemoved = true
     self.updates[i]:removed()
-  end
-  for i=1, #self.static do
-    self.static[i].isRemoved = true
-    self.static[i]:removed()
   end
   section.sections = {}
   section.current = nil
@@ -239,7 +268,7 @@ function entitysystem:update(dt)
     self.afterUpdate(self)
   end
   for i=1, #self.addQueue do
-    self:add(self.addQueue[i][1], self.addQueue[i][2])
+    self:adde(self.addQueue[i])
     self.addQueue[i] = nil
   end
   for i=1, #self.removeQueue do

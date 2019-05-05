@@ -19,9 +19,6 @@ addobjects.register("player", function(v)
     v.properties["checkpoint"] == globals.checkpoint then
     local id = megautils.nextID()
     megautils.add(camera, v.x, v.y, v.properties["doScrollX"], v.properties["doScrollY"], id)
-    if megautils.networkMode == "server" and megautils.networkGameStarted then
-      megautils.sendEntityToClients(client_camera, v.x, v.y, id)
-    end
     camera.once = false
   end
 end, -1)

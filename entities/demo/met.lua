@@ -41,16 +41,9 @@ end
 
 met = entity:extend()
 
-met.netName = "met"
-megautils.netNames[met.netName] = met
-
 addobjects.register("met", function(v)
   megautils.add(spawner, v.x, v.y+2, 14, 14, function(s)
-      local id = megautils.nextID()
-      megautils.add(met, s.transform.x, s.transform.y, s, id)
-      if megautils.networkMode == "server" and megautils.networkGameStarted then
-        megautils.sendEntityToClients(client_met, s.transform.x, s.transform.y, id)
-      end
+      megautils.add(met, s.transform.x, s.transform.y, s, megautils.nextID())
     end)
 end)
 
@@ -60,6 +53,9 @@ function met:new(x, y, s, id)
     self:addToGroup("hurtable")
     self:addToGroup("removeOnTransition")
     self:addToGroup("freezable")
+    if megautils.networkMode == "server" and megautils.networkGameStarted then
+      megautils.sendEntityToClients(client_met, {self.transform.x, self.transform.y, self.networkID})
+    end
   end
   self.transform.y = y
   self.transform.x = x
@@ -207,5 +203,7 @@ megautils.cleanFuncs["unload_met"] = function()
   met = nil
   metBullet = nil
   addobjects.unregister("met")
+  megautils.netNames[client_met.netName] = nil
+  client_met = nil
   megautils.cleanFuncs["unload_met"] = nil
 end

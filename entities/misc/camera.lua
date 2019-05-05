@@ -27,11 +27,7 @@ megautils.netNames[camera.netName] = camera
 
 addobjects.register("camera", function(v)
   if v.properties["checkpoint"] == globals.checkpoint then
-    local id = megautils.nextID()
-    megautils.add(camera, v.x, v.y, v.properties["doScrollX"], v.properties["doScrollY"], id)
-    if megautils.networkMode == "server" and megautils.networkGameStarted then
-      megautils.sendEntityToClients(client_camera, v.x, v.y, id)
-    end
+    megautils.add(camera, v.x, v.y, v.properties["doScrollX"], v.properties["doScrollY"], megautils.nextID())
     camera.once = false
   end
 end, -1)
@@ -80,6 +76,11 @@ function camera:new(x, y, doScrollX, doScrollY, id)
   self.player = nil
   view.x, view.y = self.transform.x, self.transform.y
   self.funcs = {}
+  self.added = function(self)
+    if megautils.networkMode == "server" and megautils.networkGameStarted then
+      megautils.sendEntityToClients(client_camera, {self.transform.x, self.transform.y, self.networkID})
+    end
+  end
 end
 
 function camera:updateBounds()
@@ -117,8 +118,8 @@ function camera:setSection(s)
     end
   end
   for k, v in pairs(self.toSection:is(lockSection) and self.toSection.section.group or self.toSection.group) do
-    if v.spawnEarlyDuringTransition and v.static then
-      v:removeStatic()
+    if v.spawnEarlyDuringTransition and not v.isAdded then
+      megautils.adde(v)
     end
   end
   self:updateBounds()
@@ -183,8 +184,8 @@ function camera:updateCam(ox, oy)
       if self.player then
         if not self.toSection then self.toSection = megautils.state().sectionHandler.current end
         for k, v in pairs(self.toSection:is(lockSection) and self.toSection.section.group or self.toSection.group) do
-          if v.spawnEarlyDuringTransition and v.static then
-            v:removeStatic()
+          if v.spawnEarlyDuringTransition and not v.isAdded then
+            megautils.adde(v)
           end
         end
         local sx, sy, sw, sh = self.toSection.transform.x, self.toSection.transform.y,

@@ -28,13 +28,13 @@ function megautils.createServer(p)
     end)
   megautils.net:on("a", function(data, client)
       megautils.add(megautils.netNames[data[#data]], data)
-      megautils.net:sendToAllBut(client, "a", data)
+      megautils.net:sendToAllBut(client, "a", unpack(data))
     end)
   megautils.net:on("u", function(data, client)
       if not megautils.state() then return end
-      for i=1, #megautils.state().system.updates do
-        if megautils.state().system.updates[i].networkID == data.id then
-          megautils.state().system.updates[i].networkData = data
+      for i=1, #megautils.state().system.all do
+        if megautils.state().system.all[i].networkID == data.id then
+          megautils.state().system.all[i].networkData = data
         end
       end
       megautils.net:sendToAllBut(client, "u", data)
@@ -51,6 +51,7 @@ function megautils.connectToServer(i, p)
       print("Kicked: game already in progress")
     end)
   megautils.net:on("connect", function(data)
+      if megautils.networkGameStarted then return end
       megautils.kicked = false
       megautils.networkMode = "client"
       megautils.gotoState("states/netplay.state.lua", function()
@@ -90,13 +91,13 @@ function megautils.connectToServer(i, p)
       megautils.unload()
     end)
   megautils.net:on("a", function(data)
-      megautils.add(megautils.netNames[data[#data]], data)
+      megautils.add(megautils.netNames[data[#data]], unpack(data))
     end)
   megautils.net:on("u", function(data)
       if not megautils.state() then return end
-      for i=1, #megautils.state().system.updates do
-        if megautils.state().system.updates[i].networkID == data.id then
-          megautils.state().system.updates[i].networkData = data
+      for i=1, #megautils.state().system.all do
+        if megautils.state().system.all[i].networkID == data.id then
+          megautils.state().system.all[i].networkData = data
         end
       end
     end)
@@ -295,7 +296,7 @@ function megautils.loadStage(self, path, call)
     local id = megautils.nextID()
     local e = megautils.add(mapentity, v.name, map, id)
     if megautils.networkMode == "server" and megautils.networkGameStarted then
-      megautils.sendEntityToClients(mapentity, v.name, path, id)
+      megautils.sendEntityToClients(mapentity, {v.name, path, id})
     end
     if e and call then call(e) end
   end
@@ -325,6 +326,10 @@ end
 
 function megautils.add(o, ...)
   return states.currentstate.system:add(o, ...)
+end
+
+function megautils.adde(o)
+  return states.currentstate.system:adde(o)
 end
 
 function megautils.addq(o, ...)
