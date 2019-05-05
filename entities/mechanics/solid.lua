@@ -311,7 +311,7 @@ function collision.checkGround(self, noSlopeEffect)
       if #self:collisionTable(solid, 0, cgrav * i) == 0 then
         self.ground = false
         self.onMovingFloor = nil
-        self.inStandSolid = false
+        self.inStandSolid = nil
       elseif self.velocity.vely * cgrav >= 0 then
         self.ground = true
         self.transform.y = math.round(self.transform.y+cgrav) + (i - 1) * cgrav
@@ -464,13 +464,16 @@ function collision.generalCollision(self, noSlopeEffect)
     end
   end
   
-  if self.canStandSolid and #self:collisionTable(stand, 0, cgrav) ~= 0 then
-    if self.velocity.vely * cgrav > 0 then
-      self.ground = true
-      self.ycoll = self.velocity.vely
-      self.velocity.vely = 0
+  if self.canStandSolid then
+    local ss = self:collisionTable(stand, 0, cgrav)
+    if #ss ~= 0 then
+      if self.velocity.vely * cgrav > 0 then
+        self.ground = true
+        self.ycoll = self.velocity.vely
+        self.velocity.vely = 0
+      end
+      self.inStandSolid = ss[1]
     end
-    self.inStandSolid = true
   end
   
   if self.spikesHurt then
