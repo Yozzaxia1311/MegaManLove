@@ -840,7 +840,6 @@ function megaman:code(dt)
     else
       self.velocity.vely = 0
     end
-    print(self.inStandSolid)
     self.velocity.velx = math.clamp(self.velocity.velx, self.maxLeftSpeed, self.maxRightSpeed)
     for k, v in pairs(self.groundUpdateFuncs) do
       v(self)

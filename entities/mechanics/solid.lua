@@ -4,7 +4,7 @@ collision.maxSlope = 1
 
 function collision.doCollision(self)
   collision.checkGround(self)
-  if not self.ground then self:grav() end
+  if not self.ground and self.grav then self:grav() end
   if self.blockCollision then
     collision.generalCollision(self)
   else
@@ -481,14 +481,14 @@ function collision.generalCollision(self, noSlopeEffect)
   end
 end
 
-solid = entity:extend()
+solid = basicEntity:extend()
 
 addobjects.register("solid", function(v)
   megautils.add(solid, {v.x, v.y, v.width, v.height})
 end)
 
 function solid:new(x, y, w, h)
-  solid.super.new(self, true)
+  solid.super.new(self)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(w, h)
@@ -500,14 +500,14 @@ function solid:new(x, y, w, h)
   end
 end
 
-sinkIn = entity:extend()
+sinkIn = basicEntity:extend()
 
 addobjects.register("sink_in", function(v)
   megautils.add(sinkIn, {v.x, v.y, v.width, v.height, v.properties["speed"]})
 end)
 
 function sinkIn:new(x, y, w, h, s)
-  sinkIn.super.new(self, true)
+  sinkIn.super.new(self)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(w, h)
@@ -529,14 +529,14 @@ function sinkIn:update(dt)
   end
 end
 
-slope = entity:extend()
+slope = basicEntity:extend()
 
 addobjects.register("slope", function(v)
   megautils.add(slope, {v.x, v.y, loader.get(v.properties["mask"]), v.properties["invert"], v.properties["left"]})
 end)
 
 function slope:new(x, y, mask, invert, left)
-  slope.super.new(self, true)
+  slope.super.new(self)
   self.transform.x = x
   self.transform.y = y
   self.left = left
@@ -549,14 +549,14 @@ function slope:new(x, y, mask, invert, left)
   end
 end
 
-oneway = entity:extend()
+oneway = basicEntity:extend()
 
 addobjects.register("oneway", function(v)
   megautils.add(oneway, {v.x, v.y, v.width, v.height})
 end)
 
 function oneway:new(x, y, w, h)
-  oneway.super.new(self, true)
+  oneway.super.new(self)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(w, h)

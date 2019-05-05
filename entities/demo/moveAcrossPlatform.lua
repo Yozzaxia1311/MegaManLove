@@ -4,7 +4,7 @@ addobjects.register("move_across_platform", function(v)
   end})
 end)
 
-moveAcrossPlatform = entity:extend()
+moveAcrossPlatform = basicEntity:extend()
 
 function moveAcrossPlatform:new(x, y, toX, toY, s)
   moveAcrossPlatform.super.new(self)

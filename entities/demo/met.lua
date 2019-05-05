@@ -173,7 +173,7 @@ function met:removed()
   end
 end
 
-metBullet = entity:extend()
+metBullet = basicEntity:extend()
 
 function metBullet:new(x, y, vx, vy)
   metBullet.super.new(self)
@@ -195,7 +195,8 @@ function metBullet:draw()
 end
 
 function metBullet:update(dt)
-  self:moveBy(self.velocity.velx, self.velocity.vely)
+  self.transform.x = self.transform.x + self.velocity.velx
+  self.transform.y = self.transform.y + self.velocity.vely
   self:hurt(self:collisionTable(globals.allPlayers), -2, 80)
   if megautils.outside(self) then
     megautils.remove(self, true)

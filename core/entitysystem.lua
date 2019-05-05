@@ -1,6 +1,9 @@
 entitysystem = class:extend()
 
 entitysystem.drawCollision = false
+entitysystem.doBeforeUpdate = true
+entitysystem.doAfterUpdate = true
+entitysystem.doDrawQuality = false
 
 function entitysystem:new()
   self.entities = {}
@@ -172,7 +175,7 @@ function entitysystem:draw()
   for i=1, #self.entities do
     for k=1, #self.entities[i].data do
       local v = self.entities[i].data[k]
-      if v.render and v.flashRender and not v.isRemoved then
+      if v.render and (v.flashRender == nil and true or v.flashRender) and not v.isRemoved and v.draw then
         if states.switched then
           return
         end
@@ -186,13 +189,30 @@ function entitysystem:draw()
   end
 end
 
+function entitysystem:drawQuality()
+  if not entitysystem.doDrawQuality then return end
+  for i=1, #self.entities do
+    for k=1, #self.entities[i].data do
+      local v = self.entities[i].data[k]
+      if v.render and (v.flashRender == nil and true or v.flashRender) and not v.isRemoved and v.drawQuality then
+        if states.switched then
+          return
+        end
+        v:drawQuality()
+      end
+    end
+  end
+end
+
 function entitysystem:update(dt)
-  for i=1, #self.updates do
-    local t = self.updates[i]
-    if t.updated and not t.isRemoved then
-      t:beforeUpdate(dt)
-      if states.switched then
-        return
+  if entitysystem.doBeforeUpdate then
+    for i=1, #self.updates do
+      local t = self.updates[i]
+      if t.updated and not t.isRemoved and t.beforeUpdate then
+        t:beforeUpdate(dt)
+        if states.switched then
+          return
+        end
       end
     end
   end
@@ -200,19 +220,21 @@ function entitysystem:update(dt)
     local t = self.updates[i]
     t.previousX = t.transform.x
     t.previousY = t.transform.y
-    if t.updated and not t.isRemoved then
+    if t.updated and not t.isRemoved and t.update then
       t:update(dt)
       if states.switched then
         return
       end
     end
   end
-  for i=1, #self.updates do
-    local t = self.updates[i]
-    if t.updated and not t.isRemoved then
-      t:afterUpdate(dt)
-      if states.switched then
-        return
+  if entitysystem.doAfterUpdate then
+    for i=1, #self.updates do
+      local t = self.updates[i]
+      if t.updated and not t.isRemoved and t.afterUpdate then
+        t:afterUpdate(dt)
+        if states.switched then
+          return
+        end
       end
     end
   end
@@ -267,7 +289,7 @@ end
 
 entity = class:extend()
 
-function entity:new(basic)
+function entity:new()
   self.isAdded = false
   self.transform = {}
   self.transform.x = 0
@@ -275,7 +297,6 @@ function entity:new(basic)
   self.collisionShape = nil
   self.flashRender = true
   self.layer = 0
-  self.updateLayer = 0
   self.isRemoved = false
   self.updated = true
   self.render = true
@@ -446,11 +467,6 @@ function entity:drawCollision()
   end
 end
 
-function entity:collisionRect(e, x, y)
-  return rectOverlaps(self.transform.x, self.transform.y, self:width(), self:height(), 
-    e.transform.x, e.transform.y, e:width(), e:height())
-end
-
 function entity:collisionTable(t, x, y, func)
   local result = {}
   if t == nil then return result end
@@ -467,11 +483,126 @@ function entity:beforeUpdate(dt) end
 function entity:update(dt) end
 function entity:afterUpdate(dt) end
 function entity:draw() end
+function entity:drawQuality() end
 function entity:removed() end
 function entity:added() end
 function entity:staticToggled() end
 
-mapentity = entity:extend()
+basicEntity = class:extend()
+
+function basicEntity:new(basic)
+  self.isAdded = false
+  self.transform = {}
+  self.transform.x = 0
+  self.transform.y = 0
+  self.collisionShape = nil
+  self.layer = 0
+  self.isRemoved = false
+  self.updated = true
+  self.render = true
+  self.isSolid = 0
+end
+
+function basicEntity:hurt(t, h, f)
+  for k, v in pairs(t) do
+    v:healthChanged(self, h, f or 80)
+  end
+end
+
+function basicEntity:setLayer(l)
+  if not self.isAdded or self.static then
+    self.layer = l
+  else
+    megautils.state().system:setLayer(self, l)
+  end
+end
+
+function basicEntity:addStatic()
+  megautils.state().system:addStatic(self)
+end
+
+function basicEntity:removeStatic()
+  megautils.state().system:removeStatic(self)
+end
+
+function basicEntity:removeFromGroup(g)
+  megautils.state().system:removeFromGroup(self, g)
+end
+
+function basicEntity:inGroup(g)
+  return table.contains(states.currentstate.system.groups[g], self)
+end
+
+function basicEntity:removeFromAllGroups()
+  megautils.state().system:removeFromAllGroups(self, g)
+end
+
+function basicEntity:addToGroup(g)
+  if states.currentstate.system.groups[g] == nil then
+    states.currentstate.system.groups[g] = {}
+  end
+  if not table.contains(states.currentstate.system.groups[g], self) then
+    table.insert(states.currentstate.system.groups[g], self)
+  end
+end
+
+function basicEntity:setRectangleCollision(w, h)
+  self.collisionShape = {}
+  self.collisionShape.type = 0
+  self.collisionShape.w = w
+  self.collisionShape.h = h
+end
+
+function basicEntity:setImageCollision(data)
+  self.collisionShape = {}
+  self.collisionShape.type = 1
+  self.collisionShape.data = table.convert1Dto2D(data[1], data[2])
+  self.collisionShape.w = #self.collisionShape.data[1]
+  self.collisionShape.h = #self.collisionShape.data
+end
+
+function basicEntity:collision(e, x, y)
+  if e == nil or self.collisionShape == nil or e.collisionShape == nil then return false end
+  if self.collisionShape.type == 0 then
+    if e.collisionShape.type == 0 then
+      return rectOverlaps(self.transform.x + (x or 0), self.transform.y + (y or 0),
+        self.collisionShape.w, self.collisionShape.h,
+        e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h)
+    elseif e.collisionShape.type == 1 then
+      return imageRectOverlaps(e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h, e.collisionShape.data,
+        self.transform.x + (x or 0), self.transform.y + (y or 0), self.collisionShape.w, self.collisionShape.h)
+    end
+  elseif self.collisionShape.type == 1 then
+    if e.collisionShape.type == 0 then
+      return imageRectOverlaps(self.transform.x + (x or 0), self.transform.y + (y or 0),
+        self.collisionShape.w, self.collisionShape.h, self.collisionShape.data,
+        e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h)
+    elseif e.collisionShape.type == 1 then
+      return false --image/image collision
+    end
+  end
+  return false
+end
+
+function basicEntity:collisionTable(t, x, y, func)
+  local result = {}
+  if t == nil then return result end
+  for k=1, #t do
+    local v = t[k]
+    if self:collision(v, x, y) and (func == nil and true or func(v)) then
+      result[#result+1] = v
+    end
+  end
+  return result
+end
+
+function basicEntity:update(dt) end
+function basicEntity:draw() end
+function basicEntity:removed() end
+function basicEntity:added() end
+function basicEntity:staticToggled() end
+
+mapentity = basicEntity:extend()
 
 mapentity.netName = "map"
 megautils.netNames[mapentity.netName] = mapentity
