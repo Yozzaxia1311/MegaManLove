@@ -20,16 +20,18 @@ function megautils.createServer(p)
           megautils.resetGameObjects()
         end)
     end)
-  megautils.net:on("a", function(data)
+  megautils.net:on("a", function(data, client)
       megautils.add(megautils.netNames[data[#data]], data)
+      megautils.net:sendToAllBut(client, "a", data)
     end)
-  megautils.net:on("u", function(data)
+  megautils.net:on("u", function(data, client)
       if not megautils.state() or not megautils.state().system.all then return end
       for i=1, #megautils.state().system.all do
         if megautils.state().system.all[i].networkID == data.id then
           megautils.state().system.all[i].networkData = data
         end
       end
+      megautils.net:sendToAllBut(client, "u", data)
     end)
   print("Server started on port " .. tostring(p or 5555))
   megautils.networkMode = "server"
@@ -47,6 +49,13 @@ function megautils.connectToServer(i, p)
           megautils.net:send("start")
         end)
     end)
+  megautils.net:on("rt", function(data)
+      if megautils.groups()["removeOnTransition"] then
+        for k, v in ipairs(megautils.groups()["removeOnTransition"]) do
+          megautils.remove(v, true)
+        end
+      end
+    end)
   megautils.net:on("l", function(data)
       loader.load(data.p, data.n, data.t, data.e, data.l)
     end)
@@ -62,7 +71,7 @@ function megautils.connectToServer(i, p)
   megautils.net:on("s", function(data)
       mmSfx.play(data.p, data.l, data.v)
     end)
-  megautils.net:on("u", function(data)
+  megautils.net:on("un", function(data)
       globals.resetState = data.rs
       globals.manageStageResources = data.msr
       megautils.unload()
@@ -114,7 +123,8 @@ end
 
 function megautils.sendEntityToServer(c, args)
   if megautils.networkMode == "server" then
-    megautils.net:send("a", {name=c.netName, arg=args})
+    args[#args+1] = c.netName
+    megautils.net:send("a", args)
   end
 end
 
