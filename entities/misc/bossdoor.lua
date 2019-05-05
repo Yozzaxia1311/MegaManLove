@@ -3,8 +3,8 @@ bossdoor = entity:extend()
 addobjects.register("boss_door", function(v)
   local seg = (v.properties["dir"]=="up" or v.properties["dir"]=="down") and 
     math.round(v.width/16) or math.round(v.height/16)
-  megautils.add(bossdoor, {v.x, v.y, seg, v.properties["dir"],
-  v.properties["doScrollX"], v.properties["doScrollY"]})
+  megautils.add(bossdoor, v.x, v.y, seg, v.properties["dir"],
+  v.properties["doScrollX"], v.properties["doScrollY"])
 end)
 
 bossdoor.animGrid = anim8.newGrid(32, 64, 160, 64)

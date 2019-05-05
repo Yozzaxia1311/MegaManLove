@@ -31,10 +31,10 @@ function megautils.createServer(p)
       megautils.net:sendToAllBut(client, "a", data)
     end)
   megautils.net:on("u", function(data, client)
-      if not megautils.state() or not megautils.state().system.all then return end
-      for i=1, #megautils.state().system.all do
-        if megautils.state().system.all[i].networkID == data.id then
-          megautils.state().system.all[i].networkData = data
+      if not megautils.state() then return end
+      for i=1, #megautils.state().system.updates do
+        if megautils.state().system.updates[i].networkID == data.id then
+          megautils.state().system.updates[i].networkData = data
         end
       end
       megautils.net:sendToAllBut(client, "u", data)
@@ -93,10 +93,10 @@ function megautils.connectToServer(i, p)
       megautils.add(megautils.netNames[data[#data]], data)
     end)
   megautils.net:on("u", function(data)
-      if not megautils.state() or not megautils.state().system.all then return end
-      for i=1, #megautils.state().system.all do
-        if megautils.state().system.all[i].networkID == data.id then
-          megautils.state().system.all[i].networkData = data
+      if not megautils.state() then return end
+      for i=1, #megautils.state().system.updates do
+        if megautils.state().system.updates[i].networkID == data.id then
+          megautils.state().system.updates[i].networkData = data
         end
       end
     end)
@@ -293,26 +293,26 @@ function megautils.loadStage(self, path, call)
   end
   for k, v in pairs(tLayers) do
     local id = megautils.nextID()
-    local e = megautils.add(mapentity, {v.name, map, id})
+    local e = megautils.add(mapentity, v.name, map, id)
     if megautils.networkMode == "server" and megautils.networkGameStarted then
-      megautils.sendEntityToClients(mapentity, {v.name, path, id})
+      megautils.sendEntityToClients(mapentity, v.name, path, id)
     end
     if e and call then call(e) end
   end
   addobjects.add(objs)
-  local tmp = megautils.add(trigger, {function(s, dt)
+  local tmp = megautils.add(trigger, function(s, dt)
     s.map:update(1/60)
-  end}, nil, nil, true)
+  end)
   tmp.map = map
 end
 
 function megautils.gotoState(s, before, after, chunk)
-  megautils.add(fade, {true, nil, nil, function(se)
+  megautils.add(fade, true, nil, nil, function(se)
         if before then before() end
         megautils.remove(se)
         states.set(s, chunk)
         if after then after() end
-      end})
+      end)
 end
 
 function megautils.remove(o, queue)
@@ -323,8 +323,12 @@ function megautils.state()
   return states.currentstate
 end
 
-function megautils.add(o, queue)
-  return states.currentstate.system:add(o, queue)
+function megautils.add(o, ...)
+  return states.currentstate.system:add(o, ...)
+end
+
+function megautils.addq(o, ...)
+  return states.currentstate.system:addq(o, ...)
 end
 
 function megautils.groups()
@@ -477,23 +481,23 @@ function megautils.dropItem(x, y)
   if math.between(rnd, 0, 39) then
     local rnd2 = love.math.random(0, 2)
     if rnd2 == 0 then
-      megautils.add(life, {x, y, true})
+      megautils.add(life, x, y, true)
     elseif rnd2 == 1 then
-      megautils.add(eTank, {x, y, true})
+      megautils.add(eTank, x, y, true)
     else
-      megautils.add(wTank, {x, y, true})
+      megautils.add(wTank, x, y, true)
     end
   elseif math.between(rnd, 50, 362) then
     if math.randomboolean() then
-      megautils.add(health, {x, y, true})
+      megautils.add(health, x, y, true)
     else
-      megautils.add(energy, {x, y, true})
+      megautils.add(energy, x, y, true)
     end
   elseif math.between(rnd, 370, 995) then
     if math.randomboolean() then
-      megautils.add(smallHealth, {x, y, true})
+      megautils.add(smallHealth, x, y, true)
     else
-      megautils.add(smallEnergy, {x, y, true})
+      megautils.add(smallEnergy, x, y, true)
     end
   end
 end

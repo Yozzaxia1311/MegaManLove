@@ -23,8 +23,8 @@ function collision.getTable(self, dx, dy)
   local cgrav = math.sign(self.gravity)
   cgrav = cgrav == 0 and 1 or cgrav
   
-  for i=1, #megautils.state().system.all do
-    local v = megautils.state().system.all[i]
+  for i=1, #megautils.state().system.updates do
+    local v = megautils.state().system.updates[i]
     if v.isSolid == 1 or v.isSolid == 2 then
       if v.isSolid ~= 2 or (not v:collision(self) and v:collision(self, -xs, -(cgrav * math.abs(ys)))) then
         solid[#solid+1] = v
@@ -65,8 +65,8 @@ function collision.checkSolid(self, dx, dy, noSlope)
   local cgrav = math.sign(self.gravity)
   cgrav = cgrav == 0 and 1 or cgrav
   
-  for i=1, #megautils.state().system.all do
-    local v = megautils.state().system.all[i]
+  for i=1, #megautils.state().system.updates do
+    local v = megautils.state().system.updates[i]
     if v.isSolid == 1 or v.isSolid == 2 then
       if v.isSolid ~= 2 or (not v:collision(self) and v:collision(self, -xs, -(cgrav * math.abs(ys)))) then
         solid[#solid+1] = v
@@ -118,8 +118,8 @@ function collision.entityPlatform(self)
       end
       
       if myyspeed ~= 0 then
-        for i=1, #megautils.state().system.all do
-          local v = megautils.state().system.all[i]
+        for i=1, #megautils.state().system.updates do
+          local v = megautils.state().system.updates[i]
           if v.blockCollision and v.collisionShape and v.crushed ~= self then
             local epDir = math.sign(self.transform.y + (self.collisionShape.h/2) -
               (v.transform.y + (v.collisionShape.h/2)))
@@ -180,8 +180,8 @@ function collision.entityPlatform(self)
       self.transform.y = self.transform.y + myyspeed
         
       if myxspeed ~= 0 then
-        for i=1, #megautils.state().system.all do
-          local v = megautils.state().system.all[i]
+        for i=1, #megautils.state().system.updates do
+          local v = megautils.state().system.updates[i]
           local continue = false
           if v.blockCollision and v.collisionShape and v.crushed ~= self then
             if not v:collision(self) then
@@ -279,8 +279,8 @@ function collision.checkGround(self, noSlopeEffect)
   
   local slp = math.ceil(math.abs(self.velocity.velx) + 1)
   
-  for i=1, #megautils.state().system.all do
-    local v = megautils.state().system.all[i]
+  for i=1, #megautils.state().system.updates do
+    local v = megautils.state().system.updates[i]
     if v ~= self and v.collisionShape then
       if v.isSolid == 1 or v.isSolid == 2 then
         if not v:collision(self, 0, cgrav) then
@@ -338,8 +338,8 @@ function collision.generalCollision(self, noSlopeEffect)
   local cgrav = math.sign(self.gravity)
   cgrav = cgrav == 0 and 1 or cgrav
   
-  for i=1, #megautils.state().system.all do
-    local v = megautils.state().system.all[i]
+  for i=1, #megautils.state().system.updates do
+    local v = megautils.state().system.updates[i]
     if v ~= self and v.collisionShape then
       if v.isSolid == 1 then
         if not v:collision(self) and not table.contains(solid, v) then
@@ -365,8 +365,8 @@ function collision.generalCollision(self, noSlopeEffect)
   if self.velocity.velx ~= 0 then
     local slp = (math.ceil(math.abs(self.velocity.velx)) * collision.maxSlope * cgrav) * ((self.velocity.vely * cgrav) <= 0 and 1 or 0)
     if slp ~= 0 then
-      for i=1, #megautils.state().system.all do
-        local v = megautils.state().system.all[i]
+      for i=1, #megautils.state().system.updates do
+        local v = megautils.state().system.updates[i]
         if v ~= self then
           if v.collisionShape and not table.contains(solid, v) then
             if v.isSolid == 2 then
@@ -429,8 +429,8 @@ function collision.generalCollision(self, noSlopeEffect)
   
   if self.velocity.vely ~= 0 then
     if self.velocity.vely * cgrav > 0 then
-      for i=1, #megautils.state().system.all do
-        local v = megautils.state().system.all[i]
+      for i=1, #megautils.state().system.updates do
+        local v = megautils.state().system.updates[i]
         if v.isSolid == 2 then
           table.removevaluearray(solid, v)
           if not v:collision(self) and not con then
@@ -484,7 +484,7 @@ end
 solid = basicEntity:extend()
 
 addobjects.register("solid", function(v)
-  megautils.add(solid, {v.x, v.y, v.width, v.height})
+  megautils.add(solid, v.x, v.y, v.width, v.height)
 end)
 
 function solid:new(x, y, w, h)
@@ -503,7 +503,7 @@ end
 sinkIn = basicEntity:extend()
 
 addobjects.register("sink_in", function(v)
-  megautils.add(sinkIn, {v.x, v.y, v.width, v.height, v.properties["speed"]})
+  megautils.add(sinkIn, v.x, v.y, v.width, v.height, v.properties["speed"])
 end)
 
 function sinkIn:new(x, y, w, h, s)
@@ -532,7 +532,7 @@ end
 slope = basicEntity:extend()
 
 addobjects.register("slope", function(v)
-  megautils.add(slope, {v.x, v.y, loader.get(v.properties["mask"]), v.properties["invert"], v.properties["left"]})
+  megautils.add(slope, v.x, v.y, loader.get(v.properties["mask"]), v.properties["invert"], v.properties["left"])
 end)
 
 function slope:new(x, y, mask, invert, left)
@@ -552,7 +552,7 @@ end
 oneway = basicEntity:extend()
 
 addobjects.register("oneway", function(v)
-  megautils.add(oneway, {v.x, v.y, v.width, v.height})
+  megautils.add(oneway, v.x, v.y, v.width, v.height)
 end)
 
 function oneway:new(x, y, w, h)

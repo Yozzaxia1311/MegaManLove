@@ -11,12 +11,9 @@ function entitysystem:new()
   self.groups = {}
   self.static = {}
   self.layers = {}
-  self.all = {}
-  self.netAdd = nil
-  self.addQueue = nil
-  self.removeQueue = nil
+  self.addQueue = {}
+  self.removeQueue = {}
   self.doSort = false
-  self.id = 0
 end
 
 function entitysystem:sortLayers()
@@ -33,40 +30,39 @@ function entitysystem:sortLayers()
   end
 end
 
-function entitysystem:add(c, arguments, queue)
+function entitysystem:add(c, ...)
   if not c then return end
-  if queue then
-    if self.addQueue == nil then self.addQueue = {} end
-    if not table.contains(self.addQueue, c) then
-      self.addQueue[#self.addQueue+1] = c
-    end
-  else
-    local e = c(unpack(arguments or {}))
-    if not e.static then
-      local done = false
-      for k, v in pairs(self.entities) do
-        if v.layer == e.layer then
-          v.data[#v.data+1] = e
-          e.actualLayer = v
-          done = true
-          break
-        end
+  local e = c(...)
+  if not e.static then
+    local done = false
+    for k, v in pairs(self.entities) do
+      if v.layer == e.layer then
+        v.data[#v.data+1] = e
+        e.actualLayer = v
+        done = true
+        break
       end
-      if not done then
-        self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}}
-        e.actualLayer = self.entities[#self.entities]
-        e.layer = e.actualLayer.layer
-        self.doSort = true
-      end
-      self.updates[#self.updates+1] = e
-      self.all[#self.all+1] = e
     end
-    e.isRemoved = false
-    e.isAdded = true
-    e:added()
-    e.previousX = e.transform.x
-    e.previousY = e.transform.y
-    return e
+    if not done then
+      self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}}
+      e.actualLayer = self.entities[#self.entities]
+      e.layer = e.actualLayer.layer
+      self.doSort = true
+    end
+    self.updates[#self.updates+1] = e
+  end
+  e.isRemoved = false
+  e.isAdded = true
+  e:added()
+  e.previousX = e.transform.x
+  e.previousY = e.transform.y
+  return e
+end
+
+function entitysystem:addq(c, ...)
+  if not c then return end
+  if not table.contains(self.addQueue, c) then
+    self.addQueue[#self.addQueue+1] = {c, ...}
   end
 end
 
@@ -86,7 +82,6 @@ end
 function entitysystem:addStatic(e)
   table.removevaluearray(self.updates, e)
   table.removevaluearray(e.actualLayer.data, e)
-  table.removevaluearray(self.all, e)
   self.static[#self.static+1] = e
   e.static = true
   e:staticToggled()
@@ -111,7 +106,6 @@ function entitysystem:removeStatic(e)
       self.doSort = true
     end
     self.updates[#self.updates+1] = e
-    self.all[#self.all+1] = e
     e.static = false
     e:staticToggled()
   end
@@ -140,7 +134,6 @@ end
 function entitysystem:remove(e, queue)
   if e == nil then return end
   if queue then
-    if self.removeQueue == nil then self.removeQueue = {} end
     if not table.contains(self.removeQueue, e) then
       self.removeQueue[#self.removeQueue+1] = e
     end
@@ -151,22 +144,24 @@ function entitysystem:remove(e, queue)
     e:removeStatic()
     table.removevaluearray(e.actualLayer.data, e)
     table.removevaluearray(self.updates, e)
-    table.removevaluearray(self.all, e)
     e.isAdded = false
   end
 end
 
 function entitysystem:clear()
+  for i=1, #self.updates do
+    self.updates[i].isRemoved = true
+    self.updates[i]:removed()
+  end
+  for i=1, #self.static do
+    self.static[i].isRemoved = true
+    self.static[i]:removed()
+  end
   section.sections = {}
   section.current = nil
-  for i=1, #self.all do
-    self.all[i].isRemoved = true
-    self.all[i]:removed()
-  end
   self.entities = {}
   self.updates = {}
   self.groups = {}
-  self.all = {}
   self.static = {}
   self.afterUpdate = nil
 end
@@ -241,17 +236,13 @@ function entitysystem:update(dt)
   if self.afterUpdate then
     self.afterUpdate(self)
   end
-  if self.addQueue then
-    for k, v in ipairs(self.addQueue) do
-      self:add(v)
-    end
-    self.addQueue = nil
+  for i=1, #self.addQueue do
+    self:add(self.addQueue[i][1], self.addQueue[i][2])
+    self.addQueue[i] = nil
   end
-  if self.removeQueue then
-    for k, v in ipairs(self.removeQueue) do
-      self:remove(v)
-    end
-    self.removeQueue = nil
+  for i=1, #self.removeQueue do
+    self:remove(self.removeQueue[i])
+    self.removeQueue[i] = nil
   end
   if self.doSort then
     self.doSort = false

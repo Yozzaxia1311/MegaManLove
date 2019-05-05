@@ -83,7 +83,7 @@ function healthhandler:update(dt)
       elseif healthhandler.playerTimers[i] == -1 and control.startPressed[i] then
         if globals.lives > 0 then
           healthhandler.playerTimers[i] = -2
-          local p = megautils.add(megaman, {self.player.transform.x, self.player.transform.y, self.player.side, true, i})
+          local p = megautils.add(megaman, self.player.transform.x, self.player.transform.y, self.player.side, true, i)
           self.player:transferState(p)
           megautils.revivePlayer(i)
           

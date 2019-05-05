@@ -3,9 +3,9 @@ loader.load("assets/global/bosses/stick_man.png", "stick_man", "texture")
 stickMan = entity:extend()
 
 addobjects.register("stick_man", function(v)
-  megautils.add(spawner, {v.x, v.y, 12, 28, function(s)
-    megautils.add(stickMan, {v.x, v.y, s})
-  end})
+  megautils.add(spawner, v.x, v.y, 12, 28, function(s)
+    megautils.add(stickMan, v.x, v.y, s)
+  end)
 end)
 
 function stickMan:new(x, y, s)
@@ -76,7 +76,7 @@ function stickMan:healthChanged(o, c, i)
   elseif self.changeHealth < 0 then
     self.hitTimer = 0
     mmSfx.play("enemy_hit")
-    megautils.add(harm, {self})
+    megautils.add(harm, self)
     if o:is(megaChargedBuster) then
       megautils.remove(o, true)
     end
@@ -126,7 +126,7 @@ function stickMan:update(dt)
   elseif self.s == 2 then
     collision.doCollision(self)
     if self.ground then
-      self.hBar = megautils.add(healthhandler, {{128, 128, 128}, {255, 255, 255}, {0, 0, 0}, nil, nil, 7})
+      self.hBar = megautils.add(healthhandler, {128, 128, 128}, {255, 255, 255}, {0, 0, 0}, nil, nil, 7)
       self.hBar.health = 0
       self.hBar.change = self.health
       self.hBar:updateThis()
@@ -300,7 +300,7 @@ function megamanStick:update(dt)
       self.timer = 0
       self.timer2 = self.timer2 + 1
       self.shootTimer = 0
-      megautils.add(stickWeapon, {self.transform.x+17, self.transform.y+7, 1, self.wh})
+      megautils.add(stickWeapon, self.transform.x+17, self.transform.y+7, 1, self.wh)
       if self.timer2 == 4 then
         self.timer2 = 0
         self.s = 5

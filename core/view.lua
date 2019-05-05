@@ -22,7 +22,7 @@ function view.draw(sys)
   love.graphics.setColor(1, 1, 1, 1)
   control.drawDemo()
   if showEntityCount then
-    local count = #megautils.state().system.all
+    local count = #megautils.state().system.updates
     love.graphics.setFont(mmFont)
     love.graphics.setColor(1, 1, 1, 0.8)
     love.graphics.print(count, view.w - 24, 24)

@@ -4,7 +4,7 @@ function stageselectstate:begin()
   loader.load("assets/misc/select.png", "mugshots", "texture")
   megautils.loadStage(self, "assets/maps/stage_select.lua")
   megautils.add(stageSelect)
-  megautils.add(fade, {false, nil, nil, fade.remove})
+  megautils.add(fade, false, nil, nil, fade.remove)
   view.x, view.y = 0, 0
   mmMusic.playFromFile("assets/sfx/music/select_loop.ogg", "assets/sfx/music/select_intro.ogg")
 end
@@ -111,7 +111,7 @@ function stageSelect:update(dt)
     if self.x == 2 and self.y == 1 then
       mmMusic.stopMusic()
       mmSfx.play("selected")
-      megautils.add(fade, {false, 4, {255, 255, 255}, function(s)
+      megautils.add(fade, false, 4, {255, 255, 255}, function(s)
         if globals.defeats.stickMan then
           megautils.gotoState("states/demo.state.lua")
         else
@@ -119,7 +119,7 @@ function stageSelect:update(dt)
           megautils.gotoState("states/bossintro.state.lua")
         end
         megautils.remove(s, true)
-      end})
+      end)
       self.stop = true
     end
   elseif control.selectPressed[1] and not self.stop then

@@ -28,9 +28,9 @@ megautils.netNames[camera.netName] = camera
 addobjects.register("camera", function(v)
   if v.properties["checkpoint"] == globals.checkpoint then
     local id = megautils.nextID()
-    megautils.add(camera, {v.x, v.y, v.properties["doScrollX"], v.properties["doScrollY"], id})
+    megautils.add(camera, v.x, v.y, v.properties["doScrollX"], v.properties["doScrollY"], id)
     if megautils.networkMode == "server" and megautils.networkGameStarted then
-      megautils.sendEntityToClients(client_camera, {v.x, v.y, id})
+      megautils.sendEntityToClients(client_camera, v.x, v.y, id)
     end
     camera.once = false
   end
@@ -117,8 +117,8 @@ function camera:setSection(s)
     end
   end
   for k, v in pairs(self.toSection:is(lockSection) and self.toSection.section.group or self.toSection.group) do
-    if v.spawnEarlyDuringTransition and not v.isAdded then
-      megautils.add(v)
+    if v.spawnEarlyDuringTransition and v.static then
+      v:removeStatic()
     end
   end
   self:updateBounds()

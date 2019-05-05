@@ -1,7 +1,7 @@
 addobjects.register("move_across_platform", function(v)
-  megautils.add(spawner, {v.x, v.y, 32, 16, function(s)
-    megautils.add(moveAcrossPlatform, {s.transform.x, s.transform.y, v.properties["to_x"], v.properties["to_y"], s})
-  end})
+  megautils.add(spawner, v.x, v.y, 32, 16, function(s)
+    megautils.add(moveAcrossPlatform, s.transform.x, s.transform.y, v.properties["to_x"], v.properties["to_y"], s)
+  end)
 end)
 
 moveAcrossPlatform = basicEntity:extend()

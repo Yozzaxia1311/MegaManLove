@@ -1,7 +1,7 @@
-ice = entity:extend()
+ice = basicEntity:extend()
 
 addobjects.register("ice", function(v)
-  megautils.add(ice, {v.x, v.y, v.width, v.height})
+  megautils.add(ice, v.x, v.y, v.width, v.height)
 end)
 
 megautils.resetStateFuncs["ice"] = function()

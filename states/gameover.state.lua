@@ -5,7 +5,7 @@ function gameoverstate:begin()
   megautils.loadStage(self, "assets/maps/cont.lua")
   megautils.add(contPanels)
   self.wait = 0
-  megautils.add(fade, {false, nil, nil, fade.remove})
+  megautils.add(fade, false, nil, nil, fade.remove)
   view.x, view.y = 0, 0
   mmMusic.playFromFile(nil, "assets/sfx/music/game_over.ogg")
 end
