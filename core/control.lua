@@ -137,6 +137,7 @@ function control.resetRec()
   control.record = {}
   control.anyPressed = false
   control.recordInput = false
+  control.once = false
 end
 
 function control.update()
@@ -207,37 +208,37 @@ end
 function control.playRecord()
   if control.record[control.recPos] then
     for i=1, globals.playerCount do
-      control.leftDown[i] = control.record[control.recPos].ld and control.record[control.recPos].ld[i] == 1
+      control.leftDown[i] = control.record[control.recPos].ld and control.record[control.recPos].ld[i]
       control.leftPressed[i] = control.leftDown[i] and control.pressed[i].left
       if control.leftPressed[i] then control.pressed[i].left = false end
-      control.rightDown[i] = control.record[control.recPos].rd and control.record[control.recPos].rd[i] == 1
+      control.rightDown[i] = control.record[control.recPos].rd and control.record[control.recPos].rd[i]
       control.rightPressed[i] = control.rightDown[i] and control.pressed[i].right
       if control.rightPressed[i] then control.pressed[i].right = false end
-      control.upDown[i] = control.record[control.recPos].ud and control.record[control.recPos].ud[i] == 1
+      control.upDown[i] = control.record[control.recPos].ud and control.record[control.recPos].ud[i]
       control.upPressed[i] = control.upDown[i] and control.pressed[i].up
       if control.upPressed[i] then control.pressed[i].up = false end
-      control.downDown[i] = control.record[control.recPos].dd and control.record[control.recPos].dd[i] == 1
+      control.downDown[i] = control.record[control.recPos].dd and control.record[control.recPos].dd[i]
       control.downPressed[i] = control.downDown[i] and control.pressed[i].down
       if control.downPressed[i] then control.pressed[i].down = false end
-      control.startDown[i] = control.record[control.recPos].sd and control.record[control.recPos].sd[i] == 1
+      control.startDown[i] = control.record[control.recPos].sd and control.record[control.recPos].sd[i]
       control.startPressed[i] = control.startDown[i] and control.pressed[i].start
       if control.startPressed[i] then control.pressed[i].start = false end
-      control.selectDown[i] = control.record[control.recPos].sld and control.record[control.recPos].sld[i] == 1
+      control.selectDown[i] = control.record[control.recPos].sld and control.record[control.recPos].sld[i]
       control.selectPressed[i] = control.selectDown[i] and control.pressed[i].selec
       if control.selectPressed[i] then control.pressed[i].selec = false end
-      control.jumpDown[i] = control.record[control.recPos].jd and control.record[control.recPos].jd[i] == 1
+      control.jumpDown[i] = control.record[control.recPos].jd and control.record[control.recPos].jd[i]
       control.jumpPressed[i] = control.jumpDown[i] and control.pressed[i].jump
       if control.jumpPressed[i] then control.pressed[i].jump = false end
-      control.shootDown[i] = control.record[control.recPos].shd and control.record[control.recPos].shd[i] == 1
+      control.shootDown[i] = control.record[control.recPos].shd and control.record[control.recPos].shd[i]
       control.shootPressed[i] = control.shootDown[i] and control.pressed[i].shoot
       if control.shootPressed[i] then control.pressed[i].shoot = false end
-      control.prevDown[i] = control.record[control.recPos].pd and control.record[control.recPos].pd[i] == 1
+      control.prevDown[i] = control.record[control.recPos].pd and control.record[control.recPos].pd[i]
       control.prevPressed[i] = control.prevDown[i] and control.pressed[i].prev
       if control.prevPressed[i] then control.pressed[i].prev = false end
-      control.nextDown[i] = control.record[control.recPos].nd and control.record[control.recPos].nd[i] == 1
+      control.nextDown[i] = control.record[control.recPos].nd and control.record[control.recPos].nd[i]
       control.nextPressed[i] = control.nextDown[i] and control.pressed[i].nex
       if control.nextPressed[i] then control.pressed[i].nex = false end
-      control.dashDown[i] = control.record[control.recPos].dad and control.record[control.recPos].dad[i] == 1
+      control.dashDown[i] = control.record[control.recPos].dad and control.record[control.recPos].dad[i]
       control.dashPressed[i] = control.dashDown[i] and control.pressed[i].dash
       if control.dashPressed[i] then control.pressed[i].dash = false end
     end
@@ -291,7 +292,7 @@ function control.doRecording()
       if control.record[control.recPos].ld == nil then
         control.record[control.recPos].ld = {}
       end
-      control.record[control.recPos].ld[i] = 1
+      control.record[control.recPos].ld[i] = control.leftDown[i]
     end
     if control.rightDown[i] then
       if control.record[control.recPos] == nil then
@@ -300,7 +301,7 @@ function control.doRecording()
       if control.record[control.recPos].rd == nil then
         control.record[control.recPos].rd = {}
       end
-      control.record[control.recPos].rd[i] = 1
+      control.record[control.recPos].rd[i] = control.rightDown[i]
     end
     if control.upDown[i] then
       if control.record[control.recPos] == nil then
@@ -309,7 +310,7 @@ function control.doRecording()
       if control.record[control.recPos].ud == nil then
         control.record[control.recPos].ud = {}
       end
-      control.record[control.recPos].ud[i] = 1
+      control.record[control.recPos].ud[i] = control.upDown[i]
     end
     if control.downDown[i] then
       if control.record[control.recPos] == nil then
@@ -318,7 +319,7 @@ function control.doRecording()
       if control.record[control.recPos].dd == nil then
         control.record[control.recPos].dd = {}
       end
-      control.record[control.recPos].dd[i] = 1
+      control.record[control.recPos].dd[i] = control.downDown[i]
     end
     if control.startDown[i] then
       if control.record[control.recPos] == nil then
@@ -327,7 +328,7 @@ function control.doRecording()
       if control.record[control.recPos].sd == nil then
         control.record[control.recPos].sd = {}
       end
-      control.record[control.recPos].sd[i] = 1
+      control.record[control.recPos].sd[i] = control.startDown[i]
     end
     if control.selectDown[i] then
       if control.record[control.recPos] == nil then
@@ -336,7 +337,7 @@ function control.doRecording()
       if control.record[control.recPos].sld == nil then
         control.record[control.recPos].sld = {}
       end
-      control.record[control.recPos].sld[i] = 1
+      control.record[control.recPos].sld[i] = control.selectDown[i]
     end
     if control.jumpDown[i] then
       if control.record[control.recPos] == nil then
@@ -345,7 +346,7 @@ function control.doRecording()
       if control.record[control.recPos].jd == nil then
         control.record[control.recPos].jd = {}
       end
-      control.record[control.recPos].jd[i] = 1
+      control.record[control.recPos].jd[i] = control.jumpDown[i]
     end
     if control.shootDown[i] then
       if control.record[control.recPos] == nil then
@@ -354,7 +355,7 @@ function control.doRecording()
       if control.record[control.recPos].shd == nil then
         control.record[control.recPos].shd = {}
       end
-      control.record[control.recPos].shd[i] = 1
+      control.record[control.recPos].shd[i] = control.shootDown[i]
     end
     if control.prevDown[i] then
       if control.record[control.recPos] == nil then
@@ -363,7 +364,7 @@ function control.doRecording()
       if control.record[control.recPos].pd == nil then
         control.record[control.recPos].pd = {}
       end
-      control.record[control.recPos].pd[i] = 1
+      control.record[control.recPos].pd[i] = control.prevDown[i]
     end
     if control.nextDown[i] then
       if control.record[control.recPos] == nil then
@@ -372,7 +373,7 @@ function control.doRecording()
       if control.record[control.recPos].nd == nil then
         control.record[control.recPos].nd = {}
       end
-      control.record[control.recPos].nd[i] = 1
+      control.record[control.recPos].nd[i] = control.nextDown[i]
     end
     if control.dashDown[i] then
       if control.record[control.recPos] == nil then
@@ -381,7 +382,7 @@ function control.doRecording()
       if control.record[control.recPos].dad == nil then
         control.record[control.recPos].dad = {}
       end
-      control.record[control.recPos].dad[i] = 1
+      control.record[control.recPos].dad[i] = control.dashDown[i]
     end
   end
   control.recPos = control.recPos + 1

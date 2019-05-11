@@ -1,6 +1,9 @@
 entitysystem = class:extend()
 
 entitysystem.drawCollision = false
+entitysystem.doBeforeUpdate = true
+entitysystem.doAfterUpdate = true
+entitysystem.doDrawQuality = false
 
 function entitysystem:new()
   self.entities = {}
@@ -9,8 +12,8 @@ function entitysystem:new()
   self.static = {}
   self.layers = {}
   self.all = {}
-  self.addQueue = nil
-  self.removeQueue = nil
+  self.addQueue = {}
+  self.removeQueue = {}
   self.doSort = false
 end
 
@@ -28,38 +31,70 @@ function entitysystem:sortLayers()
   end
 end
 
-function entitysystem:add(e, queue)
-  if e == nil then return end
-  if queue then
-    if self.addQueue == nil then self.addQueue = {} end
-    if not table.contains(self.addQueue, e) then
-      self.addQueue[#self.addQueue+1] = e
-    end
-  else
-    if not e.static then
-      local done = false
-      for k, v in pairs(self.entities) do
-        if v.layer == e.layer then
-          v.data[#v.data+1] = e
-          e.actualLayer = v
-          done = true
-          break
-        end
+function entitysystem:add(c, ...)
+  if not c then return end
+  local e = c(...)
+  if not e.static then
+    local done = false
+    for k, v in pairs(self.entities) do
+      if v.layer == e.layer then
+        v.data[#v.data+1] = e
+        e.actualLayer = v
+        done = true
+        break
       end
-      if not done then
-        self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}}
-        e.actualLayer = self.entities[#self.entities]
-        e.layer = e.actualLayer.layer
-        self.doSort = true
-      end
-      self.updates[#self.updates+1] = e
     end
-    self.all[#self.all+1] = e
-    e.isRemoved = false
-    e.isAdded = true
-    e:added()
-    e.previousX = e.transform.x
-    e.previousY = e.transform.y
+    if not done then
+      self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}}
+      e.actualLayer = self.entities[#self.entities]
+      e.layer = e.actualLayer.layer
+      self.doSort = true
+    end
+    self.updates[#self.updates+1] = e
+  end
+  self.all[#self.all+1] = e
+  e.isRemoved = false
+  e.isAdded = true
+  e:added()
+  e.previousX = e.transform.x
+  e.previousY = e.transform.y
+  return e
+end
+
+function entitysystem:adde(e)
+  if not e then return end
+  if not e.static then
+    local done = false
+    for k, v in pairs(self.entities) do
+      if v.layer == e.layer then
+        v.data[#v.data+1] = e
+        e.actualLayer = v
+        done = true
+        break
+      end
+    end
+    if not done then
+      self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}}
+      e.actualLayer = self.entities[#self.entities]
+      e.layer = e.actualLayer.layer
+      self.doSort = true
+    end
+    self.updates[#self.updates+1] = e
+  end
+  self.all[#self.all+1] = e
+  e.isRemoved = false
+  e.isAdded = true
+  e:added()
+  e.previousX = e.transform.x
+  e.previousY = e.transform.y
+  return e
+end
+
+function entitysystem:addq(c, ...)
+  if not c then return end
+  if not table.contains(self.addQueue, c) then
+    self.addQueue[#self.addQueue+1] = c(...)
+    return self.addQueue[#self.addQueue]
   end
 end
 
@@ -81,6 +116,7 @@ function entitysystem:addStatic(e)
   table.removevaluearray(e.actualLayer.data, e)
   self.static[#self.static+1] = e
   e.static = true
+  e:staticToggled()
 end
 
 function entitysystem:removeStatic(e)
@@ -103,6 +139,7 @@ function entitysystem:removeStatic(e)
     end
     self.updates[#self.updates+1] = e
     e.static = false
+    e:staticToggled()
   end
 end
 
@@ -129,7 +166,6 @@ end
 function entitysystem:remove(e, queue)
   if e == nil then return end
   if queue then
-    if self.removeQueue == nil then self.removeQueue = {} end
     if not table.contains(self.removeQueue, e) then
       self.removeQueue[#self.removeQueue+1] = e
     end
@@ -146,17 +182,18 @@ function entitysystem:remove(e, queue)
 end
 
 function entitysystem:clear()
+  for i=1, #self.all do
+    self.updates[i].isRemoved = true
+    self.updates[i]:removed()
+  end
   section.sections = {}
   section.current = nil
-  for i=1, #self.all do
-    self.all[i].isRemoved = true
-    self.all[i]:removed()
-  end
   self.entities = {}
   self.updates = {}
   self.groups = {}
-  self.all = {}
   self.static = {}
+  self.addQueue = {}
+  self.removeQueue = {}
   self.afterUpdate = nil
 end
 
@@ -164,7 +201,7 @@ function entitysystem:draw()
   for i=1, #self.entities do
     for k=1, #self.entities[i].data do
       local v = self.entities[i].data[k]
-      if v.render and v.flashRender and not v.isRemoved then
+      if v.render and (v.flashRender == nil and true or v.flashRender) and not v.isRemoved and v.draw then
         if states.switched then
           return
         end
@@ -178,13 +215,30 @@ function entitysystem:draw()
   end
 end
 
+function entitysystem:drawQuality()
+  if not entitysystem.doDrawQuality then return end
+  for i=1, #self.entities do
+    for k=1, #self.entities[i].data do
+      local v = self.entities[i].data[k]
+      if v.render and (v.flashRender == nil and true or v.flashRender) and not v.isRemoved and v.drawQuality then
+        if states.switched then
+          return
+        end
+        v:drawQuality()
+      end
+    end
+  end
+end
+
 function entitysystem:update(dt)
-  for i=1, #self.updates do
-    local t = self.updates[i]
-    if t.updated and not t.isRemoved then
-      t:beforeUpdate(dt)
-      if states.switched then
-        return
+  if entitysystem.doBeforeUpdate then
+    for i=1, #self.updates do
+      local t = self.updates[i]
+      if t.updated and not t.isRemoved and t.beforeUpdate then
+        t:beforeUpdate(dt)
+        if states.switched then
+          return
+        end
       end
     end
   end
@@ -192,36 +246,34 @@ function entitysystem:update(dt)
     local t = self.updates[i]
     t.previousX = t.transform.x
     t.previousY = t.transform.y
-    if t.updated and not t.isRemoved then
+    if t.updated and not t.isRemoved and t.update then
       t:update(dt)
       if states.switched then
         return
       end
     end
   end
-  for i=1, #self.updates do
-    local t = self.updates[i]
-    if t.updated and not t.isRemoved then
-      t:afterUpdate(dt)
-      if states.switched then
-        return
+  if entitysystem.doAfterUpdate then
+    for i=1, #self.updates do
+      local t = self.updates[i]
+      if t.updated and not t.isRemoved and t.afterUpdate then
+        t:afterUpdate(dt)
+        if states.switched then
+          return
+        end
       end
     end
   end
   if self.afterUpdate then
     self.afterUpdate(self)
   end
-  if self.addQueue then
-    for k, v in ipairs(self.addQueue) do
-      self:add(v)
-    end
-    self.addQueue = nil
+  for i=1, #self.addQueue do
+    self:adde(self.addQueue[i])
+    self.addQueue[i] = nil
   end
-  if self.removeQueue then
-    for k, v in ipairs(self.removeQueue) do
-      self:remove(v)
-    end
-    self.removeQueue = nil
+  for i=1, #self.removeQueue do
+    self:remove(self.removeQueue[i])
+    self.removeQueue[i] = nil
   end
   if self.doSort then
     self.doSort = false
@@ -259,7 +311,7 @@ end
 
 entity = class:extend()
 
-function entity:new(basic)
+function entity:new()
   self.isAdded = false
   self.transform = {}
   self.transform.x = 0
@@ -267,7 +319,6 @@ function entity:new(basic)
   self.collisionShape = nil
   self.flashRender = true
   self.layer = 0
-  self.updateLayer = 0
   self.isRemoved = false
   self.updated = true
   self.render = true
@@ -292,7 +343,7 @@ function entity:new(basic)
   self.moveByMoveY = 0
   self.inv = false
   self.spikesHurt = false
-  self.canSink = true
+  self.canStandSolid = true
 end
 
 function entity:grav() end
@@ -438,11 +489,6 @@ function entity:drawCollision()
   end
 end
 
-function entity:collisionRect(e, x, y)
-  return rectOverlaps(self.transform.x, self.transform.y, self:width(), self:height(), 
-    e.transform.x, e.transform.y, e:width(), e:height())
-end
-
 function entity:collisionTable(t, x, y, func)
   local result = {}
   if t == nil then return result end
@@ -459,25 +505,161 @@ function entity:beforeUpdate(dt) end
 function entity:update(dt) end
 function entity:afterUpdate(dt) end
 function entity:draw() end
+function entity:drawQuality() end
 function entity:removed() end
 function entity:added() end
+function entity:staticToggled() end
 
-mapentity = entity:extend()
+basicEntity = class:extend()
+
+function basicEntity:new(basic)
+  self.isAdded = false
+  self.transform = {}
+  self.transform.x = 0
+  self.transform.y = 0
+  self.collisionShape = nil
+  self.layer = 0
+  self.isRemoved = false
+  self.updated = true
+  self.render = true
+end
+
+function basicEntity:hurt(t, h, f)
+  for k, v in pairs(t) do
+    v:healthChanged(self, h, f or 80)
+  end
+end
+
+function basicEntity:setLayer(l)
+  if not self.isAdded or self.static then
+    self.layer = l
+  else
+    megautils.state().system:setLayer(self, l)
+  end
+end
+
+function basicEntity:addStatic()
+  megautils.state().system:addStatic(self)
+end
+
+function basicEntity:removeStatic()
+  megautils.state().system:removeStatic(self)
+end
+
+function basicEntity:removeFromGroup(g)
+  megautils.state().system:removeFromGroup(self, g)
+end
+
+function basicEntity:inGroup(g)
+  return table.contains(states.currentstate.system.groups[g], self)
+end
+
+function basicEntity:removeFromAllGroups()
+  megautils.state().system:removeFromAllGroups(self, g)
+end
+
+function basicEntity:addToGroup(g)
+  if states.currentstate.system.groups[g] == nil then
+    states.currentstate.system.groups[g] = {}
+  end
+  if not table.contains(states.currentstate.system.groups[g], self) then
+    table.insert(states.currentstate.system.groups[g], self)
+  end
+end
+
+function basicEntity:setRectangleCollision(w, h)
+  self.collisionShape = {}
+  self.collisionShape.type = 0
+  self.collisionShape.w = w
+  self.collisionShape.h = h
+end
+
+function basicEntity:setImageCollision(data)
+  self.collisionShape = {}
+  self.collisionShape.type = 1
+  self.collisionShape.data = table.convert1Dto2D(data[1], data[2])
+  self.collisionShape.w = #self.collisionShape.data[1]
+  self.collisionShape.h = #self.collisionShape.data
+end
+
+function basicEntity:collision(e, x, y)
+  if e == nil or self.collisionShape == nil or e.collisionShape == nil then return false end
+  if self.collisionShape.type == 0 then
+    if e.collisionShape.type == 0 then
+      return rectOverlaps(self.transform.x + (x or 0), self.transform.y + (y or 0),
+        self.collisionShape.w, self.collisionShape.h,
+        e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h)
+    elseif e.collisionShape.type == 1 then
+      return imageRectOverlaps(e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h, e.collisionShape.data,
+        self.transform.x + (x or 0), self.transform.y + (y or 0), self.collisionShape.w, self.collisionShape.h)
+    end
+  elseif self.collisionShape.type == 1 then
+    if e.collisionShape.type == 0 then
+      return imageRectOverlaps(self.transform.x + (x or 0), self.transform.y + (y or 0),
+        self.collisionShape.w, self.collisionShape.h, self.collisionShape.data,
+        e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h)
+    elseif e.collisionShape.type == 1 then
+      return false --image/image collision
+    end
+  end
+  return false
+end
+
+function basicEntity:collisionTable(t, x, y, func)
+  local result = {}
+  if t == nil then return result end
+  for k=1, #t do
+    local v = t[k]
+    if self:collision(v, x, y) and (func == nil and true or func(v)) then
+      result[#result+1] = v
+    end
+  end
+  return result
+end
+
+function basicEntity:update(dt) end
+function basicEntity:draw() end
+function basicEntity:removed() end
+function basicEntity:added() end
+function basicEntity:staticToggled() end
+
+mapentity = basicEntity:extend()
+
+mapentity.netName = "map"
+megautils.netNames[mapentity.netName] = mapentity
 
 mapentity.layers = {}
+mapentity.cache = {}
 
 megautils.cleanFuncs["mapentity_clean"] = function()
   mapentity.layers = {}
+  mapentity.cache = {}
 end
 
-function mapentity:new(name, map)
+function mapentity:new(name, map, id)
   mapentity.super.new(self)
   self.added = function(self)
     self:addToGroup("freezable")
   end
   self.name = name
-  self.map = map
+  if type(map) == "string" and not mapentity.cache[map] then
+    mapentity.cache[map] = cartographer.load(map)
+  end
+  self.map = type(map) == "string" and mapentity.cache[map] or map
   mapentity.layers[self.name] = self
+  self.networkID = id
+end
+
+function mapentity:update(dt)
+  if self.networkData and self.networkData.r then
+    megautils.remove(self, true)
+  end
+end
+
+function mapentity:removed()
+  if megautils.networkGameStarted and megautils.networkMode == "server" then
+    megautils.net:sendToAll("u", {r=true, id=self.networkID})
+  end
 end
 
 function mapentity:drawAt(x, y)

@@ -1,8 +1,33 @@
+client_camera = entity:extend()
+
+client_camera.netName = "c_cam"
+megautils.netNames[client_camera.netName] = client_camera
+
+function client_camera:new(x, y, id)
+  client_camera.super.new(self)
+  self.transform.y = x
+  self.transform.x = y
+  self.networkID = id
+end
+
+function client_camera:update(dt)
+  if self.networkData then
+    view.x = math.round(self.networkData.x) or view.x
+    view.y = math.round(self.networkData.y) or view.y
+    if self.networkData.r then
+      megautils.remove(self, true)
+    end
+  end
+end
+
 camera = entity:extend()
 
-addobjects.register("megacam", function(v)
+camera.netName = "cam"
+megautils.netNames[camera.netName] = camera
+
+addobjects.register("camera", function(v)
   if v.properties["checkpoint"] == globals.checkpoint then
-    megautils.add(camera(v.x, v.y, v.properties["doScrollX"], v.properties["doScrollY"]))
+    megautils.add(camera, v.x, v.y, v.properties["doScrollX"], v.properties["doScrollY"], megautils.nextID())
     camera.once = false
   end
 end, -1)
@@ -16,8 +41,9 @@ end, 2)
 
 megautils.resetStateFuncs["camera"] = function() camera.main = nil end
 
-function camera:new(x, y, doScrollX, doScrollY)
+function camera:new(x, y, doScrollX, doScrollY, id)
   camera.super.new(self)
+  self.networkID = id
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(view.w, view.h)
@@ -50,6 +76,11 @@ function camera:new(x, y, doScrollX, doScrollY)
   self.player = nil
   view.x, view.y = self.transform.x, self.transform.y
   self.funcs = {}
+  self.added = function(self)
+    if megautils.networkMode == "server" and megautils.networkGameStarted then
+      megautils.sendEntityToClients(client_camera, {self.transform.x, self.transform.y, self.networkID})
+    end
+  end
 end
 
 function camera:updateBounds()
@@ -88,7 +119,7 @@ function camera:setSection(s)
   end
   for k, v in pairs(self.toSection:is(lockSection) and self.toSection.section.group or self.toSection.group) do
     if v.spawnEarlyDuringTransition and not v.isAdded then
-      megautils.add(v)
+      megautils.adde(v)
     end
   end
   self:updateBounds()
@@ -141,6 +172,9 @@ function camera:updateCam(ox, oy)
           end
         end
       end
+      if megautils.networkMode == "server" and megautils.networkGameStarted then
+        megautils.net:sendToAll("rt")
+      end
       if self.freeze then
         megautils.freeze(globals.allPlayers)
         for k, v in pairs(globals.allPlayers) do
@@ -151,7 +185,7 @@ function camera:updateCam(ox, oy)
         if not self.toSection then self.toSection = megautils.state().sectionHandler.current end
         for k, v in pairs(self.toSection:is(lockSection) and self.toSection.section.group or self.toSection.group) do
           if v.spawnEarlyDuringTransition and not v.isAdded then
-            megautils.add(v)
+            megautils.adde(v)
           end
         end
         local sx, sy, sw, sh = self.toSection.transform.x, self.toSection.transform.y,
@@ -251,6 +285,9 @@ function camera:updateCam(ox, oy)
         camera.main.transform.y = math.round(camera.main.transform.y)
         view.x, view.y = math.round(camera.main.transform.x), math.round(camera.main.transform.y)
         camera.main:updateFuncs()
+        if megautils.networkGameStarted and megautils.networkMode == "server" then
+          megautils.net:sendToAll("u", {x=camera.main.transform.x, y=camera.main.transform.y, id=camera.main.networkID})
+        end
       end
     end
   else
@@ -315,6 +352,15 @@ function camera:doView(ox, oy, without)
   end
   view.x, view.y = math.round(self.transform.x), math.round(self.transform.y)
   self:updateFuncs()
+  if megautils.networkGameStarted and megautils.networkMode == "server" then
+    megautils.net:sendToAll("u", {x=self.transform.x, y=self.transform.y, id=self.networkID})
+  end
+end
+
+function camera:removed()
+  if megautils.networkGameStarted and megautils.networkMode == "server" then
+    megautils.net:sendToAll("u", {r=true, id=self.networkID})
+  end
 end
 
 function camera:updateFuncs()

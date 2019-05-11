@@ -1,7 +1,7 @@
-death = entity:extend()
+death = basicEntity:extend()
 
 addobjects.register("death", function(v)
-  megautils.add(death(v.x, v.y, v.width, v.height, v.properties["harm"]))
+  megautils.add(death, v.x, v.y, v.width, v.height, v.properties["harm"])
 end)
 
 function death:new(x, y, w, h, harm)

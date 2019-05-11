@@ -60,7 +60,7 @@ function weaponSelect:new(w, h, p)
   self.active["wTank"] = love.graphics.newQuad(96, 32, 16, 16, 176, 48)
   self.inactive["wTank"] = love.graphics.newQuad(64, 32, 16, 16, 176, 48)
   self.player = p
-  local trig = trigger(function(s, dt)
+  local trig = megautils.add(trigger, function(s, dt)
     for k, v in pairs(self.fills) do
       for i, j in pairs(v) do
         if not j.updated then
@@ -70,7 +70,6 @@ function weaponSelect:new(w, h, p)
     end
   end)
   trig:removeFromGroup("freezable")
-  megautils.add(trig)
   self:setLayer(10)
   self.added = function(self)
     self:addToGroup("freezable")
@@ -123,13 +122,12 @@ function weaponSelect:update(dt)
           end
         end 
       end
-      local ff = fade(true):setAfter(function(s)
+      local ff = megautils.add(fade, true, nil, nil, function(s)
             megautils.remove(self, true)
             megautils.remove(s, true)
-            megautils.add(fade(false):setAfter(fade.remove))
+            megautils.add(fade, false, nil, nil, fade.remove)
           end)
       ff:setLayer(11)
-      megautils.add(ff)
       mmSfx.play("selected")
       return
     elseif control.rightPressed[self.player] then

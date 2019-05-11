@@ -1,7 +1,7 @@
-section = entity:extend()
+section = basicEntity:extend()
 
 addobjects.register("section", function(v)
-  megautils.state().sectionHandler:add(section(v.x, v.y, v.width, v.height))
+  megautils.state().sectionHandler:add(v.x, v.y, v.width, v.height)
 end, 1)
 
 function section:new(x, y, w, h)
@@ -50,8 +50,8 @@ function sectionHandler:iterate(func)
   end
 end
 
-function sectionHandler:add(s)
-  self.sections[#self.sections+1] = s
+function sectionHandler:add(...)
+  self.sections[#self.sections+1] = section(...)
 end
 
 function sectionHandler:updateAll()
@@ -72,7 +72,7 @@ function sectionHandler:updateAll()
   if self.next then
     for k, v in pairs(self.next.group) do
       if not v.dontRemove and not v.isAdded and not (self.current and table.contains(self.current.group, v)) then
-        megautils.add(v)
+        megautils.adde(v)
       end
     end
     self.current = self.next

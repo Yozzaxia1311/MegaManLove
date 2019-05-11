@@ -228,13 +228,11 @@ function table.removevalue(t, va)
 end
 
 function table.removevaluearray(t, va)
-  local call = false
-  for i=1, #t do
+  if t[#t] == va then t[#t] = nil return end
+  for i=#t, 1, -1 do
     if t[i] == va then
       table.remove(t, i)
-      call = true
       break
     end
   end
-  if call then call = nil table.removevaluearray(t, va) end
 end

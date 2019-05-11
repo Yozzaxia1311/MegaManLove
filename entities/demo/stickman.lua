@@ -3,10 +3,9 @@ loader.load("assets/global/bosses/stick_man.png", "stick_man", "texture")
 stickMan = entity:extend()
 
 addobjects.register("stick_man", function(v)
-  local tmp = spawner(v.x, v.y, 12, 28, function(s)
-    megautils.add(stickMan(s.transform.x, s.transform.y, s))
+  megautils.add(spawner, v.x, v.y, 12, 28, function(s)
+    megautils.add(stickMan, v.x, v.y, s)
   end)
-  megautils.add(tmp)
 end)
 
 function stickMan:new(x, y, s)
@@ -26,9 +25,6 @@ function stickMan:new(x, y, s)
   self.render = false
   self.ss = 0
   self.health = 28
-  self.hBar = healthhandler({128, 128, 128}, {255, 255, 255}, {0, 0, 0}, nil, nil, 7)
-  self.hBar.health = 0
-  self.hBar.change = self.health
   camera.main.funcs["stick"] = function(s)
     self.hBar.transform.x = view.x + view.w - 24
     self.hBar.transform.y = view.y + 80
@@ -58,8 +54,6 @@ function stickMan:healthChanged(o, c, i)
     self.changeHealth = -1
   end
   self.health = self.health + self.changeHealth
-  self.hBar.change = self.changeHealth
-  self.hBar:updateThis()
   self.maxIFrame = 60
   self.iFrame = 0
   if self.health <= 0 then
@@ -82,7 +76,7 @@ function stickMan:healthChanged(o, c, i)
   elseif self.changeHealth < 0 then
     self.hitTimer = 0
     mmSfx.play("enemy_hit")
-    megautils.add(harm(self))
+    megautils.add(harm, self)
     if o:is(megaChargedBuster) then
       megautils.remove(o, true)
     end
@@ -132,7 +126,9 @@ function stickMan:update(dt)
   elseif self.s == 2 then
     collision.doCollision(self)
     if self.ground then
-      megautils.add(self.hBar)
+      self.hBar = megautils.add(healthhandler, {128, 128, 128}, {255, 255, 255}, {0, 0, 0}, nil, nil, 7)
+      self.hBar.health = 0
+      self.hBar.change = self.health
       self.hBar:updateThis()
       globals.mainPlayer.control = true
       self.s = 3
@@ -304,7 +300,7 @@ function megamanStick:update(dt)
       self.timer = 0
       self.timer2 = self.timer2 + 1
       self.shootTimer = 0
-      megautils.add(stickWeapon(self.transform.x+17, self.transform.y+7, 1, self.wh))
+      megautils.add(stickWeapon, self.transform.x+17, self.transform.y+7, 1, self.wh)
       if self.timer2 == 4 then
         self.timer2 = 0
         self.s = 5

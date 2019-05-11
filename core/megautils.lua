@@ -1,5 +1,146 @@
 megautils = {}
 
+megautils.networkMode = nil
+megautils.netNames = {}
+megautils.id = -1
+
+function megautils.nextID()
+  megautils.id = megautils.id + 1
+  return (megautils.networkMode == "client" and tostring(megautils.net:getConnectId()) .. ":" or "") .. tostring(megautils.id)
+end
+
+function megautils.createServer(p)
+  megautils.net = sock.newServer("*", p or 5555)
+  megautils.net:on("connect", function(data, client)
+      if megautils.networkGameStarted then
+        megautils.net:sendToPeer(megautils.net:getPeerByIndex(client:getIndex()), "kick")
+        return
+      end
+    end)
+  megautils.net:on("start", function(data)
+      megautils.gotoState("states/demo.state.lua", function()
+          megautils.networkGameStarted = true
+          globals.resetState = true
+          globals.manageStageResources = true
+          megautils.unload()
+          megautils.resetGameObjects()
+        end)
+    end)
+  megautils.net:on("a", function(data, client)
+      megautils.add(megautils.netNames[data[#data]], data)
+      megautils.net:sendToAllBut(client, "a", unpack(data))
+    end)
+  megautils.net:on("u", function(data, client)
+      if not megautils.state() then return end
+      for i=1, #megautils.state().system.all do
+        if megautils.state().system.all[i].networkID == data.id then
+          megautils.state().system.all[i].networkData = data
+        end
+      end
+      megautils.net:sendToAllBut(client, "u", data)
+    end)
+  print("Server started on port " .. tostring(p or 5555))
+  megautils.networkMode = "server"
+end
+
+function megautils.connectToServer(i, p)
+  megautils.net = sock.newClient(i, p or 5555)
+  megautils.net:on("kick", function(data)
+      megautils.kicked = true
+      megautils.disconnectNetwork()
+      print("Kicked: game already in progress")
+    end)
+  megautils.net:on("connect", function(data)
+      if megautils.networkGameStarted then return end
+      megautils.kicked = false
+      megautils.networkMode = "client"
+      megautils.gotoState("states/netplay.state.lua", function()
+          globals.resetState = true
+          globals.manageStageResources = true
+          megautils.unload()
+        end, function()
+          megautils.networkGameStarted = true
+          megautils.net:send("start")
+        end)
+    end)
+  megautils.net:on("rt", function(data)
+      if megautils.groups()["removeOnTransition"] then
+        for k, v in ipairs(megautils.groups()["removeOnTransition"]) do
+          megautils.remove(v, true)
+        end
+      end
+    end)
+  megautils.net:on("l", function(data)
+      loader.load(data.p, data.n, data.t, data.e, data.l)
+    end)
+  megautils.net:on("rf", function(data)
+      megautils.runFile(data)
+    end)
+  megautils.net:on("sm", function(data)
+      mmMusic.stopMusic()
+    end)
+  megautils.net:on("m", function(data)
+      mmMusic.playFromFile(data.l, data.t, data.v)
+    end)
+  megautils.net:on("s", function(data)
+      mmSfx.play(data.p, data.l, data.v)
+    end)
+  megautils.net:on("un", function(data)
+      globals.resetState = data.rs
+      globals.manageStageResources = data.msr
+      megautils.unload()
+    end)
+  megautils.net:on("a", function(data)
+      megautils.add(megautils.netNames[data[#data]], unpack(data))
+    end)
+  megautils.net:on("u", function(data)
+      if not megautils.state() then return end
+      for i=1, #megautils.state().system.all do
+        if megautils.state().system.all[i].networkID == data.id then
+          megautils.state().system.all[i].networkData = data
+        end
+      end
+    end)
+  megautils.net:connect()
+end
+
+function megautils.disconnectNetwork()
+  if megautils.net then
+    if megautils.networkMode == "server" then
+      for k, v in pairs(megautils.net:getClients()) do
+        v:disconnectNow()
+      end
+      megautils.net:destroy()
+    elseif megautils.networkMode == "client" and megautils.net:isConnected() then
+      megautils.net:disconnectNow()
+    end
+    megautils.networkMode = nil
+    megautils.net = nil
+    megautils.networkGameStarted = false
+  end
+end
+
+function megautils.sendEntityToClient(id, c, args)
+  if megautils.networkMode == "server" then
+    args[#args+1] = c.netName
+    megautils.net:sendToPeer(megautils.net:getClientByConnectionId(id), "a", args)
+  end
+end
+
+function megautils.sendEntityToClients(c, args)
+  if megautils.networkMode == "server" then
+    args[#args+1] = c.netName
+    megautils.net:sendToAll("a", args)
+  end
+end
+
+function megautils.sendEntityToServer(c, args)
+  if megautils.networkMode == "server" then
+    args[#args+1] = c.netName
+    megautils.net:send("a", args)
+  end
+end
+
 megautils.resetStateFuncs = {}
 megautils.cleanFuncs = {}
 
@@ -152,25 +293,27 @@ function megautils.loadStage(self, path, call)
     end
   end
   for k, v in pairs(tLayers) do
-    local l = mapentity(v.name, map)
-    if call then call(l) end
-    megautils.add(l)
+    local id = megautils.nextID()
+    local e = megautils.add(mapentity, v.name, map, id)
+    if megautils.networkMode == "server" and megautils.networkGameStarted then
+      megautils.sendEntityToClients(mapentity, {v.name, path, id})
+    end
+    if e and call then call(e) end
   end
   addobjects.add(objs)
-  local tmp = trigger(function(s, dt)
+  local tmp = megautils.add(trigger, function(s, dt)
     s.map:update(1/60)
   end)
   tmp.map = map
-  megautils.add(tmp)
 end
 
 function megautils.gotoState(s, before, after, chunk)
-  megautils.add(fade(true, nil, nil, function(se)
+  megautils.add(fade, true, nil, nil, function(se)
         if before then before() end
         megautils.remove(se)
         states.set(s, chunk)
         if after then after() end
-      end))
+      end)
 end
 
 function megautils.remove(o, queue)
@@ -181,8 +324,16 @@ function megautils.state()
   return states.currentstate
 end
 
-function megautils.add(o, queue)
-  states.currentstate.system:add(o, queue)
+function megautils.add(o, ...)
+  return states.currentstate.system:add(o, ...)
+end
+
+function megautils.adde(o)
+  return states.currentstate.system:adde(o)
+end
+
+function megautils.addq(o, ...)
+  return states.currentstate.system:addq(o, ...)
 end
 
 function megautils.groups()
@@ -335,23 +486,23 @@ function megautils.dropItem(x, y)
   if math.between(rnd, 0, 39) then
     local rnd2 = love.math.random(0, 2)
     if rnd2 == 0 then
-      megautils.add(life(x, y, true))
+      megautils.add(life, x, y, true)
     elseif rnd2 == 1 then
-      megautils.add(eTank(x, y, true))
+      megautils.add(eTank, x, y, true)
     else
-      megautils.add(wTank(x, y, true))
+      megautils.add(wTank, x, y, true)
     end
   elseif math.between(rnd, 50, 362) then
     if math.randomboolean() then
-      megautils.add(health(x, y, true))
+      megautils.add(health, x, y, true)
     else
-      megautils.add(energy(x, y, true))
+      megautils.add(energy, x, y, true)
     end
   elseif math.between(rnd, 370, 995) then
     if math.randomboolean() then
-      megautils.add(smallHealth(x, y, true))
+      megautils.add(smallHealth, x, y, true)
     else
-      megautils.add(smallEnergy(x, y, true))
+      megautils.add(smallEnergy, x, y, true)
     end
   end
 end

@@ -4,7 +4,7 @@ collision.maxSlope = 1
 
 function collision.doCollision(self)
   collision.checkGround(self)
-  if not self.ground then self:grav() end
+  if not self.ground and self.grav then self:grav() end
   if self.blockCollision then
     collision.generalCollision(self)
   else
@@ -25,7 +25,7 @@ function collision.getTable(self, dx, dy)
   
   for i=1, #megautils.state().system.all do
     local v = megautils.state().system.all[i]
-    if v.isSolid ~= 0 then
+    if v.isSolid == 1 or v.isSolid == 2 then
       if v.isSolid ~= 2 or (not v:collision(self) and v:collision(self, -xs, -(cgrav * math.abs(ys)))) then
         solid[#solid+1] = v
       end
@@ -67,7 +67,7 @@ function collision.checkSolid(self, dx, dy, noSlope)
   
   for i=1, #megautils.state().system.all do
     local v = megautils.state().system.all[i]
-    if v.isSolid ~= 0 then
+    if v.isSolid == 1 or v.isSolid == 2 then
       if v.isSolid ~= 2 or (not v:collision(self) and v:collision(self, -xs, -(cgrav * math.abs(ys)))) then
         solid[#solid+1] = v
       end
@@ -257,9 +257,9 @@ function collision.shiftObject(self, dx, dy, checkforcol)
   self.previousY = self.transform.y
   
   if checkforcol then
-    self.canSink = false
+    self.canStandSolid = false
     collision.generalCollision(self)
-    self.canSink = true
+    self.canStandSolid = true
   else
     self.transform.x = self.transform.x + self.velocity.velx
     self.transform.y = self.transform.y + self.velocity.vely
@@ -282,12 +282,14 @@ function collision.checkGround(self, noSlopeEffect)
   for i=1, #megautils.state().system.all do
     local v = megautils.state().system.all[i]
     if v ~= self and v.collisionShape then
-      if v.isSolid ~= 0 then
+      if v.isSolid == 1 or v.isSolid == 2 then
         if not v:collision(self, 0, cgrav) then
           if v.isSolid ~= 2 or v:collision(self, 0, -cgrav * slp) then
             solid[#solid+1] = v
           end
         end
+      elseif v.isSolid == 3 then
+        solid[#solid+1] = v
       end
     end
   end
@@ -303,18 +305,13 @@ function collision.checkGround(self, noSlopeEffect)
     end
   end
   
-  if megautils.groups()["sink"] then
-    for i=1, #megautils.groups()["sink"] do
-      solid[#solid+1] = megautils.groups()["sink"][i]
-    end
-  end
-  
   if #self:collisionTable(solid) == 0 then
     local i = 1
     while i <= slp do
       if #self:collisionTable(solid, 0, cgrav * i) == 0 then
         self.ground = false
         self.onMovingFloor = nil
+        self.inStandSolid = nil
       elseif self.velocity.vely * cgrav >= 0 then
         self.ground = true
         self.transform.y = math.round(self.transform.y+cgrav) + (i - 1) * cgrav
@@ -337,16 +334,19 @@ function collision.generalCollision(self, noSlopeEffect)
   
   local xprev = self.transform.x
   local solid = {}
+  local stand = {}
   local cgrav = math.sign(self.gravity)
   cgrav = cgrav == 0 and 1 or cgrav
   
   for i=1, #megautils.state().system.all do
     local v = megautils.state().system.all[i]
-    if v ~= self then
-      if v.collisionShape and v.isSolid == 1 then
+    if v ~= self and v.collisionShape then
+      if v.isSolid == 1 then
         if not v:collision(self) and not table.contains(solid, v) then
           solid[#solid+1] = v
         end
+      elseif v.isSolid == 3 then
+        stand[#stand+1] = v
       end
     end
   end
@@ -464,13 +464,15 @@ function collision.generalCollision(self, noSlopeEffect)
     end
   end
   
-  if not self.ground and self.canSink then
-    if megautils.groups()["sink"] and #self:collisionTable(megautils.groups()["sink"], 0, cgrav) ~= 0 then
+  if self.canStandSolid then
+    local ss = self:collisionTable(stand, 0, cgrav)
+    if #ss ~= 0 then
       if self.velocity.vely * cgrav > 0 then
         self.ground = true
         self.ycoll = self.velocity.vely
         self.velocity.vely = 0
       end
+      self.inStandSolid = ss[1]
     end
   end
   
@@ -482,14 +484,14 @@ function collision.generalCollision(self, noSlopeEffect)
   end
 end
 
-solid = entity:extend()
+solid = basicEntity:extend()
 
 addobjects.register("solid", function(v)
-  megautils.add(solid(v.x, v.y, v.width, v.height))
+  megautils.add(solid, v.x, v.y, v.width, v.height)
 end)
 
 function solid:new(x, y, w, h)
-  solid.super.new(self, true)
+  solid.super.new(self)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(w, h)
@@ -501,22 +503,23 @@ function solid:new(x, y, w, h)
   end
 end
 
-sinkIn = entity:extend()
+sinkIn = basicEntity:extend()
 
 addobjects.register("sink_in", function(v)
-  megautils.add(sinkIn(v.x, v.y, v.width, v.height, v.properties["speed"]))
+  megautils.add(sinkIn, v.x, v.y, v.width, v.height, v.properties["speed"])
 end)
 
 function sinkIn:new(x, y, w, h, s)
-  sinkIn.super.new(self, true)
+  sinkIn.super.new(self)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(w, h)
   self:setLayer(9)
   self.sink = s or 0.125
+  self.isSolid = 3
   self.added = function(self)
     self:addToGroup("despawnable")
-    self:addToGroup("sink")
+    self:addToGroup("freezable")
   end
 end
 
@@ -529,14 +532,14 @@ function sinkIn:update(dt)
   end
 end
 
-slope = entity:extend()
+slope = basicEntity:extend()
 
 addobjects.register("slope", function(v)
-  megautils.add(slope(v.x, v.y, loader.get(v.properties["mask"]), v.properties["invert"], v.properties["left"]))
+  megautils.add(slope, v.x, v.y, loader.get(v.properties["mask"]), v.properties["invert"], v.properties["left"])
 end)
 
 function slope:new(x, y, mask, invert, left)
-  slope.super.new(self, true)
+  slope.super.new(self)
   self.transform.x = x
   self.transform.y = y
   self.left = left
@@ -549,14 +552,14 @@ function slope:new(x, y, mask, invert, left)
   end
 end
 
-oneway = entity:extend()
+oneway = basicEntity:extend()
 
 addobjects.register("oneway", function(v)
-  megautils.add(oneway(v.x, v.y, v.width, v.height))
+  megautils.add(oneway, v.x, v.y, v.width, v.height)
 end)
 
 function oneway:new(x, y, w, h)
-  oneway.super.new(self, true)
+  oneway.super.new(self)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(w, h)
