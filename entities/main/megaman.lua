@@ -410,7 +410,7 @@ end
 
 function megaman:attemptWeaponUsage()
   local w = megaman.weaponHandler[self.player]
-  if control.shootPressed[self.player] then
+  if control.shootPressed[megautils.networkGameStarted and 1 or self.player] then
     if (w.current == "megaBuster" or w.current == "rushJet" or w.current == "rushCoil")
     and (not megautils.groups()["megaBuster" .. w.id] or
     #megautils.groups()["megaBuster" .. w.id] < self.maxNormalBusterShots) and (not megautils.groups()["megaChargedBuster" .. w.id] or
@@ -460,7 +460,7 @@ function megaman:attemptWeaponUsage()
       w.energy[w.currentSlot] = w.energy[w.currentSlot] - 1
     end
   end
-  if not control.shootDown[self.player] and self.chargeState ~= 0 then
+  if not control.shootDown[megautils.networkGameStarted and 1 or self.player] and self.chargeState ~= 0 then
     if w.current == "megaBuster" then
       if self.chargeState == 1 then
         if globals.player[self.player] == "mega" then
@@ -501,7 +501,7 @@ function megaman:attemptWeaponUsage()
       end
     end
   end
-  if control.shootDown[self.player] then
+  if control.shootDown[megautils.networkGameStarted and 1 or self.player] then
     if self.canChargeBuster and w.current == "megaBuster" then
       self:charge()
     end
@@ -509,15 +509,15 @@ function megaman:attemptWeaponUsage()
 end
 
 function megaman:attemptClimb()
-  if not control.downDown[self.player] and not control.upDown[self.player] then
+  if not control.downDown[megautils.networkGameStarted and 1 or self.player] and not control.upDown[megautils.networkGameStarted and 1 or self.player] then
     return
   end
   local lads = self:collisionTable(megautils.groups()["ladder"], 0, 1)
   if #lads ~= 0 then
     self.currentLadder = lads[1]
-    if (control.downDown[self.player] and self.ground and
+    if (control.downDown[megautils.networkGameStarted and 1 or self.player] and self.ground and
       self.transform.y ~= self.currentLadder.transform.y - self.collisionShape.h) or
-      (control.upDown[self.player] and self.transform.y == self.currentLadder.transform.y - self.collisionShape.h) or
+      (control.upDown[megautils.networkGameStarted and 1 or self.player] and self.transform.y == self.currentLadder.transform.y - self.collisionShape.h) or
       (not math.between(self.transform.x+self.collisionShape.w/2,
       self.currentLadder.transform.x, self.currentLadder.transform.x+self.currentLadder.collisionShape.w)) then
       self.currentLadder = nil
@@ -530,7 +530,7 @@ function megaman:attemptClimb()
     end
     if self.transform.y == self.currentLadder.transform.y - self.collisionShape.h and
       self.transform.y+self.collisionShape.h-1 < self.currentLadder.transform.y and
-      control.downDown[self.player] then
+      control.downDown[megautils.networkGameStarted and 1 or self.player] then
       self.transform.y = self.transform.y + math.round(self.collisionShape.h/2) + 2
     end
     self.velocity.vely = 0
@@ -646,22 +646,22 @@ function megaman:healthChanged(o, c, i)
 end
 
 function megaman:code(dt)
-  self.runCheck = ((control.leftDown[self.player] and not control.rightDown[self.player]) or (control.rightDown[self.player] and not control.leftDown[self.player]))
+  self.runCheck = ((control.leftDown[megautils.networkGameStarted and 1 or self.player] and not control.rightDown[megautils.networkGameStarted and 1 or self.player]) or (control.rightDown[megautils.networkGameStarted and 1 or self.player] and not control.leftDown[megautils.networkGameStarted and 1 or self.player]))
   if self.hitTimer ~= self.maxHitTime then
     self.hitTimer = math.min(self.hitTimer+1, self.maxHitTime)
     for k, v in pairs(self.knockbackUpdateFuncs) do
       v(self)
     end
     self:phys()
-    if self.canShoot and control.shootDown[self.player] then
+    if self.canShoot and control.shootDown[megautils.networkGameStarted and 1 or self.player] then
       self:charge()
     else
       self:charge(true)
     end
   elseif self.climb then
-    if control.leftDown[self.player] then
+    if control.leftDown[megautils.networkGameStarted and 1 or self.player] then
       self.side = -1
-    elseif control.rightDown[self.player] then
+    elseif control.rightDown[megautils.networkGameStarted and 1 or self.player] then
       self.side = 1
     end
     if not self.alwaysMove then
@@ -670,15 +670,15 @@ function megaman:code(dt)
     end
     self.transform.x = self.currentLadder.transform.x+(self.currentLadder.collisionShape.w/2)-
       ((self.collisionShape.w)/2)
-    if control.upDown[self.player] and self.shootTimer == self.maxShootTime then
+    if control.upDown[megautils.networkGameStarted and 1 or self.player] and self.shootTimer == self.maxShootTime then
       self.velocity.vely = self.climbUpSpeed
-    elseif control.downDown[self.player] and self.shootTimer == self.maxShootTime then
+    elseif control.downDown[megautils.networkGameStarted and 1 or self.player] and self.shootTimer == self.maxShootTime then
       self.velocity.vely = self.climbDownSpeed
     end
     if not self:collision(self.currentLadder) and self.transform.y >= self.currentLadder.transform.y then
       self.climb = false
     elseif self.transform.y+math.round(self.collisionShape.h/2) < self.currentLadder.transform.y+2
-      and control.upDown[self.player] then
+      and control.upDown[megautils.networkGameStarted and 1 or self.player] then
         self.velocity.vely = 0
         self.transform.y = math.round(self.transform.y)
         while self:collision(self.currentLadder) do
@@ -693,11 +693,11 @@ function megaman:code(dt)
       self.transform.x == (view.x+view.w)-self.collisionShape.w/2 or not self:collision(self.currentLadder) then
       self.climb = false
     end
-    if self.ground and control.downDown[self.player] then
+    if self.ground and control.downDown[megautils.networkGameStarted and 1 or self.player] then
       self.climb = false
     end
-    if control.jumpPressed[self.player] and not (control.downDown[self.player] or
-      control.upDown[self.player]) then
+    if control.jumpPressed[megautils.networkGameStarted and 1 or self.player] and not (control.downDown[megautils.networkGameStarted and 1 or self.player] or
+      control.upDown[megautils.networkGameStarted and 1 or self.player]) then
       self.climb = false
     end
     for k, v in pairs(self.climbUpdateFuncs) do
@@ -711,11 +711,11 @@ function megaman:code(dt)
     self.climbTip = self.transform.y+math.round(self.collisionShape.h/6) < self.currentLadder.transform.y
   elseif self.slide then
     local lastSide = self.side
-    if control.leftDown[self.player] then
+    if control.leftDown[megautils.networkGameStarted and 1 or self.player] then
       self.side = -1
       self.step = true
       self.stepTime = 0
-    elseif control.rightDown[self.player] then
+    elseif control.rightDown[megautils.networkGameStarted and 1 or self.player] then
       self.side = 1
       self.step = true
       self.stepTime = 0
@@ -747,9 +747,9 @@ function megaman:code(dt)
         self.slideTimer = self.maxSlideTime
         self.hitTimer = self.maxHitTime
         self:slideToReg()
-      elseif self.canJump and self.canJumpOutFromDash and control.jumpPressed[self.player] and not self:checkRegBox()
+      elseif self.canJump and self.canJumpOutFromDash and control.jumpPressed[megautils.networkGameStarted and 1 or self.player] and not self:checkRegBox()
         and (self.ground or self:checkSlideBox(0, math.sign(self.gravity)))
-          and not control.downDown[self.player] then
+          and not control.downDown[megautils.networkGameStarted and 1 or self.player] then
         self.slide = false
         jumped = true
         self.velocity.vely = self.jumpSpeed
@@ -778,7 +778,7 @@ function megaman:code(dt)
       v(self)
     end
     self:phys()
-    if self.canShoot and not self.canDashShoot and control.shootDown[self.player] then
+    if self.canShoot and not self.canDashShoot and control.shootDown[megautils.networkGameStarted and 1 or self.player] then
       self:charge()
     elseif self.canShoot and self.canDashShoot then
       self:attemptWeaponUsage()
@@ -789,7 +789,7 @@ function megaman:code(dt)
   elseif self.ground then
     if self.canWalk and not (self.stopOnShot and self.shootTimer ~= self.maxShootTime) then
       if self.runCheck and not self.step then
-        self.side = control.leftDown[self.player] and -1 or 1
+        self.side = control.leftDown[megautils.networkGameStarted and 1 or self.player] and -1 or 1
         if self.stepVelocity or self.stepTime == 0 then
           self.velocity.velx = self.velocity.velx + (self.side==1 and self.stepRightSpeed or self.stepLeftSpeed)
         elseif not self.stepVelocity then
@@ -801,7 +801,7 @@ function megaman:code(dt)
           self.stepTime = 0
         end
       elseif self.runCheck then
-        self.side = control.leftDown[self.player] and -1 or 1
+        self.side = control.leftDown[megautils.networkGameStarted and 1 or self.player] and -1 or 1
         self.velocity.velx = self.velocity.velx + (self.side == -1 and self.leftSpeed or self.rightSpeed)
       elseif not self.alwaysMove then
         self.velocity:slowX(self.side == -1 and self.leftDecel or self.rightDecel)
@@ -810,15 +810,15 @@ function megaman:code(dt)
       end
     else
       if self.runCheck then
-        self.side = control.leftDown[self.player] and -1 or 1
+        self.side = control.leftDown[megautils.networkGameStarted and 1 or self.player] and -1 or 1
       end
       self.velocity:slowX(self.side == -1 and self.leftDecel or self.rightDecel)
       self.stepTime = 0
       self.step = false
     end
     self.jumpCheck = false
-    if self.canDash and (control.dashPressed[self.player] or
-      (control.downDown[self.player] and control.jumpPressed[self.player])) and
+    if self.canDash and (control.dashPressed[megautils.networkGameStarted and 1 or self.player] or
+      (control.downDown[megautils.networkGameStarted and 1 or self.player] and control.jumpPressed[megautils.networkGameStarted and 1 or self.player])) and
       not self:checkBasicSlideBox(self.side, 0) then
       if self.shootTimer ~= self.maxShootTime then
         self.animations[self.dashAnimation["regular"]]:gotoFrame(
@@ -833,21 +833,21 @@ function megaman:code(dt)
       self.slideTimer = 0
       megautils.add(slideParticle, self.transform.x+(self.side==-1 and self.collisionShape.w or 4),
         self.transform.y+self.collisionShape.h-6, self.side)
-    elseif self.canJump and self.inStandSolid and control.jumpDown[self.player] and self.standSolidJumpTimer ~= self.maxStandSolidJumpTime and
+    elseif self.canJump and self.inStandSolid and control.jumpDown[megautils.networkGameStarted and 1 or self.player] and self.standSolidJumpTimer ~= self.maxStandSolidJumpTime and
       self.standSolidJumpTimer ~= -1 then
       self.velocity.vely = self.jumpSpeed
       self.standSolidJumpTimer = math.min(self.standSolidJumpTimer+1, self.maxStandSolidJumpTime)
-    elseif self.canJump and control.jumpPressed[self.player] and
-      not (control.downDown[self.player] and self:checkBasicSlideBox(self.side, 0)) then
+    elseif self.canJump and control.jumpPressed[megautils.networkGameStarted and 1 or self.player] and
+      not (control.downDown[megautils.networkGameStarted and 1 or self.player] and self:checkBasicSlideBox(self.side, 0)) then
       self.velocity.vely = self.jumpSpeed
     else
       self.velocity.vely = 0
     end
-    if self.standSolidJumpTimer > 0 and (not control.jumpDown[self.player] or self.standSolidJumpTimer == self.maxStandSolidJumpTime) then
+    if self.standSolidJumpTimer > 0 and (not control.jumpDown[megautils.networkGameStarted and 1 or self.player] or self.standSolidJumpTimer == self.maxStandSolidJumpTime) then
       self.standSolidJumpTimer = -1
       mmSfx.play("land")
     end
-    if self.standSolidJumpTimer == -1 and not control.jumpDown[self.player] then
+    if self.standSolidJumpTimer == -1 and not control.jumpDown[megautils.networkGameStarted and 1 or self.player] then
       self.standSolidJumpTimer = 0
     end
     self.velocity.velx = math.clamp(self.velocity.velx, self.maxLeftSpeed, self.maxRightSpeed)
@@ -864,12 +864,12 @@ function megaman:code(dt)
     self:attemptClimb()
   else
     self.wallJumping = false
-    local ns = control.leftDown[self.player] and -1 or (control.rightDown[self.player] and 1 or 0)
+    local ns = control.leftDown[megautils.networkGameStarted and 1 or self.player] and -1 or (control.rightDown[megautils.networkGameStarted and 1 or self.player] and 1 or 0)
     if self.wallJumpTimer ~= 0 then
       self.wallJumpTimer = math.max(self.wallJumpTimer-1, 0)
       self.velocity.velx = self.wallKickSpeed * self.side
-      if (self.side == 1 and control.rightDown[self.player]) or 
-        (self.side == -1 and control.leftDown[self.player]) then
+      if (self.side == 1 and control.rightDown[megautils.networkGameStarted and 1 or self.player]) or 
+        (self.side == -1 and control.leftDown[megautils.networkGameStarted and 1 or self.player]) then
         self.wallJumpTimer = 0
       end
     elseif self.canWallJump and self.velocity.vely > 0 and collision.checkSolid(self, ns, 0) then
@@ -877,7 +877,7 @@ function megaman:code(dt)
       self.velocity.velx = -self.side
       self.wallJumping = true
       self.velocity.vely = self.wallSlideSpeed
-      if control.jumpPressed[self.player] then
+      if control.jumpPressed[megautils.networkGameStarted and 1 or self.player] then
         self.wallJumpTimer = self.maxWallJumpTime
         self.velocity.vely = self.wallJumpSpeed
         self.dashJump = true
@@ -885,7 +885,7 @@ function megaman:code(dt)
           self.transform.y+self.collisionShape.h-10, -self.side)
       end
     elseif self.runCheck then
-      self.side = control.leftDown[self.player] and -1 or 1
+      self.side = control.leftDown[megautils.networkGameStarted and 1 or self.player] and -1 or 1
       self.velocity.velx = self.velocity.velx + (self.side == -1 and 
         (self.dashJump and self.slideLeftSpeed*self.dashJumpMultiplier or self.leftAirSpeed) or 
         (self.dashJump and self.slideRightSpeed*self.dashJumpMultiplier or self.rightAirSpeed))
@@ -903,7 +903,7 @@ function megaman:code(dt)
       self.stepTime = 0
       self.step = false
     end
-    if self.canStopJump and not control.jumpDown[self.player] and self.velocity.vely < 0 then
+    if self.canStopJump and not control.jumpDown[megautils.networkGameStarted and 1 or self.player] and self.velocity.vely < 0 then
       self.velocity:slowY(self.jumpDecel)
     end
     for k, v in pairs(self.airUpdateFuncs) do
@@ -950,7 +950,7 @@ function megaman:code(dt)
   if self.stopOnShot and self.shootTimer == self.maxShootTime then
     self.stopOnShot = false
   end
-  if globals.mainPlayer and control.startPressed[self.player] and self.control and globals.mainPlayer.control and globals.mainPlayer.updated
+  if globals.mainPlayer and control.startPressed[megautils.networkGameStarted and 1 or self.player] and self.control and globals.mainPlayer.control and globals.mainPlayer.updated
     and self.canPause then
     self.weaponSwitchTimer = 70
     megautils.add(fade, true, nil, nil, function(s)
@@ -1051,7 +1051,7 @@ function megaman:phys()
 end
 
 function megaman:updatePallete()
-  if control.prevDown[self.player] and control.nextDown[self.player]
+  if control.prevDown[megautils.networkGameStarted and 1 or self.player] and control.nextDown[megautils.networkGameStarted and 1 or self.player]
     and megaman.weaponHandler[self.player].currentSlot ~= 0 then
     megaman.weaponHandler[self.player]:switch(0)
     megaman.colorOutline[self.player] = megaman.weaponHandler[self.player].colorOutline[0]
@@ -1070,7 +1070,7 @@ function megaman:updatePallete()
     self.weaponSwitchTimer = 0
     self:resetCharge()
     mmSfx.play("switch")
-  elseif control.nextPressed[self.player] and not control.prevDown[self.player] then
+  elseif control.nextPressed[megautils.networkGameStarted and 1 or self.player] and not control.prevDown[megautils.networkGameStarted and 1 or self.player] then
     self.prevWeapon = megaman.weaponHandler[self.player].currentSlot
     local w = math.wrap(megaman.weaponHandler[self.player].currentSlot+1, 0, megaman.weaponHandler[self.player].slotSize)
     while not megaman.weaponHandler[self.player].weapons[w] do
@@ -1088,7 +1088,7 @@ function megaman:updatePallete()
     self.weaponSwitchTimer = 0
     self:resetCharge()
     mmSfx.play("switch")
-  elseif control.prevPressed[self.player] and not control.nextDown[self.player] then
+  elseif control.prevPressed[megautils.networkGameStarted and 1 or self.player] and not control.nextDown[megautils.networkGameStarted and 1 or self.player] then
     self.nextWeapon = megaman.weaponHandler[self.player].currentSlot
     local w = math.wrap(megaman.weaponHandler[self.player].currentSlot-1, 0, megaman.weaponHandler[self.player].slotSize)
     while not megaman.weaponHandler[self.player].weapons[w] do
@@ -1127,11 +1127,11 @@ function megaman:animate()
         else
           self.curAnim = self.climbTipAnimation["regular"]
         end
-      elseif not self.alwaysMove and not (control.downDown[self.player] or
-        control.upDown[self.player]) and 
+      elseif not self.alwaysMove and not (control.downDown[megautils.networkGameStarted and 1 or self.player] or
+        control.upDown[megautils.networkGameStarted and 1 or self.player]) and 
         self.animations[self.climbAnimation["regular"]].status == "playing" then
         self.animations[self.climbAnimation["regular"]]:pause()
-      elseif control.downDown[self.player] or control.upDown[self.player] and 
+      elseif control.downDown[megautils.networkGameStarted and 1 or self.player] or control.upDown[megautils.networkGameStarted and 1 or self.player] and 
         self.animations[self.climbAnimation["regular"]].status == "paused" then
         self.animations[self.climbAnimation["regular"]]:resume()
       end

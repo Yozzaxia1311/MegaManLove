@@ -128,7 +128,7 @@ function love.load()
   control.init()
   console.init()
   --megautils.createServer()
-  megautils.connectToServer("localhost")
+  --megautils.connectToServer("localhost")
   initEngine()
   local data = save.load("main.sav", true) or {}
   if data.fullscreen then

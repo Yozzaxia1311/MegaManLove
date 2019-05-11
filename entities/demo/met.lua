@@ -200,10 +200,10 @@ function metBullet:update(dt)
 end
 
 megautils.cleanFuncs["unload_met"] = function()
+  megautils.netNames[client_met.netName] = nil
   met = nil
   metBullet = nil
   addobjects.unregister("met")
-  megautils.netNames[client_met.netName] = nil
   client_met = nil
   megautils.cleanFuncs["unload_met"] = nil
 end

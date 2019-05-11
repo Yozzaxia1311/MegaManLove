@@ -96,9 +96,9 @@ function moveAcrossPlatform:update(dt)
 end
 
 megautils.cleanFuncs["unload_move_across_platform"] = function()
+  megautils.netNames[client_moveAcrossPlatform.netName] = nil
   moveAcrossPlatform = nil
   client_moveAcrossPlatform = nil
-  megautils.netNames[client_moveAcrossPlatform.netName] = nil
   addobjects.unregister("move_across_platform")
   megautils.cleanFuncs["unload_move_across_platform"] = nil
 end
