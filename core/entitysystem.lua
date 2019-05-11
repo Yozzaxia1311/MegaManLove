@@ -37,7 +37,7 @@ function entitysystem:add(c, ...)
   if not e.static then
     local done = false
     for k, v in pairs(self.entities) do
-      if v.layer == e.layer then
+      if v.layer == e.layer and v.name == e.layerName then
         v.data[#v.data+1] = e
         e.actualLayer = v
         done = true
@@ -45,7 +45,7 @@ function entitysystem:add(c, ...)
       end
     end
     if not done then
-      self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}}
+      self.entities[#self.entities+1] = {["layer"]=e.layer, ["name"]=e.layerName, ["data"]={e}}
       e.actualLayer = self.entities[#self.entities]
       e.layer = e.actualLayer.layer
       self.doSort = true
@@ -66,7 +66,7 @@ function entitysystem:adde(e)
   if not e.static then
     local done = false
     for k, v in pairs(self.entities) do
-      if v.layer == e.layer then
+      if v.layer == e.layer and v.name == e.layerName then
         v.data[#v.data+1] = e
         e.actualLayer = v
         done = true
@@ -74,7 +74,7 @@ function entitysystem:adde(e)
       end
     end
     if not done then
-      self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}}
+      self.entities[#self.entities+1] = {["layer"]=e.layer, ["name"]=e.layerName, ["data"]={e}}
       e.actualLayer = self.entities[#self.entities]
       e.layer = e.actualLayer.layer
       self.doSort = true
@@ -124,7 +124,7 @@ function entitysystem:removeStatic(e)
     table.removevaluearray(self.static, e)
     local done = false
     for k, v in pairs(self.entities) do
-      if v.layer == e.layer then
+      if v.layer == e.layer and v.name == e.layerName then
         v.data[#v.data+1] = e
         e.actualLayer = v
         done = true
@@ -132,7 +132,7 @@ function entitysystem:removeStatic(e)
       end
     end
     if not done then
-      self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}}
+      self.entities[#self.entities+1] = {["layer"]=e.layer, ["name"]=e.layerName, ["data"]={e}}
       e.actualLayer = self.entities[#self.entities]
       e.layer = e.actualLayer.layer
       self.doSort = true
@@ -148,7 +148,7 @@ function entitysystem:setLayer(e, l)
   e.layer = l
   local done = false
   for k, v in pairs(self.entities) do
-    if v.layer == e.layer then
+    if v.layer == e.layer and v.name == e.layerName then
       v.data[#v.data+1] = e
       e.actualLayer = v
       done = true
@@ -156,7 +156,7 @@ function entitysystem:setLayer(e, l)
     end
   end
   if not done then
-    self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}}
+    self.entities[#self.entities+1] = {["layer"]=e.layer, ["name"]=e.layerName, ["data"]={e}}
     e.actualLayer = self.entities[#self.entities]
     e.layer = e.actualLayer.layer
     self.doSort = true
@@ -175,6 +175,9 @@ function entitysystem:remove(e, queue)
     e:removeFromAllGroups()
     e:removeStatic()
     table.removevaluearray(e.actualLayer.data, e)
+    if #e.actualLayer.data == 0 then
+      table.removevaluearray(self.updates, e.actualLayer)
+    end
     table.removevaluearray(self.updates, e)
     table.removevaluearray(self.all, e)
     e.isAdded = false
@@ -185,6 +188,7 @@ function entitysystem:clear()
   for i=1, #self.all do
     self.updates[i].isRemoved = true
     self.updates[i]:removed()
+    self.updates[i].isAdded = false
   end
   section.sections = {}
   section.current = nil
@@ -319,6 +323,7 @@ function entity:new()
   self.collisionShape = nil
   self.flashRender = true
   self.layer = 0
+  self.layerName = "lyr"
   self.isRemoved = false
   self.updated = true
   self.render = true
@@ -519,6 +524,7 @@ function basicEntity:new(basic)
   self.transform.y = 0
   self.collisionShape = nil
   self.layer = 0
+  self.layerName = "lyr"
   self.isRemoved = false
   self.updated = true
   self.render = true
