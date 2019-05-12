@@ -841,8 +841,6 @@ function megaman:code(dt)
     elseif self.canJump and control.jumpPressed[self.input] and
       not (control.downDown[self.input] and self:checkBasicSlideBox(self.side, 0)) then
       self.velocity.vely = self.jumpSpeed
-    else
-      self.velocity.vely = 0
     end
     if self.standSolidJumpTimer > 0 and (not control.jumpDown[self.input] or self.standSolidJumpTimer == self.maxStandSolidJumpTime) then
       self.standSolidJumpTimer = -1
