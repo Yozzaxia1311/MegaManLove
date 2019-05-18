@@ -127,8 +127,6 @@ function love.load()
   love.filesystem.load("requirelibs.lua")()
   control.init()
   console.init()
-  --megautils.createServer()
-  --megautils.connectToServer("localhost")
   initEngine()
   local data = save.load("main.sav", true) or {}
   if data.fullscreen then
@@ -267,12 +265,6 @@ function love.draw()
   if useConsole then console.draw() end
   if touchControls then
     touchInput.draw()
-  end
-end
-
-function love.quit()
-  if megautils then
-    megautils.disconnectNetwork()
   end
 end
 

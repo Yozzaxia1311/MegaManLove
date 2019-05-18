@@ -1,61 +1,17 @@
-client_met = entity:extend()
-
-client_met.netName = "c_met"
-megautils.netNames[client_met.netName] = client_met
-
-function client_met:new(x, y, id)
-  client_met.super.new(self)
-  self.t = loader.get("demo_objects")
-  self.quads = {}
-  self.quads["safe"] = love.graphics.newQuad(32, 0, 18, 15, 100, 100)
-  self.quads["up"] = love.graphics.newQuad(50, 0, 18, 15, 100, 100)
-  self:setLayer(2)
-  
-  self.side = -1
-  self.c = "safe"
-  self.transform.y = x
-  self.transform.x = y
-  self.networkID = id
-end
-
-function client_met:update(dt)
-  if self.networkData then
-    self.side = self.networkData.s or -1
-    self.c = self.networkData.c == 0 and "safe" or "up"
-    self.transform.x = self.networkData.x or self.transform.x
-    self.transform.y = self.networkData.y or self.transform.y
-    if self.networkData.r then
-      megautils.remove(self, true)
-    end
-  end
-end
-
-function client_met:draw()
-  love.graphics.setColor(1, 1, 1, 1)
-  if self.side == -1 then
-    love.graphics.draw(self.t, self.quads[self.c], self.transform.x-2, self.transform.y)
-  else
-    love.graphics.draw(self.t, self.quads[self.c], self.transform.x+16, self.transform.y, 0, -1, 1)
-  end
-end
-
 met = entity:extend()
 
 addobjects.register("met", function(v)
   megautils.add(spawner, v.x, v.y+2, 14, 14, function(s)
-      megautils.add(met, s.transform.x, s.transform.y, s, megautils.nextID())
+      megautils.add(met, s.transform.x, s.transform.y, s)
     end)
 end)
 
-function met:new(x, y, s, id)
+function met:new(x, y, s)
   met.super.new(self)
   self.added = function(self)
     self:addToGroup("hurtable")
     self:addToGroup("removeOnTransition")
     self:addToGroup("freezable")
-    if megautils.networkMode == "server" and megautils.networkGameStarted then
-      megautils.sendEntityToClients(client_met, {self.transform.x, self.transform.y, self.networkID})
-    end
   end
   self.transform.y = y
   self.transform.x = x
@@ -72,7 +28,6 @@ function met:new(x, y, s, id)
   self.inv = true
   self.timer = 0
   self:setLayer(2)
-  self.networkID = id
 end
 
 function met:healthChanged(o, c, i)
@@ -145,9 +100,6 @@ function met:update(dt)
   if megautils.outside(self) then
     megautils.remove(self, true)
   end
-  if megautils.networkGameStarted and megautils.networkMode == "server" then
-    megautils.net:sendToAll("u", {x=self.transform.x, y=self.transform.y, s=self.side, c=self.c=="safe" and 0 or 1, id=self.networkID})
-  end
 end
 
 function met:draw()
@@ -163,9 +115,6 @@ end
 function met:removed()
   if self.spawner then
     self.spawner.canSpawn = true
-  end
-  if megautils.networkGameStarted and megautils.networkMode == "server" then
-    megautils.net:sendToAll("u", {r=true, id=self.networkID})
   end
 end
 

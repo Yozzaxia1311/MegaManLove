@@ -8,28 +8,11 @@ function demostate:begin()
       megautils.runFile("entities/demo/met.lua")
       megautils.runFile("entities/demo/moveAcrossPlatform.lua")
       megautils.runFile("entities/demo/stickman.lua")
-      if megautils.networkGameStarted and megautils.networkMode == "server" then
-        megautils.net:sendToAll("l", {p="assets/global/entities/demo_objects.png", n="demo_objects", t="texture"})
-        megautils.net:sendToAll("rf", "entities/demo/met.lua")
-        megautils.net:sendToAll("rf", "entities/demo/moveAcrossPlatform.lua")
-        megautils.net:sendToAll("rf", "entities/demo/stickman.lua")
-      end
     end 
     megautils.loadStage(self, "assets/maps/demo.lua") --Load lua exported tmx stage
-    local id = megautils.nextID()
-    megautils.add(ready, nil, nil, id) --READY
-    if megautils.networkMode == "server" and megautils.networkGameStarted then
-      megautils.sendEntityToClients(ready, {nil, true, id})
-    end
-    id = megautils.nextID()
-    megautils.add(fade, false, nil, nil, fade.ready, id) --Fade in from black
-    if megautils.networkMode == "server" and megautils.networkGameStarted then
-      megautils.sendEntityToClients(client_fade, {false, nil, id})
-    end
+    megautils.add(ready, nil, nil) --READY
+    megautils.add(fade, false, nil, nil, fade.ready) --Fade in from black
     mmMusic.playFromFile("assets/sfx/music/cut_loop.ogg", "assets/sfx/music/cut_intro.ogg") --Play music after everything is set up
-    if megautils.networkGameStarted and megautils.networkMode == "server" then
-      --megautils.net:sendToAll("m", {l=loop, i=intro, v=vol})
-    end
   end
 end
 
@@ -39,9 +22,6 @@ end
 
 function demostate:stop()
   megautils.unload()
-  if megautils.networkGameStarted and megautils.networkMode == "server" then
-    megautils.net:sendToAll("u", {rs=true, msr=true})
-  end
 end
 
 function demostate:draw()

@@ -1,38 +1,13 @@
-client_camera = entity:extend()
-
-client_camera.netName = "c_cam"
-megautils.netNames[client_camera.netName] = client_camera
-
-function client_camera:new(x, y, id)
-  client_camera.super.new(self)
-  self.transform.y = x
-  self.transform.x = y
-  self.networkID = id
-end
-
-function client_camera:update(dt)
-  if self.networkData then
-    view.x = math.round(self.networkData.x) or view.x
-    view.y = math.round(self.networkData.y) or view.y
-    if self.networkData.r then
-      megautils.remove(self, true)
-    end
-  end
-end
-
-camera = entity:extend()
-
-camera.netName = "cam"
-megautils.netNames[camera.netName] = camera
+camera = basicEntity:extend()
 
 addobjects.register("camera", function(v)
   if v.properties["checkpoint"] == globals.checkpoint then
-    megautils.add(camera, v.x, v.y, v.properties["doScrollX"], v.properties["doScrollY"], megautils.nextID())
+    megautils.add(camera, v.x, v.y, v.properties["doScrollX"], v.properties["doScrollY"])
     camera.once = false
   end
 end, -1)
 
-addobjects.register("megacam", function(v)
+addobjects.register("camera", function(v)
   if v.properties["checkpoint"] == globals.checkpoint and not camera.once and camera.main then
     camera.once = true
     camera.main:updateBounds()
@@ -41,9 +16,8 @@ end, 2)
 
 megautils.resetStateFuncs["camera"] = function() camera.main = nil end
 
-function camera:new(x, y, doScrollX, doScrollY, id)
+function camera:new(x, y, doScrollX, doScrollY)
   camera.super.new(self)
-  self.networkID = id
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(view.w, view.h)
@@ -76,11 +50,6 @@ function camera:new(x, y, doScrollX, doScrollY, id)
   self.player = nil
   view.x, view.y = self.transform.x, self.transform.y
   self.funcs = {}
-  self.added = function(self)
-    if megautils.networkMode == "server" and megautils.networkGameStarted then
-      megautils.sendEntityToClients(client_camera, {self.transform.x, self.transform.y, self.networkID})
-    end
-  end
 end
 
 function camera:updateBounds()
@@ -352,15 +321,6 @@ function camera:doView(ox, oy, without)
   end
   view.x, view.y = math.round(self.transform.x), math.round(self.transform.y)
   self:updateFuncs()
-  if megautils.networkGameStarted and megautils.networkMode == "server" then
-    megautils.net:sendToAll("u", {x=self.transform.x, y=self.transform.y, id=self.networkID})
-  end
-end
-
-function camera:removed()
-  if megautils.networkGameStarted and megautils.networkMode == "server" then
-    megautils.net:sendToAll("u", {r=true, id=self.networkID})
-  end
 end
 
 function camera:updateFuncs()

@@ -631,9 +631,6 @@ function basicEntity:staticToggled() end
 
 mapentity = basicEntity:extend()
 
-mapentity.netName = "map"
-megautils.netNames[mapentity.netName] = mapentity
-
 mapentity.layers = {}
 mapentity.cache = {}
 
@@ -642,7 +639,7 @@ megautils.cleanFuncs["mapentity_clean"] = function()
   mapentity.cache = {}
 end
 
-function mapentity:new(name, map, id)
+function mapentity:new(name, map)
   mapentity.super.new(self)
   self.added = function(self)
     self:addToGroup("freezable")
@@ -653,19 +650,6 @@ function mapentity:new(name, map, id)
   end
   self.map = type(map) == "string" and mapentity.cache[map] or map
   mapentity.layers[self.name] = self
-  self.networkID = id
-end
-
-function mapentity:update(dt)
-  if self.networkData and self.networkData.r then
-    megautils.remove(self, true)
-  end
-end
-
-function mapentity:removed()
-  if megautils.networkGameStarted and megautils.networkMode == "server" then
-    megautils.net:sendToAll("u", {r=true, id=self.networkID})
-  end
 end
 
 function mapentity:drawAt(x, y)

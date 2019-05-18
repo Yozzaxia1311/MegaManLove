@@ -17,8 +17,7 @@ megaman.colorTwo = {}
 addobjects.register("player", function(v)
   if (not v.properties["spawnCamera"] or v.properties["spawnCamera"]) and
     v.properties["checkpoint"] == globals.checkpoint then
-    local id = megautils.nextID()
-    megautils.add(camera, v.x, v.y, v.properties["doScrollX"], v.properties["doScrollY"], id)
+    megautils.add(camera, v.x, v.y, v.properties["doScrollX"], v.properties["doScrollY"])
     camera.once = false
   end
 end, -1)
@@ -841,6 +840,8 @@ function megaman:code(dt)
     elseif self.canJump and control.jumpPressed[self.input] and
       not (control.downDown[self.input] and self:checkBasicSlideBox(self.side, 0)) then
       self.velocity.vely = self.jumpSpeed
+    else
+      self.velocity.vely = 0
     end
     if self.standSolidJumpTimer > 0 and (not control.jumpDown[self.input] or self.standSolidJumpTimer == self.maxStandSolidJumpTime) then
       self.standSolidJumpTimer = -1
