@@ -1,3 +1,47 @@
+bassBuster = entity:extend()
+
+function bassBuster:new(x, y, dir, wpn)
+  bassBuster.super.new(self)
+  self.added = function(self)
+    self:addToGroup("bassBuster")
+    self:addToGroup("bassBuster" .. wpn.id)
+    self:addToGroup("freezable")
+    self:addToGroup("removeOnTransition")
+  end
+  self.transform.y = y
+  self.transform.x = x
+  self:setRectangleCollision(6, 6)
+  self.tex = loader.get("bass_buster")
+  self.dink = false
+  self.velocity = velocity()
+  self.velocity.velx = megautils.calcX(dir) * 5
+  self.velocity.vely = megautils.calcY(dir) * 5
+  self.side = self.velocity.velx < 0 and -1 or 1
+  self.wpn = wpn
+  self:setLayer(1)
+  mmSfx.play("buster")
+end
+
+function bassBuster:update(dt)
+  if not self.dink then
+    self:hurt(self:collisionTable(megautils.groups()["hurtable"]), -1, 2)
+  else
+    self.velocity.vely = -4
+    self.velocity.velx = 4*-self.side
+  end
+  self.transform.x = self.transform.x + self.velocity.velx
+  self.transform.y = self.transform.y + self.velocity.vely
+  if megautils.outside(self) or (self.wpn.currentSlot ~= 0 and self.wpn.currentSlot ~= 9
+    and self.wpn.currentSlot ~= 10) or collision.checkSolid(self) then
+    megautils.remove(self, true)
+  end
+end
+
+function bassBuster:draw()
+  love.graphics.setColor(1, 1, 1, 1)
+  love.graphics.draw(self.tex, math.round(self.transform.x-1), math.round(self.transform.y-1))
+end
+
 megaBuster = entity:extend()
 
 function megaBuster:new(x, y, dir, wpn)
@@ -339,7 +383,7 @@ function rushCoil:update(dt)
         math.between(player.transform.x+player.collisionShape.w/2, self.transform.x, self.transform.x+self.collisionShape.w) and
         player:collision(self) then
         player.canStopJump = false
-        player.velocity.vely = -10.5
+        player.velocity.vely = -7
         player.step = false
         player.stepTime = 0
         player.ground = false

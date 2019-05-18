@@ -20,7 +20,7 @@ function moveAcrossPlatform:new(x, y, toX, toY, s)
   self.quad = love.graphics.newQuad(0, 0, 32, 16, 100, 100)
   self.spawner = s
   self.velocity = velocity()
-  self.tween = tween.new(1, self.transform, {x=toX, y=toY}, "inOutBack")
+  self.tween = tween.new(2, self.transform, {x=toX, y=toY}, "inOutBack")
   self.state = 0
 end
 
@@ -45,6 +45,8 @@ function moveAcrossPlatform:update(dt)
     end
   elseif self.state == 1 then
     self.tween:update(1/60)
+    self.transform.x = math.round(self.transform.x)
+    self.transform.y = math.round(self.transform.y)
   end
   collision.doCollision(self)
   if megautils.outside(self) then

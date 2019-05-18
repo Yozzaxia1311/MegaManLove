@@ -71,7 +71,7 @@ function megaman.properties(self)
   self.wallJumpSpeed = -4.725
   self.slideLeftSpeed = -2.5
   self.slideRightSpeed = 2.5
-  self.dashJumpMultiplier = 1.2
+  self.dashJumpMultiplier = 1
   self.maxSlideTime = 26
   self.climbUpSpeed = -1.3
   self.climbDownSpeed = 1.3
@@ -90,7 +90,7 @@ function megaman.properties(self)
   self.maxWallJumpTime = 8
   self.wallSlideSpeed = 0.5
   self.canDashShoot = false
-  self.canDashJump = false
+  self.canDashJump = globals.player[self.player] == "bass"
   self.canDash = true
   self.canShoot = true
   self.canWallJump = false
@@ -115,6 +115,8 @@ function megaman.properties(self)
   self.canStandSolid = true
   self.canPause = true
   self.maxStandSolidJumpTime = 4
+  self.maxExtraJumps = 1
+  self.maxRapidShotTime = 5
 end
 
 function megaman:transferState(to)
@@ -292,7 +294,8 @@ function megaman:new(x, y, side, drop, p)
   self.bubbleTimer = 0
   self.runCheck = false
   self.standSolidJumpTimer = 0
-  self.input = megautils.networkGameStarted and 1 or self.player
+  self.extraJumps = 0
+  self.rapidShotTime = self.maxRapidShotTime
   
   self.groundUpdateFuncs = {}
   self.airUpdateFuncs = {}
@@ -304,13 +307,17 @@ function megaman:new(x, y, side, drop, p)
   self.healthHandler.render = false
   
   megaman.weaponHandler[self.player] = megautils.add(weaponhandler, nil, nil, 10)
-  megaman.weaponHandler[self.player]:register(0, "megaBuster", {0, 120, 248}, {0, 232, 216}, {0, 0, 0})
+  if globals.player[self.player] == "bass" then
+    megaman.weaponHandler[self.player]:register(0, "bassBuster", {112, 112, 112}, {248, 152, 56}, {0, 0, 0})
+  else
+    megaman.weaponHandler[self.player]:register(0, "megaBuster", {0, 120, 248}, {0, 232, 216}, {0, 0, 0})
+  end
   megaman.weaponHandler[self.player]:register(9, "rushCoil", {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
   megaman.weaponHandler[self.player]:register(10, "rushJet", {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
   megaman.colorOutline[self.player] = megaman.weaponHandler[self.player].colorOutline[0]
   megaman.colorOne[self.player] = megaman.weaponHandler[self.player].colorOne[0]
   megaman.colorTwo[self.player] = megaman.weaponHandler[self.player].colorTwo[0]
-  --megaman.weaponHandler[self.player]:reinit()
+  megaman.weaponHandler[self.player]:reinit()
   megaman.weaponHandler[self.player].render = false
   self.health = self.healthHandler.health
   self.healthHandler:updateThis()
@@ -332,15 +339,15 @@ function megaman:new(x, y, side, drop, p)
   self.curAnim = self.drop and "spawn" or "idle"
   self.dropAnimation = {["regular"]="spawn"}
   self.dropLandAnimation = {["regular"]="spawnLand"}
-  self.idleAnimation = {["regular"]="idle", ["shoot"]="idleShoot"}
-  self.nudgeAnimation = {["regular"]="nudge", ["shoot"]="idleShoot"}
-  self.jumpAnimation = {["regular"]="jump", ["shoot"]="jumpShoot"}
+  self.idleAnimation = {["regular"]="idle", ["shoot"]="idleShoot", ["s_dm"]="idleShootDM", ["s_um"]="idleShootUM", ["s_u"]="idleShootU"}
+  self.nudgeAnimation = {["regular"]="nudge", ["shoot"]="idleShoot", ["s_dm"]="idleShootDM", ["s_um"]="idleShootUM", ["s_u"]="idleShootU"}
+  self.jumpAnimation = {["regular"]="jump", ["shoot"]="jumpShoot", ["s_dm"]="jumpShootDM", ["s_um"]="jumpShootUM", ["s_u"]="jumpShootU"}
   self.runAnimation = {["regular"]="run", ["shoot"]="runShoot"}
-  self.climbAnimation = {["regular"]="climb", ["shoot"]="climbShoot"}
+  self.climbAnimation = {["regular"]="climb", ["shoot"]="climbShoot", ["s_dm"]="climbShootDM", ["s_um"]="climbShootUM", ["s_u"]="climbShootU"}
   self.climbTipAnimation = {["regular"]="climbTip"}
   self.hitAnimation = {["regular"]="hit"}
   self.wallJumpAnimation = {["regular"]="wallJump", ["shoot"]="wallJumpShoot"}
-  self.dashAnimation = {["regular"]=self.canDashShoot and "dash" or "slide", ["shoot"]="dashShoot"}
+  self.dashAnimation = {["regular"]=(self.canDashShoot and globals.player[self.player] == "mega") and "dash" or "slide", ["shoot"]="dashShoot"}
   self.animations = {}
   local pp = "mega_man_grid"
   if globals.player[self.player] == "bass" or globals.player[self.player] == "roll" then
@@ -352,16 +359,25 @@ function megaman:new(x, y, side, drop, p)
     self.animations["idle"] = anim8.newAnimation(loader.get(pp)(1, 1, 2, 1), {2.5, 0.1})
   end
   self.animations["idleShoot"] = anim8.newAnimation(loader.get(pp)(1, 4), 1)
+  self.animations["idleShootDM"] = anim8.newAnimation(loader.get(pp)(3, 6), 1)
+  self.animations["idleShootUM"] = anim8.newAnimation(loader.get(pp)(4, 6), 1)
+  self.animations["idleShootU"] = anim8.newAnimation(loader.get(pp)(1, 7), 1)
   self.animations["idleThrow"] = anim8.newAnimation(loader.get(pp)(4, 7), 1)
   self.animations["nudge"] = anim8.newAnimation(loader.get(pp)(3, 1), 1)
   self.animations["jump"] = anim8.newAnimation(loader.get(pp)(4, 2), 1)
   self.animations["jumpShoot"] = anim8.newAnimation(loader.get(pp)(1, 5), 1)
+  self.animations["jumpShootDM"] = anim8.newAnimation(loader.get(pp)(1, 10), 1)
+  self.animations["jumpShootUM"] = anim8.newAnimation(loader.get(pp)(2, 10), 1)
+  self.animations["jumpShootU"] = anim8.newAnimation(loader.get(pp)(3, 10), 1)
   self.animations["jumpThrow"] = anim8.newAnimation(loader.get(pp)(1, 8), 1)
   self.animations["run"] = anim8.newAnimation(loader.get(pp)(4, 1, "1-2", 2, 1, 2), 1/8)
   self.animations["runShoot"] = anim8.newAnimation(loader.get(pp)("2-4", 4, 3, 4), 1/8)
   self.animations["runThrow"] = anim8.newAnimation(loader.get(pp)("2-4", 8, 3, 8), 1/8)
   self.animations["climb"] = anim8.newAnimation(loader.get(pp)("1-2", 3), 1/8)
   self.animations["climbShoot"] = anim8.newAnimation(loader.get(pp)(2, 5), 1)
+  self.animations["climbShootDM"] = anim8.newAnimation(loader.get(pp)(2, 9), 1)
+  self.animations["climbShootUM"] = anim8.newAnimation(loader.get(pp)(3, 9), 1)
+  self.animations["climbShootU"] = anim8.newAnimation(loader.get(pp)(4, 9), 1)
   self.animations["climbThrow"] = anim8.newAnimation(loader.get(pp)(1, 9), 1)
   self.animations["climbTip"] = anim8.newAnimation(loader.get(pp)(3, 3), 1)
   self.animations["hit"] = anim8.newAnimation(loader.get(pp)(4, 3), 1)
@@ -410,10 +426,10 @@ end
 
 function megaman:attemptWeaponUsage()
   local w = megaman.weaponHandler[self.player]
-  if control.shootPressed[self.input] then
+  if control.shootPressed[self.player] then
     if (w.current == "megaBuster" or w.current == "rushJet" or w.current == "rushCoil")
     and (not megautils.groups()["megaBuster" .. w.id] or
-    #megautils.groups()["megaBuster" .. w.id] < self.maxNormalBusterShots) and (not megautils.groups()["megaChargedBuster" .. w.id] or
+    #megautils.groups()["megaBuster" .. w.id] < 3) and (not megautils.groups()["megaChargedBuster" .. w.id] or
     #megautils.groups()["megaChargedBuster" .. w.id] == 0) then
       if w.current == "rushCoil" and w.energy[w.currentSlot] > 0 and
       (not megautils.groups()["rush"] or #megautils.groups()["rush"] < 1) then
@@ -459,8 +475,79 @@ function megaman:attemptWeaponUsage()
       self:useShootAnimation()
       w.energy[w.currentSlot] = w.energy[w.currentSlot] - 1
     end
+  elseif control.shootDown[self.player] then
+    if (w.current == "bassBuster" or w.current == "rushJet" or w.current == "rushCoil") then
+      self.rapidShotTime = math.min(self.rapidShotTime + 1, self.maxRapidShotTime)
+      if self.rapidShotTime == self.maxRapidShotTime then
+        self.rapidShotTime = 0
+        if w.current == "rushCoil" and w.energy[w.currentSlot] > 0 and
+          (not megautils.groups()["rush"] or #megautils.groups()["rush"] < 1) then
+          megautils.add(rushCoil, self.transform.x+(self.side==1 and 18 or -32),
+            self.transform.y, self.side, w)
+          self.maxShootTime = 14
+          self.shootTimer = 0
+          self:useShootAnimation()
+        elseif w.current == "rushJet" and w.energy[w.currentSlot] > 0 and
+          (not megautils.groups()["rush"] or #megautils.groups()["rush"] < 1) then
+          megautils.add(rushJet, self.transform.x+(self.side==1 and 18 or -32),
+              self.transform.y+6, self.side, w)
+          self.maxShootTime = 14
+          self.shootTimer = 0
+          self:useShootAnimation()
+        else
+          if not megautils.groups()["bassBuster" .. w.id] or #megautils.groups()["bassBuster" .. w.id] < 4 then
+            local dir = self.side == 1 and 0 or 180
+            local tx = self.side == 1 and 22 or -19
+            local ty = 6
+            if control.upDown[self.player] then
+              if control.leftDown[self.player] then
+                dir = -45+180
+                tx = -14
+                ty = -3
+              elseif control.rightDown[self.player] then
+                dir = 45
+                tx = 19
+                ty = -3
+              else
+                dir = 90
+                tx = self.side == 1 and 7 or -3
+                ty = -8
+                if self.climb then
+                  tx = tx + (self.side == 1 and 0 or 1)
+                end
+              end
+            elseif control.downDown[self.player] then
+              if control.leftDown[self.player] then
+                dir = 45+180
+                tx = -14
+                ty = 15
+              elseif control.rightDown[self.player] then
+                dir = -45
+                tx = 19
+                ty = 15
+              else
+                dir = self.side == 1 and -45 or 45+180
+                tx = self.side == 1 and 19 or -14
+                ty = 15
+              end
+            end
+            if self.climb then
+              ty = ty - 4
+            end
+            megautils.add(bassBuster, self.transform.x+tx, self.transform.y+ty, dir, w)
+          end
+          self.maxShootTime = 14
+          self.shootTimer = 0
+          self:resetCharge()
+          self:useShootAnimation()
+          self.stopOnShot = true
+        end
+      end
+    end
+  else
+    self.rapidShotTime = self.maxRapidShotTime
   end
-  if not control.shootDown[self.input] and self.chargeState ~= 0 then
+  if not control.shootDown[self.player] and self.chargeState ~= 0 then
     if w.current == "megaBuster" then
       if self.chargeState == 1 then
         if globals.player[self.player] == "mega" then
@@ -501,7 +588,7 @@ function megaman:attemptWeaponUsage()
       end
     end
   end
-  if control.shootDown[self.input] then
+  if control.shootDown[self.player] then
     if self.canChargeBuster and w.current == "megaBuster" then
       self:charge()
     end
@@ -509,15 +596,15 @@ function megaman:attemptWeaponUsage()
 end
 
 function megaman:attemptClimb()
-  if not control.downDown[self.input] and not control.upDown[self.input] then
+  if not control.downDown[self.player] and not control.upDown[self.player] then
     return
   end
   local lads = self:collisionTable(megautils.groups()["ladder"], 0, 1)
   if #lads ~= 0 then
     self.currentLadder = lads[1]
-    if (control.downDown[self.input] and self.ground and
+    if (control.downDown[self.player] and self.ground and
       self.transform.y ~= self.currentLadder.transform.y - self.collisionShape.h) or
-      (control.upDown[self.input] and self.transform.y == self.currentLadder.transform.y - self.collisionShape.h) or
+      (control.upDown[self.player] and self.transform.y == self.currentLadder.transform.y - self.collisionShape.h) or
       (not math.between(self.transform.x+self.collisionShape.w/2,
       self.currentLadder.transform.x, self.currentLadder.transform.x+self.currentLadder.collisionShape.w)) then
       self.currentLadder = nil
@@ -530,7 +617,7 @@ function megaman:attemptClimb()
     end
     if self.transform.y == self.currentLadder.transform.y - self.collisionShape.h and
       self.transform.y+self.collisionShape.h-1 < self.currentLadder.transform.y and
-      control.downDown[self.input] then
+      control.downDown[self.player] then
       self.transform.y = self.transform.y + math.round(self.collisionShape.h/2) + 2
     end
     self.velocity.vely = 0
@@ -646,22 +733,22 @@ function megaman:healthChanged(o, c, i)
 end
 
 function megaman:code(dt)
-  self.runCheck = ((control.leftDown[self.input] and not control.rightDown[self.input]) or (control.rightDown[self.input] and not control.leftDown[self.input]))
+  self.runCheck = ((control.leftDown[self.player] and not control.rightDown[self.player]) or (control.rightDown[self.player] and not control.leftDown[self.player]))
   if self.hitTimer ~= self.maxHitTime then
     self.hitTimer = math.min(self.hitTimer+1, self.maxHitTime)
     for k, v in pairs(self.knockbackUpdateFuncs) do
       v(self)
     end
     self:phys()
-    if self.canShoot and control.shootDown[self.input] then
+    if self.canShoot and control.shootDown[self.player] then
       self:charge()
     else
       self:charge(true)
     end
   elseif self.climb then
-    if control.leftDown[self.input] then
+    if control.leftDown[self.player] then
       self.side = -1
-    elseif control.rightDown[self.input] then
+    elseif control.rightDown[self.player] then
       self.side = 1
     end
     if not self.alwaysMove then
@@ -670,15 +757,15 @@ function megaman:code(dt)
     end
     self.transform.x = self.currentLadder.transform.x+(self.currentLadder.collisionShape.w/2)-
       ((self.collisionShape.w)/2)
-    if control.upDown[self.input] and self.shootTimer == self.maxShootTime then
+    if control.upDown[self.player] and self.shootTimer == self.maxShootTime then
       self.velocity.vely = self.climbUpSpeed
-    elseif control.downDown[self.input] and self.shootTimer == self.maxShootTime then
+    elseif control.downDown[self.player] and self.shootTimer == self.maxShootTime then
       self.velocity.vely = self.climbDownSpeed
     end
     if not self:collision(self.currentLadder) and self.transform.y >= self.currentLadder.transform.y then
       self.climb = false
     elseif self.transform.y+math.round(self.collisionShape.h/2) < self.currentLadder.transform.y+2
-      and control.upDown[self.input] then
+      and control.upDown[self.player] then
         self.velocity.vely = 0
         self.transform.y = math.round(self.transform.y)
         while self:collision(self.currentLadder) do
@@ -693,11 +780,11 @@ function megaman:code(dt)
       self.transform.x == (view.x+view.w)-self.collisionShape.w/2 or not self:collision(self.currentLadder) then
       self.climb = false
     end
-    if self.ground and control.downDown[self.input] then
+    if self.ground and control.downDown[self.player] then
       self.climb = false
     end
-    if control.jumpPressed[self.input] and not (control.downDown[self.input] or
-      control.upDown[self.input]) then
+    if control.jumpPressed[self.player] and not (control.downDown[self.player] or
+      control.upDown[self.player]) then
       self.climb = false
     end
     for k, v in pairs(self.climbUpdateFuncs) do
@@ -711,11 +798,11 @@ function megaman:code(dt)
     self.climbTip = self.transform.y+math.round(self.collisionShape.h/6) < self.currentLadder.transform.y
   elseif self.slide then
     local lastSide = self.side
-    if control.leftDown[self.input] then
+    if control.leftDown[self.player] then
       self.side = -1
       self.step = true
       self.stepTime = 0
-    elseif control.rightDown[self.input] then
+    elseif control.rightDown[self.player] then
       self.side = 1
       self.step = true
       self.stepTime = 0
@@ -747,9 +834,9 @@ function megaman:code(dt)
         self.slideTimer = self.maxSlideTime
         self.hitTimer = self.maxHitTime
         self:slideToReg()
-      elseif self.canJump and self.canJumpOutFromDash and control.jumpPressed[self.input] and not self:checkRegBox()
+      elseif self.canJump and self.canJumpOutFromDash and control.jumpPressed[self.player] and not self:checkRegBox()
         and (self.ground or self:checkSlideBox(0, math.sign(self.gravity)))
-          and not control.downDown[self.input] then
+          and not control.downDown[self.player] then
         self.slide = false
         jumped = true
         self.velocity.vely = self.jumpSpeed
@@ -778,7 +865,7 @@ function megaman:code(dt)
       v(self)
     end
     self:phys()
-    if self.canShoot and not self.canDashShoot and control.shootDown[self.input] then
+    if self.canShoot and not self.canDashShoot and control.shootDown[self.player] then
       self:charge()
     elseif self.canShoot and self.canDashShoot then
       self:attemptWeaponUsage()
@@ -789,7 +876,7 @@ function megaman:code(dt)
   elseif self.ground then
     if self.canWalk and not (self.stopOnShot and self.shootTimer ~= self.maxShootTime) then
       if self.runCheck and not self.step then
-        self.side = control.leftDown[self.input] and -1 or 1
+        self.side = control.leftDown[self.player] and -1 or 1
         if self.stepVelocity or self.stepTime == 0 then
           self.velocity.velx = self.velocity.velx + (self.side==1 and self.stepRightSpeed or self.stepLeftSpeed)
         elseif not self.stepVelocity then
@@ -801,7 +888,7 @@ function megaman:code(dt)
           self.stepTime = 0
         end
       elseif self.runCheck then
-        self.side = control.leftDown[self.input] and -1 or 1
+        self.side = control.leftDown[self.player] and -1 or 1
         self.velocity.velx = self.velocity.velx + (self.side == -1 and self.leftSpeed or self.rightSpeed)
       elseif not self.alwaysMove then
         self.velocity:slowX(self.side == -1 and self.leftDecel or self.rightDecel)
@@ -810,15 +897,15 @@ function megaman:code(dt)
       end
     else
       if self.runCheck then
-        self.side = control.leftDown[self.input] and -1 or 1
+        self.side = control.leftDown[self.player] and -1 or 1
       end
       self.velocity:slowX(self.side == -1 and self.leftDecel or self.rightDecel)
       self.stepTime = 0
       self.step = false
     end
     self.jumpCheck = false
-    if self.canDash and (control.dashPressed[self.input] or
-      (control.downDown[self.input] and control.jumpPressed[self.input])) and
+    if self.canDash and (control.dashPressed[self.player] or
+      (control.downDown[self.player] and control.jumpPressed[self.player])) and
       not self:checkBasicSlideBox(self.side, 0) then
       if self.shootTimer ~= self.maxShootTime then
         self.animations[self.dashAnimation["regular"]]:gotoFrame(
@@ -833,21 +920,21 @@ function megaman:code(dt)
       self.slideTimer = 0
       megautils.add(slideParticle, self.transform.x+(self.side==-1 and self.collisionShape.w or 4),
         self.transform.y+self.collisionShape.h-6, self.side)
-    elseif self.canJump and self.inStandSolid and control.jumpDown[self.input] and self.standSolidJumpTimer ~= self.maxStandSolidJumpTime and
+    elseif self.canJump and self.inStandSolid and control.jumpDown[self.player] and self.standSolidJumpTimer ~= self.maxStandSolidJumpTime and
       self.standSolidJumpTimer ~= -1 then
       self.velocity.vely = self.jumpSpeed
       self.standSolidJumpTimer = math.min(self.standSolidJumpTimer+1, self.maxStandSolidJumpTime)
-    elseif self.canJump and control.jumpPressed[self.input] and
-      not (control.downDown[self.input] and self:checkBasicSlideBox(self.side, 0)) then
+    elseif self.canJump and control.jumpPressed[self.player] and
+      not (control.downDown[self.player] and self:checkBasicSlideBox(self.side, 0)) then
       self.velocity.vely = self.jumpSpeed
     else
       self.velocity.vely = 0
     end
-    if self.standSolidJumpTimer > 0 and (not control.jumpDown[self.input] or self.standSolidJumpTimer == self.maxStandSolidJumpTime) then
+    if self.standSolidJumpTimer > 0 and (not control.jumpDown[self.player] or self.standSolidJumpTimer == self.maxStandSolidJumpTime) then
       self.standSolidJumpTimer = -1
       mmSfx.play("land")
     end
-    if self.standSolidJumpTimer == -1 and not control.jumpDown[self.input] then
+    if self.standSolidJumpTimer == -1 and not control.jumpDown[self.player] then
       self.standSolidJumpTimer = 0
     end
     self.velocity.velx = math.clamp(self.velocity.velx, self.maxLeftSpeed, self.maxRightSpeed)
@@ -864,12 +951,12 @@ function megaman:code(dt)
     self:attemptClimb()
   else
     self.wallJumping = false
-    local ns = control.leftDown[self.input] and -1 or (control.rightDown[self.input] and 1 or 0)
+    local ns = control.leftDown[self.player] and -1 or (control.rightDown[self.player] and 1 or 0)
     if self.wallJumpTimer ~= 0 then
       self.wallJumpTimer = math.max(self.wallJumpTimer-1, 0)
       self.velocity.velx = self.wallKickSpeed * self.side
-      if (self.side == 1 and control.rightDown[self.input]) or 
-        (self.side == -1 and control.leftDown[self.input]) then
+      if (self.side == 1 and control.rightDown[self.player]) or 
+        (self.side == -1 and control.leftDown[self.player]) then
         self.wallJumpTimer = 0
       end
     elseif self.canWallJump and self.velocity.vely > 0 and collision.checkSolid(self, ns, 0) then
@@ -877,7 +964,7 @@ function megaman:code(dt)
       self.velocity.velx = -self.side
       self.wallJumping = true
       self.velocity.vely = self.wallSlideSpeed
-      if control.jumpPressed[self.input] then
+      if control.jumpPressed[self.player] then
         self.wallJumpTimer = self.maxWallJumpTime
         self.velocity.vely = self.wallJumpSpeed
         self.dashJump = true
@@ -885,7 +972,7 @@ function megaman:code(dt)
           self.transform.y+self.collisionShape.h-10, -self.side)
       end
     elseif self.runCheck then
-      self.side = control.leftDown[self.input] and -1 or 1
+      self.side = control.leftDown[self.player] and -1 or 1
       self.velocity.velx = self.velocity.velx + (self.side == -1 and 
         (self.dashJump and self.slideLeftSpeed*self.dashJumpMultiplier or self.leftAirSpeed) or 
         (self.dashJump and self.slideRightSpeed*self.dashJumpMultiplier or self.rightAirSpeed))
@@ -903,7 +990,11 @@ function megaman:code(dt)
       self.stepTime = 0
       self.step = false
     end
-    if self.canStopJump and not control.jumpDown[self.input] and self.velocity.vely < 0 then
+    if control.jumpPressed[self.player] and self.extraJumps < self.maxExtraJumps then
+      self.extraJumps = self.extraJumps + 1
+      self.velocity.vely = self.jumpSpeed
+    end
+    if self.canStopJump and not control.jumpDown[self.player] and self.velocity.vely < 0 then
       self.velocity:slowY(self.jumpDecel)
     end
     for k, v in pairs(self.airUpdateFuncs) do
@@ -914,6 +1005,7 @@ function megaman:code(dt)
     if self.ground then
       self.dashJump = false
       self.canStopJump = true
+      self.extraJumps = 0
       mmSfx.play("land")
     else
       self:attemptClimb()
@@ -950,7 +1042,7 @@ function megaman:code(dt)
   if self.stopOnShot and self.shootTimer == self.maxShootTime then
     self.stopOnShot = false
   end
-  if globals.mainPlayer and control.startPressed[self.input] and self.control and globals.mainPlayer.control and globals.mainPlayer.updated
+  if globals.mainPlayer and control.startPressed[self.player] and self.control and globals.mainPlayer.control and globals.mainPlayer.updated
     and self.canPause then
     self.weaponSwitchTimer = 70
     megautils.add(fade, true, nil, nil, function(s)
@@ -1051,7 +1143,7 @@ function megaman:phys()
 end
 
 function megaman:updatePallete()
-  if control.prevDown[self.input] and control.nextDown[self.input]
+  if control.prevDown[self.player] and control.nextDown[self.player]
     and megaman.weaponHandler[self.player].currentSlot ~= 0 then
     megaman.weaponHandler[self.player]:switch(0)
     megaman.colorOutline[self.player] = megaman.weaponHandler[self.player].colorOutline[0]
@@ -1070,7 +1162,7 @@ function megaman:updatePallete()
     self.weaponSwitchTimer = 0
     self:resetCharge()
     mmSfx.play("switch")
-  elseif control.nextPressed[self.input] and not control.prevDown[self.input] then
+  elseif control.nextPressed[self.player] and not control.prevDown[self.player] then
     self.prevWeapon = megaman.weaponHandler[self.player].currentSlot
     local w = math.wrap(megaman.weaponHandler[self.player].currentSlot+1, 0, megaman.weaponHandler[self.player].slotSize)
     while not megaman.weaponHandler[self.player].weapons[w] do
@@ -1088,7 +1180,7 @@ function megaman:updatePallete()
     self.weaponSwitchTimer = 0
     self:resetCharge()
     mmSfx.play("switch")
-  elseif control.prevPressed[self.input] and not control.nextDown[self.input] then
+  elseif control.prevPressed[self.player] and not control.nextDown[self.player] then
     self.nextWeapon = megaman.weaponHandler[self.player].currentSlot
     local w = math.wrap(megaman.weaponHandler[self.player].currentSlot-1, 0, megaman.weaponHandler[self.player].slotSize)
     while not megaman.weaponHandler[self.player].weapons[w] do
@@ -1109,6 +1201,22 @@ function megaman:updatePallete()
   end
 end
 
+function megaman:bassBusterAnim(shoot)
+  local dir = shoot
+  if self.shootTimer ~= self.maxShootTime then
+    if control.upDown[self.player] then
+      if control.leftDown[self.player] or control.rightDown[self.player] then
+        dir = "s_um"
+      else
+        dir = "s_u"
+      end
+    elseif control.downDown[self.player] then
+      dir = "s_dm"
+    end
+  end
+  return dir
+end
+
 function megaman:animate()
   if self.drop or self.rise then
     self.curAnim = self.dropLanded and self.dropLandAnimation["regular"] or self.dropAnimation["regular"]
@@ -1120,6 +1228,7 @@ function megaman:animate()
     if self.hitTimer ~= self.maxHitTime then
       self.curAnim = self.hitAnimation["regular"]
     elseif self.climb then
+      shoot = self:bassBusterAnim(shoot)
       self.curAnim = self.climbAnimation[shoot]
       if self.climbTip then
         if self.shootTimer ~= self.maxShootTime then
@@ -1127,11 +1236,11 @@ function megaman:animate()
         else
           self.curAnim = self.climbTipAnimation["regular"]
         end
-      elseif not self.alwaysMove and not (control.downDown[self.input] or
-        control.upDown[self.input]) and 
+      elseif not self.alwaysMove and not (control.downDown[self.player] or
+        control.upDown[self.player]) and 
         self.animations[self.climbAnimation["regular"]].status == "playing" then
         self.animations[self.climbAnimation["regular"]]:pause()
-      elseif control.downDown[self.input] or control.upDown[self.input] and 
+      elseif control.downDown[self.player] or control.upDown[self.player] and 
         self.animations[self.climbAnimation["regular"]].status == "paused" then
         self.animations[self.climbAnimation["regular"]]:resume()
       end
@@ -1146,6 +1255,7 @@ function megaman:animate()
       self.curAnim = self.dashAnimation[self.canDashShoot and shoot or "regular"]
     elseif self.ground then
       if self.canWalk and not self.step and self.runCheck then
+        shoot = self:bassBusterAnim(shoot)
         if self.standSolidJumpTimer > 0 then
           self.curAnim = self.jumpAnimation[shoot]
         else
@@ -1156,6 +1266,7 @@ function megaman:animate()
         not (self.stopOnShot and self.shootTimer ~= self.maxShootTime) then
         self.curAnim = self.runAnimation[shoot]
       else
+        shoot = self:bassBusterAnim(shoot)
         self.animations[self.runAnimation["regular"]]:gotoFrame(1)
         self.animations[self.runAnimation["shoot"]]:gotoFrame(1)
         if self.standSolidJumpTimer > 0 then
@@ -1168,6 +1279,7 @@ function megaman:animate()
       if self.wallJumping then
         self.curAnim = self.wallJumpAnimation[shoot]
       else
+        shoot = self:bassBusterAnim(shoot)
         self.curAnim = self.jumpAnimation[shoot]
       end
     end
@@ -1189,7 +1301,7 @@ function megaman:animate()
 end
 
 function megaman:update(dt)
-  self.input = megautils.networkGameStarted and 1 or self.player
+  self.player = megautils.networkGameStarted and 1 or self.player
   if self.dying then
     if self.cameraTween:update(1/60) then
       self.control = false
@@ -1301,7 +1413,8 @@ function megaman:draw()
   end
   offsety = offsety + self.teleportOffY
   if globals.player[self.player] == "bass" or globals.player[self.player] == "roll" then
-    if self.curAnim == "climbShoot" or self.curAnim == "climbThrow" then
+    if self.curAnim == "climbShoot" or self.curAnim == "climbShootDM" or self.curAnim == "climbShootUM"
+      or self.curAnim == "climbShootU" or self.curAnim == "climbThrow" then
       offsetx = self.side == -1 and -2 or -3
     elseif self.curAnim == "climb" then
       offsetx = self.animations["climb"].position==1 and -3 or -2
@@ -1309,7 +1422,8 @@ function megaman:draw()
       offsetx = self.side==1 and 1 or -5
     end
   else
-    if self.curAnim == "climbShoot" or self.curAnim == "climbThrow" then
+    if self.curAnim == "climbShoot" or self.curAnim == "climbShootDM" or self.curAnim == "climbShootUM"
+      or self.curAnim == "climbShootU" or self.curAnim == "climbThrow" then
       offsetx = self.side == -1 and 0 or -1
     elseif self.curAnim == "climb" then
       offsetx = self.animations["climb"].position==1 and -1 or 0

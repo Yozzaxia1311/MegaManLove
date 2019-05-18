@@ -41,7 +41,7 @@ function weaponhandler:new(side, r, slots)
 end
 
 function weaponhandler:reinit()
-  self.current = "megaBuster"
+  self.current = self.weapons[0]
   self.curSegment = 0
   self.riseTimer = 4
   self.rise = 0
