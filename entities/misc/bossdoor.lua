@@ -38,7 +38,7 @@ function bossdoor:setDirection(dir)
 end
 
 function bossdoor:update(dt)
-  if not camera.main or not rectOverlaps(self.transform.x, self.transform.y, self.collisionShape.w,
+  if not camera.main or not rectOverlapsRect(self.transform.x, self.transform.y, self.collisionShape.w,
     self.collisionShape.h, camera.main.scrollx, camera.main.scrolly, camera.main.scrollw, camera.main.scrollh) then return end
   if ((self.transform.x < camera.main.scrollx and self.dir == "left") or
     (self.transform.x+self.collisionShape.w > camera.main.scrollx+camera.main.scrollw and self.dir == "right") or

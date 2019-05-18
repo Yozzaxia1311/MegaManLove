@@ -283,13 +283,13 @@ function megautils.outside(o)
   if camera.main and not camera.main.isRemoved then
     return not o:collision(camera.main)
   end
-  return not rectOverlaps(view.x, view.y, view.w, view.h, 
+  return not rectOverlapsRect(view.x, view.y, view.w, view.h, 
     o.transform.x, o.transform.y, o.collisionShape.w, o.collisionShape.h)
 end
 
 function megautils.outsideSection(o)
   if o.collisionShape and camera.main and not camera.main.isRemoved then
-    return not rectOverlaps(camera.main.scrollx, camera.main.scrolly, camera.main.scrollw, camera.main.scrollh, 
+    return not rectOverlapsRect(camera.main.scrollx, camera.main.scrolly, camera.main.scrollw, camera.main.scrollh, 
       o.transform.x, o.transform.y, o.collisionShape.w, o.collisionShape.h)
   end
   return false

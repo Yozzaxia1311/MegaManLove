@@ -54,7 +54,7 @@ function touchInput.down(n)
       y = touchInput.buttons[n][3]
     end
     for k, v in ipairs(touches) do
-      if pointRectOverlaps(v.x, v.y, x, y, touchInput.buttons[n][4], touchInput.buttons[n][5]) then
+      if pointOverlapsRect(v.x, v.y, x, y, touchInput.buttons[n][4], touchInput.buttons[n][5]) then
         return true
       end
     end

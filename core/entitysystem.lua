@@ -466,20 +466,22 @@ function entity:collision(e, x, y)
   if e == nil or self.collisionShape == nil or e.collisionShape == nil then return false end
   if self.collisionShape.type == 0 then
     if e.collisionShape.type == 0 then
-      return rectOverlaps(self.transform.x + (x or 0), self.transform.y + (y or 0),
+      return rectOverlapsRect(self.transform.x + (x or 0), self.transform.y + (y or 0),
         self.collisionShape.w, self.collisionShape.h,
         e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h)
     elseif e.collisionShape.type == 1 then
-      return imageRectOverlaps(e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h, e.collisionShape.data,
+      return imageOverlapsRect(e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h, e.collisionShape.data,
         self.transform.x + (x or 0), self.transform.y + (y or 0), self.collisionShape.w, self.collisionShape.h)
     end
   elseif self.collisionShape.type == 1 then
     if e.collisionShape.type == 0 then
-      return imageRectOverlaps(self.transform.x + (x or 0), self.transform.y + (y or 0),
+      return imageOverlapsRect(self.transform.x + (x or 0), self.transform.y + (y or 0),
         self.collisionShape.w, self.collisionShape.h, self.collisionShape.data,
         e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h)
     elseif e.collisionShape.type == 1 then
-      return false --image/image collision
+      return imageOverlapsImage(self.transform.x + (x or 0), self.transform.y + (y or 0),
+        self.collisionShape.w, self.collisionShape.h, self.collisionShape.data,
+        e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h, e.collisionShape.data)
     end
   end
   return false
@@ -592,20 +594,22 @@ function basicEntity:collision(e, x, y)
   if e == nil or self.collisionShape == nil or e.collisionShape == nil then return false end
   if self.collisionShape.type == 0 then
     if e.collisionShape.type == 0 then
-      return rectOverlaps(self.transform.x + (x or 0), self.transform.y + (y or 0),
+      return rectOverlapsRect(self.transform.x + (x or 0), self.transform.y + (y or 0),
         self.collisionShape.w, self.collisionShape.h,
         e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h)
     elseif e.collisionShape.type == 1 then
-      return imageRectOverlaps(e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h, e.collisionShape.data,
+      return imageOverlapsRect(e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h, e.collisionShape.data,
         self.transform.x + (x or 0), self.transform.y + (y or 0), self.collisionShape.w, self.collisionShape.h)
     end
   elseif self.collisionShape.type == 1 then
     if e.collisionShape.type == 0 then
-      return imageRectOverlaps(self.transform.x + (x or 0), self.transform.y + (y or 0),
+      return imageOverlapsRect(self.transform.x + (x or 0), self.transform.y + (y or 0),
         self.collisionShape.w, self.collisionShape.h, self.collisionShape.data,
         e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h)
     elseif e.collisionShape.type == 1 then
-      return false --image/image collision
+      return imageOverlapsImage(self.transform.x + (x or 0), self.transform.y + (y or 0),
+        self.collisionShape.w, self.collisionShape.h, self.collisionShape.data,
+        e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h, e.collisionShape.data)
     end
   end
   return false
