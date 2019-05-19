@@ -917,7 +917,7 @@ function megaman:code(dt)
       self.slide = false
       local w = self.collisionShape.w
       self:regBox()
-      while collision.checkSolid(self, 0, -math.sign(self.gravity)) do
+      while collision.checkSolid(self) do
         self.transform.y = self.transform.y + math.sign(self.gravity)
       end
     elseif not (self.ground or self:checkSlideBox(self.velocity.velx, math.sign(self.gravity))) then
@@ -926,9 +926,9 @@ function megaman:code(dt)
       local w = self.collisionShape.w
       self:regBox()
       self.slideTimer = self.maxSlideTime
-      if collision.checkSolid(self, 0, math.sign(self.gravity)) then
+      if collision.checkSolid(self) then
         self.transform.y = math.round(self.transform.y + math.sign(self.gravity))
-        while collision.checkSolid(self, 0, math.sign(self.gravity)) do
+        while collision.checkSolid(self) do
           self.transform.y = self.transform.y - math.sign(self.gravity)
         end
       end
