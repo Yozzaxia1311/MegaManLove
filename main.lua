@@ -41,7 +41,7 @@ function initEngine()
   globals.playerCount = 1
   
   globals.defeats = {}
-  globals.defeats.stickMan = true
+  globals.defeats.stickMan = false
   
   globals.resetState = true
   globals.manageStageResources = true

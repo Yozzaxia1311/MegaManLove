@@ -42,8 +42,8 @@ function timer.winCutscene(func)
         globals.mainPlayer.curAnim = "jump"
       end
       globals.mainPlayer:face(globals.mainPlayer.side)
-      s.timer = math.min(s.timer+1, 300)
-      if s.timer == 300 then
+      s.timer = math.min(s.timer+1, 60)
+      if s.timer == 60 then
         s.state = 1
         s.timer = 0
         globals.mainPlayer.rise = true

@@ -1,4 +1,140 @@
-bassBuster = entity:extend()
+protoSemiBuster = basicEntity:extend()
+
+function protoSemiBuster:new(x, y, dir, wpn)
+  protoSemiBuster.super.new(self)
+  self.added = function(self)
+    self:addToGroup("protoBuster")
+    self:addToGroup("protoBuster" .. wpn.id)
+    self:addToGroup("freezable")
+    self:addToGroup("removeOnTransition")
+  end
+  self.transform.y = y
+  self.transform.x = x
+  self:setRectangleCollision(10, 10)
+  self.tex = loader.get("proto_buster")
+  self.quad = love.graphics.newQuad(0, 0, 10, 10, 68, 10)
+  self.dink = false
+  self.velocity = velocity()
+  self.velocity.velx = dir * 5
+  self.side = dir
+  self.wpn = wpn
+  mmSfx.play("semi_charged")
+  self:setLayer(1)
+end
+
+function protoSemiBuster:update(dt)
+  if not self.dink then
+    self:hurt(self:collisionTable(megautils.groups()["hurtable"]), -1, 2)
+  else
+    self.velocity.vely = -4
+    self.velocity.velx = 4*-self.side
+  end
+  self.transform.x = self.transform.x + self.velocity.velx
+  self.transform.y = self.transform.y + self.velocity.vely
+  if megautils.outside(self) or self.wpn.currentSlot ~= 0 then
+    megautils.remove(self, true)
+  end
+end
+
+function protoSemiBuster:draw()
+  love.graphics.setColor(1, 1, 1, 1)
+  love.graphics.draw(self.tex, self.quad, math.round(self.transform.x), math.round(self.transform.y)-3)
+end
+
+protoChargedBuster = entity:extend()
+
+function protoChargedBuster:new(x, y, dir, wpn)
+  protoChargedBuster.super.new(self)
+  self.added = function(self)
+    self:addToGroup("protoChargedBuster")
+    self:addToGroup("protoChargedBuster" .. wpn.id)
+    self:addToGroup("freezable")
+    self:addToGroup("removeOnTransition")
+  end
+  self.tex = loader.get("proto_buster")
+  self.anim = anim8.newAnimation(loader.get("proto_buster_grid")("1-2", 1), 1/20)
+  self.transform.y = y
+  self.transform.x = x
+  self:setRectangleCollision(29, 8)
+  self.dink = false
+  self.velocity = velocity()
+  self.spd = 4
+  self.velocity.velx = dir * 6
+  self.side = dir
+  self.wpn = wpn
+  mmSfx.play("proto_charged")
+  self:face(-self.side)
+  self:setLayer(1)
+end
+
+function protoChargedBuster:face(n)
+  self.anim.flippedH = (n == 1) and true or false
+end
+
+function protoChargedBuster:update(dt)
+  self.anim:update(1/60)
+  if not self.dink then
+    self:hurt(self:collisionTable(megautils.groups()["hurtable"]), -2, 2)
+  else
+    self.velocity.vely = -4
+    self.velocity.velx = 4*-self.side
+  end
+  self.transform.x = self.transform.x + self.velocity.velx
+  self.transform.y = self.transform.y + self.velocity.vely
+  if megautils.outside(self) or self.wpn.currentSlot ~= 0 then
+    megautils.remove(self, true)
+  end
+end
+
+function protoChargedBuster:draw()
+  love.graphics.setColor(1, 1, 1, 1)
+  self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y-1))
+end
+
+rollBuster = basicEntity:extend()
+
+function rollBuster:new(x, y, dir, wpn)
+  rollBuster.super.new(self)
+  self.added = function(self)
+    self:addToGroup("rollBuster")
+    self:addToGroup("rollBuster" .. wpn.id)
+    self:addToGroup("freezable")
+    self:addToGroup("removeOnTransition")
+  end
+  self.transform.y = y
+  self.transform.x = x
+  self:setRectangleCollision(6, 6)
+  self.tex = loader.get("bass_buster")
+  self.dink = false
+  self.side = dir
+  self.velocity = velocity()
+  self.velocity.velx = self.side * 6
+  self.wpn = wpn
+  self:setLayer(1)
+  mmSfx.play("buster")
+end
+
+function rollBuster:update(dt)
+  if not self.dink then
+    self:hurt(self:collisionTable(megautils.groups()["hurtable"]), -1, 2)
+  else
+    self.velocity.vely = -4
+    self.velocity.velx = 4*-self.side
+  end
+  self.transform.x = self.transform.x + self.velocity.velx
+  self.transform.y = self.transform.y + self.velocity.vely
+  if megautils.outside(self) or (self.wpn.currentSlot ~= 0 and self.wpn.currentSlot ~= 9
+    and self.wpn.currentSlot ~= 10) then
+    megautils.remove(self, true)
+  end
+end
+
+function rollBuster:draw()
+  love.graphics.setColor(1, 1, 1, 1)
+  love.graphics.draw(self.tex, math.round(self.transform.x-1), math.round(self.transform.y-1))
+end
+
+bassBuster = basicEntity:extend()
 
 function bassBuster:new(x, y, dir, wpn)
   bassBuster.super.new(self)
@@ -24,7 +160,7 @@ end
 
 function bassBuster:update(dt)
   if not self.dink then
-    self:hurt(self:collisionTable(megautils.groups()["hurtable"]), -1, 2)
+    self:hurt(self:collisionTable(megautils.groups()["hurtable"]), -0.5, 2)
   else
     self.velocity.vely = -4
     self.velocity.velx = 4*-self.side
@@ -32,7 +168,7 @@ function bassBuster:update(dt)
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
   if megautils.outside(self) or (self.wpn.currentSlot ~= 0 and self.wpn.currentSlot ~= 9
-    and self.wpn.currentSlot ~= 10) or collision.checkSolid(self) then
+    and self.wpn.currentSlot ~= 10) or collision.checkSolid(self) or #self:collisionTable(megautils.groups()["boss_door"]) ~= 0 then
     megautils.remove(self, true)
   end
 end
@@ -42,7 +178,7 @@ function bassBuster:draw()
   love.graphics.draw(self.tex, math.round(self.transform.x-1), math.round(self.transform.y-1))
 end
 
-megaBuster = entity:extend()
+megaBuster = basicEntity:extend()
 
 function megaBuster:new(x, y, dir, wpn)
   megaBuster.super.new(self)
@@ -73,7 +209,8 @@ function megaBuster:update(dt)
     self.velocity.vely = -4
     self.velocity.velx = 4*-self.side
   end
-  self:moveBy(self.velocity.velx, self.velocity.vely)
+  self.transform.x = self.transform.x + self.velocity.velx
+  self.transform.y = self.transform.y + self.velocity.vely
   if megautils.outside(self) or (self.wpn.currentSlot ~= 0 and self.wpn.currentSlot ~= 9
     and self.wpn.currentSlot ~= 10) then
     megautils.remove(self, true)
@@ -85,7 +222,7 @@ function megaBuster:draw()
   love.graphics.draw(self.tex, self.quad, math.round(self.transform.x), math.round(self.transform.y))
 end
 
-megaSemiBuster = entity:extend()
+megaSemiBuster = basicEntity:extend()
 
 function megaSemiBuster:new(x, y, dir, wpn)
   megaSemiBuster.super.new(self)
@@ -122,7 +259,8 @@ function megaSemiBuster:update(dt)
     self.velocity.vely = -4
     self.velocity.velx = 4*-self.side
   end
-  self:moveBy(self.velocity.velx, self.velocity.vely)
+  self.transform.x = self.transform.x + self.velocity.velx
+  self.transform.y = self.transform.y + self.velocity.vely
   if megautils.outside(self) or self.wpn.currentSlot ~= 0 then
     megautils.remove(self, true)
   end
@@ -133,7 +271,7 @@ function megaSemiBuster:draw()
   self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y)-3)
 end
 
-megaChargedBuster = entity:extend()
+megaChargedBuster = basicEntity:extend()
 
 function megaChargedBuster:new(x, y, dir, wpn)
   megaChargedBuster.super.new(self)
@@ -171,7 +309,8 @@ function megaChargedBuster:update(dt)
     self.velocity.vely = -4
     self.velocity.velx = 4*-self.side
   end
-  self:moveBy(self.velocity.velx, self.velocity.vely)
+  self.transform.x = self.transform.x + self.velocity.velx
+  self.transform.y = self.transform.y + self.velocity.vely
   if megautils.outside(self) or self.wpn.currentSlot ~= 0 then
     megautils.remove(self, true)
   end

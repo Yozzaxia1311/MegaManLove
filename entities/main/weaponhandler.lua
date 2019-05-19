@@ -116,7 +116,7 @@ function weaponhandler:draw(x, y)
   for i=1, self.segments[self.currentSlot] do
     local bit = 0
     if i == curSeg then
-      bit = math.round(4 + (self.energy[self.currentSlot]-(i*4)))
+      bit = 4 + (math.round(self.energy[self.currentSlot])-(i*4))
     elseif i > curSeg then
       bit = 0
     elseif i < curSeg then

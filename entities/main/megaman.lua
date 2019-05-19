@@ -8,9 +8,15 @@ megautils.resetGameObjectsFuncs["megaman"] = function()
   
   for i=1, globals.playerCount do
     megaman.weaponHandler[i] = weaponhandler(nil, nil, 10)
-    if globals.player[i] == "bass" then
+    if globals.player[i] == "proto" then
+      megaman.weaponHandler[i]:register(0, "protoBuster", {"p.buster", {48, 32, 16, 16}, {64, 32, 16, 16}},
+        {216, 40, 0}, {184, 184, 184}, {0, 0, 0})
+    elseif globals.player[i] == "bass" then
       megaman.weaponHandler[i]:register(0, "bassBuster", {"b.buster", {144, 32, 16, 16}, {160, 32, 16, 16}},
         {112, 112, 112}, {248, 152, 56}, {0, 0, 0})
+    elseif globals.player[i] == "roll" then
+      megaman.weaponHandler[i]:register(0, "rollBuster", {"r.buster", {80, 32, 16, 16}, {96, 32, 16, 16}},
+        {248, 56, 0}, {0, 168, 0}, {0, 0, 0})
     else
       megaman.weaponHandler[i]:register(0, "megaBuster", {"m.buster", {16, 32, 16, 16}, {32, 32, 16, 16}},
         {0, 120, 248}, {0, 232, 216}, {0, 0, 0})
@@ -207,6 +213,78 @@ function megaman:slideToReg()
   self.transform.y = self.transform.y + (math.sign(self.gravity) == 1 and (h-self.collisionShape.h) or 0)
 end
 
+function megaman:initChargingColors()
+  if globals.player[self.player] == "proto" then
+    self.chargeColorOutlines = {}
+    self.chargeColorOutlines["protoBuster"] = {}
+    self.chargeColorOutlines["protoBuster"][0] = {}
+    self.chargeColorOutlines["protoBuster"][1] = {}
+    self.chargeColorOutlines["protoBuster"][2] = {}
+    self.chargeColorOutlines["protoBuster"][0][1] = {0, 0, 0}
+    self.chargeColorOutlines["protoBuster"][1][1] = {216, 40, 0}
+    self.chargeColorOutlines["protoBuster"][1][2] = {0, 0, 0}
+    self.chargeColorOutlines["protoBuster"][2][1] = {184, 184, 184}
+    self.chargeColorOutlines["protoBuster"][2][2] = {216, 40, 0}
+    self.chargeColorOutlines["protoBuster"][2][3] = {0, 0, 0}
+    self.chargeColorOnes = {}
+    self.chargeColorOnes["protoBuster"] = {}
+    self.chargeColorOnes["protoBuster"][0] = {}
+    self.chargeColorOnes["protoBuster"][1] = {}
+    self.chargeColorOnes["protoBuster"][2] = {}
+    self.chargeColorOnes["protoBuster"][0][1] = {216, 40, 0}
+    self.chargeColorOnes["protoBuster"][1][1] = {216, 40, 0}
+    self.chargeColorOnes["protoBuster"][1][2] = {216, 40, 0}
+    self.chargeColorOnes["protoBuster"][2][1] = {0, 0, 0}
+    self.chargeColorOnes["protoBuster"][2][2] = {184, 184, 184}
+    self.chargeColorOnes["protoBuster"][2][3] = {216, 40, 0}
+    self.chargeColorTwos = {}
+    self.chargeColorTwos["protoBuster"] = {}
+    self.chargeColorTwos["protoBuster"][0] = {}
+    self.chargeColorTwos["protoBuster"][1] = {}
+    self.chargeColorTwos["protoBuster"][2] = {}
+    self.chargeColorTwos["protoBuster"][0][1] = {184, 184, 184}
+    self.chargeColorTwos["protoBuster"][1][1] = {184, 184, 184}
+    self.chargeColorTwos["protoBuster"][1][2] = {184, 184, 184}
+    self.chargeColorTwos["protoBuster"][2][1] = {184, 184, 184}
+    self.chargeColorTwos["protoBuster"][2][2] = {0, 0, 0}
+    self.chargeColorTwos["protoBuster"][2][3] = {216, 40, 0}
+  else
+    self.chargeColorOutlines = {}
+    self.chargeColorOutlines["megaBuster"] = {}
+    self.chargeColorOutlines["megaBuster"][0] = {}
+    self.chargeColorOutlines["megaBuster"][1] = {}
+    self.chargeColorOutlines["megaBuster"][2] = {}
+    self.chargeColorOutlines["megaBuster"][0][1] = {0, 0, 0}
+    self.chargeColorOutlines["megaBuster"][1][1] = {0, 232, 216}
+    self.chargeColorOutlines["megaBuster"][1][2] = {0, 0, 0}
+    self.chargeColorOutlines["megaBuster"][2][1] = {0, 120, 248}
+    self.chargeColorOutlines["megaBuster"][2][2] = {0, 0, 0}
+    self.chargeColorOutlines["megaBuster"][2][3] = {0, 232, 216}
+    self.chargeColorOnes = {}
+    self.chargeColorOnes["megaBuster"] = {}
+    self.chargeColorOnes["megaBuster"][0] = {}
+    self.chargeColorOnes["megaBuster"][1] = {}
+    self.chargeColorOnes["megaBuster"][2] = {}
+    self.chargeColorOnes["megaBuster"][0][1] = {0, 120, 248}
+    self.chargeColorOnes["megaBuster"][1][1] = {0, 120, 248}
+    self.chargeColorOnes["megaBuster"][1][2] = {0, 120, 248}
+    self.chargeColorOnes["megaBuster"][2][1] = {0, 232, 216}
+    self.chargeColorOnes["megaBuster"][2][2] = {0, 120, 248}
+    self.chargeColorOnes["megaBuster"][2][3] = {0, 0, 0}
+    self.chargeColorTwos = {}
+    self.chargeColorTwos["megaBuster"] = {}
+    self.chargeColorTwos["megaBuster"][0] = {}
+    self.chargeColorTwos["megaBuster"][1] = {}
+    self.chargeColorTwos["megaBuster"][2] = {}
+    self.chargeColorTwos["megaBuster"][0][1] = {0, 232, 216}
+    self.chargeColorTwos["megaBuster"][1][1] = {0, 232, 216}
+    self.chargeColorTwos["megaBuster"][1][2] = {0, 232, 216}
+    self.chargeColorTwos["megaBuster"][2][1] = {0, 0, 0}
+    self.chargeColorTwos["megaBuster"][2][2] = {0, 232, 216}
+    self.chargeColorTwos["megaBuster"][2][3] = {0, 120, 248}
+  end
+end
+
 function megaman:new(x, y, side, drop, p)
   megaman.super.new(self)
   megautils.registerPlayer(self, p)
@@ -240,8 +318,12 @@ function megaman:new(x, y, side, drop, p)
   self.icoTex = loader.get("weapon_select_icon")
   self.iconQuad = love.graphics.newQuad(0, 0, 16, 16, 80, 48)
   self.icons = {}
-  if globals.player[self.player] == "bass" then
+  if globals.player[self.player] == "proto" then
+    self.icons[0] = {16, 32}
+  elseif globals.player[self.player] == "bass" then
     self.icons[0] = {32, 32}
+  elseif globals.player[self.player] == "roll" then
+    self.icons[0] = {48, 32}
   else
     self.icons[0] = {0, 0}
   end
@@ -264,39 +346,7 @@ function megaman:new(x, y, side, drop, p)
   self.chargeTimer2 = 0
   self.chargeFrame = 1
   self.chargeState = 0
-  self.chargeColorOutlines = {}
-  self.chargeColorOutlines["megaBuster"] = {}
-  self.chargeColorOutlines["megaBuster"][0] = {}
-  self.chargeColorOutlines["megaBuster"][1] = {}
-  self.chargeColorOutlines["megaBuster"][2] = {}
-  self.chargeColorOutlines["megaBuster"][0][1] = {0, 0, 0}
-  self.chargeColorOutlines["megaBuster"][1][1] = {0, 232, 216}
-  self.chargeColorOutlines["megaBuster"][1][2] = {0, 0, 0}
-  self.chargeColorOutlines["megaBuster"][2][1] = {0, 120, 248}
-  self.chargeColorOutlines["megaBuster"][2][2] = {0, 0, 0}
-  self.chargeColorOutlines["megaBuster"][2][3] = {0, 232, 216}
-  self.chargeColorOnes = {}
-  self.chargeColorOnes["megaBuster"] = {}
-  self.chargeColorOnes["megaBuster"][0] = {}
-  self.chargeColorOnes["megaBuster"][1] = {}
-  self.chargeColorOnes["megaBuster"][2] = {}
-  self.chargeColorOnes["megaBuster"][0][1] = {0, 120, 248}
-  self.chargeColorOnes["megaBuster"][1][1] = {0, 120, 248}
-  self.chargeColorOnes["megaBuster"][1][2] = {0, 120, 248}
-  self.chargeColorOnes["megaBuster"][2][1] = {0, 232, 216}
-  self.chargeColorOnes["megaBuster"][2][2] = {0, 120, 248}
-  self.chargeColorOnes["megaBuster"][2][3] = {0, 0, 0}
-  self.chargeColorTwos = {}
-  self.chargeColorTwos["megaBuster"] = {}
-  self.chargeColorTwos["megaBuster"][0] = {}
-  self.chargeColorTwos["megaBuster"][1] = {}
-  self.chargeColorTwos["megaBuster"][2] = {}
-  self.chargeColorTwos["megaBuster"][0][1] = {0, 232, 216}
-  self.chargeColorTwos["megaBuster"][1][1] = {0, 232, 216}
-  self.chargeColorTwos["megaBuster"][1][2] = {0, 232, 216}
-  self.chargeColorTwos["megaBuster"][2][1] = {0, 0, 0}
-  self.chargeColorTwos["megaBuster"][2][2] = {0, 232, 216}
-  self.chargeColorTwos["megaBuster"][2][3] = {0, 120, 248}
+  self:initChargingColors()
   self.chargeTimer = 0
   self.step = false
   self.hitTimer = self.maxHitTime
@@ -444,57 +494,9 @@ end
 
 function megaman:attemptWeaponUsage()
   local w = megaman.weaponHandler[self.player]
-  if control.shootPressed[self.player] then
-    if (w.current == "megaBuster" or w.current == "rushJet" or w.current == "rushCoil")
-    and (not megautils.groups()["megaBuster" .. w.id] or
-    #megautils.groups()["megaBuster" .. w.id] < 3) and (not megautils.groups()["megaChargedBuster" .. w.id] or
-    #megautils.groups()["megaChargedBuster" .. w.id] == 0) then
-      if w.current == "rushCoil" and w.energy[w.currentSlot] > 0 and
-      (not megautils.groups()["rush"] or #megautils.groups()["rush"] < 1) then
-        megautils.add(rushCoil, self.transform.x+(self.side==1 and 18 or -32),
-          self.transform.y, self.side, w)
-        self.maxShootTime = 14
-        self.shootTimer = 0
-        self:useShootAnimation()
-      elseif w.current == "rushJet" and w.energy[w.currentSlot] > 0 and
-      (not megautils.groups()["rush"] or #megautils.groups()["rush"] < 1) then
-        megautils.add(rushJet, self.transform.x+(self.side==1 and 18 or -32),
-            self.transform.y+6, self.side, w)
-        self.maxShootTime = 14
-        self.shootTimer = 0
-        self:useShootAnimation()
-      else
-        if globals.player[self.player] == "mega" then
-          megautils.add(megaBuster, self.transform.x+(self.side==1 and 17 or -14), 
-            self.slide and self.transform.y+3 or self.transform.y+6, self.side, w)
-        elseif globals.player[self.player] == "proto" then
-          megautils.add(megaBuster, self.transform.x+(self.side==1 and 14 or -12), 
-            self.slide and self.transform.y+3 or self.transform.y+9, self.side, w)
-        elseif globals.player[self.player] == "bass" then
-          megautils.add(megaBuster, self.transform.x+(self.side==1 and 18 or -15), 
-            self.climb and self.transform.y+2 or self.transform.y+6, self.side, w)
-        elseif globals.player[self.player] == "roll" then
-          megautils.add(megaBuster, self.transform.x+(self.side==1 and 17 or -14), 
-            self.climb and self.transform.y+5 or self.transform.y+6, self.side, w)
-        end
-        self.maxShootTime = 14
-        self.shootTimer = 0
-        self:resetCharge()
-        self:useShootAnimation()
-      end
-    elseif w.current == "stickWeapon" and w.energy[w.currentSlot] > 0 and
-      (not megautils.groups()[w.current .. w.id] or
-        #megautils.groups()[w.current .. w.id] < 1) and self.shootTimer == self.maxShootTime then
-      megautils.add(stickWeapon, self.transform.x+(self.side==1 and 17 or -14), 
-        self.slide and self.transform.y+3 or self.transform.y+6, self.side, w)
-      self.maxShootTime = 14
-      self.shootTimer = 0
-      self:resetCharge()
-      self:useShootAnimation()
-      w.energy[w.currentSlot] = w.energy[w.currentSlot] - 1
-    end
-  elseif control.shootDown[self.player] then
-    if (w.current == "bassBuster" or w.current == "rushJet" or w.current == "rushCoil") then
+  if control.shootDown[self.player] then
+    if (w.current == "bassBuster" or
+      (w.weapons[0] == "bassBuster" and (w.current == "rushJet" or w.current == "rushCoil"))) then
       self.rapidShotTime = math.min(self.rapidShotTime + 1, self.maxRapidShotTime)
       if self.rapidShotTime == self.maxRapidShotTime then
         self.rapidShotTime = 0
@@ -565,40 +567,123 @@ function megaman:attemptWeaponUsage()
   else
     self.rapidShotTime = self.maxRapidShotTime
   end
+  if control.shootPressed[self.player] then
+    if (w.current == "megaBuster" or (w.weapons[0] == "megaBuster" and (w.current == "rushJet" or w.current == "rushCoil")))
+      and (not megautils.groups()["megaBuster" .. w.id] or
+      #megautils.groups()["megaBuster" .. w.id] < 3) and (not megautils.groups()["megaChargedBuster" .. w.id] or
+      #megautils.groups()["megaChargedBuster" .. w.id] == 0) then
+      if w.current == "rushCoil" and w.energy[w.currentSlot] > 0 and
+      (not megautils.groups()["rush"] or #megautils.groups()["rush"] < 1) then
+        megautils.add(rushCoil, self.transform.x+(self.side==1 and 18 or -32),
+          self.transform.y, self.side, w)
+        self.maxShootTime = 14
+        self.shootTimer = 0
+        self:useShootAnimation()
+      elseif w.current == "rushJet" and w.energy[w.currentSlot] > 0 and
+      (not megautils.groups()["rush"] or #megautils.groups()["rush"] < 1) then
+        megautils.add(rushJet, self.transform.x+(self.side==1 and 18 or -32),
+            self.transform.y+6, self.side, w)
+        self.maxShootTime = 14
+        self.shootTimer = 0
+        self:useShootAnimation()
+      else
+        megautils.add(megaBuster, self.transform.x+(self.side==1 and 17 or -14), 
+          self.transform.y+6, self.side, w)
+        self.maxShootTime = 14
+        self.shootTimer = 0
+        self:resetCharge()
+        self:useShootAnimation()
+      end
+    elseif (w.current == "protoBuster" or (w.weapons[0] == "protoBuster" and (w.current == "rushJet" or w.current == "rushCoil")))
+      and (not megautils.groups()["megaBuster" .. w.id] or
+      #megautils.groups()["megaBuster" .. w.id] < 3) then
+      if w.current == "rushCoil" and w.energy[w.currentSlot] > 0 and
+      (not megautils.groups()["rush"] or #megautils.groups()["rush"] < 1) then
+        megautils.add(rushCoil, self.transform.x+(self.side==1 and 18 or -32),
+          self.transform.y, self.side, w)
+        self.maxShootTime = 14
+        self.shootTimer = 0
+        self:useShootAnimation()
+      elseif w.current == "rushJet" and w.energy[w.currentSlot] > 0 and
+      (not megautils.groups()["rush"] or #megautils.groups()["rush"] < 1) then
+        megautils.add(rushJet, self.transform.x+(self.side==1 and 18 or -32),
+            self.transform.y+6, self.side, w)
+        self.maxShootTime = 14
+        self.shootTimer = 0
+        self:useShootAnimation()
+      else
+        megautils.add(megaBuster, self.transform.x+(self.side==1 and 16 or -13), 
+          self.transform.y+10, self.side, w)
+        self.maxShootTime = 14
+        self.shootTimer = 0
+        self:resetCharge()
+        self:useShootAnimation()
+      end
+    elseif (w.current == "rollBuster" or (w.weapons[0] == "rollBuster" and (w.current == "rushJet" or w.current == "rushCoil")))
+      and (not megautils.groups()["rollBuster" .. w.id] or
+      #megautils.groups()["rollBuster" .. w.id] < 3) then
+      if w.current == "rushCoil" and w.energy[w.currentSlot] > 0 and
+      (not megautils.groups()["rush"] or #megautils.groups()["rush"] < 1) then
+        megautils.add(rushCoil, self.transform.x+(self.side==1 and 18 or -32),
+          self.transform.y, self.side, w)
+        self.maxShootTime = 14
+        self.shootTimer = 0
+        self:useShootAnimation()
+      elseif w.current == "rushJet" and w.energy[w.currentSlot] > 0 and
+      (not megautils.groups()["rush"] or #megautils.groups()["rush"] < 1) then
+        megautils.add(rushJet, self.transform.x+(self.side==1 and 18 or -32),
+            self.transform.y+6, self.side, w)
+        self.maxShootTime = 14
+        self.shootTimer = 0
+        self:useShootAnimation()
+      else
+        megautils.add(rollBuster, self.transform.x+(self.side==1 and 24 or -20), 
+          self.transform.y+6, self.side, w)
+        self.maxShootTime = 14
+        self.shootTimer = 0
+        self:resetCharge()
+        self:useShootAnimation()
+      end
+    elseif w.current == "stickWeapon" and w.energy[w.currentSlot] > 0 and
+      (not megautils.groups()[w.current .. w.id] or
+        #megautils.groups()[w.current .. w.id] < 1) and self.shootTimer == self.maxShootTime then
+      megautils.add(stickWeapon, self.transform.x+(self.side==1 and 17 or -14), 
+        self.slide and self.transform.y+3 or self.transform.y+6, self.side, w)
+      self.maxShootTime = 14
+      self.shootTimer = 0
+      self:resetCharge()
+      self:useShootAnimation()
+      w.energy[w.currentSlot] = w.energy[w.currentSlot] - 1
+    end
+  end
   if not control.shootDown[self.player] and self.chargeState ~= 0 then
     if w.current == "megaBuster" then
       if self.chargeState == 1 then
-        if globals.player[self.player] == "mega" then
-          megautils.add(megaSemiBuster, self.transform.x+(self.side==1 and 17 or -20), 
-            self.slide and self.transform.y+1 or self.transform.y+4, self.side, w)
-        elseif globals.player[self.player] == "proto" then
-          megautils.add(megaSemiBuster, self.transform.x+(self.side==1 and 15 or -20), 
-            self.slide and self.transform.y+1 or self.transform.y+8, self.side, w)
-        elseif globals.player[self.player] == "bass" then
-          megautils.add(megaSemiBuster, self.transform.x+(self.side==1 and 18 or -21), 
-            self.climb and self.transform.y or self.transform.y+4, self.side, w)
-        elseif globals.player[self.player] == "roll" then
-          megautils.add(megaSemiBuster, self.transform.x+(self.side==1 and 17 or -20), 
-            self.slide and self.transform.y+1 or self.transform.y+4, self.side, w)
-        end
+        megautils.add(megaSemiBuster, self.transform.x+(self.side==1 and 17 or -20), 
+          self.transform.y+4, self.side, w)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
         self:useShootAnimation()
       elseif self.chargeState == 2 then
-        if globals.player[self.player] == "mega" then
-          megautils.add(megaChargedBuster, self.transform.x+(self.side==1 and 17 or -20), 
-            self.slide and self.transform.y-6 or self.transform.y-2, self.side, w)
-        elseif globals.player[self.player] == "proto" then
-          megautils.add(megaChargedBuster, self.transform.x+(self.side==1 and 14 or -19), 
-            self.slide and self.transform.y-6 or self.transform.y+2, self.side, w)
-        elseif globals.player[self.player] == "bass" then
-          megautils.add(megaChargedBuster, self.transform.x+(self.side==1 and 19 or -23), 
-            self.climb and self.transform.y-6 or self.transform.y-2, self.side, w)
-        elseif globals.player[self.player] == "roll" then
-          megautils.add(megaChargedBuster, self.transform.x+(self.side==1 and 17 or -20), 
-            self.slide and self.transform.y-6 or self.transform.y-2, self.side, w)
-        end
+        megautils.add(megaChargedBuster, self.transform.x+(self.side==1 and 17 or -20), 
+          self.transform.y-2, self.side, w)
+        self.maxShootTime = 14
+        self.shootTimer = 0
+        self:resetCharge()
+        self:useShootAnimation()
+      end
+    elseif w.current == "protoBuster" then
+      if self.chargeState == 1 then
+        megautils.add(protoSemiBuster, self.transform.x+(self.side==1 and 17 or -16), 
+          self.transform.y+10, self.side, w)
+        self.maxShootTime = 14
+        self.shootTimer = 0
+        self:resetCharge()
+        self:useShootAnimation()
+      elseif self.chargeState == 2 then
+        megautils.add(protoChargedBuster, self.transform.x+(self.side==1 and 16 or -34), 
+          self.transform.y+9, self.side, w)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
@@ -607,7 +692,7 @@ function megaman:attemptWeaponUsage()
     end
   end
   if control.shootDown[self.player] then
-    if self.canChargeBuster and w.current == "megaBuster" then
+    if self.canChargeBuster and (w.current == "megaBuster" or w.current == "protoBuster") then
       self:charge()
     end
   end
@@ -1109,6 +1194,7 @@ function megaman:resetCharge()
     megaman.colorTwo[self.player] = self.chargeColorTwos[megaman.weaponHandler[self.player].current][self.chargeState][self.chargeFrame]
   end
   mmSfx.stop("charge")
+  mmSfx.stop("proto_charge")
 end
 
 function megaman:charge(animOnly)
@@ -1129,7 +1215,11 @@ function megaman:charge(animOnly)
       self.chargeTimer = 0
       self.chargeFrame = 1
       if self.chargeState == 0 then
-        mmSfx.play("charge")
+        if megaman.weaponHandler[self.player].current == "protoBuster" then
+          mmSfx.play("proto_charge")
+        else
+          mmSfx.play("charge")
+        end
       end
       if animOnly==nil and true or not animOnly then
         self.chargeState = math.min(self.chargeState+1, 
@@ -1388,23 +1478,6 @@ end
 
 function megaman:draw()
   local roundx, roundy = math.round(self.transform.x), math.round(self.transform.y)
-  if self.weaponSwitchTimer ~= 70 then
-    love.graphics.setColor(1, 1, 1, 1)
-    if self.threeWeaponIcons then
-      self.iconQuad:setViewport(self.icons[self.nextWeapon][1],
-        self.icons[self.nextWeapon][2], 16, 16)
-      love.graphics.draw(self.icoTex, self.iconQuad, roundx+math.round(math.round(self.collisionShape.w/2))+8,
-        roundy-18, 0, 1, 1)
-      self.iconQuad:setViewport(self.icons[self.prevWeapon][1],
-        self.icons[self.prevWeapon][2], 16, 16)
-      love.graphics.draw(self.icoTex, self.iconQuad, roundx+math.round(math.round(self.collisionShape.w/2))-24,
-        roundy-18, 0, 1, 1)
-    end
-    self.iconQuad:setViewport(self.icons[megaman.weaponHandler[self.player].currentSlot][1],
-      self.icons[megaman.weaponHandler[self.player].currentSlot][2], 16, 16)
-    love.graphics.draw(self.icoTex, self.iconQuad, roundx+math.round(math.round(self.collisionShape.w/2))-8,
-      roundy-20)
-  end
   local offsety, offsetx = 0, 0
   if globals.player[self.player] == "bass" or globals.player[self.player] == "roll" then
     offsetx = -2
@@ -1461,5 +1534,23 @@ function megaman:draw()
   love.graphics.setColor(1, 1, 1, 1)
   self.animations[self.curAnim]:draw(self.texFace, roundx-15+offsetx,
     roundy-8+offsety)
+  
+  if self.weaponSwitchTimer ~= 70 then
+    love.graphics.setColor(1, 1, 1, 1)
+    if self.threeWeaponIcons then
+      self.iconQuad:setViewport(self.icons[self.nextWeapon][1],
+        self.icons[self.nextWeapon][2], 16, 16)
+      love.graphics.draw(self.icoTex, self.iconQuad, roundx+math.round(math.round(self.collisionShape.w/2))+8,
+        roundy-18, 0, 1, 1)
+      self.iconQuad:setViewport(self.icons[self.prevWeapon][1],
+        self.icons[self.prevWeapon][2], 16, 16)
+      love.graphics.draw(self.icoTex, self.iconQuad, roundx+math.round(math.round(self.collisionShape.w/2))-24,
+        roundy-18, 0, 1, 1)
+    end
+    self.iconQuad:setViewport(self.icons[megaman.weaponHandler[self.player].currentSlot][1],
+      self.icons[megaman.weaponHandler[self.player].currentSlot][2], 16, 16)
+    love.graphics.draw(self.icoTex, self.iconQuad, roundx+math.round(math.round(self.collisionShape.w/2))-8,
+      roundy-20)
+  end
   --self:drawCollision()
 end

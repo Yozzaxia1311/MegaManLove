@@ -155,7 +155,7 @@ function healthhandler:draw()
   for i=1, self.segments do
     local bit = 0
     if i == curSeg then
-      bit = 4 + (self.health-(i*4))
+      bit = 4 + (math.round(self.health)-(i*4))
     elseif i > curSeg then
       bit = 0
     elseif i < curSeg then

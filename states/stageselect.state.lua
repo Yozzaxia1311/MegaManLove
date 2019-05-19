@@ -37,6 +37,9 @@ function stageSelect:new()
   self.transform.x = 24
   self.quad = love.graphics.newQuad(81, 296, 15, 7, 96, 303)
   self.megaQuad = love.graphics.newQuad(0, 0, 32, 32, 96, 303)
+  self.protoQuad = love.graphics.newQuad(0, 160, 32, 32, 96, 303)
+  self.rollQuad = love.graphics.newQuad(0, 192, 32, 32, 96, 303)
+  self.bassQuad = love.graphics.newQuad(0, 224, 32, 32, 96, 303)
   self.stickQuad = love.graphics.newQuad(32*2, 0, 32, 32, 96, 303)
   self.tex = loader.get("mugshots")
   self.timer = 0
@@ -140,7 +143,15 @@ end
 
 function stageSelect:draw()
   if not self:allDefeated() then
-    love.graphics.draw(self.tex, self.megaQuad, 112, 88)
+    if globals.player[1] == "proto" then
+      love.graphics.draw(self.tex, self.protoQuad, 112, 88)
+    elseif globals.player[1] == "bass" then
+      love.graphics.draw(self.tex, self.bassQuad, 112, 88)
+    elseif globals.player[1] == "roll" then
+      love.graphics.draw(self.tex, self.rollQuad, 112, 88)
+    else
+      love.graphics.draw(self.tex, self.megaQuad, 112, 88)
+    end
   end --else
     --Draw Dr. Wily icon here
   --end

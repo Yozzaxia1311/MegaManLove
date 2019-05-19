@@ -359,7 +359,7 @@
   <object id="116" name="solid" x="272" y="1104" width="160" height="96"/>
   <object id="117" name="solid" x="256" y="912" width="16" height="192"/>
   <object id="118" name="solid" x="272" y="896" width="224" height="16"/>
-  <object id="119" name="solid" x="848" y="1104" width="160" height="16"/>
+  <object id="119" name="solid" x="848" y="1104" width="160" height="96"/>
   <object id="120" name="solid" x="1008" y="912" width="16" height="192"/>
   <object id="121" name="solid" x="784" y="896" width="224" height="16"/>
   <object id="122" name="boss_door" x="592" y="1104" width="32" height="32">
