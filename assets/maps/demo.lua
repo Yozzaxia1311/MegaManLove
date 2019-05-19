@@ -9,7 +9,7 @@ return {
   tilewidth = 16,
   tileheight = 16,
   nextlayerid = 5,
-  nextobjectid = 152,
+  nextobjectid = 154,
   properties = {},
   tilesets = {
     {
@@ -1878,6 +1878,36 @@ return {
           visible = true,
           properties = {
             ["name"] = "one"
+          }
+        },
+        {
+          id = 152,
+          name = "checkpoint",
+          type = "",
+          shape = "rectangle",
+          x = 128,
+          y = 720,
+          width = 16,
+          height = 16,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["name"] = "two"
+          }
+        },
+        {
+          id = 153,
+          name = "player",
+          type = "",
+          shape = "rectangle",
+          x = 128,
+          y = 848,
+          width = 16,
+          height = 16,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["checkpoint"] = "two"
           }
         }
       }

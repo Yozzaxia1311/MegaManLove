@@ -4,8 +4,20 @@ function weaponSelect:new(w, h, p)
   weaponSelect.super.new(self)
   self.t = loader.get("weapon_select")
   self.bg = loader.get("weapon_select_img")
+  self.tex = loader.get("particles")
+  self.texOutline = loader.get("particles_outline")
+  self.texOne = loader.get("particles_one")
+  self.texTwo = loader.get("particles_two")
+  self.quadE = love.graphics.newQuad(72, 12, 16, 16, 128, 98)
+  self.quadW = love.graphics.newQuad(88, 12, 16, 16, 128, 98)
+  self.heads = {}
+  self.heads["mega"] = love.graphics.newQuad(104, 12, 16, 16, 128, 98)
+  self.heads["proto"] = love.graphics.newQuad(56, 31, 16, 15, 128, 98)
+  self.heads["bass"] = love.graphics.newQuad(54, 16, 18, 15, 128, 98)
+  self.heads["roll"] = love.graphics.newQuad(38, 16, 16, 16, 128, 98)
   self.w = w
   self.h = h
+  self.player = p
   self.section = 0
   self.active = {}
   self.inactive = {}
@@ -55,11 +67,9 @@ function weaponSelect:new(w, h, p)
       end
     end
   end
-  self.active["eTank"] = love.graphics.newQuad(80, 32, 16, 16, 176, 48)
-  self.inactive["eTank"] = love.graphics.newQuad(48, 32, 16, 16, 176, 48)
-  self.active["wTank"] = love.graphics.newQuad(96, 32, 16, 16, 176, 48)
-  self.inactive["wTank"] = love.graphics.newQuad(64, 32, 16, 16, 176, 48)
-  self.player = p
+  self.cur = self.w.currentSlot
+  self.activeTankColor = {self.w.colorOne[0], self.w.colorTwo[0], self.w.colorOutline[0]}
+  self.inactiveTankColor = {{188, 188, 188}, {255, 255, 255}, {0, 0, 0}}
   local trig = megautils.add(trigger, function(s, dt)
     for k, v in pairs(self.fills) do
       for i, j in pairs(v) do
@@ -77,23 +87,11 @@ function weaponSelect:new(w, h, p)
 end
 
 function weaponSelect:addIcon(id)
-  if id == 0 then
-    self.active[id] = love.graphics.newQuad(16, 32, 16, 16, 176, 48)
-    self.inactive[id] = love.graphics.newQuad(32, 32, 16, 16, 176, 48)
-    self.text[id] = "m.buster"
-  elseif id == 9 then
-    self.active[id] = love.graphics.newQuad(144, 0, 16, 16, 176, 48)
-    self.inactive[id] = love.graphics.newQuad(160, 0, 16, 16, 176, 48)
-    self.text[id] = "rush c."
-  elseif id == 10 then
-    self.active[id] = love.graphics.newQuad(112, 32, 16, 16, 176, 48)
-    self.inactive[id] = love.graphics.newQuad(128, 32, 16, 16, 176, 48)
-    self.text[id] = "rush jet"
-  elseif id == 1 then
-    self.active[id] = love.graphics.newQuad(16, 0, 16, 16, 176, 48)
-    self.inactive[id] = love.graphics.newQuad(32, 0, 16, 16, 176, 48)
-    self.text[id] = "stick w."
-  end
+  self.active[id] = love.graphics.newQuad(self.w.pauseConf[id][2][1], self.w.pauseConf[id][2][2],
+    self.w.pauseConf[id][2][3], self.w.pauseConf[id][2][4], 176, 48)
+  self.inactive[id] = love.graphics.newQuad(self.w.pauseConf[id][3][1], self.w.pauseConf[id][3][2],
+    self.w.pauseConf[id][3][3], self.w.pauseConf[id][3][4], 176, 48)
+  self.text[id] = self.w.pauseConf[id][1]
 end
 
 function weaponSelect:update(dt)
@@ -217,6 +215,10 @@ function weaponSelect:update(dt)
           self.section = 1
           self.x = 1
           self.y = 1
+          self.w:switch(self.list[self.y][self.x])
+          megaman.colorOutline[self.player] = self.w.colorOutline[self.cur]
+          megaman.colorOne[self.player] = self.w.colorOne[self.cur]
+          megaman.colorTwo[self.player] = self.w.colorTwo[self.cur]
           mmSfx.play("cursor_move")
          return
         end
@@ -227,6 +229,10 @@ function weaponSelect:update(dt)
       end
     end
     if olx ~= self.x or oly ~= self.y then
+      self.w:switch(self.list[self.y][self.x])
+      megaman.colorOutline[self.player] = self.w.colorOutline[self.list[self.y][self.x]]
+      megaman.colorOne[self.player] = self.w.colorOne[self.list[self.y][self.x]]
+      megaman.colorTwo[self.player] = self.w.colorTwo[self.list[self.y][self.x]]
       mmSfx.play("cursor_move")
     end
   elseif self.section == 1 then
@@ -258,6 +264,10 @@ function weaponSelect:update(dt)
         end
         self.y = self.y-1
       end
+      self.w:switch(self.list[self.y][self.x])
+      megaman.colorOutline[self.player] = self.w.colorOutline[self.list[self.y][self.x]]
+      megaman.colorOne[self.player] = self.w.colorOne[self.list[self.y][self.x]]
+      megaman.colorTwo[self.player] = self.w.colorTwo[self.list[self.y][self.x]]
       olx = -69
     end
     if self.x == 1 and control.rightPressed[self.player] then
@@ -284,9 +294,41 @@ function weaponSelect:draw()
   love.graphics.print((globals.infiniteLives and "inf" or tostring(globals.lives)), view.x+(24*8), view.y+(23*8))
   love.graphics.print(tostring(globals.eTanks), view.x+(8*8), view.y+(23*8))
   love.graphics.print(tostring(globals.wTanks), view.x+(12*8), view.y+(23*8))
+  
+  local ox, oy = 0, 0
+  local tx, ty = view.x+(8*21), view.y+(22*8)
+
+  if globals.player[self.player] == "proto" then
+    oy = 1
+  elseif globals.player[self.player] == "bass" then
+    ox = -1
+    oy = 1
+  end
+  love.graphics.setColor(1, 1, 1, 1)
+  love.graphics.draw(self.tex, self.heads[globals.player[self.player]], tx+ox, ty+oy)
+  love.graphics.setColor(megaman.colorTwo[self.player][1]/255, megaman.colorTwo[self.player][2]/255, megaman.colorTwo[self.player][3]/255, 1)
+  love.graphics.draw(self.texTwo, self.heads[globals.player[self.player]], tx+ox, ty+oy)
+  love.graphics.setColor(megaman.colorOutline[self.player][1]/255, megaman.colorOutline[self.player][2]/255, megaman.colorOutline[self.player][3]/255, 1)
+  love.graphics.draw(self.texOutline, self.heads[globals.player[self.player]], tx+ox, ty+oy)
+  love.graphics.setColor(megaman.colorOne[self.player][1]/255, megaman.colorOne[self.player][2]/255, megaman.colorOne[self.player][3]/255, 1)
+  love.graphics.draw(self.texOne, self.heads[globals.player[self.player]], tx+ox, ty+oy)
+  
   if self.section == 0 then
-    love.graphics.draw(self.t, self.inactive["eTank"], view.x+(8*6), view.y+(22*8))
-    love.graphics.draw(self.t, self.inactive["wTank"], view.x+(8*10), view.y+(22*8))
+    local tx, ty, tx2 = view.x+(8*6), view.y+(22*8), view.x+(8*10)
+    love.graphics.setColor(self.inactiveTankColor[2][1]/255, self.inactiveTankColor[2][2]/255, self.inactiveTankColor[2][3]/255, 1)
+    love.graphics.draw(self.texTwo, self.quadE, tx, ty)
+    love.graphics.setColor(self.inactiveTankColor[3][1]/255, self.inactiveTankColor[3][2]/255, self.inactiveTankColor[3][3]/255, 1)
+    love.graphics.draw(self.texOutline, self.quadE, tx, ty)
+    love.graphics.setColor(self.inactiveTankColor[1][1]/255, self.inactiveTankColor[1][2]/255, self.inactiveTankColor[1][3]/255, 1)
+    love.graphics.draw(self.texOne, self.quadE, tx, ty)
+    
+    love.graphics.setColor(self.inactiveTankColor[2][1]/255, self.inactiveTankColor[2][2]/255, self.inactiveTankColor[2][3]/255, 1)
+    love.graphics.draw(self.texTwo, self.quadW, tx2, ty)
+    love.graphics.setColor(self.inactiveTankColor[3][1]/255, self.inactiveTankColor[3][2]/255, self.inactiveTankColor[3][3]/255, 1)
+    love.graphics.draw(self.texOutline, self.quadW, tx2, ty)
+    love.graphics.setColor(self.inactiveTankColor[1][1]/255, self.inactiveTankColor[1][2]/255, self.inactiveTankColor[1][3]/255, 1)
+    love.graphics.draw(self.texOne, self.quadW, tx2, ty)
+    
     for k, v in pairs(self.fills) do
       for i, j in pairs(v) do
         j:draw()
@@ -310,11 +352,35 @@ function weaponSelect:draw()
     end
     love.graphics.setColor(1, 1, 1, 1)
     if self.x == 1 then
-      love.graphics.draw(self.t, self.active["eTank"], view.x+(8*6), view.y+(22*8))
-      love.graphics.draw(self.t, self.inactive["wTank"], view.x+(8*10), view.y+(22*8))
+      local tx, ty, tx2 = view.x+(8*6), view.y+(22*8), view.x+(8*10)
+      love.graphics.setColor(self.activeTankColor[2][1]/255, self.activeTankColor[2][2]/255, self.activeTankColor[2][3]/255, 1)
+      love.graphics.draw(self.texTwo, self.quadE, tx, ty)
+      love.graphics.setColor(self.activeTankColor[3][1]/255, self.activeTankColor[3][2]/255, self.activeTankColor[3][3]/255, 1)
+      love.graphics.draw(self.texOutline, self.quadE, tx, ty)
+      love.graphics.setColor(self.activeTankColor[1][1]/255, self.activeTankColor[1][2]/255, self.activeTankColor[1][3]/255, 1)
+      love.graphics.draw(self.texOne, self.quadE, tx, ty)
+      
+      love.graphics.setColor(self.inactiveTankColor[2][1]/255, self.inactiveTankColor[2][2]/255, self.inactiveTankColor[2][3]/255, 1)
+      love.graphics.draw(self.texTwo, self.quadW, tx2, ty)
+      love.graphics.setColor(self.inactiveTankColor[3][1]/255, self.inactiveTankColor[3][2]/255, self.inactiveTankColor[3][3]/255, 1)
+      love.graphics.draw(self.texOutline, self.quadW, tx2, ty)
+      love.graphics.setColor(self.inactiveTankColor[1][1]/255, self.inactiveTankColor[1][2]/255, self.inactiveTankColor[1][3]/255, 1)
+      love.graphics.draw(self.texOne, self.quadW, tx2, ty)
     elseif self.x == 2 then
-      love.graphics.draw(self.t, self.inactive["eTank"], view.x+(8*6), view.y+(22*8))
-      love.graphics.draw(self.t, self.active["wTank"], view.x+(8*10), view.y+(22*8))
+      local tx, ty, tx2 = view.x+(8*6), view.y+(22*8), view.x+(8*10)
+      love.graphics.setColor(self.inactiveTankColor[2][1]/255, self.inactiveTankColor[2][2]/255, self.inactiveTankColor[2][3]/255, 1)
+      love.graphics.draw(self.texTwo, self.quadE, tx, ty)
+      love.graphics.setColor(self.inactiveTankColor[3][1]/255, self.inactiveTankColor[3][2]/255, self.inactiveTankColor[3][3]/255, 1)
+      love.graphics.draw(self.texOutline, self.quadE, tx, ty)
+      love.graphics.setColor(self.inactiveTankColor[1][1]/255, self.inactiveTankColor[1][2]/255, self.inactiveTankColor[1][3]/255, 1)
+      love.graphics.draw(self.texOne, self.quadE, tx, ty)
+      
+      love.graphics.setColor(self.activeTankColor[2][1]/255, self.activeTankColor[2][2]/255, self.activeTankColor[2][3]/255, 1)
+      love.graphics.draw(self.texTwo, self.quadW, tx2, ty)
+      love.graphics.setColor(self.activeTankColor[3][1]/255, self.activeTankColor[3][2]/255, self.activeTankColor[3][3]/255, 1)
+      love.graphics.draw(self.texOutline, self.quadW, tx2, ty)
+      love.graphics.setColor(self.activeTankColor[1][1]/255, self.activeTankColor[1][2]/255, self.activeTankColor[1][3]/255, 1)
+      love.graphics.draw(self.texOne, self.quadW, tx2, ty)
     end
   end
 end

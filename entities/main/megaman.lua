@@ -5,6 +5,26 @@ megautils.resetGameObjectsFuncs["megaman"] = function()
   megaman.weaponHandler = {}
   globals.mainPlayer = nil
   globals.allPlayers = {}
+  
+  for i=1, globals.playerCount do
+    megaman.weaponHandler[i] = weaponhandler(nil, nil, 10)
+    if globals.player[i] == "bass" then
+      megaman.weaponHandler[i]:register(0, "bassBuster", {"b.buster", {144, 32, 16, 16}, {160, 32, 16, 16}},
+        {112, 112, 112}, {248, 152, 56}, {0, 0, 0})
+    else
+      megaman.weaponHandler[i]:register(0, "megaBuster", {"m.buster", {16, 32, 16, 16}, {32, 32, 16, 16}},
+        {0, 120, 248}, {0, 232, 216}, {0, 0, 0})
+    end
+    megaman.weaponHandler[i]:register(9, "rushCoil", {"rush c.", {144, 0, 16, 16}, {160, 0, 16, 16}},
+      {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+    megaman.weaponHandler[i]:register(10, "rushJet", {"rush jet", {112, 32, 16, 16}, {128, 32, 16, 16}},
+      {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+    
+    if globals.defeats.stickMan then
+      megaman.weaponHandler[i]:register(1, "stickWeapon", {"stick w.", {16, 0, 16, 16}, {32, 0, 16, 16}},
+        {188, 188, 188}, {124, 124, 124}, {0, 0, 0})
+    end
+  end
 end
 
 megaman = entity:extend()
@@ -220,7 +240,11 @@ function megaman:new(x, y, side, drop, p)
   self.icoTex = loader.get("weapon_select_icon")
   self.iconQuad = love.graphics.newQuad(0, 0, 16, 16, 80, 48)
   self.icons = {}
-  self.icons[0] = {0, 0}
+  if globals.player[self.player] == "bass" then
+    self.icons[0] = {32, 32}
+  else
+    self.icons[0] = {0, 0}
+  end
   self.icons[1] = {16, 0}
   self.icons[2] = {16, 16}
   self.icons[3] = {32, 0}
@@ -303,17 +327,11 @@ function megaman:new(x, y, side, drop, p)
   self.climbUpdateFuncs = {}
   self.knockbackUpdateFuncs = {}
   
+  megautils.adde(megaman.weaponHandler[self.player])
+  
   self.healthHandler = megautils.add(healthhandler, {252, 224, 168}, {255, 255, 255}, {0, 0, 0}, nil, nil, globals.lifeSegments, self)
   self.healthHandler.render = false
   
-  megaman.weaponHandler[self.player] = megautils.add(weaponhandler, nil, nil, 10)
-  if globals.player[self.player] == "bass" then
-    megaman.weaponHandler[self.player]:register(0, "bassBuster", {112, 112, 112}, {248, 152, 56}, {0, 0, 0})
-  else
-    megaman.weaponHandler[self.player]:register(0, "megaBuster", {0, 120, 248}, {0, 232, 216}, {0, 0, 0})
-  end
-  megaman.weaponHandler[self.player]:register(9, "rushCoil", {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
-  megaman.weaponHandler[self.player]:register(10, "rushJet", {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
   megaman.colorOutline[self.player] = megaman.weaponHandler[self.player].colorOutline[0]
   megaman.colorOne[self.player] = megaman.weaponHandler[self.player].colorOne[0]
   megaman.colorTwo[self.player] = megaman.weaponHandler[self.player].colorTwo[0]

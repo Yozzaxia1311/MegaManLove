@@ -25,7 +25,7 @@ function initEngine()
   cscreen.init(view.w*view.scale, view.h*view.scale, true)
   
   globals.mainPlayer = nil
-  globals.player = {"mega", "proto", "bass", "roll"}
+  globals.player = {"bass", "proto", "bass", "roll"}
   globals.allPlayers = {}
   globals.checkpoint = "start"
   globals.infiniteLives = false
@@ -41,7 +41,7 @@ function initEngine()
   globals.playerCount = 1
   
   globals.defeats = {}
-  globals.defeats.stickMan = false
+  globals.defeats.stickMan = true
   
   globals.resetState = true
   globals.manageStageResources = true

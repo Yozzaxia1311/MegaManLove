@@ -424,6 +424,11 @@ function life:new(x, y, despwn, id, spawner)
       self:addToGroup("despawnable")
     end
   end
+  self.quad = {}
+  self.quad["mega"] = love.graphics.newQuad(104, 12, 16, 16, 128, 98)
+  self.quad["proto"] = love.graphics.newQuad(56, 31, 16, 15, 128, 98)
+  self.quad["bass"] = love.graphics.newQuad(54, 16, 18, 15, 128, 98)
+  self.quad["roll"] = love.graphics.newQuad(38, 16, 16, 16, 128, 98)
   self.velocity = velocity()
   self.timer = 0
   self.render = false
@@ -488,26 +493,45 @@ function life:removed()
 end
 
 function life:draw()
+  local ox, oy = 0, 0
   if globals.mainPlayer then
+    if globals.player[globals.mainPlayer.player] == "proto" then
+      oy = 1
+    elseif globals.player[globals.mainPlayer.player] == "bass" then
+      ox = -1
+      oy = 1
+    end
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.draw(self.tex, self.quad[globals.player[globals.mainPlayer.player]],
+      math.round(self.transform.x+ox), math.round(self.transform.y+oy))
     love.graphics.setColor(megaman.colorTwo[globals.mainPlayer.player][1]/255, megaman.colorTwo[globals.mainPlayer.player][2]/255,
       megaman.colorTwo[globals.mainPlayer.player][3]/255, 1)
-    love.graphics.draw(self.texTwo, self.quad, math.round(self.transform.x), math.round(self.transform.y))
+    love.graphics.draw(self.texTwo, self.quad[globals.player[globals.mainPlayer.player]],
+      math.round(self.transform.x+ox), math.round(self.transform.y+oy))
     love.graphics.setColor(megaman.colorOutline[globals.mainPlayer.player][1]/255, megaman.colorOutline[globals.mainPlayer.player][2]/255,
       megaman.colorOutline[globals.mainPlayer.player][3]/255, 1)
-    love.graphics.draw(self.texOutline, self.quad, math.round(self.transform.x), math.round(self.transform.y))
+    love.graphics.draw(self.texOutline, self.quad[globals.player[globals.mainPlayer.player]],
+      math.round(self.transform.x+ox), math.round(self.transform.y+oy))
     love.graphics.setColor(megaman.colorOne[globals.mainPlayer.player][1]/255, megaman.colorOne[globals.mainPlayer.player][2]/255,
       megaman.colorOne[globals.mainPlayer.player][3]/255, 1)
-    love.graphics.draw(self.texOne, self.quad, math.round(self.transform.x), math.round(self.transform.y))
+    love.graphics.draw(self.texOne, self.quad[globals.player[globals.mainPlayer.player]],
+      math.round(self.transform.x+ox), math.round(self.transform.y+oy))
   else
+    if globals.player[1] == "proto" then
+      oy = 1
+    elseif globals.player[1] == "bass" then
+      ox = -1
+      oy = 1
+    end
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.draw(self.tex, self.quad[globals.player[1]], math.round(self.transform.x), math.round(self.transform.y))
     love.graphics.setColor(0, 232/255, 216/255, 1)
-    love.graphics.draw(self.texTwo, self.quad, math.round(self.transform.x), math.round(self.transform.y))
+    love.graphics.draw(self.texTwo, self.quad[globals.player[1]], math.round(self.transform.x+ox), math.round(self.transform.y+oy))
     love.graphics.setColor(0, 0, 0, 1)
-    love.graphics.draw(self.texOutline, self.quad, math.round(self.transform.x), math.round(self.transform.y))
+    love.graphics.draw(self.texOutline, self.quad[globals.player[1]], math.round(self.transform.x+ox), math.round(self.transform.y+oy))
     love.graphics.setColor(0, 120/255, 248/255, 1)
-    love.graphics.draw(self.texOne, self.quad, math.round(self.transform.x), math.round(self.transform.y))
+    love.graphics.draw(self.texOne, self.quad[globals.player[1]], math.round(self.transform.x+ox), math.round(self.transform.y+oy))
   end
-  love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.draw(self.tex, self.quad, math.round(self.transform.x), math.round(self.transform.y))
 end
 
 eTank = entity:extend()

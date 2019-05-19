@@ -28,6 +28,7 @@ function weaponhandler:new(side, r, slots)
   self.colorOutline = {}
   self.currentColorOne = {}
   self.currentColorTwo = {}
+  self.pauseConf = {}
   self:setLayer(9)
   self.riseTimer = 4
   self.rise = 0
@@ -49,7 +50,7 @@ function weaponhandler:reinit()
   self.currentSlot = 0
 end
 
-function weaponhandler:register(slot, name, colorone, colortwo, coloroutline, segments)
+function weaponhandler:register(slot, name, pn, colorone, colortwo, coloroutline, segments)
   self.weapons[slot] = name
   self.segments[slot] = segments or 7
   self.energy[slot] = self.segments[slot]*4
@@ -57,6 +58,7 @@ function weaponhandler:register(slot, name, colorone, colortwo, coloroutline, se
   self.colorOne[slot] = colorone
   self.colorTwo[slot] = colortwo
   self.colorOutline[slot] = coloroutline
+  self.pauseConf[slot] = pn
 end
 
 function weaponhandler:switch(slot)
