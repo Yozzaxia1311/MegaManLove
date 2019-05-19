@@ -613,7 +613,7 @@ function megaman:attemptWeaponUsage()
         self:useShootAnimation()
       else
         megautils.add(megaBuster, self.transform.x+(self.side==1 and 16 or -13), 
-          self.transform.y+10, self.side, w)
+          self.transform.y+(self.climb and 8 or 10), self.side, w)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
@@ -676,14 +676,14 @@ function megaman:attemptWeaponUsage()
     elseif w.current == "protoBuster" then
       if self.chargeState == 1 then
         megautils.add(protoSemiBuster, self.transform.x+(self.side==1 and 17 or -16), 
-          self.transform.y+10, self.side, w)
+          self.transform.y+(self.climb and 9 or 10), self.side, w)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
         self:useShootAnimation()
       elseif self.chargeState == 2 then
         megautils.add(protoChargedBuster, self.transform.x+(self.side==1 and 16 or -34), 
-          self.transform.y+9, self.side, w)
+          self.transform.y+(self.climb and 7 or 9), self.side, w)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
@@ -917,8 +917,8 @@ function megaman:code(dt)
       self.slide = false
       local w = self.collisionShape.w
       self:regBox()
-      while collision.checkSolid(self, 0, -1) do
-        self.transform.y = self.transform.y + 1
+      while collision.checkSolid(self, 0, -math.sign(self.gravity)) do
+        self.transform.y = self.transform.y + math.sign(self.gravity)
       end
     elseif not (self.ground or self:checkSlideBox(self.velocity.velx, math.sign(self.gravity))) then
       self.slide = false
@@ -926,6 +926,12 @@ function megaman:code(dt)
       local w = self.collisionShape.w
       self:regBox()
       self.slideTimer = self.maxSlideTime
+      if collision.checkSolid(self, 0, math.sign(self.gravity)) then
+        self.transform.y = math.round(self.transform.y + math.sign(self.gravity))
+        while collision.checkSolid(self, 0, math.sign(self.gravity)) do
+          self.transform.y = self.transform.y - math.sign(self.gravity)
+        end
+      end
     else
       self.slideTimer = math.min(self.slideTimer+1, self.maxSlideTime)
       if self.slideTimer == self.maxSlideTime and not self:checkRegBox()
@@ -1310,6 +1316,7 @@ function megaman:updatePallete()
 end
 
 function megaman:bassBusterAnim(shoot)
+  if megaman.weaponHandler[self.player].current ~= "bassBuster" then return shoot end
   local dir = shoot
   if self.shootTimer ~= self.maxShootTime then
     if control.upDown[self.player] then
