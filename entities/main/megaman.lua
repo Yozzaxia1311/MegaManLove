@@ -21,10 +21,16 @@ megautils.resetGameObjectsFuncs["megaman"] = function()
       megaman.weaponHandler[i]:register(0, "megaBuster", {"m.buster", {16, 32, 16, 16}, {32, 32, 16, 16}},
         {0, 120, 248}, {0, 232, 216}, {0, 0, 0})
     end
-    megaman.weaponHandler[i]:register(9, "rushCoil", {"rush c.", {144, 0, 16, 16}, {160, 0, 16, 16}},
-      {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
-    megaman.weaponHandler[i]:register(10, "rushJet", {"rush jet", {112, 32, 16, 16}, {128, 32, 16, 16}},
-      {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+    
+    if globals.player[i] == "bass" then
+      megaman.weaponHandler[i]:register(9, "rushCoil", {"t. boost", {144, 16, 16, 16}, {160, 16, 16, 16}},
+        {112, 112, 112}, {128, 0, 240}, {0, 0, 0})
+    else
+      megaman.weaponHandler[i]:register(9, "rushCoil", {"rush c.", {144, 0, 16, 16}, {160, 0, 16, 16}},
+        {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+      megaman.weaponHandler[i]:register(10, "rushJet", {"rush jet", {112, 32, 16, 16}, {128, 32, 16, 16}},
+        {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+    end
     
     if globals.defeats.stickMan then
       megaman.weaponHandler[i]:register(1, "stickWeapon", {"stick w.", {16, 0, 16, 16}, {32, 0, 16, 16}},
@@ -141,7 +147,7 @@ function megaman.properties(self)
   self.canStandSolid = true
   self.canPause = true
   self.maxStandSolidJumpTime = 4
-  self.maxExtraJumps = 1
+  self.maxExtraJumps = globals.player[self.player] == "bass" and 1 or 0
   self.maxRapidShotTime = 5
 end
 
@@ -335,7 +341,11 @@ function megaman:new(x, y, side, drop, p)
   self.icons[6] = {48, 16}
   self.icons[7] = {64, 0}
   self.icons[8] = {64, 16}
-  self.icons[9] = {0, 16}
+  if globals.player[self.player] == "bass" then
+    self.icons[9] = {64, 32}
+  else
+    self.icons[9] = {0, 16}
+  end
   self.icons[10] = {0, 32}
   self.nextWeapon = 0
   self.prevWeapon = 0
@@ -501,16 +511,16 @@ function megaman:attemptWeaponUsage()
       if self.rapidShotTime == self.maxRapidShotTime then
         self.rapidShotTime = 0
         if w.current == "rushCoil" and w.energy[w.currentSlot] > 0 and
-          (not megautils.groups()["rush"] or #megautils.groups()["rush"] < 1) then
+          (not megautils.groups()["rushCoil" .. w.id] or #megautils.groups()["rushCoil" .. w.id] < 1) then
           megautils.add(rushCoil, self.transform.x+(self.side==1 and 18 or -32),
             self.transform.y, self.side, w)
           self.maxShootTime = 14
           self.shootTimer = 0
           self:useShootAnimation()
         elseif w.current == "rushJet" and w.energy[w.currentSlot] > 0 and
-          (not megautils.groups()["rush"] or #megautils.groups()["rush"] < 1) then
+          (not megautils.groups()["rushJet" .. w.id] or #megautils.groups()["rushJet" .. w.id] < 1) then
           megautils.add(rushJet, self.transform.x+(self.side==1 and 18 or -32),
-              self.transform.y+6, self.side, w)
+              self.transform.y+6, self.side, self, w)
           self.maxShootTime = 14
           self.shootTimer = 0
           self:useShootAnimation()
@@ -573,16 +583,16 @@ function megaman:attemptWeaponUsage()
       #megautils.groups()["megaBuster" .. w.id] < 3) and (not megautils.groups()["megaChargedBuster" .. w.id] or
       #megautils.groups()["megaChargedBuster" .. w.id] == 0) then
       if w.current == "rushCoil" and w.energy[w.currentSlot] > 0 and
-      (not megautils.groups()["rush"] or #megautils.groups()["rush"] < 1) then
+      (not megautils.groups()["rushCoil" .. w.id] or #megautils.groups()["rushCoil" .. w.id] < 1) then
         megautils.add(rushCoil, self.transform.x+(self.side==1 and 18 or -32),
           self.transform.y, self.side, w)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:useShootAnimation()
       elseif w.current == "rushJet" and w.energy[w.currentSlot] > 0 and
-      (not megautils.groups()["rush"] or #megautils.groups()["rush"] < 1) then
+      (not megautils.groups()["rushJet" .. w.id] or #megautils.groups()["rushJet" .. w.id] < 1) then
         megautils.add(rushJet, self.transform.x+(self.side==1 and 18 or -32),
-            self.transform.y+6, self.side, w)
+            self.transform.y+6, self.side, self, w)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:useShootAnimation()
@@ -598,16 +608,16 @@ function megaman:attemptWeaponUsage()
       and (not megautils.groups()["megaBuster" .. w.id] or
       #megautils.groups()["megaBuster" .. w.id] < 3) then
       if w.current == "rushCoil" and w.energy[w.currentSlot] > 0 and
-      (not megautils.groups()["rush"] or #megautils.groups()["rush"] < 1) then
+      (not megautils.groups()["rushCoil" .. w.id] or #megautils.groups()["rushCoil" .. w.id] < 1) then
         megautils.add(rushCoil, self.transform.x+(self.side==1 and 18 or -32),
           self.transform.y, self.side, w)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:useShootAnimation()
       elseif w.current == "rushJet" and w.energy[w.currentSlot] > 0 and
-      (not megautils.groups()["rush"] or #megautils.groups()["rush"] < 1) then
+      (not megautils.groups()["rushJet" .. w.id] or #megautils.groups()["rushJet" .. w.id] < 1) then
         megautils.add(rushJet, self.transform.x+(self.side==1 and 18 or -32),
-            self.transform.y+6, self.side, w)
+            self.transform.y+6, self.side, self, w)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:useShootAnimation()
@@ -623,16 +633,16 @@ function megaman:attemptWeaponUsage()
       and (not megautils.groups()["rollBuster" .. w.id] or
       #megautils.groups()["rollBuster" .. w.id] < 3) then
       if w.current == "rushCoil" and w.energy[w.currentSlot] > 0 and
-      (not megautils.groups()["rush"] or #megautils.groups()["rush"] < 1) then
+      (not megautils.groups()["rushCoil" .. w.id] or #megautils.groups()["rushCoil" .. w.id] < 1) then
         megautils.add(rushCoil, self.transform.x+(self.side==1 and 18 or -32),
           self.transform.y, self.side, w)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:useShootAnimation()
       elseif w.current == "rushJet" and w.energy[w.currentSlot] > 0 and
-      (not megautils.groups()["rush"] or #megautils.groups()["rush"] < 1) then
+      (not megautils.groups()["rushJet" .. w.id] or #megautils.groups()["rushJet" .. w.id] < 1) then
         megautils.add(rushJet, self.transform.x+(self.side==1 and 18 or -32),
-            self.transform.y+6, self.side, w)
+            self.transform.y+6, self.side, self, w)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:useShootAnimation()

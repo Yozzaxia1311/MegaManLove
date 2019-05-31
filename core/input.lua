@@ -7,6 +7,7 @@ function touchInput.init(w, h)
   touchInput.touchY = 0
   touchInput.buttons = {}
   touchInput.pressed = {}
+  touchInput.touches = love.touch.getTouches()
   touchInput.screenPressed = false
 end
 
@@ -121,8 +122,8 @@ function inputHandler.refreshGamepads()
   inputHandler.gamepads = love.joystick.getJoysticks()
 end
 
-function inputHandler.bind(v, k, t, n)
-  inputHandler.keys[k] = {t, v, n}
+function inputHandler.bind(v, k)
+  inputHandler.keys[k] = v
 end
 
 function inputHandler.unbind(k)
@@ -139,53 +140,70 @@ function inputHandler.down(k)
   if (console and console.state == 1) or not inputHandler.keys[k] then
     return false
   end
-  if inputHandler.keys[k][1] == "keyboard" then
-    return love.keyboard.isDown(inputHandler.keys[k][2])
-  elseif inputHandler.keys[k][1] == "touch" then
-    return touchInput.down(inputHandler.keys[k][2])
-  elseif inputHandler.keys[k][1] == "gamepad" then
-    for i, v in ipairs(inputHandler.gamepads) do
-      if inputHandler.keys[k][3] == v:getName() and v:isGamepadDown(inputHandler.keys[k][2]) then
-        return true
-      end
-    end
-  elseif inputHandler.keys[k][1] == "axis" then
-    for i, v in ipairs(inputHandler.gamepads) do
-      if inputHandler.keys[k][3] == v:getName() then
-        if inputHandler.keys[k][2] == "leftx+" and v:getGamepadAxis("leftx") > deadZone then
-          return v:getGamepadAxis("leftx")
-        elseif inputHandler.keys[k][2] == "leftx-" and v:getGamepadAxis("leftx") < -deadZone then
-          return v:getGamepadAxis("leftx")
-        end
-        if inputHandler.keys[k][2] == "lefty+" and v:getGamepadAxis("lefty") > deadZone then
-          return v:getGamepadAxis("lefty")
-        elseif inputHandler.keys[k][2] == "lefty-" and v:getGamepadAxis("lefty") < -deadZone then
-          return v:getGamepadAxis("lefty")
-        end
-        if inputHandler.keys[k][2] == "rightx+" and v:getGamepadAxis("rightx") > deadZone then
-          return v:getGamepadAxis("rightx")
-        elseif inputHandler.keys[k][2] == "rightx-" and v:getGamepadAxis("rightx") < -deadZone then
-          return v:getGamepadAxis("rightx")
-        end
-        if inputHandler.keys[k][2] == "righty+" and v:getGamepadAxis("righty") > deadZone then
-          return v:getGamepadAxis("righty")
-        elseif inputHandler.keys[k][2] == "righty-" and v:getGamepadAxis("righty") < -deadZone then
-          return v:getGamepadAxis("righty")
-        end
-        if inputHandler.keys[k][2] == "triggerleft+" and v:getGamepadAxis("triggerleft") > deadZone then
-          return v:getGamepadAxis("triggerleft")
-        elseif inputHandler.keys[k][2] == "triggerleft-" and v:getGamepadAxis("triggerleft") < -deadZone then
-          return v:getGamepadAxis("triggerleft")
-        end
-        if inputHandler.keys[k][2] == "triggerright+" and v:getGamepadAxis("triggerright") > deadZone then
-          return v:getGamepadAxis("triggerright")
-        elseif inputHandler.keys[k][2] == "triggerright-" and v:getGamepadAxis("triggerright") < -deadZone then
-          return v:getGamepadAxis("triggerright")
+  local result = false
+  for i=1, #inputHandler.keys[k] do
+    if inputHandler.keys[k][i][1] == "keyboard" then
+      result = love.keyboard.isDown(inputHandler.keys[k][i][2])
+    elseif inputHandler.keys[k][i][1] == "touch" then
+      result = touchInput.down(inputHandler.keys[k][i][2])
+    elseif inputHandler.keys[k][i][1] == "gamepad" then
+      for i, v in ipairs(inputHandler.gamepads) do
+        if inputHandler.keys[k][i][3] == v:getName() and v:isGamepadDown(inputHandler.keys[k][i][2]) then
+          result = true
+          break
         end
       end
+    elseif inputHandler.keys[k][i][1] == "axis" then
+      for i, v in ipairs(inputHandler.gamepads) do
+        if inputHandler.keys[k][i][3] == v:getName() then
+          if inputHandler.keys[k][i][2] == "leftx+" and v:getGamepadAxis("leftx") > deadZone then
+            result = v:getGamepadAxis("leftx")
+            break
+          elseif inputHandler.keys[k][i][2] == "leftx-" and v:getGamepadAxis("leftx") < -deadZone then
+            result = v:getGamepadAxis("leftx")
+            break
+          end
+          if inputHandler.keys[k][i][2] == "lefty+" and v:getGamepadAxis("lefty") > deadZone then
+            result = v:getGamepadAxis("lefty")
+            break
+          elseif inputHandler.keys[k][i][2] == "lefty-" and v:getGamepadAxis("lefty") < -deadZone then
+            result = v:getGamepadAxis("lefty")
+            break
+          end
+          if inputHandler.keys[k][i][2] == "rightx+" and v:getGamepadAxis("rightx") > deadZone then
+            result = v:getGamepadAxis("rightx")
+            break
+          elseif inputHandler.keys[k][i][2] == "rightx-" and v:getGamepadAxis("rightx") < -deadZone then
+            result = v:getGamepadAxis("rightx")
+            break
+          end
+          if inputHandler.keys[k][i][2] == "righty+" and v:getGamepadAxis("righty") > deadZone then
+            result = v:getGamepadAxis("righty")
+            break
+          elseif inputHandler.keys[k][i][2] == "righty-" and v:getGamepadAxis("righty") < -deadZone then
+            result = v:getGamepadAxis("righty")
+            break
+          end
+          if inputHandler.keys[k][i][2] == "triggerleft+" and v:getGamepadAxis("triggerleft") > deadZone then
+            result = v:getGamepadAxis("triggerleft")
+            break
+          elseif inputHandler.keys[k][i][2] == "triggerleft-" and v:getGamepadAxis("triggerleft") < -deadZone then
+            result = v:getGamepadAxis("triggerleft")
+            break
+          end
+          if inputHandler.keys[k][i][2] == "triggerright+" and v:getGamepadAxis("triggerright") > deadZone then
+            result = v:getGamepadAxis("triggerright")
+            break
+          elseif inputHandler.keys[k][i][2] == "triggerright-" and v:getGamepadAxis("triggerright") < -deadZone then
+            result = v:getGamepadAxis("triggerright")
+            break
+          end
+        end
+      end
     end
+    if result then break end
   end
-  return false
+  return result
 end
 
 function inputHandler.pressed(k)

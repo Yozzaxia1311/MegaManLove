@@ -2,20 +2,18 @@ function initEngine()
   globals = {}
   love.filesystem.load("requires.lua")()
   
-  if touchControls then
-    touchInput.add("left", "left-down", 16, -140, 64, 64)
-    touchInput.add("right", "left-down", 16+64, -140, 64, 64)
-    touchInput.add("down", "left-down", 16+32, -140+64, 64, 64)
-    touchInput.add("up", "left-down", 16+32, -140-64, 64, 64)
-    touchInput.add("jump", "right-down", -80, -140, 64, 64)
-    touchInput.add("dash", "right-down", -80-64, -140+32, 64, 64)
-    touchInput.add("shoot", "right-down", -80, -140+64, 64, 64)
-    touchInput.add("start", "right-up", -40, 16, 40, 40)
-    touchInput.add("select", "right-up", -80, 16, 40, 40)
-    touchInput.add("escape", "left-up", 0, 16, 40, 40)
-    touchInput.add("prev", "right-up", -40, 60, 40, 40)
-    touchInput.add("next", "right-up", -80, 60, 40, 40)
-  end
+  touchInput.add("left", "left-down", 16, -140, 64, 64)
+  touchInput.add("right", "left-down", 16+64, -140, 64, 64)
+  touchInput.add("down", "left-down", 16+32, -140+64, 64, 64)
+  touchInput.add("up", "left-down", 16+32, -140-64, 64, 64)
+  touchInput.add("jump", "right-down", -80, -140, 64, 64)
+  touchInput.add("dash", "right-down", -80-64, -140+32, 64, 64)
+  touchInput.add("shoot", "right-down", -80, -140+64, 64, 64)
+  touchInput.add("start", "right-up", -40, 16, 40, 40)
+  touchInput.add("select", "right-up", -80, 16, 40, 40)
+  touchInput.add("escape", "left-up", 0, 16, 40, 40)
+  touchInput.add("prev", "right-up", -40, 60, 40, 40)
+  touchInput.add("next", "right-up", -80, 60, 40, 40)
   
   view.init(256, 224, 1)
   
@@ -25,7 +23,7 @@ function initEngine()
   cscreen.init(view.w*view.scale, view.h*view.scale, true)
   
   globals.mainPlayer = nil
-  globals.player = {"mega", "proto", "bass", "roll"}
+  globals.player = {"bass", "proto", "bass", "roll"}
   globals.allPlayers = {}
   globals.checkpoint = "start"
   globals.infiniteLives = false
@@ -73,58 +71,37 @@ function love.load()
   framerate = 1/60
   nesShader = love.graphics.getSupported().glsl3 and love.graphics.newShader("assets/neslut.glsl")
   if nesShader then nesShader:send("pal", love.graphics.newImage("assets/neslut.png")) end
-  local joysticks = love.joystick.getJoysticks()
-  defaultInputBinds =
-    #joysticks > 0 and
-    {["up"]={"lefty-", "axis", joysticks[1]:getName()},
-    ["down"]={"lefty+", "axis", joysticks[1]:getName()},
-    ["left"]={"leftx-", "axis", joysticks[1]:getName()},
-    ["right"]={"leftx+", "axis", joysticks[1]:getName()},
-    ["jump"]={"a", "gamepad", joysticks[1]:getName()},
-    ["shoot"]={"x", "gamepad", joysticks[1]:getName()},
-    ["start"]={"start", "gamepad", joysticks[1]:getName()},
-    ["select"]={"back", "gamepad", joysticks[1]:getName()},
-    ["prev"]={"leftshoulder", "gamepad", joysticks[1]:getName()},
-    ["next"]={"rightshoulder", "gamepad", joysticks[1]:getName()},
-    ["dash"]={"b", "gamepad", joysticks[1]:getName()}}
-    or
-    ({["up"]={"up", "keyboard"},
-    ["down"]={"down", "keyboard"},
-    ["left"]={"left", "keyboard"},
-    ["right"]={"right", "keyboard"},
-    ["jump"]={"z", "keyboard"},
-    ["shoot"]={"x", "keyboard"},
-    ["start"]={"return", "keyboard"},
-    ["select"]={"rshift", "keyboard"},
-    ["prev"]={"a", "keyboard"},
-    ["next"]={"s", "keyboard"},
-    ["dash"]={"c", "keyboard"}}
-    or touchControls and
-    {["up"]={"up", "touch"},
-    ["down"]={"down", "touch"},
-    ["left"]={"left", "touch"},
-    ["right"]={"right", "touch"},
-    ["jump"]={"jump", "touch"},
-    ["shoot"]={"shoot", "touch"},
-    ["start"]={"start", "touch"},
-    ["select"]={"select", "touch"},
-    ["prev"]={"prev", "touch"},
-    ["next"]={"next", "touch"},
-    ["dash"]={"dash", "touch"}})
-  defaultInputBinds2 =
-    joysticks[2] and
-    {["up"]={"lefty-", "axis", joysticks[2]:getName()},
-    ["down"]={"lefty+", "axis", joysticks[2]:getName()},
-    ["left"]={"leftx-", "axis", joysticks[2]:getName()},
-    ["right"]={"leftx+", "axis", joysticks[2]:getName()},
-    ["jump"]={"a", "gamepad", joysticks[2]:getName()},
-    ["shoot"]={"x", "gamepad", joysticks[2]:getName()},
-    ["start"]={"start", "gamepad", joysticks[2]:getName()},
-    ["select"]={"back", "gamepad", joysticks[2]:getName()},
-    ["prev"]={"leftshoulder", "gamepad", joysticks[2]:getName()},
-    ["next"]={"rightshoulder", "gamepad", joysticks[2]:getName()},
-    ["dash"]={"b", "gamepad", joysticks[2]:getName()}} or {}
+  
   love.filesystem.load("requirelibs.lua")()
+  
+  local joysticks = love.joystick.getJoysticks()
+  defaultInputBinds = {["up"]={{"keyboard", "up"}, {"touch", "up"}},
+    ["down"]={{"keyboard", "down"}, {"touch", "down"}},
+    ["left"]={{"keyboard", "left"}, {"touch", "left"}},
+    ["right"]={{"keyboard", "right"}, {"touch", "right"}},
+    ["jump"]={{"keyboard", "z"}, {"touch", "jump"}},
+    ["shoot"]={{"keyboard", "x"}, {"touch", "shoot"}},
+    ["start"]={{"keyboard", "return"}, {"touch", "start"}},
+    ["select"]={{"keyboard", "rshift"}, {"touch", "select"}},
+    ["prev"]={{"keyboard", "a"}, {"touch", "prev"}},
+    ["next"]={{"keyboard", "s"}, {"touch", "next"}},
+    ["dash"]={{"keyboard", "c"}, {"touch", "dash"}}}
+  if #joysticks > 0 then
+    local joyBinds = {["up"]={"lefty-", "axis", joysticks[1]:getName()},
+    ["down"]={"axis", "lefty+", joysticks[1]:getName()},
+    ["left"]={"axis", "leftx-", joysticks[1]:getName()},
+    ["right"]={"axis", "leftx+", joysticks[1]:getName()},
+    ["jump"]={"gamepad", "a", joysticks[1]:getName()},
+    ["shoot"]={"gamepad", "x", joysticks[1]:getName()},
+    ["start"]={"gamepad", "start", joysticks[1]:getName()},
+    ["select"]={"gamepad", "back", joysticks[1]:getName()},
+    ["prev"]={"gamepad", "leftshoulder", joysticks[1]:getName()},
+    ["next"]={"gamepad", "rightshoulder", joysticks[1]:getName()},
+    ["dash"]={"gamepad", "b", joysticks[1]:getName()}}
+    for k, v in pairs(defaultInputBinds) do
+      v = table.merge({v, joyBinds[k]})
+    end
+  end
   control.init()
   console.init()
   initEngine()

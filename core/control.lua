@@ -70,18 +70,7 @@ function control.init()
     binds[9] = defaultInputBinds.prev
     binds[10] = defaultInputBinds.next
     binds[11] = defaultInputBinds.dash
-    
-    binds[12] = defaultInputBinds2.up
-    binds[13] = defaultInputBinds2.down
-    binds[14] = defaultInputBinds2.left
-    binds[15] = defaultInputBinds2.right
-    binds[16] = defaultInputBinds2.start
-    binds[17] = defaultInputBinds2.select
-    binds[18] = defaultInputBinds2.jump
-    binds[19] = defaultInputBinds2.shoot
-    binds[20] = defaultInputBinds2.prev
-    binds[21] = defaultInputBinds2.next
-    binds[22] = defaultInputBinds2.dash
+    control.usesDefaultBinds = true
   else
     for i=1, maxPlayerCount do
       binds[1+step] = data.controls[1+step]
@@ -97,21 +86,22 @@ function control.init()
       binds[11+step] = data.controls[11+step]
       step = step + 11
     end
+    control.usesDefaultBinds = false
   end
   step = 0
   for i=1, maxPlayerCount do
     if binds[1+step] then
-      inputHandler.bind(binds[1+step][1], 1+step, binds[1+step][2], binds[1+step][3])
-      inputHandler.bind(binds[2+step][1], 2+step, binds[2+step][2], binds[1+step][3])
-      inputHandler.bind(binds[3+step][1], 3+step, binds[3+step][2], binds[1+step][3])
-      inputHandler.bind(binds[4+step][1], 4+step, binds[4+step][2], binds[1+step][3])
-      inputHandler.bind(binds[5+step][1], 5+step, binds[5+step][2], binds[1+step][3])
-      inputHandler.bind(binds[6+step][1], 6+step, binds[6+step][2], binds[1+step][3])
-      inputHandler.bind(binds[7+step][1], 7+step, binds[7+step][2], binds[1+step][3])
-      inputHandler.bind(binds[8+step][1], 8+step, binds[8+step][2], binds[1+step][3])
-      inputHandler.bind(binds[9+step][1], 9+step, binds[9+step][2], binds[1+step][3])
-      inputHandler.bind(binds[10+step][1], 10+step, binds[10+step][2], binds[1+step][3])
-      inputHandler.bind(binds[11+step][1], 11+step, binds[11+step][2], binds[1+step][3])
+      inputHandler.bind(binds[1+step], 1+step)
+      inputHandler.bind(binds[2+step], 2+step)
+      inputHandler.bind(binds[3+step], 3+step)
+      inputHandler.bind(binds[4+step], 4+step)
+      inputHandler.bind(binds[5+step], 5+step)
+      inputHandler.bind(binds[6+step], 6+step)
+      inputHandler.bind(binds[7+step], 7+step)
+      inputHandler.bind(binds[8+step], 8+step)
+      inputHandler.bind(binds[9+step], 9+step)
+      inputHandler.bind(binds[10+step], 10+step)
+      inputHandler.bind(binds[11+step], 11+step)
     end
     step = step + 11
   end

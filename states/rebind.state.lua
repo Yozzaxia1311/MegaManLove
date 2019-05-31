@@ -61,8 +61,9 @@ function rebinder:update(dt)
         self.done = true
         inputHandler.unbind()
         for k, v in pairs(self.data.controls) do
-          inputHandler.bind(v[1], k, v[2], v[3])
+          inputHandler.bind(v, k)
         end
+        control.usesDefaultBinds = false
         save.save("main.sav", self.data)
         megautils.add(fade, true, nil, nil, function(s)
             states.set(globals.sendBackToDisclaimer and "states/disclaimer.state.lua" or globals.lastStateName)

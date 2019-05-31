@@ -323,10 +323,11 @@ end
 
 rushJet = entity:extend()
 
-function rushJet:new(x, y, side, w)
+function rushJet:new(x, y, side, player, wpn)
   rushJet.super.new(self)
   self.added = function(self)
-    self:addToGroup("rush")
+    self:addToGroup("rushJet")
+    self:addToGroup("rushJet" .. wpn.id)
     self:addToGroup("freezable")
     self:addToGroup("removeOnTransition")
   end
@@ -343,11 +344,13 @@ function rushJet:new(x, y, side, w)
   self.side = side
   self.s = 0
   self.velocity = velocity()
-  self.wpn = w
+  self.wpn = wpn
   self.timer = 0
   self.isSolid = 2
   self.blockCollision = true
   self:setLayer(2)
+  self.player = player
+  self.playerOn = false
 end
 
 function rushJet:face(n)
@@ -375,47 +378,40 @@ function rushJet:update(dt)
       self.s = 2
     end
   elseif self.s == 2 then
-    for i=1, globals.playerCount do
-      local p = globals.allPlayers[i]
-      if p:collision(self, 0, 1) and p.transform.y == self.transform.y - p.collisionShape.h then
-        self.s = 3
-        self.velocity.velx = self.side
-        self.user = p
-        self.user.canWalk = false
-        break
-      end
+    if self.player:collision(self, 0, 1) and self.player.transform.y == self.transform.y - self.player.collisionShape.h then
+      self.s = 3
+      self.velocity.velx = self.side
+      self.player.canWalk = false
+      self.playerOn = true
     end
     self:moveBy(self.velocity.velx, self.velocity.vely)
     collision.doCollision(self)
   elseif self.s == 3 then
-    if self.user then
-      if control.upDown[self.user.player] then
+    if self.playerOn then
+      if control.upDown[self.player.player] then
         self.velocity.vely = -1
-      elseif control.downDown[self.user.player] then
+      elseif control.downDown[self.player.player] then
         self.velocity.vely = 1
       else
         self.velocity.vely = 0
       end
     else
       self.velocity.vely = 0
-      for i=1, globals.playerCount do
-        local p = globals.allPlayers[i]
-        if p:collision(self, 0, 1) and p.transform.y == self.transform.y - p.collisionShape.h then
-          self.velocity.velx = self.side
-          self.user = p
-          self.user.canWalk = false
-          break
-        end
+      if self.player:collision(self, 0, 1) and self.player.transform.y == self.transform.y - self.player.collisionShape.h then
+        self.s = 3
+        self.velocity.velx = self.side
+        self.player.canWalk = false
+        self.playerOn = true
       end
     end
     collision.doCollision(self)
-    if self.user and not self.user:collision(self, 0, 1) then
-      self.user.canWalk = true
-      self.user = nil
+    if self.playerOn and self.player.transform.y ~= self.transform.y - self.player.collisionShape.h then
+      self.player.canWalk = true
+      self.playerOn = false
     end
     if self.xcoll ~= 0 or
-      (self.user and collision.checkSolid(self, 0, -self.user.collisionShape.h-4)) then
-      if self.user then self.user.canWalk = true self.user.onMovingFloor = nil end
+      (self.playerOn and collision.checkSolid(self, 0, -self.player.collisionShape.h-4)) then
+      if self.playerOn then self.player.canWalk = true self.player.onMovingFloor = nil end
       self.c = "spawn_land"
       self.anims["spawn_land"]:gotoFrame(1)
       self.s = 4
@@ -442,9 +438,7 @@ function rushJet:update(dt)
 end
 
 function rushJet:removed()
-  if self.user then
-    self.user.canWalk = true
-  end
+  self.player.canWalk = true
 end
 
 function rushJet:draw()
@@ -461,7 +455,8 @@ rushCoil = entity:extend()
 function rushCoil:new(x, y, side, w)
   rushCoil.super.new(self)
   self.added = function(self)
-    self:addToGroup("rush")
+    self:addToGroup("rushCoil")
+    self:addToGroup("rushCoil" .. w.id)
     self:addToGroup("freezable")
     self:addToGroup("removeOnTransition")
   end
