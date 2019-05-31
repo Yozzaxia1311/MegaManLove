@@ -489,8 +489,10 @@ end
 
 function entity:drawCollision()
   if self.collisionShape == nil then return false end
+  love.graphics.setColor(1, 1, 1, 1)
   if self.collisionShape.type == 0 then
-    love.graphics.rectangle("line", self.transform.x, self.transform.y, self.collisionShape.w, self.collisionShape.h)
+    love.graphics.rectangle("line", math.round(self.transform.x), math.round(self.transform.y),
+      self.collisionShape.w, self.collisionShape.h)
   elseif self.collisionShape.type == 1 then
     --image collision drawing not implemented
   end

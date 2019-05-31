@@ -49,6 +49,12 @@ convar["r_fullscreen"] = {
   value = 0,
   fun = function(arg) local n = numberSanitize(arg) love.window.setFullscreen(n == 1) end
 }
+convar["framerate"] = {
+  helptext = "framerate",
+  flags = {"client"},
+  value = 60,
+  fun = function(arg) local n = numberSanitize(arg) framerate = 1/n end
+}
 convar["volume"] = {
   helptext = "game volume",
   flags = {"archive"},

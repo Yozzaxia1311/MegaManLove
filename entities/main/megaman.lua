@@ -23,7 +23,7 @@ megautils.resetGameObjectsFuncs["megaman"] = function()
     end
     
     if globals.player[i] == "bass" then
-      megaman.weaponHandler[i]:register(9, "rushCoil", {"t. boost", {144, 16, 16, 16}, {160, 16, 16, 16}},
+      megaman.weaponHandler[i]:register(9, "trebleBoost", {"t. boost", {144, 16, 16, 16}, {160, 16, 16, 16}},
         {112, 112, 112}, {128, 0, 240}, {0, 0, 0})
     else
       megaman.weaponHandler[i]:register(9, "rushCoil", {"rush c.", {144, 0, 16, 16}, {160, 0, 16, 16}},
@@ -168,11 +168,11 @@ function megaman:regBox()
 end
 
 function megaman:basicSlideBox()
-  self:setRectangleCollision(11, 14)
+  self:setRectangleCollision(11, globals.player[self.player] == "bass" and 21 or 14)
 end
 
 function megaman:slideBox()
-  self:setRectangleCollision(17, 14)
+  self:setRectangleCollision(17, globals.player[self.player] == "bass" and 21 or 14)
 end
 
 function megaman:checkRegBox(ox, oy)
@@ -380,6 +380,7 @@ function megaman:new(x, y, side, drop, p)
   self.standSolidJumpTimer = 0
   self.extraJumps = 0
   self.rapidShotTime = self.maxRapidShotTime
+  self.treble = false
   
   self.groundUpdateFuncs = {}
   self.airUpdateFuncs = {}
@@ -426,10 +427,16 @@ function megaman:new(x, y, side, drop, p)
   self.hitAnimation = {["regular"]="hit"}
   self.wallJumpAnimation = {["regular"]="wallJump", ["shoot"]="wallJumpShoot"}
   self.dashAnimation = {["regular"]=(self.canDashShoot and globals.player[self.player] == "mega") and "dash" or "slide", ["shoot"]="dashShoot"}
+  self.trebleAnimation = {["regular"]="treble", ["shoot"]="trebleShoot"}
   self.animations = {}
   local pp = "mega_man_grid"
-  if globals.player[self.player] == "bass" or globals.player[self.player] == "roll" then
+  if globals.player[self.player] == "bass" then
     pp = "bass_grid"
+    self.animations["trebleStart"] = anim8.newAnimation(loader.get(pp)(4, 10, "1-4", 11, 1, 12), 1/8, "pauseAtEnd")
+    self.animations["treble"] = anim8.newAnimation(loader.get(pp)("2-3", 12), 1/12)
+    self.animations["trebleShoot"] = anim8.newAnimation(loader.get(pp)(4, 12, 1, 13), 1/12)
+  elseif globals.player[self.player] == "roll" then
+    pp = "roll_grid"
   end
   if globals.player[self.player] == "proto" then
     self.animations["idle"] = anim8.newAnimation(loader.get(pp)(1, 1, 2, 1), 1/8)
@@ -513,7 +520,14 @@ function megaman:attemptWeaponUsage()
         if w.current == "rushCoil" and w.energy[w.currentSlot] > 0 and
           (not megautils.groups()["rushCoil" .. w.id] or #megautils.groups()["rushCoil" .. w.id] < 1) then
           megautils.add(rushCoil, self.transform.x+(self.side==1 and 18 or -32),
-            self.transform.y, self.side, w)
+            self.transform.y, self.side, self, w)
+          self.maxShootTime = 14
+          self.shootTimer = 0
+          self:useShootAnimation()
+        elseif w.current == "rushJet" and w.energy[w.currentSlot] > 0 and
+          (not megautils.groups()["rushJet" .. w.id] or #megautils.groups()["rushJet" .. w.id] < 1) then
+          megautils.add(rushJet, self.transform.x+(self.side==1 and 18 or -32),
+              self.transform.y+6, self.side, self, w)
           self.maxShootTime = 14
           self.shootTimer = 0
           self:useShootAnimation()
@@ -585,7 +599,7 @@ function megaman:attemptWeaponUsage()
       if w.current == "rushCoil" and w.energy[w.currentSlot] > 0 and
       (not megautils.groups()["rushCoil" .. w.id] or #megautils.groups()["rushCoil" .. w.id] < 1) then
         megautils.add(rushCoil, self.transform.x+(self.side==1 and 18 or -32),
-          self.transform.y, self.side, w)
+          self.transform.y, self.side, self, w)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:useShootAnimation()
@@ -610,7 +624,7 @@ function megaman:attemptWeaponUsage()
       if w.current == "rushCoil" and w.energy[w.currentSlot] > 0 and
       (not megautils.groups()["rushCoil" .. w.id] or #megautils.groups()["rushCoil" .. w.id] < 1) then
         megautils.add(rushCoil, self.transform.x+(self.side==1 and 18 or -32),
-          self.transform.y, self.side, w)
+          self.transform.y, self.side, self, w)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:useShootAnimation()
@@ -635,7 +649,7 @@ function megaman:attemptWeaponUsage()
       if w.current == "rushCoil" and w.energy[w.currentSlot] > 0 and
       (not megautils.groups()["rushCoil" .. w.id] or #megautils.groups()["rushCoil" .. w.id] < 1) then
         megautils.add(rushCoil, self.transform.x+(self.side==1 and 18 or -32),
-          self.transform.y, self.side, w)
+          self.transform.y, self.side, self, w)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:useShootAnimation()
@@ -654,6 +668,16 @@ function megaman:attemptWeaponUsage()
         self:resetCharge()
         self:useShootAnimation()
       end
+    elseif w.current == "trebleBoost" and w.energy[w.currentSlot] > 0 and
+      (not megautils.groups()[w.current .. w.id] or
+        #megautils.groups()[w.current .. w.id] < 1) and self.shootTimer == self.maxShootTime then
+      megautils.add(trebleBoost, self.transform.x+(self.side==1 and 24 or -34), 
+        self.transform.y, self.side, self, w)
+      self.maxShootTime = 14
+      self.shootTimer = 0
+      self:resetCharge()
+      self:useShootAnimation()
+      w.energy[w.currentSlot] = w.energy[w.currentSlot] - 1
     elseif w.current == "stickWeapon" and w.energy[w.currentSlot] > 0 and
       (not megautils.groups()[w.current .. w.id] or
         #megautils.groups()[w.current .. w.id] < 1) and self.shootTimer == self.maxShootTime then
@@ -857,6 +881,14 @@ function megaman:code(dt)
       self:charge()
     else
       self:charge(true)
+    end
+  elseif self.treble then
+    if self.treble == 1 and self.animations["trebleStart"].looped then
+      self.treble = 2
+      mmSfx.play("treble_start")
+    end
+    if megaman.weaponHandler[self.player].current ~= "trebleBoost" then
+      self.treble = false
     end
   elseif self.climb then
     if control.leftDown[self.player] then
@@ -1189,6 +1221,7 @@ function megaman:resetStates()
   self.wallJumping = false
   self.dashJump = false
   self.curAnim = "idle"
+  self.treble = false
   self.shootTimer = self.maxShootTime
   if self.slide then
     self:slideToReg()
@@ -1253,7 +1286,7 @@ function megaman:charge(animOnly)
 end
 
 function megaman:grav()
-  if self.climb or self.slide then return end
+  if self.climb or self.slide or self.treble then return end
   if self.gravityType == 0 then
     self.velocity.vely = self.velocity.vely+self.gravity
   elseif self.gravityType == 1 then
@@ -1350,7 +1383,11 @@ function megaman:animate()
     if self.shootTimer ~= self.maxShootTime then
       shoot = "shoot"
     end
-    if self.hitTimer ~= self.maxHitTime then
+    if self.treble then
+      if self.treble == 2 then
+        self.curAnim = self.trebleAnimation[shoot]
+      end
+    elseif self.hitTimer ~= self.maxHitTime then
       self.curAnim = self.hitAnimation["regular"]
     elseif self.climb then
       shoot = self:bassBusterAnim(shoot)

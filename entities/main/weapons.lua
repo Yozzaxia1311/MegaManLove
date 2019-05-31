@@ -321,6 +321,102 @@ function megaChargedBuster:draw()
   self.anim:draw(self.tex, math.round(self.transform.x)-8, math.round(self.transform.y)-3)
 end
 
+trebleBoost = entity:extend()
+
+function trebleBoost:new(x, y, side, player, wpn)
+  trebleBoost.super.new(self)
+  self.added = function(self)
+    self:addToGroup("trebleBoost")
+    self:addToGroup("trebleBoost" .. wpn.id)
+    self:addToGroup("freezable")
+    self:addToGroup("removeOnTransition")
+  end
+  self.transform.x = x
+  self.transform.y = view.y-8
+  self.toY = y
+  self:setRectangleCollision(20, 19)
+  self.tex = loader.get("treble")
+  self.c = "spawn"
+  self.anims = {}
+  self.anims["spawn"] = anim8.newAnimation(loader.get("treble_grid")(1, 1), 1)
+  self.anims["spawn_land"] = anim8.newAnimation(loader.get("treble_grid")("2-3", 1, 2, 1), 1/20)
+  self.anims["idle"] = anim8.newAnimation(loader.get("treble_grid")(4, 1), 1)
+  self.anims["start"] = anim8.newAnimation(loader.get("treble_grid")("5-6", 1, "5-6", 1, "5-6", 1, "5-6", 1, "7-8", 1),
+    1/16, "pauseAtEnd")
+  self.side = side
+  self.s = 0
+  self.wpn = wpn
+  self:setLayer(2)
+  self.player = player
+  self.blockCollision = true
+  self.timer = 0
+end
+
+function trebleBoost:face(n)
+  self.anims[self.c].flippedH = (n ~= 1) and true or false
+end
+
+function trebleBoost:update(dt)
+  self.anims[self.c]:update(1/60)
+  if self.s == -1 then
+    self:moveBy(0, 8)
+  elseif self.s == 0 then
+    self.transform.y = math.min(self.transform.y+8, self.toY)
+    if self.transform.y == self.toY then
+      if not collision.checkSolid(self) then
+        self.s = 1
+        self.velocity.vely = 8
+      else
+        self.s = -1
+      end
+    end
+  elseif self.s == 1 then
+    collision.doCollision(self)
+    if self.ground then
+      self.c = "spawn_land"
+      self.s = 2
+    end
+  elseif self.s == 2 then
+    if self.anims["spawn_land"].looped then
+      mmSfx.play("start")
+      self.c = "idle"
+      self.s = 3
+    end
+  elseif self.s == 3 then
+    if not self.player.climb and self.player.ground and
+      math.between(self.player.transform.x+self.player.collisionShape.w/2,
+      self.transform.x, self.transform.x+self.collisionShape.w) and
+      self.player:collision(self) then
+      self.player:resetStates()
+      self.player.treble = 1
+      self.player.animations["trebleStart"]:gotoFrame(1)
+      self.player.animations["trebleStart"]:resume()
+      self.player.curAnim = "idle"
+      self.s = 4
+      self.c = "start"
+    end
+  elseif self.s == 4 then
+    if self.anims["start"].looped then
+      self.s = 5
+      self.player.curAnim = "trebleStart"
+    end
+  elseif self.s == 5 then
+    self.timer = self.timer + 1
+    if self.timer == 20 then
+      megautils.remove(self, true)
+    end
+  end
+  self:face(self.side)
+  if megautils.outside(self) or self.wpn.currentSlot ~= 9 then
+    megautils.remove(self, true)
+  end
+end
+
+function trebleBoost:draw()
+  love.graphics.setColor(1, 1, 1, 1)
+  self.anims[self.c]:draw(self.tex, math.round(self.transform.x-6), math.round(self.transform.y-12))
+end
+
 rushJet = entity:extend()
 
 function rushJet:new(x, y, side, player, wpn)
@@ -346,7 +442,6 @@ function rushJet:new(x, y, side, player, wpn)
   self.velocity = velocity()
   self.wpn = wpn
   self.timer = 0
-  self.isSolid = 2
   self.blockCollision = true
   self:setLayer(2)
   self.player = player
@@ -376,6 +471,7 @@ function rushJet:update(dt)
       mmSfx.play("start")
       self.c = "jet"
       self.s = 2
+      self.isSolid = 2
     end
   elseif self.s == 2 then
     if self.player:collision(self, 0, 1) and self.player.transform.y == self.transform.y - self.player.collisionShape.h then
@@ -452,7 +548,7 @@ end
 
 rushCoil = entity:extend()
 
-function rushCoil:new(x, y, side, w)
+function rushCoil:new(x, y, side, player, w)
   rushCoil.super.new(self)
   self.added = function(self)
     self:addToGroup("rushCoil")
@@ -478,6 +574,7 @@ function rushCoil:new(x, y, side, w)
   self.wpn = w
   self.blockCollision = true
   self:setLayer(2)
+  self.player = player
 end
 
 function rushCoil:face(n)
@@ -511,30 +608,27 @@ function rushCoil:update(dt)
       self.s = 3
     end
   elseif self.s == 3 then
-    for i=1, globals.playerCount do
-      local player = globals.allPlayers[i]
-      if not player.climb and player.velocity.vely > 0 and
-        math.between(player.transform.x+player.collisionShape.w/2, self.transform.x, self.transform.x+self.collisionShape.w) and
-        player:collision(self) then
-        player.canStopJump = false
-        player.velocity.vely = -7
-        player.step = false
-        player.stepTime = 0
-        player.ground = false
-        player.currentLadder = nil
-        player.wallJumping = false
-        player.dashJump = false
-        if player.slide then
-          local lh = self.collisionShape.h
-          player:regBox()
-          player.transform.y = player.transform.y - (player.collisionShape.h - lh)
-          player.slide = false
-        end
-        self.s = 4
-        self.c = "coil"
-        self.wpn.energy[self.wpn.currentSlot] = self.wpn.energy[self.wpn.currentSlot] - 7
-        break
+    if not self.player.climb and self.player.velocity.vely > 0 and
+      math.between(self.player.transform.x+self.player.collisionShape.w/2,
+      self.transform.x, self.transform.x+self.collisionShape.w) and
+      self.player:collision(self) then
+      self.player.canStopJump = false
+      self.player.velocity.vely = -7
+      self.player.step = false
+      self.player.stepTime = 0
+      self.player.ground = false
+      self.player.currentLadder = nil
+      self.player.wallJumping = false
+      self.player.dashJump = false
+      if self.player.slide then
+        local lh = self.collisionShape.h
+        self.player:regBox()
+        self.player.transform.y = self.player.transform.y - (self.player.collisionShape.h - lh)
+        self.player.slide = false
       end
+      self.s = 4
+      self.c = "coil"
+      self.wpn.energy[self.wpn.currentSlot] = self.wpn.energy[self.wpn.currentSlot] - 7
     end
   elseif self.s == 4 then
     self.timer = math.min(self.timer+1, 40)

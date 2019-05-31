@@ -69,7 +69,7 @@ function love.load()
   showFPS = false
   showEntityCount = false
   framerate = 1/60
-  nesShader = love.graphics.getSupported().glsl3 and love.graphics.newShader("assets/neslut.glsl")
+  nesShader = false --love.graphics.getSupported().glsl3 and love.graphics.newShader("assets/neslut.glsl")
   if nesShader then nesShader:send("pal", love.graphics.newImage("assets/neslut.png")) end
   
   love.filesystem.load("requirelibs.lua")()
