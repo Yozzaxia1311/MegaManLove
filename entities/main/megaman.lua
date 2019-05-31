@@ -1533,7 +1533,19 @@ end
 function megaman:draw()
   local roundx, roundy = math.round(self.transform.x), math.round(self.transform.y)
   local offsety, offsetx = 0, 0
-  if globals.player[self.player] == "bass" or globals.player[self.player] == "roll" then
+  if globals.player[self.player] == "bass" then
+    offsetx = -2
+    offsety = -2
+    if table.contains(self.climbAnimation, self.curAnim) or 
+      table.contains(self.jumpAnimation, self.curAnim) or 
+      table.contains(self.wallJumpAnimation, self.curAnim) then
+      offsety = 0
+    elseif table.contains(self.hitAnimation, self.curAnim) then
+      offsety = 2
+    elseif table.contains(self.dashAnimation, self.curAnim) then
+      offsety = -2
+    end
+  elseif globals.player[self.player] == "roll" then
     offsetx = -2
     offsety = -2
     if table.contains(self.climbAnimation, self.curAnim) or 
