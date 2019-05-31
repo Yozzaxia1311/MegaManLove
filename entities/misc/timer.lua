@@ -24,6 +24,7 @@ function timer.winCutscene(func)
         s.timer = 0
         s.state = 0
         mmMusic.stopMusic()
+        globals.mainPlayer:resetStates()
         globals.mainPlayer.velocity.velx = 0
         globals.mainPlayer.control = false
         globals.mainPlayer.doAnimation = false
@@ -67,6 +68,7 @@ function timer.absorbCutscene(func, music)
           s.state = 0
           s.timer = 0
           s.to = (view.x+view.w/2)-globals.mainPlayer.collisionShape.w/2
+          globals.mainPlayer:resetStates()
           globals.mainPlayer.control = false
           globals.mainPlayer.doAnimation = false
           globals.mainPlayer.canSwitchWeapons = false

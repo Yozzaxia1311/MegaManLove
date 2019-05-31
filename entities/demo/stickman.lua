@@ -23,7 +23,7 @@ function stickMan:new(x, y, s)
   self:setLayer(1)
   self.spawner = s
   self.render = false
-  self.ss = 0
+  self.ss = 1
   self.health = 28
   self.hBar = healthhandler({128, 128, 128}, {255, 255, 255}, {0, 0, 0}, nil, nil, 7)
   camera.main.funcs["stick"] = function(s)
@@ -94,26 +94,19 @@ function stickMan:update(dt)
         states.set("states/menu.state.lua")
       end)
       megautils.remove(self, true)
-    elseif globals.mainPlayer and globals.mainPlayer.control then
+    elseif globals.mainPlayer then
       self.s = 1
       globals.mainPlayer.control = false
+      globals.mainPlayer.velocity.velx = 0
+      globals.mainPlayer:resetStates()
+      if not globals.mainPlayer.ground then
+        globals.mainPlayer.curAnim = "jump"
+      end
+      globals.mainPlayer.side = self.transform.x>globals.mainPlayer.transform.x and 1 or -1
+      globals.mainPlayer:face(globals.mainPlayer.side)
     end
   elseif self.s == 1 then
-    if self.ss == 0 then
-      if globals.mainPlayer then
-        local ly = globals.mainPlayer.velocity.vely
-        globals.mainPlayer:resetStates()
-        globals.mainPlayer.velocity.vely = ly
-        globals.mainPlayer.control = false
-        globals.mainPlayer.side = self.transform.x>globals.mainPlayer.transform.x and 1 or -1
-        globals.mainPlayer:face(globals.mainPlayer.side)
-        collision.checkGround(globals.mainPlayer)
-        if not globals.mainPlayer.ground then
-          globals.mainPlayer.curAnim = "jump"
-        end
-        self.ss = 1
-      end
-    elseif self.ss == 1 then
+    if self.ss == 1 then
       if globals.mainPlayer then
         globals.mainPlayer:phys()
         globals.mainPlayer.curAnim = "jump"
@@ -137,7 +130,6 @@ function stickMan:update(dt)
       self.s = 3
     end
   end
-  print(self.health)
   self:hurt(self:collisionTable(globals.allPlayers), -4, 80)
   self:updateIFrame()
   self:updateFlash()
@@ -224,10 +216,34 @@ function megamanStick:new()
   megamanStick.super.new(self)
   self.transform.y = -60
   self.transform.x = 100
+  local grid = "mega_man_grid"
+  if globals.player[1] == "mega" then
+    self.texOutline = loader.get("mega_man_outline")
+    self.texOne = loader.get("mega_man_one")
+    self.texTwo = loader.get("mega_man_two")
+    self.texFace = loader.get("mega_man_face")
+  elseif globals.player[1] == "proto" then
+    self.texOutline = loader.get("proto_man_outline")
+    self.texOne = loader.get("proto_man_one")
+    self.texTwo = loader.get("proto_man_two")
+    self.texFace = loader.get("proto_man_face")
+  elseif globals.player[1] == "bass" then
+    self.texOutline = loader.get("bass_outline")
+    self.texOne = loader.get("bass_one")
+    self.texTwo = loader.get("bass_two")
+    self.texFace = loader.get("bass_face")
+    grid = "bass_grid"
+  elseif globals.player[1] == "roll" then
+    self.texOutline = loader.get("roll_outline")
+    self.texOne = loader.get("roll_one")
+    self.texTwo = loader.get("roll_two")
+    self.texFace = loader.get("roll_face")
+    grid = "roll_grid"
+  end
   self.curAnim = pose and "pose" or "idle"
   self.animations = {}
-  self.animations["idle"] = anim8.newAnimation(loader.get("mega_man_grid")(1, 1, 2, 1), {2.5, 0.1})
-  self.animations["idleShoot"] = anim8.newAnimation(loader.get("mega_man_grid")(1, 4), 1)
+  self.animations["idle"] = anim8.newAnimation(loader.get(grid)(1, 1, 2, 1), {2.5, 0.1})
+  self.animations["idleShoot"] = anim8.newAnimation(loader.get(grid)(1, 4), 1)
   self:face(1)
   self.text = "weapon get... stick weapon!"
   self.pos = 0
@@ -237,8 +253,8 @@ function megamanStick:new()
   self.shootTimer = 14
   self.s = 0
   self.layer = 3
-  self.megaOne = {0, 120, 248}
-  self.megaTwo = {0, 232, 216}
+  self.megaOne = megaman.weaponHandler[1].colorOne[0]
+  self.megaTwo = megaman.weaponHandler[1].colorTwo[0]
   self.toOne = {255, 255, 255}
   self.toTwo = {128, 128, 128}
   banner.colorOne = self.megaOne
@@ -341,16 +357,16 @@ function megamanStick:draw()
   local offsety = 1
   
   love.graphics.setColor(banner.colorOutline[1]/255, banner.colorOutline[2]/255, banner.colorOutline[3]/255, 1)
-  self.animations[self.curAnim]:draw(loader.get("mega_man_outline"), math.round(self.transform.x-14),
+  self.animations[self.curAnim]:draw(self.texOutline, math.round(self.transform.x-14),
     math.round(self.transform.y-8+offsety))
   love.graphics.setColor(banner.colorOne[1]/255, banner.colorOne[2]/255, banner.colorOne[3]/255, 1)
-  self.animations[self.curAnim]:draw(loader.get("mega_man_one"), math.round(self.transform.x-14),
+  self.animations[self.curAnim]:draw(self.texOne, math.round(self.transform.x-14),
     math.round(self.transform.y-8+offsety))
   love.graphics.setColor(banner.colorTwo[1]/255, banner.colorTwo[2]/255, banner.colorTwo[3]/255, 1)
-  self.animations[self.curAnim]:draw(loader.get("mega_man_two"), math.round(self.transform.x-14),
+  self.animations[self.curAnim]:draw(self.texTwo, math.round(self.transform.x-14),
     math.round(self.transform.y-8+offsety))
   love.graphics.setColor(1, 1, 1, 1)
-  self.animations[self.curAnim]:draw(loader.get("mega_man_face"), math.round(self.transform.x-14),
+  self.animations[self.curAnim]:draw(self.texFace, math.round(self.transform.x-14),
     math.round(self.transform.y-8+offsety))
   
   love.graphics.setFont(mmFont)

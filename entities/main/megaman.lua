@@ -149,6 +149,8 @@ function megaman.properties(self)
   self.maxStandSolidJumpTime = 4
   self.maxExtraJumps = globals.player[self.player] == "bass" and 1 or 0
   self.maxRapidShotTime = 5
+  self.maxTrebleSpeed = 2
+  self.trebleDecel = 0.1
 end
 
 function megaman:transferState(to)
@@ -381,6 +383,8 @@ function megaman:new(x, y, side, drop, p)
   self.extraJumps = 0
   self.rapidShotTime = self.maxRapidShotTime
   self.treble = false
+  self.trebleSine = 0
+  self.trebleForce = velocity()
   
   self.groundUpdateFuncs = {}
   self.airUpdateFuncs = {}
@@ -670,14 +674,30 @@ function megaman:attemptWeaponUsage()
       end
     elseif w.current == "trebleBoost" and w.energy[w.currentSlot] > 0 and
       (not megautils.groups()[w.current .. w.id] or
-        #megautils.groups()[w.current .. w.id] < 1) and self.shootTimer == self.maxShootTime then
-      megautils.add(trebleBoost, self.transform.x+(self.side==1 and 24 or -34), 
-        self.transform.y, self.side, self, w)
-      self.maxShootTime = 14
-      self.shootTimer = 0
-      self:resetCharge()
-      self:useShootAnimation()
-      w.energy[w.currentSlot] = w.energy[w.currentSlot] - 1
+        #megautils.groups()[w.current .. w.id] < 1) then
+      if self.treble == 2 then
+        if (not megautils.groups()["bassBuster" .. w.id] or
+          #megautils.groups()["bassBuster" .. w.id] < 1) then
+          megautils.add(bassBuster, self.transform.x+(self.side==1 and 16 or -14), self.transform.y+5,
+            self.side==1 and 0 or 180, w, true)
+          megautils.add(bassBuster, self.transform.x+(self.side==1 and 16 or -14), self.transform.y+5,
+            self.side==1 and 45 or 180+45, w, true)
+          megautils.add(bassBuster, self.transform.x+(self.side==1 and 16 or -14), self.transform.y+5,
+            self.side==1 and -45 or 180-45, w, true)
+          self.maxShootTime = 14
+          self.shootTimer = 0
+          self:resetCharge()
+          self:useShootAnimation()
+          mmSfx.play("buster")
+        end
+      else
+        megautils.add(trebleBoost, self.transform.x+(self.side==1 and 24 or -34), 
+          self.transform.y, self.side, self, w)
+        self.maxShootTime = 14
+        self.shootTimer = 0
+        self:resetCharge()
+        self:useShootAnimation()
+      end
     elseif w.current == "stickWeapon" and w.energy[w.currentSlot] > 0 and
       (not megautils.groups()[w.current .. w.id] or
         #megautils.groups()[w.current .. w.id] < 1) and self.shootTimer == self.maxShootTime then
@@ -765,6 +785,7 @@ function megaman:attemptClimb()
     self.wallJumping = false
     self.ground = false
     self.slide = false
+    self.extraJumps = 0
     self.slideTimer = self.maxSlideTime
     self.animations["climb"]:gotoFrame(1)
     self.climbTip = self.transform.y+math.round(self.collisionShape.h/6) < self.currentLadder.transform.y
@@ -883,12 +904,55 @@ function megaman:code(dt)
       self:charge(true)
     end
   elseif self.treble then
-    if self.treble == 1 and self.animations["trebleStart"].looped then
-      self.treble = 2
-      mmSfx.play("treble_start")
+    if self.treble == 2 then
+      if self.runCheck then
+        self.side = control.leftDown[self.player] and -1 or 1
+        self.trebleForce.velx = math.clamp(self.trebleForce.velx + (self.side == 1 and 0.1 or -0.1),
+          -self.maxTrebleSpeed, self.maxTrebleSpeed)
+      else
+        self.trebleForce:slowX(self.trebleDecel)
+      end
+      if ((control.upDown[self.player] and not control.downDown[self.player]) or
+        (control.downDown[self.player] and not control.upDown[self.player])) then
+        self.trebleForce.vely = math.clamp(self.trebleForce.vely + (control.downDown[self.player] and 0.1 or -0.1),
+          -self.maxTrebleSpeed, self.maxTrebleSpeed)
+      else
+        self.trebleForce:slowY(self.trebleDecel)
+      end
+      self.velocity.velx = self.trebleForce.velx
+      self.velocity.vely = self.trebleForce.vely
+      self.trebleSine = self.trebleSine + 0.13
+      self.velocity.vely = self.velocity.vely + (math.sin(self.trebleSine) * 0.3)
+      self.velocity:clampX(self.maxTrebleSpeed)
+      self.velocity:clampY(self.maxTrebleSpeed)
+      self.trebleTimer = self.trebleTimer + 1
+      if self.trebleTimer == 60 then
+        self.trebleTimer = 0
+        local w = megaman.weaponHandler[self.player]
+        w.energy[w.currentSlot] = w.energy[w.currentSlot] - 1
+      end
     end
-    if megaman.weaponHandler[self.player].current ~= "trebleBoost" then
+    self:phys()
+    if self.treble == 1 then
+      if self.animations["trebleStart"].looped then
+        self.treble = 2
+        self.trebleTimer = 0
+        self.inv = false
+      elseif self.animations["trebleStart"].position == 4 and self.trebleTimer == 0 then
+        self.trebleTimer = 1
+        mmSfx.play("treble_start")
+      end
+    elseif self.treble == 2 then
+      self:attemptWeaponUsage()
+    end
+    if megaman.weaponHandler[self.player].current ~= "trebleBoost" or
+      (megaman.weaponHandler[self.player].current == "trebleBoost" and
+      megaman.weaponHandler[self.player].energy[megaman.weaponHandler[self.player].currentSlot] <= 0) then
       self.treble = false
+      self.trebleSine = 0
+      self.trebleTimer = 0
+      self.trebleForce.velx = 0
+      self.trebleForce.vely = 0
     end
   elseif self.climb then
     if control.leftDown[self.player] then
@@ -1210,18 +1274,19 @@ function megaman:code(dt)
 end
 
 function megaman:resetStates()
-  self.velocity.velx = 0
-  self.velocity.vely = 0
   self.step = false
   self.stepTime = 0
-  self.ground = true
   self.climb = false
   self.currentLadder = nil
   self.iFrame = self.maxIFrame
   self.wallJumping = false
   self.dashJump = false
-  self.curAnim = "idle"
   self.treble = false
+  self.trebleSine = 0
+  self.trebleTimer = 0
+  self.trebleForce.velx = 0
+  self.trebleForce.vely = 0
+  self.extraJumps = 0
   self.shootTimer = self.maxShootTime
   if self.slide then
     self:slideToReg()
@@ -1452,6 +1517,12 @@ function megaman:animate()
     elseif self.curAnim == self.runAnimation["shoot"] then
       self.animations[self.runAnimation["regular"]]:gotoFrame(self.animations[self.runAnimation["shoot"]].position)
       self.animations[self.runAnimation["regular"]].timer = time
+    elseif self.curAnim == self.trebleAnimation["regular"] then
+      self.animations[self.trebleAnimation["shoot"]]:gotoFrame(self.animations[self.trebleAnimation["regular"]].position)
+      self.animations[self.trebleAnimation["shoot"]].timer = time
+    elseif self.curAnim == self.trebleAnimation["shoot"] then
+      self.animations[self.trebleAnimation["regular"]]:gotoFrame(self.animations[self.trebleAnimation["shoot"]].position)
+      self.animations[self.trebleAnimation["regular"]].timer = time
     end
   end
   self.animations[self.curAnim]:update(1/60)

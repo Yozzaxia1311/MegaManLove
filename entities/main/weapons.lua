@@ -136,7 +136,7 @@ end
 
 bassBuster = basicEntity:extend()
 
-function bassBuster:new(x, y, dir, wpn)
+function bassBuster:new(x, y, dir, wpn, t)
   bassBuster.super.new(self)
   self.added = function(self)
     self:addToGroup("bassBuster")
@@ -155,12 +155,15 @@ function bassBuster:new(x, y, dir, wpn)
   self.side = self.velocity.velx < 0 and -1 or 1
   self.wpn = wpn
   self:setLayer(1)
-  mmSfx.play("buster")
+  self.treble = t
+  if not self.treble then
+    mmSfx.play("buster")
+  end
 end
 
 function bassBuster:update(dt)
   if not self.dink then
-    self:hurt(self:collisionTable(megautils.groups()["hurtable"]), -0.5, 2)
+    self:hurt(self:collisionTable(megautils.groups()["hurtable"]), self.treble and -1 or -0.5, 2)
   else
     self.velocity.vely = -4
     self.velocity.velx = 4*-self.side
@@ -168,7 +171,8 @@ function bassBuster:update(dt)
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
   if megautils.outside(self) or (self.wpn.currentSlot ~= 0 and self.wpn.currentSlot ~= 9
-    and self.wpn.currentSlot ~= 10) or collision.checkSolid(self) or #self:collisionTable(megautils.groups()["boss_door"]) ~= 0 then
+    and self.wpn.currentSlot ~= 10) or
+    (not self.treble and (collision.checkSolid(self) or #self:collisionTable(megautils.groups()["boss_door"]) ~= 0)) then
     megautils.remove(self, true)
   end
 end
@@ -378,9 +382,9 @@ function trebleBoost:update(dt)
     end
   elseif self.s == 2 then
     if self.anims["spawn_land"].looped then
-      mmSfx.play("start")
       self.c = "idle"
       self.s = 3
+      mmSfx.play("start")
     end
   elseif self.s == 3 then
     if not self.player.climb and self.player.ground and
@@ -392,6 +396,8 @@ function trebleBoost:update(dt)
       self.player.animations["trebleStart"]:gotoFrame(1)
       self.player.animations["trebleStart"]:resume()
       self.player.curAnim = "idle"
+      self.player.inv = true
+      self.player.velocity.velx = 0
       self.s = 4
       self.c = "start"
     end
@@ -399,6 +405,7 @@ function trebleBoost:update(dt)
     if self.anims["start"].looped then
       self.s = 5
       self.player.curAnim = "trebleStart"
+      self.player:face(self.player.side)
     end
   elseif self.s == 5 then
     self.timer = self.timer + 1
