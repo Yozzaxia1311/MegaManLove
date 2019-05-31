@@ -103,8 +103,8 @@ function weaponSelect:update(dt)
         j.colorTwo = {188, 188, 188}
       end
     end
-    self.fills[self.y][self.x].colorOne = {0, 120, 248}
-    self.fills[self.y][self.x].colorTwo = {0, 232, 216}
+    self.fills[self.y][self.x].colorOne = self.w.colorOne[self.list[self.y][self.x]]
+    self.fills[self.y][self.x].colorTwo = self.w.colorTwo[self.list[self.y][self.x]]
     if control.startPressed[self.player] then
       self.updated = false
       self.w:switch(self.list[self.y][self.x])
