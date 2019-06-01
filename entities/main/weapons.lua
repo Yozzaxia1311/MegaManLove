@@ -423,8 +423,9 @@ end
 
 rushJet = entity:extend()
 
-function rushJet:new(x, y, side, player, wpn)
+function rushJet:new(x, y, side, player, wpn, proto)
   rushJet.super.new(self)
+  self.proto = proto
   self.added = function(self)
     self:addToGroup("rushJet")
     self:addToGroup("rushJet" .. wpn.id)
@@ -435,7 +436,7 @@ function rushJet:new(x, y, side, player, wpn)
   self.transform.y = view.y-8
   self.toY = y
   self:setRectangleCollision(27, 8)
-  self.tex = loader.get("rush")
+  self.tex = loader.get(self.proto and "proto_rush" or "rush")
   self.c = "spawn"
   self.anims = {}
   self.anims["spawn"] = anim8.newAnimation(loader.get("rush_grid")(1, 1), 1)
@@ -552,8 +553,9 @@ end
 
 rushCoil = entity:extend()
 
-function rushCoil:new(x, y, side, player, w)
+function rushCoil:new(x, y, side, player, w, proto)
   rushCoil.super.new(self)
+  self.proto = proto
   self.added = function(self)
     self:addToGroup("rushCoil")
     self:addToGroup("rushCoil" .. w.id)
@@ -564,7 +566,7 @@ function rushCoil:new(x, y, side, player, w)
   self.transform.y = view.y-16
   self.toY = y
   self:setRectangleCollision(20, 19)
-  self.tex = loader.get("rush")
+  self.tex = loader.get(self.proto and "proto_rush" or "rush")
   self.c = "spawn"
   self.anims = {}
   self.anims["spawn"] = anim8.newAnimation(loader.get("rush_grid")(1, 1), 1)
@@ -579,6 +581,11 @@ function rushCoil:new(x, y, side, player, w)
   self.blockCollision = true
   self:setLayer(2)
   self.player = player
+  self.gravity = 0.25
+end
+
+function rushCoil:grav()
+  self.velocity.vely = math.clamp(self.velocity.vely+self.gravity, -7, 7)
 end
 
 function rushCoil:face(n)
@@ -612,6 +619,7 @@ function rushCoil:update(dt)
       self.s = 3
     end
   elseif self.s == 3 then
+    collision.doCollision(self)
     if not self.player.climb and self.player.velocity.vely > 0 and
       math.between(self.player.transform.x+self.player.collisionShape.w/2,
       self.transform.x, self.transform.x+self.collisionShape.w) and
@@ -635,6 +643,7 @@ function rushCoil:update(dt)
       self.wpn.energy[self.wpn.currentSlot] = self.wpn.energy[self.wpn.currentSlot] - 7
     end
   elseif self.s == 4 then
+    collision.doCollision(self)
     self.timer = math.min(self.timer+1, 40)
     if self.timer == 40 then
       self.s = 5

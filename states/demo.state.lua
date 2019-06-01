@@ -8,11 +8,16 @@ function demostate:begin()
       megautils.runFile("entities/demo/met.lua")
       megautils.runFile("entities/demo/moveAcrossPlatform.lua")
       megautils.runFile("entities/demo/stickman.lua")
-    end 
+    end
+    
+    local lf, inf = "assets/sfx/music/cut_loop.ogg", "assets/sfx/music/cut_intro.ogg"
+    
     megautils.loadStage(self, "assets/maps/demo.lua") --Load lua exported tmx stage
-    megautils.add(ready, nil, nil) --READY
+    megautils.add(ready, nil, globals.player[1] == "proto", lf, inf) --READY
     megautils.add(fade, false, nil, nil, fade.ready) --Fade in from black
-    mmMusic.playFromFile("assets/sfx/music/cut_loop.ogg", "assets/sfx/music/cut_intro.ogg") --Play music after everything is set up
+    if globals.player[1] ~= "proto" then
+      mmMusic.playFromFile(lf, inf) --Play music after everything is set up
+    end
   end
 end
 

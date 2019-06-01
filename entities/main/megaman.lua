@@ -25,6 +25,16 @@ megautils.resetGameObjectsFuncs["megaman"] = function()
     if globals.player[i] == "bass" then
       megaman.weaponHandler[i]:register(9, "trebleBoost", {"t. boost", {144, 16, 16, 16}, {160, 16, 16, 16}},
         {112, 112, 112}, {128, 0, 240}, {0, 0, 0})
+    elseif globals.player[i] == "proto" then
+      megaman.weaponHandler[i]:register(9, "rushCoil", {"proto c.", {176, 0, 16, 16}, {192, 0, 16, 16}},
+        {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+      megaman.weaponHandler[i]:register(10, "rushJet", {"proto jet", {176, 16, 16, 16}, {192, 16, 16, 16}},
+        {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+    elseif globals.player[i] == "roll" then
+      megaman.weaponHandler[i]:register(9, "rushCoil", {"roll c.", {144, 0, 16, 16}, {160, 0, 16, 16}},
+        {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+      megaman.weaponHandler[i]:register(10, "rushJet", {"roll jet", {112, 32, 16, 16}, {128, 32, 16, 16}},
+        {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
     else
       megaman.weaponHandler[i]:register(9, "rushCoil", {"rush c.", {144, 0, 16, 16}, {160, 0, 16, 16}},
         {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
@@ -324,7 +334,7 @@ function megaman:new(x, y, side, drop, p)
   self.transform.x = x
   self.class = megaman
   self.icoTex = loader.get("weapon_select_icon")
-  self.iconQuad = love.graphics.newQuad(0, 0, 16, 16, 80, 48)
+  self.iconQuad = love.graphics.newQuad(0, 0, 16, 16, 96, 48)
   self.icons = {}
   if globals.player[self.player] == "proto" then
     self.icons[0] = {16, 32}
@@ -343,12 +353,18 @@ function megaman:new(x, y, side, drop, p)
   self.icons[6] = {48, 16}
   self.icons[7] = {64, 0}
   self.icons[8] = {64, 16}
-  if globals.player[self.player] == "bass" then
+  if globals.player[self.player] == "proto" then
+    self.icons[9] = {80, 0}
+  elseif globals.player[self.player] == "bass" then
     self.icons[9] = {64, 32}
   else
     self.icons[9] = {0, 16}
   end
-  self.icons[10] = {0, 32}
+  if globals.player[self.player] == "proto" then
+    self.icons[10] = {80, 16}
+  else
+    self.icons[10] = {0, 32}
+  end
   self.nextWeapon = 0
   self.prevWeapon = 0
   self.weaponSwitchTimer = 70
@@ -628,14 +644,14 @@ function megaman:attemptWeaponUsage()
       if w.current == "rushCoil" and w.energy[w.currentSlot] > 0 and
       (not megautils.groups()["rushCoil" .. w.id] or #megautils.groups()["rushCoil" .. w.id] < 1) then
         megautils.add(rushCoil, self.transform.x+(self.side==1 and 18 or -32),
-          self.transform.y, self.side, self, w)
+          self.transform.y, self.side, self, w, true)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:useShootAnimation()
       elseif w.current == "rushJet" and w.energy[w.currentSlot] > 0 and
       (not megautils.groups()["rushJet" .. w.id] or #megautils.groups()["rushJet" .. w.id] < 1) then
         megautils.add(rushJet, self.transform.x+(self.side==1 and 18 or -32),
-            self.transform.y+6, self.side, self, w)
+            self.transform.y+6, self.side, self, w, true)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:useShootAnimation()
@@ -653,14 +669,14 @@ function megaman:attemptWeaponUsage()
       if w.current == "rushCoil" and w.energy[w.currentSlot] > 0 and
       (not megautils.groups()["rushCoil" .. w.id] or #megautils.groups()["rushCoil" .. w.id] < 1) then
         megautils.add(rushCoil, self.transform.x+(self.side==1 and 18 or -32),
-          self.transform.y, self.side, self, w)
+          self.transform.y, self.side, self, w, true)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:useShootAnimation()
       elseif w.current == "rushJet" and w.energy[w.currentSlot] > 0 and
       (not megautils.groups()["rushJet" .. w.id] or #megautils.groups()["rushJet" .. w.id] < 1) then
         megautils.add(rushJet, self.transform.x+(self.side==1 and 18 or -32),
-            self.transform.y+6, self.side, self, w)
+            self.transform.y+6, self.side, self, w, true)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:useShootAnimation()

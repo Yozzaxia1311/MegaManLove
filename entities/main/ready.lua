@@ -1,9 +1,18 @@
 ready = entity:extend()
 
-function ready:new(text)
+function ready:new(text, proto, loop, intro, vol)
   ready.super.new(self)
+  self.proto = proto
   self.added = function(self)
     self:addToGroup("ready")
+    if self.proto then
+      mmSfx.play("proto_ready")
+    end
+  end
+  if self.proto then
+    self.inf = intro
+    self.lf = loop
+    self.vol = vol
   end
   self:setLayer(9)
   self.once = false
@@ -11,7 +20,7 @@ function ready:new(text)
   self.blinkTimer = 0
   self.maxBlinkTime = 6
   self.blinkCount = 0
-  self.blinks = 12
+  self.blinks = self.proto and 32 or 12
   self.text = text or "ready"
   self.width = self.text:len() * 8
   megautils.freeze()
@@ -26,6 +35,9 @@ function ready:update(dt)
     self.render = not self.render
     if self.blinkCount == self.blinks then
       megautils.unfreeze()
+      if self.proto then
+        mmMusic.playFromFile(self.lf, self.inf, self.vol)
+      end
       megautils.remove(self, true)
     end
   end

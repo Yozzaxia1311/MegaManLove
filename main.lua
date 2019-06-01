@@ -23,7 +23,7 @@ function initEngine()
   cscreen.init(view.w*view.scale, view.h*view.scale, true)
   
   globals.mainPlayer = nil
-  globals.player = {"bass", "proto", "bass", "roll"}
+  globals.player = {"proto", "proto", "bass", "roll"}
   globals.allPlayers = {}
   globals.checkpoint = "start"
   globals.infiniteLives = false
@@ -87,7 +87,7 @@ function love.load()
     ["next"]={{"keyboard", "s"}, {"touch", "next"}},
     ["dash"]={{"keyboard", "c"}, {"touch", "dash"}}}
   if #joysticks > 0 then
-    local joyBinds = {["up"]={"lefty-", "axis", joysticks[1]:getName()},
+    local joyBinds = {["up"]={"axis", "lefty-", joysticks[1]:getName()},
     ["down"]={"axis", "lefty+", joysticks[1]:getName()},
     ["left"]={"axis", "leftx-", joysticks[1]:getName()},
     ["right"]={"axis", "leftx+", joysticks[1]:getName()},
@@ -99,8 +99,9 @@ function love.load()
     ["next"]={"gamepad", "rightshoulder", joysticks[1]:getName()},
     ["dash"]={"gamepad", "b", joysticks[1]:getName()}}
     for k, v in pairs(defaultInputBinds) do
-      v = table.merge({v, joyBinds[k]})
+      defaultInputBinds[k] = table.merge({defaultInputBinds[k], {joyBinds[k]}})
     end
+    print(inspect(defaultInputBinds))
   end
   control.init()
   console.init()

@@ -20,7 +20,7 @@ function moveAcrossPlatform:new(x, y, toX, toY, s)
   self.quad = love.graphics.newQuad(0, 0, 32, 16, 100, 100)
   self.spawner = s
   self.velocity = velocity()
-  self.tween = tween.new(2, self.transform, {x=toX, y=toY}, "inOutBack")
+  self.tween = tween.new(1, self.transform, {x=toX, y=toY}, "inOutBack")
   self.state = 0
 end
 

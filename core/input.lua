@@ -147,14 +147,14 @@ function inputHandler.down(k)
     elseif inputHandler.keys[k][i][1] == "touch" then
       result = touchInput.down(inputHandler.keys[k][i][2])
     elseif inputHandler.keys[k][i][1] == "gamepad" then
-      for i, v in ipairs(inputHandler.gamepads) do
+      for _, v in ipairs(inputHandler.gamepads) do
         if inputHandler.keys[k][i][3] == v:getName() and v:isGamepadDown(inputHandler.keys[k][i][2]) then
           result = true
           break
         end
       end
     elseif inputHandler.keys[k][i][1] == "axis" then
-      for i, v in ipairs(inputHandler.gamepads) do
+      for _, v in ipairs(inputHandler.gamepads) do
         if inputHandler.keys[k][i][3] == v:getName() then
           if inputHandler.keys[k][i][2] == "leftx+" and v:getGamepadAxis("leftx") > deadZone then
             result = v:getGamepadAxis("leftx")

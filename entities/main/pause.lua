@@ -88,9 +88,9 @@ end
 
 function weaponSelect:addIcon(id)
   self.active[id] = love.graphics.newQuad(self.w.pauseConf[id][2][1], self.w.pauseConf[id][2][2],
-    self.w.pauseConf[id][2][3], self.w.pauseConf[id][2][4], 176, 48)
+    self.w.pauseConf[id][2][3], self.w.pauseConf[id][2][4], 208, 48)
   self.inactive[id] = love.graphics.newQuad(self.w.pauseConf[id][3][1], self.w.pauseConf[id][3][2],
-    self.w.pauseConf[id][3][3], self.w.pauseConf[id][3][4], 176, 48)
+    self.w.pauseConf[id][3][3], self.w.pauseConf[id][3][4], 208, 48)
   self.text[id] = self.w.pauseConf[id][1]
 end
 

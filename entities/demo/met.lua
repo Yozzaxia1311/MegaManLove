@@ -27,7 +27,13 @@ function met:new(x, y, s)
   self.health = 2
   self.inv = true
   self.timer = 0
+  self.blockCollision = true
+  self.gravity = 0.25
   self:setLayer(2)
+end
+
+function met:grav()
+  self.velocity.vely = math.clamp(self.velocity.vely+self.gravity, -7, 7)
 end
 
 function met:healthChanged(o, c, i)
@@ -94,6 +100,7 @@ function met:update(dt)
       self.s = 0
     end
   end
+  collision.doCollision(self)
   self:hurt(self:collisionTable(globals.allPlayers), -2, 80)
   self:updateIFrame()
   self:updateFlash()
