@@ -32,6 +32,16 @@ function entitysystem:sortLayers()
   end
 end
 
+function entitysystem:emptyRecycling(c, num)
+  if not num or num < 1 then
+    self.recycling[c] = {}
+  elseif num < self.recycling[c] then
+    for i=num, #self.recycling[c] do
+      self.recycling[c][i] = nil
+    end
+  end
+end
+
 function entitysystem:add(c, ...)
   if not c then return end
   local e

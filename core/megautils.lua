@@ -202,6 +202,10 @@ function megautils.addq(o, ...)
   return states.currentstate.system:addq(o, ...)
 end
 
+function megautils.emptyRecycling(c, num)
+  states.currentstate.system:emptyRecycling(c, num)
+end
+
 function megautils.groups()
   return states.currentstate.system.groups
 end
