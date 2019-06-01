@@ -15,6 +15,13 @@ function slideParticle:new(x, y, side)
   self.side = side
 end
 
+function slideParticle:recycle(x, y, side)
+  self.side = side
+  self.transform.y = y
+  self.transform.x = x
+  self.anim:gotoFrame(1)
+end
+
 function slideParticle:face(n)
   self.anim.flippedH = (n == 1) and true or false
 end
@@ -50,6 +57,12 @@ function damageSteam:new(x, y)
   self:setLayer(2)
 end
 
+function damageSteam:recycle(x, y)
+  self.transform.y = y
+  self.transform.x = x
+  self.anim:gotoFrame(1)
+end
+
 function damageSteam:update(dt)
   self.anim:update(1/60)
   if self.anim.looped then
@@ -80,6 +93,14 @@ function airBubble:new(x, y)
   self:setLayer(2)
   self.off = 0
   self.timer = 0
+  self.render = false
+end
+
+function airBubble:recycle(x, y)
+  self.transform.y = y
+  self.transform.x = x
+  self.timer = 0
+  self.off = 0
   self.render = false
 end
 
@@ -123,6 +144,15 @@ function kickParticle:new(x, y, side)
   self.render = false
   self.side = side
   self.once = false
+end
+
+function kickParticle:recycle(x, y, side)
+  self.transform.y = y
+  self.transform.x = x
+  self.side = side
+  self.once = false
+  self.render = false
+  self.anim:gotoFrame(1)
 end
 
 function kickParticle:face(n)
@@ -175,6 +205,16 @@ function angleParticle:new(x, y, a)
   self.side = self.velocity.velx>0 and -1 or 1
 end
 
+function angleParticle:recycle(x, y, a)
+  self.transform.y = y
+  self.transform.x = x
+  self.once = false
+  self.velocity.velx = megautils.calcX(a)
+  self.velocity.vely = megautils.calcY(a)
+  self.side = self.velocity.velx>0 and -1 or 1
+  self.anim:gotoFrame(1)
+end
+
 function angleParticle:face(n)
   self.anim.flippedH = (n == 1) and true or false
 end
@@ -209,7 +249,14 @@ function harm:new(e)
   self:setRectangleCollision(24, 24)
   self.tex = loader.get("particles")
   self.quad = love.graphics.newQuad(0, 22, 24, 24, 128, 98)
-  self.layer = 2
+  self:setLayer(2)
+  self.timer = 0
+end
+
+function harm:recycle(e)
+  self.follow = e
+  self.transform.x = (self.follow.transform.x+self.follow.collisionShape.w/2)-24/2
+  self.transform.y = (self.follow.transform.y+self.follow.collisionShape.h/2)-24/2
   self.timer = 0
 end
 
@@ -360,6 +407,12 @@ function smallBlast:new(x, y, spd)
   self.anim = anim8.newAnimation(loader.get("explode_particle_grid")("1-5", 1), spd or 0.065)
 end
 
+function smallBlast:recycle(x, y, spd)
+  self.transform.y = y
+  self.transform.x = x
+  self.anim:gotoFrame(1)
+end
+
 function smallBlast:update(dt)
   self.anim:update(1/60)
   if megautils.outside(self) or self.anim.looped then
@@ -379,11 +432,20 @@ function blast:new(x, y, times)
   self.added = function(self)
     self:addToGroup("freezable")
     self:addToGroup("removeOnTransition")
+    megautils.add(smallBlast, x, y)
   end
   self.transform.y = y
   self.transform.x = x
   self.deg = 0
-  megautils.add(smallBlast, x, y)
+  self.timer = 0
+  self.times = 0
+  self.max = times == nil and 4 or times
+end
+
+function blast:recycle(x, y, times)
+  self.transform.y = y
+  self.transform.x = x
+  self.deg = 0
   self.timer = 0
   self.times = 0
   self.max = times == nil and 4 or times

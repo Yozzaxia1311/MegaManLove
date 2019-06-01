@@ -129,14 +129,23 @@ metBullet = basicEntity:extend()
 
 function metBullet:new(x, y, vx, vy)
   metBullet.super.new(self)
+  self.added = function(self)
+    self:addToGroup("freezable")
+    self:addToGroup("removeOnTransition")
+  end
   self.transform.x = x
   self.transform.y = y
   self:setRectangleCollision(6, 6)
   self.tex = loader.get("demo_objects")
   self.quad = love.graphics.newQuad(68, 0, 6, 6, 100, 100)
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnTransition")
   self.velocity = velocity()
+  self.velocity.velx = vx
+  self.velocity.vely = vy
+end
+
+function metBullet:recycle(x, y, vx, vy)
+  self.transform.x = x
+  self.transform.y = y
   self.velocity.velx = vx
   self.velocity.vely = vy
 end

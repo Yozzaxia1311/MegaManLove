@@ -229,7 +229,7 @@ end
 
 function table.removevaluearray(t, va)
   if t[#t] == va then t[#t] = nil return end
-  for i=#t, 1, -1 do
+  for i=1, #t do
     if t[i] == va then
       table.remove(t, i)
       break

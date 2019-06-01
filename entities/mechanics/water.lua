@@ -16,6 +16,15 @@ function splash:new(offx, offy, follow, side)
   self.follow = follow
 end
 
+function splash:recycle(offx, offy, follow, side)
+  self.offx = offx
+  self.offy = offy
+  self.side = side
+  self.follow = follow
+  self.rot = math.rad(side==-1 and 0 or 180)
+  self.anim:gotoFrame(1)
+end
+
 function splash:update(dt)
   self.anim:update(1/60)
   if self.follow then
