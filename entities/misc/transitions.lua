@@ -217,7 +217,7 @@ function upLadder:update(dt)
     local player = globals.allPlayers[i]
     if camera.main and not camera.main.transition and
       (self.ladder or (not self.platform or (self.platform and player.onMovingFloor))) then
-      if player.control and player.climb and player.transform.y < self.transform.y then
+      if player.control and (player.climb or player.treble == 2) and player.transform.y < self.transform.y then
         camera.main.transitiondirection = "up"
         camera.main.transition = true
         camera.main.doScrollY = self.scrolly and self.scrolly or camera.main.doScrollY

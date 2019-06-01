@@ -403,9 +403,11 @@ end
 function megautils.autoFace(e, to, single)
   local closest = megautils.closest(e, to, single)
   if closest then
-    if closest.transform.x+closest.collisionShape.w/2 > e.transform.x then
+    if closest.transform.x+closest.collisionShape.w/2 >
+      e.transform.x+e.collisionShape.w/2 then
       e.side = 1
-    elseif closest.transform.x+closest.collisionShape.w/2 < e.transform.x then
+    elseif closest.transform.x+closest.collisionShape.w/2 <
+      e.transform.x+e.collisionShape.w/2 then
       e.side = -1
     end
   end

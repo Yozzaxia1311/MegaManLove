@@ -19,7 +19,7 @@ function protoSemiBuster:new(x, y, dir, wpn)
   self.side = dir
   self.wpn = wpn
   mmSfx.play("semi_charged")
-  self:setLayer(1)
+  self:setLayer(1, "b")
 end
 
 function protoSemiBuster:update(dt)
@@ -41,7 +41,7 @@ function protoSemiBuster:draw()
   love.graphics.draw(self.tex, self.quad, math.round(self.transform.x), math.round(self.transform.y)-3)
 end
 
-protoChargedBuster = entity:extend()
+protoChargedBuster = basicEntity:extend()
 
 function protoChargedBuster:new(x, y, dir, wpn)
   protoChargedBuster.super.new(self)
@@ -64,7 +64,7 @@ function protoChargedBuster:new(x, y, dir, wpn)
   self.wpn = wpn
   mmSfx.play("proto_charged")
   self:face(-self.side)
-  self:setLayer(1)
+  self:setLayer(1, "b")
 end
 
 function protoChargedBuster:face(n)
@@ -100,6 +100,7 @@ function rollBuster:new(x, y, dir, wpn)
     self:addToGroup("rollBuster" .. wpn.id)
     self:addToGroup("freezable")
     self:addToGroup("removeOnTransition")
+    mmSfx.play("buster")
   end
   self.transform.y = y
   self.transform.x = x
@@ -110,8 +111,17 @@ function rollBuster:new(x, y, dir, wpn)
   self.velocity = velocity()
   self.velocity.velx = self.side * 6
   self.wpn = wpn
-  self:setLayer(1)
-  mmSfx.play("buster")
+  self:setLayer(1, "b")
+end
+
+function rollBuster:recycle(x, y, dir, wpn)
+  self.wpn = wpn
+  self.side = dir
+  self.velocity.velx = self.side * 6
+  self.velocity.vely = 0
+  self.dink = false
+  self.transform.x = x
+  self.transform.y = y
 end
 
 function rollBuster:update(dt)
@@ -143,6 +153,9 @@ function bassBuster:new(x, y, dir, wpn, t)
     self:addToGroup("bassBuster" .. wpn.id)
     self:addToGroup("freezable")
     self:addToGroup("removeOnTransition")
+    if not self.treble then
+      mmSfx.play("buster")
+    end
   end
   self.transform.y = y
   self.transform.x = x
@@ -154,11 +167,19 @@ function bassBuster:new(x, y, dir, wpn, t)
   self.velocity.vely = megautils.calcY(dir) * 5
   self.side = self.velocity.velx < 0 and -1 or 1
   self.wpn = wpn
-  self:setLayer(1)
+  self:setLayer(1, "b")
   self.treble = t
-  if not self.treble then
-    mmSfx.play("buster")
-  end
+end
+
+function bassBuster:recycle(x, y, dir, wpn, t)
+  self.wpn = wpn
+  self.velocity.velx = megautils.calcX(dir) * 5
+  self.velocity.vely = megautils.calcY(dir) * 5
+  self.side = self.velocity.velx < 0 and -1 or 1
+  self.dink = false
+  self.transform.x = x
+  self.transform.y = y
+  self.treble = t
 end
 
 function bassBuster:update(dt)
@@ -191,6 +212,7 @@ function megaBuster:new(x, y, dir, wpn)
     self:addToGroup("megaBuster" .. wpn.id)
     self:addToGroup("freezable")
     self:addToGroup("removeOnTransition")
+    mmSfx.play("buster")
   end
   self.transform.y = y
   self.transform.x = x
@@ -202,8 +224,17 @@ function megaBuster:new(x, y, dir, wpn)
   self.velocity.velx = dir * 5
   self.side = dir
   self.wpn = wpn
-  self:setLayer(1)
-  mmSfx.play("buster")
+  self:setLayer(1, "b")
+end
+
+function megaBuster:recycle(x, y, dir, wpn)
+  self.wpn = wpn
+  self.side = dir
+  self.velocity.velx = dir * 5
+  self.velocity.vely = 0
+  self.dink = false
+  self.transform.x = x
+  self.transform.y = y
 end
 
 function megaBuster:update(dt)
@@ -248,7 +279,7 @@ function megaSemiBuster:new(x, y, dir, wpn)
   self.wpn = wpn
   mmSfx.play("semi_charged")
   self:face(-self.side)
-  self:setLayer(1)
+  self:setLayer(1, "b")
 end
 
 function megaSemiBuster:face(n)
@@ -298,7 +329,7 @@ function megaChargedBuster:new(x, y, dir, wpn)
   self.wpn = wpn
   mmSfx.play("charged")
   self:face(-self.side)
-  self:setLayer(1)
+  self:setLayer(1, "b")
 end
 
 function megaChargedBuster:face(n)
@@ -387,6 +418,8 @@ function trebleBoost:update(dt)
       mmSfx.play("start")
     end
   elseif self.s == 3 then
+    megautils.autoFace(self, self.player, true)
+    self.side = -self.side
     if not self.player.climb and self.player.ground and self.player:collision(self) then
       self.player:resetStates()
       self.player.treble = 1

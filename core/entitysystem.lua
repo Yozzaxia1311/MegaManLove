@@ -14,6 +14,7 @@ function entitysystem:new()
   self.all = {}
   self.addQueue = {}
   self.removeQueue = {}
+  self.recycle = {}
   self.doSort = false
 end
 
@@ -33,10 +34,18 @@ end
 
 function entitysystem:add(c, ...)
   if not c then return end
-  local e = c(...)
+  local e
+  local vr = self.recycle[c]
+  if vr and #vr > 0 then
+    e = vr[#vr]
+    e:recycle(...)
+    vr[#vr] = nil
+  end
+  if not e then e = c(...) end
   if not e.static then
     local done = false
-    for k, v in pairs(self.entities) do
+    for i=1, #self.entities do
+      local v = self.entities[i]
       if v.layer == e.layer and v.name == e.layerName then
         v.data[#v.data+1] = e
         e.actualLayer = v
@@ -65,7 +74,8 @@ function entitysystem:adde(e)
   if not e then return end
   if not e.static then
     local done = false
-    for k, v in pairs(self.entities) do
+    for i=1, #self.entities do
+      local v = self.entities[i]
       if v.layer == e.layer and v.name == e.layerName then
         v.data[#v.data+1] = e
         e.actualLayer = v
@@ -123,7 +133,8 @@ function entitysystem:removeStatic(e)
   if e.static then
     table.removevaluearray(self.static, e)
     local done = false
-    for k, v in pairs(self.entities) do
+    for i=1, #self.entities do
+      local v = self.entities[i]
       if v.layer == e.layer and v.name == e.layerName then
         v.data[#v.data+1] = e
         e.actualLayer = v
@@ -143,11 +154,13 @@ function entitysystem:removeStatic(e)
   end
 end
 
-function entitysystem:setLayer(e, l)
+function entitysystem:setLayer(e, l, n)
   table.removevaluearray(e.actualLayer.data, e)
-  e.layer = l
+  e.layer = l or e.layer
+  e.layerName = n or e.layerName
   local done = false
-  for k, v in pairs(self.entities) do
+  for i=1, #self.entities do
+    local v = self.entities[i]
     if v.layer == e.layer and v.name == e.layerName then
       v.data[#v.data+1] = e
       e.actualLayer = v
@@ -181,6 +194,10 @@ function entitysystem:remove(e, queue)
     table.removevaluearray(self.updates, e)
     table.removevaluearray(self.all, e)
     e.isAdded = false
+    if e.recycle then
+      if not self.recycle[e.__index] then self.recycle[e.__index] = {} end
+      self.recycle[e.__index][#self.recycle[e.__index]+1] = e
+    end
   end
 end
 
@@ -198,6 +215,7 @@ function entitysystem:clear()
   self.static = {}
   self.addQueue = {}
   self.removeQueue = {}
+  self.recycle = {}
   self.afterUpdate = nil
 end
 
@@ -396,11 +414,12 @@ function entity:updateIFrame()
   self.iFrame = math.min(self.iFrame+1, self.maxIFrame)
 end
 
-function entity:setLayer(l)
+function entity:setLayer(l, n)
   if not self.isAdded or self.static then
-    self.layer = l
+    self.layer = l or self.layer
+    self.layerName = n or self.layerName
   else
-    megautils.state().system:setLayer(self, l)
+    megautils.state().system:setLayer(self, l, n)
   end
 end
 
@@ -541,11 +560,12 @@ function basicEntity:hurt(t, h, f)
   end
 end
 
-function basicEntity:setLayer(l)
+function basicEntity:setLayer(l, n)
   if not self.isAdded or self.static then
-    self.layer = l
+    self.layer = l or self.layer
+    self.layerName = n or self.layerName
   else
-    megautils.state().system:setLayer(self, l)
+    megautils.state().system:setLayer(self, l, n)
   end
 end
 
