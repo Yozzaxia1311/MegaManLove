@@ -43,7 +43,7 @@ function rebinder:new()
 end
 
 function rebinder:update(dt)
-  if globals.lastKeyPressed and globals.lastKeyPressed[1] == "escape" and not self.done then
+  if globals.lastKeyPressed and globals.lastKeyPressed[2] == "escape" and not self.done then
     globals.lastKeyPressed = nil
     megautils.add(fade, true, nil, nil, function(s)
       states.set(globals.sendBackToDisclaimer and "states/disclaimer.state.lua" or globals.lastStateName)
@@ -53,7 +53,7 @@ function rebinder:update(dt)
     return
   end
   if globals.lastKeyPressed and not self.done then
-    self.data.controls[self.keysToSet[self.currentKey]+self.step] = globals.lastKeyPressed
+    self.data.controls[self.keysToSet[self.currentKey]+self.step] = {globals.lastKeyPressed}
     globals.lastKeyPressed = nil
     
     if self.currentKey == table.length(self.keysToSet) then

@@ -23,7 +23,7 @@ function initEngine()
   cscreen.init(view.w*view.scale, view.h*view.scale, true)
   
   globals.mainPlayer = nil
-  globals.player = {"proto", "proto", "bass", "roll"}
+  globals.player = {"mega", "proto", "bass", "roll"}
   globals.allPlayers = {}
   globals.checkpoint = "start"
   globals.infiniteLives = false
@@ -69,7 +69,7 @@ function love.load()
   showFPS = false
   showEntityCount = false
   framerate = 1/60
-  nesShader = false --love.graphics.getSupported().glsl3 and love.graphics.newShader("assets/neslut.glsl")
+  nesShader = love.graphics.getSupported().glsl3 and love.graphics.newShader("assets/neslut.glsl")
   if nesShader then nesShader:send("pal", love.graphics.newImage("assets/neslut.png")) end
   
   love.filesystem.load("requirelibs.lua")()
@@ -101,7 +101,7 @@ function love.load()
     for k, v in pairs(defaultInputBinds) do
       defaultInputBinds[k] = table.merge({defaultInputBinds[k], {joyBinds[k]}})
     end
-    print(inspect(defaultInputBinds))
+    touchInput = false
   end
   control.init()
   console.init()
@@ -137,22 +137,20 @@ function love.keypressed(k, s, r)
 		return
 	end
   if not globals.keyboardCheck[k] then
-    globals.lastKeyPressed = {k, "keyboard"}
+    globals.lastKeyPressed = {"keyboard", k}
   end
   globals.keyboardCheck[k] = 5
   control.anyPressed = true
 end
 
-touchInput = {}
-
-function touchInput.touchPressed(b)
-  globals.lastKeyPressed = {b, "touch"}
+function touchPressed(b)
+  globals.lastKeyPressed = {"touch", b}
   control.anyPressed = true
 end
 
 function love.gamepadpressed(j, b)
   if not globals.gamepadCheck[b] then
-    globals.lastKeyPressed = {b, "gamepad", j:getName()}
+    globals.lastKeyPressed = {"gamepad", b, j:getName()}
   end
   globals.gamepadCheck[b] = 5
   control.anyPressed = true
@@ -164,12 +162,12 @@ function love.gamepadaxis(j, b, v)
       if (b == "leftx" or b == "lefty" or b == "rightx" or b == "righty") then
         globals.axisTmp = {}
         if b == "leftx" or b == "rightx" then
-          globals.axisTmp["x"] = {b .. (v > 0 and "+" or "-"), "axis", v, j:getName()}
+          globals.axisTmp["x"] = {"axis", b .. (v > 0 and "+" or "-"), v, j:getName()}
         elseif b == "lefty" or b == "righty" then
-          globals.axisTmp["y"] = {b .. (v > 0 and "+" or "-"), "axis", v, j:getName()}
+          globals.axisTmp["y"] = {"axis", b .. (v > 0 and "+" or "-"), v, j:getName()}
         end
       else
-        globals.lastKeyPressed =  {b .. (v > 0 and "+" or "-"), "axis", j:getName()}
+        globals.lastKeyPressed =  {"axis", b .. (v > 0 and "+" or "-"), j:getName()}
       end
     end
     globals.gamepadCheck[b] = 10
@@ -204,6 +202,7 @@ function love.update(dt)
       return
     end
   end
+  if touchInput then touchInput.update() end
   control.update()
   if useConsole then console.update(dt) end
   states.update(dt)

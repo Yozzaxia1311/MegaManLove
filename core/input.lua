@@ -65,8 +65,6 @@ function touchInput.down(n)
   return false
 end
 
-function touchInput.touchPressed(button) end
-
 function touchInput.update()
   touchInput.touches = love.touch.getTouches()
   if not touchInput.screenPressed and touchInput.down() then
@@ -76,7 +74,7 @@ function touchInput.update()
   for k, v in pairs(touchInput.buttons) do
     if not touchInput.pressed[k] and touchInput.down(k) then
       touchInput.pressed[k] = true
-      touchInput.touchPressed(k)
+      touchPressed(k)
     end
   end
 end
