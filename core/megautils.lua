@@ -214,9 +214,8 @@ function megautils.calcY(angle)
   return -math.sin(math.rad(angle))
 end
 
-function megautils.calcPath(x, y, x2, y2, rad)
-  local a = math.deg(math.atan2(y - y2, x2 - x))
-  return a
+function megautils.calcPath(x, y, x2, y2)
+  return math.deg(math.atan2(y - y2, x2 - x))
 end
 
 function megautils.circlePathX(x, deg, dist)
@@ -412,4 +411,17 @@ function megautils.autoFace(e, to, single)
     end
   end
   return closest
+end
+
+function megautils.pointVelAt(e, to)
+  local p = megautils.calcPath(e.transform.x+e.collisionShape.w/2,
+      e.transform.y+e.collisionShape.h/2, to.transform.x+to.collisionShape.w/2,
+      to.transform.y+to.collisionShape.h/2)
+  return megautils.calcX(p), megautils.calcY(p)
+end
+
+function megautils.pointAt(e, to)
+  return megautils.calcPath(e.transform.x+e.collisionShape.w/2,
+      e.transform.y+e.collisionShape.h/2, to.transform.x+to.collisionShape.w/2,
+      to.transform.y+to.collisionShape.h/2)
 end
