@@ -90,6 +90,7 @@ function menuSelect:update(dt)
           globals.lifeSegments = data.lifeSegments
           globals.eTanks = data.eTanks
           globals.wTanks = data.wTanks
+          globals.player = data.player
         end
         megautils.resetGameObjects()
       elseif self.pick == 4 then
@@ -100,6 +101,7 @@ function menuSelect:update(dt)
         data.lifeSegments = globals.lifeSegments
         data.eTanks = globals.eTanks
         data.wTanks = globals.wTanks
+        data.player = globals.player
         save.save("save.sav", data)
         mmSfx.play("selected")
       elseif self.pick == 5 then
