@@ -387,10 +387,7 @@ function trebleBoost:update(dt)
       mmSfx.play("start")
     end
   elseif self.s == 3 then
-    if not self.player.climb and self.player.ground and
-      math.between(self.player.transform.x+self.player.collisionShape.w/2,
-      self.transform.x, self.transform.x+self.collisionShape.w) and
-      self.player:collision(self) then
+    if not self.player.climb and self.player.ground and self.player:collision(self) then
       self.player:resetStates()
       self.player.treble = 1
       self.player.animations["trebleStart"]:gotoFrame(1)
