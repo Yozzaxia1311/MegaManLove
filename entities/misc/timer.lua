@@ -103,7 +103,7 @@ function timer.absorbCutscene(func, music)
             globals.mainPlayer.curAnim = "run"
           elseif collision.checkSolid(self, globals.mainPlayer.side, 0) then
             globals.mainPlayer.curAnim = "jump"
-            globals.mainPlayer.velocity.vely = globals.mainPlayer.jumpSpeed
+            globals.mainPlayer.velocity.vely = globals.mainPlayer.jumpSpeed * (globals.mainPlayer.gravity < 0 and -1 or 1)
             globals.mainPlayer:face(globals.mainPlayer.side)
           else
             globals.mainPlayer.curAnim = "jump"
@@ -112,7 +112,7 @@ function timer.absorbCutscene(func, music)
             s.state = 2
             s.timer = 0
             globals.mainPlayer.curAnim = "jump"
-            globals.mainPlayer.velocity.vely = globals.mainPlayer.jumpSpeed
+            globals.mainPlayer.velocity.vely = globals.mainPlayer.jumpSpeed * (globals.mainPlayer.gravity < 0 and -1 or 1)
             globals.mainPlayer:face(globals.mainPlayer.side)
             return
           end
