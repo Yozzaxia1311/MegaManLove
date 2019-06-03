@@ -37,17 +37,17 @@ function met:grav()
 end
 
 function met:healthChanged(o, c, i)
+  if o.dink then return end
   if c < 0 and not self.inv and not o:is(megaChargedBuster) then
     megautils.remove(o, true)
   end
-  if not self:iFrameIsDone() then return end
+  if self.maxIFrame ~= self.iFrame then return end
   if self.inv and not o.dink then
     mmSfx.play("dink")
     o.dink = true
     self.iFrame = self.maxIFrame
     return
   end
-  if self.inv then return end
   self.changeHealth = c
   self.health = self.health + self.changeHealth
   self.maxIFrame = i

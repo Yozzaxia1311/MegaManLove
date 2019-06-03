@@ -13,6 +13,7 @@ function stickMan:new(x, y, s)
   self.added = function(self)
     self:addToGroup("freezable")
     self:addToGroup("hurtable")
+    mmMusic.stopMusic()
   end
   self.transform.y = y
   self.transform.x = x
@@ -33,18 +34,17 @@ function stickMan:new(x, y, s)
   self.velocity = velocity()
   self.velocity.vely = 8
   self.blockCollision = true
-  mmMusic.stopMusic()
 end
 
 function stickMan:healthChanged(o, c, i)
+  if o.dink then return end
   if c < 0 and not o:is(megaChargedBuster) and not o:is(megaSemiBuster) then --Remove shots
     megautils.remove(o, true)
   end
-  if not self:iFrameIsDone() then return end
-  if o:is(megaSemiBuster) then --Semi charged shots get reflected
+  if self.maxIFrame ~= self.iFrame then return end
+  if (o:is(megaSemiBuster) or self.inv) and not o.dink then --Semi charged shots get reflected
     mmSfx.play("dink")
     o.dink = true
-    self.iFrame = self.maxIFrame
     return
   end
   if o:is(stickWeapon) then --The weakness
@@ -78,11 +78,11 @@ function stickMan:healthChanged(o, c, i)
     megautils.remove(self, true)
   elseif self.changeHealth < 0 then
     self.hitTimer = 0
-    mmSfx.play("enemy_hit")
     megautils.add(harm, self)
     if o:is(megaChargedBuster) then
       megautils.remove(o, true)
     end
+    mmSfx.play("enemy_hit")
   end
 end
 

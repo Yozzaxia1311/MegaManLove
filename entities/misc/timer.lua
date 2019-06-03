@@ -92,13 +92,11 @@ function timer.absorbCutscene(func, music)
       elseif s.state == 1 then
         s.timer = math.min(s.timer+1, 300)
         if s.timer == 300 then
-          if globals.mainPlayer.transform.x > s.to then
-            globals.mainPlayer.side = -1
-            globals.mainPlayer.transform.x = math.max(globals.mainPlayer.transform.x-1.3, s.to)
-          else
-            globals.mainPlayer.side = 1
-            globals.mainPlayer.transform.x = math.min(globals.mainPlayer.transform.x+1.3, s.to)
+          if not s.once then
+            s.once = true
+            globals.mainPlayer.side = (globals.mainPlayer.transform.x > s.to and -1 or 1)
           end
+          globals.mainPlayer.velocity.velx = 1.3 * globals.mainPlayer.side
           if globals.mainPlayer.ground then
             globals.mainPlayer.curAnim = "run"
           elseif collision.checkSolid(self, globals.mainPlayer.side, 0) then
@@ -108,9 +106,11 @@ function timer.absorbCutscene(func, music)
           else
             globals.mainPlayer.curAnim = "jump"
           end
-          if globals.mainPlayer.transform.x == s.to then
+          if (globals.mainPlayer.side == -1 and globals.mainPlayer.transform.x < s.to) or
+            (globals.mainPlayer.side == 1 and globals.mainPlayer.transform.x > s.to) then
             s.state = 2
             s.timer = 0
+            globals.mainPlayer.velocity.velx = 0
             globals.mainPlayer.curAnim = "jump"
             globals.mainPlayer.velocity.vely = globals.mainPlayer.jumpSpeed * (globals.mainPlayer.gravity < 0 and -1 or 1)
             globals.mainPlayer:face(globals.mainPlayer.side)

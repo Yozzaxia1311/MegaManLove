@@ -56,7 +56,7 @@ function entitysystem:add(c, ...)
     local done = false
     for i=1, #self.entities do
       local v = self.entities[i]
-      if v.layer == e.layer and v.name == e.layerName then
+      if v.layer == e.layer then
         v.data[#v.data+1] = e
         e.actualLayer = v
         done = true
@@ -64,7 +64,7 @@ function entitysystem:add(c, ...)
       end
     end
     if not done then
-      self.entities[#self.entities+1] = {["layer"]=e.layer, ["name"]=e.layerName, ["data"]={e}}
+      self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}}
       e.actualLayer = self.entities[#self.entities]
       e.layer = e.actualLayer.layer
       self.doSort = true
@@ -86,7 +86,7 @@ function entitysystem:adde(e)
     local done = false
     for i=1, #self.entities do
       local v = self.entities[i]
-      if v.layer == e.layer and v.name == e.layerName then
+      if v.layer == e.layer then
         v.data[#v.data+1] = e
         e.actualLayer = v
         done = true
@@ -94,7 +94,7 @@ function entitysystem:adde(e)
       end
     end
     if not done then
-      self.entities[#self.entities+1] = {["layer"]=e.layer, ["name"]=e.layerName, ["data"]={e}}
+      self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}}
       e.actualLayer = self.entities[#self.entities]
       e.layer = e.actualLayer.layer
       self.doSort = true
@@ -145,7 +145,7 @@ function entitysystem:removeStatic(e)
     local done = false
     for i=1, #self.entities do
       local v = self.entities[i]
-      if v.layer == e.layer and v.name == e.layerName then
+      if v.layer == e.layer then
         v.data[#v.data+1] = e
         e.actualLayer = v
         done = true
@@ -153,7 +153,7 @@ function entitysystem:removeStatic(e)
       end
     end
     if not done then
-      self.entities[#self.entities+1] = {["layer"]=e.layer, ["name"]=e.layerName, ["data"]={e}}
+      self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}}
       e.actualLayer = self.entities[#self.entities]
       e.layer = e.actualLayer.layer
       self.doSort = true
@@ -164,25 +164,26 @@ function entitysystem:removeStatic(e)
   end
 end
 
-function entitysystem:setLayer(e, l, n)
-  table.removevaluearray(e.actualLayer.data, e)
-  e.layer = l or e.layer
-  e.layerName = n or e.layerName
-  local done = false
-  for i=1, #self.entities do
-    local v = self.entities[i]
-    if v.layer == e.layer and v.name == e.layerName then
-      v.data[#v.data+1] = e
-      e.actualLayer = v
-      done = true
-      break
+function entitysystem:setLayer(e, l)
+  if l and e.layer ~= l then
+    table.removevaluearray(e.actualLayer.data, e)
+    e.layer = l
+    local done = false
+    for i=1, #self.entities do
+      local v = self.entities[i]
+      if v.layer == e.layer then
+        v.data[#v.data+1] = e
+        e.actualLayer = v
+        done = true
+        break
+      end
     end
-  end
-  if not done then
-    self.entities[#self.entities+1] = {["layer"]=e.layer, ["name"]=e.layerName, ["data"]={e}}
-    e.actualLayer = self.entities[#self.entities]
-    e.layer = e.actualLayer.layer
-    self.doSort = true
+    if not done then
+      self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}}
+      e.actualLayer = self.entities[#self.entities]
+      e.layer = e.actualLayer.layer
+      self.doSort = true
+    end
   end
 end
 
@@ -351,7 +352,6 @@ function entity:new()
   self.collisionShape = nil
   self.flashRender = true
   self.layer = 0
-  self.layerName = "lyr"
   self.isRemoved = false
   self.updated = true
   self.render = true
@@ -408,10 +408,6 @@ function entity:updateFlash(length, range)
   end
 end
 
-function entity:iFrameIsDone()
-  return self.iFrame == self.maxIFrame
-end
-
 function entity:hurt(t, h, f)
   for k, v in pairs(t) do
     v:healthChanged(self, h, f or 80)
@@ -424,12 +420,11 @@ function entity:updateIFrame()
   self.iFrame = math.min(self.iFrame+1, self.maxIFrame)
 end
 
-function entity:setLayer(l, n)
+function entity:setLayer(l)
   if not self.isAdded or self.static then
     self.layer = l or self.layer
-    self.layerName = n or self.layerName
   else
-    megautils.state().system:setLayer(self, l, n)
+    megautils.state().system:setLayer(self, l)
   end
 end
 
@@ -557,7 +552,6 @@ function basicEntity:new(basic)
   self.transform.y = 0
   self.collisionShape = nil
   self.layer = 0
-  self.layerName = "lyr"
   self.isRemoved = false
   self.updated = true
   self.render = true
@@ -570,12 +564,11 @@ function basicEntity:hurt(t, h, f)
   end
 end
 
-function basicEntity:setLayer(l, n)
+function basicEntity:setLayer(l)
   if not self.isAdded or self.static then
     self.layer = l or self.layer
-    self.layerName = n or self.layerName
   else
-    megautils.state().system:setLayer(self, l, n)
+    megautils.state().system:setLayer(self, l)
   end
 end
 
