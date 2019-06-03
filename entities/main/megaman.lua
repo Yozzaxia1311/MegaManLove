@@ -190,7 +190,7 @@ end
 function megaman:checkRegBox(ox, oy)
   local w, h, oly = self.collisionShape.w, self.collisionShape.h, self.transform.y
   self:regBox()
-  self.transform.y = self.transform.y + (math.sign(self.gravity) == 1 and (h-self.collisionShape.h) or 0)
+  self.transform.y = self.transform.y + (self.gravity < 0 and 0 or h-self.collisionShape.h)
   local result = collision.checkSolid(self, ox, oy)
   self.transform.y = oly
   self:setRectangleCollision(w, h)
@@ -201,7 +201,7 @@ function megaman:checkSlideBox(ox, oy)
   local w, h, olx, oly = self.collisionShape.w, self.collisionShape.h, self.transform.x, self.transform.y
   self:slideBox()
   self.transform.x = self.transform.x + (w-self.collisionShape.w)/2
-  self.transform.y = self.transform.y + (math.sign(self.gravity) == 1 and (h-self.collisionShape.h) or 0)
+  self.transform.y = self.transform.y + (self.gravity < 0 and 0 or h-self.collisionShape.h)
   local result = collision.checkSolid(self, ox, oy)
   self.transform.x = olx
   self.transform.y = oly
@@ -212,7 +212,7 @@ end
 function megaman:checkBasicSlideBox(ox, oy)
   local w, h, oly = self.collisionShape.w, self.collisionShape.h, self.transform.y
   self:basicSlideBox()
-  self.transform.y = self.transform.y + (math.sign(self.gravity) == 1 and (h-self.collisionShape.h) or 0)
+  self.transform.y = self.transform.y + (self.gravity < 0 and 0 or h-self.collisionShape.h)
   local result = collision.checkSolid(self, ox, oy)
   self.transform.y = oly
   self:setRectangleCollision(w, h)
@@ -222,13 +222,13 @@ end
 function megaman:regToSlide()
   local w, h = self.collisionShape.w, self.collisionShape.h
   self:basicSlideBox()
-  self.transform.y = self.transform.y + (math.sign(self.gravity) == 1 and (h-self.collisionShape.h) or 0)
+  self.transform.y = self.transform.y + (self.gravity < 0 and 0 or h-self.collisionShape.h)
 end
 
 function megaman:slideToReg()
   local w, h = self.collisionShape.w, self.collisionShape.h
   self:regBox()
-  self.transform.y = self.transform.y + (math.sign(self.gravity) == 1 and (h-self.collisionShape.h) or 0)
+  self.transform.y = self.transform.y + (self.gravity < 0 and 0 or h-self.collisionShape.h)
 end
 
 function megaman:initChargingColors()
@@ -1061,7 +1061,7 @@ function megaman:code(dt)
           and not control.downDown[self.player] then
         self.slide = false
         jumped = true
-        self.velocity.vely = self.jumpSpeed
+        self.velocity.vely = self.jumpSpeed * (self.gravity < 0 and -1 or 1)
         self.slideTimer = self.maxSlideTime
         self.hitTimer = self.maxHitTime
         self:slideToReg()
@@ -1141,10 +1141,11 @@ function megaman:code(dt)
       self:regToSlide()
       self.slideTimer = 0
       megautils.add(slideParticle, self.transform.x+(self.side==-1 and self.collisionShape.w or 4),
-        self.transform.y+self.collisionShape.h-6, self.side)
-    elseif self.canJump and self.inStandSolid and control.jumpDown[self.player] and self.standSolidJumpTimer ~= self.maxStandSolidJumpTime and
+        self.transform.y+(self.gravity > 0 and self.collisionShape.h-6 or 0), self.side)
+    elseif self.canJump and self.inStandSolid and control.jumpDown[self.player] and
+      self.standSolidJumpTimer ~= self.maxStandSolidJumpTime and
       self.standSolidJumpTimer ~= -1 then
-      self.velocity.vely = self.jumpSpeed
+      self.velocity.vely = self.jumpSpeed * (self.gravity < 0 and -1 or 1)
       self.standSolidJumpTimer = math.min(self.standSolidJumpTimer+1, self.maxStandSolidJumpTime)
     elseif self.canJump and control.jumpPressed[self.player] and
       not (control.downDown[self.player] and self:checkBasicSlideBox(self.side, 0)) then
@@ -1152,7 +1153,8 @@ function megaman:code(dt)
     else
       self.velocity.vely = 0
     end
-    if self.standSolidJumpTimer > 0 and (not control.jumpDown[self.player] or self.standSolidJumpTimer == self.maxStandSolidJumpTime) then
+    if self.standSolidJumpTimer > 0 and (not control.jumpDown[self.player] or
+      self.standSolidJumpTimer == self.maxStandSolidJumpTime) then
       self.standSolidJumpTimer = -1
       mmSfx.play("land")
     end
@@ -1185,13 +1187,13 @@ function megaman:code(dt)
       self.side = -ns
       self.velocity.velx = -self.side
       self.wallJumping = true
-      self.velocity.vely = self.wallSlideSpeed
+      self.velocity.vely = self.wallSlideSpeed * math.sign(self.gravity)
       if control.jumpPressed[self.player] then
         self.wallJumpTimer = self.maxWallJumpTime
-        self.velocity.vely = self.wallJumpSpeed
+        self.velocity.vely = self.wallJumpSpeed * (self.gravity < 0 and -1 or 1)
         self.dashJump = true
         megautils.add(kickParticle, self.transform.x+(self.side==1 and -4 or self.collisionShape.w-4),
-          self.transform.y+self.collisionShape.h-10, -self.side)
+          self.transform.y+(self.gravity > 0 and self.collisionShape.h-10 or 0), -self.side)
       end
     elseif self.runCheck then
       self.side = control.leftDown[self.player] and -1 or 1

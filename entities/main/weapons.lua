@@ -660,7 +660,7 @@ function rushCoil:update(dt)
       self.transform.x, self.transform.x+self.collisionShape.w) and
       self.player:collision(self) then
       self.player.canStopJump = false
-      self.player.velocity.vely = -7
+      self.player.velocity.vely = -7 * (self.player.gravity < 0 and -1 or 1)
       self.player.step = false
       self.player.stepTime = 0
       self.player.ground = false
@@ -668,9 +668,7 @@ function rushCoil:update(dt)
       self.player.wallJumping = false
       self.player.dashJump = false
       if self.player.slide then
-        local lh = self.collisionShape.h
-        self.player:regBox()
-        self.player.transform.y = self.player.transform.y - (self.player.collisionShape.h - lh)
+        self.player:slideToReg()
         self.player.slide = false
       end
       self.s = 4
