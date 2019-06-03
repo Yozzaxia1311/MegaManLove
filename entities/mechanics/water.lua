@@ -23,6 +23,7 @@ function splash:recycle(offx, offy, follow, side)
   self.follow = follow
   self.rot = math.rad(side==-1 and 0 or 180)
   self.anim:gotoFrame(1)
+  self.updated = true
 end
 
 function splash:update(dt)

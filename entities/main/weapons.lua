@@ -122,6 +122,7 @@ function rollBuster:recycle(x, y, dir, wpn)
   self.dink = false
   self.transform.x = x
   self.transform.y = y
+  self.updated = true
 end
 
 function rollBuster:update(dt)
@@ -180,6 +181,7 @@ function bassBuster:recycle(x, y, dir, wpn, t)
   self.transform.x = x
   self.transform.y = y
   self.treble = t
+  self.updated = true
 end
 
 function bassBuster:update(dt)
@@ -235,6 +237,7 @@ function megaBuster:recycle(x, y, dir, wpn)
   self.dink = false
   self.transform.x = x
   self.transform.y = y
+  self.updated = true
 end
 
 function megaBuster:update(dt)
@@ -426,7 +429,6 @@ function trebleBoost:update(dt)
       self.player.animations["trebleStart"]:gotoFrame(1)
       self.player.animations["trebleStart"]:resume()
       self.player.curAnim = "idle"
-      self.player.inv = true
       self.player.velocity.velx = 0
       self.s = 4
       self.c = "start"

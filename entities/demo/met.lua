@@ -148,6 +148,7 @@ function metBullet:recycle(x, y, vx, vy)
   self.transform.y = y
   self.velocity.velx = vx
   self.velocity.vely = vy
+  self.updated = true
 end
 
 function metBullet:draw()

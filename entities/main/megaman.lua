@@ -823,7 +823,7 @@ function megaman:healthChanged(o, c, i)
   end
   self.changeHealth = (c < 0 and self.inv) and 0 or c
   self.health = self.health + self.changeHealth
-  if not self.inv and self.health <= 0 and self.control then
+  if not self.inv and self.treble ~= 1 and self.health <= 0 and self.control then
     self.healthHandler.change = self.changeHealth
     self.healthHandler:updateThis()
     if #globals.allPlayers == 1 then
@@ -877,10 +877,10 @@ function megaman:healthChanged(o, c, i)
       return
     end
   end
-  if self.inv then
+  if self.inv or self.treble == 1 then
     self.iFrame = self.maxIFrame
   end
-  if self.changeHealth < 0 and not self.inv then
+  if self.changeHealth < 0 and not self.inv and self.treble ~= 1 then
     self.hitTimer = 0
     self.velocity.velx = self.side==1 and self.leftKnockBackSpeed or self.rightKnockBackSpeed
     self.velocity.vely = 0
@@ -953,7 +953,6 @@ function megaman:code(dt)
       if self.animations["trebleStart"].looped then
         self.treble = 2
         self.trebleTimer = 0
-        self.inv = false
       elseif self.animations["trebleStart"].position == 4 and self.trebleTimer == 0 then
         self.trebleTimer = 1
         mmSfx.play("treble_start")
