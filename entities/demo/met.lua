@@ -25,7 +25,7 @@ function met:new(x, y, s)
   self.side = -1
   self.s = 0
   self.health = 2
-  self.inv = true
+  self.canBeInvincible["global"] = true
   self.timer = 0
   self.blockCollision = true
   self.gravity = 0.25
@@ -38,14 +38,13 @@ end
 
 function met:healthChanged(o, c, i)
   if o.dink then return end
-  if c < 0 and not self.inv and not o:is(megaChargedBuster) then
+  if c < 0 and not self:checkTrue(self.canBeInvincible) and not o:is(megaChargedBuster) then
     megautils.remove(o, true)
   end
   if self.maxIFrame ~= self.iFrame then return end
-  if self.inv and not o.dink then
+  if self:checkTrue(self.canBeInvincible) and not o.dink then
     mmSfx.play("dink")
     o.dink = true
-    self.iFrame = self.maxIFrame
     return
   end
   self.changeHealth = c
@@ -78,7 +77,7 @@ function met:update(dt)
     if self.timer == 80 then
       self.timer = 0
       self.s = 1
-      self.inv = false
+      self.canBeInvincible["global"] = false
       self.c = "up"
     end
   elseif self.s == 1 then
@@ -95,7 +94,7 @@ function met:update(dt)
     self.timer = math.min(self.timer+1, 20)
     if self.timer == 20 then
       self.c = "safe"
-      self.inv = true
+      self.canBeInvincible["global"] = true
       self.timer = 0
       self.s = 0
     end

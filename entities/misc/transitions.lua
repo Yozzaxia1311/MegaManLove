@@ -278,7 +278,7 @@ function lockShift:update(dt)
     megautils.freeze(globals.allPlayers)
     for k, v in pairs(globals.allPlayers) do
       v.control = false
-      v.cameraFocus = false
+      v.canHaveCameraFocus["ls"] = false
     end
     local l = camera.main.curLock
     camera.main.curLock = self.name
@@ -319,7 +319,7 @@ function lockShift:update(dt)
       megautils.unfreeze()
       for k, v in pairs(globals.allPlayers) do
         v.control = true
-        v.cameraFocus = true
+        v.canHaveCameraFocus["ls"] = true
       end
       camera.main.curLock = self.name
       camera.main:doView()

@@ -13,6 +13,7 @@ function stickMan:new(x, y, s)
   self.added = function(self)
     self:addToGroup("freezable")
     self:addToGroup("hurtable")
+    self.canBeInvincible["global"] = true
     mmMusic.stopMusic()
   end
   self.transform.y = y
@@ -42,7 +43,7 @@ function stickMan:healthChanged(o, c, i)
     megautils.remove(o, true)
   end
   if self.maxIFrame ~= self.iFrame then return end
-  if (o:is(megaSemiBuster) or self.inv) and not o.dink then --Semi charged shots get reflected
+  if (o:is(megaSemiBuster) or self:checkTrue(self.canBeInvincible)) and not o.dink then --Semi charged shots get reflected
     mmSfx.play("dink")
     o.dink = true
     return
@@ -122,6 +123,7 @@ function stickMan:update(dt)
   elseif self.s == 2 then
     collision.doCollision(self)
     if self.ground then
+      self.canBeInvincible["global"] = false
       self.hBar.health = 0
       self.hBar.change = self.health
       self.hBar:updateThis()

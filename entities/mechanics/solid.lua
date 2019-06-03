@@ -137,7 +137,9 @@ function collision.entityPlatform(self)
                 if resolid == 1 then
                   if epCanCrush and v:collision(self) then
                     v.crushed = self
-                    v.inv = false
+                    for k, v in pairs(self.canBeInvincible) do
+                      self.canBeInvincible[k] = false
+                    end
                     v.iFrame = v.maxIFrame
                     v:hurt({v}, -999)
                   end
@@ -235,9 +237,9 @@ function collision.shiftObject(self, dx, dy, checkforcol)
   self.previousY = self.transform.y
   
   if checkforcol then
-    self.canStandSolid = false
+    self.canStandSolid["global"] = false
     collision.generalCollision(self)
-    self.canStandSolid = true
+    self.canStandSolid["global"] = true
   else
     self.transform.x = self.transform.x + self.velocity.velx
     self.transform.y = self.transform.y + self.velocity.vely
@@ -420,7 +422,7 @@ function collision.generalCollision(self, noSlopeEffect)
     end
   end
   
-  if self.canStandSolid then
+  if self:checkTrue(self.canStandSolid) then
     local ss = self:collisionTable(stand, 0, cgrav)
     if #ss ~= 0 then
       if self.velocity.vely * cgrav > 0 then

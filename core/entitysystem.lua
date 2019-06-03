@@ -374,9 +374,22 @@ function entity:new()
   self.doShake = false
   self.moveByMoveX = 0
   self.moveByMoveY = 0
-  self.inv = false
-  self.spikesHurt = false
-  self.canStandSolid = true
+  self.canBeInvincible = {["global"]=true}
+  self.canStandSolid = {["global"]=true}
+end
+
+function entity:checkTrue(w)
+  for k, v in pairs(w) do
+    if v then return true end
+  end
+  return false
+end
+
+function entity:checkFalse(w)
+  for k, v in pairs(w) do
+    if not v then return false end
+  end
+  return true
 end
 
 function entity:grav() end

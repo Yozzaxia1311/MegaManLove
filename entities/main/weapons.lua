@@ -425,6 +425,7 @@ function trebleBoost:update(dt)
     self.side = -self.side
     if not self.player.climb and self.player.ground and self.player:collision(self) then
       self.player:resetStates()
+      self.player.canBeInvincible["treble"] = true
       self.player.treble = 1
       self.player.animations["trebleStart"]:gotoFrame(1)
       self.player.animations["trebleStart"]:resume()
@@ -514,10 +515,11 @@ function rushJet:update(dt)
       self.isSolid = 2
     end
   elseif self.s == 2 then
-    if self.player.ground and self.player:collision(self, 0, math.sign(self.player.gravity)) then
+    if self.player.ground and self.player:collision(self, 0, self.player.gravity < 0 and -1 or 1) and
+      not self.player:collision(self) then
       self.s = 3
       self.velocity.velx = self.side
-      self.player.canWalk = false
+      self.player.canWalk["rj"] = false
       self.playerOn = true
     end
     collision.doCollision(self)
@@ -532,21 +534,23 @@ function rushJet:update(dt)
       end
     else
       self.velocity.vely = 0
-      if self.player.ground and self.player:collision(self, 0, math.sign(self.player.gravity)) then
+      if self.player.ground and self.player:collision(self, 0, self.player.gravity < 0 and -1 or 1) and
+      not self.player:collision(self) then
         self.s = 3
         self.velocity.velx = self.side
-        self.player.canWalk = false
+        self.player.canWalk["rj"] = false
         self.playerOn = true
       end
     end
     collision.doCollision(self)
     if self.playerOn and (not self.player.ground or
-      not self.player:collision(self, 0, math.sign(self.player.gravity))) then
-      self.player.canWalk = true
+      not (self.player:collision(self, 0, self.player.gravity < 0 and -1 or 1) and
+      not self.player:collision(self))) then
+      self.player.canWalk["rj"] = true
       self.playerOn = false
     end
     if self.xcoll ~= 0 or
-      (self.playerOn and collision.checkSolid(self, 0, (self.player.collisionShape.h+4)*-math.sign(self.player.gravity))) then
+      (self.playerOn and collision.checkSolid(self.player, 0, self.player.gravity < 0 and 4 or -4)) then
       if self.playerOn then self.player.canWalk = true end
       self.c = "spawn_land"
       self.anims["spawn_land"]:gotoFrame(1)
@@ -574,7 +578,7 @@ function rushJet:update(dt)
 end
 
 function rushJet:removed()
-  self.player.canWalk = true
+  self.player.canWalk["rj"] = true
 end
 
 function rushJet:draw()
@@ -659,7 +663,7 @@ function rushCoil:update(dt)
       math.between(self.player.transform.x+self.player.collisionShape.w/2,
       self.transform.x, self.transform.x+self.collisionShape.w) and
       self.player:collision(self) then
-      self.player.canStopJump = false
+      self.player.canStopJump["global"] = false
       self.player.velocity.vely = -7 * (self.player.gravity < 0 and -1 or 1)
       self.player.step = false
       self.player.stepTime = 0

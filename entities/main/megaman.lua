@@ -119,29 +119,14 @@ function megaman.properties(self)
   self.climbDownSpeed = 1.3
   self.stepLeftSpeed = -1
   self.stepRightSpeed = 1
-  self.stepVelocity = false
   self.maxStepTime = 8
   self.maxHitTime = 32
   self.leftKnockBackSpeed = -0.5
   self.rightKnockBackSpeed = 0.5
   self.maxShootTime = 14
-  self.alwaysMove = false
-  self.inv = false
-  self.canGetCrushed = false
-  self.canStopJump = true
   self.maxWallJumpTime = 8
   self.wallSlideSpeed = 0.5
-  self.canDashShoot = false
-  self.canDashJump = globals.player[self.player] == "bass"
-  self.canDash = true
-  self.canShoot = true
-  self.canWallJump = false
-  self.canChargeBuster = true
-  self.canWalk = true
-  self.canJump = true
   self.maxNormalBusterShots = 3
-  self.cameraFocus = true
-  self.threeWeaponIcons = false
   self.cameraOffsetX = 0
   self.cameraOffsetY = 0
   self.cameraWidth = 11
@@ -149,18 +134,33 @@ function megaman.properties(self)
   self.dropSpeed = 8
   self.riseSpeed = -8
   self.maxBubbleTime = 120
-  self.canJumpOutFromDash = true
-  self.canBackOutFromDash = true
-  self.canSwitchWeapons = true
-  self.spikesHurt = true
   self.blockCollision = true
-  self.canStandSolid = true
-  self.canPause = true
   self.maxStandSolidJumpTime = 4
   self.maxExtraJumps = globals.player[self.player] == "bass" and 1 or 0
   self.maxRapidShotTime = 5
   self.maxTrebleSpeed = 2
   self.trebleDecel = 0.1
+  
+  self.canJumpOutFromDash = {["global"]=true}
+  self.canBackOutFromDash = {["global"]=true}
+  self.canSwitchWeapons = {["global"]=true}
+  self.canStandSolid = {["global"]=true}
+  self.canPause = {["global"]=true}
+  self.canDieFromSpikes = {["global"]=true}
+  self.canDashShoot = {["global"]=false}
+  self.canDashJump = {["global"]=globals.player[self.player] == "bass"}
+  self.canDash = {["global"]=true}
+  self.canShoot = {["global"]=true}
+  self.canWallJump = {["global"]=false}
+  self.canChargeBuster = {["global"]=true}
+  self.canWalk = {["global"]=true}
+  self.canJump = {["global"]=true}
+  self.canHaveCameraFocus = {["global"]=true}
+  self.canHaveThreeWeaponIcons = {["global"]=false}
+  self.canBeInvincible = {["global"]=false}
+  self.canGetCrushed = {["global"]=false}
+  self.canStopJump = {["global"]=true}
+  self.canStepVelocity = {["global"]=false}
 end
 
 function megaman:transferState(to)
@@ -401,6 +401,7 @@ function megaman:new(x, y, side, drop, p)
   self.treble = false
   self.trebleSine = 0
   self.trebleForce = velocity()
+  self.alwaysMove = false
   
   self.groundUpdateFuncs = {}
   self.airUpdateFuncs = {}
@@ -446,7 +447,7 @@ function megaman:new(x, y, side, drop, p)
   self.climbTipAnimation = {["regular"]="climbTip"}
   self.hitAnimation = {["regular"]="hit"}
   self.wallJumpAnimation = {["regular"]="wallJump", ["shoot"]="wallJumpShoot"}
-  self.dashAnimation = {["regular"]=(self.canDashShoot and globals.player[self.player] == "mega") and "dash" or "slide", ["shoot"]="dashShoot"}
+  self.dashAnimation = {["regular"]=(self:checkFalse(self.canDashShoot) and globals.player[self.player] == "mega") and "dash" or "slide", ["shoot"]="dashShoot"}
   self.trebleAnimation = {["regular"]="treble", ["shoot"]="trebleShoot"}
   self.animations = {}
   local pp = "mega_man_grid"
@@ -762,7 +763,7 @@ function megaman:attemptWeaponUsage()
     end
   end
   if control.shootDown[self.player] then
-    if self.canChargeBuster and (w.current == "megaBuster" or w.current == "protoBuster") then
+    if self:checkFalse(self.canChargeBuster) and (w.current == "megaBuster" or w.current == "protoBuster") then
       self:charge()
     end
   end
@@ -821,7 +822,7 @@ end
 
 function megaman:healthChanged(o, c, i)
   if not self.control then return end
-  self:addHealth((c < 0 and (self.inv or self.treble == 1 or self.maxIFrame ~= self.iFrame)) and 0 or c)
+  self:addHealth((c < 0 and (self:checkTrue(self.canBeInvincible) or self.maxIFrame ~= self.iFrame)) and 0 or c)
   if self.changeHealth < 0 then
     self.maxIFrame = i
     self.iFrame = 0
@@ -906,7 +907,7 @@ function megaman:code(dt)
       v(self)
     end
     self:phys()
-    if self.canShoot and control.shootDown[self.player] then
+    if self:checkFalse(self.canShoot) and control.shootDown[self.player] then
       self:charge()
     else
       self:charge(true)
@@ -956,6 +957,7 @@ function megaman:code(dt)
       (megaman.weaponHandler[self.player].current == "trebleBoost" and
       megaman.weaponHandler[self.player].energy[megaman.weaponHandler[self.player].currentSlot] <= 0) then
       self.treble = false
+      self.canBeInvincible["treble"] = false
       self.trebleSine = 0
       self.trebleTimer = 0
       self.trebleForce.velx = 0
@@ -1056,7 +1058,8 @@ function megaman:code(dt)
         self.slideTimer = self.maxSlideTime
         self.hitTimer = self.maxHitTime
         self:slideToReg()
-      elseif self.canJump and self.canJumpOutFromDash and control.jumpPressed[self.player] and not self:checkRegBox()
+      elseif self:checkFalse(self.canJump) and self:checkFalse(self.canJumpOutFromDash) and
+        control.jumpPressed[self.player] and not self:checkRegBox()
         and (self.ground or self:checkSlideBox(0, math.sign(self.gravity)))
           and not control.downDown[self.player] then
         self.slide = false
@@ -1065,7 +1068,7 @@ function megaman:code(dt)
         self.slideTimer = self.maxSlideTime
         self.hitTimer = self.maxHitTime
         self:slideToReg()
-        self.dashJump = self.canDashJump
+        self.dashJump = self:checkFalse(self.canDashJump)
       elseif not (self.ground or self:checkSlideBox(self.velocity.velx, math.sign(self.gravity)))
         and self:checkRegBox() then
         self.slide = false
@@ -1076,7 +1079,7 @@ function megaman:code(dt)
         while collision.checkSolid(self) do
           self.transform.y = self.transform.y + 1
         end
-      elseif self.canBackOutFromDash and lastSide ~= self.side and not self:checkRegBox() then
+      elseif self:checkFalse(self.canBackOutFromDash) and lastSide ~= self.side and not self:checkRegBox() then
         self.slide = false
         self.slideTimer = self.maxSlideTime
         self:slideToReg()
@@ -1087,21 +1090,23 @@ function megaman:code(dt)
       v(self)
     end
     self:phys()
-    if self.canShoot and not self.canDashShoot and control.shootDown[self.player] then
+    local cd, cs = self:checkFalse(self.canDashShoot), self:checkFalse(self.canShoot)
+    if cs and not cd and control.shootDown[self.player] then
       self:charge()
-    elseif self.canShoot and self.canDashShoot then
+    elseif cs and cd then
       self:attemptWeaponUsage()
     else
       self:charge(true)
     end
     self:attemptClimb()
   elseif self.ground then
-    if self.canWalk and not (self.stopOnShot and self.shootTimer ~= self.maxShootTime) then
+    if self:checkFalse(self.canWalk) and not (self.stopOnShot and self.shootTimer ~= self.maxShootTime) then
       if self.runCheck and not self.step then
         self.side = control.leftDown[self.player] and -1 or 1
-        if self.stepVelocity or self.stepTime == 0 then
+        local sv = self:checkFalse(self.canStepVelocity)
+        if sv or self.stepTime == 0 then
           self.velocity.velx = self.velocity.velx + (self.side==1 and self.stepRightSpeed or self.stepLeftSpeed)
-        elseif not self.stepVelocity then
+        elseif not sv then
           self.velocity.velx = 0
         end
         self.stepTime = math.min(self.stepTime+1, self.maxStepTime)
@@ -1126,7 +1131,7 @@ function megaman:code(dt)
       self.step = false
     end
     self.jumpCheck = false
-    if self.canDash and (control.dashPressed[self.player] or
+    if self:checkFalse(self.canDash) and (control.dashPressed[self.player] or
       (control.downDown[self.player] and control.jumpPressed[self.player])) and
       not self:checkBasicSlideBox(self.side, 0) then
       if self.shootTimer ~= self.maxShootTime then
@@ -1142,12 +1147,12 @@ function megaman:code(dt)
       self.slideTimer = 0
       megautils.add(slideParticle, self.transform.x+(self.side==-1 and self.collisionShape.w or 4),
         self.transform.y+(self.gravity > 0 and self.collisionShape.h-6 or 0), self.side)
-    elseif self.canJump and self.inStandSolid and control.jumpDown[self.player] and
+    elseif self:checkFalse(self.canJump) and self.inStandSolid and control.jumpDown[self.player] and
       self.standSolidJumpTimer ~= self.maxStandSolidJumpTime and
       self.standSolidJumpTimer ~= -1 then
       self.velocity.vely = self.jumpSpeed * (self.gravity < 0 and -1 or 1)
       self.standSolidJumpTimer = math.min(self.standSolidJumpTimer+1, self.maxStandSolidJumpTime)
-    elseif self.canJump and control.jumpPressed[self.player] and
+    elseif self:checkFalse(self.canJump) and control.jumpPressed[self.player] and
       not (control.downDown[self.player] and self:checkBasicSlideBox(self.side, 0)) then
       self.velocity.vely = self.jumpSpeed
     else
@@ -1169,7 +1174,7 @@ function megaman:code(dt)
     if not self.ground then
       self.standSolidJumpTimer = -1
     end
-    if self.canShoot then
+    if self:checkFalse(self.canShoot) then
       self:attemptWeaponUsage()
     end
     self:attemptClimb()
@@ -1183,7 +1188,7 @@ function megaman:code(dt)
         (self.side == -1 and control.leftDown[self.player]) then
         self.wallJumpTimer = 0
       end
-    elseif self.canWallJump and self.velocity.vely > 0 and collision.checkSolid(self, ns, 0) then
+    elseif self:checkFalse(self.canWallJump) and self.velocity.vely > 0 and collision.checkSolid(self, ns, 0) then
       self.side = -ns
       self.velocity.velx = -self.side
       self.wallJumping = true
@@ -1218,7 +1223,7 @@ function megaman:code(dt)
       self.extraJumps = self.extraJumps + 1
       self.velocity.vely = self.jumpSpeed
     end
-    if self.canStopJump and not control.jumpDown[self.player] and self.velocity.vely < 0 then
+    if self:checkFalse(self.canStopJump) and not control.jumpDown[self.player] and self.velocity.vely < 0 then
       self.velocity:slowY(self.jumpDecel)
     end
     for k, v in pairs(self.airUpdateFuncs) do
@@ -1228,13 +1233,13 @@ function megaman:code(dt)
     if self.died then return end
     if self.ground then
       self.dashJump = false
-      self.canStopJump = true
+      self.canStopJump["global"] = true
       self.extraJumps = 0
       mmSfx.play("land")
     else
       self:attemptClimb()
     end
-    if self.canShoot then
+    if self:checkFalse(self.canShoot) then
       self:attemptWeaponUsage()
     end
   end
@@ -1251,10 +1256,11 @@ function megaman:code(dt)
     view.y+view.h+4)
   self.shootTimer = math.min(self.shootTimer+1, self.maxShootTime)
   if (self.transform.y >= view.y+view.h) or 
-    (self.blockCollision and collision.checkSolid(self)) then
+    (self.blockCollision and self:checkTrue(self.canGetCrushed) and collision.checkSolid(self)) then
     self.iFrame = self.maxIFrame
-    self.inv = false
-    if self.treble == 1 then self.treble = false end
+    for k, v in pairs(self.canBeInvincible) do
+      self.canBeInvincible[k] = false
+    end
     self:hurt({self}, -999, 1)
   end
   self:updateIFrame()
@@ -1264,7 +1270,7 @@ function megaman:code(dt)
     self.stopOnShot = false
   end
   if globals.mainPlayer and control.startPressed[self.player] and self.control and globals.mainPlayer.control and globals.mainPlayer.updated
-    and self.canPause then
+    and self:checkFalse(self.canPause) then
     self.weaponSwitchTimer = 70
     megautils.add(fade, true, nil, nil, function(s)
           self.pauseMenu = megautils.add(weaponSelect, megaman.weaponHandler[self.player], self.healthHandler, self.player)
@@ -1368,7 +1374,7 @@ end
 function megaman:phys()
   self.velocity.vely = self.gravity > 0 and math.min(self.maxAirSpeed, self.velocity.vely) or math.max(-self.maxAirSpeed, self.velocity.vely)
   collision.doCollision(self)
-  if self.spikesHurt and (self.xcoll ~= 0 or self.ycoll ~= 0 or (self.ground and self.gravity ~= 0)) then
+  if self:checkFalse(self.canDieFromSpikes) and (self.xcoll ~= 0 or self.ycoll ~= 0 or (self.ground and self.gravity ~= 0)) then
     local t = self:collisionTable(megautils.groups()["death"], self.xcoll, self.ycoll+math.sign(self.gravity))
     local lx, ly = self.transform.x, self.transform.y
     for i=1, #t do
@@ -1504,16 +1510,16 @@ function megaman:animate()
         end
       end
     elseif self.slide then
-      self.curAnim = self.dashAnimation[self.canDashShoot and shoot or "regular"]
+      self.curAnim = self.dashAnimation[self:checkFalse(self.canDashShoot) and shoot or "regular"]
     elseif self.ground then
-      if self.canWalk and not self.step and self.runCheck then
+      if self:checkFalse(self.canWalk) and not self.step and self.runCheck then
         shoot = self:bassBusterAnim(shoot)
         if self.standSolidJumpTimer > 0 then
           self.curAnim = self.jumpAnimation[shoot]
         else
           self.curAnim = self.nudgeAnimation[shoot]
         end
-      elseif (self.canWalk and ((not self.idleMoving and self.alwaysMove and self.velocity.velx ~= 0) or
+      elseif (self:checkFalse(self.canWalk) and ((not self.idleMoving and self.alwaysMove and self.velocity.velx ~= 0) or
         self.runCheck)) and
         not (self.stopOnShot and self.shootTimer ~= self.maxShootTime) then
         self.curAnim = self.runAnimation[shoot]
@@ -1614,13 +1620,14 @@ function megaman:update(dt)
       self:code(dt)
     end
     if self.doAnimation then self:animate(dt) end
-    if self.canSwitchWeapons then self:updatePallete() end
+    if self:checkFalse(self.canSwitchWeapons) then self:updatePallete() end
     self.weaponSwitchTimer = math.min(self.weaponSwitchTimer+1, 70)
   end
 end
 
 function megaman:afterUpdate(dt)
-  if not self.dying and camera.main and globals.mainPlayer == self and self.cameraFocus and not self.drop and not self.rise
+  if not self.dying and camera.main and globals.mainPlayer == self and
+    self:checkFalse(self.canHaveCameraFocus) and not self.drop and not self.rise
     and self.collisionShape then
     camera.main:updateCam(0, self.slide and -3 or 0)
   end
@@ -1699,7 +1706,7 @@ function megaman:draw()
   
   if self.weaponSwitchTimer ~= 70 then
     love.graphics.setColor(1, 1, 1, 1)
-    if self.threeWeaponIcons then
+    if self:checkFalse(self.canHaveThreeWeaponIcons) then
       self.iconQuad:setViewport(self.icons[self.nextWeapon][1],
         self.icons[self.nextWeapon][2], 16, 16)
       love.graphics.draw(self.icoTex, self.iconQuad, roundx+math.round(math.round(self.collisionShape.w/2))+8,
