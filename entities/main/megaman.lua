@@ -1260,10 +1260,10 @@ function megaman:code(dt)
     self.inv = false
   end
   if (self.transform.y >= view.y+view.h) or 
-    (self.canGetCrushed and self.transform.y <= view.y-self.collisionShape.h+1 and self.ground) or 
-      (self.canGetCrushed and self.transform.x >= (view.x+view.w)-self.collisionShape.w/2 and collision.checkSolid(self, -1, 0)) or 
-        (self.canGetCrushed and self.transform.x <= view.x-self.collisionShape.w/2 and collision.checkSolid(self, 1, 0)) then
+    (self.canGetCrushed and collision.checkSolid(self)) then
     self.iFrame = self.maxIFrame
+    self.inv = false
+    if self.treble == 1 then self.treble = false end
     self:hurt({self}, -999, 1)
   end
   self:updateIFrame()
