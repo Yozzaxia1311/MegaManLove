@@ -410,8 +410,8 @@ function megaman:new(x, y, side, drop, p)
   self.knockbackUpdateFuncs = {}
   
   megautils.adde(megaman.weaponHandler[self.player])
-  
-  self.healthHandler = megautils.add(healthhandler, {252, 224, 168}, {255, 255, 255}, {0, 0, 0}, nil, nil, globals.lifeSegments, self)
+  self.healthHandler = megautils.add(healthhandler, {252, 224, 168}, {255, 255, 255}, {0, 0, 0},
+    nil, nil, globals.lifeSegments, self)
   self.healthHandler.render = false
   
   megaman.colorOutline[self.player] = megaman.weaponHandler[self.player].colorOutline[0]

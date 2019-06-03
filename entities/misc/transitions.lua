@@ -33,9 +33,6 @@ function right:update(dt)
       camera.main.transX = camera.main.scrollx+camera.main.scrollw+16
       camera.main.toSection = self:collisionTable(megautils.groups()["lock"], 2)[1] or
         self:collisionTable(megautils.state().sectionHandler.sections, 2)[1]
-      if camera.main.toSection:is(lockSection) then
-        camera.main.toSection.section = self:collisionTable(megautils.state().sectionHandler.sections, 2)[1]
-      end
       camera.main.transform.x = (camera.main.scrollx+camera.main.scrollw)-view.w
       if camera.main.player.onMovingFloor and not camera.main.player.onMovingFloor:is(rushJet) then
         camera.main.player.onMovingFloor.dontRemove = true
@@ -80,9 +77,6 @@ function left:update(dt)
       camera.main.transX = camera.main.scrollx-camera.main.player.collisionShape.w-16
       camera.main.toSection = self:collisionTable(megautils.groups()["lock"], -2)[1] or
         self:collisionTable(megautils.state().sectionHandler.sections, -2)[1]
-      if camera.main.toSection:is(lockSection) then
-        camera.main.toSection.section = self:collisionTable(megautils.state().sectionHandler.sections, -2)[1]
-      end
       camera.main.transform.x = camera.main.scrollx
       if camera.main.player.onMovingFloor and not camera.main.player.onMovingFloor:is(rushJet) then
         camera.main.player.onMovingFloor.dontRemove = true
@@ -127,9 +121,6 @@ function down:update(dt)
       camera.main.transY = camera.main.scrolly+camera.main.scrollh+8
       camera.main.toSection = self:collisionTable(megautils.groups()["lock"], 0, 2)[1] or
         self:collisionTable(megautils.state().sectionHandler.sections, 0, 2)[1]
-      if camera.main.toSection:is(lockSection) then
-        camera.main.toSection.section = self:collisionTable(megautils.state().sectionHandler.sections, 0, 2)[1]
-      end
       camera.main.transform.y = (camera.main.scrolly+camera.main.scrollh)-view.h
       if camera.main.player.onMovingFloor and not camera.main.player.onMovingFloor:is(rushJet) then
         camera.main.player.onMovingFloor.dontRemove = true
@@ -175,9 +166,6 @@ function up:update(dt)
       camera.main.transY = camera.main.scrolly-camera.main.player.collisionShape.h-8
       camera.main.toSection = self:collisionTable(megautils.groups()["lock"], 0, -2)[1] or
         self:collisionTable(megautils.state().sectionHandler.sections, 0, -2)[1]
-      if camera.main.toSection:is(lockSection) then
-        camera.main.toSection.section = self:collisionTable(megautils.state().sectionHandler.sections, 0, -2)[1]
-      end
       camera.main.transform.y = camera.main.scrolly
       if camera.main.player.onMovingFloor and not camera.main.player.onMovingFloor:is(rushJet) then
         camera.main.player.onMovingFloor.dontRemove = true
@@ -227,9 +215,6 @@ function upLadder:update(dt)
         camera.main.transY = camera.main.scrolly-camera.main.player.collisionShape.h-8
         camera.main.toSection = self:collisionTable(megautils.groups()["lock"], 0, -2)[1] or
           self:collisionTable(megautils.state().sectionHandler.sections, 0, -2)[1]
-        if camera.main.toSection:is(lockSection) then
-          camera.main.toSection.section = self:collisionTable(megautils.state().sectionHandler.sections, 0, -2)[1]
-        end
         camera.main.transform.y = camera.main.scrolly
         break
       end
@@ -241,7 +226,7 @@ lockSection = entity:extend()
 
 addobjects.register("lock_section", function(v)
   megautils.add(lockSection, v.x, v.y, v.width, v.height, v.properties["name"])
-end)
+end, 2)
 
 function lockSection:new(x, y, w, h, name)
   lockSection.super.new(self)
@@ -249,6 +234,7 @@ function lockSection:new(x, y, w, h, name)
   self.transform.y = y
   self.transform.x = x
   self.name = name
+  self.section = self:collisionTable(megautils.state().sectionHandler.sections)[1]
   self.added = function(self)
     self:addToGroup("lock")
     self:addStatic()
@@ -274,7 +260,8 @@ function lockShift:new(x, y, w, h, name, spd)
 end
 
 function lockShift:update(dt)
-  if #self:collisionTable(globals.allPlayers) >= math.floor(globals.playerCount/2)+1 and self.name ~= camera.main.curLock and not self.tween then
+  if #self:collisionTable(globals.allPlayers) >= math.floor(globals.playerCount/2)+1
+    and self.name ~= camera.main.curLock and not self.tween then
     megautils.freeze(globals.allPlayers)
     for k, v in pairs(globals.allPlayers) do
       v.control = false
@@ -328,9 +315,6 @@ function lockShift:update(dt)
       camera.main.transform.y = math.round(camera.main.transform.y)
       view.x, view.y = math.round(camera.main.transform.x), math.round(camera.main.transform.y)
       camera.main:updateFuncs()
-      if megautils.networkGameStarted and megautils.networkMode == "server" then
-        megautils.net:sendToAll("u", {x=camera.main.transform.x, y=camera.main.transform.y, id=camera.main.networkID})
-      end
     end
   end
 end

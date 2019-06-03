@@ -131,6 +131,7 @@ function menuSelect:update(dt)
     if control.jumpPressed[1] or control.startPressed[1] then
       self.section = 0
       self.timer = 20
+      megautils.resetGameObjects()
       mmSfx.play("selected")
     end
   end
