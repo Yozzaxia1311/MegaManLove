@@ -1298,6 +1298,7 @@ function megaman:resetStates()
   self.trebleTimer = 0
   self.trebleForce.velx = 0
   self.trebleForce.vely = 0
+  self.canBeInvincible["treble"] = false
   self.extraJumps = 0
   self.shootTimer = self.maxShootTime
   if self.slide then
