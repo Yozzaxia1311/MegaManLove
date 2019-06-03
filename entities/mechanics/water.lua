@@ -14,6 +14,10 @@ function splash:new(offx, offy, follow, side)
   self.anim = anim8.newAnimation(loader.get("splash_grid")("1-4", 1), 1/8)
   self.rot = math.rad(side==-1 and 0 or 180)
   self.follow = follow
+  if self.follow then
+    self.transform.x = self.follow.transform.x + self.offx
+    self.transform.y = self.follow.transform.y + self.offy
+  end
 end
 
 function splash:recycle(offx, offy, follow, side)
@@ -21,6 +25,10 @@ function splash:recycle(offx, offy, follow, side)
   self.offy = offy
   self.side = side
   self.follow = follow
+  if self.follow then
+    self.transform.x = self.follow.transform.x + self.offx
+    self.transform.y = self.follow.transform.y + self.offy
+  end
   self.rot = math.rad(side==-1 and 0 or 180)
   self.anim:gotoFrame(1)
   self.updated = true

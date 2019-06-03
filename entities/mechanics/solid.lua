@@ -32,17 +32,6 @@ function collision.getTable(self, dx, dy)
     end
   end
   
-  if megautils.groups()["death"] then
-    for i=1, #megautils.groups()["death"] do
-      local v = megautils.groups()["death"][i]
-      if v ~= self and v.collisionShape then
-        if not self.inv and self.spikesHurt and self.iFrame == self.maxIFrame then
-          table.removevaluearray(solid, v)
-        end
-      end
-    end
-  end
-  
   local ret = {}
   for i=1, #solid do
     if self:collision(solid[i], xs, ys) then
@@ -70,17 +59,6 @@ function collision.checkSolid(self, dx, dy, noSlope)
     if v.isSolid == 1 or v.isSolid == 2 then
       if v.isSolid ~= 2 or (not v:collision(self) and v:collision(self, -xs, -(cgrav * math.abs(ys)))) then
         solid[#solid+1] = v
-      end
-    end
-  end
-  
-  if megautils.groups()["death"] then
-    for i=1, #megautils.groups()["death"] do
-      local v = megautils.groups()["death"][i]
-      if v ~= self and v.collisionShape then
-        if not self.inv and self.spikesHurt and self.iFrame == self.maxIFrame then
-          table.removevaluearray(solid, v)
-        end
       end
     end
   end
@@ -294,17 +272,6 @@ function collision.checkGround(self, noSlopeEffect)
     end
   end
   
-  if megautils.groups()["death"] then
-    for i=1, #megautils.groups()["death"] do
-      local v = megautils.groups()["death"][i]
-      if v ~= self and v.collisionShape then
-        if not self.inv and self.spikesHurt and self.iFrame == self.maxIFrame then
-          table.removevaluearray(solid, v)
-        end
-      end
-    end
-  end
-  
   if #self:collisionTable(solid) == 0 then
     local i = 1
     while i <= slp do
@@ -347,17 +314,6 @@ function collision.generalCollision(self, noSlopeEffect)
         end
       elseif v.isSolid == 3 then
         stand[#stand+1] = v
-      end
-    end
-  end
-  
-  if megautils.groups()["death"] then
-    for i=1, #megautils.groups()["death"] do
-      local v = megautils.groups()["death"][i]
-      if v ~= self and v.collisionShape then
-        if not self.inv and self.spikesHurt and self.iFrame == self.maxIFrame then
-          table.removevaluearray(solid, v)
-        end
       end
     end
   end
@@ -473,13 +429,6 @@ function collision.generalCollision(self, noSlopeEffect)
         self.velocity.vely = 0
       end
       self.inStandSolid = ss[1]
-    end
-  end
-  
-  if self.spikesHurt then
-    local deth = self:collisionTable(megautils.groups()["death"])
-    if #deth ~= 0 then
-      self:hurt({self}, -99999)
     end
   end
 end

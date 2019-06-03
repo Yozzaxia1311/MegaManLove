@@ -805,104 +805,96 @@ function megaman:attemptClimb()
     self.slideTimer = self.maxSlideTime
     self.animations["climb"]:gotoFrame(1)
     self.climbTip = self.transform.y+math.round(self.collisionShape.h/6) < self.currentLadder.transform.y
+    self.transform.x = self.currentLadder.transform.x+(self.currentLadder.collisionShape.w/2)-
+      ((self.collisionShape.w)/2)
   end
 end
 
 function megaman:addHealth(c)
   self.changeHealth = c
-  self.health = self.health + self.changeHealth
-  self.healthHandler.change = self.changeHealth
-  self.healthHandler:updateThis()
+  if self.changeHealth ~= 0 then
+    self.health = self.health + self.changeHealth
+    self.healthHandler.change = self.changeHealth
+    self.healthHandler:updateThis()
+  end
 end
 
 function megaman:healthChanged(o, c, i)
   if not self.control then return end
-  if not self:iFrameIsDone() then return else
+  self:addHealth((c < 0 and (self.inv or self.treble == 1 or self.maxIFrame ~= self.iFrame)) and 0 or c)
+  if self.changeHealth < 0 then
     self.maxIFrame = i
     self.iFrame = 0
-  end
-  self.changeHealth = (c < 0 and self.inv) and 0 or c
-  self.health = self.health + self.changeHealth
-  if not self.inv and self.treble ~= 1 and self.health <= 0 and self.control then
-    self.healthHandler.change = self.changeHealth
-    self.healthHandler:updateThis()
-    if #globals.allPlayers == 1 then
-      if self.transform.y < view.y+view.h then
-        explodeParticle.createExplosion(self.transform.x+((self.collisionShape.w/2)-12),
-          self.transform.y+((self.collisionShape.h/2)-12))
-      end
-      self.render = false
-      self.control = false
-      self.died = true
-      healthhandler.playerTimers = {}
-      for i=1, maxPlayerCount do
-        healthhandler.playerTimers[i] = -2
-      end
-      megautils.add(timer, 160, function(t)
-        megautils.add(fade, true, nil, nil, function(s)
-          globals.resetState = true
-          globals.mainPlayer = nil
-          if not globals.infiniteLives and globals.lives <= 0 then
-            megautils.resetGameObjects()
-            globals.gameOverContinueState = states.current
-            states.set("states/gameover.state.lua")
-          else
-            globals.manageStageResources = false
-            if not globals.infiniteLives then
-              globals.lives = globals.lives - 1
+    if self.health <= 0 then
+      if #globals.allPlayers == 1 then
+        if self.transform.y < view.y+view.h then
+          explodeParticle.createExplosion(self.transform.x+((self.collisionShape.w/2)-12),
+            self.transform.y+((self.collisionShape.h/2)-12))
+        end
+        self.render = false
+        self.control = false
+        self.died = true
+        healthhandler.playerTimers = {}
+        for i=1, maxPlayerCount do
+          healthhandler.playerTimers[i] = -2
+        end
+        megautils.add(timer, 160, function(t)
+          megautils.add(fade, true, nil, nil, function(s)
+            globals.resetState = true
+            globals.mainPlayer = nil
+            if not globals.infiniteLives and globals.lives <= 0 then
+              megautils.resetGameObjects()
+              globals.gameOverContinueState = states.current
+              states.set("states/gameover.state.lua")
+            else
+              globals.manageStageResources = false
+              if not globals.infiniteLives then
+                globals.lives = globals.lives - 1
+              end
+              states.set(states.current)
             end
-            states.set(states.current)
-          end
-          megautils.remove(s, true)
+            megautils.remove(s, true)
+          end)
+          megautils.remove(t, true)
         end)
-        megautils.remove(t, true)
-      end)
-      megautils.unregisterPlayer(self)
-      megautils.remove(self, true)
-      mmMusic.stopMusic()
-      mmSfx.play("die")
-      return
+        megautils.unregisterPlayer(self)
+        megautils.remove(self, true)
+        mmMusic.stopMusic()
+        mmSfx.play("die")
+        return
+      else
+        self.dying = true
+        self.iFrame = self.maxIFrame
+        megautils.freeze({self})
+        local dx, dy
+        local ox, oy = camera.main.transform.x, camera.main.transform.y
+        camera.main:doView(nil, nil, self)
+        dx = camera.main.transform.x
+        dy = camera.main.transform.y
+        camera.main.transform.x = ox
+        camera.main.transform.y = oy
+        self.cameraTween = tween.new(0.4, camera.main.transform, {x=dx, y=dy})
+        return
+      end
     else
-      self.dying = true
-      self.iFrame = self.maxIFrame
-      megautils.freeze({self})
-      local dx, dy
-      local ox, oy = camera.main.transform.x, camera.main.transform.y
-      camera.main:doView(nil, nil, self)
-      dx = camera.main.transform.x
-      dy = camera.main.transform.y
-      camera.main.transform.x = ox
-      camera.main.transform.y = oy
-      self.cameraTween = tween.new(0.4, camera.main.transform, {x=dx, y=dy})
-      return
+      self.hitTimer = 0
+      self.velocity.velx = self.side==1 and self.leftKnockBackSpeed or self.rightKnockBackSpeed
+      self.velocity.vely = 0
+      if self.slide and not self:checkRegBox() then
+        self.slide = false
+        self:slideToReg()
+      elseif self.slide and self:checkRegBox() then
+        self.hitTimer = self.maxHitTime
+        self.velocity.velx = 0
+      end
+      self.climb = false
+      self.dashJump = false
+      megautils.add(harm, self)
+      megautils.add(damageSteam, self.transform.x+((self.collisionShape.w/2)+2)-11, self.transform.y-8)
+      megautils.add(damageSteam, self.transform.x+((self.collisionShape.w/2)+2), self.transform.y-8)
+      megautils.add(damageSteam, self.transform.x+((self.collisionShape.w/2)+2)+11, self.transform.y-8)
+      mmSfx.play("hurt")
     end
-  end
-  if self.inv or self.treble == 1 then
-    self.iFrame = self.maxIFrame
-  end
-  if self.changeHealth < 0 and not self.inv and self.treble ~= 1 then
-    self.hitTimer = 0
-    self.velocity.velx = self.side==1 and self.leftKnockBackSpeed or self.rightKnockBackSpeed
-    self.velocity.vely = 0
-    if self.slide and not self:checkRegBox() then
-      self.slide = false
-      self:slideToReg()
-    elseif self.slide and self:checkRegBox() then
-      self.hitTimer = self.maxHitTime
-      self.velocity.velx = 0
-    end
-    self.climb = false
-    self.dashJump = false
-    mmSfx.play("hurt")
-    megautils.add(harm, self)
-    megautils.add(damageSteam, self.transform.x+((self.collisionShape.w/2)+2)-11, self.transform.y-8)
-    megautils.add(damageSteam, self.transform.x+((self.collisionShape.w/2)+2), self.transform.y-8)
-    megautils.add(damageSteam, self.transform.x+((self.collisionShape.w/2)+2)+11, self.transform.y-8)
-    self.healthHandler.change = self.changeHealth
-    self.healthHandler:updateThis()
-  elseif self.changeHealth > 0 then
-    self.healthHandler.change = self.changeHealth
-    self.healthHandler:updateThis()
   end
 end
 
@@ -1256,11 +1248,8 @@ function megaman:code(dt)
   self.transform.y = math.clamp(self.transform.y, view.y-(self.collisionShape.h*1.4),
     view.y+view.h+4)
   self.shootTimer = math.min(self.shootTimer+1, self.maxShootTime)
-  if (self.transform.y >= view.y+view.h) and self.inv then
-    self.inv = false
-  end
   if (self.transform.y >= view.y+view.h) or 
-    (self.canGetCrushed and collision.checkSolid(self)) then
+    (self.blockCollision and collision.checkSolid(self)) then
     self.iFrame = self.maxIFrame
     self.inv = false
     if self.treble == 1 then self.treble = false end
@@ -1377,6 +1366,25 @@ end
 function megaman:phys()
   self.velocity.vely = self.gravity > 0 and math.min(self.maxAirSpeed, self.velocity.vely) or math.max(-self.maxAirSpeed, self.velocity.vely)
   collision.doCollision(self)
+  if self.spikesHurt and (self.xcoll ~= 0 or self.ycoll ~= 0 or (self.ground and self.gravity ~= 0)) then
+    local t = self:collisionTable(megautils.groups()["death"], self.xcoll, self.ycoll+math.sign(self.gravity))
+    local lx, ly = self.transform.x, self.transform.y
+    for i=1, #t do
+      t[i].isSolid = 0
+    end
+    collision.shiftObject(self, self.xcoll, self.ycoll+math.sign(self.gravity), true)
+    for i=1, #t do
+      t[i].isSolid = 1
+    end
+    if self.blockCollision and collision.checkSolid(self) then
+      self:hurt({self}, -999, 1)
+      if self.changeHealth < 0 then
+        self.ground = false
+      end
+    end
+    self.transform.x = lx
+    self.transform.y = ly
+  end
 end
 
 function megaman:updatePallete()

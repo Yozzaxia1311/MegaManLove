@@ -297,27 +297,19 @@ function camera:doView(ox, oy, without)
       self.transform.y = math.clamp(self.transform.y, self.scrolly, self.scrolly+self.scrollh-view.h)
     end
   end
-  self.locked = self:collisionTable(megautils.groups()["lock"])
-  local result = false
-  self.lockx = 0
-  self.locky = 0
-  self.lockw = 0
-  self.lockh = 0
-  for i=1, #self.locked do
-    local v = self.locked[i]
-    if v.name == self.curLock then
-      self.lockx = v.transform.x
-      self.locky = v.transform.y
-      self.lockw = v.collisionShape.w
-      self.lockh = v.collisionShape.h
-      result = true
-      break
+  if megautils.groups()["lock"] and self.curLock then
+    for i=1, #megautils.groups()["lock"] do
+      local v = megautils.groups()["lock"][i]
+      if v.name == self.curLock then
+        self.lockx = v.transform.x
+        self.locky = v.transform.y
+        self.lockw = v.collisionShape.w
+        self.lockh = v.collisionShape.h
+        self.transform.x = math.clamp(self.transform.x, self.lockx, self.lockx+self.lockw-view.w)
+        self.transform.y = math.clamp(self.transform.y, self.locky, self.locky+self.lockh-view.h)
+        break
+      end
     end
-  end
-  if not result then self.locked = nil end
-  if self.locked then
-    self.transform.x = math.clamp(self.transform.x, self.lockx, self.lockx+self.lockw)
-    self.transform.y = math.clamp(self.transform.y, self.locky, self.locky+self.lockh)
   end
   view.x, view.y = math.round(self.transform.x), math.round(self.transform.y)
   self:updateFuncs()

@@ -514,13 +514,12 @@ function rushJet:update(dt)
       self.isSolid = 2
     end
   elseif self.s == 2 then
-    if self.player:collision(self, 0, 1) and self.player.transform.y == self.transform.y - self.player.collisionShape.h then
+    if self.player.ground and self.player:collision(self, 0, math.sign(self.player.gravity)) then
       self.s = 3
       self.velocity.velx = self.side
       self.player.canWalk = false
       self.playerOn = true
     end
-    self:moveBy(self.velocity.velx, self.velocity.vely)
     collision.doCollision(self)
   elseif self.s == 3 then
     if self.playerOn then
@@ -533,7 +532,7 @@ function rushJet:update(dt)
       end
     else
       self.velocity.vely = 0
-      if self.player:collision(self, 0, 1) and self.player.transform.y == self.transform.y - self.player.collisionShape.h then
+      if self.player.ground and self.player:collision(self, 0, math.sign(self.player.gravity)) then
         self.s = 3
         self.velocity.velx = self.side
         self.player.canWalk = false
@@ -541,13 +540,14 @@ function rushJet:update(dt)
       end
     end
     collision.doCollision(self)
-    if self.playerOn and self.player.transform.y ~= self.transform.y - self.player.collisionShape.h then
+    if self.playerOn and (not self.player.ground or
+      not self.player:collision(self, 0, math.sign(self.player.gravity))) then
       self.player.canWalk = true
       self.playerOn = false
     end
     if self.xcoll ~= 0 or
-      (self.playerOn and collision.checkSolid(self, 0, -self.player.collisionShape.h-4)) then
-      if self.playerOn then self.player.canWalk = true self.player.onMovingFloor = nil end
+      (self.playerOn and collision.checkSolid(self, 0, (self.player.collisionShape.h+4)*-math.sign(self.player.gravity))) then
+      if self.playerOn then self.player.canWalk = true end
       self.c = "spawn_land"
       self.anims["spawn_land"]:gotoFrame(1)
       self.s = 4
