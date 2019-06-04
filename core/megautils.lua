@@ -237,13 +237,6 @@ function megautils.resetGameObjects()
   globals.manageStageResources = true
   globals.checkpoint = "start"
   globals.lives = globals.lives > 2 and globals.lives or globals.startingLives
-  wTank.banIds = {}
-  eTank.banIds = {}
-  life.banIds = {}
-  energy.banIds = {}
-  smallEnergy.banIds = {}
-  health.banIds = {}
-  smallHealth.banIds = {}
   for k, v in pairs(megautils.resetGameObjectsFuncs) do
     v()
   end

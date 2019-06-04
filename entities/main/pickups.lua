@@ -741,3 +741,13 @@ function wTank:draw()
     self.anim:draw(self.texOne, math.round(self.transform.x), math.round(self.transform.y))
   end
 end
+
+megautils.resetGameObjectsFuncs["pickups"] = function()
+  wTank.banIds = {}
+  eTank.banIds = {}
+  life.banIds = {}
+  energy.banIds = {}
+  smallEnergy.banIds = {}
+  health.banIds = {}
+  smallHealth.banIds = {}
+end
