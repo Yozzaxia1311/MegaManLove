@@ -115,6 +115,10 @@ end
 
 function love.resize(w, h)
   cscreen.update(w, h)
+  if console.state == 0 and console.y == -console.h then
+    console.y = -math.huge
+    console.update()
+  end
   resized = true
 end
 
