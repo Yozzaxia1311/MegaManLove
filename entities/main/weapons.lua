@@ -496,6 +496,7 @@ function rushJet:new(x, y, side, player, wpn, proto)
   self:setLayer(2)
   self.player = player
   self.playerOn = false
+  self.exclusiveCollision = {self.player}
 end
 
 function rushJet:face(n)
