@@ -1,19 +1,7 @@
 function initEngine()
+  control.init()
   globals = {}
   love.filesystem.load("requires.lua")()
-  
-  touchInput.add("left", "left-down", 16, -140, 64, 64)
-  touchInput.add("right", "left-down", 16+64, -140, 64, 64)
-  touchInput.add("down", "left-down", 16+32, -140+64, 64, 64)
-  touchInput.add("up", "left-down", 16+32, -140-64, 64, 64)
-  touchInput.add("jump", "right-down", -80, -140, 64, 64)
-  touchInput.add("dash", "right-down", -80-64, -140+32, 64, 64)
-  touchInput.add("shoot", "right-down", -80, -140+64, 64, 64)
-  touchInput.add("start", "right-up", -40, 16, 40, 40)
-  touchInput.add("select", "right-up", -80, 16, 40, 40)
-  touchInput.add("escape", "left-up", 0, 16, 40, 40)
-  touchInput.add("prev", "right-up", -40, 60, 40, 40)
-  touchInput.add("next", "right-up", -80, 60, 40, 40)
   
   view.init(256, 224, 1)
   
@@ -73,7 +61,9 @@ function love.load()
   
   love.filesystem.load("requirelibs.lua")()
   
-  local joysticks = love.joystick.getJoysticks()
+  inputHandler.init()
+  
+  local joysticks = inputHandler.gamepads
   defaultInputBinds = {["up"]={{"keyboard", "up"}, {"touch", "up"}},
     ["down"]={{"keyboard", "down"}, {"touch", "down"}},
     ["left"]={{"keyboard", "left"}, {"touch", "left"}},
@@ -85,6 +75,7 @@ function love.load()
     ["prev"]={{"keyboard", "a"}, {"touch", "prev"}},
     ["next"]={{"keyboard", "s"}, {"touch", "next"}},
     ["dash"]={{"keyboard", "c"}, {"touch", "dash"}}}
+  defaultInputBindsExtra = {}
   if #joysticks > 0 then
     local joyBinds = {["up"]={"axis", "lefty-", joysticks[1]:getName()},
     ["down"]={"axis", "lefty+", joysticks[1]:getName()},
@@ -100,12 +91,39 @@ function love.load()
     for k, v in pairs(defaultInputBinds) do
       defaultInputBinds[k] = table.merge({defaultInputBinds[k], {joyBinds[k]}})
     end
-    touchInput = false
+    for i=2, #joysticks do
+      defaultInputBindsExtra[i] = {["up"]={"axis", "lefty-", joysticks[i]:getName()},
+      ["down"]={"axis", "lefty+", joysticks[i]:getName()},
+      ["left"]={"axis", "leftx-", joysticks[i]:getName()},
+      ["right"]={"axis", "leftx+", joysticks[i]:getName()},
+      ["jump"]={"gamepad", "a", joysticks[i]:getName()},
+      ["shoot"]={"gamepad", "x", joysticks[i]:getName()},
+      ["start"]={"gamepad", "start", joysticks[i]:getName()},
+      ["select"]={"gamepad", "back", joysticks[i]:getName()},
+      ["prev"]={"gamepad", "leftshoulder", joysticks[i]:getName()},
+      ["next"]={"gamepad", "rightshoulder", joysticks[i]:getName()},
+      ["dash"]={"gamepad", "b", joysticks[i]:getName()}}
+    end
+    touchControls = false
   end
-  control.init()
+  
   console.init()
   initEngine()
-  local data = save.load("main.sav", true) or {}
+  
+  touchInput.add("left", "left-down", 16, -140, 64, 64)
+  touchInput.add("right", "left-down", 16+64, -140, 64, 64)
+  touchInput.add("down", "left-down", 16+32, -140+64, 64, 64)
+  touchInput.add("up", "left-down", 16+32, -140-64, 64, 64)
+  touchInput.add("jump", "right-down", -80, -140, 64, 64)
+  touchInput.add("dash", "right-down", -80-64, -140+32, 64, 64)
+  touchInput.add("shoot", "right-down", -80, -140+64, 64, 64)
+  touchInput.add("start", "right-up", -40, 16, 40, 40)
+  touchInput.add("select", "right-up", -80, 16, 40, 40)
+  touchInput.add("escape", "left-up", 0, 16, 40, 40)
+  touchInput.add("prev", "right-up", -40, 60, 40, 40)
+  touchInput.add("next", "right-up", -80, 60, 40, 40)
+  
+  local data = save.load("main.sav") or {}
   if data.fullscreen then
     convar.setValue("r_fullscreen", data.fullscreen, true)
   end
@@ -120,6 +138,14 @@ function love.resize(w, h)
     console.update()
   end
   resized = true
+end
+
+function love.joystickadded(j)
+  control.loadBinds()
+end
+
+function love.joystickremoved(j)
+  control.loadBinds()
 end
 
 function love.keypressed(k, s, r)

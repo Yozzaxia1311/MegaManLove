@@ -1,6 +1,6 @@
 save = {}
 
-save.compress = true
+save.compress = false
 
 function save.createDirChain(p)
   local part = p:split("/")

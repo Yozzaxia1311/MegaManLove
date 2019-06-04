@@ -37,7 +37,7 @@ function rebinder:new()
   globals.lastKeyPressed = nil
   self.step = 0
   self.done = false
-  self.data = save.load("main.sav", true) or {}
+  self.data = save.load("main.sav") or {}
   self.data.controls = {}
   inputHandler.refreshGamepads()
 end

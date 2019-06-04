@@ -19,6 +19,10 @@ function megautils.runFile(path)
 end
 
 function megautils.resetGame()
+  love.audio.stop()
+  mmMusic.stopMusic()
+  globals.resetState = true
+  globals.manageStageResources = true
   megautils.unload()
   initEngine()
   states.set("states/disclaimer.state.lua")

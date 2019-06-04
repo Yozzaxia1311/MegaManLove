@@ -53,41 +53,274 @@ function control.init()
   control.demo = false
   control.resetRec()
   
-  inputHandler.init()
-  
-  local data = save.load("main.sav", true)
   local binds = {}
   local step = 0
-  if not data or not data.controls then
-    binds[1] = defaultInputBinds.up
-    binds[2] = defaultInputBinds.down
-    binds[3] = defaultInputBinds.left
-    binds[4] = defaultInputBinds.right
-    binds[5] = defaultInputBinds.start
-    binds[6] = defaultInputBinds.select
-    binds[7] = defaultInputBinds.jump
-    binds[8] = defaultInputBinds.shoot
-    binds[9] = defaultInputBinds.prev
-    binds[10] = defaultInputBinds.next
-    binds[11] = defaultInputBinds.dash
-    control.usesDefaultBinds = true
-  else
+  
+  binds[1] = defaultInputBinds.up
+  binds[2] = defaultInputBinds.down
+  binds[3] = defaultInputBinds.left
+  binds[4] = defaultInputBinds.right
+  binds[5] = defaultInputBinds.start
+  binds[6] = defaultInputBinds.select
+  binds[7] = defaultInputBinds.jump
+  binds[8] = defaultInputBinds.shoot
+  binds[9] = defaultInputBinds.prev
+  binds[10] = defaultInputBinds.next
+  binds[11] = defaultInputBinds.dash
+  
+  step = step + 11
+  for i=2, maxPlayerCount do
+    if not defaultInputBindsExtra[i] then break end
+    binds[1+step] = defaultInputBindsExtra[i].up
+    binds[2+step] = defaultInputBindsExtra[i].down
+    binds[3+step] = defaultInputBindsExtra[i].left
+    binds[4+step] = defaultInputBindsExtra[i].right
+    binds[5+step] = defaultInputBindsExtra[i].start
+    binds[6+step] = defaultInputBindsExtra[i].select
+    binds[7+step] = defaultInputBindsExtra[i].jump
+    binds[8+step] = defaultInputBindsExtra[i].shoot
+    binds[9+step] = defaultInputBindsExtra[i].prev
+    binds[10+step] = defaultInputBindsExtra[i].next
+    binds[11+step] = defaultInputBindsExtra[i].dash
+    step = step + 11
+  end
+  
+  step = 0
+  local data = save.load("main.sav")
+  if data and data.controls then
     for i=1, maxPlayerCount do
-      binds[1+step] = data.controls[1+step]
-      binds[2+step] = data.controls[2+step]
-      binds[3+step] = data.controls[3+step]
-      binds[4+step] = data.controls[4+step]
-      binds[5+step] = data.controls[5+step]
-      binds[6+step] = data.controls[6+step]
-      binds[7+step] = data.controls[7+step]
-      binds[8+step] = data.controls[8+step]
-      binds[9+step] = data.controls[9+step]
-      binds[10+step] = data.controls[10+step]
-      binds[11+step] = data.controls[11+step]
+      binds[1+step] = data.controls[1+step] or binds[1+step]
+      binds[2+step] = data.controls[2+step] or binds[2+step]
+      binds[3+step] = data.controls[3+step] or binds[3+step]
+      binds[4+step] = data.controls[4+step] or binds[4+step]
+      binds[5+step] = data.controls[5+step] or binds[5+step]
+      binds[6+step] = data.controls[6+step] or binds[6+step]
+      binds[7+step] = data.controls[7+step] or binds[7+step]
+      binds[8+step] = data.controls[8+step] or binds[8+step]
+      binds[9+step] = data.controls[9+step] or binds[9+step]
+      binds[10+step] = data.controls[10+step] or binds[10+step]
+      binds[11+step] = data.controls[11+step] or binds[11+step]
       step = step + 11
     end
-    control.usesDefaultBinds = false
   end
+  step = 0
+  for i=1, maxPlayerCount do
+    if binds[1+step] then
+      inputHandler.bind(binds[1+step], 1+step)
+      inputHandler.bind(binds[2+step], 2+step)
+      inputHandler.bind(binds[3+step], 3+step)
+      inputHandler.bind(binds[4+step], 4+step)
+      inputHandler.bind(binds[5+step], 5+step)
+      inputHandler.bind(binds[6+step], 6+step)
+      inputHandler.bind(binds[7+step], 7+step)
+      inputHandler.bind(binds[8+step], 8+step)
+      inputHandler.bind(binds[9+step], 9+step)
+      inputHandler.bind(binds[10+step], 10+step)
+      inputHandler.bind(binds[11+step], 11+step)
+    end
+    step = step + 11
+  end
+end
+
+function control.defaultBinds()
+  inputHandler.refreshGamepads()
+  inputHandler.unbind()
+  
+  local joysticks = inputHandler.gamepads
+  local binds = {}
+  local step = 0
+  
+  defaultInputBinds = {["up"]={{"keyboard", "up"}, {"touch", "up"}},
+    ["down"]={{"keyboard", "down"}, {"touch", "down"}},
+    ["left"]={{"keyboard", "left"}, {"touch", "left"}},
+    ["right"]={{"keyboard", "right"}, {"touch", "right"}},
+    ["jump"]={{"keyboard", "z"}, {"touch", "jump"}},
+    ["shoot"]={{"keyboard", "x"}, {"touch", "shoot"}},
+    ["start"]={{"keyboard", "return"}, {"touch", "start"}},
+    ["select"]={{"keyboard", "rshift"}, {"touch", "select"}},
+    ["prev"]={{"keyboard", "a"}, {"touch", "prev"}},
+    ["next"]={{"keyboard", "s"}, {"touch", "next"}},
+    ["dash"]={{"keyboard", "c"}, {"touch", "dash"}}}
+  
+  defaultInputBindsExtra = {}
+  
+  if #joysticks > 0 then
+    local joyBinds = {["up"]={"axis", "lefty-", joysticks[1]:getName()},
+    ["down"]={"axis", "lefty+", joysticks[1]:getName()},
+    ["left"]={"axis", "leftx-", joysticks[1]:getName()},
+    ["right"]={"axis", "leftx+", joysticks[1]:getName()},
+    ["jump"]={"gamepad", "a", joysticks[1]:getName()},
+    ["shoot"]={"gamepad", "x", joysticks[1]:getName()},
+    ["start"]={"gamepad", "start", joysticks[1]:getName()},
+    ["select"]={"gamepad", "back", joysticks[1]:getName()},
+    ["prev"]={"gamepad", "leftshoulder", joysticks[1]:getName()},
+    ["next"]={"gamepad", "rightshoulder", joysticks[1]:getName()},
+    ["dash"]={"gamepad", "b", joysticks[1]:getName()}}
+    for k, v in pairs(defaultInputBinds) do
+      defaultInputBinds[k] = table.merge({defaultInputBinds[k], {joyBinds[k]}})
+    end
+    for i=2, #joysticks do
+      defaultInputBindsExtra[i] = {["up"]={"axis", "lefty-", joysticks[i]:getName()},
+      ["down"]={"axis", "lefty+", joysticks[i]:getName()},
+      ["left"]={"axis", "leftx-", joysticks[i]:getName()},
+      ["right"]={"axis", "leftx+", joysticks[i]:getName()},
+      ["jump"]={"gamepad", "a", joysticks[i]:getName()},
+      ["shoot"]={"gamepad", "x", joysticks[i]:getName()},
+      ["start"]={"gamepad", "start", joysticks[i]:getName()},
+      ["select"]={"gamepad", "back", joysticks[i]:getName()},
+      ["prev"]={"gamepad", "leftshoulder", joysticks[i]:getName()},
+      ["next"]={"gamepad", "rightshoulder", joysticks[i]:getName()},
+      ["dash"]={"gamepad", "b", joysticks[i]:getName()}}
+    end
+  end
+  
+  binds[1] = defaultInputBinds.up
+  binds[2] = defaultInputBinds.down
+  binds[3] = defaultInputBinds.left
+  binds[4] = defaultInputBinds.right
+  binds[5] = defaultInputBinds.start
+  binds[6] = defaultInputBinds.select
+  binds[7] = defaultInputBinds.jump
+  binds[8] = defaultInputBinds.shoot
+  binds[9] = defaultInputBinds.prev
+  binds[10] = defaultInputBinds.next
+  binds[11] = defaultInputBinds.dash
+  
+  step = step + 11
+  for i=2, maxPlayerCount do
+    if not defaultInputBindsExtra[i] then break end
+    binds[1+step] = defaultInputBindsExtra[i].up
+    binds[2+step] = defaultInputBindsExtra[i].down
+    binds[3+step] = defaultInputBindsExtra[i].left
+    binds[4+step] = defaultInputBindsExtra[i].right
+    binds[5+step] = defaultInputBindsExtra[i].start
+    binds[6+step] = defaultInputBindsExtra[i].select
+    binds[7+step] = defaultInputBindsExtra[i].jump
+    binds[8+step] = defaultInputBindsExtra[i].shoot
+    binds[9+step] = defaultInputBindsExtra[i].prev
+    binds[10+step] = defaultInputBindsExtra[i].next
+    binds[11+step] = defaultInputBindsExtra[i].dash
+    step = step + 11
+  end
+  
+  step = 0
+  for i=1, maxPlayerCount do
+    if binds[1+step] then
+      inputHandler.bind(binds[1+step], 1+step)
+      inputHandler.bind(binds[2+step], 2+step)
+      inputHandler.bind(binds[3+step], 3+step)
+      inputHandler.bind(binds[4+step], 4+step)
+      inputHandler.bind(binds[5+step], 5+step)
+      inputHandler.bind(binds[6+step], 6+step)
+      inputHandler.bind(binds[7+step], 7+step)
+      inputHandler.bind(binds[8+step], 8+step)
+      inputHandler.bind(binds[9+step], 9+step)
+      inputHandler.bind(binds[10+step], 10+step)
+      inputHandler.bind(binds[11+step], 11+step)
+    end
+    step = step + 11
+  end
+end
+
+function control.loadBinds()
+  inputHandler.refreshGamepads()
+  inputHandler.unbind()
+  
+  local joysticks = inputHandler.gamepads
+  local binds = {}
+  local step = 0
+  
+  defaultInputBinds = {["up"]={{"keyboard", "up"}, {"touch", "up"}},
+    ["down"]={{"keyboard", "down"}, {"touch", "down"}},
+    ["left"]={{"keyboard", "left"}, {"touch", "left"}},
+    ["right"]={{"keyboard", "right"}, {"touch", "right"}},
+    ["jump"]={{"keyboard", "z"}, {"touch", "jump"}},
+    ["shoot"]={{"keyboard", "x"}, {"touch", "shoot"}},
+    ["start"]={{"keyboard", "return"}, {"touch", "start"}},
+    ["select"]={{"keyboard", "rshift"}, {"touch", "select"}},
+    ["prev"]={{"keyboard", "a"}, {"touch", "prev"}},
+    ["next"]={{"keyboard", "s"}, {"touch", "next"}},
+    ["dash"]={{"keyboard", "c"}, {"touch", "dash"}}}
+  
+  defaultInputBindsExtra = {}
+  
+  if #joysticks > 0 then
+    local joyBinds = {["up"]={"axis", "lefty-", joysticks[1]:getName()},
+    ["down"]={"axis", "lefty+", joysticks[1]:getName()},
+    ["left"]={"axis", "leftx-", joysticks[1]:getName()},
+    ["right"]={"axis", "leftx+", joysticks[1]:getName()},
+    ["jump"]={"gamepad", "a", joysticks[1]:getName()},
+    ["shoot"]={"gamepad", "x", joysticks[1]:getName()},
+    ["start"]={"gamepad", "start", joysticks[1]:getName()},
+    ["select"]={"gamepad", "back", joysticks[1]:getName()},
+    ["prev"]={"gamepad", "leftshoulder", joysticks[1]:getName()},
+    ["next"]={"gamepad", "rightshoulder", joysticks[1]:getName()},
+    ["dash"]={"gamepad", "b", joysticks[1]:getName()}}
+    for k, v in pairs(defaultInputBinds) do
+      defaultInputBinds[k] = table.merge({defaultInputBinds[k], {joyBinds[k]}})
+    end
+    for i=2, #joysticks do
+      defaultInputBindsExtra[i] = {["up"]={"axis", "lefty-", joysticks[i]:getName()},
+      ["down"]={"axis", "lefty+", joysticks[i]:getName()},
+      ["left"]={"axis", "leftx-", joysticks[i]:getName()},
+      ["right"]={"axis", "leftx+", joysticks[i]:getName()},
+      ["jump"]={"gamepad", "a", joysticks[i]:getName()},
+      ["shoot"]={"gamepad", "x", joysticks[i]:getName()},
+      ["start"]={"gamepad", "start", joysticks[i]:getName()},
+      ["select"]={"gamepad", "back", joysticks[i]:getName()},
+      ["prev"]={"gamepad", "leftshoulder", joysticks[i]:getName()},
+      ["next"]={"gamepad", "rightshoulder", joysticks[i]:getName()},
+      ["dash"]={"gamepad", "b", joysticks[i]:getName()}}
+    end
+  end
+  binds[1] = defaultInputBinds.up
+  binds[2] = defaultInputBinds.down
+  binds[3] = defaultInputBinds.left
+  binds[4] = defaultInputBinds.right
+  binds[5] = defaultInputBinds.start
+  binds[6] = defaultInputBinds.select
+  binds[7] = defaultInputBinds.jump
+  binds[8] = defaultInputBinds.shoot
+  binds[9] = defaultInputBinds.prev
+  binds[10] = defaultInputBinds.next
+  binds[11] = defaultInputBinds.dash
+  
+  step = step + 11
+  for i=2, maxPlayerCount do
+    if not defaultInputBindsExtra[i] then break end
+    binds[1+step] = defaultInputBindsExtra[i].up
+    binds[2+step] = defaultInputBindsExtra[i].down
+    binds[3+step] = defaultInputBindsExtra[i].left
+    binds[4+step] = defaultInputBindsExtra[i].right
+    binds[5+step] = defaultInputBindsExtra[i].start
+    binds[6+step] = defaultInputBindsExtra[i].select
+    binds[7+step] = defaultInputBindsExtra[i].jump
+    binds[8+step] = defaultInputBindsExtra[i].shoot
+    binds[9+step] = defaultInputBindsExtra[i].prev
+    binds[10+step] = defaultInputBindsExtra[i].next
+    binds[11+step] = defaultInputBindsExtra[i].dash
+    step = step + 11
+  end
+  
+  step = 0
+  local data = save.load("main.sav")
+  if data and data.controls then
+    for i=1, maxPlayerCount do
+      binds[1+step] = data.controls[1+step] or binds[1+step]
+      binds[2+step] = data.controls[2+step] or binds[2+step]
+      binds[3+step] = data.controls[3+step] or binds[3+step]
+      binds[4+step] = data.controls[4+step] or binds[4+step]
+      binds[5+step] = data.controls[5+step] or binds[5+step]
+      binds[6+step] = data.controls[6+step] or binds[6+step]
+      binds[7+step] = data.controls[7+step] or binds[7+step]
+      binds[8+step] = data.controls[8+step] or binds[8+step]
+      binds[9+step] = data.controls[9+step] or binds[9+step]
+      binds[10+step] = data.controls[10+step] or binds[10+step]
+      binds[11+step] = data.controls[11+step] or binds[11+step]
+      step = step + 11
+    end
+  end
+  
   step = 0
   for i=1, maxPlayerCount do
     if binds[1+step] then

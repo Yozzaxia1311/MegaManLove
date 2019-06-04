@@ -40,7 +40,7 @@ function cmdRecEnd(cmd)
   console.print("Recording ended")
   console.print("Remember to save with recsave")
 end
-concmd["recend"] = {
+concmd["rec_end"] = {
   helptext = "stop recording",
   flags = {},
   fun = cmdRecEnd,
@@ -71,7 +71,7 @@ function cmdRecDel(cmd)
     console.print("Recording deleted")
   end
 end
-concmd["recdel"] = {
+concmd["rec_del"] = {
   helptext = "delete recording",
   flags = {},
   fun = cmdRecDel,
@@ -92,10 +92,20 @@ function cmdRecOpen(cmd)
     console.print("No such record file \""..cmd[2].."\"")
   end
 end
-concmd["recopen"] = {
+concmd["rec_open"] = {
   helptext = "stop recording",
   flags = {},
   fun = cmdRecOpen,
+}
+
+function cmdDefBinds(cmd)
+  control.defaultBinds()
+  console.print("Now using default input binds")
+end
+concmd["def_binds"] = {
+  helptext = "load default input binds",
+  flags = {},
+  fun = cmdDefBinds,
 }
 
 function cmdOpenDir(cmd)

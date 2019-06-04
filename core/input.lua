@@ -31,6 +31,7 @@ function touchInput.updateTouchPos()
 end
 
 function touchInput.down(n)
+  if not touchControls then return false end
   local touches = {}
   if love.mouse and love.mouse.isDown(1) then
     touches[1] = {}
