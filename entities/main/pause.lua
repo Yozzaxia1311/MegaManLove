@@ -215,7 +215,6 @@ function weaponSelect:update(dt)
           self.section = 1
           self.x = 1
           self.y = 1
-          self.w:switch(self.list[self.y][self.x])
           megaman.colorOutline[self.player] = self.w.colorOutline[self.cur]
           megaman.colorOne[self.player] = self.w.colorOne[self.cur]
           megaman.colorTwo[self.player] = self.w.colorTwo[self.cur]
@@ -229,7 +228,6 @@ function weaponSelect:update(dt)
       end
     end
     if olx ~= self.x or oly ~= self.y then
-      self.w:switch(self.list[self.y][self.x])
       megaman.colorOutline[self.player] = self.w.colorOutline[self.list[self.y][self.x]]
       megaman.colorOne[self.player] = self.w.colorOne[self.list[self.y][self.x]]
       megaman.colorTwo[self.player] = self.w.colorTwo[self.list[self.y][self.x]]
@@ -264,7 +262,6 @@ function weaponSelect:update(dt)
         end
         self.y = self.y-1
       end
-      self.w:switch(self.list[self.y][self.x])
       megaman.colorOutline[self.player] = self.w.colorOutline[self.list[self.y][self.x]]
       megaman.colorOne[self.player] = self.w.colorOne[self.list[self.y][self.x]]
       megaman.colorTwo[self.player] = self.w.colorTwo[self.list[self.y][self.x]]

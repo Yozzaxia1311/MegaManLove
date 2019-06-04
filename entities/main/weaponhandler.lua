@@ -1,5 +1,6 @@
 weaponhandler = entity:extend()
 
+weaponhandler.removeGroups = {}
 weaponhandler.id = 0
 
 function weaponhandler:new(side, r, slots)
@@ -61,7 +62,22 @@ function weaponhandler:register(slot, name, pn, colorone, colortwo, coloroutline
   self.pauseConf[slot] = pn
 end
 
+function weaponhandler:removeWeaponShots()
+  if weaponhandler.removeGroups[self.current] then
+    for _, i in ipairs(weaponhandler.removeGroups[self.current]) do
+      if megautils.groups()[i .. self.id] then
+        for _, v in ipairs(megautils.groups()[i .. self.id]) do
+          megautils.remove(v, true)
+        end
+      end
+    end
+  end
+end
+
 function weaponhandler:switch(slot)
+  if self.currentSlot ~= slot then
+    self:removeWeaponShots()
+  end
   self.current = self.weapons[slot]
   self.currentSlot = self.slots[self.current]
   self.currentColorOne = self.colorOne[self.currentSlot]
@@ -69,6 +85,9 @@ function weaponhandler:switch(slot)
 end
 
 function weaponhandler:switchName(name)
+  if self.current ~= name then
+    self:removeWeaponShots()
+  end
   self.current = name
   self.currentSlot = self.slots[self.current]
   self.currentColorOne = self.colorOne[self.currentSlot]

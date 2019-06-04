@@ -52,7 +52,6 @@ function initEngine()
   loader.clear()
   megautils.load()
   megautils.resetGameObjects()
-  if love.keyboard then megautils.enableConsole() end
   collectgarbage()
 end
 
@@ -65,7 +64,7 @@ function love.load()
   altEnterOnce = false
   deadZone = 0.8
   maxPlayerCount = 4
-  useConsole = true
+  useConsole = love.keyboard
   showFPS = false
   showEntityCount = false
   framerate = 1/60

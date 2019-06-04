@@ -1,10 +1,12 @@
+weaponhandler.removeGroups["protoBuster"] = {"megaBuster", "protoChargedBuster"}
+
 protoSemiBuster = basicEntity:extend()
 
 function protoSemiBuster:new(x, y, dir, wpn)
   protoSemiBuster.super.new(self)
   self.added = function(self)
-    self:addToGroup("protoBuster")
-    self:addToGroup("protoBuster" .. wpn.id)
+    self:addToGroup("megaBuster")
+    self:addToGroup("megaBuster" .. wpn.id)
     self:addToGroup("freezable")
     self:addToGroup("removeOnTransition")
   end
@@ -19,7 +21,7 @@ function protoSemiBuster:new(x, y, dir, wpn)
   self.side = dir
   self.wpn = wpn
   mmSfx.play("semi_charged")
-  self:setLayer(1, "b")
+  self:setLayer(1)
 end
 
 function protoSemiBuster:update(dt)
@@ -31,7 +33,7 @@ function protoSemiBuster:update(dt)
   end
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
-  if megautils.outside(self) or self.wpn.currentSlot ~= 0 then
+  if megautils.outside(self) then
     megautils.remove(self, true)
   end
 end
@@ -64,7 +66,7 @@ function protoChargedBuster:new(x, y, dir, wpn)
   self.wpn = wpn
   mmSfx.play("proto_charged")
   self:face(-self.side)
-  self:setLayer(1, "b")
+  self:setLayer(1)
 end
 
 function protoChargedBuster:face(n)
@@ -81,7 +83,7 @@ function protoChargedBuster:update(dt)
   end
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
-  if megautils.outside(self) or self.wpn.currentSlot ~= 0 then
+  if megautils.outside(self) then
     megautils.remove(self, true)
   end
 end
@@ -92,6 +94,8 @@ function protoChargedBuster:draw()
 end
 
 rollBuster = basicEntity:extend()
+
+weaponhandler.removeGroups["rollBuster"] = {"rollBuster"}
 
 function rollBuster:new(x, y, dir, wpn)
   rollBuster.super.new(self)
@@ -111,7 +115,7 @@ function rollBuster:new(x, y, dir, wpn)
   self.velocity = velocity()
   self.velocity.velx = self.side * 6
   self.wpn = wpn
-  self:setLayer(1, "b")
+  self:setLayer(1)
 end
 
 function rollBuster:recycle(x, y, dir, wpn)
@@ -134,8 +138,7 @@ function rollBuster:update(dt)
   end
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
-  if megautils.outside(self) or (self.wpn.currentSlot ~= 0 and self.wpn.currentSlot ~= 9
-    and self.wpn.currentSlot ~= 10) then
+  if megautils.outside(self) then
     megautils.remove(self, true)
   end
 end
@@ -146,6 +149,8 @@ function rollBuster:draw()
 end
 
 bassBuster = basicEntity:extend()
+
+weaponhandler.removeGroups["bassBuster"] = {"bassBuster"}
 
 function bassBuster:new(x, y, dir, wpn, t)
   bassBuster.super.new(self)
@@ -168,7 +173,7 @@ function bassBuster:new(x, y, dir, wpn, t)
   self.velocity.vely = megautils.calcY(dir) * 5
   self.side = self.velocity.velx < 0 and -1 or 1
   self.wpn = wpn
-  self:setLayer(1, "b")
+  self:setLayer(1)
   self.treble = t
 end
 
@@ -193,8 +198,7 @@ function bassBuster:update(dt)
   end
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
-  if megautils.outside(self) or (self.wpn.currentSlot ~= 0 and self.wpn.currentSlot ~= 9
-    and self.wpn.currentSlot ~= 10) or
+  if megautils.outside(self) or
     (not self.treble and (collision.checkSolid(self) or #self:collisionTable(megautils.groups()["boss_door"]) ~= 0)) then
     megautils.remove(self, true)
   end
@@ -206,6 +210,8 @@ function bassBuster:draw()
 end
 
 megaBuster = basicEntity:extend()
+
+weaponhandler.removeGroups["megaBuster"] = {"megaBuster", "megaChargedBuster"}
 
 function megaBuster:new(x, y, dir, wpn)
   megaBuster.super.new(self)
@@ -226,7 +232,7 @@ function megaBuster:new(x, y, dir, wpn)
   self.velocity.velx = dir * 5
   self.side = dir
   self.wpn = wpn
-  self:setLayer(1, "b")
+  self:setLayer(1)
 end
 
 function megaBuster:recycle(x, y, dir, wpn)
@@ -249,8 +255,7 @@ function megaBuster:update(dt)
   end
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
-  if megautils.outside(self) or (self.wpn.currentSlot ~= 0 and self.wpn.currentSlot ~= 9
-    and self.wpn.currentSlot ~= 10) then
+  if megautils.outside(self) then
     megautils.remove(self, true)
   end
 end
@@ -282,7 +287,7 @@ function megaSemiBuster:new(x, y, dir, wpn)
   self.wpn = wpn
   mmSfx.play("semi_charged")
   self:face(-self.side)
-  self:setLayer(1, "b")
+  self:setLayer(1)
 end
 
 function megaSemiBuster:face(n)
@@ -299,7 +304,7 @@ function megaSemiBuster:update(dt)
   end
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
-  if megautils.outside(self) or self.wpn.currentSlot ~= 0 then
+  if megautils.outside(self) then
     megautils.remove(self, true)
   end
 end
@@ -332,7 +337,7 @@ function megaChargedBuster:new(x, y, dir, wpn)
   self.wpn = wpn
   mmSfx.play("charged")
   self:face(-self.side)
-  self:setLayer(1, "b")
+  self:setLayer(1)
 end
 
 function megaChargedBuster:face(n)
@@ -349,7 +354,7 @@ function megaChargedBuster:update(dt)
   end
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
-  if megautils.outside(self) or self.wpn.currentSlot ~= 0 then
+  if megautils.outside(self) then
     megautils.remove(self, true)
   end
 end
@@ -360,6 +365,8 @@ function megaChargedBuster:draw()
 end
 
 trebleBoost = entity:extend()
+
+weaponhandler.removeGroups["trebleBoost"] = {"trebleBoost", "bassBuster"}
 
 function trebleBoost:new(x, y, side, player, wpn)
   trebleBoost.super.new(self)
@@ -447,7 +454,7 @@ function trebleBoost:update(dt)
     end
   end
   self:face(self.side)
-  if megautils.outside(self) or self.wpn.currentSlot ~= 9 then
+  if megautils.outside(self) then
     megautils.remove(self, true)
   end
 end
@@ -458,6 +465,8 @@ function trebleBoost:draw()
 end
 
 rushJet = entity:extend()
+
+weaponhandler.removeGroups["rushJet"] = {"rushJet", "megaBuster", "bassBuster", "rollBuster"}
 
 function rushJet:new(x, y, side, player, wpn, proto)
   rushJet.super.new(self)
@@ -572,7 +581,7 @@ function rushJet:update(dt)
     self:moveBy(0, -8)
   end
   self:face(self.side)
-  if megautils.outside(self) or self.wpn.currentSlot ~= 10 then
+  if megautils.outside(self) then
     megautils.remove(self, true)
   end
 end
@@ -591,6 +600,8 @@ function rushJet:draw()
 end
 
 rushCoil = entity:extend()
+
+weaponhandler.removeGroups["rushCoil"] = {"rushCoil", "megaBuster", "bassBuster", "rollBuster"}
 
 function rushCoil:new(x, y, side, player, w, proto)
   rushCoil.super.new(self)
@@ -697,7 +708,7 @@ function rushCoil:update(dt)
     self:moveBy(0, -8)
   end
   self:face(self.side)
-  if megautils.outside(self) or self.wpn.currentSlot ~= 9 then
+  if megautils.outside(self) then
     megautils.remove(self, true)
   end
 end
@@ -708,6 +719,8 @@ function rushCoil:draw()
 end
 
 stickWeapon = entity:extend()
+
+weaponhandler.removeGroups["stickWeapon"] = {"stickWeapon"}
 
 function stickWeapon:new(x, y, dir, wpn)
   stickWeapon.super.new(self)
@@ -737,7 +750,7 @@ function stickWeapon:update(dt)
     self.velocity.velx = 4*-self.side
   end
   self:moveBy(self.velocity.velx, self.velocity.vely)
-  if megautils.outside(self) or self.wpn.currentSlot ~= 1 then
+  if megautils.outside(self) then
     megautils.remove(self, true)
   end
 end

@@ -5,6 +5,7 @@ megautils.resetGameObjectsFuncs["megaman"] = function()
   megaman.weaponHandler = {}
   globals.mainPlayer = nil
   globals.allPlayers = {}
+  weaponhandler.id = 0
   
   for i=1, globals.playerCount do
     megaman.weaponHandler[i] = weaponhandler(nil, nil, 10)
@@ -533,8 +534,8 @@ end
 function megaman:attemptWeaponUsage()
   local w = megaman.weaponHandler[self.player]
   if control.shootDown[self.player] then
-    if (w.current == "bassBuster" or
-      (w.weapons[0] == "bassBuster" and (w.current == "rushJet" or w.current == "rushCoil"))) then
+    if w.current == "bassBuster" or
+      (w.weapons[0] == "bassBuster" and (w.current == "rushJet" or w.current == "rushCoil")) then
       self.rapidShotTime = math.min(self.rapidShotTime + 1, self.maxRapidShotTime)
       if self.rapidShotTime == self.maxRapidShotTime then
         self.rapidShotTime = 0
@@ -542,13 +543,6 @@ function megaman:attemptWeaponUsage()
           (not megautils.groups()["rushCoil" .. w.id] or #megautils.groups()["rushCoil" .. w.id] < 1) then
           megautils.add(rushCoil, self.transform.x+(self.side==1 and 18 or -32),
             self.transform.y, self.side, self, w)
-          self.maxShootTime = 14
-          self.shootTimer = 0
-          self:useShootAnimation()
-        elseif w.current == "rushJet" and w.energy[w.currentSlot] > 0 and
-          (not megautils.groups()["rushJet" .. w.id] or #megautils.groups()["rushJet" .. w.id] < 1) then
-          megautils.add(rushJet, self.transform.x+(self.side==1 and 18 or -32),
-              self.transform.y+6, self.side, self, w)
           self.maxShootTime = 14
           self.shootTimer = 0
           self:useShootAnimation()
