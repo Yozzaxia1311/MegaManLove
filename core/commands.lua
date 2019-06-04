@@ -40,7 +40,7 @@ function cmdRecEnd(cmd)
   console.print("Recording ended")
   console.print("Remember to save with recsave")
 end
-concmd["rec_end"] = {
+concmd["recend"] = {
   helptext = "stop recording",
   flags = {},
   fun = cmdRecEnd,
@@ -71,7 +71,7 @@ function cmdRecDel(cmd)
     console.print("Recording deleted")
   end
 end
-concmd["rec_del"] = {
+concmd["recdel"] = {
   helptext = "delete recording",
   flags = {},
   fun = cmdRecDel,
@@ -92,7 +92,7 @@ function cmdRecOpen(cmd)
     console.print("No such record file \""..cmd[2].."\"")
   end
 end
-concmd["rec_open"] = {
+concmd["recopen"] = {
   helptext = "stop recording",
   flags = {},
   fun = cmdRecOpen,
@@ -102,7 +102,7 @@ function cmdDefBinds(cmd)
   control.defaultBinds()
   console.print("Now using default input binds")
 end
-concmd["def_binds"] = {
+concmd["defbinds"] = {
   helptext = "load default input binds",
   flags = {},
   fun = cmdDefBinds,
@@ -291,7 +291,7 @@ function cmdLockCheats(cmd)
   end
   if convar.isValid("cheats") and not table.contains(convar["cheats"].flags, "cheat") then table.insert(convar["cheats"].flags, "cheat") end
 end
-concmd["lock_cheats"] = {
+concmd["lockcheats"] = {
   helptext = "lock cheats for the rest of the game",
   flags = {},
   fun = cmdLockCheats,
@@ -317,7 +317,7 @@ function cmdRunLua(cmd)
   end
   love.filesystem.load(cmd[2])()
 end
-concmd["run_lua"] = {
+concmd["runlua"] = {
   helptext = "run a lua file",
   flags = {"cheat"},
   fun = cmdRunLua,
