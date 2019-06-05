@@ -193,6 +193,23 @@ local function newAnimation(frames, durations, onLoop)
   )
 end
 
+function Animation:setDurations(durations)
+  durations = parseDurations(durations, #self.frames)
+  local intervals, totalDuration = parseIntervals(durations)
+  local setTo = false
+  if self.timer > totalDuration then
+    setTo = true
+  end
+  self.intervals = intervals
+  self.durations = durations
+  self.totalDuration = totalDuration
+  if setTo then
+    self.position = #self.frames
+    self.timer = self.totalDuration
+  end
+  self.looped = false
+end
+
 function Animation:clone()
   local newAnim = newAnimation(self.frames, self.durations, self.onLoop)
   newAnim.flippedH, newAnim.flippedV = self.flippedH, self.flippedV

@@ -416,6 +416,7 @@ end
 function smallBlast:recycle(x, y, spd)
   self.transform.y = y
   self.transform.x = x
+  self.anim:setDurations(spd or 0.065)
   self.anim:gotoFrame(1)
   self.updated = true
 end
