@@ -219,9 +219,9 @@ end
 
 function entitysystem:clear()
   for i=1, #self.all do
-    self.updates[i].isRemoved = true
-    self.updates[i]:removed()
-    self.updates[i].isAdded = false
+    self.all[i].isRemoved = true
+    self.all[i]:removed()
+    self.all[i].isAdded = false
   end
   section.sections = {}
   section.current = nil
