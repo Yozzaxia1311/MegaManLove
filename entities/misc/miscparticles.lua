@@ -410,13 +410,17 @@ function smallBlast:new(x, y, spd)
   self.transform.x = x
   self:setRectangleCollision(24, 24)
   self.tex = loader.get("particles")
-  self.anim = anim8.newAnimation(loader.get("explode_particle_grid")("1-5", 1), spd or 0.065)
+  self.spd = spd or 0.065
+  self.anim = anim8.newAnimation(loader.get("explode_particle_grid")("1-5", 1), self.spd)
 end
 
 function smallBlast:recycle(x, y, spd)
   self.transform.y = y
   self.transform.x = x
-  self.anim:setDurations(spd or 0.065)
+  if spd ~= self.spd then
+    self.spd = spd or 0.065
+    self.anim:setDurations(self.spd)
+  end
   self.anim:gotoFrame(1)
   self.updated = true
 end
