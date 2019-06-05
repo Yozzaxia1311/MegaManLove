@@ -42,8 +42,7 @@ function entitysystem:emptyRecycling(c, num)
   end
 end
 
-function entitysystem:add(c, ...)
-  if not c then return end
+function entitysystem:getRecycled(c, ...)
   local e
   local vr = self.recycle[c]
   if vr and #vr > 0 then
@@ -52,6 +51,12 @@ function entitysystem:add(c, ...)
     vr[#vr] = nil
   end
   if not e then e = c(...) end
+  return e
+end
+
+function entitysystem:add(c, ...)
+  if not c then return end
+  local e = self:getRecycled(c, ...)
   if not e.static then
     local done = false
     for i=1, #self.entities do
@@ -113,7 +118,7 @@ end
 function entitysystem:addq(c, ...)
   if not c then return end
   if not table.contains(self.addQueue, c) then
-    self.addQueue[#self.addQueue+1] = c(...)
+    self.addQueue[#self.addQueue+1] = self:getRecycled(c, ...)
     return self.addQueue[#self.addQueue]
   end
 end

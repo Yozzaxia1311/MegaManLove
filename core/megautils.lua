@@ -206,6 +206,10 @@ function megautils.addq(o, ...)
   return states.currentstate.system:addq(o, ...)
 end
 
+function megautils.getRecycled(o, ...)
+  return states.currentstate.system:getRecycled(o, ...)
+end
+
 function megautils.emptyRecycling(c, num)
   states.currentstate.system:emptyRecycling(c, num)
 end
