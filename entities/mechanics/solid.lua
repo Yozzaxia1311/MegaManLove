@@ -138,8 +138,8 @@ function collision.entityPlatform(self)
                 if resolid == 1 then
                   if epCanCrush and v:collision(self) then
                     v.crushed = self
-                    for k, v in pairs(self.canBeInvincible) do
-                      self.canBeInvincible[k] = false
+                    for k2, _ in pairs(v.canBeInvincible) do
+                      v.canBeInvincible[k2] = false
                     end
                     v.iFrame = v.maxIFrame
                     v:hurt({v}, -999)
