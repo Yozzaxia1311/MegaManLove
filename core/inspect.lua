@@ -259,7 +259,7 @@ function Inspector:putTable(t)
       local count = 0
       for i=1, sequenceLength do
         if count > 0 then self:puts(',') end
-        self:puts(' ')
+        --self:puts(' ')
         self:putValue(t[i])
         count = count + 1
       end
@@ -284,7 +284,7 @@ function Inspector:putTable(t)
     if #nonSequentialKeys > 0 or mt then -- result is multi-lined. Justify closing }
       self:tabify()
     elseif sequenceLength > 0 then -- array tables have one extra space before closing }
-      self:puts(' ')
+      --self:puts(' ')
     end
 
     self:puts('}')

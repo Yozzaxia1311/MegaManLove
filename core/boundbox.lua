@@ -1,19 +1,35 @@
-function rectOverlapsRect(x1,y1,w1,h1, x2,y2,w2,h2)
-  return x1 < x2+w2 and
-         x2 < x1+w1 and
-         y1 < y2+h2 and
-         y2 < y1+h1
+function rectOverlapsRect(x1, y1, w1, h1, x2, y2, w2, h2)
+  return x1 < x2 + w2 and
+         x2 < x1 + w1 and
+         y1 < y2 + h2 and
+         y2 < y1 + h1
 end
 
-function pointOverlapsRect(x1,y1, x2,y2,w2,h2)
-  return x1 < x2+w2 and
+function pointOverlapsRect(x1, y1, x2, y2, w2, h2)
+  return x1 < x2 + w2 and
          x2 < x1 and
-         y1 < y2+h2 and
+         y1 < y2 + h2 and
          y2 < y1
 end
 
-function pointOverlapsPoint(x1,y1, x2,y2)
+function pointOverlapsPoint(x1, y1, x2, y2)
   return x1 == x2 and y1 == y2
+end
+
+function circleOverlapsCircle(x1, y1, r1, x2, y2, r2)
+  return math.dist2d(x1, y1, x2, y2) <= r1 + r2
+end
+
+function pointOverlapsCircle(x1, y1, x2, y2, r2)
+  return math.dist2d(x1, y1, x2, y2) <= r2
+end
+
+function circleOverlapsRect(x1, y1, r1, x2, y2, w2, h2)
+  return pointOverlapsRect(x1, y1, x2, y2, w2, h2) or
+    pointOverlapsCircle(x2, y2, x1, y1, r1) or
+    pointOverlapsCircle(x2 + w2, y2, x1, y1, r1) or
+    pointOverlapsCircle(x2 + w2, y2 + h2, x1, y1, r1) or
+    pointOverlapsCircle(x2, y2 + h2, x1, y1, r1)
 end
 
 function imageOverlapsRect(x, y, w, h, data, x2, y2, w2, h2)
@@ -28,6 +44,26 @@ function imageOverlapsRect(x, y, w, h, data, x2, y2, w2, h2)
     for xi=clmx, clmw do
       for yi=clmy, clmh do
         if data[yi+1] and data[yi+1][xi+1] ~= 0 and pointOverlapsRect(x + xi, y + yi, x2, y2, w2, h2) then
+          return true
+        end
+      end
+    end
+  end
+  return false
+end
+
+function imageOverlapsCircle(x, y, w, h, data, x2, y2, r2)
+  if circleOverlapsRect(x2, y2, r2, x, y, w, h) then
+    local neww, newh = w-1, h-1
+    
+    local clmx = math.clamp(math.round(x2-x)-r2, 0, neww)
+    local clmw = math.clamp(math.round(x2-x)+r2, 0, neww)
+    local clmy = math.clamp(math.round(y2-y)-r2, 0, newh)
+    local clmh = math.clamp(math.round(y2-y)+r2, 0, newh)
+    
+    for xi=clmx, clmw do
+      for yi=clmy, clmh do
+        if data[yi+1] and data[yi+1][xi+1] ~= 0 and pointOverlapsCircle(x + xi, y + yi, x2, y2, r2) then
           return true
         end
       end

@@ -8,14 +8,14 @@ function loader.load(path, nick, typ, parameters, lock)
     if typ == "texture" then
       if lock then
         if parameters and parameters[1] then
-          loader.locked[nick] = {table.stringtonumbervalues(love.data.decompress("string", "zlib", love.filesystem.read(path)):split(",")),
+          loader.locked[nick] = {table.stringtonumbervalues(love.filesystem.read(path):split(",")),
             parameters[2]}
         else
           loader.locked[nick] = love.graphics.newImage(path)
         end
       else
         if parameters and parameters[1] then
-          loader.resources[nick] = {table.stringtonumbervalues(love.data.decompress("string", "zlib", love.filesystem.read(path)):split(",")),
+          loader.resources[nick] = {table.stringtonumbervalues(love.filesystem.read(path):split(",")),
             parameters[2]}
         else
           loader.resources[nick] = love.graphics.newImage(path)
