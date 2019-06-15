@@ -487,15 +487,13 @@ end
 slope = basicEntity:extend()
 
 addobjects.register("slope", function(v)
-  megautils.add(slope, v.x, v.y, loader.get(v.properties["mask"]), v.properties["invert"], v.properties["left"])
+  megautils.add(slope, v.x, v.y, loader.get(v.properties["mask"]))
 end)
 
-function slope:new(x, y, mask, invert, left)
+function slope:new(x, y, mask)
   slope.super.new(self)
   self.transform.x = x
   self.transform.y = y
-  self.left = left
-  self.invert = invert
   self:setImageCollision(mask)
   self.isSolid = 1
   self.added = function(self)

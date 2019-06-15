@@ -43,7 +43,7 @@ convar["cheats"] = {
   flags = {},
   value = 0,
 }
-convar["r_fullscreen"] = {
+convar["fullscreen"] = {
   helptext = "fullscreen mode",
   flags = {"client"},
   value = 0,
@@ -61,28 +61,28 @@ convar["volume"] = {
   value = 1,
   fun = function(arg) local n = numberSanitize(arg) love.audio.setVolume(n) end
 }
-convar["hitboxes"] = {
+convar["showcollision"] = {
   helptext = "draw hitboxes",
   flags = {"client"},
   value = 0,
   fun = function(arg) local n = numberSanitize(arg) entitysystem.drawCollision = n == 1 end
 }
 
-convar["show_fps"] = {
+convar["showfps"] = {
   helptext = "draw framerate",
   flags = {"client"},
   value = 0,
   fun = function(arg) local n = numberSanitize(arg) showFPS = n == 1 end
 }
 
-convar["show_entity_count"] = {
+convar["showentitycount"] = {
   helptext = "draw entity count",
   flags = {"client"},
   value = 0,
   fun = function(arg) local n = numberSanitize(arg) showEntityCount = n == 1 end
 }
 
-convar["infinite_lives"] = {
+convar["infinitelives"] = {
   helptext = "never gameover",
   flags = {"cheat"},
   value = 0,

@@ -48,7 +48,6 @@ function love.load()
   love.graphics.setDefaultFilter("nearest", "nearest")
   consoleFont = love.graphics.getFont() -- needs to be preserved
   OSSystem = love.system.getOS()
-  touchControls = OSSystem == "Android" or OSSystem == "iOS"
   altEnterOnce = false
   deadZone = 0.8
   maxPlayerCount = 4
@@ -64,17 +63,17 @@ function love.load()
   inputHandler.init()
   
   local joysticks = inputHandler.gamepads
-  defaultInputBinds = {["up"]={{"keyboard", "up"}, {"touch", "up"}},
-    ["down"]={{"keyboard", "down"}, {"touch", "down"}},
-    ["left"]={{"keyboard", "left"}, {"touch", "left"}},
-    ["right"]={{"keyboard", "right"}, {"touch", "right"}},
-    ["jump"]={{"keyboard", "z"}, {"touch", "jump"}},
-    ["shoot"]={{"keyboard", "x"}, {"touch", "shoot"}},
-    ["start"]={{"keyboard", "return"}, {"touch", "start"}},
-    ["select"]={{"keyboard", "rshift"}, {"touch", "select"}},
-    ["prev"]={{"keyboard", "a"}, {"touch", "prev"}},
-    ["next"]={{"keyboard", "s"}, {"touch", "next"}},
-    ["dash"]={{"keyboard", "c"}, {"touch", "dash"}}}
+  defaultInputBinds = {["up"]={{"keyboard", "up"}, {"custom", "up"}},
+    ["down"]={{"keyboard", "down"}, {"custom", "down"}},
+    ["left"]={{"keyboard", "left"}, {"custom", "left"}},
+    ["right"]={{"keyboard", "right"}, {"custom", "right"}},
+    ["jump"]={{"keyboard", "z"}, {"custom", "jump"}},
+    ["shoot"]={{"keyboard", "x"}, {"custom", "shoot"}},
+    ["start"]={{"keyboard", "return"}, {"custom", "start"}},
+    ["select"]={{"keyboard", "rshift"}, {"custom", "select"}},
+    ["prev"]={{"keyboard", "a"}, {"custom", "prev"}},
+    ["next"]={{"keyboard", "s"}, {"custom", "next"}},
+    ["dash"]={{"keyboard", "c"}, {"custom", "dash"}}}
   defaultInputBindsExtra = {}
   if #joysticks > 0 then
     local joyBinds = {["up"]={"axis", "lefty-", joysticks[1]:getName()},
@@ -104,24 +103,10 @@ function love.load()
       ["next"]={"gamepad", "rightshoulder", joysticks[i]:getName()},
       ["dash"]={"gamepad", "b", joysticks[i]:getName()}}
     end
-    touchControls = false
   end
   
   console.init()
   initEngine()
-  
-  touchInput.add("left", "left-down", 16, -140, 64, 64)
-  touchInput.add("right", "left-down", 16+64, -140, 64, 64)
-  touchInput.add("down", "left-down", 16+32, -140+64, 64, 64)
-  touchInput.add("up", "left-down", 16+32, -140-64, 64, 64)
-  touchInput.add("jump", "right-down", -80, -140, 64, 64)
-  touchInput.add("dash", "right-down", -80-64, -140+32, 64, 64)
-  touchInput.add("shoot", "right-down", -80, -140+64, 64, 64)
-  touchInput.add("start", "right-up", -40, 16, 40, 40)
-  touchInput.add("select", "right-up", -80, 16, 40, 40)
-  touchInput.add("escape", "left-up", 0, 16, 40, 40)
-  touchInput.add("prev", "right-up", -40, 60, 40, 40)
-  touchInput.add("next", "right-up", -80, 60, 40, 40)
   
   local data = save.load("main.sav") or {}
   if data.fullscreen then
@@ -172,11 +157,6 @@ function love.keypressed(k, s, r)
   control.anyPressed = true
 end
 
-function touchPressed(b)
-  globals.lastKeyPressed = {"touch", b}
-  control.anyPressed = true
-end
-
 function love.gamepadpressed(j, b)
   if not globals.gamepadCheck[b] then
     globals.lastKeyPressed = {"gamepad", b, j:getName()}
@@ -208,17 +188,16 @@ function love.textinput(k)
 end
 
 function love.update(dt)
-  if megautils.net then megautils.net:update() end
   if love.keyboard then
     if (love.keyboard.isDown("ralt") or love.keyboard.isDown("lalt")) and love.keyboard.isDown("return") then
       if not altEnterOnce then
-        if convar.getNumber("r_fullscreen") == 1 then
-          convar.setValue("r_fullscreen", 0, true)
+        if convar.getNumber("fullscreen") == 1 then
+          convar.setValue("fullscreen", 0, true)
         else
-          convar.setValue("r_fullscreen", 1, true)
+          convar.setValue("fullscreen", 1, true)
         end
         local data = save.load("main.sav") or {}
-        data.fullscreen = convar.getNumber("r_fullscreen")
+        data.fullscreen = convar.getNumber("fullscreen")
         save.save("main.sav", data)
       end
       altEnterOnce = 10
@@ -231,7 +210,6 @@ function love.update(dt)
       return
     end
   end
-  if touchInput then touchInput.update() end
   control.update()
   if useConsole then console.update(dt) end
   states.update(dt)
@@ -269,9 +247,6 @@ function love.draw()
   states.draw()
   love.graphics.pop()
   if useConsole then console.draw() end
-  if touchControls then
-    touchInput.draw()
-  end
 end
 
 function love.run()

@@ -3,20 +3,35 @@ loader = {}
 loader.resources = {}
 loader.locked = {}
 
+local function imgColImage(x, y, r, g, b, a)
+  if loader.tmp[y+1][x+1] == 1 then
+    return 1, 1, 1, 1
+  end
+  return 1, 1, 1, 0
+end
+
 function loader.load(path, nick, typ, parameters, lock)
   if not table.containskey(loader.resources, nick) then
     if typ == "texture" then
       if lock then
         if parameters and parameters[1] then
-          loader.locked[nick] = {table.stringtonumbervalues(love.filesystem.read(path):split(",")),
-            parameters[2]}
+          local t = table.convert1Dto2D(table.stringtonumbervalues(love.filesystem.read(path):split(",")), parameters[2])
+          local img = love.image.newImageData(#t[1]-1, #t-1)
+          loader.tmp = t
+          img:mapPixel(imgColImage)
+          loader.tmp = nil
+          loader.locked[nick] = {t, img}
         else
           loader.locked[nick] = love.graphics.newImage(path)
         end
       else
         if parameters and parameters[1] then
-          loader.resources[nick] = {table.stringtonumbervalues(love.filesystem.read(path):split(",")),
-            parameters[2]}
+          local t = table.convert1Dto2D(table.stringtonumbervalues(love.filesystem.read(path):split(",")), parameters[2])
+          local img = love.image.newImageData(#t[1], #t)
+          loader.tmp = t
+          img:mapPixel(imgColImage)
+          loader.tmp = nil
+          loader.resources[nick] = {t, img}
         else
           loader.resources[nick] = love.graphics.newImage(path)
         end

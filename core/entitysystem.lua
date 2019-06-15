@@ -493,7 +493,8 @@ end
 function entity:setImageCollision(data)
   self.collisionShape = {}
   self.collisionShape.type = 1
-  self.collisionShape.data = table.convert1Dto2D(data[1], data[2])
+  self.collisionShape.data = data[1]
+  self.collisionShape.image = data[2]
   self.collisionShape.w = #self.collisionShape.data[1]
   self.collisionShape.h = #self.collisionShape.data
 end
@@ -557,14 +558,15 @@ end
 
 function entity:drawCollision()
   if self.collisionShape == nil then return false end
-  love.graphics.setColor(1, 1, 1, 0.8)
-  if self.collisionShape.type == 0 or self.collisionShape.type == 1 then
-    love.graphics.rectangle("fill", math.round(self.transform.x), math.round(self.transform.y),
-      self.collisionShape.w, self.collisionShape.h)
-  elseif self.collisionShape.type == 2 then
-    love.graphics.circle("fill", math.round(self.transform.x), math.round(self.transform.y), self.collisionShape.r)
-  end
   love.graphics.setColor(1, 1, 1, 1)
+  if self.collisionShape.type == 0 then
+    love.graphics.rectangle("line", math.round(self.transform.x), math.round(self.transform.y),
+      self.collisionShape.w, self.collisionShape.h)
+  elseif self.collisionShape.type == 1 then
+    love.graphics.draw(self.collisionShape.image, math.round(self.transform.x), math.round(self.transform.y))
+  elseif self.collisionShape.type == 2 then
+    love.graphics.circle("line", math.round(self.transform.x), math.round(self.transform.y), self.collisionShape.r)
+  end
 end
 
 function entity:collisionTable(t, x, y, func)
@@ -653,10 +655,19 @@ function basicEntity:setRectangleCollision(w, h)
   self.collisionShape.h = h
 end
 
+function basicEntity:setCircleCollision(r)
+  self.collisionShape = {}
+  self.collisionShape.type = 2
+  self.collisionShape.r = r
+  self.collisionShape.w = r
+  self.collisionShape.h = r
+end
+
 function basicEntity:setImageCollision(data)
   self.collisionShape = {}
   self.collisionShape.type = 1
-  self.collisionShape.data = table.convert1Dto2D(data[1], data[2])
+  self.collisionShape.data = data[1]
+  self.collisionShape.image = data[2]
   self.collisionShape.w = #self.collisionShape.data[1]
   self.collisionShape.h = #self.collisionShape.data
 end
@@ -671,6 +682,9 @@ function basicEntity:collision(e, x, y)
     elseif e.collisionShape.type == 1 then
       return imageOverlapsRect(e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h, e.collisionShape.data,
         self.transform.x + (x or 0), self.transform.y + (y or 0), self.collisionShape.w, self.collisionShape.h)
+    elseif e.collisionShape.type == 2 then
+      return circleOverlapsRect(e.transform.x, e.transform.y, e.collisionShape.r,
+        self.transform.x + (x or 0), self.transform.y + (y or 0), self.collisionShape.w, self.collisionShape.h)
     end
   elseif self.collisionShape.type == 1 then
     if e.collisionShape.type == 0 then
@@ -681,9 +695,38 @@ function basicEntity:collision(e, x, y)
       return imageOverlapsImage(self.transform.x + (x or 0), self.transform.y + (y or 0),
         self.collisionShape.w, self.collisionShape.h, self.collisionShape.data,
         e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h, e.collisionShape.data)
+    elseif e.collisionShape.type == 2 then
+      return imageOverlapsCircle(self.transform.x + (x or 0), self.transform.y + (y or 0),
+        self.collisionShape.w, self.collisionShape.h, self.collisionShape.data,
+        e.transform.x, e.transform.y, e.collisionShape.r)
+    end
+  elseif self.collisionShape.type == 2 then
+    if e.collisionShape.type == 0 then
+      return circleOverlapsRect(self.transform.x + (x or 0), self.transform.y + (y or 0), self.collisionShape.r,
+        e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h)
+    elseif e.collisionShape.type == 1 then
+      return imageOverlapsCircle(e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h, e.collisionShape.data,
+        self.transform.x + (x or 0), self.transform.y + (y or 0), self.collisionShape.r)
+    elseif e.collisionShape.type == 2 then
+      return circleOverlapsCircle(self.transform.x + (x or 0), self.transform.y + (y or 0), self.collisionShape.r,
+        e.transform.x, e.transform.y, e.collisionShape.r)
     end
   end
   return false
+end
+
+function basicEntity:drawCollision()
+  if self.collisionShape == nil then return false end
+  love.graphics.setColor(1, 1, 1, 0.8)
+  if self.collisionShape.type == 0 then
+    love.graphics.rectangle("line", math.round(self.transform.x), math.round(self.transform.y),
+      self.collisionShape.w, self.collisionShape.h)
+  elseif self.collisionShape.type == 1 then
+    love.graphics.draw(self.collisionShape.image, math.round(self.transform.x), math.round(self.transform.y))
+  elseif self.collisionShape.type == 2 then
+    love.graphics.circle("line", math.round(self.transform.x), math.round(self.transform.y), self.collisionShape.r)
+  end
+  love.graphics.setColor(1, 1, 1, 0.8)
 end
 
 function basicEntity:collisionTable(t, x, y, func)

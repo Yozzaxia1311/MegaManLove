@@ -130,17 +130,17 @@ function control.defaultBinds()
   local binds = {}
   local step = 0
   
-  defaultInputBinds = {["up"]={{"keyboard", "up"}, {"touch", "up"}},
-    ["down"]={{"keyboard", "down"}, {"touch", "down"}},
-    ["left"]={{"keyboard", "left"}, {"touch", "left"}},
-    ["right"]={{"keyboard", "right"}, {"touch", "right"}},
-    ["jump"]={{"keyboard", "z"}, {"touch", "jump"}},
-    ["shoot"]={{"keyboard", "x"}, {"touch", "shoot"}},
-    ["start"]={{"keyboard", "return"}, {"touch", "start"}},
-    ["select"]={{"keyboard", "rshift"}, {"touch", "select"}},
-    ["prev"]={{"keyboard", "a"}, {"touch", "prev"}},
-    ["next"]={{"keyboard", "s"}, {"touch", "next"}},
-    ["dash"]={{"keyboard", "c"}, {"touch", "dash"}}}
+  defaultInputBinds = {["up"]={{"keyboard", "up"}, {"custom", "up"}},
+    ["down"]={{"keyboard", "down"}, {"custom", "down"}},
+    ["left"]={{"keyboard", "left"}, {"custom", "left"}},
+    ["right"]={{"keyboard", "right"}, {"custom", "right"}},
+    ["jump"]={{"keyboard", "z"}, {"custom", "jump"}},
+    ["shoot"]={{"keyboard", "x"}, {"custom", "shoot"}},
+    ["start"]={{"keyboard", "return"}, {"custom", "start"}},
+    ["select"]={{"keyboard", "rshift"}, {"custom", "select"}},
+    ["prev"]={{"keyboard", "a"}, {"custom", "prev"}},
+    ["next"]={{"keyboard", "s"}, {"custom", "next"}},
+    ["dash"]={{"keyboard", "c"}, {"custom", "dash"}}}
   
   defaultInputBindsExtra = {}
   
@@ -230,17 +230,17 @@ function control.loadBinds()
   local binds = {}
   local step = 0
   
-  defaultInputBinds = {["up"]={{"keyboard", "up"}, {"touch", "up"}},
-    ["down"]={{"keyboard", "down"}, {"touch", "down"}},
-    ["left"]={{"keyboard", "left"}, {"touch", "left"}},
-    ["right"]={{"keyboard", "right"}, {"touch", "right"}},
-    ["jump"]={{"keyboard", "z"}, {"touch", "jump"}},
-    ["shoot"]={{"keyboard", "x"}, {"touch", "shoot"}},
-    ["start"]={{"keyboard", "return"}, {"touch", "start"}},
-    ["select"]={{"keyboard", "rshift"}, {"touch", "select"}},
-    ["prev"]={{"keyboard", "a"}, {"touch", "prev"}},
-    ["next"]={{"keyboard", "s"}, {"touch", "next"}},
-    ["dash"]={{"keyboard", "c"}, {"touch", "dash"}}}
+  defaultInputBinds = {["up"]={{"keyboard", "up"}, {"custom", "up"}},
+    ["down"]={{"keyboard", "down"}, {"custom", "down"}},
+    ["left"]={{"keyboard", "left"}, {"custom", "left"}},
+    ["right"]={{"keyboard", "right"}, {"custom", "right"}},
+    ["jump"]={{"keyboard", "z"}, {"custom", "jump"}},
+    ["shoot"]={{"keyboard", "x"}, {"custom", "shoot"}},
+    ["start"]={{"keyboard", "return"}, {"custom", "start"}},
+    ["select"]={{"keyboard", "rshift"}, {"custom", "select"}},
+    ["prev"]={{"keyboard", "a"}, {"custom", "prev"}},
+    ["next"]={{"keyboard", "s"}, {"custom", "next"}},
+    ["dash"]={{"keyboard", "c"}, {"custom", "dash"}}}
   
   defaultInputBindsExtra = {}
   
@@ -365,9 +365,6 @@ end
 
 function control.update()
   if not control.demo then
-    if touchControls then
-      touchInput.update()
-    end
     local step = 0
     for i=1, globals.playerCount do
       control.leftDown[i] = inputHandler.down(3+step)
@@ -613,7 +610,6 @@ end
 
 function control.flush()
   inputHandler.flush()
-  touchInput.flush()
   if control.demo then
     for i=1, globals.playerCount do
       if not control.leftDown[i] then control.pressed[i].left = true end
