@@ -78,6 +78,11 @@ end
 function collision.entityPlatform(self)
   if self.isSolid ~= 0 and self.collisionShape then
     if self.transform.x ~= self.previousX or self.transform.y ~= self.previousY then
+      local all = megautils.state().system.all
+      if self.exclusiveCollision then
+        all = self.exclusiveCollision
+      end
+      
       local resolid = self.isSolid
       self.isSolid = 0
       local xypre
@@ -96,8 +101,8 @@ function collision.entityPlatform(self)
       end
       
       if myyspeed ~= 0 then
-        for i=1, #megautils.state().system.all do
-          local v = megautils.state().system.all[i]
+        for i=1, #all do
+          local v = all[i]
           if v ~= self and v.blockCollision and v.collisionShape and v.crushed ~= self and
             (not self.exclusiveCollision or table.contains(self.exclusiveCollision, v)) then
             local epDir = math.sign(self.transform.y + (self.collisionShape.h/2) -
@@ -161,8 +166,8 @@ function collision.entityPlatform(self)
       self.transform.y = self.transform.y + myyspeed
         
       if myxspeed ~= 0 then
-        for i=1, #megautils.state().system.all do
-          local v = megautils.state().system.all[i]
+        for i=1, #all do
+          local v = all[i]
           local continue = false
           if v ~= self and v.blockCollision and v.collisionShape and v.crushed ~= self and
             (not self.exclusiveCollision or table.contains(self.exclusiveCollision, v)) then
