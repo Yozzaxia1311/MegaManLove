@@ -210,6 +210,9 @@ function entitysystem:remove(e, queue)
       table.removevaluearray(e.actualLayer.data, e)
       table.removevaluearray(self.updates, e)
     end
+    if #e.actualLayer.data == 0 then
+      table.removevaluearray(self.entities, e.actualLayer)
+    end
     table.removevaluearray(self.all, e)
     e.isAdded = false
     if e.recycle then
