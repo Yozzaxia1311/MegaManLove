@@ -198,7 +198,7 @@ function entitysystem:remove(e, queue)
     if not table.contains(self.removeQueue, e) then
       self.removeQueue[#self.removeQueue+1] = e
     end
-  else
+  elseif not e.isRemoved and e.isAdded then
     e.isRemoved = true
     e:removed()
     e:removeFromAllGroups()
