@@ -202,17 +202,22 @@ function entitysystem:remove(e, queue)
     e.isRemoved = true
     e:removed()
     e:removeFromAllGroups()
-    e:removeStatic()
-    table.removevaluearray(e.actualLayer.data, e)
-    if #e.actualLayer.data == 0 then
-      table.removevaluearray(self.updates, e.actualLayer)
+    if e.static then
+      table.removevaluearray(self.static, e)
+      e.static = false
+      e:staticToggled()
+    else
+      table.removevaluearray(e.actualLayer.data, e)
+      table.removevaluearray(self.updates, e)
     end
-    table.removevaluearray(self.updates, e)
     table.removevaluearray(self.all, e)
     e.isAdded = false
     if e.recycle then
-      if not self.recycle[e.__index] then self.recycle[e.__index] = {} end
-      self.recycle[e.__index][#self.recycle[e.__index]+1] = e
+      if not self.recycle[e.__index] then
+        self.recycle[e.__index] = {e}
+      elseif not table.contains(self.recycle[e.__index], e) then
+        self.recycle[e.__index][#self.recycle[e.__index]+1] = e
+      end
     end
   end
 end
