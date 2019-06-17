@@ -425,7 +425,7 @@ function collision.generalCollision(self, noSlopeEffect)
     end
   end
   
-  if self:checkTrue(self.canStandSolid) then
+  if self:checkFalse(self.canStandSolid) then
     local ss = self:collisionTable(stand, 0, cgrav)
     if #ss ~= 0 then
       if self.velocity.vely * cgrav > 0 then
