@@ -289,8 +289,22 @@ function collision.checkGround(self, noSlopeEffect)
       elseif self.velocity.vely * cgrav >= 0 then
         self.ground = true
         self.transform.y = math.round(self.transform.y+cgrav) + (i - 1) * cgrav
-        while #self:collisionTable(solid) ~= 0 do
-          self.transform.y = self.transform.y - cgrav
+        local dec = 0
+        while true do
+          local tmp = self:collisionTable(solid)
+          if #tmp ~= 0 then
+            self.transform.y = self.transform.y - cgrav
+            dec = tmp[1].transform.y - math.floor(tmp[1].transform.y)
+          else
+            break
+          end
+        end
+        if dec ~= 0 then
+          if cgrav > 0 then
+            self.transform.y = self.transform.y + dec
+          elseif cgrav < 0 then
+            self.transform.y = self.transform.y - (1 - dec)
+          end
         end
         break
       end

@@ -2,7 +2,7 @@ weaponhandler.removeGroups["protoBuster"] = {"megaBuster", "protoChargedBuster"}
 
 protoSemiBuster = basicEntity:extend()
 
-function protoSemiBuster:new(x, y, dir, wpn)
+function protoSemiBuster:new(x, y, dir, wpn, roll)
   protoSemiBuster.super.new(self)
   self.added = function(self)
     self:addToGroup("megaBuster")
@@ -13,7 +13,7 @@ function protoSemiBuster:new(x, y, dir, wpn)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(10, 10)
-  self.tex = loader.get("proto_buster")
+  self.tex = loader.get(roll and "roll_buster" or "proto_buster")
   self.quad = love.graphics.newQuad(0, 0, 10, 10, 68, 10)
   self.dink = false
   self.velocity = velocity()
@@ -45,7 +45,7 @@ end
 
 protoChargedBuster = basicEntity:extend()
 
-function protoChargedBuster:new(x, y, dir, wpn)
+function protoChargedBuster:new(x, y, dir, wpn, roll)
   protoChargedBuster.super.new(self)
   self.added = function(self)
     self:addToGroup("protoChargedBuster")
@@ -53,7 +53,7 @@ function protoChargedBuster:new(x, y, dir, wpn)
     self:addToGroup("freezable")
     self:addToGroup("removeOnTransition")
   end
-  self.tex = loader.get("proto_buster")
+  self.tex = loader.get(roll and "roll_buster" or "proto_buster")
   self.anim = anim8.newAnimation(loader.get("proto_buster_grid")("1-2", 1), 1/20)
   self.transform.y = y
   self.transform.x = x
@@ -91,61 +91,6 @@ end
 function protoChargedBuster:draw()
   love.graphics.setColor(1, 1, 1, 1)
   self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y-1))
-end
-
-rollBuster = basicEntity:extend()
-
-weaponhandler.removeGroups["rollBuster"] = {"rollBuster"}
-
-function rollBuster:new(x, y, dir, wpn)
-  rollBuster.super.new(self)
-  self.added = function(self)
-    self:addToGroup("rollBuster")
-    self:addToGroup("rollBuster" .. wpn.id)
-    self:addToGroup("freezable")
-    self:addToGroup("removeOnTransition")
-    mmSfx.play("buster")
-  end
-  self.transform.y = y
-  self.transform.x = x
-  self:setRectangleCollision(6, 6)
-  self.tex = loader.get("bass_buster")
-  self.dink = false
-  self.side = dir
-  self.velocity = velocity()
-  self.velocity.velx = self.side * 6
-  self.wpn = wpn
-  self:setLayer(1)
-end
-
-function rollBuster:recycle(x, y, dir, wpn)
-  self.wpn = wpn
-  self.side = dir
-  self.velocity.velx = self.side * 6
-  self.velocity.vely = 0
-  self.dink = false
-  self.transform.x = x
-  self.transform.y = y
-  self.updated = true
-end
-
-function rollBuster:update(dt)
-  if not self.dink then
-    self:hurt(self:collisionTable(megautils.groups()["hurtable"]), -1, 2)
-  else
-    self.velocity.vely = -4
-    self.velocity.velx = 4*-self.side
-  end
-  self.transform.x = self.transform.x + self.velocity.velx
-  self.transform.y = self.transform.y + self.velocity.vely
-  if megautils.outside(self) then
-    megautils.remove(self, true)
-  end
-end
-
-function rollBuster:draw()
-  love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.draw(self.tex, math.round(self.transform.x-1), math.round(self.transform.y-1))
 end
 
 bassBuster = basicEntity:extend()
@@ -466,11 +411,10 @@ end
 
 rushJet = entity:extend()
 
-weaponhandler.removeGroups["rushJet"] = {"rushJet", "megaBuster", "bassBuster", "rollBuster"}
+weaponhandler.removeGroups["rushJet"] = {"rushJet", "megaBuster", "bassBuster"}
 
-function rushJet:new(x, y, side, player, wpn, proto)
+function rushJet:new(x, y, side, player, wpn, skin)
   rushJet.super.new(self)
-  self.proto = proto
   self.added = function(self)
     self:addToGroup("rushJet")
     self:addToGroup("rushJet" .. wpn.id)
@@ -481,7 +425,7 @@ function rushJet:new(x, y, side, player, wpn, proto)
   self.transform.y = view.y-8
   self.toY = y
   self:setRectangleCollision(27, 8)
-  self.tex = loader.get(self.proto and "proto_rush" or "rush")
+  self.tex = loader.get(skin or "rush")
   self.c = "spawn"
   self.anims = {}
   self.anims["spawn"] = anim8.newAnimation(loader.get("rush_grid")(1, 1), 1)
@@ -604,7 +548,7 @@ rushCoil = entity:extend()
 
 weaponhandler.removeGroups["rushCoil"] = {"rushCoil", "megaBuster", "bassBuster", "rollBuster"}
 
-function rushCoil:new(x, y, side, player, w, proto)
+function rushCoil:new(x, y, side, player, w, skin)
   rushCoil.super.new(self)
   self.proto = proto
   self.added = function(self)
@@ -617,7 +561,7 @@ function rushCoil:new(x, y, side, player, w, proto)
   self.transform.y = view.y-16
   self.toY = y
   self:setRectangleCollision(20, 19)
-  self.tex = loader.get(self.proto and "proto_rush" or "rush")
+  self.tex = loader.get(skin or "rush")
   self.c = "spawn"
   self.anims = {}
   self.anims["spawn"] = anim8.newAnimation(loader.get("rush_grid")(1, 1), 1)
