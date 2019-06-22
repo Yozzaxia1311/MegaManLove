@@ -344,8 +344,8 @@ function collision.generalCollision(self, noSlopeEffect)
     self.transform.x = self.transform.x + self.velocity.velx
     
     if #self:collisionTable(solid) ~= 0 then
-      self.transform.x = math.round(self.transform.x)
       self.xcoll = -math.sign(self.velocity.velx)
+      self.transform.x = math.round(self.transform.x-self.xcoll)
       
       for ii=0, math.max(32, math.abs(self.velocity.velx) * 4) do
         if #self:collisionTable(solid) ~= 0 then
@@ -404,9 +404,8 @@ function collision.generalCollision(self, noSlopeEffect)
     self.transform.y = self.transform.y + self.velocity.vely
     
     if #self:collisionTable(solid) ~= 0 then
-      self.transform.y = math.round(self.transform.y)
-      
-      self.ycoll = math.sign(self.velocity.vely) * -1
+      self.ycoll = -math.sign(self.velocity.vely)
+      self.transform.y = math.round(self.transform.y-self.ycoll)
       
       for i=0, math.max(32, math.abs(self.velocity.vely) * 4) do
         if #self:collisionTable(solid) ~= 0 then
