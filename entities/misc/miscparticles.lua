@@ -20,7 +20,6 @@ function slideParticle:recycle(x, y, side)
   self.transform.y = y
   self.transform.x = x
   self.anim:gotoFrame(1)
-  self.updated = true
 end
 
 function slideParticle:face(n)
@@ -62,7 +61,6 @@ function damageSteam:recycle(x, y)
   self.transform.y = y
   self.transform.x = x
   self.anim:gotoFrame(1)
-  self.updated = true
 end
 
 function damageSteam:update(dt)
@@ -104,7 +102,6 @@ function airBubble:recycle(x, y)
   self.timer = 0
   self.off = 0
   self.render = false
-  self.updated = true
 end
 
 function airBubble:check(x, y)
@@ -156,7 +153,6 @@ function kickParticle:recycle(x, y, side)
   self.once = false
   self.render = false
   self.anim:gotoFrame(1)
-  self.updated = true
 end
 
 function kickParticle:face(n)
@@ -217,7 +213,6 @@ function angleParticle:recycle(x, y, a)
   self.velocity.vely = megautils.calcY(a)
   self.side = self.velocity.velx>0 and -1 or 1
   self.anim:gotoFrame(1)
-  self.updated = true
 end
 
 function angleParticle:face(n)
@@ -263,7 +258,6 @@ function harm:recycle(e)
   self.transform.x = (self.follow.transform.x+self.follow.collisionShape.w/2)-24/2
   self.transform.y = (self.follow.transform.y+self.follow.collisionShape.h/2)-24/2
   self.timer = 0
-  self.updated = true
 end
 
 function harm:update(dt)
@@ -422,7 +416,6 @@ function smallBlast:recycle(x, y, spd)
     self.anim:setDurations(self.spd)
   end
   self.anim:gotoFrame(1)
-  self.updated = true
 end
 
 function smallBlast:update(dt)
@@ -461,7 +454,6 @@ function blast:recycle(x, y, times)
   self.timer = 0
   self.times = 0
   self.max = times == nil and 4 or times
-  self.updated = true
 end
 
 function blast:update(dt)

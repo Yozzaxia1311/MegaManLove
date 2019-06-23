@@ -47,6 +47,7 @@ function entitysystem:getRecycled(c, ...)
   local vr = self.recycle[c]
   if vr and #vr > 0 then
     e = vr[#vr]
+    e:baseRecycle()
     e:recycle(...)
     vr[#vr] = nil
   end
@@ -391,6 +392,35 @@ function entity:new()
   self.canStandSolid = {["global"]=true}
 end
 
+function entity:baseRecycle()
+  self.transform.x = 0
+  self.transform.y = 0
+  self.flashRender = true
+  self.updated = true
+  self.render = true
+  self.isSolid = 0
+  self.velocity.velx = 0
+  self.velocity.vely = 0
+  self.gravity = 0.25
+  self.blockCollision = false
+  self.ground = false
+  self.xcoll = 0
+  self.ycoll = 0
+  self.iFrame = self.maxIFrame
+  self.health = 28
+  self.changeHealth = 0
+  self.shakeX = 0
+  self.shakeY = 0
+  self.shakeTime = 0
+  self.maxShakeTime = 5
+  self.shakeSide = 1
+  self.doShake = false
+  self.moveByMoveX = 0
+  self.moveByMoveY = 0
+  self.canBeInvincible = {["global"]=true}
+  self.canStandSolid = {["global"]=true}
+end
+
 function entity:checkTrue(w)
   for k, v in pairs(w) do
     if v then return true end
@@ -600,7 +630,7 @@ function entity:staticToggled() end
 
 basicEntity = class:extend()
 
-function basicEntity:new(basic)
+function basicEntity:new()
   self.isAdded = false
   self.transform = {}
   self.transform.x = 0
@@ -608,6 +638,14 @@ function basicEntity:new(basic)
   self.collisionShape = nil
   self.layer = 0
   self.isRemoved = false
+  self.updated = true
+  self.render = true
+  self.gravity = 0
+end
+
+function basicEntity:baseRecycle()
+  self.transform.x = 0
+  self.transform.y = 0
   self.updated = true
   self.render = true
   self.gravity = 0
