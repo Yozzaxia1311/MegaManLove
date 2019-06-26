@@ -464,9 +464,13 @@ function entity:updateFlash(length, range)
   end
 end
 
-function entity:hurt(t, h, f)
-  for k, v in pairs(t) do
-    v:healthChanged(self, h, f or 80)
+function entity:hurt(t, h, f, single)
+  if single then
+    t:healthChanged(self, h, f or 80)
+  else
+    for i=1, #t do
+      t[i]:healthChanged(self, h, f or 80)
+    end
   end
 end
 
@@ -651,9 +655,13 @@ function basicEntity:baseRecycle()
   self.gravity = 0
 end
 
-function basicEntity:hurt(t, h, f)
-  for k, v in pairs(t) do
-    v:healthChanged(self, h, f or 80)
+function basicEntity:hurt(t, h, f, single)
+  if single then
+    t:healthChanged(self, h, f or 80)
+  else
+    for i=1, #t do
+      t[i]:healthChanged(self, h, f or 80)
+    end
   end
 end
 
