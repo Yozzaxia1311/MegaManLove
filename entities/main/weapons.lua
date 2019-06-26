@@ -503,7 +503,7 @@ function rushJet:update(dt)
     end
     if self.xcoll ~= 0 or
       (self.playerOn and collision.checkSolid(self.player, 0, self.player.gravity < 0 and 4 or -4)) then
-      if self.playerOn then self.player.canWalk = true end
+      if self.playerOn then self.player.canWalk["rj"] = true end
       self.c = "spawn_land"
       self.anims["spawn_land"]:gotoFrame(1)
       self.s = 4

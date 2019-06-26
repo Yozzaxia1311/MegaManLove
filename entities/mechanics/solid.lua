@@ -94,12 +94,6 @@ function collision.entityPlatform(self)
       self.transform.x = self.previousX
       self.transform.y = self.previousY
       
-      local savedgrav
-      if globals.mainPlayer then
-        savedgrav = globals.mainPlayer.gravity
-        globals.mainPlayer.gravity = math.sign(globals.mainPlayer.gravity)
-      end
-      
       if myyspeed ~= 0 then
         for i=1, #all do
           local v = all[i]
@@ -228,7 +222,6 @@ function collision.entityPlatform(self)
       
       self.previousX = self.transform.x
       self.previousY = self.transform.y
-      if savedgrav and globals.mainPlayer then globals.mainPlayer.gravity = savedgrav end
     end
   end
 end
