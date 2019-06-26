@@ -91,7 +91,10 @@ function bossdoor:update(dt)
       camera.main.doScrollY = self.scrolly and self.scrolly or camera.main.doScrollY
       camera.main.doScrollX = self.scrollx and self.scrollx or camera.main.doScrollX
       camera.main.transition = true
-      camera.main.toSection = self:collisionTable(megautils.state().sectionHandler.sections, 
+      camera.main.toSection = self:collisionTable(megautils.groups()["lock"], 
+        (self.dir=="left" or self.dir=="right") and (self.dir=="left" and -16 or 16) or 0,
+        (self.dir=="up" or self.dir=="down") and (self.dir=="up" and -16 or 16) or 0)[1]
+      or self:collisionTable(megautils.state().sectionHandler.sections, 
         (self.dir=="left" or self.dir=="right") and (self.dir=="left" and -16 or 16) or 0,
         (self.dir=="up" or self.dir=="down") and (self.dir=="up" and -16 or 16) or 0)[1]
       camera.main.speed = self.spd
