@@ -350,7 +350,7 @@ function megautils.setShake(x, y, t)
   megautils.shakeX = x
   megautils.shakeY = y
   megautils.maxShakeTime = t or megautils.maxShakeTime
-  megautils.shake = nil, true
+  megautils.shake = x ~= 0 or y ~= 0
 end
 
 function megautils.dropItem(x, y)
