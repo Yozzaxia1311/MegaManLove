@@ -46,6 +46,7 @@ function mmMusic:new(path, pathIntro)
   self.musicLoop = path
   self.musicIntro = pathIntro
   self.playingLoop = false
+  self.current = self.musicIntro or self.musicLoop
   self.paused = false
 end
 
@@ -69,7 +70,7 @@ function mmMusic:setVolume(v)
 end
 
 function mmMusic:getVolume()
-  return self.musicLoop:getVolume()
+  return self.current:getVolume()
 end
 
 function mmMusic:stopped()
@@ -116,6 +117,7 @@ function mmMusic:update()
   if not self.paused and not self.playingLoop and self.musicIntro and self.musicLoop and
       not self.musicLoop:isPlaying() and not self.musicIntro:isPlaying() then
     self.musicLoop:play()
+    self.current = self.musicLoop
     self.playingLoop = true
   end
 end
