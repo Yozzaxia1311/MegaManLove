@@ -28,7 +28,7 @@ function timer.winCutscene(func)
         globals.mainPlayer.velocity.velx = 0
         globals.mainPlayer.control = false
         globals.mainPlayer.doAnimation = false
-        globals.mainPlayer.canSwitchWeapons = false
+        globals.mainPlayer.canSwitchWeapons["global"] = false
         if globals.mainPlayer.slide then
           globals.mainPlayer.slide = false
           globals.mainPlayer:slideToReg()
@@ -71,7 +71,7 @@ function timer.absorbCutscene(func, music)
           globals.mainPlayer:resetStates()
           globals.mainPlayer.control = false
           globals.mainPlayer.doAnimation = false
-          globals.mainPlayer.canSwitchWeapons = false
+          globals.mainPlayer.canSwitchWeapons["global"] = false
           if not globals.mainPlayer.ground then
             globals.mainPlayer.curAnim = "jump"
           end
