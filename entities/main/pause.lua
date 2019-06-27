@@ -80,6 +80,9 @@ function weaponSelect:new(w, h, p)
     end
   end)
   trig:removeFromGroup("freezable")
+  megaman.colorOutline[self.player] = self.w.colorOutline[self.list[self.y][self.x]]
+  megaman.colorOne[self.player] = self.w.colorOne[self.list[self.y][self.x]]
+  megaman.colorTwo[self.player] = self.w.colorTwo[self.list[self.y][self.x]]
   self:setLayer(10)
   self.added = function(self)
     self:addToGroup("freezable")
