@@ -1607,12 +1607,12 @@ function megaman:animate()
       self.animations[self.trebleAnimation["regular"]].timer = time
     end
   end
-  self.animations[self.curAnim]:update(1/60)
   if self.curAnim ~= self.climbAnimation["regular"] and self.curAnim ~= self.climbTipAnimation["regular"] then
     self:face(self.side)
   else
     self:face(-1)
   end
+  self.animations[self.curAnim]:update(1/60)
 end
 
 function megaman:update(dt)
