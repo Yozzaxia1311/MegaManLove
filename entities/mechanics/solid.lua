@@ -25,8 +25,10 @@ function collision.getTable(self, dx, dy)
   
   for i=1, #megautils.state().system.all do
     local v = megautils.state().system.all[i]
-    if (not v.exclusiveCollision or table.contains(v.exclusiveCollision, self)) and (v.isSolid == 1 or v.isSolid == 2) then
-      if v.isSolid ~= 2 or (not v:collision(self) and v:collision(self, -xs, -(cgrav * math.abs(ys)))) then
+    if (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
+      (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) and
+      (v.isSolid == 1 or v.isSolid == 2) then
+      if v.isSolid ~= 2 or (math.sign(ys) == cgrav and not v:collision(self) and v:collision(self, 0, -ys)) then
         solid[#solid+1] = v
       end
     end
@@ -56,8 +58,10 @@ function collision.checkSolid(self, dx, dy, noSlope)
   
   for i=1, #megautils.state().system.all do
     local v = megautils.state().system.all[i]
-    if (not v.exclusiveCollision or table.contains(v.exclusiveCollision, self)) and (v.isSolid == 1 or v.isSolid == 2) then
-      if v.isSolid ~= 2 or (not v:collision(self) and v:collision(self, -xs, -(cgrav * math.abs(ys)))) then
+    if (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
+      (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) and
+      (v.isSolid == 1 or v.isSolid == 2) then
+      if v.isSolid ~= 2 or (math.sign(ys) == cgrav and not v:collision(self) and v:collision(self, 0, -ys)) then
         solid[#solid+1] = v
       end
     end
@@ -79,8 +83,8 @@ function collision.entityPlatform(self)
   if self.isSolid ~= 0 and self.collisionShape then
     if self.transform.x ~= self.previousX or self.transform.y ~= self.previousY then
       local all = megautils.state().system.all
-      if self.exclusiveCollision then
-        all = self.exclusiveCollision
+      if self.exclusivelySolidFor then
+        all = self.exclusivelySolidFor
       end
       
       local resolid = self.isSolid
@@ -98,7 +102,8 @@ function collision.entityPlatform(self)
         for i=1, #all do
           local v = all[i]
           if v ~= self and v.blockCollision and v.collisionShape and v.crushed ~= self and
-            (not self.exclusiveCollision or table.contains(self.exclusiveCollision, v)) then
+            (not self.exclusivelySolidFor or table.contains(self.exclusivelySolidFor, v)) and
+            (not self.excludeSolidFor or not table.contains(self.excludeSolidFor, v)) then
             local epDir = math.sign(self.transform.y + (self.collisionShape.h/2) -
               (v.transform.y + (v.collisionShape.h/2)))
             
@@ -164,7 +169,8 @@ function collision.entityPlatform(self)
           local v = all[i]
           local continue = false
           if v ~= self and v.blockCollision and v.collisionShape and v.crushed ~= self and
-            (not self.exclusiveCollision or table.contains(self.exclusiveCollision, v)) then
+            (not self.exclusivelySolidFor or table.contains(self.exclusivelySolidFor, v)) and
+            (not self.excludeSolidFor or not table.contains(self.excludeSolidFor, v)) then
             if not v:collision(self) then
               local epIsOnPlat = false
               local epDir = math.sign((self.transform.x + (self.collisionShape.w/2)) -
@@ -261,7 +267,9 @@ function collision.checkGround(self, noSlopeEffect)
   
   for i=1, #megautils.state().system.all do
     local v = megautils.state().system.all[i]
-    if v ~= self and v.collisionShape and (not v.exclusiveCollision or table.contains(v.exclusiveCollision, self)) then
+    if v ~= self and v.collisionShape and
+      (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
+      (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) then
       if v.isSolid == 1 or v.isSolid == 2 then
         if not v:collision(self, 0, cgrav) and (v.isSolid ~= 2 or v:collision(self, 0, -cgrav * slp)) then
           solid[#solid+1] = v
@@ -321,7 +329,8 @@ function collision.generalCollision(self, noSlopeEffect)
   
   for i=1, #megautils.state().system.all do
     local v = megautils.state().system.all[i]
-    if v ~= self and v.collisionShape and (not v.exclusiveCollision or table.contains(v.exclusiveCollision, self)) then
+    if v ~= self and v.collisionShape and (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
+      (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) then
       if v.isSolid == 1 then
         if not v:collision(self) and not table.contains(solid, v) then
           solid[#solid+1] = v
@@ -339,7 +348,8 @@ function collision.generalCollision(self, noSlopeEffect)
       for i=1, #megautils.state().system.all do
         local v = megautils.state().system.all[i]
         if v ~= self and v.collisionShape and not table.contains(solid, v) and
-          (not v.exclusiveCollision or table.contains(v.exclusiveCollision, self)) then
+          (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
+          (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) then
           if v.isSolid == 2 and v:collision(self, -self.velocity.velx, 0) and
             not v:collision(self, -self.velocity.velx, slp) and not v:collision(self) then
             solid[#solid+1] = v
@@ -399,7 +409,8 @@ function collision.generalCollision(self, noSlopeEffect)
       for i=1, #megautils.state().system.all do
         local v = megautils.state().system.all[i]
         if v ~= self and v.collisionShape and v.isSolid == 2 and
-          (not v.exclusiveCollision or table.contains(v.exclusiveCollision, self)) then
+          (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
+          (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) then
           table.removevaluearray(solid, v)
           if not v:collision(self) then
             solid[#solid+1] = v

@@ -438,7 +438,7 @@ function rushJet:new(x, y, side, player, wpn, skin)
   self:setLayer(2)
   self.player = player
   self.playerOn = false
-  self.exclusiveCollision = {self.player}
+  self.exclusivelySolidFor = {self.player}
 end
 
 function rushJet:face(n)
