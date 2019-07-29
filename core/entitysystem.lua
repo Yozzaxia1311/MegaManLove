@@ -125,7 +125,7 @@ function entitysystem:addq(c, ...)
 end
 
 function entitysystem:removeFromGroup(e, g)
-  table.removevaluearray(self.groups[g], e)
+  table.quickremovevaluearray(self.groups[g], e)
   if #self.groups[g] == 0 then
     self.groups[g] = nil
   end
@@ -138,8 +138,11 @@ function entitysystem:removeFromAllGroups(e)
 end
 
 function entitysystem:addStatic(e)
-  table.removevaluearray(self.updates, e)
-  table.removevaluearray(e.actualLayer.data, e)
+  table.quickremovevaluearray(self.updates, e)
+  table.quickremovevaluearray(e.actualLayer.data, e)
+  if #e.actualLayer.data == 0 then
+    table.removevaluearray(self.entities, e.actualLayer)
+  end
   self.static[#self.static+1] = e
   e.static = true
   e:staticToggled()
@@ -147,7 +150,7 @@ end
 
 function entitysystem:removeStatic(e)
   if e.static then
-    table.removevaluearray(self.static, e)
+    table.quickremovevaluearray(self.static, e)
     local done = false
     for i=1, #self.entities do
       local v = self.entities[i]
@@ -172,7 +175,10 @@ end
 
 function entitysystem:setLayer(e, l)
   if l and e.layer ~= l then
-    table.removevaluearray(e.actualLayer.data, e)
+    table.quickremovevaluearray(e.actualLayer.data, e)
+    if #e.actualLayer.data == 0 then
+      table.removevaluearray(self.entities, e.actualLayer)
+    end
     e.layer = l
     local done = false
     for i=1, #self.entities do
@@ -204,17 +210,17 @@ function entitysystem:remove(e, queue)
     e:removed()
     e:removeFromAllGroups()
     if e.static then
-      table.removevaluearray(self.static, e)
+      table.quickremovevaluearray(self.static, e)
       e.static = false
       e:staticToggled()
     else
-      table.removevaluearray(e.actualLayer.data, e)
-      table.removevaluearray(self.updates, e)
+      table.quickremovevaluearray(e.actualLayer.data, e)
+      table.quickremovevaluearray(self.updates, e)
     end
     if #e.actualLayer.data == 0 then
       table.removevaluearray(self.entities, e.actualLayer)
     end
-    table.removevaluearray(self.all, e)
+    table.quickremovevaluearray(self.all, e)
     e.isAdded = false
     if e.recycle then
       if not self.recycle[e.__index] then
