@@ -236,3 +236,14 @@ function table.removevaluearray(t, va)
     end
   end
 end
+
+function table.quickremovevaluearray(t, va)
+  if t[#t] == va then t[#t] = nil return end
+  for i=1, #t do
+    if t[i] == va then
+      t[i] = t[#t]
+      t[#t] = nil
+      return
+    end
+  end
+end
