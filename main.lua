@@ -212,8 +212,8 @@ function love.update(dt)
   end
   control.update()
   if useConsole then console.update(dt) end
-  states.update(dt)
   states.switched = false
+  states.update(dt)
   control.flush()
   if love.joystick then
     if globals.axisTmp then
