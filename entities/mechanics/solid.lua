@@ -108,8 +108,7 @@ function collision.entityPlatform(self)
               (v.transform.y + (v.collisionShape.h/2)))
             
             if not v:collision(self) then
-              local epIsPassenger = v:collision(self, 0, math.sign(v.gravity) + v.gravity +
-                (0.5*math.sign(v.gravity)*(v.ground and 1 or 0)))
+              local epIsPassenger = v:collision(self, 0, math.sign(v.gravity)*(v.ground and 1 or 0))
               local epWillCollide = self:collision(v, 0, myyspeed)
               
               if epIsPassenger or epWillCollide then
