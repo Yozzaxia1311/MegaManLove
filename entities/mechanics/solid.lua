@@ -258,7 +258,7 @@ function collision.shiftObject(self, dx, dy, checkforcol)
 end
 
 function collision.checkGround(self, noSlopeEffect)
-  if not self.ground then return end
+  if not self.ground then self.onMovingFloor = nil self.inStandSolid = nil return end
   local solid = {}
   local cgrav = math.sign(self.gravity)
   cgrav = cgrav == 0 and 1 or cgrav
