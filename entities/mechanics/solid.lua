@@ -101,7 +101,7 @@ function collision.entityPlatform(self)
       if myyspeed ~= 0 then
         for i=1, #all do
           local v = all[i]
-          if v ~= self and v.blockCollision and v.collisionShape and v.crushed ~= self and
+          if v ~= self and v.blockCollision and v.collisionShape and
             (not self.exclusivelySolidFor or table.contains(self.exclusivelySolidFor, v)) and
             (not self.excludeSolidFor or not table.contains(self.excludeSolidFor, v)) then
             local epDir = math.sign(self.transform.y + (self.collisionShape.h/2) -
@@ -140,12 +140,11 @@ function collision.entityPlatform(self)
                 
                 if resolid == 1 then
                   if epCanCrush and v:collision(self) then
-                    v.crushed = self
                     for k2, _ in pairs(v.canBeInvincible) do
                       v.canBeInvincible[k2] = false
                     end
                     v.iFrame = v.maxIFrame
-                    v:hurt({v}, -999)
+                    v:hurt({v}, -99999)
                   end
                 end
                 
