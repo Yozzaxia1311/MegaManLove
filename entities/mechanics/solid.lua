@@ -174,8 +174,7 @@ function collision.entityPlatform(self)
               local epDir = math.sign((self.transform.x + (self.collisionShape.w/2)) -
                 (v.transform.x + (v.collisionShape.w/2)))
               
-              if v:collision(self, 0, math.sign(v.gravity)+v.gravity+
-                ((v.ground and 1 or 0)*0.5*math.sign(v.gravity))) then
+              if v:collision(self, 0, math.sign(v.gravity)+(v.ground and 1 or 0)) then
                 collision.shiftObject(v, myxspeed, 0, true)
                 epIsOnPlat = true
                 v.onMovingFloor = self
