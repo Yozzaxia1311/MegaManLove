@@ -351,10 +351,27 @@ concmd["exec"] = {
 }
 
 function cmdFindcvar(cmd)
+  local result = {}
+  local cut = 1
+  local step = 0
   for k, v in pairs(convar) do
     if convar.isValid(k) then
-      console.print(k)
+      if not result[cut] then result[cut] = "" end
+      result[cut] = result[cut] .. (result[cut] == "" and "" or ", ") .. k
+      step = step + 1
+      if step == 4 then
+        step = 0
+        cut = cut + 1
+      end
     end
+  end
+  for k, v in ipairs(result) do
+    if k ~= #result then
+      result[k] = result[k] .. ","
+    end
+  end
+  for k, v in ipairs(result) do
+    console.print(v)
   end
 end
 concmd["findcvar"] = {
@@ -364,10 +381,27 @@ concmd["findcvar"] = {
 }
 
 function cmdFindcmd(cmd)
+  local result = {}
+  local cut = 1
+  local step = 0
   for k, v in pairs(concmd) do
     if concmd.isValid(k) then
-      console.print(k)
+      if not result[cut] then result[cut] = "" end
+      result[cut] = result[cut] .. (result[cut] == "" and "" or ", ") .. k
+      step = step + 1
+      if step == 4 then
+        step = 0
+        cut = cut + 1
+      end
     end
+  end
+  for k, v in ipairs(result) do
+    if k ~= #result then
+      result[k] = result[k] .. ","
+    end
+  end
+  for k, v in ipairs(result) do
+    console.print(v)
   end
 end
 concmd["findcmd"] = {
