@@ -86,14 +86,14 @@ end
 	If the tile is animated, then it'll return the correct tile for the current
 	animation frame (defaults to 1).
 ]]
-function Tileset:_getTileImageAndQuad(gid, frame)
+function Tileset:_getTileImageAndQuad(gid, frame, checkedAnim)
 	frame = frame or 1
 	local tile = self:_getTile(gid)
-	if tile and tile.animation then
+	if tile and tile.animation and not checkedAnim then
 		-- get the appropriate frame for animated tiles
 		local currentFrameGid = self.firstgid + tile.animation[frame].tileid
 		if currentFrameGid ~= gid then
-			return self:_getTileImageAndQuad(currentFrameGid, frame)
+			return self:_getTileImageAndQuad(currentFrameGid, frame, true)
 		end
 	end
 	if tile and tile.image then
