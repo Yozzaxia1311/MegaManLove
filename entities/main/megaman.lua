@@ -1425,7 +1425,8 @@ end
 function megaman:phys()
   self.velocity.vely = self.gravity > 0 and math.min(self.maxAirSpeed, self.velocity.vely) or math.max(-self.maxAirSpeed, self.velocity.vely)
   collision.doCollision(self)
-  if self:checkFalse(self.canDieFromSpikes) and (self.xcoll ~= 0 or self.ycoll ~= 0 or (self.ground and self.gravity ~= 0)) then
+  if self.blockCollision and self:checkFalse(self.canDieFromSpikes) and
+    (self.xcoll ~= 0 or self.ycoll ~= 0 or (self.ground and self.gravity ~= 0)) then
     local t = self:collisionTable(megautils.groups()["death"], self.xcoll, self.ycoll+math.sign(self.gravity))
     local lx, ly = self.transform.x, self.transform.y
     for i=1, #t do
@@ -1435,7 +1436,7 @@ function megaman:phys()
     for i=1, #t do
       t[i].isSolid = 1
     end
-    if self.blockCollision and collision.checkSolid(self) then
+    if collision.checkSolid(self) then
       self:hurt({self}, -999, 1)
       if self.changeHealth < 0 then
         self.ground = false
