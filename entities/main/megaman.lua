@@ -1432,6 +1432,7 @@ function megaman:phys()
       local lx, ly = self.transform.x, self.transform.y
       local lg = self.ground
       local lcx, lcy = self.xcoll, self.ycoll
+      local lss = self.inStandSolid
       for i=1, #t do
         t[i].isSolid = 0
       end
@@ -1448,6 +1449,7 @@ function megaman:phys()
         self.ground = lg
         self.xcoll = lcx
         self.ycoll = lcy
+        self.inStandSolid = lss
       end
       self.transform.x = lx
       self.transform.y = ly
