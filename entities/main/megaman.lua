@@ -1428,22 +1428,30 @@ function megaman:phys()
   if self.blockCollision and self:checkFalse(self.canDieFromSpikes) and
     (self.xcoll ~= 0 or self.ycoll ~= 0 or (self.ground and self.gravity ~= 0)) then
     local t = self:collisionTable(megautils.groups()["death"], self.xcoll, self.ycoll+math.sign(self.gravity))
-    local lx, ly = self.transform.x, self.transform.y
-    for i=1, #t do
-      t[i].isSolid = 0
-    end
-    collision.shiftObject(self, self.xcoll, self.ycoll+math.sign(self.gravity), true)
-    for i=1, #t do
-      t[i].isSolid = 1
-    end
-    if collision.checkSolid(self) then
-      self:hurt({self}, -999, 1)
-      if self.changeHealth < 0 then
-        self.ground = false
+    if #t ~= 0 then
+      local lx, ly = self.transform.x, self.transform.y
+      local lg = self.ground
+      local lcx, lcy = self.xcoll, self.ycoll
+      for i=1, #t do
+        t[i].isSolid = 0
       end
+      collision.shiftObject(self, self.xcoll, self.ycoll+math.sign(self.gravity), true)
+      for i=1, #t do
+        t[i].isSolid = 1
+      end
+      if collision.checkSolid(self) then
+        self:hurt({self}, -99999, 1)
+        if self.changeHealth < 0 then
+          self.ground = false
+        end
+      else
+        self.ground = lg
+        self.xcoll = lcx
+        self.ycoll = lcy
+      end
+      self.transform.x = lx
+      self.transform.y = ly
     end
-    self.transform.x = lx
-    self.transform.y = ly
   end
 end
 
