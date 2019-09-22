@@ -1433,10 +1433,11 @@ function megaman:phys()
       local lg = self.ground
       local lcx, lcy = self.xcoll, self.ycoll
       local lss = self.inStandSolid
+      local lmf = self.onMovingFloor
       for i=1, #t do
         t[i].isSolid = 0
       end
-      collision.shiftObject(self, self.xcoll, self.ycoll+math.sign(self.gravity), true)
+      collision.shiftObject(self, self.xcoll, self.ycoll+math.sign(self.gravity), true, false)
       for i=1, #t do
         t[i].isSolid = 1
       end
@@ -1450,6 +1451,7 @@ function megaman:phys()
         self.xcoll = lcx
         self.ycoll = lcy
         self.inStandSolid = lss
+        self.onMovingFloor = lmf
       end
       self.transform.x = lx
       self.transform.y = ly
