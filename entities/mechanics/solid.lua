@@ -150,6 +150,7 @@ function collision.entityPlatform(self)
                 
                 if v.velocity.vely == 0 and epDir == math.sign(v.gravity) then
                   v.ground = true
+                  v.onMovingFloor = self
                 end
                 
                 self.transform.y = self.transform.y - myyspeed
@@ -176,6 +177,7 @@ function collision.entityPlatform(self)
               if v:collision(self, 0, math.sign(v.gravity)+(v.ground and 1 or 0)) then
                 collision.shiftObject(v, myxspeed, 0, true)
                 epIsOnPlat = true
+                v.onMovingFloor = self
               end
               
               if resolid == 1 then
@@ -253,7 +255,7 @@ function collision.shiftObject(self, dx, dy, checkforcol)
 end
 
 function collision.checkGround(self, noSlopeEffect)
-  if not self.ground then self.inStandSolid = nil return end
+  if not self.ground then self.onMovingFloor = nil self.inStandSolid = nil return end
   local solid = {}
   local cgrav = math.sign(self.gravity)
   cgrav = cgrav == 0 and 1 or cgrav
@@ -280,6 +282,7 @@ function collision.checkGround(self, noSlopeEffect)
     while i <= slp do
       if #self:collisionTable(solid, 0, cgrav * i) == 0 then
         self.ground = false
+        self.onMovingFloor = nil
         self.inStandSolid = nil
       elseif self.velocity.vely * cgrav >= 0 then
         self.ground = true
