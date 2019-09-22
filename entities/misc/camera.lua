@@ -36,7 +36,6 @@ function camera:new(x, y, doScrollX, doScrollY)
   self.locky = 0
   self.lockw = 0
   self.lockh = 0
-  self.locked = false
   self.curLock = ""
   self.doScrollY = doScrollY == nil and true or doScrollY
   self.doScrollX = doScrollX == nil and true or doScrollX
@@ -162,9 +161,6 @@ function camera:updateCam(ox, oy)
           end
         end
       end
-      if megautils.networkMode == "server" and megautils.networkGameStarted then
-        megautils.net:sendToAll("rt")
-      end
       if self.freeze then
         megautils.freeze(globals.allPlayers)
         for k, v in pairs(globals.allPlayers) do
@@ -239,13 +235,13 @@ function camera:updateCam(ox, oy)
           camera.main.tween2[i]:update(1/60)
         end
         if camera.main.tween:update(1/60) then
-          camera.main.transition = false
-          camera.main.once = false
-          camera.main.scrollx, camera.main.scrolly, camera.main.scrollw, camera.main.scrollh = camera.main.toSection.transform.x,
-            camera.main.toSection.transform.y, camera.main.toSection.collisionShape.w, camera.main.toSection.collisionShape.h
+          camera.main.tweenFinished = true
           if camera.main.updateSections then
             camera.main:updateBounds()
             camera.main.toSection = nil
+            camera.main.transition = false
+            camera.main.once = false
+            camera.main.tweenFinished = nil
             if camera.main.freeze then
               megautils.unfreeze(globals.allPlayers)
               for k, v in pairs(globals.allPlayers) do
@@ -265,7 +261,6 @@ function camera:updateCam(ox, oy)
           camera.main.tween2 = nil
           megautils.state().system.afterUpdate = nil
           camera.main.preTrans = nil
-          camera.main.locked = nil
         end
         if camera.main.player and camera.main.player.onMovingFloor then
           camera.main.player.onMovingFloor.transform.x = camera.main.player.transform.x + camera.main.flx
@@ -275,9 +270,6 @@ function camera:updateCam(ox, oy)
         camera.main.transform.y = math.round(camera.main.transform.y)
         view.x, view.y = math.round(camera.main.transform.x), math.round(camera.main.transform.y)
         camera.main:updateFuncs()
-        if megautils.networkGameStarted and megautils.networkMode == "server" then
-          megautils.net:sendToAll("u", {x=camera.main.transform.x, y=camera.main.transform.y, id=camera.main.networkID})
-        end
       end
     end
   else

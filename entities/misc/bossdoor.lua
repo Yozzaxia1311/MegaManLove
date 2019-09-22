@@ -103,20 +103,18 @@ function bossdoor:update(dt)
       camera.main.freeze = false
     end
   elseif self.state == 2 then
-    if not camera.main.transition then
+    if camera.main.tweenFinished then
       self.player.doAnimation = false
-      camera.main.transXSpeed = .35
-      camera.main.transYSpeed = .45
       self.state = 3
     end
   elseif self.state == 3 then
     self.timer = math.min(self.timer+1, 8)
-    if self.timer == 8 then
+    if self.timer == 8 and self.segments < self.maxSegments then
       self.timer = 0
       self.segments = math.min(self.segments+1, self.maxSegments)
       mmSfx.play("boss_door_sfx")
     end
-    if self.segments >= self.maxSegments then
+    if self.segments >= self.maxSegments and not megautils.state().system.afterUpdate then
       self.timer = 0
       for i=1, #globals.allPlayers do
         globals.allPlayers[i].control = true
@@ -127,8 +125,11 @@ function bossdoor:update(dt)
       megautils.state().system.afterUpdate = function()
         camera.main:updateBounds()
         camera.main.toSection = nil
+        camera.main.tweenFinished = nil
         megautils.unfreeze(globals.allPlayers)
         megautils.state().system.afterUpdate = nil
+        camera.main.once = false
+        camera.main.transition = false
       end
       self.state = 0
     end
