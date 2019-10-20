@@ -242,6 +242,7 @@ function camera:updateCam(ox, oy)
             camera.main.transition = false
             camera.main.once = false
             camera.main.tweenFinished = nil
+            camera.main.preTrans = false
             if camera.main.freeze then
               megautils.unfreeze(globals.allPlayers)
               for k, v in pairs(globals.allPlayers) do
@@ -260,7 +261,6 @@ function camera:updateCam(ox, oy)
           camera.main.tween = nil
           camera.main.tween2 = nil
           megautils.state().system.afterUpdate = nil
-          camera.main.preTrans = nil
         end
         if camera.main.player and camera.main.player.onMovingFloor then
           camera.main.player.onMovingFloor.transform.x = camera.main.player.transform.x + camera.main.flx

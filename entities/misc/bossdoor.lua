@@ -116,10 +116,6 @@ function bossdoor:update(dt)
     end
     if self.segments >= self.maxSegments and not megautils.state().system.afterUpdate then
       self.timer = 0
-      for i=1, #globals.allPlayers do
-        globals.allPlayers[i].control = true
-        globals.allPlayers[i].doAnimation = true
-      end
       camera.main.freeze = true
       camera.main.updateSections = true
       megautils.state().system.afterUpdate = function()
@@ -127,9 +123,14 @@ function bossdoor:update(dt)
         camera.main.toSection = nil
         camera.main.tweenFinished = nil
         megautils.unfreeze(globals.allPlayers)
+        for i=1, #globals.allPlayers do
+          globals.allPlayers[i].control = true
+          globals.allPlayers[i].doAnimation = true
+        end
         megautils.state().system.afterUpdate = nil
         camera.main.once = false
         camera.main.transition = false
+        camera.main.preTrans = false
       end
       self.state = 0
     end
