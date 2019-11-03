@@ -110,7 +110,7 @@ function love.load()
   
   local data = save.load("main.sav") or {}
   if data.fullscreen then
-    convar.setValue("r_fullscreen", data.fullscreen, true)
+    convar.setValue("fullscreen", data.fullscreen, true)
   end
   states.set("states/disclaimer.state.lua")
   console.parse("exec autoexec")
