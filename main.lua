@@ -125,6 +125,14 @@ function love.resize(w, h)
   resized = true
 end
 
+--Love2D doesn't fire the resize event when exiting fullscreen, so here's a hack.
+local lf = love.window.setFullscreen
+
+function love.window.setFullscreen(s)
+  lf(s)
+  love.resize(love.graphics.getDimensions())
+end
+
 function love.joystickadded(j)
   control.loadBinds()
 end
