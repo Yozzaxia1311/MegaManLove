@@ -1,5 +1,5 @@
 # Mega Man Love engine
-The Mega Man Love engine is a free, open-source NES-style Mega Man engine built for [Love2D 11.2](http://love2d.org).
+The Mega Man Love engine is a free, open-source NES-style Mega Man engine built for [Love2D 11.3](http://love2d.org).
 
 ## License
 [MIT](./LICENSE) for licensing. You can use this engine for any purpose-- though, authors and other contributors will not be liable for what you do.
