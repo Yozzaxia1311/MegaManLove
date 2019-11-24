@@ -14,7 +14,7 @@ function banner:new()
   self.tTwo = loader.get("star_field")
   self.tOne = loader.get("star_field_one")
   self.quad = love.graphics.newQuad(0, 0, 256, 103, 256, 187)
-  self:setLayer(1)
+  self:setLayer(2)
 end
 
 function banner:update(dt)

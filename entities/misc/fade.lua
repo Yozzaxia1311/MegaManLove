@@ -9,7 +9,7 @@ function fade:new(fadeToColor, gap, color, after)
   self.timer = 0
   self.color = color or {0, 0, 0}
   megautils.freeze()
-  self:setLayer(10)
+  self:setLayer(11)
   fade.main = self
 end
 

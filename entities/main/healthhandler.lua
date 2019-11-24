@@ -36,7 +36,7 @@ function healthhandler:new(colorOne, colorTwo, colorOutline, side, r, segments, 
   self.change = 0
   self.rise = 0
   self.riseTimer = 4
-  self:setLayer(9)
+  self:setLayer(1)
   self.rot = r or "y"
   self.onceA = false
   self.me = {self}

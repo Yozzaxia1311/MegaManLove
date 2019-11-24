@@ -29,7 +29,7 @@ function met:new(x, y, s)
   self.timer = 0
   self.blockCollision = true
   self.gravity = 0.25
-  self:setLayer(2)
+  self:setLayer(1)
 end
 
 function met:grav()
@@ -140,6 +140,7 @@ function metBullet:new(x, y, vx, vy)
   self.velocity = velocity()
   self.velocity.velx = vx
   self.velocity.vely = vy
+  self:setLayer(1)
 end
 
 function metBullet:recycle(x, y, vx, vy)

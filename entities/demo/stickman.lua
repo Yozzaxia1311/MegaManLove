@@ -254,7 +254,7 @@ function megamanStick:new()
   self.timer2 = 0
   self.shootTimer = 14
   self.s = 0
-  self.layer = 3
+  self:setLayer(3)
   self.megaOne = megaman.weaponHandler[1].colorOne[0]
   self.megaTwo = megaman.weaponHandler[1].colorTwo[0]
   self.toOne = {255, 255, 255}

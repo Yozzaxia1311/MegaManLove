@@ -4,6 +4,7 @@ entitysystem.drawCollision = false
 entitysystem.doBeforeUpdate = true
 entitysystem.doAfterUpdate = true
 entitysystem.doDrawQuality = false
+entitysystem.doDrawFlicker = true
 
 function entitysystem:new()
   self.entities = {}
@@ -70,7 +71,7 @@ function entitysystem:add(c, ...)
       end
     end
     if not done then
-      self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}}
+      self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}, ["flicker"]=true}
       e.actualLayer = self.entities[#self.entities]
       e.layer = e.actualLayer.layer
       self.doSort = true
@@ -100,7 +101,7 @@ function entitysystem:adde(e)
       end
     end
     if not done then
-      self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}}
+      self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}, ["flicker"]=true}
       e.actualLayer = self.entities[#self.entities]
       e.layer = e.actualLayer.layer
       self.doSort = true
@@ -162,7 +163,7 @@ function entitysystem:removeStatic(e)
       end
     end
     if not done then
-      self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}}
+      self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}, ["flicker"]=true}
       e.actualLayer = self.entities[#self.entities]
       e.layer = e.actualLayer.layer
       self.doSort = true
@@ -191,10 +192,19 @@ function entitysystem:setLayer(e, l)
       end
     end
     if not done then
-      self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}}
+      self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}, ["flicker"]=true}
       e.actualLayer = self.entities[#self.entities]
       e.layer = e.actualLayer.layer
       self.doSort = true
+    end
+  end
+end
+
+function entitysystem:setLayerFlicker(l, b)
+  for i=1, #self.entities do
+    if self.entities[i].layer == l then
+      self.entities[i].flicker = b
+      break
     end
   end
 end
@@ -332,6 +342,13 @@ function entitysystem:update(dt)
     self.doSort = false
     self:sortLayers()
   end
+  if entitysystem.doDrawFlicker then
+    for i=1, #self.entities do
+      if self.entities[i].flicker and #self.entities[i].data > 1 then
+        table.shuffle(self.entities[i].data)
+      end
+    end
+  end
 end
 
 velocity = class:extend()
@@ -371,7 +388,7 @@ function entity:new()
   self.transform.y = 0
   self.collisionShape = nil
   self.flashRender = true
-  self.layer = 0
+  self.layer = 1
   self.isRemoved = false
   self.updated = true
   self.render = true
@@ -646,7 +663,7 @@ function basicEntity:new()
   self.transform.x = 0
   self.transform.y = 0
   self.collisionShape = nil
-  self.layer = 0
+  self.layer = 1
   self.isRemoved = false
   self.updated = true
   self.render = true
@@ -828,6 +845,7 @@ function mapentity:new(name, map)
   end
   self.map = type(map) == "string" and mapentity.cache[map] or map
   mapentity.layers[self.name] = self
+  self:setLayer(-5)
 end
 
 function mapentity:drawAt(x, y)

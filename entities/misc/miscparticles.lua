@@ -11,7 +11,7 @@ function slideParticle:new(x, y, side)
   self:setRectangleCollision(2, 8)
   self.tex = loader.get("particles")
   self.anim = anim8.newAnimation(loader.get("slide_particle_grid")("1-3",1), 1/10)
-  self:setLayer(2)
+  self:setLayer(1)
   self.side = side
 end
 
@@ -54,7 +54,7 @@ function damageSteam:new(x, y)
   self:setRectangleCollision(5, 8)
   self.tex = loader.get("particles")
   self.anim = anim8.newAnimation(loader.get("damage_steam_grid")("1-3",1), 1/8)
-  self:setLayer(2)
+  self:setLayer(1)
 end
 
 function damageSteam:recycle(x, y)
@@ -90,7 +90,7 @@ function airBubble:new(x, y)
   self:setRectangleCollision(2, 8)
   self.tex = loader.get("particles")
   self.quad = love.graphics.newQuad(104, 28, 4, 4, 128, 98)
-  self:setLayer(2)
+  self:setLayer(1)
   self.off = 0
   self.timer = 0
   self.render = false
@@ -249,7 +249,7 @@ function harm:new(e)
   self:setRectangleCollision(24, 24)
   self.tex = loader.get("particles")
   self.quad = love.graphics.newQuad(0, 22, 24, 24, 128, 98)
-  self:setLayer(2)
+  self:setLayer(1)
   self.timer = 0
 end
 

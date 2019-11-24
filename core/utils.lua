@@ -100,6 +100,18 @@ function table.merge(tables)
   return result
 end
 
+function table.shuffle(t)
+  for i = #t, 2, -1 do
+    local j = love.math.random(i)
+    t[i], t[j] = t[j], t[i]
+  end
+  return t
+end
+
+function math.even(n)
+  return n % 2 == 0
+end
+
 function math.dist2d(x, y, x2, y2)
   return math.sqrt(math.pow(x-x2, 2)+math.pow(y-y2, 2))
 end

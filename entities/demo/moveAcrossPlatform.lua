@@ -22,6 +22,7 @@ function moveAcrossPlatform:new(x, y, toX, toY, s)
   self.velocity = velocity()
   self.tween = tween.new(1, self.transform, {x=toX, y=toY}, "inOutBack")
   self.state = 0
+  self:setLayer(1)
 end
 
 function moveAcrossPlatform:removed()

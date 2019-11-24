@@ -172,6 +172,7 @@ function megautils.loadStage(self, path, call)
     local e = megautils.add(mapentity, v.name, map)
     if e and call then call(e) end
   end
+  megautils.setLayerFlicker(-5, false)
   addobjects.add(objs)
   local tmp = megautils.add(trigger, function(s, dt)
     s.map:update(1/60)
@@ -186,6 +187,10 @@ function megautils.gotoState(s, before, after, chunk)
         states.set(s, chunk)
         if after then after() end
       end)
+end
+
+function megautils.setLayerFlicker(l, b)
+  states.currentstate.system:setLayerFlicker(l, b)
 end
 
 function megautils.remove(o, queue)

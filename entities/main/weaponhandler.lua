@@ -30,7 +30,7 @@ function weaponhandler:new(side, r, slots)
   self.currentColorOne = {}
   self.currentColorTwo = {}
   self.pauseConf = {}
-  self:setLayer(9)
+  self:setLayer(1)
   self.riseTimer = 4
   self.rise = 0
   self.change = 0

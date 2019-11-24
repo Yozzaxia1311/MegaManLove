@@ -334,7 +334,7 @@ function trebleBoost:new(x, y, side, player, wpn)
   self.side = side
   self.s = 0
   self.wpn = wpn
-  self:setLayer(2)
+  self:setLayer(1)
   self.player = player
   self.blockCollision = true
   self.timer = 0
@@ -435,7 +435,7 @@ function rushJet:new(x, y, side, player, wpn, skin)
   self.wpn = wpn
   self.timer = 0
   self.blockCollision = true
-  self:setLayer(2)
+  self:setLayer(1)
   self.player = player
   self.playerOn = false
   self.exclusivelySolidFor = {self.player}
@@ -572,7 +572,7 @@ function rushCoil:new(x, y, side, player, w, skin)
   self.velocity = velocity()
   self.wpn = w
   self.blockCollision = true
-  self:setLayer(2)
+  self:setLayer(1)
   self.player = player
   self.gravity = 0.25
 end
@@ -618,7 +618,7 @@ function rushCoil:update(dt)
       self.transform.x, self.transform.x+self.collisionShape.w) and
       self.player:collision(self) then
       self.player.canStopJump["global"] = false
-      self.player.velocity.vely = -7 * (self.player.gravity < 0 and -1 or 1)
+      self.player.velocity.vely = -7.5 * (self.player.gravity < 0 and -1 or 1)
       self.player.step = false
       self.player.stepTime = 0
       self.player.ground = false
