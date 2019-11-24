@@ -1,5 +1,5 @@
 addobjects.register("move_across_platform", function(v)
-  megautils.add(spawner, v.x, v.y, 32, 16, function(s)
+  megautils.add(spawner, v.x-4, v.y-4, 32+8, 16+8, function(s)
     megautils.add(moveAcrossPlatform, s.transform.x, s.transform.y, v.properties["to_x"], v.properties["to_y"], s)
   end)
 end)

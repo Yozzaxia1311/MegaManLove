@@ -384,15 +384,18 @@ function megautils.dropItem(x, y)
   end
 end
 
-function megautils.dist(e, e1)
-  local path = megautils.calcPath(e.transform.x+e.collisionShape.w/2, e.transform.y+e.collisionShape.h/2,
-    e1.transform.x+e1.collisionShape.w/2, e1.transform.y+e1.collisionShape.h/2)
-  local path2 = megautils.calcPath(e1.transform.x+e1.collisionShape.w/2, e1.transform.y+e1.collisionShape.h/2,
-    e.transform.x+e1.collisionShape.w/2, e.transform.y+e.collisionShape.h/2)
-  return math.dist2d(megautils.circlePathX(e.transform.x+e.collisionShape.w/2, path2, e.collisionShape.w/2),
-    megautils.circlePathY(e.transform.y+e.collisionShape.h/2, path2, e.collisionShape.h/2),
-    megautils.circlePathX(e1.transform.x+e1.collisionShape.w/2, path2, e1.collisionShape.w/2),
-    megautils.circlePathY(e1.transform.y+e1.collisionShape.h/2, path2, e1.collisionShape.h/2))
+function megautils.center(e)
+  return e.transform.x+e.collisionShape.w/2, e.transform.y+e.collisionShape.h/2
+end
+
+function megautils.dist(e, e2)
+  local cx, cy = megautils.center(e)
+  local cx2, cy2 = megautils.center(e2)
+  local path = megautils.calcPath(cx2, cy2, cx, cy)
+  return math.dist2d(megautils.circlePathX(cx, path, e.collisionShape.w/2),
+    megautils.circlePathY(cy, path, e.collisionShape.h/2),
+    megautils.circlePathX(cx2, path, e2.collisionShape.w/2),
+    megautils.circlePathY(cy2, path, e2.collisionShape.h/2))
 end
 
 function megautils.closest(e, group, single)
@@ -426,14 +429,39 @@ function megautils.autoFace(e, to, single)
 end
 
 function megautils.pointVelAt(e, to)
-  local p = megautils.calcPath(e.transform.x+e.collisionShape.w/2,
-      e.transform.y+e.collisionShape.h/2, to.transform.x+to.collisionShape.w/2,
-      to.transform.y+to.collisionShape.h/2)
+  local p = megautils.calcPath(megautils.center(e), megautils.center(to))
   return megautils.calcX(p), megautils.calcY(p)
 end
 
 function megautils.pointAt(e, to)
-  return megautils.calcPath(e.transform.x+e.collisionShape.w/2,
-      e.transform.y+e.collisionShape.h/2, to.transform.x+to.collisionShape.w/2,
-      to.transform.y+to.collisionShape.h/2)
+  return megautils.calcPath(megautils.center(e), megautils.center(to))
+end
+
+function megautils.arcXVel(yvel, grav, x, y, tox, toy, limit)
+  if not grav or grav == 0 then
+    return megautils.calcX(megautils.calcPath(x, y, tox, toy))
+  end
+  
+  local ly = y
+  local py = ly
+  local vel = yvel
+  local time = 0
+  
+  while true do
+    time = time + 1
+    py = ly
+    ly = ly + vel
+    vel = vel + grav
+    if (ly >= toy and py < toy) or (vel > 0 and ly > toy) then
+      break
+    end
+  end
+  
+  local result = (tox - x) / time
+  
+  if limit then
+    math.clamp(result, -math.abs(limit), math.abs(limit))
+  end
+  
+  return result
 end

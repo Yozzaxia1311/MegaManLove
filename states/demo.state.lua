@@ -6,7 +6,7 @@ function demostate:begin()
       loader.clear() --Clear assets just incase
       loader.load("assets/global/entities/demo_objects.png", "demo_objects", "texture")
       megautils.runFile("entities/demo/met.lua")
-      megautils.runFile("entities/demo/moveAcrossPlatform.lua")
+      megautils.runFile("entities/demo/moveacrossplatform.lua")
       megautils.runFile("entities/demo/stickman.lua")
     end
     
