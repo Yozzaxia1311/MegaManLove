@@ -298,14 +298,11 @@ function megautils.unfreeze(e, name)
   end
 end
 
-function megautils.outside(o)
+function megautils.outside(o, ex, ey)
   if not o.collisionShape then
     return false
   end
-  if camera.main and not camera.main.isRemoved then
-    return not o:collision(camera.main)
-  end
-  return not rectOverlapsRect(view.x, view.y, view.w, view.h, 
+  return not rectOverlapsRect(view.x-(ex or 0), view.y-(ey or 0), view.w+((ex or 0)*2), view.h+((ey or 0)*2), 
     o.transform.x, o.transform.y, o.collisionShape.w, o.collisionShape.h)
 end
 

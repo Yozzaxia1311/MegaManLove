@@ -1,7 +1,7 @@
 return {
   version = "1.2",
   luaversion = "5.1",
-  tiledversion = "1.2.3",
+  tiledversion = "1.2.2",
   orientation = "orthogonal",
   renderorder = "right-down",
   width = 64,
@@ -1375,7 +1375,7 @@ return {
           name = "move_across_platform",
           type = "",
           shape = "rectangle",
-          x = 256,
+          x = 272,
           y = 384,
           width = 32,
           height = 16,
