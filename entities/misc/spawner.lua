@@ -12,7 +12,6 @@ function spawner:new(x, y, w, h, func)
     self.wasOutside = true
     self.canSpawn = true
   end
-  self.layer = 10
 end
 
 function spawner:update(dt)
@@ -40,7 +39,6 @@ function intervalSpawner:new(x, y, w, h, time, func)
   end
   self.time = time
   self.timer = 0
-  self.layer = 10
 end
 
 function intervalSpawner:update(dt)

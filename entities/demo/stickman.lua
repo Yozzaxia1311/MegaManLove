@@ -22,7 +22,6 @@ function stickMan:new(x, y, s)
   self.t = loader.get("stick_man")
   self.side = -1
   self.s = 0
-  self:setLayer(1)
   self.spawner = s
   self.render = false
   self.ss = 1

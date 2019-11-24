@@ -542,7 +542,6 @@ function megaman:new(x, y, side, drop, p)
     self:addToGroup("submergable")
     self:addToGroup("carry")
   end
-  self:setLayer(1)
   self.render = not self.drop
 end
 

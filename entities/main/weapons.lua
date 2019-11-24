@@ -21,7 +21,6 @@ function protoSemiBuster:new(x, y, dir, wpn, roll)
   self.side = dir
   self.wpn = wpn
   mmSfx.play("semi_charged")
-  self:setLayer(1)
 end
 
 function protoSemiBuster:update(dt)
@@ -66,7 +65,6 @@ function protoChargedBuster:new(x, y, dir, wpn, roll)
   self.wpn = wpn
   mmSfx.play("proto_charged")
   self:face(-self.side)
-  self:setLayer(1)
 end
 
 function protoChargedBuster:face(n)
@@ -118,7 +116,6 @@ function bassBuster:new(x, y, dir, wpn, t)
   self.velocity.vely = megautils.calcY(dir) * 5
   self.side = self.velocity.velx < 0 and -1 or 1
   self.wpn = wpn
-  self:setLayer(1)
   self.treble = t
 end
 
@@ -176,7 +173,6 @@ function megaBuster:new(x, y, dir, wpn)
   self.velocity.velx = dir * 5
   self.side = dir
   self.wpn = wpn
-  self:setLayer(1)
 end
 
 function megaBuster:recycle(x, y, dir, wpn)
@@ -230,7 +226,6 @@ function megaSemiBuster:new(x, y, dir, wpn)
   self.wpn = wpn
   mmSfx.play("semi_charged")
   self:face(-self.side)
-  self:setLayer(1)
 end
 
 function megaSemiBuster:face(n)
@@ -280,7 +275,6 @@ function megaChargedBuster:new(x, y, dir, wpn)
   self.wpn = wpn
   mmSfx.play("charged")
   self:face(-self.side)
-  self:setLayer(1)
 end
 
 function megaChargedBuster:face(n)
@@ -334,7 +328,6 @@ function trebleBoost:new(x, y, side, player, wpn)
   self.side = side
   self.s = 0
   self.wpn = wpn
-  self:setLayer(1)
   self.player = player
   self.blockCollision = true
   self.timer = 0
@@ -435,7 +428,6 @@ function rushJet:new(x, y, side, player, wpn, skin)
   self.wpn = wpn
   self.timer = 0
   self.blockCollision = true
-  self:setLayer(1)
   self.player = player
   self.playerOn = false
   self.exclusivelySolidFor = {self.player}
@@ -572,7 +564,6 @@ function rushCoil:new(x, y, side, player, w, skin)
   self.velocity = velocity()
   self.wpn = w
   self.blockCollision = true
-  self:setLayer(1)
   self.player = player
   self.gravity = 0.25
 end
@@ -681,7 +672,6 @@ function stickWeapon:new(x, y, dir, wpn)
   self.velocity.velx = dir * 5
   self.side = dir
   self.wpn = wpn
-  self:setLayer(1)
   mmSfx.play("buster")
 end
 
