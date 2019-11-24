@@ -24,7 +24,7 @@ function initEngine()
   globals.maxETanks = 10
   globals.maxWTanks = 10
   globals.startingLives = 2
-  globals.playerCount = 2
+  globals.playerCount = 1
   
   globals.defeats = {}
   globals.defeats.stickMan = false
