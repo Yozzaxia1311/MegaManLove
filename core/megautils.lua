@@ -55,7 +55,7 @@ function megautils.load()
   loader.load("assets/misc/particles_one.png", "particles_one", "texture", nil, true)
   loader.load("assets/misc/particles_two.png", "particles_two", "texture", nil, true)
   loader.load("assets/misc/weapon_select.png", "weapon_select_img", "texture", nil, true)
-  loader.load("assets/global/bossdoors/boss_door.png", "boss_door", "texture", nil, true)
+  loader.load("assets/global/boss_door.png", "boss_door", "texture", nil, true)
   loader.load("assets/misc/menu_select.png", "menu_select", "texture", nil, true)
   loader.load("assets/misc/weapons/stick_weapon.png", "stick_weapon", "texture", nil, true)
   loader.load("assets/sfx/mm_start.ogg", "start", "sound", nil, true)
@@ -169,7 +169,7 @@ function megautils.loadStage(self, path, call)
       end
     end
   end
-  local bg = trigger(nil, map.drawBackground)
+  local bg = trigger(nil, function() mapentity.currentMap:drawBackground() end)
   bg:setLayer(-5)
   megautils.adde(bg)
   for k, v in pairs(tLayers) do
