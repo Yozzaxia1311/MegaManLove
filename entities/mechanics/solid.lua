@@ -29,7 +29,6 @@ function collision.getTable(self, dx, dy)
     local v = all[i]
     if (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
       (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) and
-      (not self.blockCollisionExclusion or not table.contains(self.blockCollisionExclusion, v)) and
       (v.isSolid == 1 or v.isSolid == 2) then
       if v.isSolid ~= 2 or (math.sign(ys) == cgrav and not v:collision(self) and v:collision(self, 0, -ys)) then
         solid[#solid+1] = v
@@ -65,7 +64,6 @@ function collision.checkSolid(self, dx, dy, noSlope)
     local v = all[i]
     if (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
       (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) and
-      (not self.blockCollisionExclusion or not table.contains(self.blockCollisionExclusion, v)) and
       (v.isSolid == 1 or v.isSolid == 2) then
       if v.isSolid ~= 2 or (math.sign(ys) == cgrav and not v:collision(self) and v:collision(self, 0, -ys)) then
         solid[#solid+1] = v
@@ -109,9 +107,7 @@ function collision.entityPlatform(self)
           local v = all[i]
           if v ~= self and v.blockCollision and v.collisionShape and
             (not self.exclusivelySolidFor or table.contains(self.exclusivelySolidFor, v)) and
-            (not self.excludeSolidFor or not table.contains(self.excludeSolidFor, v)) and
-            (not v.blockCollisionAgainst or table.contains(v.blockCollisionAgainst, self)) and
-            (not v.blockCollisionExclusion or not table.contains(v.blockCollisionExclusion, self)) then
+            (not self.excludeSolidFor or not table.contains(self.excludeSolidFor, v)) then
             local epDir = math.sign(self.transform.y + (self.collisionShape.h/2) -
               (v.transform.y + (v.collisionShape.h/2)))
             
@@ -176,9 +172,7 @@ function collision.entityPlatform(self)
           local continue = false
           if v ~= self and v.blockCollision and v.collisionShape and v.crushed ~= self and
             (not self.exclusivelySolidFor or table.contains(self.exclusivelySolidFor, v)) and
-            (not self.excludeSolidFor or not table.contains(self.excludeSolidFor, v)) and
-            (not v.blockCollisionAgainst or table.contains(v.blockCollisionAgainst, self)) and
-            (not v.blockCollisionExclusion or not table.contains(v.blockCollisionExclusion, self)) then
+            (not self.excludeSolidFor or not table.contains(self.excludeSolidFor, v)) then
             if not v:collision(self) then
               local epIsOnPlat = false
               local epDir = math.sign((self.transform.x + (self.collisionShape.w/2)) -
@@ -278,9 +272,7 @@ function collision.checkGround(self, noSlopeEffect)
     local v = megautils.state().system.all[i]
     if v ~= self and v.collisionShape and
       (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
-      (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) and
-      (not self.blockCollisionAgainst or table.contains(self.blockCollisionAgainst, v)) and
-      (not self.blockCollisionExclusion or not table.contains(self.blockCollisionExclusion, v)) then
+      (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) then
       if v.isSolid == 1 or v.isSolid == 2 then
         if not v:collision(self, 0, cgrav) and (v.isSolid ~= 2 or v:collision(self, 0, -cgrav * slp)) then
           solid[#solid+1] = v
@@ -421,9 +413,7 @@ function collision.generalCollision(self, noSlopeEffect)
         local v = megautils.state().system.all[i]
         if v ~= self and v.collisionShape and v.isSolid == 2 and
           (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
-          (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) and
-          (not self.blockCollisionAgainst or table.contains(self.blockCollisionAgainst, v)) and
-          (not self.blockCollisionExclusion or not table.contains(self.blockCollisionExclusion, v)) then
+          (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) then
           table.removevaluearray(solid, v)
           if not v:collision(self) then
             solid[#solid+1] = v
