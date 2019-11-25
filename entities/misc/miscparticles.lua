@@ -431,7 +431,7 @@ function blast:new(x, y, times)
   self.added = function(self)
     self:addToGroup("freezable")
     self:addToGroup("removeOnTransition")
-    megautils.add(smallBlast, x, y)
+    megautils.add(smallBlast, self.transform.x, self.transform.y)
   end
   self.transform.y = y
   self.transform.x = x
