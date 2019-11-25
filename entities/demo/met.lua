@@ -56,7 +56,6 @@ function met:healthChanged(o, c, i)
     megautils.remove(self, true)
     mmSfx.play("enemy_explode")
   elseif self.changeHealth < 0 then
-    self.hitTimer = 0
     mmSfx.play("enemy_hit")
     if o:is(megaChargedBuster) then
       megautils.remove(o, true)
