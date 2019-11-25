@@ -77,7 +77,6 @@ function stickMan:healthChanged(o, c, i)
     end)
     megautils.remove(self, true)
   elseif self.changeHealth < 0 then
-    self.hitTimer = 0
     megautils.add(harm, self)
     if o:is(megaChargedBuster) then
       megautils.remove(o, true)
