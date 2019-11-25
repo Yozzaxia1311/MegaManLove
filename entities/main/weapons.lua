@@ -9,6 +9,7 @@ function protoSemiBuster:new(x, y, dir, wpn, roll)
     self:addToGroup("megaBuster" .. wpn.id)
     self:addToGroup("freezable")
     self:addToGroup("removeOnTransition")
+    self:addToGroup("weapon")
   end
   self.transform.y = y
   self.transform.x = x
@@ -102,6 +103,7 @@ function bassBuster:new(x, y, dir, wpn, t)
     self:addToGroup("bassBuster" .. wpn.id)
     self:addToGroup("freezable")
     self:addToGroup("removeOnTransition")
+    self:addToGroup("weapon")
     if not self.treble then
       mmSfx.play("buster")
     end
@@ -161,6 +163,7 @@ function megaBuster:new(x, y, dir, wpn)
     self:addToGroup("megaBuster" .. wpn.id)
     self:addToGroup("freezable")
     self:addToGroup("removeOnTransition")
+    self:addToGroup("weapon")
     mmSfx.play("buster")
   end
   self.transform.y = y
@@ -213,6 +216,7 @@ function megaSemiBuster:new(x, y, dir, wpn)
     self:addToGroup("megaBuster" .. wpn.id)
     self:addToGroup("freezable")
     self:addToGroup("removeOnTransition")
+    self:addToGroup("weapon")
   end
   self.transform.y = y
   self.transform.x = x
@@ -261,6 +265,7 @@ function megaChargedBuster:new(x, y, dir, wpn)
     self:addToGroup("megaChargedBuster" .. wpn.id)
     self:addToGroup("freezable")
     self:addToGroup("removeOnTransition")
+    self:addToGroup("weapon")
   end
   self.tex = loader.get("buster_tex")
   self.anim = anim8.newAnimation(loader.get("charge_grid")("1-4", 1), 1/20)
