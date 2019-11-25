@@ -156,7 +156,8 @@ end
 
 function megautils.loadStage(self, path, call)
   self.sectionHandler = sectionHandler()
-  local map = cartographer.load(path)
+  mapentity.currentMap = cartographer.load(path)
+  local map = mapentity.currentMap
   local tLayers = {}
   local objs = {}
   for k, v in pairs(map.layers) do
@@ -168,6 +169,9 @@ function megautils.loadStage(self, path, call)
       end
     end
   end
+  local bg = trigger(nil, map.drawBackground)
+  bg:setLayer(-5)
+  megautils.adde(bg)
   for k, v in pairs(tLayers) do
     local e = megautils.add(mapentity, v.name, map)
     if e and call then call(e) end

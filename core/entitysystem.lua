@@ -827,11 +827,11 @@ function basicEntity:staticToggled() end
 mapentity = basicEntity:extend()
 
 mapentity.layers = {}
-mapentity.cache = {}
+mapentity.currentMap = nil
 
 megautils.cleanFuncs["mapentity_clean"] = function()
   mapentity.layers = {}
-  mapentity.cache = {}
+  mapentity.currentMap = nil
 end
 
 function mapentity:new(name, map)
@@ -840,19 +840,15 @@ function mapentity:new(name, map)
     self:addToGroup("freezable")
   end
   self.name = name
-  if type(map) == "string" and not mapentity.cache[map] then
-    mapentity.cache[map] = cartographer.load(map)
-  end
-  self.map = type(map) == "string" and mapentity.cache[map] or map
+  self.data = mapentity.currentMap.layers[self.name]
   mapentity.layers[self.name] = self
   self:setLayer(-5)
 end
 
 function mapentity:drawAt(x, y)
-  love.graphics.push()
-  love.graphics.translate(x, y)
-  self.map.layers[self.name]:draw()
-  love.graphics.pop()
+  self.data.offsetx = x
+  self.data.offsety = y
+  self.data:draw()
 end
 
 function mapentity:draw()

@@ -1,5 +1,5 @@
 local cartographer = {
-	_VERSION = 'Cartographer v2.0',
+	_VERSION = 'Cartographer',
 	_DESCRIPTION = 'Simple Tiled map loading for LÖVE.',
 	_URL = 'https://github.com/tesselode/cartographer',
 	_LICENSE = [[
@@ -50,82 +50,64 @@ end
 -- given a grid with w items per row, return the column and row of the nth item
 -- (going from left to right, top to bottom)
 -- https://stackoverflow.com/a/9816217
-local function getCoordinates(n, w)
+local function indexToCoordinates(n, w)
 	return (n - 1) % w, math.floor((n - 1) / w)
 end
 
--- Represents a tileset in an exported Tiled map.
-local Tileset = {}
-Tileset.__index = Tileset
-
-function Tileset:_init(map)
-	self._map = map
-	if self.image then
-		local image = self._map._images[self.image]
-		-- save the number of tiles per row so we don't have to calculate it later
-		self._tilesPerRow = math.floor(image:getWidth() / (self.tilewidth + self.spacing))
-	end
+local function coordinatesToIndex(x, y, w)
+	return x + w * y + 1
 end
 
--- Gets the tile with the specified global id.
-function Tileset:_getTile(gid)
-	for _, tile in ipairs(self.tiles) do
-		if self.firstgid + tile.id == gid then
-			return tile
+local getByNameMetatable = {
+	__index = function(self, key)
+		for _, item in ipairs(self) do
+			if item.name == key then return item end
 		end
-	end
-end
-
---[[
-	Gets the image and optionally quad of the tile with the specified global id.
-	If the tileset is a collection of images, then each tile has its own image,
-	so it'll just return the image. If the tileset is one image with a grid
-	that defines the individual tiles, then it'll also return the quad for the
-	specific tile.
-
-	If the tile is animated, then it'll return the correct tile for the current
-	animation frame (defaults to 1).
-]]
-function Tileset:_getTileImageAndQuad(gid, frame, checkedAnim)
-	frame = frame or 1
-	local tile = self:_getTile(gid)
-	if tile and tile.animation and not checkedAnim then
-		-- get the appropriate frame for animated tiles
-		local currentFrameGid = self.firstgid + tile.animation[frame].tileid
-		if currentFrameGid ~= gid then
-			return self:_getTileImageAndQuad(currentFrameGid, frame, true)
-		end
-	end
-	if tile and tile.image then
-		-- if each tile has its own image, just return that image
-		return self._map._images[tile.image]
-	elseif self.image then
-		-- return the tileset image and the quad representing the specific tile
-		local image = self._map._images[self.image]
-		local x, y = getCoordinates(gid - self.firstgid + 1, self._tilesPerRow)
-		local quad = love.graphics.newQuad(
-			x * (self.tilewidth + self.spacing),
-			y * (self.tileheight + self.spacing),
-			self.tilewidth, self.tileheight,
-			image:getWidth(), image:getHeight())
-		return image, quad
-	else
-		return false
-	end
-end
-
--- this metatable is applied to map.layers so that layers can be accessed
--- by name
-local LayerList = {
-	__index = function(self, k)
-		for _, layer in ipairs(self) do
-			if layer.name == k then return layer end
-		end
-		return rawget(self, k)
+		return rawget(self, key)
 	end,
 }
 
+local function getLayer(self, ...)
+	local numberOfArguments = select('#', ...)
+	if numberOfArguments == 0 then
+		error('must specify at least one layer name', 2)
+	end
+	local layer
+	local layerName = select(1, ...)
+	if not self.layers[layerName] then return end
+	layer = self.layers[layerName]
+	for i = 2, numberOfArguments do
+		layerName = select(i, ...)
+		if not (layer.layers and layer.layers[layerName]) then return end
+		layer = layer.layers[layerName]
+	end
+	return layer
+end
+
 local Layer = {}
+
+-- A common class for all layer types.
+Layer.base = {}
+Layer.base.__index = Layer.base
+
+function Layer.base:_init(map)
+	self._map = map
+end
+
+-- Converts grid coordinates to pixel coordinates for this layer.
+function Layer.base:gridToPixel(x, y)
+	x, y = x * self._map.tilewidth, y * self._map.tileheight
+	x, y = x + self.offsetx, y + self.offsety
+	return x, y
+end
+
+-- Converts pixel coordinates for this layer to grid coordinates.
+function Layer.base:pixelToGrid(x, y)
+	x, y = x - self.offsetx, y - self.offsety
+	x, y = x / self._map.tilewidth, y / self._map.tileheight
+	x, y = math.floor(x), math.floor(y)
+	return x, y
+end
 
 --[[
 	Represents any layer type that can contain tiles
@@ -134,112 +116,214 @@ local Layer = {}
 	it's just a parent class to share code between
 	tile layers and object layers.
 ]]
-Layer.itemlayer = {}
-Layer.itemlayer.__index = Layer.itemlayer
+Layer.spritelayer = setmetatable({}, Layer.base)
+Layer.spritelayer.__index = Layer.spritelayer
 
--- Starts timers for each animated tile in the map.
-function Layer.itemlayer:_initAnimations()
+function Layer.spritelayer:_initAnimations()
 	self._animations = {}
 	for _, tileset in ipairs(self._map.tilesets) do
-		self._animations[tileset] = {}
 		for _, tile in ipairs(tileset.tiles) do
 			if tile.animation then
 				local gid = tileset.firstgid + tile.id
-				self._animations[tileset][gid] = {
+				self._animations[gid] = {
+					tileset = tileset,
 					frames = tile.animation,
-					frame = 1,
+					currentFrame = 1,
 					timer = tile.animation[1].duration,
-					sprites = {},
 				}
 			end
 		end
 	end
 end
 
--- Creates sprite batches for each single-image tileset.
-function Layer.itemlayer:_createSpriteBatches()
+function Layer.spritelayer:_createSpriteBatches()
 	self._spriteBatches = {}
 	for _, tileset in ipairs(self._map.tilesets) do
 		if tileset.image then
 			local image = self._map._images[tileset.image]
-			self._spriteBatches[image] = love.graphics.newSpriteBatch(image)
+			self._spriteBatches[tileset] = love.graphics.newSpriteBatch(image)
 		end
 	end
 end
 
--- Gets the number of items to draw. This is a placeholder, since the behavior
--- is specific to tile and object layers.
-function Layer.itemlayer:_getNumberOfItems() end
+--[[
+	About sprites
+	-------------
+	In Tiled, both tile layers and object layers can display tiles.
+	Since this behavior is similar for both layer types, I encapsulated
+	them in a parent type called a "sprite layer".
 
--- Gets the global id, x position, and y position of a tile.
--- This is a placeholder, since the behavior is specific to tile and object layers.
--- Can return false if there's no item to draw at this index.
-function Layer.itemlayer:_getItem(i) end
+	In this case, a "sprite" is just an occurrence of a tile in the map.
+	Each sprite has a tile global ID, an x position, and a y position.
 
--- Renders the layer to sprite batches. Only tiles that are part
--- of a single-image tileset are batched.
-function Layer.itemlayer:_fillSpriteBatches()
-	for i = 1, self:_getNumberOfItems() do
-		local gid, x, y = self:_getItem(i)
-		if gid and x and y then
-			local tileset = self._map:_getTileset(gid)
-			if tileset.image then
-				local image, quad = tileset:_getTileImageAndQuad(gid)
-				local id = self._spriteBatches[image]:add(quad, x, y)
-				-- save information about sprites that will be affected by animations,
-				-- since we'll have to update them later
-				if self._animations[tileset][gid] then
-					table.insert(self._animations[tileset][gid].sprites, {
-						id = id,
-						x = x,
-						y = y,
-					})
+	Tiled has two kinds of tilesets: single-image tilesets and image
+	collection tilesets. In single-image tilesets, each tile is a rectangular
+	piece of a single image. In image collection tilesets, each tile is the
+	entirety of a separate image.
+
+	For single-image tilesets, it makes sense to use sprite batches to draw
+	each tile that belongs to the same image. For image collection tilesets,
+	it does not. Therefore, sprites can either be batched or unbatched.
+	Batched sprites have two additional fields:
+	- spriteBatch - the sprite batch that the sprite belongs to
+	- id - the ID of the sprite in the sprite batch (sorry for the confusing
+	terminology)
+
+	The setTile function adds, changes, and removes sprites as needed, and it
+	adds and removes sprites from sprite batches automatically (depending
+	on whether the sprite's tile belongs to a single-image or image collection
+	tileset).
+
+	A sprite layer draws all of its sprite batches first, and then it
+	manually draws each unbatched sprite.
+
+	How sprites are stored
+	======================
+	Each sprite has the following fields:
+	- tileGid (number)
+	- x (number)
+	- y (number)
+	- spriteBatch (spriteBatch or nil)
+	- id (number or nil)
+
+	Normally, I'd represent a list of sprites like this:
+
+	sprites = {
+		{
+			tileGid = tileGid,
+			x = x,
+			...
+		},
+		{
+			tileGid = tileGid,
+			x = x,
+			...
+		},
+		...
+	}
+
+	However, since large maps have a lot of sprites, all of these
+	tables use a lot of memory. So instead, since I know that every
+	sprite has the same fields, I organize them like this:
+
+	sprites = {
+		exists = {sprite1Exists, sprite2Exists, ...},
+		tileGid = {sprite1TileGid, sprite2TileGid, ...},
+		x = {sprite1X, sprite2X, ...},
+		...
+	}
+
+	It's a little awkward to work with, but it means that I only ever
+	have 7 tables total dedicated to sprites for any given item layer.
+
+	The biggest concern is that you have to insert and remove from all of the
+	tables at the same time, otherwise the data for each sprite will get
+	misaligned. To keep Lua's table functions working smoothly, I set
+	spriteBatch and id to false instead of nil when I want to "remove" them;
+	that way I don't make holes in the tables.
+
+	Note: the exists field isn't really necessary, but I'd feel weird using
+	the x/y/tileGid fields as indicators that a sprite exists.
+]]
+
+function Layer.spritelayer:_setSprite(x, y, gid)
+	-- if the gid is 0 (empty), remove the sprite at (x, y)
+	-- (if it exists)
+	if gid == 0 then
+		for i = #self._sprites.exists, 1, -1 do
+			if self._sprites.x[i] == x and self._sprites.y[i] == y then
+				if self._sprites.spriteBatch[i] then
+					self._sprites.spriteBatch[i]:set(self._sprites.id[i], 0, 0, 0, 0, 0)
 				end
-			else
-				-- remember which items aren't part of a sprite batch
-				-- so we can iterate through them in layer.draw
-				table.insert(self._unbatchedItems, {
-					gid = gid,
-					x = x,
-					y = y,
-				})
+				table.remove(self._sprites.exists, i)
+				table.remove(self._sprites.tileGid, i)
+				table.remove(self._sprites.x, i)
+				table.remove(self._sprites.y, i)
+				table.remove(self._sprites.spriteBatch, i)
+				table.remove(self._sprites.id, i)
+				break
 			end
 		end
+		return
+	end
+	local index
+	-- check if a sprite already exists at (x, y)
+	for i = 1, #self._sprites.exists do
+		if self._sprites.x[i] == x and self._sprites.y[i] == y then
+			index = i
+			break
+		end
+	end
+	-- if the sprite doesn't exist, create a new one and add it to the sprite batch
+	if not index then
+		table.insert(self._sprites.exists, true)
+		table.insert(self._sprites.tileGid, gid)
+		table.insert(self._sprites.x, x)
+		table.insert(self._sprites.y, y)
+		table.insert(self._sprites.spriteBatch, false)
+		table.insert(self._sprites.id, false)
+		index = #self._sprites.exists
+	end
+	-- update the sprite's tile GID
+	self._sprites.tileGid[index] = gid
+	local tileset = self._map:getTileset(gid)
+	-- if the sprite should be batched...
+	if tileset.image then
+		-- get the new quad
+		local animation = self._animations[gid]
+		local quad = self._map:_getTileQuad(gid, animation and animation.currentFrame)
+		-- if the sprite isn't batched, add it to the sprite batch
+		if not self._sprites.spriteBatch[index] then
+			self._sprites.spriteBatch[index] = self._spriteBatches[tileset]
+			self._sprites.id[index] = self._spriteBatches[tileset]:add(quad, x, y)
+		-- otherwise, just update the sprite batch
+		else
+			self._sprites.spriteBatch[index]:set(self._sprites.id[index], quad, x, y)
+		end
+	-- otherwise...
+	else
+		-- if the sprite is batched, remove it from the sprite batch
+		if self._sprites.spriteBatch[index] then
+			self._sprites.spriteBatch[index]:set(self._sprites.id[index], 0, 0, 0, 0, 0)
+			self._sprites.spriteBatch[index] = false
+			self._sprites.id[index] = false
+		end
 	end
 end
 
-function Layer.itemlayer:_init(map)
-	self._map = map
-	self._unbatchedItems = {}
+function Layer.spritelayer:_init(map)
+	Layer.base._init(self, map)
 	self:_initAnimations()
 	self:_createSpriteBatches()
-	self:_fillSpriteBatches()
+	self._sprites = {
+		exists = {},
+		tileGid = {},
+		x = {},
+		y = {},
+		spriteBatch = {},
+		id = {},
+	}
 end
 
--- Updates the animation timers and changes sprites in the sprite batches as needed.
-function Layer.itemlayer:_updateAnimations(dt)
-	for tileset, tilesetAnimations in pairs(self._animations) do
-		for gid, animation in pairs(tilesetAnimations) do
-			-- decrement the animation timer
-			animation.timer = animation.timer - 1000 * dt
-			while animation.timer <= 0 do
-				-- move to then next frame of animation
-				animation.frame = animation.frame + 1
-				if animation.frame > #animation.frames then
-					animation.frame = 1
-				end
-				-- increment the animation timer by the duration of the new frame
-				animation.timer = animation.timer + animation.frames[animation.frame].duration
-				-- update sprites
-				if tileset.image then
-					local image, quad = tileset:_getTileImageAndQuad(gid, animation.frame)
-					--[[
-						in _fillSpriteBatches we save the id, x position, and y position of sprites
-						in the sprite batch that need to be updated because of animations.
-						here we iterate through them and change the quad.
-					]]
-					for _, sprite in ipairs(animation.sprites) do
-						self._spriteBatches[image]:set(sprite.id, quad, sprite.x, sprite.y)
+function Layer.spritelayer:_updateAnimations(dt)
+	for gid, animation in pairs(self._animations) do
+		-- decrement the animation timer
+		animation.timer = animation.timer - 1000 * dt
+		while animation.timer <= 0 do
+			-- move to the next frame of animation
+			animation.currentFrame = animation.currentFrame + 1
+			if animation.currentFrame > #animation.frames then
+				animation.currentFrame = 1
+			end
+			-- increment the animation timer by the duration of the new frame
+			animation.timer = animation.timer + animation.frames[animation.currentFrame].duration
+			-- update sprites
+			local tileset = self._map:getTileset(gid)
+			if tileset.image then
+				local quad = self._map:_getTileQuad(gid, animation.currentFrame)
+				for i = 1, #self._sprites.exists do
+					if self._sprites.tileGid[i] == gid then
+						self._sprites.spriteBatch[i]:set(self._sprites.id[i], quad, self._sprites.x[i], self._sprites.y[i])
 					end
 				end
 			end
@@ -247,123 +331,189 @@ function Layer.itemlayer:_updateAnimations(dt)
 	end
 end
 
-function Layer.itemlayer:update(dt)
+function Layer.spritelayer:update(dt)
 	self:_updateAnimations(dt)
 end
 
-function Layer.itemlayer:draw()
+function Layer.spritelayer:draw()
 	love.graphics.push()
 	love.graphics.translate(self.offsetx, self.offsety)
 	-- draw the sprite batches
 	for _, spriteBatch in pairs(self._spriteBatches) do
 		love.graphics.draw(spriteBatch)
 	end
-	-- draw the items that aren't part of a sprite batch
-	for _, item in ipairs(self._unbatchedItems) do
-		local tileset = self._map:_getTileset(item.gid)
-		local frame = 1
-		if self._animations[tileset][item.gid] then
-			frame = self._animations[tileset][item.gid].frame
+	-- draw the unbatched sprites
+	for i = 1, #self._sprites.exists do
+		if not self._sprites.spriteBatch[i] then
+			local animation = self._animations[self._sprites.tileGid[i]]
+			local image = self._map:_getTileImage(self._sprites.tileGid[i], animation and animation.currentFrame)
+			love.graphics.draw(image, self._sprites.x[i], self._sprites.y[i])
 		end
-		local image = tileset:_getTileImageAndQuad(item.gid, frame)
-		love.graphics.draw(image, item.x, item.y)
 	end
 	love.graphics.pop()
 end
 
 -- Represents a tile layer in an exported Tiled map.
-Layer.tilelayer = setmetatable({}, {__index = Layer.itemlayer})
+Layer.tilelayer = setmetatable({}, Layer.spritelayer)
 Layer.tilelayer.__index = Layer.tilelayer
 
--- Gets the x and y position of the nth tile in the layer's tile data.
-function Layer.tilelayer:_getTilePosition(n, width, offsetX, offsetY)
-	width = width or self.width
-	offsetX = offsetX or 0
-	offsetY = offsetY or 0
-	local x, y = getCoordinates(n, width)
-	x, y = x + offsetX, y + offsetY
-	x, y = x * self._map.tilewidth, y * self._map.tileheight
-	x, y = x + self.offsetx, y + self.offsety
-	return x, y
-end
-
-function Layer.tilelayer:_getNumberOfItems()
-	-- for infinite maps, get the total number of items split up among all the chunks
-	if self.chunks then
-		local items = 0
-		for _, chunk in ipairs(self.chunks) do
-			items = items + #chunk.data
-		end
-		return items
+function Layer.tilelayer:_init(map)
+	Layer.spritelayer._init(self, map)
+	for _, gid, _, _, pixelX, pixelY in self:getTiles() do
+		self:_setSprite(pixelX, pixelY, gid)
 	end
-	-- otherwise, just get the length of the data
-	return #self.data
 end
 
-function Layer.tilelayer:_getItem(i)
-	--[[
-		for infinite maps, treat all the chunk data like one big array
-		each chunk has its own row width and x/y offset, which we factor
-		into the position of each sprite on the screen
-	]]
+-- Gets the left, top, right, and bottom bounds of the layer (in tiles).
+function Layer.tilelayer:getGridBounds()
+	if self.chunks then
+		local left, top, right, bottom
+		for _, chunk in ipairs(self.chunks) do
+			local chunkLeft = chunk.x
+			local chunkTop = chunk.y
+			local chunkRight = chunk.x + chunk.width - 1
+			local chunkBottom = chunk.y + chunk.height - 1
+			if not left or chunkLeft < left then left = chunkLeft end
+			if not top or chunkTop < top then top = chunkTop end
+			if not right or chunkRight > right then right = chunkRight end
+			if not bottom or chunkBottom > bottom then bottom = chunkBottom end
+		end
+		return left, top, right, bottom
+	end
+	return self.x, self.y, self.x + self.width - 1, self.y + self.height - 1
+end
+
+-- Gets the left, top, right, and bottom bounds of the layer (in pixels).
+function Layer.tilelayer:getPixelBounds()
+	local left, top, right, bottom = self:getGridBounds()
+	left, top = self:gridToPixel(left, top)
+	right, bottom = self:gridToPixel(right, bottom)
+	return left, top, right, bottom
+end
+
+-- Returns the global ID of the tile at the given grid position,
+-- or false if the tile is empty.
+function Layer.tilelayer:getTileAtGridPosition(x, y)
+	local gid
 	if self.chunks then
 		for _, chunk in ipairs(self.chunks) do
-			if i <= #chunk.data then
-				local gid = chunk.data[i]
-				if gid ~= 0 then
-					local x, y = self:_getTilePosition(i, chunk.width, chunk.x, chunk.y)
-					return gid, x, y
-				end
-				return false
+			local pointInChunk = x >= chunk.x
+							 and x < chunk.x + chunk.width
+							 and y >= chunk.y
+							 and y < chunk.y + chunk.height
+			if pointInChunk then
+				gid = chunk.data[coordinatesToIndex(x - chunk.x, y - chunk.y, chunk.width)]
 			end
-			i = i - #chunk.data
 		end
+	else
+		gid = self.data[coordinatesToIndex(x, y, self.width)]
 	end
-	local gid = self.data[i]
-	if gid ~= 0 then
-		local x, y = self:_getTilePosition(i)
-		return gid, x, y
+	if gid == 0 then return false end
+	return gid
+end
+
+-- Sets the tile at the given grid position to the specified global ID.
+function Layer.tilelayer:setTileAtGridPosition(x, y, gid)
+	if self.chunks then
+		for _, chunk in ipairs(self.chunks) do
+			local pointInChunk = x >= chunk.x
+							 and x < chunk.x + chunk.width
+							 and y >= chunk.y
+							 and y < chunk.y + chunk.height
+			if pointInChunk then
+				local index = coordinatesToIndex(x - chunk.x, y - chunk.y, chunk.width)
+				chunk.data[index] = gid
+			end
+		end
+	else
+		self.data[coordinatesToIndex(x, y, self.width)] = gid
 	end
-	return false
+	local pixelX, pixelY = self:gridToPixel(x, y)
+	self:_setSprite(pixelX, pixelY, gid)
+end
+
+-- Returns the global ID of the tile at the given pixel position,
+-- or false if the tile is empty.
+function Layer.tilelayer:getTileAtPixelPosition(x, y)
+	return self:getTileAtGridPosition(self:pixelToGrid(x, y))
+end
+
+-- Sets the tile at the given pixel position to the specified global ID.
+function Layer.tilelayer:setTileAtPixelPosition(gridX, gridY, gid)
+	local pixelX, pixelY = self:pixelToGrid(gridX, gridY)
+	return self:setTileAtGridPosition(pixelX, pixelY, gid)
+end
+
+function Layer.tilelayer:_getTileAtIndex(index)
+	-- for infinite maps, treat all the chunk data like one big array
+	if self.chunks then
+		for _, chunk in ipairs(self.chunks) do
+			if index <= #chunk.data then
+				local gid = chunk.data[index]
+				local gridX, gridY = indexToCoordinates(index, chunk.width)
+				gridX, gridY = gridX + chunk.x, gridY + chunk.y
+				local pixelX, pixelY = self:gridToPixel(gridX, gridY)
+				return gid, gridX, gridY, pixelX, pixelY
+			else
+				index = index - #chunk.data
+			end
+		end
+	elseif self.data[index] then
+		local gid = self.data[index]
+		local gridX, gridY = indexToCoordinates(index, self.width)
+		local pixelX, pixelY = self:gridToPixel(gridX, gridY)
+		return gid, gridX, gridY, pixelX, pixelY
+	end
+end
+
+function Layer.tilelayer:_tileIterator(i)
+	while true do
+		i = i + 1
+		local gid, gridX, gridY, pixelX, pixelY = self:_getTileAtIndex(i)
+		if not gid then break end
+		if gid ~= 0 then return i, gid, gridX, gridY, pixelX, pixelY end
+	end
+end
+
+function Layer.tilelayer:getTiles()
+	return self._tileIterator, self, 0
 end
 
 -- Represents an object layer in an exported Tiled map.
-Layer.objectgroup = setmetatable({}, {__index = Layer.itemlayer})
+Layer.objectgroup = setmetatable({}, Layer.spritelayer)
 Layer.objectgroup.__index = Layer.objectgroup
 
-function Layer.objectgroup:_getNumberOfItems()
-	return #self.objects
-end
-
-function Layer.objectgroup:_getItem(i)
-	local object = self.objects[i]
-	-- tile objects are anchored at the bottom
-	return object.gid, object.x, object.y - object.height
+function Layer.objectgroup:_init(map)
+	Layer.spritelayer._init(self, map)
+	for _, object in ipairs(self.objects) do
+		if object.gid and object.visible then
+			self:_setSprite(object.x, object.y - object.height, object.gid)
+		end
+	end
 end
 
 -- Represents an image layer in an exported Tiled map.
-Layer.imagelayer = {}
+Layer.imagelayer = setmetatable({}, Layer.base)
 Layer.imagelayer.__index = Layer.imagelayer
-
-function Layer.imagelayer:_init(map)
-	self._map = map
-end
 
 function Layer.imagelayer:draw()
 	love.graphics.draw(self._map._images[self.image], self.offsetx, self.offsety)
 end
 
 -- Represents a layer group in an exported Tiled map.
-Layer.group = {}
+Layer.group = setmetatable({}, Layer.base)
 Layer.group.__index = Layer.group
 
 function Layer.group:_init(map)
+	Layer.base._init(self, map)
 	for _, layer in ipairs(self.layers) do
 		setmetatable(layer, Layer[layer.type])
 		layer:_init(map)
 	end
-	setmetatable(self.layers, LayerList)
+	setmetatable(self.layers, getByNameMetatable)
 end
+
+Layer.group.getLayer = getLayer
 
 function Layer.group:update(dt)
 	for _, layer in ipairs(self.layers) do
@@ -372,15 +522,11 @@ function Layer.group:update(dt)
 end
 
 function Layer.group:draw()
-	love.graphics.push()
-	love.graphics.translate(self.offsetx, self.offsety)
 	for _, layer in ipairs(self.layers) do
 		if layer.visible and layer.draw then layer:draw() end
 	end
-	love.graphics.pop()
 end
 
--- Represents an exported Tiled map.
 local Map = {}
 Map.__index = Map
 
@@ -409,53 +555,106 @@ function Map:_loadImages()
 	end
 end
 
-function Map:_initTilesets()
-	for _, tileset in ipairs(self.tilesets) do
-		setmetatable(tileset, Tileset)
-		tileset:_init(self)
-	end
-end
-
 function Map:_initLayers()
 	for _, layer in ipairs(self.layers) do
 		setmetatable(layer, Layer[layer.type])
-		if layer._init then layer:_init(self) end
+		layer:_init(self)
 	end
-	setmetatable(self.layers, LayerList)
+	setmetatable(self.layers, getByNameMetatable)
 end
 
 function Map:_init(path)
 	self.dir = splitPath(path)
 	self:_loadImages()
-	self:_initTilesets()
+	setmetatable(self.tilesets, getByNameMetatable)
 	self:_initLayers()
 end
 
--- Gets the tileset the tile with the specified global id belongs to.
-function Map:_getTileset(gid)
+-- Gets the quad of the tile with the given global ID.
+-- Returns false if the tileset is an image collection.
+function Map:_getTileQuad(gid, frame)
+	frame = frame or 1
+	local tileset = self:getTileset(gid)
+	if not tileset.image then return false end
+	local id = gid - tileset.firstgid
+	local tile = self:getTile(gid)
+	if tile and tile.animation then
+		id = tile.animation[frame].tileid
+	end
+	local image = self._images[tileset.image]
+	local gridWidth = math.floor(image:getWidth() / (tileset.tilewidth + tileset.spacing))
+	local x, y = indexToCoordinates(id + 1, gridWidth)
+	return love.graphics.newQuad(
+		x * (tileset.tilewidth + tileset.spacing),
+		y * (tileset.tileheight + tileset.spacing),
+		tileset.tilewidth, tileset.tileheight,
+		image:getWidth(), image:getHeight()
+	)
+end
+
+-- Gets the quad of the tile with the given global ID.
+-- Returns false if the tileset uses a single image.
+function Map:_getTileImage(gid, frame)
+	frame = frame or 1
+	local tileset = self:getTileset(gid)
+	if tileset.image then return false end
+	local tile = self:getTile(gid)
+	if tile and tile.animation then
+		tile = self:getTile(tileset.firstgid + tile.animation[frame].tileid)
+	end
+	return self._images[tile.image]
+end
+
+-- Gets the tileset that has the tile with the given global ID.
+function Map:getTileset(gid)
 	for i = #self.tilesets, 1, -1 do
-		if gid >= self.tilesets[i].firstgid then
-			return self.tilesets[i]
+		local tileset = self.tilesets[i]
+		if tileset.firstgid <= gid then
+			return tileset
 		end
 	end
 end
 
--- Gets the tile with the specified global id.
-function Map:_getTile(gid)
-	return self:_getTileset(gid):_getTile(gid)
+-- Gets the data table for the tile with the given global ID, if it exists.
+function Map:getTile(gid)
+	local tileset = self:getTileset(gid)
+	for _, tile in ipairs(tileset.tiles) do
+		if tileset.firstgid + tile.id == gid then
+			return tile
+		end
+	end
 end
 
--- Gets the type of the specified tile, if it exists.
+-- Gets the type of the tile with the given global ID, if it exists.
 function Map:getTileType(gid)
-	local tile = self:_getTile(gid)
-	return tile and tile.type
+	local tile = self:getTile(gid)
+	if not tile then return end
+	return tile.type
 end
 
--- Gets the value of the specified property on the specified tile, if it exists.
+-- Gets the value of the specified property on the tile
+-- with the given global ID, if it exists.
 function Map:getTileProperty(gid, propertyName)
-	local tile = self:_getTile(gid)
-	return tile and tile.properties and tile.properties[propertyName] or false
+	local tile = self:getTile(gid)
+	if not tile then return end
+	if not tile.properties then return end
+	return tile.properties[propertyName]
 end
+
+-- Sets the value of the specified property on the tile
+-- with the given global ID.
+function Map:setTileProperty(gid, propertyName, propertyValue)
+	local tile = self:getTile(gid)
+	if not tile then
+		local tileset = self:getTileset(gid)
+		tile = {id = gid - tileset.firstgid}
+		table.insert(tileset.tiles, tile)
+	end
+	tile.properties = tile.properties or {}
+	tile.properties[propertyName] = propertyValue
+end
+
+Map.getLayer = getLayer
 
 function Map:update(dt)
 	for _, layer in ipairs(self.layers) do
@@ -465,6 +664,7 @@ end
 
 function Map:drawBackground()
 	if self.backgroundcolor then
+		love.graphics.push 'all'
 		local r = self.backgroundcolor[1] / 255
 		local g = self.backgroundcolor[2] / 255
 		local b = self.backgroundcolor[3] / 255
@@ -472,6 +672,7 @@ function Map:drawBackground()
 		love.graphics.rectangle('fill', 0, 0,
 			self.width * self.tilewidth,
 			self.height * self.tileheight)
+		love.graphics.pop()
 	end
 end
 
@@ -484,18 +685,8 @@ end
 
 -- Loads a Tiled map from a lua file.
 function cartographer.load(path)
-	if not path then
-		error('No map path provided', 2)
-	end
-	local ok, chunk = pcall(love.filesystem.load, path)
-	if not ok then
-		error('Error loading map from path: ' .. tostring(chunk), 2)
-	end
-	if not chunk then
-		error('Could not find path: ' .. path, 2)
-	end
-	local map = chunk()
-	setmetatable(map, Map)
+	if not path then error('No map path provided', 2) end
+	local map = setmetatable(love.filesystem.load(path)(), Map)
 	map:_init(path)
 	return map
 end
