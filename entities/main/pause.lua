@@ -128,7 +128,6 @@ function weaponSelect:update(dt)
             megautils.remove(s, true)
             megautils.add(fade, false, nil, nil, fade.remove)
           end)
-      ff:setLayer(11)
       mmSfx.play("selected")
       return
     elseif control.rightPressed[self.player] then
