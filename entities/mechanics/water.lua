@@ -60,6 +60,7 @@ function water:new(x, y, w, h, grav)
   self.transform.x = x
   self.transform.y = y
   self:setRectangleCollision(w, h)
+  self:setLayer(-5)
   self.current = false
   self.checked = false
   self.grav = grav or 0.1

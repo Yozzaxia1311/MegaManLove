@@ -6,15 +6,15 @@ end)
 
 function death:new(x, y, w, h, harm)
   death.super.new(self, true)
-  self.w, self.h = w, h
   self.transform.y = y
   self.transform.x = x
+  self:setRectangleCollision(w, h)
+  self:setLayer(-5)
   self.harm = harm or -99
   self.harm = -math.abs(self.harm)
   self.isSolid = 1
   self.added = function(self)
     self:addToGroup("despawnable")
     self:addToGroup("death")
-    self:setRectangleCollision(self.w, self.h)
   end
 end

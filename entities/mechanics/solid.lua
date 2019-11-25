@@ -479,7 +479,7 @@ function solid:new(x, y, w, h)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(w, h)
-  self:setLayer(9)
+  self:setLayer(-5)
   self.isSolid = 1
   self.added = function(self)
     self:addToGroup("despawnable")
@@ -498,7 +498,7 @@ function sinkIn:new(x, y, w, h, s)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(w, h)
-  self:setLayer(9)
+  self:setLayer(-5)
   self.sink = s or 0.125
   self.isSolid = 3
   self.added = function(self)
@@ -527,6 +527,7 @@ function slope:new(x, y, mask)
   self.transform.x = x
   self.transform.y = y
   self:setImageCollision(mask)
+  self:setLayer(-5)
   self.isSolid = 1
   self.added = function(self)
     self:addToGroup("despawnable")
@@ -545,6 +546,7 @@ function oneway:new(x, y, w, h)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(w, h)
+  self:setLayer(-5)
   self.isSolid = 2
   self.added = function(self)
     self:addToGroup("despawnable")

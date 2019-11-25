@@ -17,6 +17,7 @@ function bossdoor:new(x, y, seg, dir, scrollx, scrolly, spd)
   end
   self.transform.y = y
   self.transform.x = x
+  self:setLayer(0)
   self.tex = loader.get("boss_door")
   self.scrollx = scrollx
   self.scrolly = scrolly

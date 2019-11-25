@@ -21,6 +21,7 @@ function camera:new(x, y, doScrollX, doScrollY)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(view.w, view.h)
+  self:setLayer(-5)
   self.transition = false
   self.transitiondirection = "right"
   self.doShift = false

@@ -161,7 +161,6 @@ function stickManIntro:new()
   self.textTimer = 0
   self.timer = 0
   self.s = 0
-  self:setLayer(3)
   banner.colorOne = {255, 255, 255}
   banner.colorTwo = {128, 128, 128}
 end
@@ -253,7 +252,6 @@ function megamanStick:new()
   self.timer2 = 0
   self.shootTimer = 14
   self.s = 0
-  self:setLayer(3)
   self.megaOne = megaman.weaponHandler[1].colorOne[0]
   self.megaTwo = megaman.weaponHandler[1].colorTwo[0]
   self.toOne = {255, 255, 255}

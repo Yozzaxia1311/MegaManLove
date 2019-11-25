@@ -2,6 +2,7 @@ trigger = entity:extend()
 
 function trigger:new(call, drawCall)
   trigger.super.new(self, tran)
+  self:setLayer(-5)
   self.call = call
   self.drawCall = drawCall
   self.added = function(self)

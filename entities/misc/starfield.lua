@@ -14,7 +14,7 @@ function banner:new()
   self.tTwo = loader.get("star_field")
   self.tOne = loader.get("star_field_one")
   self.quad = love.graphics.newQuad(0, 0, 256, 103, 256, 187)
-  self:setLayer(2)
+  self:setLayer(0)
 end
 
 function banner:update(dt)
@@ -39,6 +39,7 @@ function smallStar:new(x, y, angle, spd)
   self.velocity = velocity()
   self.velocity.velx = megautils.calcX(angle) * spd
   self.velocity.vely = megautils.calcY(angle) * spd
+  self:setLayer(-1)
 end
 
 function smallStar:update()
@@ -62,6 +63,7 @@ function star:new(x, y, angle, spd)
   self.velocity = velocity()
   self.velocity.velx = megautils.calcX(angle) * spd
   self.velocity.vely = megautils.calcY(angle) * spd
+  self:setLayer(-1)
 end
 
 function star:update()
@@ -85,6 +87,7 @@ function largeStar:new(x, y, angle, spd)
   self.velocity = velocity()
   self.velocity.velx = megautils.calcX(angle) * spd
   self.velocity.vely = megautils.calcY(angle) * spd
+  self:setLayer(-1)
 end
 
 function largeStar:update()

@@ -9,6 +9,7 @@ function ladder:new(x, y, w, h)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(w, h)
+  self:setLayer(-5)
   self.dspwn = dspwn
   self.isSolid = 2
   self.added = function(self)

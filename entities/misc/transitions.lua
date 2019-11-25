@@ -8,6 +8,7 @@ end)
 function right:new(x, y, h, scrollx, scrolly, spd, p)
   right.super.new(self)
   self:setRectangleCollision(2, h)
+  self:setLayer(-5)
   self.transform.x = x + 14
   self.transform.y = y
   self.scrollx = scrollx
@@ -52,6 +53,7 @@ end)
 function left:new(x, y, h, scrollx, scrolly, spd, p)
   left.super.new(self)
   self:setRectangleCollision(2, h)
+  self:setLayer(-5)
   self.transform.x = x
   self.transform.y = y
   self.scrollx = scrollx
@@ -96,6 +98,7 @@ end)
 function down:new(x, y, w, scrollx, scrolly, spd, p)
   down.super.new(self)
   self:setRectangleCollision(w, 2)
+  self:setLayer(-5)
   self.transform.y = y + 14
   self.transform.x = x
   self.scrollx = scrollx
@@ -140,6 +143,7 @@ end)
 function up:new(x, y, w, scrollx, scrolly, spd, p)
   up.super.new(self)
   self:setRectangleCollision(w, 2)
+  self:setLayer(-5)
   self.transform.y = y
   self.transform.x = x
   self.scrollx = scrollx
@@ -185,6 +189,7 @@ end)
 function upLadder:new(x, y, w, scrollx, scrolly, spd, p)
   upLadder.super.new(self)
   self:setRectangleCollision(w, 2)
+  self:setLayer(-5)
   self.transform.y = y
   self.transform.x = x
   self.scrollx = scrollx
@@ -231,6 +236,7 @@ end, 2)
 function lockSection:new(x, y, w, h, name)
   lockSection.super.new(self)
   self:setRectangleCollision(w, h)
+  self:setLayer(-5)
   self.transform.y = y
   self.transform.x = x
   self.name = name
@@ -250,6 +256,7 @@ end)
 function lockShift:new(x, y, w, h, name, spd)
   lockShift.super.new(self)
   self:setRectangleCollision(w, h)
+  self:setLayer(-5)
   self.transform.y = y
   self.transform.x = x
   self.name = name
