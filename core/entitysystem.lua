@@ -411,7 +411,7 @@ function entity:new()
   self.doShake = false
   self.moveByMoveX = 0
   self.moveByMoveY = 0
-  self.canBeInvincible = {["global"]=true}
+  self.canBeInvincible = {["global"]=false}
   self.canStandSolid = {["global"]=true}
 end
 
