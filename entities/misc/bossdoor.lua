@@ -29,16 +29,6 @@ function bossdoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt)
   self:setDirection(dir)
   self.spawnEarlyDuringTransition = true
   self.useMapTiles = mapentity.layers[umt] and umt
-  if self.useMapTiles then
-    self.tileList = {}
-    for x=1, (self.dir=="right" or self.dir=="left") and 2 or self.maxSegments do
-      self.tileList[x] = {}
-      for y=1, (self.dir=="right" or self.dir=="left") and self.maxSegments or 2 do
-        self.tileList[x][y] = mapentity.layers[self.useMapTiles].data
-          :getTileAtPixelPosition(self.transform.x+(x*16)-16, self.transform.y+(y*16)-16)
-      end
-    end
-  end
 end
 
 function bossdoor:setDirection(dir)
@@ -74,6 +64,16 @@ function bossdoor:update(dt)
           if megautils.groups()["removeOnTransition"] then
             for k, v in pairs(megautils.groups()["removeOnTransition"]) do
               megautils.remove(v, true)
+            end
+          end
+          if self.useMapTiles then
+            self.tileList = {}
+            for x=1, (self.dir=="right" or self.dir=="left") and 2 or self.maxSegments do
+              self.tileList[x] = {}
+              for y=1, (self.dir=="right" or self.dir=="left") and self.maxSegments or 2 do
+                self.tileList[x][y] = mapentity.layers[self.useMapTiles].data
+                  :getTileAtPixelPosition(self.transform.x+(x*16)-16, self.transform.y+(y*16)-16)
+              end
             end
           end
         end
