@@ -445,16 +445,17 @@ function megautils.arcXVel(yvel, grav, x, y, tox, toy, limit)
   
   local ly = y
   local py = ly
-  local vel = -math.abs(yvel)
-  local g = math.abs(grav)
+  local vel = yvel
   local time = 0
   
   while true do
     time = time + 1
     py = ly
     ly = ly + vel
-    vel = vel + g
-    if (ly >= toy and py < toy) or (vel > 0 and ly > toy) then
+    vel = vel + grav
+    if grav > 0 and ((ly >= toy and py < toy) or (vel > 0 and ly > toy)) then
+      break
+    elseif grav < 0 and ((ly <= toy and py > toy) or (vel < 0 and ly < toy)) then
       break
     end
   end
