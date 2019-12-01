@@ -84,6 +84,19 @@ local function getLayer(self, ...)
 	return layer
 end
 
+-- Decompress tile layer data
+-- https://github.com/karai17/Simple-Tiled-Implementation/blob/master/sti/utils.lua#L5
+function getDecompressedData(data)
+  local ffi = require "ffi"
+  local d = {}
+  local decoded = ffi.cast("uint32_t*", data)
+  
+  for i = 0, data:len() / ffi.sizeof("uint32_t") do
+    table.insert(d, tonumber(decoded[i]))
+  end
+  return d
+end
+
 local Layer = {}
 
 -- A common class for all layer types.
@@ -359,6 +372,16 @@ Layer.tilelayer.__index = Layer.tilelayer
 
 function Layer.tilelayer:_init(map)
 	Layer.spritelayer._init(self, map)
+  if self.encoding == "base64" then
+    assert(require "ffi", "Compressed maps require LuaJIT FFI.\nPlease Switch your interperator to LuaJIT or your Tile Layer Format to \"CSV\".")
+    local data = love.data.decode("string", "base64", self.data)
+    if self.compression == "gzip" then
+      data = love.data.decompress("string", "gzip", data)
+    elseif self.compression == "zlib" then
+      data = love.data.decompress("string", "zlib", data)
+    end
+    self.data = getDecompressedData(data)
+  end
 	for _, gid, _, _, pixelX, pixelY in self:getTiles() do
 		self:_setSprite(pixelX, pixelY, gid)
 	end
