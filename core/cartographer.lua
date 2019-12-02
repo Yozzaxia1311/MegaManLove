@@ -431,7 +431,8 @@ function Layer.tilelayer:getTileAtGridPosition(x, y)
 	else
 		gid = self.data[coordinatesToIndex(x, y, self.width)]
 	end
-	if gid == 0 then return false end
+  gid = gid - 1
+	if gid == -1 then return false end
 	return gid
 end
 
@@ -453,7 +454,7 @@ function Layer.tilelayer:setTileAtGridPosition(x, y, id, tileset)
 		self.data[coordinatesToIndex(x, y, self.width)] = gid
 	end
 	local pixelX, pixelY = self:gridToPixel(x, y)
-	self:_setSprite(pixelX, pixelY, gid)
+	self:_setSprite(pixelX, pixelY, gid-1)
 end
 
 -- Returns the global ID of the tile at the given pixel position,

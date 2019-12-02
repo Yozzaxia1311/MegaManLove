@@ -87,10 +87,10 @@ function bossdoor:update(dt)
       if self.useMapTiles then
         mapentity.layers[self.useMapTiles].data
         :setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and self.transform.x or self.transform.x+(self.segments*16),
-          (self.dir=="right" or self.dir=="left") and self.transform.y+((self.segments)*16) or self.transform.y, 0)
+          (self.dir=="right" or self.dir=="left") and self.transform.y+((self.segments)*16) or self.transform.y, -1)
         mapentity.layers[self.useMapTiles].data
         :setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and self.transform.x+16 or self.transform.x+(self.segments*16),
-          (self.dir=="right" or self.dir=="left") and self.transform.y+((self.segments)*16) or self.transform.y+16, 0)
+          (self.dir=="right" or self.dir=="left") and self.transform.y+((self.segments)*16) or self.transform.y+16, -1)
       end
       mmSfx.play("boss_door_sfx")
     end
