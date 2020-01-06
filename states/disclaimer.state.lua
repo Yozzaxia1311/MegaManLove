@@ -41,7 +41,7 @@ function disclaimer:new()
   self.check = false
   self.cycler = 1
   self.colors = {{0, 70, 90}, {0, 120, 248}, {60, 188, 252}, {255, 255, 255}}
-  self.disclaimerText = "mega man and all related content (c) capcom 2019." .. 
+  self.disclaimerText = "mega man and all related content (c) capcom 2020." .. 
     "\n\n\n\nthe mega man love engine is a non-profit fanmade engine created by " .. 
     "various contributors.\n\nit is not for sale.\n\n" .. 
     "have fun!"
