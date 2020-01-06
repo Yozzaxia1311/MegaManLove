@@ -438,7 +438,7 @@ function megautils.pointAt(e, to)
   return megautils.calcPath(megautils.center(e), megautils.center(to))
 end
 
-function megautils.arcXVel(yvel, grav, x, y, tox, toy, limit)
+function megautils.arcXVel(yvel, grav, x, y, tox, toy)
   if not grav or grav == 0 then
     return megautils.calcX(megautils.calcPath(x, y, tox, toy))
   end
@@ -461,10 +461,6 @@ function megautils.arcXVel(yvel, grav, x, y, tox, toy, limit)
   end
   
   local result = (tox - x) / time
-  
-  if limit then
-    math.clamp(result, -math.abs(limit), math.abs(limit))
-  end
   
   return result
 end
