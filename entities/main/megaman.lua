@@ -607,11 +607,17 @@ function megaman:attemptWeaponUsage()
                 tx = 19
                 ty = -3
               else
-                dir = 90
-                tx = self.side == 1 and 7 or -3
-                ty = -8
-                if self.climb then
-                  tx = tx + (self.side == 1 and 0 or 1)
+                if self.gravity >= 0 then
+                  dir = 90
+                  tx = self.side == 1 and 7 or -3
+                  ty = -8
+                  if self.climb then
+                    tx = tx + (self.side == 1 and 0 or 1)
+                  end
+                else
+                  dir = self.side == 1 and 45 or -45+180
+                  tx = self.side == 1 and 19 or -14
+                  ty = -3
                 end
               end
             elseif control.downDown[self.player] then
@@ -624,13 +630,25 @@ function megaman:attemptWeaponUsage()
                 tx = 19
                 ty = 15
               else
-                dir = self.side == 1 and -45 or 45+180
-                tx = self.side == 1 and 19 or -14
-                ty = 15
+                if self.gravity >= 0 then
+                  dir = self.side == 1 and -45 or 45+180
+                  tx = self.side == 1 and 19 or -14
+                  ty = 15
+                else
+                  dir = -90
+                  tx = self.side == 1 and 7 or -3
+                  ty = 15
+                  if self.climb then
+                    tx = tx + (self.side == 1 and 0 or 1)
+                  end
+                end
               end
             end
             if self.climb then
-              ty = ty - 4
+              ty = ty + (self.gravity >= 0 and -4 or 4)
+            end
+            if self.gravity < 0 then
+              ty = ty + 3
             end
             megautils.add(bassBuster, self.transform.x+tx, self.transform.y+ty, dir, w)
           end
@@ -666,7 +684,7 @@ function megaman:attemptWeaponUsage()
         self:useShootAnimation()
       else
         megautils.add(megaBuster, self.transform.x+(self.side==1 and 17 or -14), 
-          self.transform.y+6, self.side, w)
+          self.transform.y+(self.gravity >= 0 and 6 or (self.climb and 10 or 9)), self.side, w)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
@@ -691,7 +709,7 @@ function megaman:attemptWeaponUsage()
         self:useShootAnimation()
       else
         megautils.add(megaBuster, self.transform.x+(self.side==1 and 16 or -13), 
-          self.transform.y+(self.climb and 8 or 10), self.side, w)
+          self.transform.y+(self.climb and (self.gravity >= 0 and 8 or 7) or (self.gravity >= 0 and 10 or 5)), self.side, w)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
@@ -716,7 +734,7 @@ function megaman:attemptWeaponUsage()
         self:useShootAnimation()
       else
         megautils.add(megaBuster, self.transform.x+(self.side==1 and 24 or -20), 
-          self.transform.y+6, self.side, w)
+          self.transform.y+(self.gravity >= 0 and 6 or 9), self.side, w)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
@@ -764,14 +782,14 @@ function megaman:attemptWeaponUsage()
     if w.current == "megaBuster" then
       if self.chargeState == 1 then
         megautils.add(megaSemiBuster, self.transform.x+(self.side==1 and 17 or -20), 
-          self.transform.y+4, self.side, w)
+          self.transform.y+(self.gravity >= 0 and 4 or (self.climb and 8 or 7)), self.side, w)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
         self:useShootAnimation()
       elseif self.chargeState == 2 then
         megautils.add(megaChargedBuster, self.transform.x+(self.side==1 and 17 or -20), 
-          self.transform.y-2, self.side, w)
+          self.transform.y+(self.gravity >= 0 and -2 or 1), self.side, w)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
@@ -780,14 +798,14 @@ function megaman:attemptWeaponUsage()
     elseif w.current == "protoBuster" then
       if self.chargeState == 1 then
         megautils.add(protoSemiBuster, self.transform.x+(self.side==1 and 17 or -16), 
-          self.transform.y+(self.climb and 9 or 10), self.side, w)
+          self.transform.y+(self.climb and 9 or (self.gravity >= 0 and 10 or 7)), self.side, w)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
         self:useShootAnimation()
       elseif self.chargeState == 2 then
         megautils.add(protoChargedBuster, self.transform.x+(self.side==1 and 16 or -34), 
-          self.transform.y+(self.climb and 7 or 9), self.side, w)
+          self.transform.y+(self.climb and 7 or (self.gravity >= 0 and 9 or 5)), self.side, w)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
@@ -796,14 +814,14 @@ function megaman:attemptWeaponUsage()
     elseif w.current == "rollBuster" then
       if self.chargeState == 1 then
         megautils.add(protoSemiBuster, self.transform.x+(self.side==1 and 19 or -18), 
-          self.transform.y+(self.climb and 5 or 7), self.side, w, true)
+          self.transform.y+(self.climb and (self.gravity >= 0 and 5 or 9) or (self.gravity >= 0 and 7 or 10)), self.side, w, true)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
         self:useShootAnimation()
       elseif self.chargeState == 2 then
         megautils.add(protoChargedBuster, self.transform.x+(self.side==1 and 16 or -34), 
-          self.transform.y+(self.climb and 4 or 6), self.side, w, true)
+          self.transform.y+(self.climb and (self.gravity >= 0 and 4 or 7) or (self.gravity >= 0 and 6 or 8)), self.side, w, true)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
@@ -1235,7 +1253,7 @@ function megaman:code(dt)
       self.velocity.vely = self.jumpSpeed * (self.gravity < 0 and -1 or 1)
       self.standSolidJumpTimer = math.min(self.standSolidJumpTimer+1, self.maxStandSolidJumpTime)
     elseif self:checkFalse(self.canJump) and control.jumpPressed[self.player] and
-      not (control.downDown[self.player] and self:checkBasicSlideBox(self.side, 0)) then
+      not ((self.gravity >= 0 and control.downDown[self.player] or control.upDown[self.player]) and self:checkBasicSlideBox(self.side, 0)) then
       self.velocity.vely = self.jumpSpeed * (self.gravity < 0 and -1 or 1)
     else
       self.velocity.vely = 0
@@ -1557,12 +1575,16 @@ function megaman:bassBusterAnim(shoot)
   if self.shootTimer ~= self.maxShootTime then
     if control.upDown[self.player] then
       if control.leftDown[self.player] or control.rightDown[self.player] then
-        dir = "s_um"
+        dir = self.gravity >= 0 and "s_um" or "s_dm"
       else
-        dir = "s_u"
+        dir = self.gravity >= 0 and "s_u" or "s_dm"
       end
     elseif control.downDown[self.player] then
-      dir = "s_dm"
+      if self.gravity < 0 and (control.leftDown[self.player] or control.rightDown[self.player]) then
+        dir = "s_um"
+      else
+        dir = self.gravity >= 0 and "s_dm" or "s_u"
+      end
     end
   end
   return dir
@@ -1737,22 +1759,22 @@ function megaman:draw()
     if table.contains(self.climbAnimation, self.curAnim) or 
       table.contains(self.jumpAnimation, self.curAnim) or 
       table.contains(self.wallJumpAnimation, self.curAnim) then
-      offsety = -8
+      offsety = self.gravity >= 0 and -8 or -12
     elseif table.contains(self.hitAnimation, self.curAnim) then
-      offsety = -6
+      offsety = self.gravity >= 0 and -6 or -14
     elseif table.contains(self.dashAnimation, self.curAnim) then
       offsety = -10
     end
   elseif globals.player[self.player] == "roll" then
-    offsety, offsetx = -10, -18
+    offsety, offsetx = self.gravity >= 0 and -10 or -3, -18
     if table.contains(self.climbAnimation, self.curAnim) or 
       table.contains(self.jumpAnimation, self.curAnim) or 
       table.contains(self.wallJumpAnimation, self.curAnim) then
-      offsety = -8
+      offsety = self.gravity >= 0 and -8 or -7
     elseif table.contains(self.hitAnimation, self.curAnim) then
-      offsety = -6
+      offsety = self.gravity >= 0 and -6 or -14
     elseif table.contains(self.dashAnimation, self.curAnim) then
-      offsety = -17
+      offsety = self.gravity >= 0 and -17 or -3
     end
   else
     offsety, offsetx = self.gravity >= 0 and -8 or -1, -15
@@ -1817,5 +1839,5 @@ function megaman:draw()
     love.graphics.draw(self.icoTex, self.iconQuad, roundx+math.round(math.round(self.collisionShape.w/2))-8,
       roundy-20)
   end
-  self:drawCollision()
+  --self:drawCollision()
 end

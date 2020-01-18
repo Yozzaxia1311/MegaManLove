@@ -248,9 +248,21 @@ function cmdGivehealth(cmd)
   end
 end
 concmd["givehealth"] = {
-  helptext = "negatively and positively add to your health",
+  helptext = "negatively and positively add health",
   flags = {"cheat"},
   fun = cmdGivehealth,
+}
+
+function cmdGravDir(cmd)
+  if not cmd[2] then return end
+  for i=1, globals.playerCount do
+    globals.allPlayers[i].gravityMultipliers["global"] = numberSanitize(cmd[2])
+  end
+end
+concmd["gravdir"] = {
+  helptext = "set gravity direction",
+  flags = {"cheat"},
+  fun = cmdGravDir,
 }
 
 function cmdKill(cmd)

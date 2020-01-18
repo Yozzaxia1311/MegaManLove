@@ -89,18 +89,6 @@ convar["infinitelives"] = {
   fun = function(arg) local n = numberSanitize(arg) globals.infiniteLives = n == 1 end
 }
 
-convar["gravdir"] = {
-  helptext = "gravity direction",
-  flags = {"client"},
-  value = 0,
-  fun = function(arg)
-    local n = numberSanitize(arg)
-    if globals.mainPlayer then
-      globals.mainPlayer.gravity = math.abs(globals.mainPlayer.gravity)*numberSanitize(arg)
-    end
-  end
-}
-
 conaction = {}
 
 function conaction.new(str)

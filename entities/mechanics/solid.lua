@@ -4,7 +4,7 @@ collision.maxSlope = 1
 
 function collision.doCollision(self)
   collision.checkGround(self)
-  if not self.ground and self.grav then self:grav() end
+  if self.grav then self:grav() end
   if self.blockCollision then
     collision.generalCollision(self)
   else
