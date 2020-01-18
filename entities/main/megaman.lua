@@ -80,20 +80,20 @@ addobjects.register("player", function(v)
   if v.properties["checkpoint"] == globals.checkpoint then
     if v.properties["individual"] then
       if v.properties["individual"] <= globals.playerCount then
-        megautils.add(megaman, v.x, v.y-5, v.properties["side"], v.properties["drop"], v.properties["individual"])
+        megautils.add(megaman, v.x, v.y-5, v.properties["side"], v.properties["drop"], v.properties["individual"], v.properties["grav"])
       end
     else
       for i=1, globals.playerCount do
-        megautils.add(megaman, v.x, v.y-5, v.properties["side"], v.properties["drop"], i)
+        megautils.add(megaman, v.x, v.y-5, v.properties["side"], v.properties["drop"], i, v.properties["grav"])
       end
     end
   end
 end)
 
-function megaman.properties(self)
+function megaman.properties(self, g)
   self.gravityType = 0
   self.normalGravity = 0.25
-  self.gravity = -self.normalGravity
+  self.gravityMultipliers = {["global"]=g or 1}
   self.maxChargeTime = 50
   self.jumpSpeed = -5.25
   self.jumpDecel = 5.25
@@ -339,10 +339,11 @@ function megaman:initChargingColors()
   end
 end
 
-function megaman:new(x, y, side, drop, p)
+function megaman:new(x, y, side, drop, p, g)
   megaman.super.new(self)
   megautils.registerPlayer(self, p)
-  megaman.properties(self)
+  megaman.properties(self, g)
+  self:calcGrav()
   if globals.player[self.player] == "mega" then
     self.texOutline = loader.get("mega_man_outline")
     self.texOne = loader.get("mega_man_one")
@@ -366,7 +367,7 @@ function megaman:new(x, y, side, drop, p)
   end
   self.teleportOffY = 0
   self.side = side or 1
-  self.transform.y = y
+  self.transform.y = y + (self.gravity >= 0 and 0 or 5)
   self.transform.x = x
   self.class = megaman
   self.icoTex = loader.get("weapon_select_icon")
@@ -822,26 +823,30 @@ function megaman:attemptClimb()
   if not control.downDown[self.player] and not control.upDown[self.player] then
     return
   end
-  local lads = self:collisionTable(megautils.groups()["ladder"], 0, 1)
+  local lads = self:collisionTable(megautils.groups()["ladder"], 0, self.gravity >= 0 and 1 or -1)
+  local downDown, upDown
+  if self.gravity >= 0 then
+    downDown = control.downDown[self.player]
+    upDown = control.upDown[self.player]
+  else
+    downDown = control.upDown[self.player]
+    upDown = control.downDown[self.player]
+  end
   if #lads ~= 0 then
     self.currentLadder = lads[1]
-    if (control.downDown[self.player] and self.ground and
-      self.transform.y ~= self.currentLadder.transform.y - self.collisionShape.h) or
-      (control.upDown[self.player] and self.transform.y == self.currentLadder.transform.y - self.collisionShape.h) or
-      (not math.between(self.transform.x+self.collisionShape.w/2,
-      self.currentLadder.transform.x, self.currentLadder.transform.x+self.currentLadder.collisionShape.w)) then
+    local betwn = math.between(self.transform.x+self.collisionShape.w/2,
+      self.currentLadder.transform.x, self.currentLadder.transform.x+self.currentLadder.collisionShape.w)
+    if (downDown and self.ground and self:collision(self.currentLadder)) or
+      (upDown and self.ground and not self:collision(self.currentLadder)) or
+      (not betwn) then
       self.currentLadder = nil
       return
     end
     if self.slide then
-      local lh = self.collisionShape.h
-      self:regBox()
-      self.transform.y = self.transform.y - (self.collisionShape.h - lh)
+      self:slideToReg()
     end
-    if self.transform.y == self.currentLadder.transform.y - self.collisionShape.h and
-      self.transform.y+self.collisionShape.h-1 < self.currentLadder.transform.y and
-      control.downDown[self.player] then
-      self.transform.y = self.transform.y + math.round(self.collisionShape.h/2) + 2
+    if downDown and betwn and self.ground and not self:collision(self.currentLadder) then
+      self.transform.y = self.transform.y + (self.gravity >= 0 and (math.round(self.collisionShape.h/2) + 2) or (-math.round(self.collisionShape.h/2) - 2))
     end
     self.velocity.vely = 0
     self.velocity.velx = 0
@@ -854,7 +859,11 @@ function megaman:attemptClimb()
     self.extraJumps = 0
     self.slideTimer = self.maxSlideTime
     self.animations["climb"]:gotoFrame(1)
-    self.climbTip = self.transform.y+math.round(self.collisionShape.h/6) < self.currentLadder.transform.y
+    if self.gravity >= 0 then
+      self.climbTip = self.transform.y < self.currentLadder.transform.y
+    else
+      self.climbTip = self.transform.y+self.collisionShape.h > self.currentLadder.transform.y+self.currentLadder.collisionShape.h
+    end
     self.transform.x = self.currentLadder.transform.x+(self.currentLadder.collisionShape.w/2)-
       ((self.collisionShape.w)/2)
   end
@@ -1027,22 +1036,43 @@ function megaman:code(dt)
     end
     self.transform.x = self.currentLadder.transform.x+(self.currentLadder.collisionShape.w/2)-
       ((self.collisionShape.w)/2)
+    local downDown, upDown
+    if self.gravity >= 0 then
+      downDown = control.downDown[self.player]
+      upDown = control.upDown[self.player]
+    else
+      downDown = control.upDown[self.player]
+      upDown = control.downDown[self.player]
+    end
+    if self.gravity >= 0 then
+      downDown = control.downDown[self.player]
+      upDown = control.upDown[self.player]
+    else
+      downDown = control.upDown[self.player]
+      upDown = control.downDown[self.player]
+    end
+    
     if control.upDown[self.player] and self.shootTimer == self.maxShootTime then
       self.velocity.vely = self.climbUpSpeed
     elseif control.downDown[self.player] and self.shootTimer == self.maxShootTime then
       self.velocity.vely = self.climbDownSpeed
     end
-    if not self:collision(self.currentLadder) and self.transform.y >= self.currentLadder.transform.y then
+    if not self:collision(self.currentLadder) then
       self.climb = false
-    elseif self.transform.y+math.round(self.collisionShape.h/2) < self.currentLadder.transform.y+2
-      and control.upDown[self.player] then
+    elseif upDown and ((self.gravity >= 0 and self.transform.y+((self.collisionShape.h/2)-2) < self.currentLadder.transform.y) or 
+      (self.gravity < 0 and self.transform.y+((self.collisionShape.h/2)+2) > self.currentLadder.transform.y+self.currentLadder.collisionShape.h)) then
         self.velocity.vely = 0
         self.transform.y = math.round(self.transform.y)
+        local hit = false
         while self:collision(self.currentLadder) do
-          self.transform.y = self.transform.y - 1
+          collision.shiftObject(self, 0, self.gravity >= 0 and -1 or 1, true)
+          if self.ycoll ~= 0 then
+            hit = true
+            break
+          end
         end
-        while not self:collision(self.currentLadder, 0, 1) do
-          self.transform.y = self.transform.y + 1
+        if not hit then
+          collision.shiftObject(self, 0, self.gravity >= 0 and 1 or -1, true)
         end
         self.climb = false
     end
@@ -1050,11 +1080,10 @@ function megaman:code(dt)
       self.transform.x == (view.x+view.w)-self.collisionShape.w/2 or not self:collision(self.currentLadder) then
       self.climb = false
     end
-    if self.ground and control.downDown[self.player] then
+    if self.ground and downDown then
       self.climb = false
     end
-    if control.jumpPressed[self.player] and not (control.downDown[self.player] or
-      control.upDown[self.player]) then
+    if control.jumpPressed[self.player] and not (downDown or upDown) then
       self.climb = false
     end
     for k, v in pairs(self.climbUpdateFuncs) do
@@ -1065,7 +1094,11 @@ function megaman:code(dt)
     if self.shootTimer ~= self.maxShootTime then
       self.velocity.vely = 0      
     end
-    self.climbTip = self.transform.y+math.round(self.collisionShape.h/6) < self.currentLadder.transform.y
+    if self.gravity >= 0 then
+      self.climbTip = self.transform.y < self.currentLadder.transform.y
+    else
+      self.climbTip = self.transform.y+self.collisionShape.h > self.currentLadder.transform.y+self.currentLadder.collisionShape.h
+    end
   elseif self.slide then
     local lastSide = self.side
     if control.leftDown[self.player] then
@@ -1181,7 +1214,7 @@ function megaman:code(dt)
       self.step = false
     end
     if self:checkFalse(self.canDash) and (control.dashPressed[self.player] or
-      (control.downDown[self.player] and control.jumpPressed[self.player])) and
+      ((self.gravity >= 0 and control.downDown[self.player] or control.upDown[self.player]) and control.jumpPressed[self.player])) and
       not self:checkBasicSlideBox(self.side, 0) then
       if self.shootTimer ~= self.maxShootTime then
         self.animations[self.dashAnimation["regular"]]:gotoFrame(
@@ -1413,6 +1446,7 @@ function megaman:charge(animOnly)
 end
 
 function megaman:grav()
+  self:calcGrav()
   if self.climb or self.slide or self.treble then return end
   if self.gravityType == 0 then
     self.velocity.vely = self.velocity.vely+self.gravity
@@ -1624,6 +1658,7 @@ function megaman:animate()
   else
     self:face(-1)
   end
+  self.animations[self.curAnim].flippedV = self.gravity < 0
   self.animations[self.curAnim]:update(1/60)
 end
 
@@ -1649,9 +1684,6 @@ function megaman:update(dt)
     end
     view.x, view.y = math.round(camera.main.transform.x), math.round(camera.main.transform.y)
     camera.main:updateFuncs()
-    if megautils.networkGameStarted and megautils.networkMode == "server" then
-      megautils.net:sendToAll("u", {x=camera.main.transform.x, y=camera.main.transform.y, id=camera.main.networkID})
-    end
   else
     self.runCheck = false
     if self.rise then
@@ -1698,74 +1730,75 @@ end
 
 function megaman:draw()
   local roundx, roundy = math.round(self.transform.x), math.round(self.transform.y)
-  local offsety, offsetx = 0, 0
+  local offsetx, offsety = self.offsetx, self.offsety
+  
   if globals.player[self.player] == "bass" then
-    offsetx = -2
-    offsety = -2
+    offsety, offsetx = -10, -18
     if table.contains(self.climbAnimation, self.curAnim) or 
       table.contains(self.jumpAnimation, self.curAnim) or 
       table.contains(self.wallJumpAnimation, self.curAnim) then
-      offsety = 0
+      offsety = -8
     elseif table.contains(self.hitAnimation, self.curAnim) then
-      offsety = 2
+      offsety = -6
     elseif table.contains(self.dashAnimation, self.curAnim) then
-      offsety = -2
+      offsety = -10
     end
   elseif globals.player[self.player] == "roll" then
-    offsetx = -2
-    offsety = -2
+    offsety, offsetx = -10, -18
     if table.contains(self.climbAnimation, self.curAnim) or 
       table.contains(self.jumpAnimation, self.curAnim) or 
       table.contains(self.wallJumpAnimation, self.curAnim) then
-      offsety = 0
+      offsety = -8
     elseif table.contains(self.hitAnimation, self.curAnim) then
-      offsety = 2
+      offsety = -6
     elseif table.contains(self.dashAnimation, self.curAnim) then
-      offsety = -9
+      offsety = -17
     end
   else
+    offsety, offsetx = self.gravity >= 0 and -8 or -1, -15
     if table.contains(self.climbAnimation, self.curAnim) or 
       table.contains(self.jumpAnimation, self.curAnim) or 
       table.contains(self.wallJumpAnimation, self.curAnim) then
-      offsety = 6
+      offsety = self.gravity >= 0 and -2 or -6
     elseif table.contains(self.hitAnimation, self.curAnim) then
-      offsety = 4
+      offsety = self.gravity >= 0 and -4 or -5
     elseif table.contains(self.dashAnimation, self.curAnim) then
-      offsety = -5
+      offsety = self.gravity >= 0 and -13 or -3
     end
   end
   offsety = offsety + self.teleportOffY
   if globals.player[self.player] == "bass" or globals.player[self.player] == "roll" then
     if self.curAnim == "climbShoot" or self.curAnim == "climbShootDM" or self.curAnim == "climbShootUM"
       or self.curAnim == "climbShootU" or self.curAnim == "climbThrow" then
-      offsetx = self.side == -1 and -2 or -3
+      offsetx = self.side == -1 and -17 or -18
     elseif self.curAnim == "climb" then
-      offsetx = self.animations["climb"].position==1 and -3 or -2
+      offsetx = self.animations["climb"].position==1 and -18 or -17
     elseif self.curAnim == "slide" then
-      offsetx = self.side==1 and 1 or -5
+      offsetx = self.side==1 and -14 or -20
     end
   else
     if self.curAnim == "climbShoot" or self.curAnim == "climbShootDM" or self.curAnim == "climbShootUM"
       or self.curAnim == "climbShootU" or self.curAnim == "climbThrow" then
-      offsetx = self.side == -1 and 0 or -1
+      offsetx = self.side == -1 and -15 or -16
     elseif self.curAnim == "climb" then
-      offsetx = self.animations["climb"].position==1 and -1 or 0
+      offsetx = self.animations["climb"].position==1 and -16 or -15
     elseif self.curAnim == "slide" then
-      offsetx = self.side==1 and 3 or -3
+      offsetx = self.side==1 and -12 or -18
     end
   end
+  
   love.graphics.setColor(megaman.colorOutline[self.player][1]/255, megaman.colorOutline[self.player][2]/255, megaman.colorOutline[self.player][3]/255, 1)
-  self.animations[self.curAnim]:draw(self.texOutline, roundx-15+offsetx,
-    roundy-8+offsety)
+  self.animations[self.curAnim]:draw(self.texOutline, roundx+offsetx,
+    roundy+offsety)
   love.graphics.setColor(megaman.colorOne[self.player][1]/255, megaman.colorOne[self.player][2]/255, megaman.colorOne[self.player][3]/255, 1)
-  self.animations[self.curAnim]:draw(self.texOne, roundx-15+offsetx,
-    roundy-8+offsety)
+  self.animations[self.curAnim]:draw(self.texOne, roundx+offsetx,
+    roundy+offsety)
   love.graphics.setColor(megaman.colorTwo[self.player][1]/255, megaman.colorTwo[self.player][2]/255, megaman.colorTwo[self.player][3]/255, 1)
-  self.animations[self.curAnim]:draw(self.texTwo, roundx-15+offsetx,
-    roundy-8+offsety)
+  self.animations[self.curAnim]:draw(self.texTwo, roundx+offsetx,
+    roundy+offsety)
   love.graphics.setColor(1, 1, 1, 1)
-  self.animations[self.curAnim]:draw(self.texFace, roundx-15+offsetx,
-    roundy-8+offsety)
+  self.animations[self.curAnim]:draw(self.texFace, roundx+offsetx,
+    roundy+offsety)
   
   if self.weaponSwitchTimer ~= 70 then
     love.graphics.setColor(1, 1, 1, 1)
@@ -1784,5 +1817,5 @@ function megaman:draw()
     love.graphics.draw(self.icoTex, self.iconQuad, roundx+math.round(math.round(self.collisionShape.w/2))-8,
       roundy-20)
   end
-  --self:drawCollision()
+  self:drawCollision()
 end

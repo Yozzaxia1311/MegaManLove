@@ -394,7 +394,9 @@ function entity:new()
   self.render = true
   self.isSolid = 0
   self.velocity = velocity()
-  self.gravity = 0.25
+  self.normalGravity = 0.25
+  self.gravityMultipliers = {["global"]=1}
+  self:calcGrav()
   self.blockCollision = false
   self.ground = false
   self.xcoll = 0
@@ -424,7 +426,9 @@ function entity:baseRecycle()
   self.isSolid = 0
   self.velocity.velx = 0
   self.velocity.vely = 0
-  self.gravity = 0.25
+  self.normalGravity = 0.25
+  self.gravityMultipliers = {["global"]=1}
+  self:calcGrav()
   self.blockCollision = false
   self.ground = false
   self.xcoll = 0
@@ -442,6 +446,13 @@ function entity:baseRecycle()
   self.moveByMoveY = 0
   self.canBeInvincible = {["global"]=true}
   self.canStandSolid = {["global"]=true}
+end
+
+function entity:calcGrav()
+  self.gravity = self.normalGravity
+  for k, v in pairs(self.gravityMultipliers) do
+    self.gravity = self.gravity*v
+  end
 end
 
 function entity:checkTrue(w)

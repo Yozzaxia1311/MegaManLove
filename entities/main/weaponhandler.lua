@@ -1,4 +1,4 @@
-weaponhandler = entity:extend()
+weaponhandler = basicEntity:extend()
 
 weaponhandler.removeGroups = {}
 weaponhandler.id = 0

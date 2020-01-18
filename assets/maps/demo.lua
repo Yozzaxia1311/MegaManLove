@@ -1757,14 +1757,15 @@ return {
           name = "player",
           type = "",
           shape = "rectangle",
-          x = 64,
-          y = 400,
+          x = 368,
+          y = 256,
           width = 16,
           height = 16,
           rotation = 0,
           visible = true,
           properties = {
             ["checkpoint"] = "start",
+            ["grav"] = -1,
             ["individual"] = 1
           }
         },

@@ -1,4 +1,4 @@
-healthhandler = entity:extend()
+healthhandler = basicEntity:extend()
 
 megautils.resetGameObjectsFuncs["healthhandler"] = function()
   healthhandler.playerTimers = {}
