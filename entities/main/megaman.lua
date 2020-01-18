@@ -93,7 +93,7 @@ end)
 function megaman.properties(self)
   self.gravityType = 0
   self.normalGravity = 0.25
-  self.gravity = self.normalGravity
+  self.gravity = -self.normalGravity
   self.maxChargeTime = 50
   self.jumpSpeed = -5.25
   self.jumpDecel = 5.25
@@ -877,7 +877,7 @@ function megaman:healthChanged(o, c, i)
     self.iFrame = 0
     if self.health <= 0 then
       if #globals.allPlayers == 1 then
-        if self.transform.y < view.y+view.h then
+        if ((self.gravity >= 0 and self.transform.y < view.y+view.h) or (self.gravity < 0 and self.transform.y+self.collisionShape.h > view.y)) then
           explodeParticle.createExplosion(self.transform.x+((self.collisionShape.w/2)-12),
             self.transform.y+((self.collisionShape.h/2)-12))
         end
@@ -1203,7 +1203,7 @@ function megaman:code(dt)
       self.standSolidJumpTimer = math.min(self.standSolidJumpTimer+1, self.maxStandSolidJumpTime)
     elseif self:checkFalse(self.canJump) and control.jumpPressed[self.player] and
       not (control.downDown[self.player] and self:checkBasicSlideBox(self.side, 0)) then
-      self.velocity.vely = self.jumpSpeed
+      self.velocity.vely = self.jumpSpeed * (self.gravity < 0 and -1 or 1)
     else
       self.velocity.vely = 0
     end
@@ -1272,7 +1272,8 @@ function megaman:code(dt)
       self.extraJumps = self.extraJumps + 1
       self.velocity.vely = self.jumpSpeed
     end
-    if self:checkFalse(self.canStopJump) and not control.jumpDown[self.player] and self.velocity.vely < 0 then
+    if self:checkFalse(self.canStopJump) and not control.jumpDown[self.player] and
+      ((self.gravity < 0 and self.velocity.vely > 0) or (self.gravity >= 0 and self.velocity.vely < 0)) then
       self.velocity:slowY(self.jumpDecel)
     end
     for k, v in pairs(self.airUpdateFuncs) do
@@ -1304,7 +1305,7 @@ function megaman:code(dt)
   self.transform.y = math.clamp(self.transform.y, view.y-(self.collisionShape.h*1.4),
     view.y+view.h+4)
   self.shootTimer = math.min(self.shootTimer+1, self.maxShootTime)
-  if (self.transform.y >= view.y+view.h) or 
+  if ((self.gravity >= 0 and self.transform.y >= view.y+view.h) or (self.gravity < 0 and self.transform.y+self.collisionShape.h <= view.y)) or 
     (self.blockCollision and self:checkTrue(self.canGetCrushed) and collision.checkSolid(self)) then
     self.iFrame = self.maxIFrame
     for k, v in pairs(self.canBeInvincible) do
