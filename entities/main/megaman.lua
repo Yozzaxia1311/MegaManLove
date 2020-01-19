@@ -180,6 +180,9 @@ function megaman:transferState(to)
   to.slide = self.slide
   to.climb = self.climb
   to.currentLadder = self.currentLadder
+  if globals.player[self.player] == "bass" then
+    self.transform.y = to.transform.y - (self.collisionShape.h - to.collisionShape.h)
+  end
   if self.slideTimer ~= self.maxSlideTime then
     to.slideTimer = to.maxSlideTime - 2
   end
