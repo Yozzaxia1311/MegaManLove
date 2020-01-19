@@ -464,3 +464,21 @@ function megautils.arcXVel(yvel, grav, x, y, tox, toy)
   
   return result
 end
+
+function megautils.diff(...)
+  for k, v in pairs({...}) do
+    if v == convar.getString("diff") then
+      return true
+    end
+  end
+  return false
+end
+
+function megautils.diffValue(def, t)
+  for k, v in pairs(t) do
+    if k == convar.getString("diff") then
+      return v
+    end
+  end
+  return def
+end

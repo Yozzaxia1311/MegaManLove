@@ -71,7 +71,7 @@ function entitysystem:add(c, ...)
       end
     end
     if not done then
-      self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}, ["flicker"]=true}
+      self.entities[#self.entities+1] = {layer=e.layer, data={e}, flicker=true}
       e.actualLayer = self.entities[#self.entities]
       e.layer = e.actualLayer.layer
       self.doSort = true
@@ -101,7 +101,7 @@ function entitysystem:adde(e)
       end
     end
     if not done then
-      self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}, ["flicker"]=true}
+      self.entities[#self.entities+1] = {layer=e.layer, data={e}, flicker=true}
       e.actualLayer = self.entities[#self.entities]
       e.layer = e.actualLayer.layer
       self.doSort = true
@@ -163,7 +163,7 @@ function entitysystem:removeStatic(e)
       end
     end
     if not done then
-      self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}, ["flicker"]=true}
+      self.entities[#self.entities+1] = {layer=e.layer, data={e}, flicker=true}
       e.actualLayer = self.entities[#self.entities]
       e.layer = e.actualLayer.layer
       self.doSort = true
@@ -192,7 +192,7 @@ function entitysystem:setLayer(e, l)
       end
     end
     if not done then
-      self.entities[#self.entities+1] = {["layer"]=e.layer, ["data"]={e}, ["flicker"]=true}
+      self.entities[#self.entities+1] = {layer=e.layer, data={e}, flicker=true}
       e.actualLayer = self.entities[#self.entities]
       e.layer = e.actualLayer.layer
       self.doSort = true
@@ -395,7 +395,7 @@ function entity:new()
   self.isSolid = 0
   self.velocity = velocity()
   self.normalGravity = 0.25
-  self.gravityMultipliers = {["global"]=1}
+  self.gravityMultipliers = {global=1}
   self:calcGrav()
   self.blockCollision = false
   self.ground = false
@@ -413,8 +413,8 @@ function entity:new()
   self.doShake = false
   self.moveByMoveX = 0
   self.moveByMoveY = 0
-  self.canBeInvincible = {["global"]=false}
-  self.canStandSolid = {["global"]=true}
+  self.canBeInvincible = {global=false}
+  self.canStandSolid = {global=true}
 end
 
 function entity:baseRecycle()
@@ -427,7 +427,7 @@ function entity:baseRecycle()
   self.velocity.velx = 0
   self.velocity.vely = 0
   self.normalGravity = 0.25
-  self.gravityMultipliers = {["global"]=1}
+  self.gravityMultipliers = {global=1}
   self:calcGrav()
   self.blockCollision = false
   self.ground = false
@@ -444,8 +444,8 @@ function entity:baseRecycle()
   self.doShake = false
   self.moveByMoveX = 0
   self.moveByMoveY = 0
-  self.canBeInvincible = {["global"]=true}
-  self.canStandSolid = {["global"]=true}
+  self.canBeInvincible = {global=true}
+  self.canStandSolid = {global=true}
 end
 
 function entity:calcGrav()

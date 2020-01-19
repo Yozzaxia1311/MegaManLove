@@ -89,6 +89,12 @@ convar["infinitelives"] = {
   fun = function(arg) local n = numberSanitize(arg) globals.infiniteLives = n == 1 end
 }
 
+convar["diff"] = {
+  helptext = "difficulty (easy, normal, hard, etc.)",
+  flags = {"cheat"},
+  value = "normal",
+}
+
 conaction = {}
 
 function conaction.new(str)

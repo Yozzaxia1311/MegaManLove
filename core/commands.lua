@@ -311,8 +311,8 @@ concmd["lockcheats"] = {
 
 function cmdGive(cmd)
   if globals.mainPlayer and cmd[2] then
-    addobjects.add({{["name"]=cmd[2], ["x"]=globals.mainPlayer.transform.x+numberSanitize(cmd[3]),
-          ["y"]=globals.mainPlayer.transform.y+numberSanitize(cmd[4])}})
+    addobjects.add({{name=cmd[2], x=globals.mainPlayer.transform.x+numberSanitize(cmd[3]),
+          y=globals.mainPlayer.transform.y+numberSanitize(cmd[4])}})
   end
 end
 concmd["give"] = {

@@ -44,6 +44,25 @@ function met:healthChanged(o, c, i)
     o:dink(self)
     return
   end
+  
+  if o:is(megaBuster) then
+    self.changeHealth = -1
+  elseif o:is(megaSemiBuster) then
+    self.changeHealth = megautils.diffValue(-1, {easy=-2})
+  elseif o:is(megaChargedBuster) then
+    self.changeHealth = megautils.diffValue(-2, {easy=-3})
+  elseif o:is(protoSemiBuster) then
+    self.changeHealth = megautils.diffValue(-1, {easy=-2})
+  elseif o:is(protoChargedBuster) then
+    self.changeHealth = megautils.diffValue(-2, {easy=-3})
+  elseif o:is(bassBuster) then
+    if o.treble then
+      self.changeHealth = megautils.diffValue(-1, {easy=-2})
+    else
+      self.changeHealth = megautils.diffValue(-0.5, {easy=-1})
+    end
+  end
+  
   self.changeHealth = c
   self.health = self.health + self.changeHealth
   self.maxIFrame = i
@@ -96,7 +115,7 @@ function met:update(dt)
     end
   end
   collision.doCollision(self)
-  self:hurt(self:collisionTable(globals.allPlayers), -2, 80)
+  self:hurt(self:collisionTable(globals.allPlayers), megautils.diffValue(-2, {easy=-1, normal=-2, hard=-3}), 80)
   self:updateIFrame()
   self:updateFlash()
   if megautils.outside(self) then
@@ -160,9 +179,9 @@ function metBullet:update(dt)
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
   if self.dinked then
-    self:hurt(self:collisionTable(megautils.groups()["hurtable"]), -1, 2)
+    self:hurt(self:collisionTable(megautils.groups()["hurtable"]), -2, 2)
   else
-    self:hurt(self:collisionTable(globals.allPlayers), -2, 80)
+    self:hurt(self:collisionTable(globals.allPlayers), megautils.diffValue(-2, {easy=-1, normal=-2, hard=-3}), 80)
   end
   if megautils.outside(self) then
     megautils.remove(self, true)

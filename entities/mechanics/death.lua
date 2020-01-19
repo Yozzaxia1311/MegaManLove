@@ -10,7 +10,7 @@ function death:new(x, y, w, h, harm)
   self.transform.x = x
   self:setRectangleCollision(w, h)
   self:setLayer(-5)
-  self.harm = harm or -99
+  self.harm = harm or megautils.diffValue(-999999, {easy=-14})
   self.harm = -math.abs(self.harm)
   self.isSolid = 1
   self.added = function(self)

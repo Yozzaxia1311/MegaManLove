@@ -1,4 +1,5 @@
 function initEngine()
+  inputHandler.init()
   control.init()
   globals = {}
   love.filesystem.load("requires.lua")()
@@ -11,7 +12,7 @@ function initEngine()
   cscreen.init(view.w*view.scale, view.h*view.scale, true)
   
   globals.mainPlayer = nil
-  globals.player = {"proto", "proto", "bass", "roll"}
+  globals.player = {"mega", "proto", "bass", "roll"}
   globals.allPlayers = {}
   globals.checkpoint = "start"
   globals.infiniteLives = false
@@ -59,51 +60,6 @@ function love.load()
   if nesShader then nesShader:send("pal", love.graphics.newImage("assets/neslut.png")) end
   
   love.filesystem.load("requirelibs.lua")()
-  
-  inputHandler.init()
-  
-  local joysticks = inputHandler.gamepads
-  defaultInputBinds = {["up"]={{"keyboard", "up"}, {"custom", "up"}},
-    ["down"]={{"keyboard", "down"}, {"custom", "down"}},
-    ["left"]={{"keyboard", "left"}, {"custom", "left"}},
-    ["right"]={{"keyboard", "right"}, {"custom", "right"}},
-    ["jump"]={{"keyboard", "z"}, {"custom", "jump"}},
-    ["shoot"]={{"keyboard", "x"}, {"custom", "shoot"}},
-    ["start"]={{"keyboard", "return"}, {"custom", "start"}},
-    ["select"]={{"keyboard", "rshift"}, {"custom", "select"}},
-    ["prev"]={{"keyboard", "a"}, {"custom", "prev"}},
-    ["next"]={{"keyboard", "s"}, {"custom", "next"}},
-    ["dash"]={{"keyboard", "c"}, {"custom", "dash"}}}
-  defaultInputBindsExtra = {}
-  if #joysticks > 0 then
-    local joyBinds = {["up"]={"axis", "lefty-", joysticks[1]:getName()},
-    ["down"]={"axis", "lefty+", joysticks[1]:getName()},
-    ["left"]={"axis", "leftx-", joysticks[1]:getName()},
-    ["right"]={"axis", "leftx+", joysticks[1]:getName()},
-    ["jump"]={"gamepad", "a", joysticks[1]:getName()},
-    ["shoot"]={"gamepad", "x", joysticks[1]:getName()},
-    ["start"]={"gamepad", "start", joysticks[1]:getName()},
-    ["select"]={"gamepad", "back", joysticks[1]:getName()},
-    ["prev"]={"gamepad", "leftshoulder", joysticks[1]:getName()},
-    ["next"]={"gamepad", "rightshoulder", joysticks[1]:getName()},
-    ["dash"]={"gamepad", "b", joysticks[1]:getName()}}
-    for k, v in pairs(defaultInputBinds) do
-      defaultInputBinds[k] = table.merge({defaultInputBinds[k], {joyBinds[k]}})
-    end
-    for i=2, #joysticks do
-      defaultInputBindsExtra[i] = {["up"]={"axis", "lefty-", joysticks[i]:getName()},
-      ["down"]={"axis", "lefty+", joysticks[i]:getName()},
-      ["left"]={"axis", "leftx-", joysticks[i]:getName()},
-      ["right"]={"axis", "leftx+", joysticks[i]:getName()},
-      ["jump"]={"gamepad", "a", joysticks[i]:getName()},
-      ["shoot"]={"gamepad", "x", joysticks[i]:getName()},
-      ["start"]={"gamepad", "start", joysticks[i]:getName()},
-      ["select"]={"gamepad", "back", joysticks[i]:getName()},
-      ["prev"]={"gamepad", "leftshoulder", joysticks[i]:getName()},
-      ["next"]={"gamepad", "rightshoulder", joysticks[i]:getName()},
-      ["dash"]={"gamepad", "b", joysticks[i]:getName()}}
-    end
-  end
   
   console.init()
   initEngine()

@@ -95,7 +95,7 @@ end)
 function megaman.properties(self, g)
   self.gravityType = 0
   self.normalGravity = 0.25
-  self.gravityMultipliers = {["global"]=g or 1}
+  self.gravityMultipliers = {global=g or 1}
   self.maxChargeTime = 50
   self.jumpSpeed = -5.25
   self.jumpDecel = 5.25
@@ -143,31 +143,36 @@ function megaman.properties(self, g)
   self.maxRapidShotTime = 5
   self.maxTrebleSpeed = 2
   self.trebleDecel = 0.1
-  self.protoShieldLeftCollision = {["x"]=-7, ["y"]=0, ["w"]=8, ["h"]=14}
-  self.protoShieldRightCollision = {["x"]=10, ["y"]=0, ["w"]=8, ["h"]=14}
+  if megautils.diff("easy") then
+    self.protoShieldLeftCollision = {x=-7, y=0, w=8, h=20}
+    self.protoShieldRightCollision = {x=10, y=0, w=8, h=20}
+  else
+    self.protoShieldLeftCollision = {x=-7, y=0, w=8, h=14}
+    self.protoShieldRightCollision = {x=10, y=0, w=8, h=14}
+  end
   
-  self.canJumpOutFromDash = {["global"]=true}
-  self.canBackOutFromDash = {["global"]=true}
-  self.canSwitchWeapons = {["global"]=true}
-  self.canStandSolid = {["global"]=true}
-  self.canPause = {["global"]=true}
-  self.canDieFromSpikes = {["global"]=true}
-  self.canDashShoot = {["global"]=false}
-  self.canDashJump = {["global"]=globals.player[self.player] == "bass"}
-  self.canDash = {["global"]=true}
-  self.canShoot = {["global"]=true}
-  self.canWallJump = {["global"]=false}
-  self.canChargeBuster = {["global"]=true}
-  self.canWalk = {["global"]=true}
-  self.canJump = {["global"]=true}
-  self.canHaveCameraFocus = {["global"]=true}
-  self.canHaveThreeWeaponIcons = {["global"]=false}
-  self.canBeInvincible = {["global"]=false}
-  self.canGetCrushed = {["global"]=false}
-  self.canStopJump = {["global"]=true}
-  self.canStepVelocity = {["global"]=false}
-  self.canIgnoreKnockback = {["global"]=false}
-  self.canProtoShield = {["global"]=globals.player[self.player] == "proto"}
+  self.canJumpOutFromDash = {global=true}
+  self.canBackOutFromDash = {global=true}
+  self.canSwitchWeapons = {global=true}
+  self.canStandSolid = {global=true}
+  self.canPause = {global=true}
+  self.canDieFromSpikes = {global=true}
+  self.canDashShoot = {global=false}
+  self.canDashJump = {global=globals.player[self.player] == "bass"}
+  self.canDash = {global=true}
+  self.canShoot = {global=true}
+  self.canWallJump = {global=false}
+  self.canChargeBuster = {global=true}
+  self.canWalk = {global=true}
+  self.canJump = {global=true}
+  self.canHaveCameraFocus = {global=true}
+  self.canHaveThreeWeaponIcons = {global=false}
+  self.canBeInvincible = {global=false}
+  self.canGetCrushed = {global=false}
+  self.canStopJump = {global=true}
+  self.canStepVelocity = {global=false}
+  self.canIgnoreKnockback = {global=false}
+  self.canProtoShield = {global=globals.player[self.player] == "proto"}
 end
 
 function megaman:transferState(to)
@@ -484,19 +489,19 @@ function megaman:new(x, y, side, drop, p, g)
     end
   end
   self.curAnim = self.drop and "spawn" or "idle"
-  self.dropAnimation = {["regular"]="spawn"}
-  self.dropLandAnimation = {["regular"]="spawnLand"}
-  self.idleAnimation = {["regular"]="idle", ["shoot"]="idleShoot", ["s_dm"]="idleShootDM", ["s_um"]="idleShootUM", ["s_u"]="idleShootU"}
-  self.nudgeAnimation = {["regular"]="nudge", ["shoot"]="idleShoot", ["s_dm"]="idleShootDM", ["s_um"]="idleShootUM", ["s_u"]="idleShootU"}
-  self.jumpAnimation = {["regular"]="jump", ["shoot"]="jumpShoot", ["s_dm"]="jumpShootDM", ["s_um"]="jumpShootUM", ["s_u"]="jumpShootU",
-    ["ps"]="jumpProtoShield", ["ps2"]="jumpProtoShield2"}
-  self.runAnimation = {["regular"]="run", ["shoot"]="runShoot"}
-  self.climbAnimation = {["regular"]="climb", ["shoot"]="climbShoot", ["s_dm"]="climbShootDM", ["s_um"]="climbShootUM", ["s_u"]="climbShootU"}
-  self.climbTipAnimation = {["regular"]="climbTip"}
-  self.hitAnimation = {["regular"]="hit"}
-  self.wallJumpAnimation = {["regular"]="wallJump", ["shoot"]="wallJumpShoot"}
-  self.dashAnimation = {["regular"]=(self:checkFalse(self.canDashShoot) and globals.player[self.player] == "mega") and "dash" or "slide", ["shoot"]="dashShoot"}
-  self.trebleAnimation = {["regular"]="treble", ["shoot"]="trebleShoot"}
+  self.dropAnimation = {regular="spawn"}
+  self.dropLandAnimation = {regular="spawnLand"}
+  self.idleAnimation = {regular="idle", shoot="idleShoot", s_dm="idleShootDM", s_um="idleShootUM", s_u="idleShootU"}
+  self.nudgeAnimation = {regular="nudge", shoot="idleShoot", s_dm="idleShootDM", s_um="idleShootUM", s_u="idleShootU"}
+  self.jumpAnimation = {regular="jump", shoot="jumpShoot", s_dm="jumpShootDM", s_um="jumpShootUM", s_u="jumpShootU",
+    ps=megautils.diff("easy") and "jumpProtoShield2" or "jumpProtoShield"}
+  self.runAnimation = {regular="run", shoot="runShoot"}
+  self.climbAnimation = {regular="climb", shoot="climbShoot", s_dm="climbShootDM", s_um="climbShootUM", s_u="climbShootU"}
+  self.climbTipAnimation = {regular="climbTip"}
+  self.hitAnimation = {regular="hit"}
+  self.wallJumpAnimation = {regular="wallJump", shoot="wallJumpShoot"}
+  self.dashAnimation = {regular=(self:checkFalse(self.canDashShoot) and globals.player[self.player] == "mega") and "dash" or "slide", shoot="dashShoot"}
+  self.trebleAnimation = {regular="treble", shoot="trebleShoot"}
   self.animations = {}
   local pp = "mega_man_grid"
   if globals.player[self.player] == "bass" then
@@ -1542,9 +1547,16 @@ function megaman:phys()
         t[i].isSolid = 1
       end
       if collision.checkSolid(self) then
-        self:hurt({self}, -99999, 1)
-        if self.changeHealth < 0 then
+        local dv = self:collisionTable(megautils.groups()["death"])
+        self:hurt({self}, dv[1] and dv[1].harm or -9999999, 80)
+        if self.health <= 0 then
           self.ground = false
+        else
+          self.ground = lg
+          self.xcoll = lcx
+          self.ycoll = lcy
+          self.inStandSolid = lss
+          self.onMovingFloor = lmf
         end
       else
         self.ground = lg
