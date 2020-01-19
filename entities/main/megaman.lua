@@ -1295,10 +1295,10 @@ function megaman:code(dt)
       self.side = -ns
       self.velocity.velx = -self.side
       self.wallJumping = true
-      self.velocity.vely = self.wallSlideSpeed * math.sign(self.gravity)
+      self.velocity.vely = self.wallSlideSpeed * (self.gravity >= 0 and 1 or -1)
       if control.jumpPressed[self.player] then
         self.wallJumpTimer = self.maxWallJumpTime
-        self.velocity.vely = self.wallJumpSpeed * (self.gravity < 0 and -1 or 1)
+        self.velocity.vely = self.wallJumpSpeed * (self.gravity >= 0 and 1 or -1)
         self.dashJump = true
         megautils.add(kickParticle, self.transform.x+(self.side==1 and -4 or self.collisionShape.w-4),
           self.transform.y+(self.gravity > 0 and self.collisionShape.h-10 or 0), -self.side)
@@ -1324,7 +1324,7 @@ function megaman:code(dt)
     end
     if control.jumpPressed[self.player] and self.extraJumps < self.maxExtraJumps then
       self.extraJumps = self.extraJumps + 1
-      self.velocity.vely = self.jumpSpeed
+      self.velocity.vely = self.jumpSpeed * (self.gravity >= 0 and 1 or -1)
     end
     if self:checkFalse(self.canStopJump) and not control.jumpDown[self.player] and
       ((self.gravity < 0 and self.velocity.vely > 0) or (self.gravity >= 0 and self.velocity.vely < 0)) then
