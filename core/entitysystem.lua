@@ -678,7 +678,6 @@ function basicEntity:new()
   self.isRemoved = false
   self.updated = true
   self.render = true
-  self.gravity = 0
 end
 
 function basicEntity:baseRecycle()
@@ -686,7 +685,6 @@ function basicEntity:baseRecycle()
   self.transform.y = 0
   self.updated = true
   self.render = true
-  self.gravity = 0
 end
 
 function basicEntity:hurt(t, h, f, single)

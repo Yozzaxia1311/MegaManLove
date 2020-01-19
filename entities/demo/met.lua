@@ -28,7 +28,6 @@ function met:new(x, y, s)
   self.canBeInvincible["global"] = true
   self.timer = 0
   self.blockCollision = true
-  self.gravity = 0.25
 end
 
 function met:grav()
@@ -36,14 +35,13 @@ function met:grav()
 end
 
 function met:healthChanged(o, c, i)
-  if o.dink then return end
+  if o.dinked == 1 then return end
   if c < 0 and not self:checkTrue(self.canBeInvincible) and not o:is(megaChargedBuster) then
     megautils.remove(o, true)
   end
   if self.maxIFrame ~= self.iFrame then return end
-  if self:checkTrue(self.canBeInvincible) and not o.dink then
-    mmSfx.play("dink")
-    o.dink = true
+  if self:checkTrue(self.canBeInvincible) and o.dink then
+    o:dink(self)
     return
   end
   self.changeHealth = c
@@ -56,10 +54,10 @@ function met:healthChanged(o, c, i)
     megautils.remove(self, true)
     mmSfx.play("enemy_explode")
   elseif self.changeHealth < 0 then
-    mmSfx.play("enemy_hit")
     if o:is(megaChargedBuster) then
       megautils.remove(o, true)
     end
+    mmSfx.play("enemy_hit")
   end
 end
 
@@ -129,6 +127,7 @@ function metBullet:new(x, y, vx, vy)
   self.added = function(self)
     self:addToGroup("freezable")
     self:addToGroup("removeOnTransition")
+    self:addToGroup("enemyWeapon")
   end
   self.transform.x = x
   self.transform.y = y
@@ -145,20 +144,34 @@ function metBullet:recycle(x, y, vx, vy)
   self.transform.y = y
   self.velocity.velx = vx
   self.velocity.vely = vy
+  self.dinked = nil
 end
 
-function metBullet:draw()
-  love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.draw(self.tex, self.quad, math.round(self.transform.x), math.round(self.transform.y))
+function metBullet:dink(e)
+  if e:is(megaman) then
+    self.velocity.velx = -self.velocity.velx
+    self.velocity.vely = -self.velocity.vely
+    self.dinked = 2
+    mmSfx.play("dink")
+  end
 end
 
 function metBullet:update(dt)
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
-  self:hurt(self:collisionTable(globals.allPlayers), -2, 80)
+  if self.dinked then
+    self:hurt(self:collisionTable(megautils.groups()["hurtable"]), -1, 2)
+  else
+    self:hurt(self:collisionTable(globals.allPlayers), -2, 80)
+  end
   if megautils.outside(self) then
     megautils.remove(self, true)
   end
+end
+
+function metBullet:draw()
+  love.graphics.setColor(1, 1, 1, 1)
+  love.graphics.draw(self.tex, self.quad, math.round(self.transform.x), math.round(self.transform.y))
 end
 
 megautils.cleanFuncs["unload_met"] = function()

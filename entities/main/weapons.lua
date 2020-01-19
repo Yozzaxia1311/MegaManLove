@@ -16,7 +16,6 @@ function protoSemiBuster:new(x, y, dir, wpn, roll)
   self:setRectangleCollision(10, 10)
   self.tex = loader.get(roll and "roll_buster" or "proto_buster")
   self.quad = love.graphics.newQuad(0, 0, 10, 10, 68, 10)
-  self.dink = false
   self.velocity = velocity()
   self.velocity.velx = dir * 5
   self.side = dir
@@ -24,12 +23,16 @@ function protoSemiBuster:new(x, y, dir, wpn, roll)
   mmSfx.play("semi_charged")
 end
 
+function protoSemiBuster:dink(e)
+  self.velocity.vely = -4
+  self.velocity.velx = 4*-self.side
+  self.dinked = 1
+  mmSfx.play("dink")
+end
+
 function protoSemiBuster:update(dt)
-  if not self.dink then
+  if not self.dinked then
     self:hurt(self:collisionTable(megautils.groups()["hurtable"]), -1, 2)
-  else
-    self.velocity.vely = -4
-    self.velocity.velx = 4*-self.side
   end
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
@@ -58,7 +61,6 @@ function protoChargedBuster:new(x, y, dir, wpn, roll)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(29, 8)
-  self.dink = false
   self.velocity = velocity()
   self.spd = 4
   self.velocity.velx = dir * 6
@@ -72,13 +74,17 @@ function protoChargedBuster:face(n)
   self.anim.flippedH = (n == 1) and true or false
 end
 
+function protoChargedBuster:dink(e)
+  self.velocity.vely = -4
+  self.velocity.velx = 4*-self.side
+  self.dinked = 1
+  mmSfx.play("dink")
+end
+
 function protoChargedBuster:update(dt)
   self.anim:update(1/60)
-  if not self.dink then
+  if not self.dinked then
     self:hurt(self:collisionTable(megautils.groups()["hurtable"]), -2, 2)
-  else
-    self.velocity.vely = -4
-    self.velocity.velx = 4*-self.side
   end
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
@@ -112,7 +118,6 @@ function bassBuster:new(x, y, dir, wpn, t)
   self.transform.x = x
   self:setRectangleCollision(6, 6)
   self.tex = loader.get("bass_buster")
-  self.dink = false
   self.velocity = velocity()
   self.velocity.velx = megautils.calcX(dir) * 5
   self.velocity.vely = megautils.calcY(dir) * 5
@@ -126,18 +131,22 @@ function bassBuster:recycle(x, y, dir, wpn, t)
   self.velocity.velx = megautils.calcX(dir) * 5
   self.velocity.vely = megautils.calcY(dir) * 5
   self.side = self.velocity.velx < 0 and -1 or 1
-  self.dink = false
+  self.dinked = nil
   self.transform.x = x
   self.transform.y = y
   self.treble = t
 end
 
+function bassBuster:dink(e)
+  self.velocity.vely = -4
+  self.velocity.velx = 4*-self.side
+  self.dinked = 1
+  mmSfx.play("dink")
+end
+
 function bassBuster:update(dt)
-  if not self.dink then
+  if not self.dinked then
     self:hurt(self:collisionTable(megautils.groups()["hurtable"]), self.treble and -1 or -0.5, 2)
-  else
-    self.velocity.vely = -4
-    self.velocity.velx = 4*-self.side
   end
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
@@ -171,7 +180,6 @@ function megaBuster:new(x, y, dir, wpn)
   self:setRectangleCollision(8, 6)
   self.tex = loader.get("buster_tex")
   self.quad = love.graphics.newQuad(0, 31, 8, 6, 133, 47)
-  self.dink = false
   self.velocity = velocity()
   self.velocity.velx = dir * 5
   self.side = dir
@@ -183,17 +191,21 @@ function megaBuster:recycle(x, y, dir, wpn)
   self.side = dir
   self.velocity.velx = dir * 5
   self.velocity.vely = 0
-  self.dink = false
+  self.dinked = nil
   self.transform.x = x
   self.transform.y = y
 end
 
+function megaBuster:dink(e)
+  self.velocity.vely = -4
+  self.velocity.velx = 4*-self.side
+  self.dinked = 1
+  mmSfx.play("dink")
+end
+
 function megaBuster:update(dt)
-  if not self.dink then
+  if not self.dinked then
     self:hurt(self:collisionTable(megautils.groups()["hurtable"]), -1, 2)
-  else
-    self.velocity.vely = -4
-    self.velocity.velx = 4*-self.side
   end
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
@@ -223,7 +235,6 @@ function megaSemiBuster:new(x, y, dir, wpn)
   self:setRectangleCollision(16, 10)
   self.tex = loader.get("buster_tex")
   self.anim = anim8.newAnimation(loader.get("small_charge_grid")("1-2", 1), 1/12)
-  self.dink = false
   self.velocity = velocity()
   self.velocity.velx = dir * 5
   self.side = dir
@@ -236,13 +247,17 @@ function megaSemiBuster:face(n)
   self.anim.flippedH = (n == 1) and true or false
 end
 
+function megaSemiBuster:dink(e)
+  self.velocity.vely = -4
+  self.velocity.velx = 4*-self.side
+  self.dinked = 1
+  mmSfx.play("dink")
+end
+
 function megaSemiBuster:update(dt)
   self.anim:update(1/60)
-  if not self.dink then
+  if not self.dinked then
     self:hurt(self:collisionTable(megautils.groups()["hurtable"]), -1, 2)
-  else
-    self.velocity.vely = -4
-    self.velocity.velx = 4*-self.side
   end
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
@@ -272,7 +287,6 @@ function megaChargedBuster:new(x, y, dir, wpn)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(24, 24)
-  self.dink = false
   self.velocity = velocity()
   self.spd = 4
   self.velocity.velx = dir * 5.5
@@ -286,13 +300,17 @@ function megaChargedBuster:face(n)
   self.anim.flippedH = (n == 1) and true or false
 end
 
+function megaChargedBuster:dink(e)
+  self.velocity.vely = -4
+  self.velocity.velx = 4*-self.side
+  self.dinked = 1
+  mmSfx.play("dink")
+end
+
 function megaChargedBuster:update(dt)
   self.anim:update(1/60)
-  if not self.dink then
+  if not self.dinked then
     self:hurt(self:collisionTable(megautils.groups()["hurtable"]), -2, 2)
-  else
-    self.velocity.vely = -4
-    self.velocity.velx = 4*-self.side
   end
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
@@ -340,7 +358,6 @@ function trebleBoost:new(x, y, side, player, wpn)
 end
 
 function trebleBoost:grav()
-  self:calcGrav()
   self.velocity.vely = math.clamp(self.velocity.vely+self.gravity, -7, 7)
 end
 
@@ -583,7 +600,6 @@ function rushCoil:new(x, y, side, player, w, skin)
 end
 
 function rushCoil:grav()
-  self:calcGrav()
   self.velocity.vely = math.clamp(self.velocity.vely+self.gravity, -7, 7)
 end
 
@@ -684,7 +700,6 @@ function stickWeapon:new(x, y, dir, wpn)
   self.transform.x = x
   self:setRectangleCollision(8, 6)
   self.tex = loader.get("stick_weapon")
-  self.dink = false
   self.velocity = velocity()
   self.velocity.velx = dir * 5
   self.side = dir
@@ -692,12 +707,16 @@ function stickWeapon:new(x, y, dir, wpn)
   mmSfx.play("buster")
 end
 
+function stickWeapon:dink(e)
+  self.velocity.vely = -4
+  self.velocity.velx = 4*-self.side
+  self.dinked = 1
+  mmSfx.play("dink")
+end
+
 function stickWeapon:update(dt)
-  if not self.dink then
+  if not self.dinked then
     self:hurt(self:collisionTable(megautils.groups()["hurtable"]), -8, 1)
-  else
-    self.velocity.vely = -4
-    self.velocity.velx = 4*-self.side
   end
   self:moveBy(self.velocity.velx, self.velocity.vely)
   if megautils.outside(self) then

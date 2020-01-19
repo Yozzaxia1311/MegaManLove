@@ -143,6 +143,8 @@ function megaman.properties(self, g)
   self.maxRapidShotTime = 5
   self.maxTrebleSpeed = 2
   self.trebleDecel = 0.1
+  self.protoShieldLeftCollision = {["x"]=-7, ["y"]=0, ["w"]=8, ["h"]=14}
+  self.protoShieldRightCollision = {["x"]=10, ["y"]=0, ["w"]=8, ["h"]=14}
   
   self.canJumpOutFromDash = {["global"]=true}
   self.canBackOutFromDash = {["global"]=true}
@@ -165,6 +167,7 @@ function megaman.properties(self, g)
   self.canStopJump = {["global"]=true}
   self.canStepVelocity = {["global"]=false}
   self.canIgnoreKnockback = {["global"]=false}
+  self.canProtoShield = {["global"]=globals.player[self.player] == "proto"}
 end
 
 function megaman:transferState(to)
@@ -445,6 +448,7 @@ function megaman:new(x, y, side, drop, p, g)
   self.trebleSine = 0
   self.trebleForce = velocity()
   self.alwaysMove = false
+  self.protoShielding = false
   
   self.groundUpdateFuncs = {}
   self.airUpdateFuncs = {}
@@ -484,7 +488,8 @@ function megaman:new(x, y, side, drop, p, g)
   self.dropLandAnimation = {["regular"]="spawnLand"}
   self.idleAnimation = {["regular"]="idle", ["shoot"]="idleShoot", ["s_dm"]="idleShootDM", ["s_um"]="idleShootUM", ["s_u"]="idleShootU"}
   self.nudgeAnimation = {["regular"]="nudge", ["shoot"]="idleShoot", ["s_dm"]="idleShootDM", ["s_um"]="idleShootUM", ["s_u"]="idleShootU"}
-  self.jumpAnimation = {["regular"]="jump", ["shoot"]="jumpShoot", ["s_dm"]="jumpShootDM", ["s_um"]="jumpShootUM", ["s_u"]="jumpShootU"}
+  self.jumpAnimation = {["regular"]="jump", ["shoot"]="jumpShoot", ["s_dm"]="jumpShootDM", ["s_um"]="jumpShootUM", ["s_u"]="jumpShootU",
+    ["ps"]="jumpProtoShield", ["ps2"]="jumpProtoShield2"}
   self.runAnimation = {["regular"]="run", ["shoot"]="runShoot"}
   self.climbAnimation = {["regular"]="climb", ["shoot"]="climbShoot", ["s_dm"]="climbShootDM", ["s_um"]="climbShootUM", ["s_u"]="climbShootU"}
   self.climbTipAnimation = {["regular"]="climbTip"}
@@ -519,6 +524,8 @@ function megaman:new(x, y, side, drop, p, g)
   self.animations["jumpShootUM"] = anim8.newAnimation(loader.get(pp)(2, 10), 1)
   self.animations["jumpShootU"] = anim8.newAnimation(loader.get(pp)(3, 10), 1)
   self.animations["jumpThrow"] = anim8.newAnimation(loader.get(pp)(1, 8), 1)
+  self.animations["jumpProtoShield"] = anim8.newAnimation(loader.get(pp)(3, 6), 1)
+  self.animations["jumpProtoShield2"] = anim8.newAnimation(loader.get(pp)(4, 6), 1)
   self.animations["run"] = anim8.newAnimation(loader.get(pp)(4, 1, "1-2", 2, 1, 2), 1/8)
   self.animations["runShoot"] = anim8.newAnimation(loader.get(pp)("2-4", 4, 3, 4), 1/8)
   self.animations["runThrow"] = anim8.newAnimation(loader.get(pp)("2-4", 8, 3, 8), 1/8)
@@ -889,6 +896,32 @@ function megaman:attemptClimb()
   end
 end
 
+function megaman:checkProtoShield(e, side)
+  local x, y = self.transform.x, self.transform.y
+  local w, h = self.collisionShape.w, self.collisionShape.h
+  
+  if side == -1 then
+    self.transform.x = x+self.protoShieldLeftCollision.x
+    self.transform.y = y+self.protoShieldLeftCollision.y
+    self.collisionShape.w = self.protoShieldLeftCollision.w
+    self.collisionShape.h = self.protoShieldLeftCollision.h
+  else
+    self.transform.x = x+self.protoShieldRightCollision.x
+    self.transform.y = y+self.protoShieldRightCollision.y
+    self.collisionShape.w = self.protoShieldRightCollision.w
+    self.collisionShape.h = self.protoShieldRightCollision.h
+  end
+  
+  local result = self:collision(e)
+  
+  self.transform.x = x
+  self.transform.y = y
+  self.collisionShape.w = w
+  self.collisionShape.h = h
+  
+  return result
+end
+
 function megaman:addHealth(c)
   self.changeHealth = c
   if self.changeHealth ~= 0 then
@@ -899,7 +932,11 @@ function megaman:addHealth(c)
 end
 
 function megaman:healthChanged(o, c, i)
-  if not self.control then return end
+  if not self.control or o.dinked == 2 then return end
+  if self.protoShielding and o.dink and self:checkProtoShield(o, self.side) then
+    o:dink(self)
+    return
+  end
   self:addHealth((c < 0 and (self:checkTrue(self.canBeInvincible) or self.maxIFrame ~= self.iFrame)) and 0 or c)
   if self.changeHealth < 0 then
     self.maxIFrame = i
@@ -981,6 +1018,7 @@ end
 
 function megaman:code(dt)
   self.canIgnoreKnockback["global"] = false
+  self.protoShielding = false
   self.runCheck = ((control.leftDown[self.player] and not control.rightDown[self.player]) or (control.rightDown[self.player] and not control.leftDown[self.player]))
   if self.hitTimer ~= self.maxHitTime then
     self.hitTimer = math.min(self.hitTimer+1, self.maxHitTime)
@@ -1258,6 +1296,7 @@ function megaman:code(dt)
     elseif self:checkFalse(self.canJump) and control.jumpPressed[self.player] and
       not (control[self.gravity >= 0 and "downDown" or "upDown"][self.player] and self:checkBasicSlideBox(self.side, 0)) then
       self.velocity.vely = self.jumpSpeed * (self.gravity < 0 and -1 or 1)
+      self.protoShielding = self:checkFalse(self.canProtoShield)
     else
       self.velocity.vely = 0
     end
@@ -1282,6 +1321,7 @@ function megaman:code(dt)
     end
     self:attemptClimb()
   else
+    self.protoShielding = self:checkFalse(self.canProtoShield)
     self.wallJumping = false
     local ns = control.leftDown[self.player] and -1 or (control.rightDown[self.player] and 1 or 0)
     if self.wallJumpTimer ~= 0 then
@@ -1345,6 +1385,13 @@ function megaman:code(dt)
     end
     if self:checkFalse(self.canShoot) then
       self:attemptWeaponUsage()
+    end
+  end
+  if megautils.groups()["enemyWeapon"] then
+    for k, v in ipairs(megautils.groups()["enemyWeapon"]) do
+      if self.protoShielding and not v.dinked and v.dink and self:checkProtoShield(v, self.side) then
+        v:dink(self)
+      end
     end
   end
   if #self:collisionTable(megautils.groups()["water"]) ~= 0 then
@@ -1467,7 +1514,6 @@ function megaman:charge(animOnly)
 end
 
 function megaman:grav()
-  self:calcGrav()
   if self.climb or self.slide or self.treble then return end
   if self.gravityType == 0 then
     self.velocity.vely = self.velocity.vely+self.gravity
@@ -1637,6 +1683,9 @@ function megaman:animate()
       if self:checkFalse(self.canWalk) and not self.step and self.runCheck then
         shoot = self:bassBusterAnim(shoot)
         if self.standSolidJumpTimer > 0 then
+          if self.protoShielding and shoot == "regular" then
+            shoot = "ps"
+          end
           self.curAnim = self.jumpAnimation[shoot]
         else
           self.curAnim = self.nudgeAnimation[shoot]
@@ -1650,6 +1699,9 @@ function megaman:animate()
         self.animations[self.runAnimation["regular"]]:gotoFrame(1)
         self.animations[self.runAnimation["shoot"]]:gotoFrame(1)
         if self.standSolidJumpTimer > 0 then
+          if self.protoShielding and shoot == "regular" then
+            shoot = "ps"
+          end
           self.curAnim = self.jumpAnimation[shoot]
         else
           self.curAnim = self.idleAnimation[shoot]
@@ -1660,6 +1712,9 @@ function megaman:animate()
         self.curAnim = self.wallJumpAnimation[shoot]
       else
         shoot = self:bassBusterAnim(shoot)
+        if self.protoShielding and shoot == "regular" then
+          shoot = "ps"
+        end
         self.curAnim = self.jumpAnimation[shoot]
       end
     end

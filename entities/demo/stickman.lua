@@ -37,14 +37,13 @@ function stickMan:new(x, y, s)
 end
 
 function stickMan:healthChanged(o, c, i)
-  if o.dink then return end
+  if o.dinked then return end
   if c < 0 and not o:is(megaChargedBuster) and not o:is(megaSemiBuster) then --Remove shots
     megautils.remove(o, true)
   end
   if self.maxIFrame ~= self.iFrame then return end
-  if (o:is(megaSemiBuster) or self:checkTrue(self.canBeInvincible)) and not o.dink then --Semi charged shots get reflected
-    mmSfx.play("dink")
-    o.dink = true
+  if (o:is(megaSemiBuster) or self:checkTrue(self.canBeInvincible)) and o.dink then --Semi charged shots get reflected
+    o:dink(self)
     return
   end
   if o:is(stickWeapon) then --The weakness
@@ -65,7 +64,6 @@ function stickMan:healthChanged(o, c, i)
         megautils.remove(v, true)
       end
     end
-    mmSfx.play("die")
     explodeParticle.createExplosion(self.transform.x+((self.collisionShape.w/2)-24/2),
       self.transform.y+((self.collisionShape.h/2)-24/2))
     mmMusic.stopMusic()
@@ -76,6 +74,7 @@ function stickMan:healthChanged(o, c, i)
       states.set("states/weaponget.state.lua")
     end)
     megautils.remove(self, true)
+    mmSfx.play("die")
   elseif self.changeHealth < 0 then
     megautils.add(harm, self)
     if o:is(megaChargedBuster) then
