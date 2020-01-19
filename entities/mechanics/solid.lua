@@ -112,7 +112,7 @@ function collision.entityPlatform(self)
               (v.transform.y + (v.collisionShape.h/2)))
             
             if not v:collision(self) then
-              local epIsPassenger = v:collision(self, 0, math.sign(v.gravity)*(v.ground and 1 or 0))
+              local epIsPassenger = v:collision(self, 0, (v.gravity >= 0 and 1 or -1)*(v.ground and 1 or 0))
               local epWillCollide = self:collision(v, 0, myyspeed)
               
               if epIsPassenger or epWillCollide then
@@ -123,7 +123,7 @@ function collision.entityPlatform(self)
                   v.transform.y = v.transform.y + myyspeed
                 end
                 
-                if resolid == 1 or (resolid == 2 and (epDir*math.sign(v.gravity))>0) then
+                if resolid == 1 or (resolid == 2 and (epDir*(v.gravity >= 0 and 1 or -1))>0) then
                   if v:collision(self) then
                     v.transform.y = math.round(v.transform.y)
                     v.transform.y = v.transform.y + (epDir*-0.5)
@@ -152,7 +152,7 @@ function collision.entityPlatform(self)
                   end
                 end
                 
-                if v.velocity.vely == 0 and epDir == math.sign(v.gravity) then
+                if v.velocity.vely == 0 and epDir == (v.gravity >= 0 and 1 or -1) then
                   v.ground = true
                   v.onMovingFloor = self
                 end
@@ -178,7 +178,7 @@ function collision.entityPlatform(self)
               local epDir = math.sign((self.transform.x + (self.collisionShape.w/2)) -
                 (v.transform.x + (v.collisionShape.w/2)))
               
-              if v:collision(self, 0, math.sign(v.gravity)+(v.ground and 1 or 0)) then
+              if v:collision(self, 0, (v.gravity >= 0 and 1 or -1)*(v.ground and 1 or 0)) then
                 collision.shiftObject(v, myxspeed, 0, true)
                 epIsOnPlat = true
                 v.onMovingFloor = self

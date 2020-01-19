@@ -80,11 +80,13 @@ addobjects.register("player", function(v)
   if v.properties["checkpoint"] == globals.checkpoint then
     if v.properties["individual"] then
       if v.properties["individual"] <= globals.playerCount then
-        megautils.add(megaman, v.x, v.y-5, v.properties["side"], v.properties["drop"], v.properties["individual"], v.properties["grav"])
+        megautils.add(megaman, v.x, v.y+((v.properties["grav"] == nil or v.properties["grav"] >= 0) and -5 or 0),
+          v.properties["side"], v.properties["drop"], v.properties["individual"], v.properties["grav"])
       end
     else
       for i=1, globals.playerCount do
-        megautils.add(megaman, v.x, v.y-5, v.properties["side"], v.properties["drop"], i, v.properties["grav"])
+        megautils.add(megaman, v.x, v.y+((v.properties["grav"] == nil or v.properties["grav"] >= 0) and -5 or 0),
+          v.properties["side"], v.properties["drop"], i, v.properties["grav"])
       end
     end
   end
@@ -367,7 +369,7 @@ function megaman:new(x, y, side, drop, p, g)
   end
   self.teleportOffY = 0
   self.side = side or 1
-  self.transform.y = y + (self.gravity >= 0 and 0 or 5)
+  self.transform.y = y
   self.transform.x = x
   self.class = megaman
   self.icoTex = loader.get("weapon_select_icon")
@@ -746,11 +748,11 @@ function megaman:attemptWeaponUsage()
       if self.treble == 2 then
         if (not megautils.groups()["bassBuster" .. w.id] or
           #megautils.groups()["bassBuster" .. w.id] < 1) then
-          megautils.add(bassBuster, self.transform.x+(self.side==1 and 16 or -14), self.transform.y+5,
+          megautils.add(bassBuster, self.transform.x+(self.side==1 and 16 or -14), self.transform.y+(self.gravity >= 0 and 5 or 10),
             self.side==1 and 0 or 180, w, true)
-          megautils.add(bassBuster, self.transform.x+(self.side==1 and 16 or -14), self.transform.y+5,
+          megautils.add(bassBuster, self.transform.x+(self.side==1 and 16 or -14), self.transform.y+(self.gravity >= 0 and 5 or 10),
             self.side==1 and 45 or 180+45, w, true)
-          megautils.add(bassBuster, self.transform.x+(self.side==1 and 16 or -14), self.transform.y+5,
+          megautils.add(bassBuster, self.transform.x+(self.side==1 and 16 or -14), self.transform.y+(self.gravity >= 0 and 5 or 10),
             self.side==1 and -45 or 180-45, w, true)
           self.maxShootTime = 14
           self.shootTimer = 0
@@ -1025,6 +1027,7 @@ function megaman:code(dt)
       if self.animations["trebleStart"].looped then
         self.treble = 2
         self.trebleTimer = 0
+        self.canBeInvincible["treble"] = false
       elseif self.animations["trebleStart"].position == 4 and self.trebleTimer == 0 then
         self.trebleTimer = 1
         mmSfx.play("treble_start")
@@ -1232,7 +1235,7 @@ function megaman:code(dt)
       self.step = false
     end
     if self:checkFalse(self.canDash) and (control.dashPressed[self.player] or
-      ((self.gravity >= 0 and control.downDown[self.player] or control.upDown[self.player]) and control.jumpPressed[self.player])) and
+      (control[self.gravity >= 0 and "downDown" or "upDown"][self.player] and control.jumpPressed[self.player])) and
       not self:checkBasicSlideBox(self.side, 0) then
       if self.shootTimer ~= self.maxShootTime then
         self.animations[self.dashAnimation["regular"]]:gotoFrame(
@@ -1253,7 +1256,7 @@ function megaman:code(dt)
       self.velocity.vely = self.jumpSpeed * (self.gravity < 0 and -1 or 1)
       self.standSolidJumpTimer = math.min(self.standSolidJumpTimer+1, self.maxStandSolidJumpTime)
     elseif self:checkFalse(self.canJump) and control.jumpPressed[self.player] and
-      not ((self.gravity >= 0 and control.downDown[self.player] or control.upDown[self.player]) and self:checkBasicSlideBox(self.side, 0)) then
+      not (control[self.gravity >= 0 and "downDown" or "upDown"][self.player] and self:checkBasicSlideBox(self.side, 0)) then
       self.velocity.vely = self.jumpSpeed * (self.gravity < 0 and -1 or 1)
     else
       self.velocity.vely = 0
@@ -1474,7 +1477,7 @@ function megaman:grav()
 end
 
 function megaman:phys()
-  self.velocity.vely = self.gravity > 0 and math.min(self.maxAirSpeed, self.velocity.vely) or math.max(-self.maxAirSpeed, self.velocity.vely)
+  self.velocity.vely = self.gravity >= 0 and math.min(self.maxAirSpeed, self.velocity.vely) or math.max(-self.maxAirSpeed, self.velocity.vely)
   collision.doCollision(self)
   if self.blockCollision and self:checkFalse(self.canDieFromSpikes) and
     (self.xcoll ~= 0 or self.ycoll ~= 0 or (self.ground and self.gravity ~= 0)) then

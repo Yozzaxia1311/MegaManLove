@@ -336,6 +336,12 @@ function trebleBoost:new(x, y, side, player, wpn)
   self.player = player
   self.blockCollision = true
   self.timer = 0
+  self.gravityMultipliers["global"] = self.player.gravity >= 0 and 1 or -1
+end
+
+function trebleBoost:grav()
+  self:calcGrav()
+  self.velocity.vely = math.clamp(self.velocity.vely+self.gravity, -7, 7)
 end
 
 function trebleBoost:face(n)
@@ -395,6 +401,8 @@ function trebleBoost:update(dt)
     end
   end
   self:face(self.side)
+  self.gravityMultipliers["global"] = self.player.gravity >= 0 and 1 or -1
+  self.anims[self.c].flippedV = self.gravity < 0
   if megautils.outside(self) then
     megautils.remove(self, true)
   end
@@ -402,7 +410,7 @@ end
 
 function trebleBoost:draw()
   love.graphics.setColor(1, 1, 1, 1)
-  self.anims[self.c]:draw(self.tex, math.round(self.transform.x-6), math.round(self.transform.y-12))
+  self.anims[self.c]:draw(self.tex, math.round(self.transform.x-6), math.round(self.transform.y-12+(self.gravity >= 0 and 0 or 11)))
 end
 
 rushJet = entity:extend()
@@ -483,7 +491,7 @@ function rushJet:update(dt)
       end
     else
       self.velocity.vely = 0
-      if self.player.ground and self.player:collision(self, 0, self.player.gravity < 0 and -1 or 1) and
+      if self.player.ground and self.player:collision(self, 0, self.player.gravity >= 0 and 1 or -1) and
       not self.player:collision(self) then
         self.s = 3
         self.velocity.velx = self.side
@@ -493,13 +501,13 @@ function rushJet:update(dt)
     end
     collision.doCollision(self)
     if self.playerOn and (not self.player.ground or
-      not (self.player:collision(self, 0, self.player.gravity < 0 and -1 or 1) and
+      not (self.player:collision(self, 0, self.player.gravity >= 0 and 1 or -1) and
       not self.player:collision(self))) then
       self.player.canWalk["rj"] = true
       self.playerOn = false
     end
     if self.xcoll ~= 0 or
-      (self.playerOn and collision.checkSolid(self.player, 0, self.player.gravity < 0 and 4 or -4)) then
+      (self.playerOn and collision.checkSolid(self.player, 0, self.player.gravity >= 0 and -4 or 4)) then
       if self.playerOn then self.player.canWalk["rj"] = true end
       self.c = "spawn_land"
       self.anims["spawn_land"]:gotoFrame(1)
@@ -521,6 +529,7 @@ function rushJet:update(dt)
     self:moveBy(0, -8)
   end
   self:face(self.side)
+  self.anims[self.c].flippedV = self.player.gravity < 0
   if megautils.outside(self) then
     megautils.remove(self, true)
   end
@@ -533,7 +542,7 @@ end
 function rushJet:draw()
   love.graphics.setColor(1, 1, 1, 1)
   if self.c == "spawn" or self.c == "spawn_land" then
-    self.anims[self.c]:draw(self.tex, math.round(self.transform.x-4), math.round(self.transform.y-16))
+    self.anims[self.c]:draw(self.tex, math.round(self.transform.x-4), math.round(self.transform.y+(self.player.gravity >= 0 and -16 or -6)))
   else
     self.anims[self.c]:draw(self.tex, math.round(self.transform.x-4), math.round(self.transform.y-12))
   end
@@ -570,10 +579,11 @@ function rushCoil:new(x, y, side, player, w, skin)
   self.wpn = w
   self.blockCollision = true
   self.player = player
-  self.gravity = 0.25
+  self.gravityMultipliers["global"] = self.player.gravity >= 0 and 1 or -1
 end
 
 function rushCoil:grav()
+  self:calcGrav()
   self.velocity.vely = math.clamp(self.velocity.vely+self.gravity, -7, 7)
 end
 
@@ -609,12 +619,12 @@ function rushCoil:update(dt)
     end
   elseif self.s == 3 then
     collision.doCollision(self)
-    if not self.player.climb and self.player.velocity.vely > 0 and
+    if not self.player.climb and (self.player.gravity >= 0 and (self.player.velocity.vely > 0) or (self.player.velocity.vely < 0)) and
       math.between(self.player.transform.x+self.player.collisionShape.w/2,
       self.transform.x, self.transform.x+self.collisionShape.w) and
       self.player:collision(self) then
       self.player.canStopJump["global"] = false
-      self.player.velocity.vely = -7.5 * (self.player.gravity < 0 and -1 or 1)
+      self.player.velocity.vely = -7.5 * (self.player.gravity >= 0 and 1 or -1)
       self.player.step = false
       self.player.stepTime = 0
       self.player.ground = false
@@ -647,6 +657,8 @@ function rushCoil:update(dt)
     self:moveBy(0, -8)
   end
   self:face(self.side)
+  self.gravityMultipliers["global"] = self.player.gravity >= 0 and 1 or -1
+  self.anims[self.c].flippedV = self.gravity < 0
   if megautils.outside(self) then
     megautils.remove(self, true)
   end
@@ -654,7 +666,7 @@ end
 
 function rushCoil:draw()
   love.graphics.setColor(1, 1, 1, 1)
-  self.anims[self.c]:draw(self.tex, math.round(self.transform.x-8), math.round(self.transform.y-12))
+  self.anims[self.c]:draw(self.tex, math.round(self.transform.x-8), math.round(self.transform.y-12+(self.gravity >= 0 and 0 or 11)))
 end
 
 stickWeapon = entity:extend()

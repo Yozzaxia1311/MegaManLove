@@ -400,10 +400,10 @@
   <object id="135" name="solid" x="400" y="864" width="192" height="32"/>
   <object id="136" name="solid" x="368" y="864" width="16" height="32"/>
   <object id="139" name="space" x="416" y="528" width="64" height="112"/>
-  <object id="142" name="player" x="368" y="256" width="16" height="16">
+  <object id="142" name="player" x="64" y="400" width="16" height="16">
    <properties>
     <property name="checkpoint" value="start"/>
-    <property name="grav" type="int" value="-1"/>
+    <property name="grav" type="int" value="1"/>
     <property name="individual" type="int" value="1"/>
    </properties>
   </object>
