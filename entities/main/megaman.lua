@@ -144,13 +144,12 @@ function megaman.properties(self, g)
   self.maxTrebleSpeed = 2
   self.trebleDecel = 0.1
   if megautils.diff("easy") then
-    self.protoShieldLeftCollision = {x=-7, y=0, w=8, h=20}
-    self.protoShieldRightCollision = {x=10, y=0, w=8, h=20}
+    self.protoShieldLeftCollision = {x=-7, y=0, w=8, h=20, goy=2}
+    self.protoShieldRightCollision = {x=10, y=0, w=8, h=20, goy=2}
   else
-    self.protoShieldLeftCollision = {x=-7, y=0, w=8, h=14}
-    self.protoShieldRightCollision = {x=10, y=0, w=8, h=14}
+    self.protoShieldLeftCollision = {x=-7, y=0, w=8, h=14, goy=8}
+    self.protoShieldRightCollision = {x=10, y=0, w=8, h=14, goy=8}
   end
-  
   self.canJumpOutFromDash = {global=true}
   self.canBackOutFromDash = {global=true}
   self.canSwitchWeapons = {global=true}
@@ -910,12 +909,12 @@ function megaman:checkProtoShield(e, side)
   
   if side == -1 then
     self.transform.x = x+self.protoShieldLeftCollision.x
-    self.transform.y = y+self.protoShieldLeftCollision.y
+    self.transform.y = y+self.protoShieldLeftCollision.y+(self.gravity >= 0 and 0 or self.protoShieldLeftCollision.goy)
     self.collisionShape.w = self.protoShieldLeftCollision.w
     self.collisionShape.h = self.protoShieldLeftCollision.h
   else
     self.transform.x = x+self.protoShieldRightCollision.x
-    self.transform.y = y+self.protoShieldRightCollision.y
+    self.transform.y = y+self.protoShieldRightCollision.y+(self.gravity >= 0 and 0 or self.protoShieldRightCollision.goy)
     self.collisionShape.w = self.protoShieldRightCollision.w
     self.collisionShape.h = self.protoShieldRightCollision.h
   end
