@@ -61,9 +61,10 @@ function met:healthChanged(o, c, i)
     else
       self.changeHealth = megautils.diffValue(-0.5, {easy=-1})
     end
+  else
+    self.changeHealth = c
   end
   
-  self.changeHealth = c
   self.health = self.health + self.changeHealth
   self.maxIFrame = i
   self.iFrame = 0
