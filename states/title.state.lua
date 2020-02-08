@@ -54,7 +54,7 @@ function title:update(dt)
       megautils.add(fade, true, nil, nil, function(s)
           mmMusic.lock = true
           control.returning = function()
-              megautils.add(fade, true, nil, nil, function(s) megautils.resetGame() states.set("states/title.state.lua") end)
+              megautils.add(fade, true, nil, nil, function(s) megautils.resetGame("states/title.state.lua", false, true) end)
             end
           states.set()
         end)

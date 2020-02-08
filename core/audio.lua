@@ -11,6 +11,19 @@ function mmSfx.stop(s)
   loader.get(s):stop()
 end
 
+function mmSfx.stopAll()
+  for k, v in pairs(loader.resources) do
+    if v.type and v:type() == "Source" then
+      v:stop()
+    end
+  end
+  for k, v in pairs(loader.locked) do
+    if v.type and v:type() == "Source" then
+      v:stop()
+    end
+  end
+end
+
 mmMusic = class:extend()
 
 mmMusic.cur = nil
