@@ -35,6 +35,7 @@ end
 
 function smallHealth:grav()
   self.velocity.vely = self.velocity.vely + self.gravity
+  self.velocity:clamp(7)
 end
 
 function smallHealth:update(dt)
@@ -129,6 +130,7 @@ end
 
 function health:grav()
   self.velocity.vely = self.velocity.vely + self.gravity
+  self.velocity:clamp(7)
 end
 
 function health:update(dt)
@@ -224,6 +226,7 @@ end
 
 function smallEnergy:grav()
   self.velocity.vely = self.velocity.vely + self.gravity
+  self.velocity:clamp(7)
 end
 
 function smallEnergy:update(dt)
@@ -328,6 +331,7 @@ end
 
 function energy:grav()
   self.velocity.vely = self.velocity.vely + self.gravity
+  self.velocity:clamp(7)
 end
 
 function energy:update(dt)
@@ -438,6 +442,7 @@ end
 
 function life:grav()
   self.velocity.vely = self.velocity.vely + self.gravity
+  self.velocity:clamp(7)
 end
 
 function life:update(dt)
@@ -572,6 +577,7 @@ end
 
 function eTank:grav()
   self.velocity.vely = self.velocity.vely + self.gravity
+  self.velocity:clamp(7)
 end
 
 function eTank:update(dt)
@@ -676,6 +682,7 @@ end
 
 function wTank:grav()
   self.velocity.vely = self.velocity.vely + self.gravity
+  self.velocity:clamp(7)
 end
 
 function wTank:update(dt)
