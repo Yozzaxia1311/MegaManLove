@@ -20,7 +20,7 @@ function states.set(n, s, after)
   end
   if states.openRecord then
     control.resetRec()
-    control.record = table.stringtonumberkeys(save.load(states.openRecord))
+    control.record = save.load(states.openRecord)
     nick = control.record.state
     states.openRecord = nil
     globals = control.record.globals

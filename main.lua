@@ -66,7 +66,7 @@ function love.load()
   
   local data = save.load("main.sav") or {}
   if data.fullscreen then
-    convar.setValue("fullscreen", data.fullscreen, true)
+    megautils.setFullscreen(true)
   end
   states.set("states/disclaimer.state.lua")
   console.parse("exec autoexec")
@@ -155,13 +155,9 @@ function love.update(dt)
   if love.keyboard then
     if (love.keyboard.isDown("ralt") or love.keyboard.isDown("lalt")) and love.keyboard.isDown("return") then
       if not altEnterOnce then
-        if convar.getNumber("fullscreen") == 1 then
-          convar.setValue("fullscreen", 0, true)
-        else
-          convar.setValue("fullscreen", 1, true)
-        end
+        megautils.setFullscreen(not megautils.getFullscreen())
         local data = save.load("main.sav") or {}
-        data.fullscreen = convar.getNumber("fullscreen")
+        data.fullscreen = megautils.getFullscreen()
         save.save("main.sav", data)
       end
       altEnterOnce = 10

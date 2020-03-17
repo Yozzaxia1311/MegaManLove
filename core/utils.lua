@@ -30,38 +30,6 @@ function table.convert1Dto2D(t, w)
   return tmp
 end
 
-function table.numbertostringkeys(t)
-  local result = {}
-  for k, v in pairs(t) do
-    if type(v) == "table" then
-      result[k] = table.numbertostringkeys(v)
-    else
-      result[k] = v
-    end
-    if type(k) == "number" then
-      result[tostring(k)] = result[k]
-      result[k] = nil
-    end
-  end
-  return result
-end
-
-function table.stringtonumberkeys(t)
-  local result = {}
-  for k, v in pairs(t) do
-    if type(v) == "table" then
-      result[k] = table.stringtonumberkeys(v)
-    else
-      result[k] = v
-    end
-    if type(k) == "string" and tonumber(k) then
-      result[tonumber(k)] = result[k]
-      result[k] = nil
-    end
-  end
-  return result
-end
-
 function iterateDirs(func, path)
   local results = {}
   path = path or ""

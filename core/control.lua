@@ -377,7 +377,7 @@ end
 
 function control.finishRecord()
   control.recordInput = false
-  local result =  table.numbertostringkeys(control.record)
+  local result = control.record
   result.last = control.recPos
   result.globals = control.record.globals
   result.seed = control.record.seed

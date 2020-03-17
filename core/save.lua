@@ -1,6 +1,6 @@
 save = {}
 
-save.compress = false
+save.compress = true
 
 function save.createDirChain(p)
   local part = p:split("/")
@@ -23,7 +23,7 @@ function save.createDirChain(p)
 end
 
 function save.save(file, data)
-  local sv = json.encode(data)
+  local sv = binser.serialize(data)
   if save.compress then
     sv = love.data.compress("string", "zlib", sv)
   end
@@ -39,5 +39,5 @@ function save.load(file)
   if save.compress then
     sv = love.data.decompress("string", "zlib", sv)
   end
-  return json.decode(sv)
+  return unpack(binser.deserialize(sv))
 end

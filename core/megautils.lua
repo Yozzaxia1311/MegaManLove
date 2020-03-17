@@ -3,6 +3,14 @@ megautils = {}
 megautils.resetStateFuncs = {}
 megautils.cleanFuncs = {}
 
+function megautils.setFullscreen(what)
+  convar.setValue("fullscreen", what and 1 or 0, true)
+end
+
+function megautils.getFullscreen()
+  return convar.getNumber("fullscreen") == 1
+end
+
 function megautils.enableConsole()
   useConsole = true
 end
