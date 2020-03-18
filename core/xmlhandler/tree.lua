@@ -95,11 +95,10 @@ function tree:reduce(node, key, parent)
             self:reduce(v,k,node)
         end
     end
-    if #node == 1 and not self.options.noreduce[key] and 
-        node._attr == nil then
+    if #node == 1 and node._n then
         parent[key] = node[1]
     else
-        node.n = nil
+        node._n = nil
     end
 end
 
@@ -108,10 +107,11 @@ end
 -- where name is the name of the tag and attrs
 -- is a table containing the atributtes of the tag
 function tree:starttag(tag)
-    local node = {}
-    if self.parseAttributes == true then
-        node._attr=tag.attrs
-    end
+    local node = tag.attrs or {}
+    --print(inspect(node))
+    --if self.parseAttributes == true then
+    --    node._attr=tag.attrs
+    --end
 
     --Table in the stack representing the tag being processed
     local current = self._stack[#self._stack]
@@ -119,7 +119,7 @@ function tree:starttag(tag)
     if current[tag.name] then
         table.insert(current[tag.name], node)
     else
-        current[tag.name] = {node; n=1}
+        current[tag.name] = {node; _n=1}
     end
 
     table.insert(self._stack, node)
@@ -151,6 +151,10 @@ end
 function tree:text(text)
     local current = self._stack[#self._stack]
     table.insert(current, text)
+end
+
+function tree:getResult()
+  return self.root
 end
 
 ---Parses CDATA tag content.

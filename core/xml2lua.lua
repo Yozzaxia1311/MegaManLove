@@ -79,7 +79,7 @@ local xml2lua = {
 --@author Paul Chakravarti (paulc@passtheaardvark.com)
 --@author Manoel Campos da Silva Filho
 
-local XmlParser = require("XmlParser")
+local XmlParser = require("core/XmlParser")
 
 ---Recursivelly prints a table in an easy-to-ready format
 --@param tb The table to be printed

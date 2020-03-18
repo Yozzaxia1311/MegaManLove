@@ -714,10 +714,117 @@ function Map:draw()
   end
 end
 
--- Loads a Tiled map from a lua file.
+local function finalXML2LuaTable(data, f)
+  local tmp = string.split(f, "/")
+  tmp = tmp[#tmp]:len()
+  local path = f:sub(0, -tmp-1)
+  local tsx = {}
+  local result = table.clone(data.map)
+  
+  result.tilesets = result.tileset
+  result.tileset = nil
+  
+  result.compressionLevel = nil
+  result.height = tonumber(result.height)
+  result.width = tonumber(result.width)
+  result.infinite = nil
+  result.editorsettings = nil
+  result.nextlayerid = tonumber(result.nextlayerid)
+  result.nextobjectid = tonumber(result.nextobjectid)
+  result.luaversion = "5.1"
+  result.tileheight = tonumber(result.tileheight)
+  result.tilewidth = tonumber(result.tilewidth)
+  
+  if result.layer then
+    for k, v in pairs(result.layer) do
+      v.type = "tilelayer"
+
+      if v.data then
+        if v.data.encoding then
+          v.encoding = v.data.encoding
+          v.data.encoding = nil
+        end
+        if v.data.compression then
+          v.compression = v.data.compression
+          v.data.compression = nil
+        end
+          
+        if v.data.chunk then
+          v.chunks = v.data.chunk
+          v.data.chunk = nil
+          
+          for i, j in pairs(v.chunks) do
+            j.data = j[1]
+            j[1] = nil
+          end
+          
+          v.data = nil
+          
+          if v.encoding  == "csv" then
+            for i, j in pairs(v.chunks) do
+              local full = string.split(j.data, "\r\n")
+              j.data = ""
+              for o, p in ipairs(full) do
+                j.data = j.data .. p
+              end
+              j.data = string.split(j.data, ",")
+              for o, p in ipairs(j.data) do
+                j.data[o] = tonumber(p)
+              end
+            end
+          end
+        else
+          if v.encoding == "csv" then
+            local full = string.split(v.data[1], "\r\n")
+            v.data[1] = ""
+            for i, j in ipairs(full) do
+              v.data[1] = v.data[1] .. j
+            end
+          end
+          v.data = v.data[1]
+          if v.encoding == "csv" then
+            v.data = string.split(v.data, ",")
+            for i, j in ipairs(v.data) do
+              v.data[i] = tonumber(j)
+            end
+          end
+        end
+        
+        v.x = tonumber(v.x) or 0
+        v.y = tonumber(v.y) or 0
+        v.visible = v.visible == nil or v.visible == "1"
+        v.opacity = tonumber(v.opacity) or 1
+        v.offsetx = tonumber(v.offsetx) or 0
+        v.offsety = tonumber(v.offsety) or 0
+        v.width = tonumber(v.width) or 0
+        v.height = tonumber(v.height) or 0
+        v.id = tonumber(id) or 0
+        
+        v.properties = v.properties or {}
+        local ref = v.properties
+        v.properties = {}
+        if ref.property then
+          for i, j in pairs(ref.property) do
+            if j.type == "int" or j.type == "float" then
+              v.properties[j.name] = tonumber(j.value)
+            elseif j.type == "bool" then
+              v.properties[j.name] = j.value == "true"
+            else
+              v.properties[j.name] = j.value
+            end
+          end
+        end
+      end
+    end
+  end
+  print(inspect(result))
+end
+
+-- Loads a Tiled map from a tmx file.
 function cartographer.load(path)
   if not path then error('No map path provided', 2) end
-  local map = setmetatable(love.filesystem.load(path)(), Map)
+  finalXML2LuaTable(xml2lua:parse(love.filesystem.read(path)), path)
+  local map = setmetatable(nil, Map)
   map:_init(path)
   return map
 end

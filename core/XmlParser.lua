@@ -431,6 +431,8 @@ function XmlParser:parse(xml, parseAttributes)
         parseTagType(self, xml, f)
         f.pos = f.endMatch + 1
     end
+    
+    return self.handler:getResult()
 end
 
 XmlParser.__index = XmlParser
