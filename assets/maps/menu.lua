@@ -8,8 +8,8 @@ return {
   height = 28,
   tilewidth = 8,
   tileheight = 8,
-  nextlayerid = 5,
-  nextobjectid = 29,
+  nextlayerid = 7,
+  nextobjectid = 33,
   properties = {},
   tilesets = {
     {
@@ -106,6 +106,31 @@ return {
       }
     },
     {
+      type = "group",
+      id = 6,
+      name = "Group 1",
+      visible = true,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      properties = {
+        ["dfdf"] = false
+      },
+      layers = {
+        {
+          type = "imagelayer",
+          id = 5,
+          name = "Image Layer 1",
+          visible = true,
+          opacity = 1,
+          offsetx = 0,
+          offsety = 0,
+          image = "tilesets/menu_tiled.png",
+          properties = {}
+        }
+      }
+    },
+    {
       type = "tilelayer",
       id = 2,
       name = "bg2",
@@ -153,16 +178,21 @@ return {
       properties = {},
       objects = {
         {
-          id = 28,
+          id = 32,
           name = "",
           type = "",
-          shape = "rectangle",
-          x = 216,
-          y = 88,
-          width = 16,
-          height = 16,
+          shape = "polygon",
+          x = 224,
+          y = 104,
+          width = 0,
+          height = 0,
           rotation = 0,
           visible = true,
+          polygon = {
+            { x = 0, y = 0 },
+            { x = -32, y = 40 },
+            { x = 16, y = 48 }
+          },
           properties = {}
         }
       }

@@ -714,403 +714,338 @@ function Map:draw()
   end
 end
 
-local function finalXML2LuaTable(data, f)
-  local tmp = string.split(f, "/")
-  tmp = tmp[#tmp]:len()
-  local path = f:sub(0, -tmp-1)
-  local result = data.map
-  
-  if result.tileset then
-    if not (type(result.tileset[1]) == "table" and type(result.tileset[2]) == "table") then
-      result.tileset = {result.tileset}
-    end
-    result.tilesets = result.tileset
-    result.tileset = nil
-    
-    for k, v in pairs(result.tilesets) do
-      v.firstgid = tonumber(v.firstgid)
-      if not love.filesystem.getInfo(path .. v.source) then
-        error("No such tileset '" .. v.source .. "'")
-      end
-      
-      local ts = xml2lua:parse(love.filesystem.read(path .. v.source)).tileset
-      
-      ts.filename = v.source
-      ts.columns = tonumber(ts.columns)
-      ts.tilecount = tonumber(ts.tilecount)
-      ts.tilewidth = tonumber(ts.tilewidth)
-      ts.tileheight = tonumber(ts.tileheight)
-      ts.spacing = tonumber(ts.spacing) or 0
-      ts.margin = tonumber(ts.margin) or 0
-      
-      if ts.grid then
-        ts.grid.width = tonumber(ts.grid.width)
-        ts.grid.height = tonumber(ts.grid.height)
-      else
-        ts.grid = {width=ts.tilewidth, height=ts.tileheight, orientation="orthogonal"}
-      end
-      
-      if ts.tileoffset then
-        ts.tileoffset.x = tonumber(ts.tileoffset.x)
-        ts.tileoffset.y = tonumber(ts.tileoffset.y)
-      else
-        ts.tileoffset = {x=0, y=0}
-      end
-      
-      if ts.image then
-        tmp = ts.image
-        ts.image = tmp.source
-        ts.imagewidth = tmp.width
-        ts.imageheight = tmp.height
-      end
-      
-      ts.properties = ts.properties or {}
-      local ref = ts.properties
-      ts.properties = {}
-      
-      if ref.property then
-        if not (type(ref.property[1]) == "table" and type(ref.property[2]) == "table") then
-          ref.property = {ref.property}
-        end
-        
-        for o, p in pairs(ref.property) do
-          if p.type == "int" or p.type == "float" then
-            ts.properties[p.name] = tonumber(p.value)
-          elseif p.type == "bool" then
-            ts.properties[p.name] = p.value == "true"
-          else
-            ts.properties[p.name] = p.value
+local function finalXML2LuaTable(str, f)
+  local function layerGroupParenting(str, f, recur)
+    local layerOrder = {}
+    for word in string.gmatch(str, "<(.-)>") do
+      if word:sub(1, 5) == "layer" or word:sub(1, 11) == "objectgroup" or word:sub(1, 10) == "imagelayer" then
+        for k, v in pairs(string.split(word, " ")) do
+          if v:sub(0, 2) == "id" then
+            layerOrder[#layerOrder+1] = tonumber(string.split(v, "=")[2]:sub(2, 2))
           end
         end
       end
-      
-      ts.terraintypes = ts.terraintypes or {}
-      ref = ts.terraintypes
-      ts.terraintypes = nil
-      ts.terrains = {}
-      if ref.terrain then
-        if not (type(ref.terrain[1]) == "table" and type(ref.terrain[2]) == "table") then
-          ref.terrain = {ref.terrain}
-        end
-        
-        for o, p in pairs(ref.terrain) do
-          p.tile = tonumber(p.tile)
-          
-          p.properties = p.properties or {}
-          local ref2 = p.properties
-          p.properties = {}
-          if ref2.property then
-            if not (type(ref2.property[1]) == "table" and type(ref2.property[2]) == "table") then
-              ref2.property = {ref2.property}
-            end
-            
-            for o2, p2 in pairs(ref2.property) do
-              if p2.type == "int" or p2.type == "float" then
-                p.properties[p2.name] = tonumber(p2.value)
-              elseif p2.type == "bool" then
-                p.properties[p2.name] = p2.value == "true"
-              else
-                p.properties[p2.name] = p2.value
-              end
-            end
-          end
-          
-          ts.terrains[#ts.terrains+1] = p
-        end
-      end
-      
-      if ts.tile then
-        ts.tiles = ts.tile
-        ts.tile = nil
-        if not (type(ts.tiles[1]) == "table" and type(ts.tiles[2]) == "table") then
-          ts.tiles = {ts.tiles}
-        end
-        
-        for o, p in pairs(ts.tiles) do
-          p.id = tonumber(p.id)
-          p.probability = tonumber(p.probability)
-          
-          if p.properties then
-            if not (type(p.properties.property[1]) == "table" and type(p.properties.property[2]) == "table") then
-              p.properties.property = {p.properties.property}
-            end
-            
-            local ref = p.properties.property
-            p.properties = {}
-            
-            for o2, p2 in pairs(ref) do
-              if p2.type == "int" or p2.type == "float" then
-                p.properties[p2.name] = tonumber(p2.value)
-              elseif p2.type == "bool" then
-                p.properties[p2.name] = p2.value == "true"
-              else
-                p.properties[p2.name] = p2.value
-              end
-            end
-          end
-          
-          if p.terrain then
-            p.terrain = string.split(p.terrain, ",")
-            for o2, p2 in pairs(p.terrain) do
-              p.terrain[o2] = tonumber(p.terrain[o2]) or -1
-            end
-          end
-          
-          if p.animation then
-            if not (type(p.animation.frame[1]) == "table" and type(p.animation.frame[2]) == "table") then
-              p.animation.frame = {p.animation.frame}
-            end
-            
-            for o2, p2 in pairs(p.animation.frame) do
-              p2.duration = tonumber(p2.duration)
-              p2.tileid = tonumber(p2.tileid)
-            end
-            
-            p.animation = p.animation.frame
-            p.animation.frame = nil
-          end
-          
-        end
-      end
-      
-      ts.firstgid = v.firstgid
-      ts.firstgid = nil
-      ts.version = nil
-      ts.tiledversion = nil
-      
-      result.tilesets[k] = ts
-    end
-  end
-  
-  result.compressionLevel = nil
-  result.height = tonumber(result.height)
-  result.width = tonumber(result.width)
-  result.infinite = nil
-  result.editorsettings = nil
-  result.nextlayerid = tonumber(result.nextlayerid)
-  result.nextobjectid = tonumber(result.nextobjectid)
-  result.luaversion = "5.1"
-  result.tileheight = tonumber(result.tileheight)
-  result.tilewidth = tonumber(result.tilewidth)
-  
-  if result.objectgroup then
-    if not (type(result.objectgroup[1]) == "table" and type(result.objectgroup[2]) == "table") then
-      result.objectgroup = {result.objectgroup}
     end
     
-    for k, v in pairs(result.objectgroup) do
-      v.type = "objectgroup"
-      v.id = tonumber(v.id)
-      v.visible = v.visible ~= "0"
-      v.opacity = tonumber(v.opacity) or 1
-      v.offsetx = tonumber(v.offsetx) or 0
-      v.offsety = tonumber(v.offsety) or 0
-      v.draworder = v.draworder or "topdown"
-      
-      if not (type(v.object[1]) == "table" and type(v.object[2]) == "table") then
-        v.object = {v.object}
-      end
-      v.objects = v.object
-      v.object = nil
-      
-      local function templateParenting(j, fcache)
-        local tf = {}
-        
-        if j.template then
-          if not fcache[path .. j.template] then
-            if not love.filesystem.getInfo(path .. j.template) then
-              error("No such template file '" .. j.template .. "'")
-            end
-            fcache[path .. j.template] = xml2lua:parse(love.filesystem.read(path .. j.template)).template
-          end
-          tf = templateParenting(fcache[path .. j.template], fcache)
+    local tlo = {}
+    for i=#layerOrder, 1, -1 do
+      tlo[#tlo+1] = layerOrder[i]
+    end
+    layerOrder = tlo
+    
+    local data = xml2lua:parse(str)
+    local tmp = string.split(f, "/")
+    tmp = tmp[#tmp]:len()
+    local path = f:sub(0, -tmp-1)
+    local result = data.map
+    
+    if not recur then
+      result.compressionLevel = nil
+      result.height = tonumber(result.height)
+      result.width = tonumber(result.width)
+      result.infinite = nil
+      result.editorsettings = nil
+      result.nextlayerid = tonumber(result.nextlayerid)
+      result.nextobjectid = tonumber(result.nextobjectid)
+      result.luaversion = "5.1"
+      result.tileheight = tonumber(result.tileheight)
+      result.tilewidth = tonumber(result.tilewidth)
+    
+      if result.tileset then
+        if not (type(result.tileset[1]) == "table" and type(result.tileset[2]) == "table") then
+          result.tileset = {result.tileset}
         end
+        result.tilesets = result.tileset
+        result.tileset = nil
         
-        j.type = j.type == nil and (tf.type == nil and "" or tf.type) or j.type
-        j.name = j.name == nil and (tf.name == nil and "" or tf.name) or j.name
-        j.width = tonumber(j.width) or tonumber(tf.width) or 0
-        j.height = tonumber(j.height) or tonumber(tf.height) or 0
-        j.x = tonumber(j.x) or tonumber(tf.x)
-        j.y = tonumber(j.y) or tonumber(tf.y)
-        j.rotation = tonumber(j.rotation) or tonumber(tf.rotation) or 0
-        j.visible = j.visible == nil and tf.visible == "1" or j.visible == "1"
-        j.id = tonumber(j.id) or tonumber(tf.id)
-        
-        if not j.point then
-          j.point = tf.point
-        elseif not j.ellipse then
-          j.ellipse = tf.ellipse
-        elseif not j.polyline then
-          j.polyline = tf.polyline
-        elseif not j.polygon then
-          j.polygon = tf.polygon
-        end
-        
-        if j.point then
-          j.point = nil
-          j.shape = "point"
-        elseif j.ellipse then
-          j.ellipse = nil
-          j.shape = "ellipse"
-        elseif j.polyline then
-          j.shape = "polyline"
-          
-          j.polyline = string.split(j.polyline.points, " ")
-          local ptmp = {}
-          for o, p in pairs(j.polyline) do
-            ptmp[o] = string.split(p, ",")
-            for o2, p2 in pairs(ptmp[o]) do
-              ptmp[o][o2] = tonumber(p2)
-            end
-          end
-          j.polyline = ptmp          
-        elseif j.polygon then
-          j.shape = "polygon"
-          
-          j.polygon = string.split(j.polygon.points, " ")
-          local ptmp = {}
-          for o, p in pairs(j.polygon) do
-            ptmp[o] = string.split(p, ",")
-            for o2, p2 in pairs(ptmp[o]) do
-              ptmp[o][o2] = tonumber(p2)
-            end
-          end
-          j.polygon = ptmp  
-        else
-          j.shape = "rectangle"
-          j.gid = tonumber(j.gid) or tonumber(tf.gid)
-        end
-        
-        j.properties = j.properties or {}
-        local ref = j.properties
-        j.properties = {}
-        if ref.property then
-          if not (type(ref.property[1]) == "table" and type(ref.property[2]) == "table") then
-            ref.property = {ref.property}
+        for k, v in pairs(result.tilesets) do
+          v.firstgid = tonumber(v.firstgid)
+          if not love.filesystem.getInfo(path .. v.source) then
+            error("No such tileset '" .. v.source .. "'")
           end
           
-          for o, p in pairs(ref.property) do
-            if p.type == "int" or p.type == "float" then
-              j.properties[p.name] = tonumber(p.value)
-            elseif p.type == "bool" then
-              j.properties[p.name] = p.value == "true"
-            else
-              j.properties[p.name] = p.value
-            end
-          end
-        end
-        
-        if tf.properties then
+          local ts = xml2lua:parse(love.filesystem.read(path .. v.source)).tileset
           
-        end
-        
-        return j
-      end
-      --end of func
-      local tcache = {}
-      for i, j in pairs(v.objects) do
-        j = templateParenting(j, tcache)
-      end
-      
-      v.properties = v.properties or {}
-      ref = v.properties
-      v.properties = {}
-      if ref.property then
-        if not (type(ref.property[1]) == "table" and type(ref.property[2]) == "table") then
-          ref.property = {ref.property}
-        end
-        
-        for i, j in pairs(ref.property) do
-          if j.type == "int" or j.type == "float" then
-            v.properties[j.name] = tonumber(j.value)
-          elseif j.type == "bool" then
-            v.properties[j.name] = j.value == "true"
+          ts.filename = v.source
+          ts.columns = tonumber(ts.columns)
+          ts.tilecount = tonumber(ts.tilecount)
+          ts.tilewidth = tonumber(ts.tilewidth)
+          ts.tileheight = tonumber(ts.tileheight)
+          ts.spacing = tonumber(ts.spacing) or 0
+          ts.margin = tonumber(ts.margin) or 0
+          
+          if ts.grid then
+            ts.grid.width = tonumber(ts.grid.width)
+            ts.grid.height = tonumber(ts.grid.height)
           else
-            v.properties[j.name] = j.value
+            ts.grid = {width=ts.tilewidth, height=ts.tileheight, orientation="orthogonal"}
           end
+          
+          if ts.tileoffset then
+            ts.tileoffset.x = tonumber(ts.tileoffset.x)
+            ts.tileoffset.y = tonumber(ts.tileoffset.y)
+          else
+            ts.tileoffset = {x=0, y=0}
+          end
+          
+          if ts.image then
+            tmp = ts.image
+            ts.image = tmp.source
+            ts.imagewidth = tmp.width
+            ts.imageheight = tmp.height
+          end
+          
+          ts.properties = ts.properties or {}
+          local ref = ts.properties
+          ts.properties = {}
+          
+          if ref.property then
+            if not (type(ref.property[1]) == "table" and type(ref.property[2]) == "table") then
+              ref.property = {ref.property}
+            end
+            
+            for o, p in pairs(ref.property) do
+              if p.type == "int" or p.type == "float" then
+                ts.properties[p.name] = tonumber(p.value)
+              elseif p.type == "bool" then
+                ts.properties[p.name] = p.value == "true"
+              else
+                ts.properties[p.name] = p.value
+              end
+            end
+          end
+          
+          ts.terraintypes = ts.terraintypes or {}
+          ref = ts.terraintypes
+          ts.terraintypes = nil
+          ts.terrains = {}
+          if ref.terrain then
+            if not (type(ref.terrain[1]) == "table" and type(ref.terrain[2]) == "table") then
+              ref.terrain = {ref.terrain}
+            end
+            
+            for o, p in pairs(ref.terrain) do
+              p.tile = tonumber(p.tile)
+              
+              p.properties = p.properties or {}
+              local ref2 = p.properties
+              p.properties = {}
+              if ref2.property then
+                if not (type(ref2.property[1]) == "table" and type(ref2.property[2]) == "table") then
+                  ref2.property = {ref2.property}
+                end
+                
+                for o2, p2 in pairs(ref2.property) do
+                  if p2.type == "int" or p2.type == "float" then
+                    p.properties[p2.name] = tonumber(p2.value)
+                  elseif p2.type == "bool" then
+                    p.properties[p2.name] = p2.value == "true"
+                  else
+                    p.properties[p2.name] = p2.value
+                  end
+                end
+              end
+              
+              ts.terrains[#ts.terrains+1] = p
+            end
+          end
+          
+          if ts.tile then
+            ts.tiles = ts.tile
+            ts.tile = nil
+            if not (type(ts.tiles[1]) == "table" and type(ts.tiles[2]) == "table") then
+              ts.tiles = {ts.tiles}
+            end
+            
+            for o, p in pairs(ts.tiles) do
+              p.id = tonumber(p.id)
+              p.probability = tonumber(p.probability)
+              
+              if p.properties then
+                if not (type(p.properties.property[1]) == "table" and type(p.properties.property[2]) == "table") then
+                  p.properties.property = {p.properties.property}
+                end
+                
+                local ref = p.properties.property
+                p.properties = {}
+                
+                for o2, p2 in pairs(ref) do
+                  if p2.type == "int" or p2.type == "float" then
+                    p.properties[p2.name] = tonumber(p2.value)
+                  elseif p2.type == "bool" then
+                    p.properties[p2.name] = p2.value == "true"
+                  else
+                    p.properties[p2.name] = p2.value
+                  end
+                end
+              end
+              
+              if p.terrain then
+                p.terrain = string.split(p.terrain, ",")
+                for o2, p2 in pairs(p.terrain) do
+                  p.terrain[o2] = tonumber(p.terrain[o2]) or -1
+                end
+              end
+              
+              if p.animation then
+                if not (type(p.animation.frame[1]) == "table" and type(p.animation.frame[2]) == "table") then
+                  p.animation.frame = {p.animation.frame}
+                end
+                
+                for o2, p2 in pairs(p.animation.frame) do
+                  p2.duration = tonumber(p2.duration)
+                  p2.tileid = tonumber(p2.tileid)
+                end
+                
+                p.animation = p.animation.frame
+                p.animation.frame = nil
+              end
+              
+            end
+          end
+          
+          ts.firstgid = v.firstgid
+          ts.firstgid = nil
+          ts.version = nil
+          ts.tiledversion = nil
+          
+          result.tilesets[k] = ts
         end
       end
+    end
+    
+    if result.objectgroup then
+      if not (type(result.objectgroup[1]) == "table" and type(result.objectgroup[2]) == "table") then
+        result.objectgroup = {result.objectgroup}
+      end
       
-    end
-  end
-  
-  if result.layer then
-    if not (type(result.layer[1]) == "table" and type(result.layer[2]) == "table") then
-      result.layer = {result.layer}
-    end
-    for k, v in pairs(result.layer) do
-      v.type = "tilelayer"
-
-      if v.data then
-        if v.data.encoding then
-          v.encoding = v.data.encoding
-          v.data.encoding = nil
-        end
-        if v.data.compression then
-          v.compression = v.data.compression
-          v.data.compression = nil
-        end
-          
-        if v.data.chunk then
-          if not (type(v.data.chunk[1]) == "table" and type(v.data.chunk[2]) == "table") then
-            v.data.chunk = {v.data.chunk}
-          end
-          v.chunks = v.data.chunk
-          v.data.chunk = nil
-          
-          for i, j in pairs(v.chunks) do
-            j.data = j[1]
-            j[1] = nil
-          end
-          
-          v.data = nil
-          
-          if v.encoding  == "csv" then
-            for i, j in pairs(v.chunks) do
-              local full = string.split(j.data, "\r\n")
-              j.data = ""
-              for o, p in ipairs(full) do
-                j.data = j.data .. p
-              end
-              j.data = string.split(j.data, ",")
-              for o, p in ipairs(j.data) do
-                j.data[o] = tonumber(p)
-              end
-            end
-          end
-        else
-          if not (type(v.data[1]) == "table" and type(v.data[2]) == "table") then
-            v.data = {v.data}
-          end
-          
-          if v.encoding == "csv" then
-            local full = string.split(v.data[1], "\r\n")
-            v.data[1] = ""
-            for i, j in ipairs(full) do
-              v.data[1] = v.data[1] .. j
-            end
-          end
-          v.data = v.data[1]
-          if v.encoding == "csv" then
-            v.data = string.split(v.data, ",")
-            for i, j in ipairs(v.data) do
-              v.data[i] = tonumber(j)
-            end
-          end
-        end
-        
-        v.x = tonumber(v.x) or 0
-        v.y = tonumber(v.y) or 0
+      for k, v in pairs(result.objectgroup) do
+        v.type = "objectgroup"
+        v.id = tonumber(v.id)
         v.visible = v.visible ~= "0"
         v.opacity = tonumber(v.opacity) or 1
         v.offsetx = tonumber(v.offsetx) or 0
         v.offsety = tonumber(v.offsety) or 0
-        v.width = tonumber(v.width) or 0
-        v.height = tonumber(v.height) or 0
-        v.id = tonumber(id)
+        v.draworder = v.draworder or "topdown"
+        
+        if not (type(v.object[1]) == "table" and type(v.object[2]) == "table") then
+          v.object = {v.object}
+        end
+        v.objects = v.object
+        v.object = nil
+        
+        local function templateParenting(j, fcache)
+          local tf = {}
+          
+          if j.template then
+            if not fcache[path .. j.template] then
+              if not love.filesystem.getInfo(path .. j.template) then
+                error("No such template file '" .. j.template .. "'")
+              end
+              fcache[path .. j.template] = xml2lua:parse(love.filesystem.read(path .. j.template)).template.object
+            end
+            tf = templateParenting(table.clone(fcache[path .. j.template]), fcache)
+          end
+          
+          j.type = j.type == nil and (tf.type == nil and "" or tf.type) or j.type
+          j.name = j.name == nil and (tf.name == nil and "" or tf.name) or j.name
+          j.width = tonumber(j.width) or tonumber(tf.width) or 0
+          j.height = tonumber(j.height) or tonumber(tf.height) or 0
+          j.x = tonumber(j.x) or tonumber(tf.x)
+          j.y = tonumber(j.y) or tonumber(tf.y)
+          j.rotation = tonumber(j.rotation) or tonumber(tf.rotation) or 0
+          j.visible = j.visible == nil and (tf.visible ~= "0") or (j.visible ~= "0")
+          j.id = tonumber(j.id) or tonumber(tf.id)
+          
+          if not j.point and not j.ellipse and not j.polyline and not j.polygon then
+            j.point = tf.tmpPoint
+            j.ellipse = tf.tmpEllipse
+            j.polyline = tf.tmpPolyline
+            j.polygon = tf.tmpPolygon
+          end
+          
+          if j.point then
+            j.tmpPoint = j.point
+            j.point = nil
+            j.shape = "point"
+          elseif j.ellipse then
+            j.tmpEllipse = j.ellipse
+            j.ellipse = nil
+            j.shape = "ellipse"
+          elseif j.polyline then
+            j.tmpPolyline = j.polyline
+            j.shape = "polyline"
+            
+            j.polyline = string.split(j.polyline.points, " ")
+            local ptmp = {}
+            for o, p in pairs(j.polyline) do
+              ptmp[o] = string.split(p, ",")
+              for o2, p2 in pairs(ptmp[o]) do
+                ptmp[o][o2] = tonumber(p2)
+              end
+            end
+            j.polyline = ptmp          
+          elseif j.polygon then
+            j.tmpPolygon = j.polygon
+            j.shape = "polygon"
+            
+            j.polygon = string.split(j.polygon.points, " ")
+            local ptmp = {}
+            for o, p in pairs(j.polygon) do
+              ptmp[o] = string.split(p, ",")
+              for o2, p2 in pairs(ptmp[o]) do
+                ptmp[o][o2] = tonumber(p2)
+              end
+            end
+            j.polygon = ptmp  
+          else
+            j.shape = "rectangle"
+            j.gid = tonumber(j.gid) or tonumber(tf.gid)
+          end
+          
+          j.properties = j.properties or {}
+          local ref = j.properties
+          j.properties = {}
+          if ref.property then
+            if not (type(ref.property[1]) == "table" and type(ref.property[2]) == "table") then
+              ref.property = {ref.property}
+            end
+            
+            for o, p in pairs(ref.property) do
+              if p.type == "int" or p.type == "float" then
+                j.properties[p.name] = tonumber(p.value)
+              elseif p.type == "bool" then
+                j.properties[p.name] = p.value == "true"
+              else
+                j.properties[p.name] = p.value
+              end
+            end
+          end
+          
+          if tf.properties then
+            for o, p in pairs(tf.properties) do
+              if j.properties[o] == nil then
+                j.properties[o] = p
+              end
+            end
+          end
+          
+          return j
+        end
+        
+        local tcache = {}
+        for i, j in pairs(v.objects) do
+          j = templateParenting(j, tcache)
+        end
+        for i, j in pairs(v.objects) do
+          j.tmpPoint = nil
+          j.tmpEllipse = nil
+          j.tmpPolyline = nil
+          j.tmpPolygon = nil
+        end
         
         v.properties = v.properties or {}
-        local ref = v.properties
+        ref = v.properties
         v.properties = {}
         if ref.property then
           if not (type(ref.property[1]) == "table" and type(ref.property[2]) == "table") then
@@ -1130,17 +1065,163 @@ local function finalXML2LuaTable(data, f)
       end
     end
     
+    if result.imagelayer then
+      if not (type(result.imagelayer[1]) == "table" and type(result.imagelayer[2]) == "table") then
+        result.imagelayer = {result.imagelayer}
+      end
+      
+      for k, v in pairs(result.imagelayer) do
+        v.type = "imagelayer"
+        v.id = tonumber(v.id)
+        v.visible = v.visible ~= "0"
+        v.opacity = tonumber(v.opacity) or 1
+        v.offsetx = tonumber(v.offsetx) or 0
+        v.offsety = tonumber(v.offsety) or 0
+        v.image = v.image.source
+        
+        v.properties = v.properties or {}
+        ref = v.properties
+        v.properties = {}
+        if ref.property then
+          if not (type(ref.property[1]) == "table" and type(ref.property[2]) == "table") then
+            ref.property = {ref.property}
+          end
+          
+          for i, j in pairs(ref.property) do
+            if j.type == "int" or j.type == "float" then
+              v.properties[j.name] = tonumber(j.value)
+            elseif j.type == "bool" then
+              v.properties[j.name] = j.value == "true"
+            else
+              v.properties[j.name] = j.value
+            end
+          end
+        end
+      end
+    end
+    
+    if result.layer then
+      if not (type(result.layer[1]) == "table" and type(result.layer[2]) == "table") then
+        result.layer = {result.layer}
+      end
+      for k, v in pairs(result.layer) do
+        v.type = "tilelayer"
+
+        if v.data then
+          if v.data.encoding then
+            v.encoding = v.data.encoding
+            v.data.encoding = nil
+          end
+          if v.data.compression then
+            v.compression = v.data.compression
+            v.data.compression = nil
+          end
+            
+          if v.data.chunk then
+            if not (type(v.data.chunk[1]) == "table" and type(v.data.chunk[2]) == "table") then
+              v.data.chunk = {v.data.chunk}
+            end
+            v.chunks = v.data.chunk
+            v.data.chunk = nil
+            
+            for i, j in pairs(v.chunks) do
+              j.data = j[1]
+              j[1] = nil
+            end
+            
+            v.data = nil
+            
+            if v.encoding  == "csv" then
+              for i, j in pairs(v.chunks) do
+                local full = string.split(j.data, "\r\n")
+                j.data = ""
+                for o, p in ipairs(full) do
+                  j.data = j.data .. p
+                end
+                j.data = string.split(j.data, ",")
+                for o, p in ipairs(j.data) do
+                  j.data[o] = tonumber(p)
+                end
+              end
+            end
+          else
+            if not (type(v.data[1]) == "table" and type(v.data[2]) == "table") then
+              v.data = {v.data}
+            end
+            
+            if v.encoding == "csv" then
+              local full = string.split(v.data[1], "\r\n")
+              v.data[1] = ""
+              for i, j in ipairs(full) do
+                v.data[1] = v.data[1] .. j
+              end
+            end
+            v.data = v.data[1]
+            if v.encoding == "csv" then
+              v.data = string.split(v.data, ",")
+              for i, j in ipairs(v.data) do
+                v.data[i] = tonumber(j)
+              end
+            end
+          end
+          
+          v.x = tonumber(v.x) or 0
+          v.y = tonumber(v.y) or 0
+          v.visible = v.visible ~= "0"
+          v.opacity = tonumber(v.opacity) or 1
+          v.offsetx = tonumber(v.offsetx) or 0
+          v.offsety = tonumber(v.offsety) or 0
+          v.width = tonumber(v.width) or 0
+          v.height = tonumber(v.height) or 0
+          v.id = tonumber(v.id)
+          
+          v.properties = v.properties or {}
+          local ref = v.properties
+          v.properties = {}
+          if ref.property then
+            if not (type(ref.property[1]) == "table" and type(ref.property[2]) == "table") then
+              ref.property = {ref.property}
+            end
+            
+            for i, j in pairs(ref.property) do
+              if j.type == "int" or j.type == "float" then
+                v.properties[j.name] = tonumber(j.value)
+              elseif j.type == "bool" then
+                v.properties[j.name] = j.value == "true"
+              else
+                v.properties[j.name] = j.value
+              end
+            end
+          end
+        end
+      end
+    end
+    
     result.layer = table.merge({result.layer, result.objectgroup})
+    result.layer = table.merge({result.layer, result.imagelayer})
     result.objectgroup = nil
+    result.imagelayer = nil
+    
+    tmp = {}
+    for i=1, #layerOrder do
+      for k, v in pairs(result.layer) do
+        if layerOrder[i] == v.id then
+          tmp[#tmp+1] = v
+        end
+      end
+    end
+    result.layer = tmp
+    
+    return result
   end
-  
-  --print(inspect(result))
+  local result = layerGroupParenting(str, f, false)
+  print(inspect(result))
 end
 
 -- Loads a Tiled map from a tmx file.
 function cartographer.load(path)
   if not path then error('No map path provided', 2) end
-  finalXML2LuaTable(xml2lua:parse(love.filesystem.read(path)), path)
+  finalXML2LuaTable(love.filesystem.read(path), path)
   local map = setmetatable(nil, Map)
   map:_init(path)
   return map
