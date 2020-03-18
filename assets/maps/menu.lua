@@ -9,7 +9,7 @@ return {
   tilewidth = 8,
   tileheight = 8,
   nextlayerid = 5,
-  nextobjectid = 22,
+  nextobjectid = 23,
   properties = {},
   tilesets = {
     {
@@ -104,7 +104,9 @@ return {
       opacity = 1,
       offsetx = 0,
       offsety = 0,
-      properties = {},
+      properties = {
+        ["fff"] = false
+      },
       encoding = "base64",
       compression = "zlib",
       chunks = {

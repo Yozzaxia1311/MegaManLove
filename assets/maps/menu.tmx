@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="32" height="28" tilewidth="8" tileheight="8" infinite="1" nextlayerid="5" nextobjectid="22">
+<map version="1.2" tiledversion="1.3.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="32" height="28" tilewidth="8" tileheight="8" infinite="1" nextlayerid="5" nextobjectid="23">
  <editorsettings>
   <export target="menu.lua" format="lua"/>
  </editorsettings>
@@ -21,6 +21,9 @@
   </data>
  </layer>
  <layer id="2" name="bg2" width="32" height="28">
+  <properties>
+   <property name="fff" type="bool" value="false"/>
+  </properties>
   <data encoding="base64" compression="zlib">
    <chunk x="0" y="0" width="16" height="16">
    eAHtkrENgEAMA1M+sAA8Czyw/36cO5ckHdJbuiaKJcdKi4gFVthAavB1trN7QIcTpMxssH/BDQ9ImVkls99Wyez3VjL7vZmuPbd6kjfTteeWX95M155bfnln///+/xd2eRPm

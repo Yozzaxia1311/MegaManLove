@@ -721,8 +721,20 @@ local function finalXML2LuaTable(data, f)
   local tsx = {}
   local result = table.clone(data.map)
   
-  result.tilesets = result.tileset
-  result.tileset = nil
+  if result.tileset then
+    if not (type(result.tileset[1]) == "table" and type(result.tileset[2]) == "table") then
+      result.tileset = {result.tileset}
+    end
+    result.tilesets = result.tileset
+    result.tileset = nil
+    
+    for k, v in pairs(result.tilesets) do
+      v.firstgid = tonumber(v.firstgid)
+      if not love.filesystem.getInfo(path .. v.source) then
+        error("No such tileset '" .. v.source .. "'")
+      end
+    end
+  end
   
   result.compressionLevel = nil
   result.height = tonumber(result.height)
@@ -735,7 +747,81 @@ local function finalXML2LuaTable(data, f)
   result.tileheight = tonumber(result.tileheight)
   result.tilewidth = tonumber(result.tilewidth)
   
+  if result.objectgroup then
+    if not (type(result.objectgroup[1]) == "table" and type(result.objectgroup[2]) == "table") then
+      result.objectgroup = {result.objectgroup}
+    end
+    
+    for k, v in pairs(result.objectgroup) do
+      v.type = "objectgroup"
+      v.id = tonumber(v.id)
+      v.visible = v.visible ~= "0"
+      v.opacity = tonumber(v.opacity) or 1
+      v.offsetx = tonumber(v.offsetx) or 0
+      v.offsety = tonumber(v.offsety) or 0
+      v.draworder = v.draworder or "topdown"
+      
+      if not (type(v.object[1]) == "table" and type(v.object[2]) == "table") then
+        v.object = {v.object}
+      end
+      v.objects = v.object
+      v.object = nil
+      for i, j in pairs(v.objects) do
+        j.width = tonumber(j.width) or 0
+        j.height = tonumber(j.height) or 0
+        j.x = tonumber(j.x)
+        j.y = tonumber(j.y)
+        j.rotation = tonumber(j.rotation) or 0
+        j.visible = j.visible ~= "0"
+        j.id = tonumber(j.id)
+        
+        j.properties = j.properties or {}
+        local ref = j.properties
+        j.properties = {}
+        if ref.property then
+          if not (type(ref.property[1]) == "table" and type(ref.property[2]) == "table") then
+            ref.property = {ref.property}
+          end
+          
+          for o, p in pairs(ref.property) do
+            if p.type == "int" or p.type == "float" then
+              j.properties[p.name] = tonumber(p.value)
+            elseif p.type == "bool" then
+              j.properties[p.name] = p.value == "true"
+            else
+              j.properties[p.name] = p.value
+            end
+          end
+        end
+        
+        v.properties = v.properties or {}
+        ref = v.properties
+        v.properties = {}
+        if ref.property then
+          if not (type(ref.property[1]) == "table" and type(ref.property[2]) == "table") then
+            ref.property = {ref.property}
+          end
+          
+          for i, j in pairs(ref.property) do
+            if j.type == "int" or j.type == "float" then
+              v.properties[j.name] = tonumber(j.value)
+            elseif j.type == "bool" then
+              v.properties[j.name] = j.value == "true"
+            else
+              v.properties[j.name] = j.value
+            end
+          end
+        end
+        
+        
+      end
+    end
+  end
+  
   if result.layer then
+    if not (type(result.layer[1]) == "table" and type(result.layer[2]) == "table") then
+      result.layer = {result.layer}
+    end
     for k, v in pairs(result.layer) do
       v.type = "tilelayer"
 
@@ -750,6 +836,9 @@ local function finalXML2LuaTable(data, f)
         end
           
         if v.data.chunk then
+          if not (type(v.data.chunk[1]) == "table" and type(v.data.chunk[2]) == "table") then
+            v.data.chunk = {v.data.chunk}
+          end
           v.chunks = v.data.chunk
           v.data.chunk = nil
           
@@ -774,6 +863,10 @@ local function finalXML2LuaTable(data, f)
             end
           end
         else
+          if not (type(v.data[1]) == "table" and type(v.data[2]) == "table") then
+            v.data = {v.data}
+          end
+          
           if v.encoding == "csv" then
             local full = string.split(v.data[1], "\r\n")
             v.data[1] = ""
@@ -792,18 +885,22 @@ local function finalXML2LuaTable(data, f)
         
         v.x = tonumber(v.x) or 0
         v.y = tonumber(v.y) or 0
-        v.visible = v.visible == nil or v.visible == "1"
+        v.visible = v.visible ~= "0"
         v.opacity = tonumber(v.opacity) or 1
         v.offsetx = tonumber(v.offsetx) or 0
         v.offsety = tonumber(v.offsety) or 0
         v.width = tonumber(v.width) or 0
         v.height = tonumber(v.height) or 0
-        v.id = tonumber(id) or 0
+        v.id = tonumber(id)
         
         v.properties = v.properties or {}
         local ref = v.properties
         v.properties = {}
         if ref.property then
+          if not (type(ref.property[1]) == "table" and type(ref.property[2]) == "table") then
+            ref.property = {ref.property}
+          end
+          
           for i, j in pairs(ref.property) do
             if j.type == "int" or j.type == "float" then
               v.properties[j.name] = tonumber(j.value)
@@ -816,7 +913,11 @@ local function finalXML2LuaTable(data, f)
         end
       end
     end
+    
+    result.layer = table.merge({result.layer, result.objectgroup})
+    result.objectgroup = nil
   end
+  
   print(inspect(result))
 end
 
