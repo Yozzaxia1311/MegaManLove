@@ -12,7 +12,7 @@ function demostate:begin()
     
     local lf, inf = "assets/sfx/music/cut_loop.ogg", "assets/sfx/music/cut_intro.ogg"
     
-    megautils.loadStage(self, "assets/maps/demo.lua") --Load lua exported tmx stage
+    megautils.loadStage(self, "assets/maps/demo.tmx") --Load stage from .tmx
     megautils.add(ready, nil, globals.player[1] == "proto", lf, inf) --READY
     megautils.add(fade, false, nil, nil, fade.ready) --Fade in from black
     if globals.player[1] ~= "proto" then

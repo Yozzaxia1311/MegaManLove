@@ -2,7 +2,7 @@ local stageselectstate = states.state:extend()
 
 function stageselectstate:begin()
   loader.load("assets/misc/select.png", "mugshots", "texture")
-  megautils.loadStage(self, "assets/maps/stage_select.lua")
+  megautils.loadStage(self, "assets/maps/stage_select.tmx")
   megautils.add(stageSelect)
   megautils.add(fade, false, nil, nil, fade.remove)
   view.x, view.y = 0, 0
