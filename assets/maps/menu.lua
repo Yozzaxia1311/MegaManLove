@@ -9,7 +9,7 @@ return {
   tilewidth = 8,
   tileheight = 8,
   nextlayerid = 5,
-  nextobjectid = 23,
+  nextobjectid = 29,
   properties = {},
   tilesets = {
     {
@@ -41,15 +41,28 @@ return {
           id = 1,
           animation = {
             {
-              tileid = 84,
+              tileid = 82,
               duration = 100
             },
             {
-              tileid = 131,
+              tileid = 162,
+              duration = 100
+            }
+          }
+        },
+        {
+          id = 130,
+          animation = {
+            {
+              tileid = 161,
               duration = 100
             },
             {
-              tileid = 164,
+              tileid = 97,
+              duration = 100
+            },
+            {
+              tileid = 105,
               duration = 100
             }
           }
@@ -140,14 +153,14 @@ return {
       properties = {},
       objects = {
         {
-          id = 21,
+          id = 28,
           name = "",
           type = "",
           shape = "rectangle",
-          x = 224,
-          y = 32,
+          x = 216,
+          y = 88,
           width = 16,
-          height = 8,
+          height = 16,
           rotation = 0,
           visible = true,
           properties = {}

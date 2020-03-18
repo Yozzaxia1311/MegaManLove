@@ -3,9 +3,15 @@
  <image source="menu_tiled.png" width="128" height="120"/>
  <tile id="1">
   <animation>
-   <frame tileid="84" duration="100"/>
-   <frame tileid="131" duration="100"/>
-   <frame tileid="164" duration="100"/>
+   <frame tileid="82" duration="100"/>
+   <frame tileid="162" duration="100"/>
+  </animation>
+ </tile>
+ <tile id="130">
+  <animation>
+   <frame tileid="161" duration="100"/>
+   <frame tileid="97" duration="100"/>
+   <frame tileid="105" duration="100"/>
   </animation>
  </tile>
 </tileset>

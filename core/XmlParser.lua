@@ -393,7 +393,9 @@ function XmlParser:parse(xml, parseAttributes)
     if type(self) ~= "table" or getmetatable(self) ~= XmlParser then
         error("You must call xmlparser:parse(parameters) instead of xmlparser.parse(parameters)")
     end
-
+    
+    self.handler = self.handler:new()
+    
     if parseAttributes == nil then
        parseAttributes = true
     end

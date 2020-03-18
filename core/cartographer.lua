@@ -718,8 +718,7 @@ local function finalXML2LuaTable(data, f)
   local tmp = string.split(f, "/")
   tmp = tmp[#tmp]:len()
   local path = f:sub(0, -tmp-1)
-  local tsx = {}
-  local result = table.clone(data.map)
+  local result = data.map
   
   if result.tileset then
     if not (type(result.tileset[1]) == "table" and type(result.tileset[2]) == "table") then
@@ -733,6 +732,153 @@ local function finalXML2LuaTable(data, f)
       if not love.filesystem.getInfo(path .. v.source) then
         error("No such tileset '" .. v.source .. "'")
       end
+      
+      local ts = xml2lua:parse(love.filesystem.read(path .. v.source)).tileset
+      
+      ts.filename = v.source
+      ts.columns = tonumber(ts.columns)
+      ts.tilecount = tonumber(ts.tilecount)
+      ts.tilewidth = tonumber(ts.tilewidth)
+      ts.tileheight = tonumber(ts.tileheight)
+      ts.spacing = tonumber(ts.spacing) or 0
+      ts.margin = tonumber(ts.margin) or 0
+      
+      if ts.grid then
+        ts.grid.width = tonumber(ts.grid.width)
+        ts.grid.height = tonumber(ts.grid.height)
+      else
+        ts.grid = {width=ts.tilewidth, height=ts.tileheight, orientation="orthogonal"}
+      end
+      
+      if ts.tileoffset then
+        ts.tileoffset.x = tonumber(ts.tileoffset.x)
+        ts.tileoffset.y = tonumber(ts.tileoffset.y)
+      else
+        ts.tileoffset = {x=0, y=0}
+      end
+      
+      if ts.image then
+        tmp = ts.image
+        ts.image = tmp.source
+        ts.imagewidth = tmp.width
+        ts.imageheight = tmp.height
+      end
+      
+      ts.properties = ts.properties or {}
+      local ref = ts.properties
+      ts.properties = {}
+      
+      if ref.property then
+        if not (type(ref.property[1]) == "table" and type(ref.property[2]) == "table") then
+          ref.property = {ref.property}
+        end
+        
+        for o, p in pairs(ref.property) do
+          if p.type == "int" or p.type == "float" then
+            ts.properties[p.name] = tonumber(p.value)
+          elseif p.type == "bool" then
+            ts.properties[p.name] = p.value == "true"
+          else
+            ts.properties[p.name] = p.value
+          end
+        end
+      end
+      
+      ts.terraintypes = ts.terraintypes or {}
+      ref = ts.terraintypes
+      ts.terraintypes = nil
+      ts.terrains = {}
+      if ref.terrain then
+        if not (type(ref.terrain[1]) == "table" and type(ref.terrain[2]) == "table") then
+          ref.terrain = {ref.terrain}
+        end
+        
+        for o, p in pairs(ref.terrain) do
+          p.tile = tonumber(p.tile)
+          
+          p.properties = p.properties or {}
+          local ref2 = p.properties
+          p.properties = {}
+          if ref2.property then
+            if not (type(ref2.property[1]) == "table" and type(ref2.property[2]) == "table") then
+              ref2.property = {ref2.property}
+            end
+            
+            for o2, p2 in pairs(ref2.property) do
+              if p2.type == "int" or p2.type == "float" then
+                p.properties[p2.name] = tonumber(p2.value)
+              elseif p2.type == "bool" then
+                p.properties[p2.name] = p2.value == "true"
+              else
+                p.properties[p2.name] = p2.value
+              end
+            end
+          end
+          
+          ts.terrains[#ts.terrains+1] = p
+        end
+      end
+      
+      if ts.tile then
+        ts.tiles = ts.tile
+        ts.tile = nil
+        if not (type(ts.tiles[1]) == "table" and type(ts.tiles[2]) == "table") then
+          ts.tiles = {ts.tiles}
+        end
+        
+        for o, p in pairs(ts.tiles) do
+          p.id = tonumber(p.id)
+          p.probability = tonumber(p.probability)
+          
+          if p.properties then
+            if not (type(p.properties.property[1]) == "table" and type(p.properties.property[2]) == "table") then
+              p.properties.property = {p.properties.property}
+            end
+            
+            local ref = p.properties.property
+            p.properties = {}
+            
+            for o2, p2 in pairs(ref) do
+              if p2.type == "int" or p2.type == "float" then
+                p.properties[p2.name] = tonumber(p2.value)
+              elseif p2.type == "bool" then
+                p.properties[p2.name] = p2.value == "true"
+              else
+                p.properties[p2.name] = p2.value
+              end
+            end
+          end
+          
+          if p.terrain then
+            p.terrain = string.split(p.terrain, ",")
+            for o2, p2 in pairs(p.terrain) do
+              p.terrain[o2] = tonumber(p.terrain[o2]) or -1
+            end
+          end
+          
+          if p.animation then
+            if not (type(p.animation.frame[1]) == "table" and type(p.animation.frame[2]) == "table") then
+              p.animation.frame = {p.animation.frame}
+            end
+            
+            for o2, p2 in pairs(p.animation.frame) do
+              p2.duration = tonumber(p2.duration)
+              p2.tileid = tonumber(p2.tileid)
+            end
+            
+            p.animation = p.animation.frame
+            p.animation.frame = nil
+          end
+          
+        end
+      end
+      
+      ts.firstgid = v.firstgid
+      ts.firstgid = nil
+      ts.version = nil
+      ts.tiledversion = nil
+      
+      result.tilesets[k] = ts
     end
   end
   
@@ -766,14 +912,74 @@ local function finalXML2LuaTable(data, f)
       end
       v.objects = v.object
       v.object = nil
-      for i, j in pairs(v.objects) do
-        j.width = tonumber(j.width) or 0
-        j.height = tonumber(j.height) or 0
-        j.x = tonumber(j.x)
-        j.y = tonumber(j.y)
-        j.rotation = tonumber(j.rotation) or 0
-        j.visible = j.visible ~= "0"
-        j.id = tonumber(j.id)
+      
+      local function templateParenting(j, fcache)
+        local tf = {}
+        
+        if j.template then
+          if not fcache[path .. j.template] then
+            if not love.filesystem.getInfo(path .. j.template) then
+              error("No such template file '" .. j.template .. "'")
+            end
+            fcache[path .. j.template] = xml2lua:parse(love.filesystem.read(path .. j.template)).template
+          end
+          tf = templateParenting(fcache[path .. j.template], fcache)
+        end
+        
+        j.type = j.type == nil and (tf.type == nil and "" or tf.type) or j.type
+        j.name = j.name == nil and (tf.name == nil and "" or tf.name) or j.name
+        j.width = tonumber(j.width) or tonumber(tf.width) or 0
+        j.height = tonumber(j.height) or tonumber(tf.height) or 0
+        j.x = tonumber(j.x) or tonumber(tf.x)
+        j.y = tonumber(j.y) or tonumber(tf.y)
+        j.rotation = tonumber(j.rotation) or tonumber(tf.rotation) or 0
+        j.visible = j.visible == nil and tf.visible == "1" or j.visible == "1"
+        j.id = tonumber(j.id) or tonumber(tf.id)
+        
+        if not j.point then
+          j.point = tf.point
+        elseif not j.ellipse then
+          j.ellipse = tf.ellipse
+        elseif not j.polyline then
+          j.polyline = tf.polyline
+        elseif not j.polygon then
+          j.polygon = tf.polygon
+        end
+        
+        if j.point then
+          j.point = nil
+          j.shape = "point"
+        elseif j.ellipse then
+          j.ellipse = nil
+          j.shape = "ellipse"
+        elseif j.polyline then
+          j.shape = "polyline"
+          
+          j.polyline = string.split(j.polyline.points, " ")
+          local ptmp = {}
+          for o, p in pairs(j.polyline) do
+            ptmp[o] = string.split(p, ",")
+            for o2, p2 in pairs(ptmp[o]) do
+              ptmp[o][o2] = tonumber(p2)
+            end
+          end
+          j.polyline = ptmp          
+        elseif j.polygon then
+          j.shape = "polygon"
+          
+          j.polygon = string.split(j.polygon.points, " ")
+          local ptmp = {}
+          for o, p in pairs(j.polygon) do
+            ptmp[o] = string.split(p, ",")
+            for o2, p2 in pairs(ptmp[o]) do
+              ptmp[o][o2] = tonumber(p2)
+            end
+          end
+          j.polygon = ptmp  
+        else
+          j.shape = "rectangle"
+          j.gid = tonumber(j.gid) or tonumber(tf.gid)
+        end
         
         j.properties = j.properties or {}
         local ref = j.properties
@@ -794,27 +1000,37 @@ local function finalXML2LuaTable(data, f)
           end
         end
         
-        v.properties = v.properties or {}
-        ref = v.properties
-        v.properties = {}
-        if ref.property then
-          if not (type(ref.property[1]) == "table" and type(ref.property[2]) == "table") then
-            ref.property = {ref.property}
-          end
+        if tf.properties then
           
-          for i, j in pairs(ref.property) do
-            if j.type == "int" or j.type == "float" then
-              v.properties[j.name] = tonumber(j.value)
-            elseif j.type == "bool" then
-              v.properties[j.name] = j.value == "true"
-            else
-              v.properties[j.name] = j.value
-            end
-          end
         end
         
-        
+        return j
       end
+      --end of func
+      local tcache = {}
+      for i, j in pairs(v.objects) do
+        j = templateParenting(j, tcache)
+      end
+      
+      v.properties = v.properties or {}
+      ref = v.properties
+      v.properties = {}
+      if ref.property then
+        if not (type(ref.property[1]) == "table" and type(ref.property[2]) == "table") then
+          ref.property = {ref.property}
+        end
+        
+        for i, j in pairs(ref.property) do
+          if j.type == "int" or j.type == "float" then
+            v.properties[j.name] = tonumber(j.value)
+          elseif j.type == "bool" then
+            v.properties[j.name] = j.value == "true"
+          else
+            v.properties[j.name] = j.value
+          end
+        end
+      end
+      
     end
   end
   
@@ -918,7 +1134,7 @@ local function finalXML2LuaTable(data, f)
     result.objectgroup = nil
   end
   
-  print(inspect(result))
+  --print(inspect(result))
 end
 
 -- Loads a Tiled map from a tmx file.

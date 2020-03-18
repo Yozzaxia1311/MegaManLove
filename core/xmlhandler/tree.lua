@@ -4,7 +4,7 @@ local function init()
         options = {noreduce = {}}
     }
     
-    obj._stack = {obj.root, n=1}  
+    obj._stack = {obj.root, _n=1}  
     return obj  
 end
 
@@ -55,7 +55,7 @@ end
 --
 --@author Paul Chakravarti (paulc@passtheaardvark.com)
 --@author Manoel Campos da Silva Filho
-local tree = init()
+local tree = {}
 
 ---Instantiates a new handler object.
 --Each instance can handle a single XML.
