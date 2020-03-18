@@ -773,13 +773,20 @@ local function finalXML2LuaTable(str, f)
     
     for k, v in pairs(result.tilesets) do
       v.firstgid = tonumber(v.firstgid)
-      if not love.filesystem.getInfo(path .. v.source) then
-        error("No such tileset '" .. v.source .. "'")
+      local ts
+      if v.source then
+        if not love.filesystem.getInfo(path .. v.source) then
+          error("No such tileset '" .. v.source .. "'")
+        end
+        
+        ts = xml2lua:parse(love.filesystem.read(path .. v.source)).tileset
+      else
+        ts = v
       end
       
-      local ts = xml2lua:parse(love.filesystem.read(path .. v.source)).tileset
-      
-      ts.filename = v.source
+      if not v.source then
+        ts.filename = v.source
+      end
       ts.columns = tonumber(ts.columns)
       ts.tilecount = tonumber(ts.tilecount)
       ts.tilewidth = tonumber(ts.tilewidth)
@@ -802,11 +809,17 @@ local function finalXML2LuaTable(str, f)
       end
       
       if ts.image then
-        tmp = ts.image
-        local tmp2 = string.split(v.source, "/")
-        ts.image = v.source:sub(0, -tmp2[#tmp2]:len()-1) .. tmp.source
-        ts.imagewidth = tmp.width
-        ts.imageheight = tmp.height
+        if v.source then
+          tmp = ts.image
+          local tmp2 = string.split(v.source, "/")
+          ts.image = v.source:sub(0, -tmp2[#tmp2]:len()-1) .. tmp.source
+          ts.imagewidth = tonumber(tmp.width)
+          ts.imageheight = tonumber(tmp.height)
+        else
+          v.imagewidth = tonumber(v.image.width)
+          v.imageheight = tonumber(v.image.height)
+          v.image = v.image.source
+        end
       end
             
       ts.properties = ts.properties or {}
