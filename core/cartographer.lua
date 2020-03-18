@@ -957,11 +957,12 @@ local function finalXML2LuaTable(str, f)
           j.visible = j.visible == nil and (tf.visible ~= "0") or (j.visible ~= "0")
           j.id = tonumber(j.id) or tonumber(tf.id)
           
-          if not j.point and not j.ellipse and not j.polyline and not j.polygon then
+          if not j.point and not j.ellipse and not j.polyline and not j.polygon and not j.text then
             j.point = tf.tmpPoint
             j.ellipse = tf.tmpEllipse
             j.polyline = tf.tmpPolyline
             j.polygon = tf.tmpPolygon
+            j.text = tf.tmpText
           end
           
           if j.point then
@@ -998,6 +999,11 @@ local function finalXML2LuaTable(str, f)
               end
             end
             j.polygon = ptmp  
+          elseif j.text then
+            j.tmpText = j.text
+            j.shape = "text"
+            j.wrap = j.wrap ~= "0"
+            j.text = j.text[1]
           else
             j.shape = "rectangle"
             j.gid = tonumber(j.gid) or tonumber(tf.gid)
@@ -1042,6 +1048,7 @@ local function finalXML2LuaTable(str, f)
           j.tmpEllipse = nil
           j.tmpPolyline = nil
           j.tmpPolygon = nil
+          j.tmpText = nil
         end
         
         v.properties = v.properties or {}

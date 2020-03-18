@@ -9,7 +9,7 @@ return {
   tilewidth = 8,
   tileheight = 8,
   nextlayerid = 7,
-  nextobjectid = 33,
+  nextobjectid = 34,
   properties = {},
   tilesets = {
     {
@@ -193,6 +193,21 @@ return {
             { x = -32, y = 40 },
             { x = 16, y = 48 }
           },
+          properties = {}
+        },
+        {
+          id = 33,
+          name = "",
+          type = "",
+          shape = "text",
+          x = 184,
+          y = 64,
+          width = 83,
+          height = 19,
+          rotation = 0,
+          visible = true,
+          text = "Hello World",
+          wrap = true,
           properties = {}
         }
       }
