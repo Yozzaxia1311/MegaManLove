@@ -749,7 +749,7 @@ function wTank:draw()
   end
 end
 
-megautils.resetGameObjectsFuncs["pickups"] = function()
+megautils.resetGameObjectsFuncs.pickups = function()
   wTank.banIds = {}
   eTank.banIds = {}
   life.banIds = {}

@@ -1,4 +1,4 @@
-megautils.resetGameObjectsFuncs["megaman"] = function()
+megautils.resetGameObjectsFuncs.megaman = function()
   megaman.colorOutline = {}
   megaman.colorOne = {}
   megaman.colorTwo = {}

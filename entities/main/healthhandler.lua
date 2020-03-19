@@ -1,6 +1,6 @@
 healthHandler = basicEntity:extend()
 
-megautils.resetGameObjectsFuncs["healthHandler"] = function()
+megautils.resetGameObjectsFuncs.healthHandler = function()
   healthHandler.playerTimers = {}
   for i=1, maxPlayerCount do
     healthHandler.playerTimers[i] = -2
