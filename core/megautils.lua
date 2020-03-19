@@ -201,6 +201,36 @@ function megautils.map()
   return states.currentstate.currentMap
 end
 
+function megautils.getMapLayer(name)
+  local function recursiveCheck(tab, n)
+    if tab and tab.layers then
+      for k, v in pairs(tab.layers) do
+        if v.name == n then
+          return v
+        elseif v.type == "group" then
+          recursiveCheck(v, n)
+        end
+      end
+    end
+  end
+  return recursiveCheck(megautils.map(), name)
+end
+
+function megautils.getMapLayerByID(name)
+  local function recursiveCheck(tab, n)
+    if tab and tab.layers then
+      for k, v in pairs(tab.layers) do
+        if v.id == n then
+          return v
+        elseif v.type == "group" then
+          recursiveCheck(v, n)
+        end
+      end
+    end
+  end
+  return recursiveCheck(megautils.map(), name)
+end
+
 function megautils.gotoState(s, before, after, chunk)
   megautils.add(fade, true, nil, nil, function(se)
         if before then before() end
