@@ -16,16 +16,4 @@
    eAHt1rkKwkAQxvG8crx6z96z9+w9+3g9gIiFiCLqe/hfcJsRthpYwfngRybsMBsCWZIkv5OUR8khjwKKKEFGu8/PL1NUUEUNdTQgo93n5zcpWmijgy56kNHu8/P7FAMMMcIYE8ho9/n5U4oZ5lhgiRVktPv8/IxijQ222GEPGe0+Od/u47yBlG3t/LHzx86f8Pd3Z/mBE54fXL7i1l4444gLtOJnHxjonsXtE8qVRdd7CzVFXrPzx/5/7P8n8kf4Z9u/AfCX1HY=
   </data>
  </layer>
- <objectgroup id="4" name="obj" visible="0">
-  <object id="21" name="cum_select" x="24" y="8" width="48" height="48"/>
-  <object id="23" name="erect_select" x="104" y="8" width="48" height="48"/>
-  <object id="24" name="wo_select" x="184" y="8" width="48" height="48"/>
-  <object id="25" name="flint_select" x="184" y="88" width="48" height="48"/>
-  <object id="26" name="car_select" x="184" y="168" width="48" height="48"/>
-  <object id="27" name="rubber_select" x="104" y="168" width="48" height="48"/>
-  <object id="28" name="rip_select" x="24" y="168" width="48" height="48"/>
-  <object id="29" name="suck_select" x="24" y="88" width="48" height="48"/>
-  <object id="30" name="mega_select" x="104" y="88" width="48" height="48"/>
-  <object id="31" name="select_cursor" x="8" y="-8" width="8" height="8"/>
- </objectgroup>
 </map>

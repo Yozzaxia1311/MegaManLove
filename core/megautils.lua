@@ -168,32 +168,37 @@ end
 
 function megautils.loadStage(self, path, call)
   self.sectionHandler = sectionHandler()
-  mapentity.currentMap = cartographer.load(path)
-  local map = mapentity.currentMap
-  local tLayers = {}
-  local objs = {}
-  for k, v in pairs(map.layers) do
-    if v.type == "tilelayer" then
-      tLayers[#tLayers+1] = v
-    elseif v.type == "objectgroup" then
-      for i, j in pairs(v.objects) do
-        objs[#objs+1] = j
+  self.currentMap = cartographer.load(path)
+  local map = self.currentMap
+  local function recursiveLayerChecking(tab, otab)
+    for k, v in pairs(tab.layers) do
+      if v.type == "objectgroup" then
+        for i, j in pairs(v.objects) do
+          otab[#otab+1] = j
+        end
+      elseif v.type == "group" then
+        recursiveLayerChecking(v, otab)
       end
     end
+    return otab
   end
-  local bg = trigger(nil, function() mapentity.currentMap:drawBackground() end)
+  local objs = recursiveLayerChecking(map, {})
+  local bg = trigger(nil, function(s, dt) s.map:drawBackground() end)
+  bg.map = map
   bg:setLayer(-5)
   megautils.adde(bg)
-  for k, v in pairs(tLayers) do
-    local e = megautils.add(mapentity, v.name, map)
-    if e and call then call(e) end
-  end
   megautils.setLayerFlicker(-5, false)
   addobjects.add(objs)
   local tmp = megautils.add(trigger, function(s, dt)
     s.map:update(1/60)
+  end, function(s)
+    s.map:draw()
   end)
   tmp.map = map
+end
+
+function megautils.map()
+  return states.currentstate.currentMap
 end
 
 function megautils.gotoState(s, before, after, chunk)
