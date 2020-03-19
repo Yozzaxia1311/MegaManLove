@@ -1238,7 +1238,6 @@ local function finalXML2LuaTable(str, f)
   
   result.layer = table.merge({result.layer, result.objectgroup})
   result.layer = table.merge({result.layer, result.imagelayer})
-  result.objects = result.objectgroup
   result.objectgroup = nil
   result.imagelayer = nil
   
