@@ -14,9 +14,9 @@ function weaponHandler:new(side, r, slots)
   self.weapons = {}
   self.energy = {}
   self.slots = {}
-  self.barOne = loader.get("barOne")
-  self.barTwo = loader.get("barTwo")
-  self.barOutline = loader.get("barOutline")
+  self.barOne = megautils.getResource("barOne")
+  self.barTwo = megautils.getResource("barTwo")
+  self.barOutline = megautils.getResource("barOutline")
   self.quads = {}
   self.quads[0] = love.graphics.newQuad(0, 48, 8, 8, 232, 56)
   self.quads[1] = love.graphics.newQuad(8, 48, 8, 8, 232, 56)
@@ -114,12 +114,12 @@ function weaponHandler:update(dt)
     self.energy[self.currentSlot] = self.energy[self.currentSlot] + 1
     self.riseTimer = 0
     self.rise = self.rise - 1
-    mmSfx.play("heal")
+    megautils.playSound("heal")
     if self.rise == 0 or self.energy[self.currentSlot] == self.segments[self.currentSlot]*4 
       or self.energy[self.currentSlot] == 0 then
       megautils.unfreeze({self})
       self.rise = 0
-      mmSfx.stop("heal")
+      megautils.stopSound("heal")
     end
   end
   if self.energy[self.currentSlot] and self.segments[self.currentSlot] then

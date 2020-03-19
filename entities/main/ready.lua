@@ -6,7 +6,7 @@ function ready:new(text, proto, loop, intro, vol)
   self.added = function(self)
     self:addToGroup("ready")
     if self.proto then
-      mmSfx.play("protoReady")
+      megautils.playSound("protoReady")
     end
   end
   if self.proto then
@@ -36,7 +36,7 @@ function ready:update(dt)
     if self.blinkCount == self.blinks then
       megautils.unfreeze()
       if self.proto then
-        mmMusic.playFromFile(self.lf, self.inf, self.vol)
+        megautils.playMusic(self.lf, self.inf, self.vol)
       end
       megautils.remove(self, true)
     end

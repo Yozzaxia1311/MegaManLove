@@ -6,7 +6,7 @@ function menuState:begin()
   megautils.add(fade, false, nil, nil, fade.remove)
   view.x, view.y = 0, 0
   if not globals.stopMusicMenu then
-    mmMusic.playFromFile("assets/sfx/music/menu.ogg")
+    megautils.playMusic("assets/sfx/music/menu.ogg")
   end
 end
 
@@ -39,7 +39,7 @@ function menuSelect:new()
   end
   self.transform.y = 9*8
   self.transform.x = 88
-  self.tex = loader.get("menuSelect")
+  self.tex = megautils.getResource("menuSelect")
   self.pick = 0
   self.offY = self.transform.y
   self.picked = false
@@ -56,13 +56,13 @@ function menuSelect:update(dt)
       self.pick = math.wrap(self.pick+1, 0, 6)
     end
     if old ~= self.pick then
-      mmSfx.play("cursorMove")
+      megautils.playSound("cursorMove")
     end
     if (control.jumpPressed[1] or control.startPressed[1]) and not self.picked then
       if self.pick == 0 then
         self.picked = true
         self.section = -1
-        mmMusic.stopMusic()
+        megautils.stopMusic()
         megautils.gotoState("states/stageselect.state.lua")
         globals.stopMusicMenu = nil
       elseif self.pick == 1 then
@@ -77,7 +77,7 @@ function menuSelect:update(dt)
         megautils.gotoState("states/rebind.state.lua")
         globals.stopMusicMenu = nil
       elseif self.pick == 3 then
-        mmSfx.play("selected")
+        megautils.playSound("selected")
         local data = save.load("save.sav")
         if data then
           globals.defeats = data.defeats
@@ -99,15 +99,15 @@ function menuSelect:update(dt)
         data.wTanks = globals.wTanks
         data.player = globals.player
         save.save("save.sav", data)
-        mmSfx.play("selected")
+        megautils.playSound("selected")
       elseif self.pick == 5 then
         self.section = 1
         self.timer = 0
-        mmSfx.play("selected")
+        megautils.playSound("selected")
       elseif self.pick == 6 then
         self.picked = true
         self.section = -1
-        mmMusic.stopMusic()
+        megautils.stopMusic()
         megautils.gotoState("states/title.state.lua")
         globals.stopMusicMenu = nil
       end
@@ -122,13 +122,13 @@ function menuSelect:update(dt)
       globals.playerCount = math.wrap(globals.playerCount+1, 1, maxPlayerCount)
     end
     if old ~= globals.playerCount then
-      mmSfx.play("cursorMove")
+      megautils.playSound("cursorMove")
     end
     if control.jumpPressed[1] or control.startPressed[1] then
       self.section = 0
       self.timer = 20
       megautils.resetGameObjects()
-      mmSfx.play("selected")
+      megautils.playSound("selected")
     end
   end
 end

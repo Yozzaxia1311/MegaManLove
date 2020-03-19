@@ -1,7 +1,6 @@
 local weaponGetState = states.state:extend()
 
 function weaponGetState:begin()
-  loader.clear()
   megautils.runFile("entities/misc/starfield.lua")
   megautils.add(banner)
   megautils.add(smallStar, 32, 32, 180, 2)
@@ -20,7 +19,7 @@ function weaponGetState:begin()
   end
   view.x, view.y = 0, 0
   megautils.add(fade, false, nil, nil, fade.remove)
-  mmMusic.playFromFile("assets/sfx/music/get.ogg")
+  megautils.playMusic("assets/sfx/music/get.ogg")
 end
 
 function weaponGetState:update(dt)

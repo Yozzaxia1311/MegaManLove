@@ -2,12 +2,12 @@ weaponSelect = entity:extend()
 
 function weaponSelect:new(w, h, p)
   weaponSelect.super.new(self)
-  self.t = loader.get("weaponSelect")
-  self.bg = loader.get("weaponSelectImg")
-  self.tex = loader.get("particles")
-  self.texOutline = loader.get("particlesOutline")
-  self.texOne = loader.get("particlesOne")
-  self.texTwo = loader.get("particlesTwo")
+  self.t = megautils.getResource("weaponSelect")
+  self.bg = megautils.getResource("weaponSelectImg")
+  self.tex = megautils.getResource("particles")
+  self.texOutline = megautils.getResource("particlesOutline")
+  self.texOne = megautils.getResource("particlesOne")
+  self.texTwo = megautils.getResource("particlesTwo")
   self.quadE = love.graphics.newQuad(72, 12, 16, 16, 128, 98)
   self.quadW = love.graphics.newQuad(88, 12, 16, 16, 128, 98)
   self.heads = {}
@@ -128,7 +128,7 @@ function weaponSelect:update(dt)
             megautils.remove(s, true)
             megautils.add(fade, false, nil, nil, fade.remove)
           end)
-      mmSfx.play("selected")
+      megautils.playSound("selected")
       return
     elseif control.rightPressed[self.player] then
       self.x = math.clamp(self.x+1, 1, 2)
@@ -220,7 +220,7 @@ function weaponSelect:update(dt)
           megaman.colorOutline[self.player] = self.w.colorOutline[self.cur]
           megaman.colorOne[self.player] = self.w.colorOne[self.cur]
           megaman.colorTwo[self.player] = self.w.colorTwo[self.cur]
-          mmSfx.play("cursorMove")
+          megautils.playSound("cursorMove")
          return
         end
         self.y = math.clamp(self.y+1, 1, 6)
@@ -233,7 +233,7 @@ function weaponSelect:update(dt)
       megaman.colorOutline[self.player] = self.w.colorOutline[self.list[self.y][self.x]]
       megaman.colorOne[self.player] = self.w.colorOne[self.list[self.y][self.x]]
       megaman.colorTwo[self.player] = self.w.colorTwo[self.list[self.y][self.x]]
-      mmSfx.play("cursorMove")
+      megautils.playSound("cursorMove")
     end
   elseif self.section == 1 then
     local olx, oly = self.x, self.y
@@ -275,7 +275,7 @@ function weaponSelect:update(dt)
       self.x = 1
     end
     if olx ~= self.x or oly ~= self.y then
-      mmSfx.play("cursorMove")
+      megautils.playSound("cursorMove")
     end
     for k, v in pairs(self.fills) do
       for i, j in pairs(v) do

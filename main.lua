@@ -38,8 +38,8 @@ function initEngine()
   for k, v in pairs(megautils.cleanFuncs) do
     v()
   end
-  loader.clear()
-  megautils.load()
+  megautils.unloadAllResources()
+  megautils.loadGlobalResources()
   megautils.resetGameObjects()
   collectgarbage()
 end

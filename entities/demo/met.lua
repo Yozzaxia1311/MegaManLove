@@ -1,4 +1,4 @@
-loader.load("assets/global/entities/met.png", "met", "texture")
+megautils.loadResource("assets/global/entities/met.png", "met")
 
 met = entity:extend()
 
@@ -18,7 +18,7 @@ function met:new(x, y, s)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(14, 14)
-  self.t = loader.get("met")
+  self.t = megautils.getResource("met")
   self.spawner = s
   self.c = "safe"
   self.quads = {safe=love.graphics.newQuad(0, 0, 18, 15, 42, 15), up=love.graphics.newQuad(18, 0, 18, 15, 42, 15)}
@@ -73,12 +73,12 @@ function met:healthChanged(o, c, i)
     megautils.add(smallBlast, self.transform.x-4, self.transform.y-4)
     megautils.dropItem(self.transform.x, self.transform.y-4)
     megautils.remove(self, true)
-    mmSfx.play("enemyExplode")
+    megautils.playSound("enemyExplode")
   elseif self.changeHealth < 0 then
     if o:is(megaChargedBuster) then
       megautils.remove(o, true)
     end
-    mmSfx.play("enemyHit")
+    megautils.playSound("enemyHit")
   end
 end
 
@@ -108,7 +108,7 @@ function met:update(dt)
       megautils.add(metBullet, self.transform.x+4, self.transform.y+4, self.side*megautils.calcX(45)*2, -megautils.calcY(45)*2)
       megautils.add(metBullet, self.transform.x+4, self.transform.y+4, self.side*megautils.calcX(45)*2, megautils.calcY(45)*2)
       megautils.add(metBullet, self.transform.x+4, self.transform.y+4, self.side*2, 0)
-      mmSfx.play("buster")
+      megautils.playSound("buster")
     end
   elseif self.s == 2 then
     self.timer = math.min(self.timer+1, 20)
@@ -156,7 +156,7 @@ function metBullet:new(x, y, vx, vy)
   self.transform.x = x
   self.transform.y = y
   self:setRectangleCollision(6, 6)
-  self.tex = loader.get("met")
+  self.tex = megautils.getResource("met")
   self.quad = love.graphics.newQuad(36, 0, 6, 6, 42, 15)
   self.velocity = velocity()
   self.velocity.velx = vx
@@ -176,7 +176,7 @@ function metBullet:dink(e)
     self.velocity.velx = -self.velocity.velx
     self.velocity.vely = -self.velocity.vely
     self.dinked = 2
-    mmSfx.play("dink")
+    megautils.playSound("dink")
   end
 end
 

@@ -10,8 +10,8 @@ function splash:new(offx, offy, follow, side)
   self.offy = offy
   self.side = side
   self:setRectangleCollision(32, 28)
-  self.tex = loader.get("particles")
-  self.anim = anim8.newAnimation(loader.get("splashGrid")("1-4", 1), 1/8)
+  self.tex = megautils.getResource("particles")
+  self.anim = anim8.newAnimation(megautils.getResource("splashGrid")("1-4", 1), 1/8)
   self.rot = math.rad(side==-1 and 0 or 180)
   self.follow = follow
   if self.follow then
@@ -100,21 +100,21 @@ function water:update(dt)
         v.gravityMultipliers.water = self.grav
         if v.transform.y < self.transform.y then
           megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2), -8, self, -1)
-          mmSfx.play("splash")
+          megautils.playSound("splash")
         elseif v.transform.y-v.velocity.vely > self.transform.y+self.collisionShape.h then
           megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2), 
             self.collisionShape.h+8, self, 1)
-          mmSfx.play("splash")
+          megautils.playSound("splash")
         end
       elseif self.current and v.gravityMultipliers.water and #v:collisionTable(megautils.groups().water) == 0 then
         v.gravityMultipliers.water = nil
         if v.transform.y < self.transform.y then
           megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2), -8, self, -1)
-          mmSfx.play("splash")
+          megautils.playSound("splash")
         elseif v.transform.y > self.transform.y+self.collisionShape.h then
           megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2), 
             self.collisionShape.h+8, self, 1)
-          mmSfx.play("splash")
+          megautils.playSound("splash")
         end
         self.current = false
       end

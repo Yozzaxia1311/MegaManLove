@@ -13,11 +13,11 @@ function smallHealth:new(x, y, despwn, id, spawner)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(8, 6)
-  self.anim = anim8.newAnimation(loader.get("smallHealthGrid")("1-2", 1), 1/8)
+  self.anim = anim8.newAnimation(megautils.getResource("smallHealthGrid")("1-2", 1), 1/8)
   self.id = id
   self.spawner = spawner
-  self.t = loader.get("particles")
-  self.tOutline = loader.get("particlesOutline")
+  self.t = megautils.getResource("particles")
+  self.tOutline = megautils.getResource("particlesOutline")
   self.despawn = despwn == nil and self.id == nil or despwn
   self.added = function()
     self:addToGroup("removeOnTransition")
@@ -108,11 +108,11 @@ function health:new(x, y, despwn, id, spawner)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(16, 14)
-  self.anim = anim8.newAnimation(loader.get("healthGrid")("1-2", 1), 1/8)
+  self.anim = anim8.newAnimation(megautils.getResource("healthGrid")("1-2", 1), 1/8)
   self.id = id
   self.spawner = spawner
-  self.t = loader.get("particles")
-  self.tOutline = loader.get("particlesOutline")
+  self.t = megautils.getResource("particles")
+  self.tOutline = megautils.getResource("particlesOutline")
   self.despawn = despwn == nil and self.id == nil or despwn
   self.added = function()
     self:addToGroup("removeOnTransition")
@@ -203,12 +203,12 @@ function smallEnergy:new(x, y, despwn, id, spawner)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(8, 6)
-  self.anim = anim8.newAnimation(loader.get("smallEnergyGrid")("1-2", 1), 1/8)
+  self.anim = anim8.newAnimation(megautils.getResource("smallEnergyGrid")("1-2", 1), 1/8)
   self.id = id
   self.spawner = spawner
-  self.texOutline = loader.get("particlesOutline")
-  self.texOne = loader.get("particlesOne")
-  self.texTwo = loader.get("particlesTwo")
+  self.texOutline = megautils.getResource("particlesOutline")
+  self.texOne = megautils.getResource("particlesOne")
+  self.texTwo = megautils.getResource("particlesTwo")
   self.despawn = despwn == nil and self.id == nil or despwn
   self.added = function()
     self:addToGroup("removeOnTransition")
@@ -308,12 +308,12 @@ function energy:new(x, y, despwn, id, spawner)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(16, 10)
-  self.anim = anim8.newAnimation(loader.get("energyGrid")("1-2", 1), 1/8)
+  self.anim = anim8.newAnimation(megautils.getResource("energyGrid")("1-2", 1), 1/8)
   self.id = id
   self.spawner = spawner
-  self.texOutline = loader.get("particlesOutline")
-  self.texOne = loader.get("particlesOne")
-  self.texTwo = loader.get("particlesTwo")
+  self.texOutline = megautils.getResource("particlesOutline")
+  self.texOne = megautils.getResource("particlesOne")
+  self.texTwo = megautils.getResource("particlesTwo")
   self.despawn = despwn == nil and self.id == nil or despwn
   self.added = function()
     self:addToGroup("removeOnTransition")
@@ -416,10 +416,10 @@ function life:new(x, y, despwn, id, spawner)
   self.quad = love.graphics.newQuad(104, 12, 16, 16, 128, 98)
   self.id = id
   self.spawner = spawner
-  self.tex = loader.get("particles")
-  self.texTwo = loader.get("particlesTwo")
-  self.texOutline = loader.get("particlesOutline")
-  self.texOne = loader.get("particlesOne")
+  self.tex = megautils.getResource("particles")
+  self.texTwo = megautils.getResource("particlesTwo")
+  self.texOutline = megautils.getResource("particlesOutline")
+  self.texOne = megautils.getResource("particlesOne")
   self.despawn = despwn == nil and self.id == nil or despwn
   self.added = function()
     self:addToGroup("removeOnTransition")
@@ -470,7 +470,7 @@ function life:update(dt)
         if not self.despawn then
           life.banIds[#life.banIds+1] = self.id
         end
-        mmSfx.play("life")
+        megautils.playSound("life")
         megautils.state().sectionHandler:removeEntity(self.spawner)
         megautils.remove(self.spawner, true)
         megautils.remove(self, true)
@@ -554,12 +554,12 @@ function eTank:new(x, y, despwn, id, spawner)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(16, 15)
-  self.anim = anim8.newAnimation(loader.get("tankGrid")(1, 1, 2, 2), 1/8)
+  self.anim = anim8.newAnimation(megautils.getResource("tankGrid")(1, 1, 2, 2), 1/8)
   self.id = id
   self.spawner = spawner
-  self.texOutline = loader.get("particlesOutline")
-  self.texOne = loader.get("particlesOne")
-  self.texTwo = loader.get("particlesTwo")
+  self.texOutline = megautils.getResource("particlesOutline")
+  self.texOne = megautils.getResource("particlesOne")
+  self.texTwo = megautils.getResource("particlesTwo")
   self.despawn = despwn == nil and self.id == nil or despwn
   self.added = function()
     self:addToGroup("removeOnTransition")
@@ -596,7 +596,7 @@ function eTank:update(dt)
       if not self.despawn then
         eTank.banIds[#eTank.banIds+1] = self.id
       end
-      mmSfx.play("life")
+      megautils.playSound("life")
       megautils.state().sectionHandler:removeEntity(self.spawner)
       megautils.remove(self.spawner, true)
       megautils.remove(self, true)
@@ -659,12 +659,12 @@ function wTank:new(x, y, despwn, id, spawner)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(16, 15)
-  self.anim = anim8.newAnimation(loader.get("tankGrid")(2, 2, 2, 1), 1/8)
+  self.anim = anim8.newAnimation(megautils.getResource("tankGrid")(2, 2, 2, 1), 1/8)
   self.id = id
   self.spawner = spawner
-  self.texOutline = loader.get("particlesOutline")
-  self.texOne = loader.get("particlesOne")
-  self.texTwo = loader.get("particlesTwo")
+  self.texOutline = megautils.getResource("particlesOutline")
+  self.texOne = megautils.getResource("particlesOne")
+  self.texTwo = megautils.getResource("particlesTwo")
   self.despawn = despwn == nil and self.id == nil or despwn
   self.added = function()
     self:addToGroup("removeOnTransition")
@@ -701,7 +701,7 @@ function wTank:update(dt)
       if not self.despawn then
         wTank.banIds[#wTank.banIds+1] = self.id
       end
-      mmSfx.play("life")
+      megautils.playSound("life")
       megautils.state().sectionHandler:removeEntity(self.spawner)
       megautils.remove(self.spawner, true)
       megautils.remove(self, true)

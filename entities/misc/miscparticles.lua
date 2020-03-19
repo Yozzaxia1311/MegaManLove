@@ -9,8 +9,8 @@ function slideParticle:new(x, y, side)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(2, 8)
-  self.tex = loader.get("particles")
-  self.anim = anim8.newAnimation(loader.get("slideParticleGrid")("1-3",1), 1/10)
+  self.tex = megautils.getResource("particles")
+  self.anim = anim8.newAnimation(megautils.getResource("slideParticleGrid")("1-3",1), 1/10)
   self.side = side
 end
 
@@ -51,8 +51,8 @@ function damageSteam:new(x, y)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(5, 8)
-  self.tex = loader.get("particles")
-  self.anim = anim8.newAnimation(loader.get("damageSteamGrid")("1-3",1), 1/8)
+  self.tex = megautils.getResource("particles")
+  self.anim = anim8.newAnimation(megautils.getResource("damageSteamGrid")("1-3",1), 1/8)
 end
 
 function damageSteam:recycle(x, y)
@@ -86,7 +86,7 @@ function airBubble:new(x, y)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(2, 8)
-  self.tex = loader.get("particles")
+  self.tex = megautils.getResource("particles")
   self.quad = love.graphics.newQuad(104, 28, 4, 4, 128, 98)
   self.off = 0
   self.timer = 0
@@ -135,8 +135,8 @@ function kickParticle:new(x, y, side)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(8, 8)
-  self.tex = loader.get("particles")
-  self.anim = anim8.newAnimation(loader.get("slideParticleGrid")("1-3",1), 1/10)
+  self.tex = megautils.getResource("particles")
+  self.anim = anim8.newAnimation(megautils.getResource("slideParticleGrid")("1-3",1), 1/10)
   self.render = false
   self.side = side
   self.once = false
@@ -191,8 +191,8 @@ function angleParticle:new(x, y, a)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(2, 8)
-  self.tex = loader.get("particles")
-  self.anim = anim8.newAnimation(loader.get("slideParticleGrid")("1-3",1), 1/10)
+  self.tex = megautils.getResource("particles")
+  self.anim = anim8.newAnimation(megautils.getResource("slideParticleGrid")("1-3",1), 1/10)
   self.once = false
   self.velocity = velocity()
   self.velocity.velx = megautils.calcX(a)
@@ -242,7 +242,7 @@ function harm:new(e)
   self.transform.x = (self.follow.transform.x+self.follow.collisionShape.w/2)-24/2
   self.transform.y = (self.follow.transform.y+self.follow.collisionShape.h/2)-24/2
   self:setRectangleCollision(24, 24)
-  self.tex = loader.get("particles")
+  self.tex = megautils.getResource("particles")
   self.quad = love.graphics.newQuad(0, 22, 24, 24, 128, 98)
   self.timer = 0
 end
@@ -284,8 +284,8 @@ function explodeParticle:new(x, y, angle, spd)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(24, 24)
-  self.tex = loader.get("particles")
-  self.anim = anim8.newAnimation(loader.get("explodeParticleGrid")("1-5", 1), 1/10)
+  self.tex = megautils.getResource("particles")
+  self.anim = anim8.newAnimation(megautils.getResource("explodeParticleGrid")("1-5", 1), 1/10)
   self.velocity = velocity()
   self.velocity.velx = megautils.calcX(angle)*spd
   self.velocity.vely = megautils.calcY(angle)*spd
@@ -323,8 +323,8 @@ function absorbParticle:new(x, y, towards, spd)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(24, 24)
-  self.tex = loader.get("particles")
-  self.anim = anim8.newAnimation(loader.get("explodeParticleGrid")("1-5", 1), 1/10)
+  self.tex = megautils.getResource("particles")
+  self.anim = anim8.newAnimation(megautils.getResource("explodeParticleGrid")("1-5", 1), 1/10)
   self.towards = towards
   self.startX = x
   self.startY = y
@@ -378,7 +378,7 @@ function absorb:update(dt)
   if self.timer == 60 then
     self.timer = 0
     self.times = self.times + 1
-    mmSfx.play("absorb")
+    megautils.playSound("absorb")
     absorbParticle.createAbsorbtion(self.towards, self.spd)
     if self.times == self.maxTimes then
       megautils.remove(self, true)
@@ -397,9 +397,9 @@ function smallBlast:new(x, y, spd)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(24, 24)
-  self.tex = loader.get("particles")
+  self.tex = megautils.getResource("particles")
   self.spd = spd or 0.065
-  self.anim = anim8.newAnimation(loader.get("explodeParticleGrid")("1-5", 1), self.spd)
+  self.anim = anim8.newAnimation(megautils.getResource("explodeParticleGrid")("1-5", 1), self.spd)
 end
 
 function smallBlast:recycle(x, y, spd)

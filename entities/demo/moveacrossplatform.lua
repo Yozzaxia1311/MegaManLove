@@ -1,4 +1,4 @@
-loader.load("assets/global/entities/moveAcrossPlatform.png", "moveArossPlatform", "texture")
+megautils.loadResource("assets/global/entities/moveAcrossPlatform.png", "moveArossPlatform")
 
 addobjects.register("moveAcrossPlatform", function(v)
   megautils.add(spawner, v.x-4, v.y-4, 32+8, 16+8, function(s)
@@ -18,7 +18,7 @@ function moveAcrossPlatform:new(x, y, toX, toY, s)
   self.transform.x = x
   self.transform.y = y
   self:setRectangleCollision(32, 16)
-  self.tex = loader.get("moveArossPlatform")
+  self.tex = megautils.getResource("moveArossPlatform")
   self.quad = love.graphics.newQuad(0, 0, 32, 16, 32, 16)
   self.spawner = s
   self.velocity = velocity()

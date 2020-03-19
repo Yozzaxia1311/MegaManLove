@@ -1,8 +1,8 @@
 local disclaimerState = states.state:extend()
 
 function disclaimerState:begin()
-  mmMusic.stopMusic()
-  loader.load("assets/misc/disclaimerFace.png", "face", "texture")
+  megautils.stopMusic()
+  megautils.loadResource("assets/misc/disclaimerFace.png", "face")
   megautils.add(disclaimer)
   megautils.add(fade, false, nil, nil, fade.remove)
 end
@@ -33,7 +33,7 @@ function disclaimer:new()
   end
   self.transform.x = 0
   self.transform.y = 0
-  self.t = loader.get("face")
+  self.t = megautils.getResource("face")
   self.timer = 0
   self.timer2 = 2
   self.alpha = 0

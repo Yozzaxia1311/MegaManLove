@@ -1,13 +1,13 @@
 local gameOverState = states.state:extend()
 
 function gameOverState:begin()
-  loader.load("assets/misc/cont.png", "cont", "texture")
+  megautils.loadResource("assets/misc/cont.png", "cont")
   megautils.loadStage(self, "assets/maps/cont.tmx")
   megautils.add(contPanels)
   self.wait = 0
   megautils.add(fade, false, nil, nil, fade.remove)
   view.x, view.y = 0, 0
-  mmMusic.playFromFile(nil, "assets/sfx/music/gameOver.ogg")
+  megautils.playMusic(nil, "assets/sfx/music/gameOver.ogg")
 end
 
 function gameOverState:update(dt)
@@ -31,7 +31,7 @@ function contPanels:new()
   self.added = function(self)
     self:addToGroup("freezable")
   end
-  self.tex = loader.get("cont")
+  self.tex = megautils.getResource("cont")
   self.quadOne = love.graphics.newQuad(0, 0, 176, 48, 176, 104)
   self.quadTwo = love.graphics.newQuad(0, 48, 160, 56, 176, 104)
   self.state = 0
@@ -43,7 +43,7 @@ function contPanels:update(dt)
   if self.timer == 198 then
     self.state = 1
     if globals.gameOverMenuMusic then
-      mmMusic.playFromFile("assets/sfx/music/menu.ogg")
+      megautils.playMusic("assets/sfx/music/menu.ogg")
     end
     megautils.add(contSelect)
   end
@@ -62,7 +62,7 @@ function contSelect:new()
   contSelect.super.new(self)
   self.transform.x = 56
   self.transform.y = 144
-  self.tex = loader.get("menuSelect")
+  self.tex = megautils.getResource("menuSelect")
   self.pick = 0
   self.offY = self.transform.y
   self.picked = false
@@ -76,13 +76,13 @@ function contSelect:update(dt)
     self.pick = math.wrap(self.pick+1, 0, 1)
   end
   if old ~= self.pick then
-    mmSfx.play("cursorMove")
+    megautils.playSound("cursorMove")
   end
   if (control.jumpPressed[1] or control.startPressed[1]) and not self.picked then
     if self.pick == 1 then
       self.picked = true
       self.render = false
-      mmMusic.stopMusic()
+      megautils.stopMusic()
       megautils.gotoState(globals.gameOverContinueState)
     elseif self.pick == 0 then
       self.picked = true

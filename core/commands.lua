@@ -82,7 +82,7 @@ function cmdRecOpen(cmd)
   if love.filesystem.getInfo(cmd[2] .. ".rd") then
     states.openRecord = cmd[2] .. ".rd"
     megautils.add(fade, true, nil, nil, function(s)
-          mmMusic.stopMusic()
+          megautils.stopMusic()
           love.audio.stop()
           control.updateDemoFunc = function()
               return console.state == 1
@@ -173,7 +173,7 @@ function cmdState(cmd)
   end
   if map == nil then console.print("No such state \""..cmd[2].."\"") return end
   love.audio.stop()
-  mmMusic.stopMusic()
+  megautils.stopMusic()
   globals.manageStageResources = true
   globals.resetState = true
   if cmd[3] then globals.checkpoint = cmd[3] end

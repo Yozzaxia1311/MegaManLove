@@ -14,20 +14,20 @@ function protoSemiBuster:new(x, y, dir, wpn, roll)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(10, 10)
-  self.tex = loader.get(roll and "rollBuster" or "protoBuster")
+  self.tex = megautils.getResource(roll and "rollBuster" or "protoBuster")
   self.quad = love.graphics.newQuad(0, 0, 10, 10, 68, 10)
   self.velocity = velocity()
   self.velocity.velx = dir * 5
   self.side = dir
   self.wpn = wpn
-  mmSfx.play("semiCharged")
+  megautils.playSound("semiCharged")
 end
 
 function protoSemiBuster:dink(e)
   self.velocity.vely = -4
   self.velocity.velx = 4*-self.side
   self.dinked = 1
-  mmSfx.play("dink")
+  megautils.playSound("dink")
 end
 
 function protoSemiBuster:update(dt)
@@ -56,8 +56,8 @@ function protoChargedBuster:new(x, y, dir, wpn, roll)
     self:addToGroup("freezable")
     self:addToGroup("removeOnTransition")
   end
-  self.tex = loader.get(roll and "rollBuster" or "protoBuster")
-  self.anim = anim8.newAnimation(loader.get("protoBusterGrid")("1-2", 1), 1/20)
+  self.tex = megautils.getResource(roll and "rollBuster" or "protoBuster")
+  self.anim = anim8.newAnimation(megautils.getResource("protoBusterGrid")("1-2", 1), 1/20)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(29, 8)
@@ -66,7 +66,7 @@ function protoChargedBuster:new(x, y, dir, wpn, roll)
   self.velocity.velx = dir * 6
   self.side = dir
   self.wpn = wpn
-  mmSfx.play("protoCharged")
+  megautils.playSound("protoCharged")
   self:face(-self.side)
 end
 
@@ -78,7 +78,7 @@ function protoChargedBuster:dink(e)
   self.velocity.vely = -4
   self.velocity.velx = 4*-self.side
   self.dinked = 1
-  mmSfx.play("dink")
+  megautils.playSound("dink")
 end
 
 function protoChargedBuster:update(dt)
@@ -111,13 +111,13 @@ function bassBuster:new(x, y, dir, wpn, t)
     self:addToGroup("removeOnTransition")
     self:addToGroup("weapon")
     if not self.treble then
-      mmSfx.play("buster")
+      megautils.playSound("buster")
     end
   end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(6, 6)
-  self.tex = loader.get("bassBuster")
+  self.tex = megautils.getResource("bassBuster")
   self.velocity = velocity()
   self.velocity.velx = megautils.calcX(dir) * 5
   self.velocity.vely = megautils.calcY(dir) * 5
@@ -141,7 +141,7 @@ function bassBuster:dink(e)
   self.velocity.vely = -4
   self.velocity.velx = 4*-self.side
   self.dinked = 1
-  mmSfx.play("dink")
+  megautils.playSound("dink")
 end
 
 function bassBuster:update(dt)
@@ -173,12 +173,12 @@ function megaBuster:new(x, y, dir, wpn)
     self:addToGroup("freezable")
     self:addToGroup("removeOnTransition")
     self:addToGroup("weapon")
-    mmSfx.play("buster")
+    megautils.playSound("buster")
   end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(8, 6)
-  self.tex = loader.get("busterTex")
+  self.tex = megautils.getResource("busterTex")
   self.quad = love.graphics.newQuad(0, 31, 8, 6, 133, 47)
   self.velocity = velocity()
   self.velocity.velx = dir * 5
@@ -200,7 +200,7 @@ function megaBuster:dink(e)
   self.velocity.vely = -4
   self.velocity.velx = 4*-self.side
   self.dinked = 1
-  mmSfx.play("dink")
+  megautils.playSound("dink")
 end
 
 function megaBuster:update(dt)
@@ -233,13 +233,13 @@ function megaSemiBuster:new(x, y, dir, wpn)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(16, 10)
-  self.tex = loader.get("busterTex")
-  self.anim = anim8.newAnimation(loader.get("smallChargeGrid")("1-2", 1), 1/12)
+  self.tex = megautils.getResource("busterTex")
+  self.anim = anim8.newAnimation(megautils.getResource("smallChargeGrid")("1-2", 1), 1/12)
   self.velocity = velocity()
   self.velocity.velx = dir * 5
   self.side = dir
   self.wpn = wpn
-  mmSfx.play("semiCharged")
+  megautils.playSound("semiCharged")
   self:face(-self.side)
 end
 
@@ -251,7 +251,7 @@ function megaSemiBuster:dink(e)
   self.velocity.vely = -4
   self.velocity.velx = 4*-self.side
   self.dinked = 1
-  mmSfx.play("dink")
+  megautils.playSound("dink")
 end
 
 function megaSemiBuster:update(dt)
@@ -282,8 +282,8 @@ function megaChargedBuster:new(x, y, dir, wpn)
     self:addToGroup("removeOnTransition")
     self:addToGroup("weapon")
   end
-  self.tex = loader.get("busterTex")
-  self.anim = anim8.newAnimation(loader.get("chargeGrid")("1-4", 1), 1/20)
+  self.tex = megautils.getResource("busterTex")
+  self.anim = anim8.newAnimation(megautils.getResource("chargeGrid")("1-4", 1), 1/20)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(24, 24)
@@ -292,7 +292,7 @@ function megaChargedBuster:new(x, y, dir, wpn)
   self.velocity.velx = dir * 5.5
   self.side = dir
   self.wpn = wpn
-  mmSfx.play("charged")
+  megautils.playSound("charged")
   self:face(-self.side)
 end
 
@@ -304,7 +304,7 @@ function megaChargedBuster:dink(e)
   self.velocity.vely = -4
   self.velocity.velx = 4*-self.side
   self.dinked = 1
-  mmSfx.play("dink")
+  megautils.playSound("dink")
 end
 
 function megaChargedBuster:update(dt)
@@ -340,13 +340,13 @@ function trebleBoost:new(x, y, side, player, wpn)
   self.transform.y = view.y-8
   self.toY = y
   self:setRectangleCollision(20, 19)
-  self.tex = loader.get("treble")
+  self.tex = megautils.getResource("treble")
   self.c = "spawn"
   self.anims = {}
-  self.anims.spawn = anim8.newAnimation(loader.get("trebleGrid")(1, 1), 1)
-  self.anims.spawnLand = anim8.newAnimation(loader.get("trebleGrid")("2-3", 1, 2, 1), 1/20)
-  self.anims.idle = anim8.newAnimation(loader.get("trebleGrid")(4, 1), 1)
-  self.anims.start = anim8.newAnimation(loader.get("trebleGrid")("5-6", 1, "5-6", 1, "5-6", 1, "5-6", 1, "7-8", 1),
+  self.anims.spawn = anim8.newAnimation(megautils.getResource("trebleGrid")(1, 1), 1)
+  self.anims.spawnLand = anim8.newAnimation(megautils.getResource("trebleGrid")("2-3", 1, 2, 1), 1/20)
+  self.anims.idle = anim8.newAnimation(megautils.getResource("trebleGrid")(4, 1), 1)
+  self.anims.start = anim8.newAnimation(megautils.getResource("trebleGrid")("5-6", 1, "5-6", 1, "5-6", 1, "5-6", 1, "7-8", 1),
     1/16, "pauseAtEnd")
   self.side = side
   self.s = 0
@@ -389,7 +389,7 @@ function trebleBoost:update(dt)
     if self.anims.spawnLand.looped then
       self.c = "idle"
       self.s = 3
-      mmSfx.play("start")
+      megautils.playSound("start")
     end
   elseif self.s == 3 then
     megautils.autoFace(self, self.player, true)
@@ -446,12 +446,12 @@ function rushJet:new(x, y, side, player, wpn, skin)
   self.transform.y = view.y-8
   self.toY = y
   self:setRectangleCollision(27, 8)
-  self.tex = loader.get(skin or "rush")
+  self.tex = megautils.getResource(skin or "rush")
   self.c = "spawn"
   self.anims = {}
-  self.anims.spawn = anim8.newAnimation(loader.get("rushGrid")(1, 1), 1)
-  self.anims.spawnLand = anim8.newAnimation(loader.get("rushGrid")("2-3", 1, 2, 1), 1/20)
-  self.anims.jet = anim8.newAnimation(loader.get("rushGrid")("2-3", 2), 1/8)
+  self.anims.spawn = anim8.newAnimation(megautils.getResource("rushGrid")(1, 1), 1)
+  self.anims.spawnLand = anim8.newAnimation(megautils.getResource("rushGrid")("2-3", 1, 2, 1), 1/20)
+  self.anims.jet = anim8.newAnimation(megautils.getResource("rushGrid")("2-3", 2), 1/8)
   self.side = side
   self.s = 0
   self.velocity = velocity()
@@ -483,7 +483,7 @@ function rushJet:update(dt)
     end
   elseif self.s == 1 then
     if self.anims.spawnLand.looped then
-      mmSfx.play("start")
+      megautils.playSound("start")
       self.c = "jet"
       self.s = 2
       self.isSolid = 2
@@ -530,7 +530,7 @@ function rushJet:update(dt)
       self.anims.spawnLand:gotoFrame(1)
       self.s = 4
       self.isSolid = 0
-      mmSfx.play("ascend")
+      megautils.playSound("ascend")
     end
     self.timer = math.min(self.timer+1, 60)
     if self.timer == 60 then
@@ -582,13 +582,13 @@ function rushCoil:new(x, y, side, player, w, skin)
   self.transform.y = view.y-16
   self.toY = y
   self:setRectangleCollision(20, 19)
-  self.tex = loader.get(skin or "rush")
+  self.tex = megautils.getResource(skin or "rush")
   self.c = "spawn"
   self.anims = {}
-  self.anims.spawn = anim8.newAnimation(loader.get("rushGrid")(1, 1), 1)
-  self.anims.spawnLand = anim8.newAnimation(loader.get("rushGrid")("2-3", 1, 2, 1), 1/20)
-  self.anims.idle = anim8.newAnimation(loader.get("rushGrid")(4, 1, 1, 2), 1/8)
-  self.anims.coil = anim8.newAnimation(loader.get("rushGrid")(4, 2), 1)
+  self.anims.spawn = anim8.newAnimation(megautils.getResource("rushGrid")(1, 1), 1)
+  self.anims.spawnLand = anim8.newAnimation(megautils.getResource("rushGrid")("2-3", 1, 2, 1), 1/20)
+  self.anims.idle = anim8.newAnimation(megautils.getResource("rushGrid")(4, 1, 1, 2), 1/8)
+  self.anims.coil = anim8.newAnimation(megautils.getResource("rushGrid")(4, 2), 1)
   self.side = side
   self.s = 0
   self.timer = 0
@@ -629,7 +629,7 @@ function rushCoil:update(dt)
     end
   elseif self.s == 2 then
     if self.anims.spawnLand.looped then
-      mmSfx.play("start")
+      megautils.playSound("start")
       self.c = "idle"
       self.s = 3
     end
@@ -662,7 +662,7 @@ function rushCoil:update(dt)
       self.s = 5
       self.c = "spawnLand"
       self.anims.spawnLand:gotoFrame(1)
-      mmSfx.play("ascend")
+      megautils.playSound("ascend")
     end
   elseif self.s == 5 then
     if self.anims.spawnLand.looped then
@@ -699,19 +699,19 @@ function stickWeapon:new(x, y, dir, wpn)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(8, 6)
-  self.tex = loader.get("stickWeapon")
+  self.tex = megautils.getResource("stickWeapon")
   self.velocity = velocity()
   self.velocity.velx = dir * 5
   self.side = dir
   self.wpn = wpn
-  mmSfx.play("buster")
+  megautils.playSound("buster")
 end
 
 function stickWeapon:dink(e)
   self.velocity.vely = -4
   self.velocity.velx = 4*-self.side
   self.dinked = 1
-  mmSfx.play("dink")
+  megautils.playSound("dink")
 end
 
 function stickWeapon:update(dt)

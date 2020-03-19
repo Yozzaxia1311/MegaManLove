@@ -18,9 +18,9 @@ function healthHandler:new(colorOne, colorTwo, colorOutline, side, r, segments, 
   self.added = function(self)
     self:addToGroup("freezable")
   end
-  self.barOne = loader.get("barOne")
-  self.barTwo = loader.get("barTwo")
-  self.barOutline = loader.get("barOutline")
+  self.barOne = megautils.getResource("barOne")
+  self.barTwo = megautils.getResource("barTwo")
+  self.barOutline = megautils.getResource("barOutline")
   self.colorOne = colorOne
   self.colorTwo = colorTwo
   self.colorOutline = colorOutline
@@ -64,11 +64,11 @@ function healthHandler:update(dt)
     self.health = self.health + 1
     self.riseTimer = 0
     self.rise = self.rise - 1
-    mmSfx.play("heal")
+    megautils.playSound("heal")
     if self.rise == 0 or self.health >= 4*self.segments or self.health <= 0 then
       megautils.unfreeze({self})
       self.rise = 0
-      mmSfx.stop("heal")
+      megautils.stopSound("heal")
     end
   end
   self.health = math.clamp(self.health, 0, 4*self.segments)
@@ -108,9 +108,9 @@ function healthHandler:update(dt)
           self.t2 = nil
           self.tween = nil
           megautils.unfreeze()
-          mmSfx.play("selected")
+          megautils.playSound("selected")
         else
-          mmSfx.play("error")
+          megautils.playSound("error")
         end
       end
     end

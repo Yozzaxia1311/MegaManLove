@@ -355,32 +355,32 @@ function megaman:new(x, y, side, drop, p, g, gf)
   megaman.properties(self, g, gf)
   self:calcGrav()
   if globals.player[self.player] == "mega" then
-    self.texOutline = loader.get("megaManOutline")
-    self.texOne = loader.get("megaManOne")
-    self.texTwo = loader.get("megaManTwo")
-    self.texFace = loader.get("megaManFace")
+    self.texOutline = megautils.getResource("megaManOutline")
+    self.texOne = megautils.getResource("megaManOne")
+    self.texTwo = megautils.getResource("megaManTwo")
+    self.texFace = megautils.getResource("megaManFace")
   elseif globals.player[self.player] == "proto" then
-    self.texOutline = loader.get("protoManOutline")
-    self.texOne = loader.get("protoManOne")
-    self.texTwo = loader.get("protoManTwo")
-    self.texFace = loader.get("protoManFace")
+    self.texOutline = megautils.getResource("protoManOutline")
+    self.texOne = megautils.getResource("protoManOne")
+    self.texTwo = megautils.getResource("protoManTwo")
+    self.texFace = megautils.getResource("protoManFace")
   elseif globals.player[self.player] == "bass" then
-    self.texOutline = loader.get("bassOutline")
-    self.texOne = loader.get("bassOne")
-    self.texTwo = loader.get("bassTwo")
-    self.texFace = loader.get("bassFace")
+    self.texOutline = megautils.getResource("bassOutline")
+    self.texOne = megautils.getResource("bassOne")
+    self.texTwo = megautils.getResource("bassTwo")
+    self.texFace = megautils.getResource("bassFace")
   elseif globals.player[self.player] == "roll" then
-    self.texOutline = loader.get("rollOutline")
-    self.texOne = loader.get("rollOne")
-    self.texTwo = loader.get("rollTwo")
-    self.texFace = loader.get("rollFace")
+    self.texOutline = megautils.getResource("rollOutline")
+    self.texOne = megautils.getResource("rollOne")
+    self.texTwo = megautils.getResource("rollTwo")
+    self.texFace = megautils.getResource("rollFace")
   end
   self.teleportOffY = 0
   self.side = side or 1
   self.transform.y = y
   self.transform.x = x
   self.class = megaman
-  self.icoTex = loader.get("weaponSelectIcon")
+  self.icoTex = megautils.getResource("weaponSelectIcon")
   self.iconQuad = love.graphics.newQuad(0, 0, 16, 16, 112, 48)
   self.icons = {}
   if globals.player[self.player] == "proto" then
@@ -509,51 +509,51 @@ function megaman:new(x, y, side, drop, p, g, gf)
   local pp = "megaManGrid"
   if globals.player[self.player] == "bass" then
     pp = "bassGrid"
-    self.animations.trebleStart = anim8.newAnimation(loader.get(pp)(4, 10, "1-4", 11, 1, 12), 1/8, "pauseAtEnd")
-    self.animations.treble = anim8.newAnimation(loader.get(pp)("2-3", 12), 1/12)
-    self.animations.trebleShoot = anim8.newAnimation(loader.get(pp)(4, 12, 1, 13), 1/12)
+    self.animations.trebleStart = anim8.newAnimation(megautils.getResource(pp)(4, 10, "1-4", 11, 1, 12), 1/8, "pauseAtEnd")
+    self.animations.treble = anim8.newAnimation(megautils.getResource(pp)("2-3", 12), 1/12)
+    self.animations.trebleShoot = anim8.newAnimation(megautils.getResource(pp)(4, 12, 1, 13), 1/12)
   elseif globals.player[self.player] == "roll" then
     pp = "rollGrid"
   end
   if globals.player[self.player] == "proto" then
-    self.animations.idle = anim8.newAnimation(loader.get(pp)(1, 1, 2, 1), 1/8)
+    self.animations.idle = anim8.newAnimation(megautils.getResource(pp)(1, 1, 2, 1), 1/8)
   else
-    self.animations.idle = anim8.newAnimation(loader.get(pp)(1, 1, 2, 1), {2.5, 0.1})
+    self.animations.idle = anim8.newAnimation(megautils.getResource(pp)(1, 1, 2, 1), {2.5, 0.1})
   end
-  self.animations.idleShoot = anim8.newAnimation(loader.get(pp)(1, 4), 1)
-  self.animations.idleShootDM = anim8.newAnimation(loader.get(pp)(3, 6), 1)
-  self.animations.idleShootUM = anim8.newAnimation(loader.get(pp)(4, 6), 1)
-  self.animations.idleShootU = anim8.newAnimation(loader.get(pp)(1, 7), 1)
-  self.animations.idleThrow = anim8.newAnimation(loader.get(pp)(4, 7), 1)
-  self.animations.nudge = anim8.newAnimation(loader.get(pp)(3, 1), 1)
-  self.animations.jump = anim8.newAnimation(loader.get(pp)(4, 2), 1)
-  self.animations.jumpShoot = anim8.newAnimation(loader.get(pp)(1, 5), 1)
-  self.animations.jumpShootDM = anim8.newAnimation(loader.get(pp)(1, 10), 1)
-  self.animations.jumpShootUM = anim8.newAnimation(loader.get(pp)(2, 10), 1)
-  self.animations.jumpShootU = anim8.newAnimation(loader.get(pp)(3, 10), 1)
-  self.animations.jumpThrow = anim8.newAnimation(loader.get(pp)(1, 8), 1)
-  self.animations.jumpProtoShield = anim8.newAnimation(loader.get(pp)(3, 6), 1)
-  self.animations.jumpProtoShield2 = anim8.newAnimation(loader.get(pp)(4, 6), 1)
-  self.animations.run = anim8.newAnimation(loader.get(pp)(4, 1, "1-2", 2, 1, 2), 1/8)
-  self.animations.runShoot = anim8.newAnimation(loader.get(pp)("2-4", 4, 3, 4), 1/8)
-  self.animations.runThrow = anim8.newAnimation(loader.get(pp)("2-4", 8, 3, 8), 1/8)
-  self.animations.climb = anim8.newAnimation(loader.get(pp)("1-2", 3), 1/8)
-  self.animations.climbShoot = anim8.newAnimation(loader.get(pp)(2, 5), 1)
-  self.animations.climbShootDM = anim8.newAnimation(loader.get(pp)(2, 9), 1)
-  self.animations.climbShootUM = anim8.newAnimation(loader.get(pp)(3, 9), 1)
-  self.animations.climbShootU = anim8.newAnimation(loader.get(pp)(4, 9), 1)
-  self.animations.climbThrow = anim8.newAnimation(loader.get(pp)(1, 9), 1)
-  self.animations.climbTip = anim8.newAnimation(loader.get(pp)(3, 3), 1)
-  self.animations.hit = anim8.newAnimation(loader.get(pp)(4, 3), 1)
-  self.animations.wallJump = anim8.newAnimation(loader.get(pp)(2, 9), 1)
-  self.animations.wallJumpShoot = anim8.newAnimation(loader.get(pp)(3, 9), 1)
-  self.animations.wallJumpThrow = anim8.newAnimation(loader.get(pp)(4, 9), 1)
-  self.animations.slide = anim8.newAnimation(loader.get(pp)(3, 2), 1/14, "pauseAtEnd")
-  self.animations.dash = anim8.newAnimation(loader.get(pp)("1-2", 10), 1/8, "pauseAtEnd")
-  self.animations.dashShoot = anim8.newAnimation(loader.get(pp)(4, 10), 1)
-  self.animations.dashThrow = anim8.newAnimation(loader.get(pp)(1, 11), 1)
-  self.animations.spawn = anim8.newAnimation(loader.get(pp)("3-4", 5), 0.08)
-  self.animations.spawnLand = anim8.newAnimation(loader.get(pp)("1-2", 6, 1, 6), 1/20)
+  self.animations.idleShoot = anim8.newAnimation(megautils.getResource(pp)(1, 4), 1)
+  self.animations.idleShootDM = anim8.newAnimation(megautils.getResource(pp)(3, 6), 1)
+  self.animations.idleShootUM = anim8.newAnimation(megautils.getResource(pp)(4, 6), 1)
+  self.animations.idleShootU = anim8.newAnimation(megautils.getResource(pp)(1, 7), 1)
+  self.animations.idleThrow = anim8.newAnimation(megautils.getResource(pp)(4, 7), 1)
+  self.animations.nudge = anim8.newAnimation(megautils.getResource(pp)(3, 1), 1)
+  self.animations.jump = anim8.newAnimation(megautils.getResource(pp)(4, 2), 1)
+  self.animations.jumpShoot = anim8.newAnimation(megautils.getResource(pp)(1, 5), 1)
+  self.animations.jumpShootDM = anim8.newAnimation(megautils.getResource(pp)(1, 10), 1)
+  self.animations.jumpShootUM = anim8.newAnimation(megautils.getResource(pp)(2, 10), 1)
+  self.animations.jumpShootU = anim8.newAnimation(megautils.getResource(pp)(3, 10), 1)
+  self.animations.jumpThrow = anim8.newAnimation(megautils.getResource(pp)(1, 8), 1)
+  self.animations.jumpProtoShield = anim8.newAnimation(megautils.getResource(pp)(3, 6), 1)
+  self.animations.jumpProtoShield2 = anim8.newAnimation(megautils.getResource(pp)(4, 6), 1)
+  self.animations.run = anim8.newAnimation(megautils.getResource(pp)(4, 1, "1-2", 2, 1, 2), 1/8)
+  self.animations.runShoot = anim8.newAnimation(megautils.getResource(pp)("2-4", 4, 3, 4), 1/8)
+  self.animations.runThrow = anim8.newAnimation(megautils.getResource(pp)("2-4", 8, 3, 8), 1/8)
+  self.animations.climb = anim8.newAnimation(megautils.getResource(pp)("1-2", 3), 1/8)
+  self.animations.climbShoot = anim8.newAnimation(megautils.getResource(pp)(2, 5), 1)
+  self.animations.climbShootDM = anim8.newAnimation(megautils.getResource(pp)(2, 9), 1)
+  self.animations.climbShootUM = anim8.newAnimation(megautils.getResource(pp)(3, 9), 1)
+  self.animations.climbShootU = anim8.newAnimation(megautils.getResource(pp)(4, 9), 1)
+  self.animations.climbThrow = anim8.newAnimation(megautils.getResource(pp)(1, 9), 1)
+  self.animations.climbTip = anim8.newAnimation(megautils.getResource(pp)(3, 3), 1)
+  self.animations.hit = anim8.newAnimation(megautils.getResource(pp)(4, 3), 1)
+  self.animations.wallJump = anim8.newAnimation(megautils.getResource(pp)(2, 9), 1)
+  self.animations.wallJumpShoot = anim8.newAnimation(megautils.getResource(pp)(3, 9), 1)
+  self.animations.wallJumpThrow = anim8.newAnimation(megautils.getResource(pp)(4, 9), 1)
+  self.animations.slide = anim8.newAnimation(megautils.getResource(pp)(3, 2), 1/14, "pauseAtEnd")
+  self.animations.dash = anim8.newAnimation(megautils.getResource(pp)("1-2", 10), 1/8, "pauseAtEnd")
+  self.animations.dashShoot = anim8.newAnimation(megautils.getResource(pp)(4, 10), 1)
+  self.animations.dashThrow = anim8.newAnimation(megautils.getResource(pp)(1, 11), 1)
+  self.animations.spawn = anim8.newAnimation(megautils.getResource(pp)("3-4", 5), 0.08)
+  self.animations.spawnLand = anim8.newAnimation(megautils.getResource(pp)("1-2", 6, 1, 6), 1/20)
   
   self:face(self.side)
   self.added = function(self)
@@ -774,7 +774,7 @@ function megaman:attemptWeaponUsage()
           self.shootTimer = 0
           self:resetCharge()
           self:useShootAnimation()
-          mmSfx.play("buster")
+          megautils.playSound("buster")
         end
       else
         megautils.add(trebleBoost, self.transform.x+(self.side==1 and 24 or -34), 
@@ -984,8 +984,8 @@ function megaman:healthChanged(o, c, i)
         end)
         megautils.unregisterPlayer(self)
         megautils.remove(self, true)
-        mmMusic.stopMusic()
-        mmSfx.play("die")
+        megautils.stopMusic()
+        megautils.playSound("die")
         return
       else
         self.dying = true
@@ -1020,7 +1020,7 @@ function megaman:healthChanged(o, c, i)
       megautils.add(damageSteam, self.transform.x+((self.collisionShape.w/2)+2)-11, self.transform.y-8)
       megautils.add(damageSteam, self.transform.x+((self.collisionShape.w/2)+2), self.transform.y-8)
       megautils.add(damageSteam, self.transform.x+((self.collisionShape.w/2)+2)+11, self.transform.y-8)
-      mmSfx.play("hurt")
+      megautils.playSound("hurt")
     end
   end
 end
@@ -1077,7 +1077,7 @@ function megaman:code(dt)
         self.canBeInvincible.treble = false
       elseif self.animations.trebleStart.position == 4 and self.trebleTimer == 0 then
         self.trebleTimer = 1
-        mmSfx.play("trebleStart")
+        megautils.playSound("trebleStart")
       end
     elseif self.treble == 2 then
       self:attemptWeaponUsage()
@@ -1312,7 +1312,7 @@ function megaman:code(dt)
     if self.standSolidJumpTimer > 0 and (not control.jumpDown[self.player] or
       self.standSolidJumpTimer == self.maxStandSolidJumpTime) then
       self.standSolidJumpTimer = -1
-      mmSfx.play("land")
+      megautils.playSound("land")
     end
     if self.standSolidJumpTimer == -1 and not control.jumpDown[self.player] then
       self.standSolidJumpTimer = 0
@@ -1388,7 +1388,7 @@ function megaman:code(dt)
       self.dashJump = false
       self.canStopJump.global = true
       self.extraJumps = 0
-      mmSfx.play("land")
+      megautils.playSound("land")
     else
       self:attemptClimb()
     end
@@ -1440,7 +1440,7 @@ function megaman:code(dt)
               end)
           megautils.remove(s, true)
           end)
-    mmSfx.play("pause")
+    megautils.playSound("pause")
   end
 end
 
@@ -1479,8 +1479,8 @@ function megaman:resetCharge()
     megaman.colorOne[self.player] = self.chargeColorOnes[megaman.weaponHandler[self.player].current][self.chargeState][self.chargeFrame]
     megaman.colorTwo[self.player] = self.chargeColorTwos[megaman.weaponHandler[self.player].current][self.chargeState][self.chargeFrame]
   end
-  mmSfx.stop("charge")
-  mmSfx.stop("protoCharge")
+  megautils.stopSound("charge")
+  megautils.stopSound("protoCharge")
 end
 
 function megaman:charge(animOnly)
@@ -1502,9 +1502,9 @@ function megaman:charge(animOnly)
       self.chargeFrame = 1
       if self.chargeState == 0 then
         if megaman.weaponHandler[self.player].current == "protoBuster" then
-          mmSfx.play("protoCharge")
+          megautils.playSound("protoCharge")
         else
-          mmSfx.play("charge")
+          megautils.playSound("charge")
         end
       end
       if animOnly==nil and true or not animOnly then
@@ -1594,7 +1594,7 @@ function megaman:updatePallete()
     self.prevWeapon = w
     self.weaponSwitchTimer = 0
     self:resetCharge()
-    mmSfx.play("switch")
+    megautils.playSound("switch")
   elseif control.nextPressed[self.player] and not control.prevDown[self.player] then
     self.prevWeapon = megaman.weaponHandler[self.player].currentSlot
     local w = math.wrap(megaman.weaponHandler[self.player].currentSlot+1, 0, megaman.weaponHandler[self.player].slotSize)
@@ -1612,7 +1612,7 @@ function megaman:updatePallete()
     self.nextWeapon = w
     self.weaponSwitchTimer = 0
     self:resetCharge()
-    mmSfx.play("switch")
+    megautils.playSound("switch")
   elseif control.prevPressed[self.player] and not control.nextDown[self.player] then
     self.nextWeapon = megaman.weaponHandler[self.player].currentSlot
     local w = math.wrap(megaman.weaponHandler[self.player].currentSlot-1, 0, megaman.weaponHandler[self.player].slotSize)
@@ -1630,7 +1630,7 @@ function megaman:updatePallete()
     self.prevWeapon = w
     self.weaponSwitchTimer = 0
     self:resetCharge()
-    mmSfx.play("switch")
+    megautils.playSound("switch")
   end
 end
 
@@ -1775,7 +1775,7 @@ function megaman:update(dt)
       megautils.unregisterPlayer(self)
       megautils.remove(self, true)
       megautils.unfreeze()
-      mmSfx.play("die")
+      megautils.playSound("die")
       return
     end
     view.x, view.y = math.round(camera.main.transform.x), math.round(camera.main.transform.y)
@@ -1787,7 +1787,7 @@ function megaman:update(dt)
       if self.dropLanded then
         self.dropLanded = not self.animations[self.dropLandAnimation.regular].looped
         if not self.dropLanded then
-          mmSfx.play("ascend")
+          megautils.playSound("ascend")
         end
       else
         self.teleportOffY = self.teleportOffY+self.riseSpeed
@@ -1804,7 +1804,7 @@ function megaman:update(dt)
           self.drop = false
           self.animations[self.dropLandAnimation.regular]:gotoFrame(1)
           self.control = true
-          mmSfx.play("start")
+          megautils.playSound("start")
         end
       end
     elseif self.control then

@@ -16,7 +16,7 @@ function bossdoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt)
   self.transform.y = y
   self.transform.x = x
   self:setLayer(0)
-  self.tex = loader.get("bossDoor")
+  self.tex = megautils.getResource("bossDoor")
   self.scrollx = scrollx
   self.scrolly = scrolly
   self.quad = love.graphics.newQuad(0, 0, 32, 16, 32, 16)
@@ -92,7 +92,7 @@ function bossdoor:update(dt)
         :setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and self.transform.x+16 or self.transform.x+(self.segments*16),
           (self.dir=="right" or self.dir=="left") and self.transform.y+((self.segments)*16) or self.transform.y+16, -1)
       end
-      mmSfx.play("bossDoorSfx")
+      megautils.playSound("bossDoorSfx")
     end
     if self.segments <= 0 then
       self.state = 2
@@ -140,7 +140,7 @@ function bossdoor:update(dt)
           (self.dir=="right" or self.dir=="left") and self.transform.y+(self.segments*16)-16 or self.transform.y+16,
           self.tileList[(self.dir=="right" or self.dir=="left") and 2 or self.segments][(self.dir=="right" or self.dir=="left") and self.segments or 2])
       end
-      mmSfx.play("bossDoorSfx")
+      megautils.playSound("bossDoorSfx")
     end
     if self.segments >= self.maxSegments and not megautils.state().system.afterUpdate then
       self.timer = 0

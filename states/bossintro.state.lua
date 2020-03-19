@@ -1,7 +1,7 @@
 local bossIntroState = states.state:extend()
 
 function bossIntroState:begin()
-  loader.load("assets/misc/title.png", "title", "texture")
+  megautils.loadResource("assets/misc/title.png", "title")
   megautils.runFile("entities/misc/starfield.lua")
   megautils.add(banner)
   megautils.add(smallStar, 32, 32, 180, 2)
@@ -19,7 +19,7 @@ function bossIntroState:begin()
     megautils.add(stickManIntro)
   end
   megautils.add(fade, false, nil, nil, fade.remove)
-  mmMusic.playFromFile(nil, "assets/sfx/music/stageStart.ogg")
+  megautils.playMusic(nil, "assets/sfx/music/stageStart.ogg")
 end
 
 function bossIntroState:update(dt)

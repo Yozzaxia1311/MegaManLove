@@ -1,9 +1,9 @@
 local titleState = states.state:extend()
 
 function titleState:begin()
-  loader.load("assets/misc/title.png", "title", "texture")
+  megautils.loadResource("assets/misc/title.png", "title")
   megautils.add(title)
-  mmMusic.lock = false
+  megautils.setMusicLock(false)
 end
 
 function titleState:update(dt)
@@ -29,7 +29,7 @@ function title:new()
   title.super.new(self)
   self.transform.y = 256
   self.transform.x = 37
-  self.tex = loader.get("title")
+  self.tex = megautils.getResource("title")
   self.once = false
   self.textTimer = 0
   self.drawText = false
@@ -45,14 +45,14 @@ function title:update(dt)
   if self.transform.y == 32 and not self.once then
     self.once = true
     self.drawText = true
-    mmMusic.playFromFile(nil, "assets/sfx/music/title.ogg")
+    megautils.playMusic(nil, "assets/sfx/music/title.ogg")
   end
   if self.drawText then
     self.timer = self.timer + 1
     if self.timer == 400 then
       states.openRecord = "assets/demo.rd"
       megautils.add(fade, true, nil, nil, function(s)
-          mmMusic.lock = true
+          megautils.setMusicLock(true)
           control.drawDemoFunc = function()
               if control.demo and math.wrap(control.recPos, 0, 40) < 20 then
                 love.graphics.setFont(mmFont)
@@ -68,7 +68,7 @@ function title:update(dt)
     end
     self.textTimer = math.wrap(self.textTimer+1, 0, 40)
     if control.startDown[1] then
-      mmMusic.stopMusic()
+      megautils.stopMusic()
       self.drawText = false
       megautils.gotoState("states/menu.state.lua")
     end

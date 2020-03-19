@@ -1,12 +1,12 @@
 local stageSelectState = states.state:extend()
 
 function stageSelectState:begin()
-  loader.load("assets/misc/select.png", "mugshots", "texture")
+  megautils.loadResource("assets/misc/select.png", "mugshots")
   megautils.loadStage(self, "assets/maps/stageSelect.tmx")
   megautils.add(stageSelect)
   megautils.add(fade, false, nil, nil, fade.remove)
   view.x, view.y = 0, 0
-  mmMusic.playFromFile("assets/sfx/music/selectLoop.ogg", "assets/sfx/music/selectIntro.ogg")
+  megautils.playMusic("assets/sfx/music/selectLoop.ogg", "assets/sfx/music/selectIntro.ogg")
 end
 
 function stageSelectState:update(dt)
@@ -41,7 +41,7 @@ function stageSelect:new()
   self.rollQuad = love.graphics.newQuad(0, 192, 32, 32, 96, 303)
   self.bassQuad = love.graphics.newQuad(0, 224, 32, 32, 96, 303)
   self.stickQuad = love.graphics.newQuad(32*2, 0, 32, 32, 96, 303)
-  self.tex = loader.get("mugshots")
+  self.tex = megautils.getResource("mugshots")
   self.timer = 0
   self.oldX = self.transform.x
   self.oldY = self.transform.y
@@ -72,7 +72,7 @@ function stageSelect:update(dt)
   self.y = math.wrap(self.y, 0, 2)
   
   if oldx ~= self.x or oldy ~= self.y then
-    mmSfx.play("cursorMove")
+    megautils.playSound("cursorMove")
     local newx, newy = 0, 0
     if self.x == 0 and self.y == 0 then
       newx = 1
@@ -112,8 +112,8 @@ function stageSelect:update(dt)
   
   if (control.startPressed[1] or control.jumpPressed[1]) and not self.stop then
     if self.x == 2 and self.y == 1 then
-      mmMusic.stopMusic()
-      mmSfx.play("selected")
+      megautils.stopMusic()
+      megautils.playSound("selected")
       megautils.add(fade, false, 4, {255, 255, 255}, function(s)
         if globals.defeats.stickMan then
           megautils.gotoState("states/demo.state.lua")
@@ -128,7 +128,7 @@ function stageSelect:update(dt)
   elseif control.selectPressed[1] and not self.stop then
     self.stop = true
     megautils.gotoState("states/menu.state.lua")
-    mmMusic.stopMusic()
+    megautils.stopMusic()
   end
 end
 

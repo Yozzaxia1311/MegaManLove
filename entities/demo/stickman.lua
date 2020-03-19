@@ -1,4 +1,4 @@
-loader.load("assets/global/bosses/stickMan.png", "stickMan", "texture")
+megautils.loadResource("assets/global/bosses/stickMan.png", "stickMan")
 
 stickMan = entity:extend()
 
@@ -14,12 +14,12 @@ function stickMan:new(x, y, s)
     self:addToGroup("freezable")
     self:addToGroup("hurtable")
     self.canBeInvincible.global = true
-    mmMusic.stopMusic()
+    megautils.stopMusic()
   end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(12, 24)
-  self.t = loader.get("stickMan")
+  self.t = megautils.getResource("stickMan")
   self.side = -1
   self.s = 0
   self.spawner = s
@@ -66,7 +66,7 @@ function stickMan:healthChanged(o, c, i)
     end
     explodeParticle.createExplosion(self.transform.x+((self.collisionShape.w/2)-24/2),
       self.transform.y+((self.collisionShape.h/2)-24/2))
-    mmMusic.stopMusic()
+    megautils.stopMusic()
     timer.absorbCutscene(function()
       globals.defeats.stickMan = true
       globals.weaponGet = "stick"
@@ -74,13 +74,13 @@ function stickMan:healthChanged(o, c, i)
       states.set("states/weaponget.state.lua")
     end)
     megautils.remove(self, true)
-    mmSfx.play("die")
+    megautils.playSound("die")
   elseif self.changeHealth < 0 then
     megautils.add(harm, self)
     if o:is(megaChargedBuster) then
       megautils.remove(o, true)
     end
-    mmSfx.play("enemyHit")
+    megautils.playSound("enemyHit")
   end
 end
 
@@ -112,7 +112,7 @@ function stickMan:update(dt)
           self.ss = 0
           globals.mainPlayer.curAnim = "idle"
           self.s = 2
-          mmMusic.playFromFile("assets/sfx/music/bossLoop.ogg", "assets/sfx/music/bossIntro.ogg")
+          megautils.playMusic("assets/sfx/music/bossLoop.ogg", "assets/sfx/music/bossIntro.ogg")
           self.render = true
         end
       end
@@ -152,7 +152,7 @@ function stickManIntro:new()
   stickManIntro.super.new(self)
   self.transform.y = -60
   self.transform.x = 108
-  self.t = loader.get("stickMan")
+  self.t = megautils.getResource("stickMan")
   self.c = "idle"
   self.text = "stick man"
   self.pos = 0
@@ -194,7 +194,7 @@ function stickManIntro:update(dt)
   elseif self.s == 4 then
     self.timer = math.min(self.timer+1, 300)
     if self.timer == 300 then
-      mmMusic.stopMusic()
+      megautils.stopMusic()
       megautils.gotoState("states/demo.state.lua")
       self.updated = false
     end
@@ -216,32 +216,32 @@ function megamanStick:new()
   self.transform.x = 100
   local grid = "megaManGrid"
   if globals.player[1] == "mega" then
-    self.texOutline = loader.get("megaManOutline")
-    self.texOne = loader.get("megaManOne")
-    self.texTwo = loader.get("megaManTwo")
-    self.texFace = loader.get("megaManFace")
+    self.texOutline = megautils.getResource("megaManOutline")
+    self.texOne = megautils.getResource("megaManOne")
+    self.texTwo = megautils.getResource("megaManTwo")
+    self.texFace = megautils.getResource("megaManFace")
   elseif globals.player[1] == "proto" then
-    self.texOutline = loader.get("protoManOutline")
-    self.texOne = loader.get("protoManOne")
-    self.texTwo = loader.get("protoManTwo")
-    self.texFace = loader.get("protoManFace")
+    self.texOutline = megautils.getResource("protoManOutline")
+    self.texOne = megautils.getResource("protoManOne")
+    self.texTwo = megautils.getResource("protoManTwo")
+    self.texFace = megautils.getResource("protoManFace")
   elseif globals.player[1] == "bass" then
-    self.texOutline = loader.get("bassOutline")
-    self.texOne = loader.get("bassOne")
-    self.texTwo = loader.get("bassTwo")
-    self.texFace = loader.get("bassFace")
+    self.texOutline = megautils.getResource("bassOutline")
+    self.texOne = megautils.getResource("bassOne")
+    self.texTwo = megautils.getResource("bassTwo")
+    self.texFace = megautils.getResource("bassFace")
     grid = "bassGrid"
   elseif globals.player[1] == "roll" then
-    self.texOutline = loader.get("rollOutline")
-    self.texOne = loader.get("rollOne")
-    self.texTwo = loader.get("rollTwo")
-    self.texFace = loader.get("rollFace")
+    self.texOutline = megautils.getResource("rollOutline")
+    self.texOne = megautils.getResource("rollOne")
+    self.texTwo = megautils.getResource("rollTwo")
+    self.texFace = megautils.getResource("rollFace")
     grid = "rollGrid"
   end
   self.curAnim = pose and "pose" or "idle"
   self.animations = {}
-  self.animations.idle = anim8.newAnimation(loader.get(grid)(1, 1, 2, 1), {2.5, 0.1})
-  self.animations.idleShoot = anim8.newAnimation(loader.get(grid)(1, 4), 1)
+  self.animations.idle = anim8.newAnimation(megautils.getResource(grid)(1, 1, 2, 1), {2.5, 0.1})
+  self.animations.idleShoot = anim8.newAnimation(megautils.getResource(grid)(1, 4), 1)
   self:face(1)
   self.text = "weapon get... stick weapon!"
   self.pos = 0
