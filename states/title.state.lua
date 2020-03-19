@@ -53,6 +53,13 @@ function title:update(dt)
       states.openRecord = "assets/demo.rd"
       megautils.add(fade, true, nil, nil, function(s)
           mmMusic.lock = true
+          control.drawDemoFunc = function()
+              if control.demo and math.wrap(control.recPos, 0, 40) < 20 then
+                love.graphics.setFont(mmFont)
+                love.graphics.setColor(1, 1, 1, 1)
+                love.graphics.print("demo", view.w - 48, view.h - 16)
+              end
+            end
           control.returning = function()
               megautils.add(fade, true, nil, nil, function(s) megautils.resetGame("states/title.state.lua", false, true) end)
             end

@@ -9,7 +9,7 @@ function section:new(x, y, w, h)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(w, h)
-  self.group = self:collisionTable(megautils.groups()["despawnable"])
+  self.group = self:collisionTable(megautils.groups().despawnable)
 end
 
 sectionHandler = class:extend()
@@ -62,7 +62,7 @@ function sectionHandler:updateAll()
       end
     end
   else
-    self.current.group = self.current:collisionTable(megautils.groups()["despawnable"])
+    self.current.group = self.current:collisionTable(megautils.groups().despawnable)
     for k, v in pairs(self.current.group) do
       if not v.dontRemove and not table.contains(self.next.group, v) then
         megautils.remove(v)

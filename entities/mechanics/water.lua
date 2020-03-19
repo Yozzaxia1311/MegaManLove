@@ -72,10 +72,10 @@ function water:new(x, y, w, h, grav)
 end
 
 function water:removed()
-  if megautils.groups()["submergable"] and self.current then
-    for k, v in ipairs(megautils.groups()["submergable"]) do
-      if #v:collisionTable(megautils.groups()["water"]) == 0 then
-        v.gravityMultipliers["water"] = nil
+  if megautils.groups().submergable and self.current then
+    for k, v in ipairs(megautils.groups().submergable) do
+      if #v:collisionTable(megautils.groups().water) == 0 then
+        v.gravityMultipliers.water = nil
         self.current = false
       end
     end
@@ -84,20 +84,20 @@ function water:removed()
 end
 
 function water:update(dt)
-  if megautils.groups()["submergable"] then
+  if megautils.groups().submergable then
     if not self.checked then
       self.checked = true
-      for k, v in pairs(self:collisionTable(megautils.groups()["submergable"])) do
-        if not v.gravityMultipliers["water"] then
+      for k, v in pairs(self:collisionTable(megautils.groups().submergable)) do
+        if not v.gravityMultipliers.water then
           self.current = true
-          v.gravityMultipliers["water"] = self.grav
+          v.gravityMultipliers.water = self.grav
         end
       end
     end
-    for k, v in ipairs(megautils.groups()["submergable"]) do
-      if v:collision(self) and not v.gravityMultipliers["water"] then
+    for k, v in ipairs(megautils.groups().submergable) do
+      if v:collision(self) and not v.gravityMultipliers.water then
         self.current = true
-        v.gravityMultipliers["water"] = self.grav
+        v.gravityMultipliers.water = self.grav
         if v.transform.y < self.transform.y then
           megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2), -8, self, -1)
           mmSfx.play("splash")
@@ -106,8 +106,8 @@ function water:update(dt)
             self.collisionShape.h+8, self, 1)
           mmSfx.play("splash")
         end
-      elseif self.current and v.gravityMultipliers["water"] and #v:collisionTable(megautils.groups()["water"]) == 0 then
-        v.gravityMultipliers["water"] = nil
+      elseif self.current and v.gravityMultipliers.water and #v:collisionTable(megautils.groups().water) == 0 then
+        v.gravityMultipliers.water = nil
         if v.transform.y < self.transform.y then
           megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2), -8, self, -1)
           mmSfx.play("splash")
@@ -118,8 +118,8 @@ function water:update(dt)
         end
         self.current = false
       end
-      if not self.current and v.gravityMultipliers["water"] and v:collision(self) then
-        for k, i in ipairs(megautils.groups()["water"]) do
+      if not self.current and v.gravityMultipliers.water and v:collision(self) then
+        for k, i in ipairs(megautils.groups().water) do
           i.current = false
         end
         self.current = true
@@ -150,10 +150,10 @@ function space:new(x, y, w, h, grav)
 end
 
 function space:removed()
-  if megautils.groups()["submergable"] and self.current then
-    for k, v in ipairs(megautils.groups()["submergable"]) do
-      if #v:collisionTable(megautils.groups()["space"]) == 0 then
-        v.gravityMultipliers["space"] = nil
+  if megautils.groups().submergable and self.current then
+    for k, v in ipairs(megautils.groups().submergable) do
+      if #v:collisionTable(megautils.groups().space) == 0 then
+        v.gravityMultipliers.space = nil
         self.current = false
       end
     end
@@ -162,26 +162,26 @@ function space:removed()
 end
 
 function space:update(dt)
-  if megautils.groups()["submergable"] then
+  if megautils.groups().submergable then
     if not self.checked then
       self.checked = true
-      for k, v in pairs(self:collisionTable(megautils.groups()["submergable"])) do
-        if not v.gravityMultipliers["space"] then
+      for k, v in pairs(self:collisionTable(megautils.groups().submergable)) do
+        if not v.gravityMultipliers.space then
           self.current = true
-          v.gravityMultipliers["space"] = self.grav
+          v.gravityMultipliers.space = self.grav
         end
       end
     end
-    for k, v in ipairs(megautils.groups()["submergable"]) do
-      if v:collision(self) and not v.gravityMultipliers["space"] then
+    for k, v in ipairs(megautils.groups().submergable) do
+      if v:collision(self) and not v.gravityMultipliers.space then
         self.current = true
-        v.gravityMultipliers["space"] = self.grav
-      elseif self.current and v.gravityMultipliers["space"] and #v:collisionTable(megautils.groups()["space"]) == 0 then
-        v.gravityMultipliers["space"] = nil
+        v.gravityMultipliers.space = self.grav
+      elseif self.current and v.gravityMultipliers.space and #v:collisionTable(megautils.groups().space) == 0 then
+        v.gravityMultipliers.space = nil
         self.current = false
       end
-      if not self.current and v.gravityMultipliers["space"] and v:collision(self) then
-        for k, i in ipairs(megautils.groups()["space"]) do
+      if not self.current and v.gravityMultipliers.space and v:collision(self) then
+        for k, i in ipairs(megautils.groups().space) do
           i.current = false
         end
         self.current = true

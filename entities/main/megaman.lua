@@ -246,106 +246,106 @@ end
 function megaman:initChargingColors()
   if globals.player[self.player] == "roll" then
     self.chargeColorOutlines = {}
-    self.chargeColorOutlines["rollBuster"] = {}
-    self.chargeColorOutlines["rollBuster"][0] = {}
-    self.chargeColorOutlines["rollBuster"][1] = {}
-    self.chargeColorOutlines["rollBuster"][2] = {}
-    self.chargeColorOutlines["rollBuster"][0][1] = {0, 0, 0}
-    self.chargeColorOutlines["rollBuster"][1][1] = {248, 56, 0}
-    self.chargeColorOutlines["rollBuster"][1][2] = {0, 0, 0}
-    self.chargeColorOutlines["rollBuster"][2][1] = {0, 168, 0}
-    self.chargeColorOutlines["rollBuster"][2][2] = {248, 56, 0}
-    self.chargeColorOutlines["rollBuster"][2][3] = {0, 0, 0}
+    self.chargeColorOutlines.rollBuster = {}
+    self.chargeColorOutlines.rollBuster[0] = {}
+    self.chargeColorOutlines.rollBuster[1] = {}
+    self.chargeColorOutlines.rollBuster[2] = {}
+    self.chargeColorOutlines.rollBuster[0][1] = {0, 0, 0}
+    self.chargeColorOutlines.rollBuster[1][1] = {248, 56, 0}
+    self.chargeColorOutlines.rollBuster[1][2] = {0, 0, 0}
+    self.chargeColorOutlines.rollBuster[2][1] = {0, 168, 0}
+    self.chargeColorOutlines.rollBuster[2][2] = {248, 56, 0}
+    self.chargeColorOutlines.rollBuster[2][3] = {0, 0, 0}
     self.chargeColorOnes = {}
-    self.chargeColorOnes["rollBuster"] = {}
-    self.chargeColorOnes["rollBuster"][0] = {}
-    self.chargeColorOnes["rollBuster"][1] = {}
-    self.chargeColorOnes["rollBuster"][2] = {}
-    self.chargeColorOnes["rollBuster"][0][1] = {248, 56, 0}
-    self.chargeColorOnes["rollBuster"][1][1] = {248, 56, 0}
-    self.chargeColorOnes["rollBuster"][1][2] = {248, 56, 0}
-    self.chargeColorOnes["rollBuster"][2][1] = {0, 0, 0}
-    self.chargeColorOnes["rollBuster"][2][2] = {0, 168, 0}
-    self.chargeColorOnes["rollBuster"][2][3] = {248, 56, 0}
+    self.chargeColorOnes.rollBuster = {}
+    self.chargeColorOnes.rollBuster[0] = {}
+    self.chargeColorOnes.rollBuster[1] = {}
+    self.chargeColorOnes.rollBuster[2] = {}
+    self.chargeColorOnes.rollBuster[0][1] = {248, 56, 0}
+    self.chargeColorOnes.rollBuster[1][1] = {248, 56, 0}
+    self.chargeColorOnes.rollBuster[1][2] = {248, 56, 0}
+    self.chargeColorOnes.rollBuster[2][1] = {0, 0, 0}
+    self.chargeColorOnes.rollBuster[2][2] = {0, 168, 0}
+    self.chargeColorOnes.rollBuster[2][3] = {248, 56, 0}
     self.chargeColorTwos = {}
-    self.chargeColorTwos["rollBuster"] = {}
-    self.chargeColorTwos["rollBuster"][0] = {}
-    self.chargeColorTwos["rollBuster"][1] = {}
-    self.chargeColorTwos["rollBuster"][2] = {}
-    self.chargeColorTwos["rollBuster"][0][1] = {0, 168, 0}
-    self.chargeColorTwos["rollBuster"][1][1] = {0, 168, 0}
-    self.chargeColorTwos["rollBuster"][1][2] = {0, 168, 0}
-    self.chargeColorTwos["rollBuster"][2][1] = {0, 168, 0}
-    self.chargeColorTwos["rollBuster"][2][2] = {0, 0, 0}
-    self.chargeColorTwos["rollBuster"][2][3] = {248, 56, 0}
+    self.chargeColorTwos.rollBuster = {}
+    self.chargeColorTwos.rollBuster[0] = {}
+    self.chargeColorTwos.rollBuster[1] = {}
+    self.chargeColorTwos.rollBuster[2] = {}
+    self.chargeColorTwos.rollBuster[0][1] = {0, 168, 0}
+    self.chargeColorTwos.rollBuster[1][1] = {0, 168, 0}
+    self.chargeColorTwos.rollBuster[1][2] = {0, 168, 0}
+    self.chargeColorTwos.rollBuster[2][1] = {0, 168, 0}
+    self.chargeColorTwos.rollBuster[2][2] = {0, 0, 0}
+    self.chargeColorTwos.rollBuster[2][3] = {248, 56, 0}
   elseif globals.player[self.player] == "proto" then
     self.chargeColorOutlines = {}
-    self.chargeColorOutlines["protoBuster"] = {}
-    self.chargeColorOutlines["protoBuster"][0] = {}
-    self.chargeColorOutlines["protoBuster"][1] = {}
-    self.chargeColorOutlines["protoBuster"][2] = {}
-    self.chargeColorOutlines["protoBuster"][0][1] = {0, 0, 0}
-    self.chargeColorOutlines["protoBuster"][1][1] = {216, 40, 0}
-    self.chargeColorOutlines["protoBuster"][1][2] = {0, 0, 0}
-    self.chargeColorOutlines["protoBuster"][2][1] = {184, 184, 184}
-    self.chargeColorOutlines["protoBuster"][2][2] = {216, 40, 0}
-    self.chargeColorOutlines["protoBuster"][2][3] = {0, 0, 0}
+    self.chargeColorOutlines.protoBuster = {}
+    self.chargeColorOutlines.protoBuster[0] = {}
+    self.chargeColorOutlines.protoBuster[1] = {}
+    self.chargeColorOutlines.protoBuster[2] = {}
+    self.chargeColorOutlines.protoBuster[0][1] = {0, 0, 0}
+    self.chargeColorOutlines.protoBuster[1][1] = {216, 40, 0}
+    self.chargeColorOutlines.protoBuster[1][2] = {0, 0, 0}
+    self.chargeColorOutlines.protoBuster[2][1] = {184, 184, 184}
+    self.chargeColorOutlines.protoBuster[2][2] = {216, 40, 0}
+    self.chargeColorOutlines.protoBuster[2][3] = {0, 0, 0}
     self.chargeColorOnes = {}
-    self.chargeColorOnes["protoBuster"] = {}
-    self.chargeColorOnes["protoBuster"][0] = {}
-    self.chargeColorOnes["protoBuster"][1] = {}
-    self.chargeColorOnes["protoBuster"][2] = {}
-    self.chargeColorOnes["protoBuster"][0][1] = {216, 40, 0}
-    self.chargeColorOnes["protoBuster"][1][1] = {216, 40, 0}
-    self.chargeColorOnes["protoBuster"][1][2] = {216, 40, 0}
-    self.chargeColorOnes["protoBuster"][2][1] = {0, 0, 0}
-    self.chargeColorOnes["protoBuster"][2][2] = {184, 184, 184}
-    self.chargeColorOnes["protoBuster"][2][3] = {216, 40, 0}
+    self.chargeColorOnes.protoBuster = {}
+    self.chargeColorOnes.protoBuster[0] = {}
+    self.chargeColorOnes.protoBuster[1] = {}
+    self.chargeColorOnes.protoBuster[2] = {}
+    self.chargeColorOnes.protoBuster[0][1] = {216, 40, 0}
+    self.chargeColorOnes.protoBuster[1][1] = {216, 40, 0}
+    self.chargeColorOnes.protoBuster[1][2] = {216, 40, 0}
+    self.chargeColorOnes.protoBuster[2][1] = {0, 0, 0}
+    self.chargeColorOnes.protoBuster[2][2] = {184, 184, 184}
+    self.chargeColorOnes.protoBuster[2][3] = {216, 40, 0}
     self.chargeColorTwos = {}
-    self.chargeColorTwos["protoBuster"] = {}
-    self.chargeColorTwos["protoBuster"][0] = {}
-    self.chargeColorTwos["protoBuster"][1] = {}
-    self.chargeColorTwos["protoBuster"][2] = {}
-    self.chargeColorTwos["protoBuster"][0][1] = {184, 184, 184}
-    self.chargeColorTwos["protoBuster"][1][1] = {184, 184, 184}
-    self.chargeColorTwos["protoBuster"][1][2] = {184, 184, 184}
-    self.chargeColorTwos["protoBuster"][2][1] = {184, 184, 184}
-    self.chargeColorTwos["protoBuster"][2][2] = {0, 0, 0}
-    self.chargeColorTwos["protoBuster"][2][3] = {216, 40, 0}
+    self.chargeColorTwos.protoBuster = {}
+    self.chargeColorTwos.protoBuster[0] = {}
+    self.chargeColorTwos.protoBuster[1] = {}
+    self.chargeColorTwos.protoBuster[2] = {}
+    self.chargeColorTwos.protoBuster[0][1] = {184, 184, 184}
+    self.chargeColorTwos.protoBuster[1][1] = {184, 184, 184}
+    self.chargeColorTwos.protoBuster[1][2] = {184, 184, 184}
+    self.chargeColorTwos.protoBuster[2][1] = {184, 184, 184}
+    self.chargeColorTwos.protoBuster[2][2] = {0, 0, 0}
+    self.chargeColorTwos.protoBuster[2][3] = {216, 40, 0}
   else
     self.chargeColorOutlines = {}
-    self.chargeColorOutlines["megaBuster"] = {}
-    self.chargeColorOutlines["megaBuster"][0] = {}
-    self.chargeColorOutlines["megaBuster"][1] = {}
-    self.chargeColorOutlines["megaBuster"][2] = {}
-    self.chargeColorOutlines["megaBuster"][0][1] = {0, 0, 0}
-    self.chargeColorOutlines["megaBuster"][1][1] = {0, 232, 216}
-    self.chargeColorOutlines["megaBuster"][1][2] = {0, 0, 0}
-    self.chargeColorOutlines["megaBuster"][2][1] = {0, 120, 248}
-    self.chargeColorOutlines["megaBuster"][2][2] = {0, 0, 0}
-    self.chargeColorOutlines["megaBuster"][2][3] = {0, 232, 216}
+    self.chargeColorOutlines.megaBuster = {}
+    self.chargeColorOutlines.megaBuster[0] = {}
+    self.chargeColorOutlines.megaBuster[1] = {}
+    self.chargeColorOutlines.megaBuster[2] = {}
+    self.chargeColorOutlines.megaBuster[0][1] = {0, 0, 0}
+    self.chargeColorOutlines.megaBuster[1][1] = {0, 232, 216}
+    self.chargeColorOutlines.megaBuster[1][2] = {0, 0, 0}
+    self.chargeColorOutlines.megaBuster[2][1] = {0, 120, 248}
+    self.chargeColorOutlines.megaBuster[2][2] = {0, 0, 0}
+    self.chargeColorOutlines.megaBuster[2][3] = {0, 232, 216}
     self.chargeColorOnes = {}
-    self.chargeColorOnes["megaBuster"] = {}
-    self.chargeColorOnes["megaBuster"][0] = {}
-    self.chargeColorOnes["megaBuster"][1] = {}
-    self.chargeColorOnes["megaBuster"][2] = {}
-    self.chargeColorOnes["megaBuster"][0][1] = {0, 120, 248}
-    self.chargeColorOnes["megaBuster"][1][1] = {0, 120, 248}
-    self.chargeColorOnes["megaBuster"][1][2] = {0, 120, 248}
-    self.chargeColorOnes["megaBuster"][2][1] = {0, 232, 216}
-    self.chargeColorOnes["megaBuster"][2][2] = {0, 120, 248}
-    self.chargeColorOnes["megaBuster"][2][3] = {0, 0, 0}
+    self.chargeColorOnes.megaBuster = {}
+    self.chargeColorOnes.megaBuster[0] = {}
+    self.chargeColorOnes.megaBuster[1] = {}
+    self.chargeColorOnes.megaBuster[2] = {}
+    self.chargeColorOnes.megaBuster[0][1] = {0, 120, 248}
+    self.chargeColorOnes.megaBuster[1][1] = {0, 120, 248}
+    self.chargeColorOnes.megaBuster[1][2] = {0, 120, 248}
+    self.chargeColorOnes.megaBuster[2][1] = {0, 232, 216}
+    self.chargeColorOnes.megaBuster[2][2] = {0, 120, 248}
+    self.chargeColorOnes.megaBuster[2][3] = {0, 0, 0}
     self.chargeColorTwos = {}
-    self.chargeColorTwos["megaBuster"] = {}
-    self.chargeColorTwos["megaBuster"][0] = {}
-    self.chargeColorTwos["megaBuster"][1] = {}
-    self.chargeColorTwos["megaBuster"][2] = {}
-    self.chargeColorTwos["megaBuster"][0][1] = {0, 232, 216}
-    self.chargeColorTwos["megaBuster"][1][1] = {0, 232, 216}
-    self.chargeColorTwos["megaBuster"][1][2] = {0, 232, 216}
-    self.chargeColorTwos["megaBuster"][2][1] = {0, 0, 0}
-    self.chargeColorTwos["megaBuster"][2][2] = {0, 232, 216}
-    self.chargeColorTwos["megaBuster"][2][3] = {0, 120, 248}
+    self.chargeColorTwos.megaBuster = {}
+    self.chargeColorTwos.megaBuster[0] = {}
+    self.chargeColorTwos.megaBuster[1] = {}
+    self.chargeColorTwos.megaBuster[2] = {}
+    self.chargeColorTwos.megaBuster[0][1] = {0, 232, 216}
+    self.chargeColorTwos.megaBuster[1][1] = {0, 232, 216}
+    self.chargeColorTwos.megaBuster[1][2] = {0, 232, 216}
+    self.chargeColorTwos.megaBuster[2][1] = {0, 0, 0}
+    self.chargeColorTwos.megaBuster[2][2] = {0, 232, 216}
+    self.chargeColorTwos.megaBuster[2][3] = {0, 120, 248}
   end
 end
 
@@ -473,8 +473,8 @@ function megaman:new(x, y, side, drop, p, g, gf)
   megaman.weaponHandler[self.player].render = false
   self.health = self.healthHandler.health
   self.healthHandler:updateThis()
-  if not camera.main.funcs["megaman"] then
-    camera.main.funcs["megaman"] = function(s)
+  if not camera.main.funcs.megaman then
+    camera.main.funcs.megaman = function(s)
       for i=0, #globals.allPlayers-1 do
         local player = globals.allPlayers[i+1]
         if player then
@@ -488,7 +488,9 @@ function megaman:new(x, y, side, drop, p, g, gf)
       end
     end
   end
+  
   self.curAnim = self.drop and "spawn" or "idle"
+  
   self.dropAnimation = {regular="spawn"}
   self.dropLandAnimation = {regular="spawnLand"}
   self.idleAnimation = {regular="idle", shoot="idleShoot", s_dm="idleShootDM", s_um="idleShootUM", s_u="idleShootU"}
@@ -502,55 +504,57 @@ function megaman:new(x, y, side, drop, p, g, gf)
   self.wallJumpAnimation = {regular="wallJump", shoot="wallJumpShoot"}
   self.dashAnimation = {regular=(self:checkFalse(self.canDashShoot) and globals.player[self.player] == "mega") and "dash" or "slide", shoot="dashShoot"}
   self.trebleAnimation = {regular="treble", shoot="trebleShoot"}
+  
   self.animations = {}
   local pp = "megaManGrid"
   if globals.player[self.player] == "bass" then
     pp = "bassGrid"
-    self.animations["trebleStart"] = anim8.newAnimation(loader.get(pp)(4, 10, "1-4", 11, 1, 12), 1/8, "pauseAtEnd")
-    self.animations["treble"] = anim8.newAnimation(loader.get(pp)("2-3", 12), 1/12)
-    self.animations["trebleShoot"] = anim8.newAnimation(loader.get(pp)(4, 12, 1, 13), 1/12)
+    self.animations.trebleStart = anim8.newAnimation(loader.get(pp)(4, 10, "1-4", 11, 1, 12), 1/8, "pauseAtEnd")
+    self.animations.treble = anim8.newAnimation(loader.get(pp)("2-3", 12), 1/12)
+    self.animations.trebleShoot = anim8.newAnimation(loader.get(pp)(4, 12, 1, 13), 1/12)
   elseif globals.player[self.player] == "roll" then
     pp = "rollGrid"
   end
   if globals.player[self.player] == "proto" then
-    self.animations["idle"] = anim8.newAnimation(loader.get(pp)(1, 1, 2, 1), 1/8)
+    self.animations.idle = anim8.newAnimation(loader.get(pp)(1, 1, 2, 1), 1/8)
   else
-    self.animations["idle"] = anim8.newAnimation(loader.get(pp)(1, 1, 2, 1), {2.5, 0.1})
+    self.animations.idle = anim8.newAnimation(loader.get(pp)(1, 1, 2, 1), {2.5, 0.1})
   end
-  self.animations["idleShoot"] = anim8.newAnimation(loader.get(pp)(1, 4), 1)
-  self.animations["idleShootDM"] = anim8.newAnimation(loader.get(pp)(3, 6), 1)
-  self.animations["idleShootUM"] = anim8.newAnimation(loader.get(pp)(4, 6), 1)
-  self.animations["idleShootU"] = anim8.newAnimation(loader.get(pp)(1, 7), 1)
-  self.animations["idleThrow"] = anim8.newAnimation(loader.get(pp)(4, 7), 1)
-  self.animations["nudge"] = anim8.newAnimation(loader.get(pp)(3, 1), 1)
-  self.animations["jump"] = anim8.newAnimation(loader.get(pp)(4, 2), 1)
-  self.animations["jumpShoot"] = anim8.newAnimation(loader.get(pp)(1, 5), 1)
-  self.animations["jumpShootDM"] = anim8.newAnimation(loader.get(pp)(1, 10), 1)
-  self.animations["jumpShootUM"] = anim8.newAnimation(loader.get(pp)(2, 10), 1)
-  self.animations["jumpShootU"] = anim8.newAnimation(loader.get(pp)(3, 10), 1)
-  self.animations["jumpThrow"] = anim8.newAnimation(loader.get(pp)(1, 8), 1)
-  self.animations["jumpProtoShield"] = anim8.newAnimation(loader.get(pp)(3, 6), 1)
-  self.animations["jumpProtoShield2"] = anim8.newAnimation(loader.get(pp)(4, 6), 1)
-  self.animations["run"] = anim8.newAnimation(loader.get(pp)(4, 1, "1-2", 2, 1, 2), 1/8)
-  self.animations["runShoot"] = anim8.newAnimation(loader.get(pp)("2-4", 4, 3, 4), 1/8)
-  self.animations["runThrow"] = anim8.newAnimation(loader.get(pp)("2-4", 8, 3, 8), 1/8)
-  self.animations["climb"] = anim8.newAnimation(loader.get(pp)("1-2", 3), 1/8)
-  self.animations["climbShoot"] = anim8.newAnimation(loader.get(pp)(2, 5), 1)
-  self.animations["climbShootDM"] = anim8.newAnimation(loader.get(pp)(2, 9), 1)
-  self.animations["climbShootUM"] = anim8.newAnimation(loader.get(pp)(3, 9), 1)
-  self.animations["climbShootU"] = anim8.newAnimation(loader.get(pp)(4, 9), 1)
-  self.animations["climbThrow"] = anim8.newAnimation(loader.get(pp)(1, 9), 1)
-  self.animations["climbTip"] = anim8.newAnimation(loader.get(pp)(3, 3), 1)
-  self.animations["hit"] = anim8.newAnimation(loader.get(pp)(4, 3), 1)
-  self.animations["wallJump"] = anim8.newAnimation(loader.get(pp)(2, 9), 1)
-  self.animations["wallJumpShoot"] = anim8.newAnimation(loader.get(pp)(3, 9), 1)
-  self.animations["wallJumpThrow"] = anim8.newAnimation(loader.get(pp)(4, 9), 1)
-  self.animations["slide"] = anim8.newAnimation(loader.get(pp)(3, 2), 1/14, "pauseAtEnd")
-  self.animations["dash"] = anim8.newAnimation(loader.get(pp)("1-2", 10), 1/8, "pauseAtEnd")
-  self.animations["dashShoot"] = anim8.newAnimation(loader.get(pp)(4, 10), 1)
-  self.animations["dashThrow"] = anim8.newAnimation(loader.get(pp)(1, 11), 1)
-  self.animations["spawn"] = anim8.newAnimation(loader.get(pp)("3-4", 5), 0.08)
-  self.animations["spawnLand"] = anim8.newAnimation(loader.get(pp)("1-2", 6, 1, 6), 1/20)
+  self.animations.idleShoot = anim8.newAnimation(loader.get(pp)(1, 4), 1)
+  self.animations.idleShootDM = anim8.newAnimation(loader.get(pp)(3, 6), 1)
+  self.animations.idleShootUM = anim8.newAnimation(loader.get(pp)(4, 6), 1)
+  self.animations.idleShootU = anim8.newAnimation(loader.get(pp)(1, 7), 1)
+  self.animations.idleThrow = anim8.newAnimation(loader.get(pp)(4, 7), 1)
+  self.animations.nudge = anim8.newAnimation(loader.get(pp)(3, 1), 1)
+  self.animations.jump = anim8.newAnimation(loader.get(pp)(4, 2), 1)
+  self.animations.jumpShoot = anim8.newAnimation(loader.get(pp)(1, 5), 1)
+  self.animations.jumpShootDM = anim8.newAnimation(loader.get(pp)(1, 10), 1)
+  self.animations.jumpShootUM = anim8.newAnimation(loader.get(pp)(2, 10), 1)
+  self.animations.jumpShootU = anim8.newAnimation(loader.get(pp)(3, 10), 1)
+  self.animations.jumpThrow = anim8.newAnimation(loader.get(pp)(1, 8), 1)
+  self.animations.jumpProtoShield = anim8.newAnimation(loader.get(pp)(3, 6), 1)
+  self.animations.jumpProtoShield2 = anim8.newAnimation(loader.get(pp)(4, 6), 1)
+  self.animations.run = anim8.newAnimation(loader.get(pp)(4, 1, "1-2", 2, 1, 2), 1/8)
+  self.animations.runShoot = anim8.newAnimation(loader.get(pp)("2-4", 4, 3, 4), 1/8)
+  self.animations.runThrow = anim8.newAnimation(loader.get(pp)("2-4", 8, 3, 8), 1/8)
+  self.animations.climb = anim8.newAnimation(loader.get(pp)("1-2", 3), 1/8)
+  self.animations.climbShoot = anim8.newAnimation(loader.get(pp)(2, 5), 1)
+  self.animations.climbShootDM = anim8.newAnimation(loader.get(pp)(2, 9), 1)
+  self.animations.climbShootUM = anim8.newAnimation(loader.get(pp)(3, 9), 1)
+  self.animations.climbShootU = anim8.newAnimation(loader.get(pp)(4, 9), 1)
+  self.animations.climbThrow = anim8.newAnimation(loader.get(pp)(1, 9), 1)
+  self.animations.climbTip = anim8.newAnimation(loader.get(pp)(3, 3), 1)
+  self.animations.hit = anim8.newAnimation(loader.get(pp)(4, 3), 1)
+  self.animations.wallJump = anim8.newAnimation(loader.get(pp)(2, 9), 1)
+  self.animations.wallJumpShoot = anim8.newAnimation(loader.get(pp)(3, 9), 1)
+  self.animations.wallJumpThrow = anim8.newAnimation(loader.get(pp)(4, 9), 1)
+  self.animations.slide = anim8.newAnimation(loader.get(pp)(3, 2), 1/14, "pauseAtEnd")
+  self.animations.dash = anim8.newAnimation(loader.get(pp)("1-2", 10), 1/8, "pauseAtEnd")
+  self.animations.dashShoot = anim8.newAnimation(loader.get(pp)(4, 10), 1)
+  self.animations.dashThrow = anim8.newAnimation(loader.get(pp)(1, 11), 1)
+  self.animations.spawn = anim8.newAnimation(loader.get(pp)("3-4", 5), 0.08)
+  self.animations.spawnLand = anim8.newAnimation(loader.get(pp)("1-2", 6, 1, 6), 1/20)
+  
   self:face(self.side)
   self.added = function(self)
     self:addToGroup("freezable")
@@ -855,7 +859,7 @@ function megaman:attemptClimb()
   if not control.downDown[self.player] and not control.upDown[self.player] then
     return
   end
-  local lads = self:collisionTable(megautils.groups()["ladder"], 0, self.gravity >= 0 and 1 or -1)
+  local lads = self:collisionTable(megautils.groups().ladder, 0, self.gravity >= 0 and 1 or -1)
   local downDown, upDown
   if self.gravity >= 0 then
     downDown = control.downDown[self.player]
@@ -890,7 +894,7 @@ function megaman:attemptClimb()
     self.slide = false
     self.extraJumps = 0
     self.slideTimer = self.maxSlideTime
-    self.animations["climb"]:gotoFrame(1)
+    self.animations.climb:gotoFrame(1)
     if self.gravity >= 0 then
       self.climbTip = self.transform.y < self.currentLadder.transform.y
     else
@@ -1022,7 +1026,7 @@ function megaman:healthChanged(o, c, i)
 end
 
 function megaman:code(dt)
-  self.canIgnoreKnockback["global"] = false
+  self.canIgnoreKnockback.global = false
   self.protoShielding = false
   self.runCheck = ((control.leftDown[self.player] and not control.rightDown[self.player]) or (control.rightDown[self.player] and not control.leftDown[self.player]))
   if self.hitTimer ~= self.maxHitTime then
@@ -1067,11 +1071,11 @@ function megaman:code(dt)
     end
     self:phys()
     if self.treble == 1 then
-      if self.animations["trebleStart"].looped then
+      if self.animations.trebleStart.looped then
         self.treble = 2
         self.trebleTimer = 0
         self.canBeInvincible.treble = false
-      elseif self.animations["trebleStart"].position == 4 and self.trebleTimer == 0 then
+      elseif self.animations.trebleStart.position == 4 and self.trebleTimer == 0 then
         self.trebleTimer = 1
         mmSfx.play("trebleStart")
       end
@@ -1199,7 +1203,7 @@ function megaman:code(dt)
     else
       self.slideTimer = math.min(self.slideTimer+1, self.maxSlideTime)
       local rb = self:checkRegBox()
-      self.canIgnoreKnockback["global"] = rb
+      self.canIgnoreKnockback.global = rb
       if self.slideTimer == self.maxSlideTime and not rb and (self.ground or sb) then
         self.slide = false
         self:slideToReg()
@@ -1281,12 +1285,12 @@ function megaman:code(dt)
       (control[self.gravity >= 0 and "downDown" or "upDown"][self.player] and control.jumpPressed[self.player])) and
       not self:checkBasicSlideBox(self.side, 0) then
       if self.shootTimer ~= self.maxShootTime then
-        self.animations[self.dashAnimation["regular"]]:gotoFrame(
-          table.length(self.animations[self.dashAnimation["regular"]].frames))
-        self.animations[self.dashAnimation["regular"]]:pause()
+        self.animations[self.dashAnimation.regular]:gotoFrame(
+          table.length(self.animations[self.dashAnimation.regular].frames))
+        self.animations[self.dashAnimation.regular]:pause()
       else
-        self.animations[self.dashAnimation["regular"]]:gotoFrame(1)
-        self.animations[self.dashAnimation["regular"]]:resume()
+        self.animations[self.dashAnimation.regular]:gotoFrame(1)
+        self.animations[self.dashAnimation.regular]:resume()
       end
       self.slide = true
       self:regToSlide()
@@ -1382,7 +1386,7 @@ function megaman:code(dt)
     if self.died then return end
     if self.ground then
       self.dashJump = false
-      self.canStopJump["global"] = true
+      self.canStopJump.global = true
       self.extraJumps = 0
       mmSfx.play("land")
     else
@@ -1392,14 +1396,14 @@ function megaman:code(dt)
       self:attemptWeaponUsage()
     end
   end
-  if megautils.groups()["enemyWeapon"] then
-    for k, v in ipairs(megautils.groups()["enemyWeapon"]) do
+  if megautils.groups().enemyWeapon then
+    for k, v in ipairs(megautils.groups().enemyWeapon) do
       if self.protoShielding and not v.dinked and v.dink and self:checkProtoShield(v, self.side) then
         v:dink(self)
       end
     end
   end
-  if #self:collisionTable(megautils.groups()["water"]) ~= 0 then
+  if #self:collisionTable(megautils.groups().water) ~= 0 then
     self.bubbleTimer = math.min(self.bubbleTimer+1, self.maxBubbleTime)
     if self.bubbleTimer == self.maxBubbleTime then
       self.bubbleTimer = 0
@@ -1532,7 +1536,7 @@ function megaman:phys()
   collision.doCollision(self)
   if self.blockCollision and self:checkFalse(self.canDieFromSpikes) and
     (self.xcoll ~= 0 or self.ycoll ~= 0 or (self.ground and self.gravity ~= 0)) then
-    local t = self:collisionTable(megautils.groups()["death"], self.xcoll, self.ycoll+math.sign(self.gravity))
+    local t = self:collisionTable(megautils.groups().death, self.xcoll, self.ycoll+math.sign(self.gravity))
     if #t ~= 0 then
       local lx, ly = self.transform.x, self.transform.y
       local lg = self.ground
@@ -1547,7 +1551,7 @@ function megaman:phys()
         t[i].isSolid = 1
       end
       if collision.checkSolid(self) then
-        local dv = self:collisionTable(megautils.groups()["death"])
+        local dv = self:collisionTable(megautils.groups().death)
         self:hurt({self}, dv[1] and dv[1].harm or -9999999, 80)
         if self.health <= 0 then
           self.ground = false
@@ -1653,7 +1657,7 @@ end
 
 function megaman:animate()
   if self.drop or self.rise then
-    self.curAnim = self.dropLanded and self.dropLandAnimation["regular"] or self.dropAnimation["regular"]
+    self.curAnim = self.dropLanded and self.dropLandAnimation.regular or self.dropAnimation.regular
   elseif self.control then
     local shoot = "regular"
     if self.shootTimer ~= self.maxShootTime then
@@ -1664,7 +1668,7 @@ function megaman:animate()
         self.curAnim = self.trebleAnimation[shoot]
       end
     elseif self.hitTimer ~= self.maxHitTime then
-      self.curAnim = self.hitAnimation["regular"]
+      self.curAnim = self.hitAnimation.regular
     elseif self.climb then
       shoot = self:bassBusterAnim(shoot)
       self.curAnim = self.climbAnimation[shoot]
@@ -1672,21 +1676,21 @@ function megaman:animate()
         if self.shootTimer ~= self.maxShootTime then
           self.curAnim = self.climbAnimation[shoot]
         else
-          self.curAnim = self.climbTipAnimation["regular"]
+          self.curAnim = self.climbTipAnimation.regular
         end
       elseif not self.alwaysMove and not (control.downDown[self.player] or
         control.upDown[self.player]) and 
-        self.animations[self.climbAnimation["regular"]].status == "playing" then
-        self.animations[self.climbAnimation["regular"]]:pause()
+        self.animations[self.climbAnimation.regular].status == "playing" then
+        self.animations[self.climbAnimation.regular]:pause()
       elseif control.downDown[self.player] or control.upDown[self.player] and 
-        self.animations[self.climbAnimation["regular"]].status == "paused" then
-        self.animations[self.climbAnimation["regular"]]:resume()
+        self.animations[self.climbAnimation.regular].status == "paused" then
+        self.animations[self.climbAnimation.regular]:resume()
       end
       if shoot == "shoot" or shoot == "throw" then
         if self.side == -1 then
-          self.animations[self.climbAnimation["regular"]]:gotoFrame(2)
+          self.animations[self.climbAnimation.regular]:gotoFrame(2)
         else
-          self.animations[self.climbAnimation["regular"]]:gotoFrame(1)
+          self.animations[self.climbAnimation.regular]:gotoFrame(1)
         end
       end
     elseif self.slide then
@@ -1708,8 +1712,8 @@ function megaman:animate()
         self.curAnim = self.runAnimation[shoot]
       else
         shoot = self:bassBusterAnim(shoot)
-        self.animations[self.runAnimation["regular"]]:gotoFrame(1)
-        self.animations[self.runAnimation["shoot"]]:gotoFrame(1)
+        self.animations[self.runAnimation.regular]:gotoFrame(1)
+        self.animations[self.runAnimation.shoot]:gotoFrame(1)
         if self.standSolidJumpTimer > 0 then
           if self.protoShielding and shoot == "regular" then
             shoot = "ps"
@@ -1731,21 +1735,21 @@ function megaman:animate()
       end
     end
     local time = self.animations[self.curAnim].timer
-    if self.curAnim == self.runAnimation["regular"] then
-      self.animations[self.runAnimation["shoot"]]:gotoFrame(self.animations[self.runAnimation["regular"]].position)
-      self.animations[self.runAnimation["shoot"]].timer = time
-    elseif self.curAnim == self.runAnimation["shoot"] then
-      self.animations[self.runAnimation["regular"]]:gotoFrame(self.animations[self.runAnimation["shoot"]].position)
-      self.animations[self.runAnimation["regular"]].timer = time
-    elseif self.curAnim == self.trebleAnimation["regular"] then
-      self.animations[self.trebleAnimation["shoot"]]:gotoFrame(self.animations[self.trebleAnimation["regular"]].position)
-      self.animations[self.trebleAnimation["shoot"]].timer = time
-    elseif self.curAnim == self.trebleAnimation["shoot"] then
-      self.animations[self.trebleAnimation["regular"]]:gotoFrame(self.animations[self.trebleAnimation["shoot"]].position)
-      self.animations[self.trebleAnimation["regular"]].timer = time
+    if self.curAnim == self.runAnimation.regular then
+      self.animations[self.runAnimation.shoot]:gotoFrame(self.animations[self.runAnimation.regular].position)
+      self.animations[self.runAnimation.shoot].timer = time
+    elseif self.curAnim == self.runAnimation.shoot then
+      self.animations[self.runAnimation.regular]:gotoFrame(self.animations[self.runAnimation.shoot].position)
+      self.animations[self.runAnimation.regular].timer = time
+    elseif self.curAnim == self.trebleAnimation.regular then
+      self.animations[self.trebleAnimation.shoot]:gotoFrame(self.animations[self.trebleAnimation.regular].position)
+      self.animations[self.trebleAnimation.shoot].timer = time
+    elseif self.curAnim == self.trebleAnimation.shoot then
+      self.animations[self.trebleAnimation.regular]:gotoFrame(self.animations[self.trebleAnimation.shoot].position)
+      self.animations[self.trebleAnimation.regular].timer = time
     end
   end
-  if self.curAnim ~= self.climbAnimation["regular"] and self.curAnim ~= self.climbTipAnimation["regular"] then
+  if self.curAnim ~= self.climbAnimation.regular and self.curAnim ~= self.climbTipAnimation.regular then
     self:face(self.side)
   else
     self:face(-1)
@@ -1781,7 +1785,7 @@ function megaman:update(dt)
     if self.rise then
       self.control = false
       if self.dropLanded then
-        self.dropLanded = not self.animations[self.dropLandAnimation["regular"]].looped
+        self.dropLanded = not self.animations[self.dropLandAnimation.regular].looped
         if not self.dropLanded then
           mmSfx.play("ascend")
         end
@@ -1796,9 +1800,9 @@ function megaman:update(dt)
       self.teleportOffY = math.min(self.teleportOffY+self.dropSpeed, 0)
       if self.teleportOffY == 0 then
         self.dropLanded = true
-        if self.animations[self.dropLandAnimation["regular"]].looped then
+        if self.animations[self.dropLandAnimation.regular].looped then
           self.drop = false
-          self.animations[self.dropLandAnimation["regular"]]:gotoFrame(1)
+          self.animations[self.dropLandAnimation.regular]:gotoFrame(1)
           self.control = true
           mmSfx.play("start")
         end
@@ -1864,7 +1868,7 @@ function megaman:draw()
       or self.curAnim == "climbShootU" or self.curAnim == "climbThrow" then
       offsetx = self.side == -1 and -17 or -18
     elseif self.curAnim == "climb" then
-      offsetx = self.animations["climb"].position==1 and -18 or -17
+      offsetx = self.animations.climb.position==1 and -18 or -17
     elseif self.curAnim == "slide" then
       offsetx = self.side==1 and -14 or -20
     end
@@ -1873,7 +1877,7 @@ function megaman:draw()
       or self.curAnim == "climbShootU" or self.curAnim == "climbThrow" then
       offsetx = self.side == -1 and -15 or -16
     elseif self.curAnim == "climb" then
-      offsetx = self.animations["climb"].position==1 and -16 or -15
+      offsetx = self.animations.climb.position==1 and -16 or -15
     elseif self.curAnim == "slide" then
       offsetx = self.side==1 and -12 or -18
     end

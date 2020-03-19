@@ -23,6 +23,7 @@ function states.set(n, s, after)
     control.record = save.load(states.openRecord)
     nick = control.record.state
     states.openRecord = nil
+    control.oldGlobals = globals
     globals = control.record.globals
     love.math.setRandomSeed(control.record.seed)
     control.demo = true
@@ -31,6 +32,7 @@ function states.set(n, s, after)
   end
   if states.recordOnSwitch then
     states.recordOnSwitch = false
+    control.drawDemoFunc = control.baseDrawDemoFunc
     control.resetRec()
     control.recordInput = true
     control.record.globals = table.clone(globals)

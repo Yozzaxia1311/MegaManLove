@@ -359,6 +359,9 @@ function control.update()
   else
     control.playRecord()
     local result = control.anyPressed
+    if control.updateDemoFunc then
+      result = control.updateDemoFunc()
+    end
     if control.recPos >= control.record.last then
       result = true
     end
@@ -367,7 +370,15 @@ function control.update()
       control.demo = false
       control.recPos = 1
       control.record = {}
-      if control.returning then control.returning() control.returning = nil else megautils.resetGame() end
+      control.updateDemoFunc = nil
+      control.drawDemoFunc = nil
+      globals = control.oldGlobals
+      if control.returning then
+        control.returning()
+        control.returning = nil
+      else
+        megautils.resetGame()
+      end
     end
   end
   if control.recordInput then
@@ -457,14 +468,18 @@ function control.playRecord()
 end
 
 function control.drawDemo()
-  if control.demo and math.wrap(control.recPos, 0, 40) < 20 then
-    love.graphics.setFont(mmFont)
-    love.graphics.setColor(1, 1, 1, 1)
-    love.graphics.print("replay", view.w - 64, view.h - 16)
-  elseif control.recordInput then
-    love.graphics.setFont(mmFont)
-    love.graphics.setColor(1, 1, 1, 0.8)
-    love.graphics.print("recording", view.w - 88, view.h - 16)
+  if control.drawDemoFunc then
+    control.drawDemoFunc()
+  else
+    if control.demo and math.wrap(control.recPos, 0, 40) < 20 then
+      love.graphics.setFont(mmFont)
+      love.graphics.setColor(1, 1, 1, 1)
+      love.graphics.print("replay", view.w - 64, view.h - 16)
+    elseif control.recordInput then
+      love.graphics.setFont(mmFont)
+      love.graphics.setColor(1, 1, 1, 0.8)
+      love.graphics.print("recording", view.w - 88, view.h - 16)
+    end
   end
 end
 

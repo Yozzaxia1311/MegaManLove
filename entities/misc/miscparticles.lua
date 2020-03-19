@@ -103,7 +103,7 @@ end
 
 function airBubble:check(x, y)
   return collision.checkSolid(self) or
-    #self:collisionTable(megautils.groups()["water"], x, y) == 0
+    #self:collisionTable(megautils.groups().water, x, y) == 0
 end
 
 function airBubble:update(dt)
@@ -158,7 +158,7 @@ end
 function kickParticle:update(dt)
   if not self.once then
     self.once = true
-    if #self:collisionTable(megautils.groups()["solid"]) == 0 then
+    if not collision.checkSolid(self) then
       megautils.remove(self, true)
       return
     end

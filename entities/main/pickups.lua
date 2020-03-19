@@ -429,10 +429,10 @@ function life:new(x, y, despwn, id, spawner)
     end
   end
   self.quad = {}
-  self.quad["mega"] = love.graphics.newQuad(104, 12, 16, 16, 128, 98)
-  self.quad["proto"] = love.graphics.newQuad(56, 31, 16, 15, 128, 98)
-  self.quad["bass"] = love.graphics.newQuad(54, 16, 18, 15, 128, 98)
-  self.quad["roll"] = love.graphics.newQuad(38, 16, 16, 16, 128, 98)
+  self.quad.mega = love.graphics.newQuad(104, 12, 16, 16, 128, 98)
+  self.quad.proto = love.graphics.newQuad(56, 31, 16, 15, 128, 98)
+  self.quad.bass = love.graphics.newQuad(54, 16, 18, 15, 128, 98)
+  self.quad.roll = love.graphics.newQuad(38, 16, 16, 16, 128, 98)
   self.velocity = velocity()
   self.timer = 0
   self.render = false

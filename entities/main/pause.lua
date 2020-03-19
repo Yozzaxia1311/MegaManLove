@@ -11,10 +11,10 @@ function weaponSelect:new(w, h, p)
   self.quadE = love.graphics.newQuad(72, 12, 16, 16, 128, 98)
   self.quadW = love.graphics.newQuad(88, 12, 16, 16, 128, 98)
   self.heads = {}
-  self.heads["mega"] = love.graphics.newQuad(104, 12, 16, 16, 128, 98)
-  self.heads["proto"] = love.graphics.newQuad(56, 31, 16, 15, 128, 98)
-  self.heads["bass"] = love.graphics.newQuad(54, 16, 18, 15, 128, 98)
-  self.heads["roll"] = love.graphics.newQuad(38, 16, 16, 16, 128, 98)
+  self.heads.mega = love.graphics.newQuad(104, 12, 16, 16, 128, 98)
+  self.heads.proto = love.graphics.newQuad(56, 31, 16, 15, 128, 98)
+  self.heads.bass = love.graphics.newQuad(54, 16, 18, 15, 128, 98)
+  self.heads.roll = love.graphics.newQuad(38, 16, 16, 16, 128, 98)
   self.w = w
   self.h = h
   self.player = p

@@ -84,6 +84,9 @@ function cmdRecOpen(cmd)
     megautils.add(fade, true, nil, nil, function(s)
           mmMusic.stopMusic()
           love.audio.stop()
+          control.updateDemoFunc = function()
+              return console.state == 1
+            end
           states.set()
         end)
     console.close()

@@ -27,7 +27,7 @@ function stickMan:new(x, y, s)
   self.ss = 1
   self.health = 28
   self.hBar = healthHandler({128, 128, 128}, {255, 255, 255}, {0, 0, 0}, nil, nil, 7)
-  camera.main.funcs["stick"] = function(s)
+  camera.main.funcs.stick = function(s)
     self.hBar.transform.x = view.x + view.w - 24
     self.hBar.transform.y = view.y + 80
   end
@@ -59,8 +59,8 @@ function stickMan:healthChanged(o, c, i)
   self.maxIFrame = 60
   self.iFrame = 0
   if self.health <= 0 then
-    if megautils.groups()["removeOnDefeat"] then
-      for k, v in ipairs(megautils.groups()["removeOnDefeat"]) do
+    if megautils.groups().removeOnDefeat then
+      for k, v in ipairs(megautils.groups().removeOnDefeat) do
         megautils.remove(v, true)
       end
     end
@@ -240,8 +240,8 @@ function megamanStick:new()
   end
   self.curAnim = pose and "pose" or "idle"
   self.animations = {}
-  self.animations["idle"] = anim8.newAnimation(loader.get(grid)(1, 1, 2, 1), {2.5, 0.1})
-  self.animations["idleShoot"] = anim8.newAnimation(loader.get(grid)(1, 4), 1)
+  self.animations.idle = anim8.newAnimation(loader.get(grid)(1, 1, 2, 1), {2.5, 0.1})
+  self.animations.idleShoot = anim8.newAnimation(loader.get(grid)(1, 4), 1)
   self:face(1)
   self.text = "weapon get... stick weapon!"
   self.pos = 0

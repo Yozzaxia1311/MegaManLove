@@ -53,9 +53,9 @@ function camera:new(x, y, doScrollX, doScrollY)
 end
 
 function camera:updateLock()
-  if megautils.groups()["lock"] and self.curLock then
-    for i=1, #megautils.groups()["lock"] do
-      local v = megautils.groups()["lock"][i]
+  if megautils.groups().lock and self.curLock then
+    for i=1, #megautils.groups().lock do
+      local v = megautils.groups().lock[i]
       if v.name == self.curLock then
         self.lockx = v.transform.x
         self.locky = v.transform.y
@@ -74,7 +74,7 @@ end
 
 function camera:updateBounds()
   if not self.toSection then
-    self.toSection = self:collisionTable(megautils.groups()["lock"])[1] or
+    self.toSection = self:collisionTable(megautils.groups().lock)[1] or
       self:collisionTable(megautils.state().sectionHandler.sections)[1]
   end
   if self.toSection then
@@ -100,8 +100,8 @@ end
 
 function camera:setSection(s)
   self.toSection = s
-  if megautils.groups()["removeOnTransition"] then
-    for k, v in pairs(megautils.groups()["removeOnTransition"]) do
+  if megautils.groups().removeOnTransition then
+    for k, v in pairs(megautils.groups().removeOnTransition) do
       if not v.dontRemove then
         megautils.remove(v, true)
       end
@@ -155,8 +155,8 @@ function camera:updateCam(ox, oy)
       view.x, view.y = math.round(camera.main.transform.x), math.round(camera.main.transform.y)
       camera.main:updateFuncs()
     elseif not self.once then
-      if megautils.groups()["removeOnTransition"] then
-        for k, v in pairs(megautils.groups()["removeOnTransition"]) do
+      if megautils.groups().removeOnTransition then
+        for k, v in pairs(megautils.groups().removeOnTransition) do
           if not v.dontRemove then
             megautils.remove(v, true)
           end

@@ -21,9 +21,7 @@ function met:new(x, y, s)
   self.t = loader.get("met")
   self.spawner = s
   self.c = "safe"
-  self.quads = {}
-  self.quads["safe"] = love.graphics.newQuad(0, 0, 18, 15, 42, 15)
-  self.quads["up"] = love.graphics.newQuad(0, 0, 18, 15, 42, 15)
+  self.quads = {safe=love.graphics.newQuad(0, 0, 18, 15, 42, 15), up=love.graphics.newQuad(18, 0, 18, 15, 42, 15)}
   self.side = -1
   self.s = 0
   self.health = 2
@@ -186,7 +184,7 @@ function metBullet:update(dt)
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
   if self.dinked then
-    self:hurt(self:collisionTable(megautils.groups()["hurtable"]), -2, 2)
+    self:hurt(self:collisionTable(megautils.groups().hurtable), -2, 2)
   else
     self:hurt(self:collisionTable(globals.allPlayers), megautils.diffValue(-2, {easy=-1, normal=-2, hard=-3}), 80)
   end

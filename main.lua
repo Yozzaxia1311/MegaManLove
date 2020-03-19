@@ -135,9 +135,9 @@ function love.gamepadaxis(j, b, v)
       if (b == "leftx" or b == "lefty" or b == "rightx" or b == "righty") then
         globals.axisTmp = {}
         if b == "leftx" or b == "rightx" then
-          globals.axisTmp["x"] = {"axis", b .. (v > 0 and "+" or "-"), v, j:getName()}
+          globals.axisTmp.x = {"axis", b .. (v > 0 and "+" or "-"), v, j:getName()}
         elseif b == "lefty" or b == "righty" then
-          globals.axisTmp["y"] = {"axis", b .. (v > 0 and "+" or "-"), v, j:getName()}
+          globals.axisTmp.y = {"axis", b .. (v > 0 and "+" or "-"), v, j:getName()}
         end
       else
         globals.lastKeyPressed =  {"axis", b .. (v > 0 and "+" or "-"), j:getName()}
@@ -177,11 +177,11 @@ function love.update(dt)
   control.flush()
   if love.joystick then
     if globals.axisTmp then
-      if globals.axisTmp["x"] and (not globals.axisTmp["y"] or
-        math.abs(globals.axisTmp["x"][3]) > math.abs(globals.axisTmp["y"][3])) then
-        globals.lastKeyPressed = {globals.axisTmp["x"][1], globals.axisTmp["x"][2], globals.axisTmp["x"][4]}
-      elseif globals.axisTmp["y"] then
-        globals.lastKeyPressed = {globals.axisTmp["y"][1], globals.axisTmp["y"][2], globals.axisTmp["y"][4]}
+      if globals.axisTmp.x and (not globals.axisTmp.y or
+        math.abs(globals.axisTmp.x[3]) > math.abs(globals.axisTmp.y[3])) then
+        globals.lastKeyPressed = {globals.axisTmp.x[1], globals.axisTmp.x[2], globals.axisTmp.x[4]}
+      elseif globals.axisTmp.y then
+        globals.lastKeyPressed = {globals.axisTmp.y[1], globals.axisTmp.y[2], globals.axisTmp.y[4]}
       end
       globals.axisTmp = nil
     end

@@ -245,9 +245,9 @@ function collision.shiftObject(self, dx, dy, checkforcol, ep)
   self.previousY = self.transform.y
   
   if checkforcol then
-    self.canStandSolid["global"] = false
+    self.canStandSolid.global = false
     collision.generalCollision(self)
-    self.canStandSolid["global"] = true
+    self.canStandSolid.global = true
   else
     self.transform.x = self.transform.x + self.velocity.velx
     self.transform.y = self.transform.y + self.velocity.vely

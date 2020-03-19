@@ -32,7 +32,7 @@ function right:update(dt)
       camera.main.player = player
       camera.main.speed = self.spd
       camera.main.transX = camera.main.scrollx+camera.main.scrollw+16
-      camera.main.toSection = self:collisionTable(megautils.groups()["lock"], 2)[1] or
+      camera.main.toSection = self:collisionTable(megautils.groups().lock, 2)[1] or
         self:collisionTable(megautils.state().sectionHandler.sections, 2)[1]
       camera.main.transform.x = (camera.main.scrollx+camera.main.scrollw)-view.w
       if camera.main.player.onMovingFloor and not camera.main.player.onMovingFloor:is(rushJet) then
@@ -77,7 +77,7 @@ function left:update(dt)
       camera.main.player = player
       camera.main.speed = self.spd
       camera.main.transX = camera.main.scrollx-camera.main.player.collisionShape.w-16
-      camera.main.toSection = self:collisionTable(megautils.groups()["lock"], -2)[1] or
+      camera.main.toSection = self:collisionTable(megautils.groups().lock, -2)[1] or
         self:collisionTable(megautils.state().sectionHandler.sections, -2)[1]
       camera.main.transform.x = camera.main.scrollx
       if camera.main.player.onMovingFloor and not camera.main.player.onMovingFloor:is(rushJet) then
@@ -122,7 +122,7 @@ function down:update(dt)
       camera.main.player = player
       camera.main.speed = self.spd
       camera.main.transY = camera.main.scrolly+camera.main.scrollh+8
-      camera.main.toSection = self:collisionTable(megautils.groups()["lock"], 0, 2)[1] or
+      camera.main.toSection = self:collisionTable(megautils.groups().lock, 0, 2)[1] or
         self:collisionTable(megautils.state().sectionHandler.sections, 0, 2)[1]
       camera.main.transform.y = (camera.main.scrolly+camera.main.scrollh)-view.h
       if camera.main.player.onMovingFloor and not camera.main.player.onMovingFloor:is(rushJet) then
@@ -168,7 +168,7 @@ function up:update(dt)
       camera.main.player = player
       camera.main.speed = self.spd
       camera.main.transY = camera.main.scrolly-camera.main.player.collisionShape.h-8
-      camera.main.toSection = self:collisionTable(megautils.groups()["lock"], 0, -2)[1] or
+      camera.main.toSection = self:collisionTable(megautils.groups().lock, 0, -2)[1] or
         self:collisionTable(megautils.state().sectionHandler.sections, 0, -2)[1]
       camera.main.transform.y = camera.main.scrolly
       if camera.main.player.onMovingFloor and not camera.main.player.onMovingFloor:is(rushJet) then
@@ -198,13 +198,13 @@ function upLadder:new(x, y, w, scrollx, scrolly, spd, p)
   self.platform = p
   self.added = function(self)
     self:addToGroup("despawnable")
-    self.ladder = self:collisionTable(megautils.groups()["ladder"])[1]
+    self.ladder = self:collisionTable(megautils.groups().ladder)[1]
   end
 end
 
 function upLadder:update(dt)
   if not self.ladder then
-    self.ladder = self:collisionTable(megautils.groups()["ladder"])[1]
+    self.ladder = self:collisionTable(megautils.groups().ladder)[1]
   end
   for i=1, #globals.allPlayers do
     local player = globals.allPlayers[i]
@@ -218,7 +218,7 @@ function upLadder:update(dt)
         camera.main.player = player
         camera.main.speed = self.spd
         camera.main.transY = camera.main.scrolly-camera.main.player.collisionShape.h-8
-        camera.main.toSection = self:collisionTable(megautils.groups()["lock"], 0, -2)[1] or
+        camera.main.toSection = self:collisionTable(megautils.groups().lock, 0, -2)[1] or
           self:collisionTable(megautils.state().sectionHandler.sections, 0, -2)[1]
         camera.main.transform.y = camera.main.scrolly
         break
@@ -272,7 +272,7 @@ function lockShift:update(dt)
     megautils.freeze(globals.allPlayers)
     for k, v in pairs(globals.allPlayers) do
       v.control = false
-      v.canHaveCameraFocus["ls"] = false
+      v.canHaveCameraFocus.ls = false
     end
     local l = camera.main.curLock
     camera.main.curLock = self.name
@@ -313,7 +313,7 @@ function lockShift:update(dt)
       megautils.unfreeze()
       for k, v in pairs(globals.allPlayers) do
         v.control = true
-        v.canHaveCameraFocus["ls"] = true
+        v.canHaveCameraFocus.ls = true
       end
       camera.main.curLock = self.name
       camera.main:doView()

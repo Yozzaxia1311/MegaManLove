@@ -1,4 +1,4 @@
-weaponHandler.removeGroups["protoBuster"] = {"megaBuster", "protoChargedBuster"}
+weaponHandler.removeGroups.protoBuster = {"megaBuster", "protoChargedBuster"}
 
 protoSemiBuster = basicEntity:extend()
 
@@ -32,7 +32,7 @@ end
 
 function protoSemiBuster:update(dt)
   if not self.dinked then
-    self:hurt(self:collisionTable(megautils.groups()["hurtable"]), -1, 2)
+    self:hurt(self:collisionTable(megautils.groups().hurtable), -1, 2)
   end
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
@@ -84,7 +84,7 @@ end
 function protoChargedBuster:update(dt)
   self.anim:update(1/60)
   if not self.dinked then
-    self:hurt(self:collisionTable(megautils.groups()["hurtable"]), -2, 2)
+    self:hurt(self:collisionTable(megautils.groups().hurtable), -2, 2)
   end
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
@@ -100,7 +100,7 @@ end
 
 bassBuster = basicEntity:extend()
 
-weaponHandler.removeGroups["bassBuster"] = {"bassBuster"}
+weaponHandler.removeGroups.bassBuster = {"bassBuster"}
 
 function bassBuster:new(x, y, dir, wpn, t)
   bassBuster.super.new(self)
@@ -146,12 +146,12 @@ end
 
 function bassBuster:update(dt)
   if not self.dinked then
-    self:hurt(self:collisionTable(megautils.groups()["hurtable"]), self.treble and -1 or -0.5, 2)
+    self:hurt(self:collisionTable(megautils.groups().hurtable), self.treble and -1 or -0.5, 2)
   end
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
   if megautils.outside(self) or
-    (not self.treble and (collision.checkSolid(self) or #self:collisionTable(megautils.groups()["bossDoor"]) ~= 0)) then
+    (not self.treble and (collision.checkSolid(self) or #self:collisionTable(megautils.groups().bossDoor) ~= 0)) then
     megautils.remove(self, true)
   end
 end
@@ -163,7 +163,7 @@ end
 
 megaBuster = basicEntity:extend()
 
-weaponHandler.removeGroups["megaBuster"] = {"megaBuster", "megaChargedBuster"}
+weaponHandler.removeGroups.megaBuster = {"megaBuster", "megaChargedBuster"}
 
 function megaBuster:new(x, y, dir, wpn)
   megaBuster.super.new(self)
@@ -205,7 +205,7 @@ end
 
 function megaBuster:update(dt)
   if not self.dinked then
-    self:hurt(self:collisionTable(megautils.groups()["hurtable"]), -1, 2)
+    self:hurt(self:collisionTable(megautils.groups().hurtable), -1, 2)
   end
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
@@ -257,7 +257,7 @@ end
 function megaSemiBuster:update(dt)
   self.anim:update(1/60)
   if not self.dinked then
-    self:hurt(self:collisionTable(megautils.groups()["hurtable"]), -1, 2)
+    self:hurt(self:collisionTable(megautils.groups().hurtable), -1, 2)
   end
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
@@ -310,7 +310,7 @@ end
 function megaChargedBuster:update(dt)
   self.anim:update(1/60)
   if not self.dinked then
-    self:hurt(self:collisionTable(megautils.groups()["hurtable"]), -2, 2)
+    self:hurt(self:collisionTable(megautils.groups().hurtable), -2, 2)
   end
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
@@ -326,7 +326,7 @@ end
 
 trebleBoost = entity:extend()
 
-weaponHandler.removeGroups["trebleBoost"] = {"trebleBoost", "bassBuster"}
+weaponHandler.removeGroups.trebleBoost = {"trebleBoost", "bassBuster"}
 
 function trebleBoost:new(x, y, side, player, wpn)
   trebleBoost.super.new(self)
@@ -343,10 +343,10 @@ function trebleBoost:new(x, y, side, player, wpn)
   self.tex = loader.get("treble")
   self.c = "spawn"
   self.anims = {}
-  self.anims["spawn"] = anim8.newAnimation(loader.get("trebleGrid")(1, 1), 1)
-  self.anims["spawnLand"] = anim8.newAnimation(loader.get("trebleGrid")("2-3", 1, 2, 1), 1/20)
-  self.anims["idle"] = anim8.newAnimation(loader.get("trebleGrid")(4, 1), 1)
-  self.anims["start"] = anim8.newAnimation(loader.get("trebleGrid")("5-6", 1, "5-6", 1, "5-6", 1, "5-6", 1, "7-8", 1),
+  self.anims.spawn = anim8.newAnimation(loader.get("trebleGrid")(1, 1), 1)
+  self.anims.spawnLand = anim8.newAnimation(loader.get("trebleGrid")("2-3", 1, 2, 1), 1/20)
+  self.anims.idle = anim8.newAnimation(loader.get("trebleGrid")(4, 1), 1)
+  self.anims.start = anim8.newAnimation(loader.get("trebleGrid")("5-6", 1, "5-6", 1, "5-6", 1, "5-6", 1, "7-8", 1),
     1/16, "pauseAtEnd")
   self.side = side
   self.s = 0
@@ -354,7 +354,7 @@ function trebleBoost:new(x, y, side, player, wpn)
   self.player = player
   self.blockCollision = true
   self.timer = 0
-  self.gravityMultipliers["global"] = self.player.gravity >= 0 and 1 or -1
+  self.gravityMultipliers.global = self.player.gravity >= 0 and 1 or -1
 end
 
 function trebleBoost:grav()
@@ -386,7 +386,7 @@ function trebleBoost:update(dt)
       self.s = 2
     end
   elseif self.s == 2 then
-    if self.anims["spawnLand"].looped then
+    if self.anims.spawnLand.looped then
       self.c = "idle"
       self.s = 3
       mmSfx.play("start")
@@ -398,15 +398,15 @@ function trebleBoost:update(dt)
       self.player:resetStates()
       self.player.canBeInvincible.treble = true
       self.player.treble = 1
-      self.player.animations["trebleStart"]:gotoFrame(1)
-      self.player.animations["trebleStart"]:resume()
+      self.player.animations.trebleStart:gotoFrame(1)
+      self.player.animations.trebleStart:resume()
       self.player.curAnim = "idle"
       self.player.velocity.velx = 0
       self.s = 4
       self.c = "start"
     end
   elseif self.s == 4 then
-    if self.anims["start"].looped then
+    if self.anims.start.looped then
       self.s = 5
       self.player.curAnim = "trebleStart"
       self.player:face(self.player.side)
@@ -418,7 +418,7 @@ function trebleBoost:update(dt)
     end
   end
   self:face(self.side)
-  self.gravityMultipliers["global"] = self.player.gravity >= 0 and 1 or -1
+  self.gravityMultipliers.global = self.player.gravity >= 0 and 1 or -1
   self.anims[self.c].flippedV = self.gravity < 0
   if megautils.outside(self) then
     megautils.remove(self, true)
@@ -432,7 +432,7 @@ end
 
 rushJet = entity:extend()
 
-weaponHandler.removeGroups["rushJet"] = {"rushJet", "megaBuster", "bassBuster"}
+weaponHandler.removeGroups.rushJet = {"rushJet", "megaBuster", "bassBuster"}
 
 function rushJet:new(x, y, side, player, wpn, skin)
   rushJet.super.new(self)
@@ -449,9 +449,9 @@ function rushJet:new(x, y, side, player, wpn, skin)
   self.tex = loader.get(skin or "rush")
   self.c = "spawn"
   self.anims = {}
-  self.anims["spawn"] = anim8.newAnimation(loader.get("rushGrid")(1, 1), 1)
-  self.anims["spawnLand"] = anim8.newAnimation(loader.get("rushGrid")("2-3", 1, 2, 1), 1/20)
-  self.anims["jet"] = anim8.newAnimation(loader.get("rushGrid")("2-3", 2), 1/8)
+  self.anims.spawn = anim8.newAnimation(loader.get("rushGrid")(1, 1), 1)
+  self.anims.spawnLand = anim8.newAnimation(loader.get("rushGrid")("2-3", 1, 2, 1), 1/20)
+  self.anims.jet = anim8.newAnimation(loader.get("rushGrid")("2-3", 2), 1/8)
   self.side = side
   self.s = 0
   self.velocity = velocity()
@@ -482,7 +482,7 @@ function rushJet:update(dt)
       end
     end
   elseif self.s == 1 then
-    if self.anims["spawnLand"].looped then
+    if self.anims.spawnLand.looped then
       mmSfx.play("start")
       self.c = "jet"
       self.s = 2
@@ -493,7 +493,7 @@ function rushJet:update(dt)
       not self.player:collision(self) then
       self.s = 3
       self.velocity.velx = self.side
-      self.player.canWalk["rj"] = false
+      self.player.canWalk.rj = false
       self.playerOn = true
     end
     collision.doCollision(self)
@@ -512,7 +512,7 @@ function rushJet:update(dt)
       not self.player:collision(self) then
         self.s = 3
         self.velocity.velx = self.side
-        self.player.canWalk["rj"] = false
+        self.player.canWalk.rj = false
         self.playerOn = true
       end
     end
@@ -520,14 +520,14 @@ function rushJet:update(dt)
     if self.playerOn and (not self.player.ground or
       not (self.player:collision(self, 0, self.player.gravity >= 0 and 1 or -1) and
       not self.player:collision(self))) then
-      self.player.canWalk["rj"] = true
+      self.player.canWalk.rj = true
       self.playerOn = false
     end
     if self.xcoll ~= 0 or
       (self.playerOn and collision.checkSolid(self.player, 0, self.player.gravity >= 0 and -4 or 4)) then
-      if self.playerOn then self.player.canWalk["rj"] = true end
+      if self.playerOn then self.player.canWalk.rj = true end
       self.c = "spawnLand"
-      self.anims["spawnLand"]:gotoFrame(1)
+      self.anims.spawnLand:gotoFrame(1)
       self.s = 4
       self.isSolid = 0
       mmSfx.play("ascend")
@@ -538,7 +538,7 @@ function rushJet:update(dt)
       self.wpn.energy[self.wpn.currentSlot] = self.wpn.energy[self.wpn.currentSlot] - 1
     end
   elseif self.s == 4 then
-    if self.anims["spawnLand"].looped then
+    if self.anims.spawnLand.looped then
       self.s = 5
       self.c = "spawn"
     end
@@ -553,7 +553,7 @@ function rushJet:update(dt)
 end
 
 function rushJet:removed()
-  self.player.canWalk["rj"] = true
+  self.player.canWalk.rj = true
 end
 
 function rushJet:draw()
@@ -567,7 +567,7 @@ end
 
 rushCoil = entity:extend()
 
-weaponHandler.removeGroups["rushCoil"] = {"rushCoil", "megaBuster", "bassBuster", "rollBuster"}
+weaponHandler.removeGroups.rushCoil = {"rushCoil", "megaBuster", "bassBuster", "rollBuster"}
 
 function rushCoil:new(x, y, side, player, w, skin)
   rushCoil.super.new(self)
@@ -585,10 +585,10 @@ function rushCoil:new(x, y, side, player, w, skin)
   self.tex = loader.get(skin or "rush")
   self.c = "spawn"
   self.anims = {}
-  self.anims["spawn"] = anim8.newAnimation(loader.get("rushGrid")(1, 1), 1)
-  self.anims["spawnLand"] = anim8.newAnimation(loader.get("rushGrid")("2-3", 1, 2, 1), 1/20)
-  self.anims["idle"] = anim8.newAnimation(loader.get("rushGrid")(4, 1, 1, 2), 1/8)
-  self.anims["coil"] = anim8.newAnimation(loader.get("rushGrid")(4, 2), 1)
+  self.anims.spawn = anim8.newAnimation(loader.get("rushGrid")(1, 1), 1)
+  self.anims.spawnLand = anim8.newAnimation(loader.get("rushGrid")("2-3", 1, 2, 1), 1/20)
+  self.anims.idle = anim8.newAnimation(loader.get("rushGrid")(4, 1, 1, 2), 1/8)
+  self.anims.coil = anim8.newAnimation(loader.get("rushGrid")(4, 2), 1)
   self.side = side
   self.s = 0
   self.timer = 0
@@ -596,7 +596,7 @@ function rushCoil:new(x, y, side, player, w, skin)
   self.wpn = w
   self.blockCollision = true
   self.player = player
-  self.gravityMultipliers["global"] = self.player.gravity >= 0 and 1 or -1
+  self.gravityMultipliers.global = self.player.gravity >= 0 and 1 or -1
 end
 
 function rushCoil:grav()
@@ -628,7 +628,7 @@ function rushCoil:update(dt)
       self.s = 2
     end
   elseif self.s == 2 then
-    if self.anims["spawnLand"].looped then
+    if self.anims.spawnLand.looped then
       mmSfx.play("start")
       self.c = "idle"
       self.s = 3
@@ -639,7 +639,7 @@ function rushCoil:update(dt)
       math.between(self.player.transform.x+self.player.collisionShape.w/2,
       self.transform.x, self.transform.x+self.collisionShape.w) and
       self.player:collision(self) then
-      self.player.canStopJump["global"] = false
+      self.player.canStopJump.global = false
       self.player.velocity.vely = -7.5 * (self.player.gravity >= 0 and 1 or -1)
       self.player.step = false
       self.player.stepTime = 0
@@ -661,11 +661,11 @@ function rushCoil:update(dt)
     if self.timer == 40 then
       self.s = 5
       self.c = "spawnLand"
-      self.anims["spawnLand"]:gotoFrame(1)
+      self.anims.spawnLand:gotoFrame(1)
       mmSfx.play("ascend")
     end
   elseif self.s == 5 then
-    if self.anims["spawnLand"].looped then
+    if self.anims.spawnLand.looped then
       self.s = 6
       self.c = "spawn"
     end
@@ -673,7 +673,7 @@ function rushCoil:update(dt)
     self:moveBy(0, -8)
   end
   self:face(self.side)
-  self.gravityMultipliers["global"] = self.player.gravity >= 0 and 1 or -1
+  self.gravityMultipliers.global = self.player.gravity >= 0 and 1 or -1
   self.anims[self.c].flippedV = self.gravity < 0
   if megautils.outside(self) then
     megautils.remove(self, true)
@@ -687,7 +687,7 @@ end
 
 stickWeapon = entity:extend()
 
-weaponHandler.removeGroups["stickWeapon"] = {"stickWeapon"}
+weaponHandler.removeGroups.stickWeapon = {"stickWeapon"}
 
 function stickWeapon:new(x, y, dir, wpn)
   stickWeapon.super.new(self)
@@ -716,7 +716,7 @@ end
 
 function stickWeapon:update(dt)
   if not self.dinked then
-    self:hurt(self:collisionTable(megautils.groups()["hurtable"]), -8, 1)
+    self:hurt(self:collisionTable(megautils.groups().hurtable), -8, 1)
   end
   self:moveBy(self.velocity.velx, self.velocity.vely)
   if megautils.outside(self) then
