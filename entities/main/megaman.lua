@@ -970,13 +970,13 @@ function megaman:healthChanged(o, c, i)
             if not globals.infiniteLives and globals.lives <= 0 then
               megautils.resetGameObjects()
               globals.gameOverContinueState = states.current
-              states.set("states/gameover.state.lua")
+              megautils.gotoState("states/gameover.state.lua")
             else
               globals.manageStageResources = false
               if not globals.infiniteLives then
                 globals.lives = globals.lives - 1
               end
-              states.set(states.current)
+              megautils.gotoState(states.current)
             end
             megautils.remove(s, true)
           end)

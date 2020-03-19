@@ -375,13 +375,17 @@ function megautils.getMapLayerByID(name)
   return recursiveCheck(megautils.map(), name)
 end
 
-function megautils.gotoState(s, before, after, chunk)
-  megautils.add(fade, true, nil, nil, function(se)
+function megautils.transitionToState(s, before, after, chunk)
+  local tmp = megautils.add(fade, true, nil, nil, function(se)
         if before then before() end
         megautils.remove(se)
-        states.set(s, chunk)
+        megautils.gotoState(s, chunk)
         if after then after() end
       end)
+end
+
+function megautils.gotoState(s, chunk)
+  states.set(s, chunk)
 end
 
 function megautils.setLayerFlicker(l, b)

@@ -87,7 +87,7 @@ function cmdRecOpen(cmd)
           control.updateDemoFunc = function()
               return console.state == 1
             end
-          states.set()
+          megautils.gotoState()
         end)
     console.close()
     console.y = -112*2
@@ -177,7 +177,7 @@ function cmdState(cmd)
   globals.manageStageResources = true
   globals.resetState = true
   if cmd[3] then globals.checkpoint = cmd[3] end
-  states.set(map)
+  megautils.gotoState(map)
 end
 concmd["state"] = {
   helptext = "load a state",

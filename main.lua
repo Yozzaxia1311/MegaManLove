@@ -68,7 +68,7 @@ function love.load()
   if data.fullscreen then
     megautils.setFullscreen(true)
   end
-  states.set("states/disclaimer.state.lua")
+  megautils.gotoState("states/disclaimer.state.lua")
   console.parse("exec autoexec")
 end
 

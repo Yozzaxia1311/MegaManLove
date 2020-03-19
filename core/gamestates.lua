@@ -27,7 +27,7 @@ function states.set(n, s, after)
     globals = control.record.globals
     love.math.setRandomSeed(control.record.seed)
     control.demo = true
-    states.set(nick)
+    megautils.gotoState(nick)
     return
   end
   if states.recordOnSwitch then

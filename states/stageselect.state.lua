@@ -116,10 +116,10 @@ function stageSelect:update(dt)
       megautils.playSound("selected")
       megautils.add(fade, false, 4, {255, 255, 255}, function(s)
         if globals.defeats.stickMan then
-          megautils.gotoState("states/demo.state.lua")
+          megautils.transitionToState("states/demo.state.lua")
         else
           globals.bossIntroBoss = "stick"
-          megautils.gotoState("states/bossintro.state.lua")
+          megautils.transitionToState("states/bossintro.state.lua")
         end
         megautils.remove(s, true)
       end)
@@ -127,7 +127,7 @@ function stageSelect:update(dt)
     end
   elseif control.selectPressed[1] and not self.stop then
     self.stop = true
-    megautils.gotoState("states/menu.state.lua")
+    megautils.transitionToState("states/menu.state.lua")
     megautils.stopMusic()
   end
 end

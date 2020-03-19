@@ -63,7 +63,7 @@ function menuSelect:update(dt)
         self.picked = true
         self.section = -1
         megautils.stopMusic()
-        megautils.gotoState("states/stageselect.state.lua")
+        megautils.transitionToState("states/stageselect.state.lua")
         globals.stopMusicMenu = nil
       elseif self.pick == 1 then
         megautils.setFullscreen(not megautils.getFullscreen())
@@ -74,7 +74,7 @@ function menuSelect:update(dt)
         self.picked = true
         self.section = -1
         globals.lastStateName = states.current
-        megautils.gotoState("states/rebind.state.lua")
+        megautils.transitionToState("states/rebind.state.lua")
         globals.stopMusicMenu = nil
       elseif self.pick == 3 then
         megautils.playSound("selected")
@@ -108,7 +108,7 @@ function menuSelect:update(dt)
         self.picked = true
         self.section = -1
         megautils.stopMusic()
-        megautils.gotoState("states/title.state.lua")
+        megautils.transitionToState("states/title.state.lua")
         globals.stopMusicMenu = nil
       end
     end

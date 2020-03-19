@@ -63,14 +63,14 @@ function title:update(dt)
           control.returning = function()
               megautils.add(fade, true, nil, nil, function(s) megautils.resetGame("states/title.state.lua", false, true) end)
             end
-          states.set()
+          megautils.gotoState()
         end)
     end
     self.textTimer = math.wrap(self.textTimer+1, 0, 40)
     if control.startDown[1] then
       megautils.stopMusic()
       self.drawText = false
-      megautils.gotoState("states/menu.state.lua")
+      megautils.transitionToState("states/menu.state.lua")
     end
   end
 end
