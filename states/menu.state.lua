@@ -1,6 +1,6 @@
-local menustate = states.state:extend()
+local menuState = states.state:extend()
 
-function menustate:begin()
+function menuState:begin()
   megautils.loadStage(self, "assets/maps/menu.tmx")
   megautils.add(menuSelect)
   megautils.add(fade, false, nil, nil, fade.remove)
@@ -10,24 +10,24 @@ function menustate:begin()
   end
 end
 
-function menustate:update(dt)
+function menuState:update(dt)
   megautils.update(self, dt)
 end
 
-function menustate:stop()
+function menuState:stop()
   self.system:clear()
   if not globals.stopMusicMenu then
     megautils.unload()
   end
 end
 
-function menustate:draw()
+function menuState:draw()
   megautils.draw(self)
 end
 
-megautils.cleanFuncs["unload_menu"] = function()
+megautils.cleanFuncs.menu = function()
   menuSelect = nil
-  megautils.cleanFuncs["unload_menu"] = nil
+  megautils.cleanFuncs.menu = nil
 end
 
 menuSelect = entity:extend()
@@ -39,7 +39,7 @@ function menuSelect:new()
   end
   self.transform.y = 9*8
   self.transform.x = 88
-  self.tex = loader.get("menu_select")
+  self.tex = loader.get("menuSelect")
   self.pick = 0
   self.offY = self.transform.y
   self.picked = false
@@ -56,7 +56,7 @@ function menuSelect:update(dt)
       self.pick = math.wrap(self.pick+1, 0, 6)
     end
     if old ~= self.pick then
-      mmSfx.play("cursor_move")
+      mmSfx.play("cursorMove")
     end
     if (control.jumpPressed[1] or control.startPressed[1]) and not self.picked then
       if self.pick == 0 then
@@ -122,7 +122,7 @@ function menuSelect:update(dt)
       globals.playerCount = math.wrap(globals.playerCount+1, 1, maxPlayerCount)
     end
     if old ~= globals.playerCount then
-      mmSfx.play("cursor_move")
+      mmSfx.play("cursorMove")
     end
     if control.jumpPressed[1] or control.startPressed[1] then
       self.section = 0
@@ -147,4 +147,4 @@ function menuSelect:draw()
   end
 end
 
-return menustate
+return menuState

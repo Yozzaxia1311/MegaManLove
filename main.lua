@@ -56,8 +56,8 @@ function love.load()
   showFPS = false
   showEntityCount = false
   framerate = 1/60
-  nesShader = love.graphics.getSupported().glsl3 and love.graphics.newShader("assets/neslut.glsl")
-  if nesShader then nesShader:send("pal", love.graphics.newImage("assets/neslut.png")) end
+  nesShader = love.graphics.getSupported().glsl3 and love.graphics.newShader("assets/nesLUT.glsl")
+  if nesShader then nesShader:send("pal", love.graphics.newImage("assets/nesLUT.png")) end
   
   love.filesystem.load("requirelibs.lua")()
   
@@ -229,7 +229,7 @@ function love.run()
         love.timer.step()
         dt = love.timer.getDelta()
       end
-      local before_update = love.timer.getTime()
+      local bu = love.timer.getTime()
       if love.update then love.update(dt) end
       if love.graphics and love.graphics.isActive() then
         love.graphics.origin()
@@ -237,7 +237,7 @@ function love.run()
         if love.draw then love.draw() end
         love.graphics.present()
       end
-      local delta = love.timer.getTime() - before_update
+      local delta = love.timer.getTime() - bu
       if delta < framerate then love.timer.sleep(framerate - delta) end
       resized = false
     end

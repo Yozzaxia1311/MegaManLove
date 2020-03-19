@@ -480,8 +480,8 @@ end
 
 sinkIn = basicEntity:extend()
 
-addobjects.register("sink_in", function(v)
-  megautils.add(sinkIn, v.x, v.y, v.width, v.height, v.properties["speed"])
+addobjects.register("sinkIn", function(v)
+  megautils.add(sinkIn, v.x, v.y, v.width, v.height, v.properties.speed)
 end)
 
 function sinkIn:new(x, y, w, h, s)
@@ -510,7 +510,7 @@ end
 slope = basicEntity:extend()
 
 addobjects.register("slope", function(v)
-  megautils.add(slope, v.x, v.y, loader.get(v.properties["mask"]))
+  megautils.add(slope, v.x, v.y, loader.get(v.properties.mask))
 end)
 
 function slope:new(x, y, mask)

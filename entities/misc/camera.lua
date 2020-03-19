@@ -1,20 +1,20 @@
 camera = basicEntity:extend()
 
 addobjects.register("camera", function(v)
-  if v.properties["checkpoint"] == globals.checkpoint then
-    megautils.add(camera, v.x, v.y, v.properties["doScrollX"], v.properties["doScrollY"])
+  if v.propertiescheckpoint == globals.checkpoint then
+    megautils.add(camera, v.x, v.y, v.properties.doScrollX, v.properties.doScrollY)
     camera.once = false
   end
 end, -1)
 
 addobjects.register("camera", function(v)
-  if v.properties["checkpoint"] == globals.checkpoint and not camera.once and camera.main then
+  if v.propertiescheckpoint == globals.checkpoint and not camera.once and camera.main then
     camera.once = true
     camera.main:updateBounds()
   end
 end, 2)
 
-megautils.resetStateFuncs["camera"] = function() camera.main = nil end
+megautils.resetStateFuncs.camera = function() camera.main = nil end
 
 function camera:new(x, y, doScrollX, doScrollY)
   camera.super.new(self)

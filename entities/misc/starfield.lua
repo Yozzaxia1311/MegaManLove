@@ -1,5 +1,5 @@
-loader.load("assets/misc/star_field.png", "star_field", "texture")
-loader.load("assets/misc/star_field_one.png", "star_field_one", "texture")
+loader.load("assets/misc/starField.png", "starField", "texture")
+loader.load("assets/misc/starFieldOne.png", "starFieldOne", "texture")
 
 banner = entity:extend()
 
@@ -11,8 +11,8 @@ function banner:new()
   banner.super.new(self)
   self.transform.y = 240
   self.transform.x = 0
-  self.tTwo = loader.get("star_field")
-  self.tOne = loader.get("star_field_one")
+  self.tTwo = loader.get("starField")
+  self.tOne = loader.get("starFieldOne")
   self.quad = love.graphics.newQuad(0, 0, 256, 103, 256, 187)
   self:setLayer(0)
 end
@@ -34,7 +34,7 @@ function smallStar:new(x, y, angle, spd)
   smallStar.super.new(self)
   self.transform.y = y
   self.transform.x = x
-  self.t = loader.get("star_field")
+  self.t = loader.get("starField")
   self.quad = love.graphics.newQuad(25, 120, 3, 3, 256, 187)
   self.velocity = velocity()
   self.velocity.velx = megautils.calcX(angle) * spd
@@ -58,7 +58,7 @@ function star:new(x, y, angle, spd)
   star.super.new(self)
   self.transform.y = y
   self.transform.x = x
-  self.t = loader.get("star_field")
+  self.t = loader.get("starField")
   self.quad = love.graphics.newQuad(0, 120, 10, 6, 256, 187)
   self.velocity = velocity()
   self.velocity.velx = megautils.calcX(angle) * spd
@@ -82,7 +82,7 @@ function largeStar:new(x, y, angle, spd)
   largeStar.super.new(self)
   self.transform.y = y
   self.transform.x = x
-  self.t = loader.get("star_field")
+  self.t = loader.get("starField")
   self.quad = love.graphics.newQuad(10, 120, 15, 11, 256, 187)
   self.velocity = velocity()
   self.velocity.velx = megautils.calcX(angle) * spd
@@ -100,10 +100,10 @@ function largeStar:draw()
   love.graphics.draw(self.t, self.quad, math.round(self.transform.x), math.round(self.transform.y))
 end
 
-megautils.cleanFuncs["unload_starfield"] = function()
+megautils.cleanFuncs.starfield = function()
   smallStar = nil
   star = nil
   largeStar = nil
   banner = nil
-  megautils.cleanFuncs["unload_starfield"] = nil
+  megautils.cleanFuncs.starfield = nil
 end

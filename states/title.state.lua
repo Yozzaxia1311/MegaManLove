@@ -1,26 +1,26 @@
-local titlestate = states.state:extend()
+local titleState = states.state:extend()
 
-function titlestate:begin()
+function titleState:begin()
   loader.load("assets/misc/title.png", "title", "texture")
   megautils.add(title)
   mmMusic.lock = false
 end
 
-function titlestate:update(dt)
+function titleState:update(dt)
   megautils.update(self, dt)
 end
 
-function titlestate:stop()
+function titleState:stop()
   megautils.unload()
 end
 
-function titlestate:draw()
+function titleState:draw()
   megautils.draw(self)
 end
 
-megautils.cleanFuncs["unload_title"] = function()
+megautils.cleanFuncs.title = function()
   title = nil
-  megautils.cleanFuncs["unload_title"] = nil
+  megautils.cleanFuncs.title = nil
 end
 
 title = entity:extend()
@@ -80,4 +80,4 @@ function title:draw()
   love.graphics.draw(self.tex, self.transform.x, self.transform.y)
 end
 
-return titlestate
+return titleState

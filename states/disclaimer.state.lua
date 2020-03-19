@@ -1,27 +1,27 @@
-local disclaimerstate = states.state:extend()
+local disclaimerState = states.state:extend()
 
-function disclaimerstate:begin()
+function disclaimerState:begin()
   mmMusic.stopMusic()
-  loader.load("assets/misc/disclaimer_face.png", "face", "texture")
+  loader.load("assets/misc/disclaimerFace.png", "face", "texture")
   megautils.add(disclaimer)
   megautils.add(fade, false, nil, nil, fade.remove)
 end
 
-function disclaimerstate:update(dt)
+function disclaimerState:update(dt)
   megautils.update(self)
 end
 
-function disclaimerstate:stop()
+function disclaimerState:stop()
   megautils.unload()
 end
 
-function disclaimerstate:draw()
+function disclaimerState:draw()
   megautils.draw(self, dt)
 end
 
-megautils.cleanFuncs["unload_disclaimer"] = function()
+megautils.cleanFuncs.disclaimer = function()
   disclaimer = nil
-  megautils.cleanFuncs["unload_disclaimer"] = nil
+  megautils.cleanFuncs.disclaimer = nil
 end
 
 disclaimer = entity:extend()
@@ -87,4 +87,4 @@ function disclaimer:draw()
   love.graphics.printf("press start to continue\npress alt+enter for fullscreen\npress escape to rebind controls", -21, 200, 300, "center")
 end
 
-return disclaimerstate
+return disclaimerState

@@ -11,7 +11,7 @@ function splash:new(offx, offy, follow, side)
   self.side = side
   self:setRectangleCollision(32, 28)
   self.tex = loader.get("particles")
-  self.anim = anim8.newAnimation(loader.get("splash_grid")("1-4", 1), 1/8)
+  self.anim = anim8.newAnimation(loader.get("splashGrid")("1-4", 1), 1/8)
   self.rot = math.rad(side==-1 and 0 or 180)
   self.follow = follow
   if self.follow then
@@ -52,7 +52,7 @@ end
 water = entity:extend()
 
 addobjects.register("water", function(v)
-  megautils.add(water, v.x, v.y, v.width, v.height, v.properties["grav"])
+  megautils.add(water, v.x, v.y, v.width, v.height, v.properties.grav)
 end)
 
 function water:new(x, y, w, h, grav)
@@ -131,7 +131,7 @@ end
 space = entity:extend()
 
 addobjects.register("space", function(v)
-  megautils.add(space, v.x, v.y, v.width, v.height, v.properties["grav"])
+  megautils.add(space, v.x, v.y, v.width, v.height, v.properties.grav)
 end)
 
 function space:new(x, y, w, h, grav)

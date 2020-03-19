@@ -5,10 +5,10 @@ megautils.resetGameObjectsFuncs["megaman"] = function()
   megaman.weaponHandler = {}
   globals.mainPlayer = nil
   globals.allPlayers = {}
-  weaponhandler.id = 0
+  weaponHandler.id = 0
   
   for i=1, globals.playerCount do
-    megaman.weaponHandler[i] = weaponhandler(nil, nil, 10)
+    megaman.weaponHandler[i] = weaponHandler(nil, nil, 10)
     if globals.player[i] == "proto" then
       megaman.weaponHandler[i]:register(0, "protoBuster", {"p.buster", {48, 32, 16, 16}, {64, 32, 16, 16}},
         {216, 40, 0}, {184, 184, 184}, {0, 0, 0})
@@ -48,26 +48,21 @@ megautils.resetGameObjectsFuncs["megaman"] = function()
         {188, 188, 188}, {124, 124, 124}, {0, 0, 0})
     end
   end
+  
+  megaman.individualLanded = {}
 end
 
 megaman = entity:extend()
 
-megaman.weaponHandler = {}
-megaman.colorOutline = {}
-megaman.colorOne = {}
-megaman.colorTwo = {}
-
 addobjects.register("player", function(v)
-  if (not v.properties["spawnCamera"] or v.properties["spawnCamera"]) and
-    v.properties["checkpoint"] == globals.checkpoint then
-    megautils.add(camera, v.x, v.y, v.properties["doScrollX"], v.properties["doScrollY"])
+  if v.properties.checkpoint == globals.checkpoint then
+    megautils.add(camera, v.x, v.y, v.properties.doScrollX, v.properties.doScrollY)
     camera.once = false
   end
 end, -1)
 
 addobjects.register("player", function(v)
-  if (not v.properties["spawnCamera"] or v.properties["spawnCamera"]) and
-    v.properties["checkpoint"] == globals.checkpoint and not camera.once and camera.main then
+  if v.properties.checkpoint == globals.checkpoint and not camera.once and camera.main then
     camera.once = true
     camera.main:setRectangleCollision(8, 8)
     camera.main:updateBounds()
@@ -77,25 +72,28 @@ addobjects.register("player", function(v)
 end, 2)
 
 addobjects.register("player", function(v)
-  if v.properties["checkpoint"] == globals.checkpoint then
-    if v.properties["individual"] then
-      if v.properties["individual"] <= globals.playerCount then
-        megautils.add(megaman, v.x, v.y+((v.properties["grav"] == nil or v.properties["grav"] >= 0) and -5 or 0),
-          v.properties["side"], v.properties["drop"], v.properties["individual"], v.properties["grav"])
+  if v.properties.checkpoint == globals.checkpoint then
+    if v.properties.individual then
+      if v.properties.individual <= globals.playerCount then
+        megaman.individualLanded[#megaman.individualLanded+1] = v.properties.individual
+        megautils.add(megaman, v.x, v.y+((v.properties.grav == nil or v.properties.grav >= 0) and -5 or 0),
+          v.properties.side, v.properties.draw, v.properties.individual, v.properties.grav, v.properties.gravFlip)
       end
     else
       for i=1, globals.playerCount do
-        megautils.add(megaman, v.x, v.y+((v.properties["grav"] == nil or v.properties["grav"] >= 0) and -5 or 0),
-          v.properties["side"], v.properties["drop"], i, v.properties["grav"])
+        if not table.contains(v.properties.individual, i) then
+          megautils.add(megaman, v.x, v.y+((v.properties.grav == nil or v.properties.grav >= 0) and -5 or 0),
+            v.properties.side, v.properties.drop, i, v.properties.grav, v.properties.gravFlip)
+        end
       end
     end
   end
 end)
 
-function megaman.properties(self, g)
+function megaman.properties(self, g, gf)
   self.gravityType = 0
   self.normalGravity = 0.25
-  self.gravityMultipliers = {global=g or 1}
+  self.gravityMultipliers = {global=g or 1, gravityFlip=gf or 1}
   self.maxChargeTime = 50
   self.jumpSpeed = -5.25
   self.jumpDecel = 5.25
@@ -351,38 +349,38 @@ function megaman:initChargingColors()
   end
 end
 
-function megaman:new(x, y, side, drop, p, g)
+function megaman:new(x, y, side, drop, p, g, gf)
   megaman.super.new(self)
   megautils.registerPlayer(self, p)
-  megaman.properties(self, g)
+  megaman.properties(self, g, gf)
   self:calcGrav()
   if globals.player[self.player] == "mega" then
-    self.texOutline = loader.get("mega_man_outline")
-    self.texOne = loader.get("mega_man_one")
-    self.texTwo = loader.get("mega_man_two")
-    self.texFace = loader.get("mega_man_face")
+    self.texOutline = loader.get("megaManOutline")
+    self.texOne = loader.get("megaManOne")
+    self.texTwo = loader.get("megaManTwo")
+    self.texFace = loader.get("megaManFace")
   elseif globals.player[self.player] == "proto" then
-    self.texOutline = loader.get("proto_man_outline")
-    self.texOne = loader.get("proto_man_one")
-    self.texTwo = loader.get("proto_man_two")
-    self.texFace = loader.get("proto_man_face")
+    self.texOutline = loader.get("protoManOutline")
+    self.texOne = loader.get("protoManOne")
+    self.texTwo = loader.get("protoManTwo")
+    self.texFace = loader.get("protoManFace")
   elseif globals.player[self.player] == "bass" then
-    self.texOutline = loader.get("bass_outline")
-    self.texOne = loader.get("bass_one")
-    self.texTwo = loader.get("bass_two")
-    self.texFace = loader.get("bass_face")
+    self.texOutline = loader.get("bassOutline")
+    self.texOne = loader.get("bassOne")
+    self.texTwo = loader.get("bassTwo")
+    self.texFace = loader.get("bassFace")
   elseif globals.player[self.player] == "roll" then
-    self.texOutline = loader.get("roll_outline")
-    self.texOne = loader.get("roll_one")
-    self.texTwo = loader.get("roll_two")
-    self.texFace = loader.get("roll_face")
+    self.texOutline = loader.get("rollOutline")
+    self.texOne = loader.get("rollOne")
+    self.texTwo = loader.get("rollTwo")
+    self.texFace = loader.get("rollFace")
   end
   self.teleportOffY = 0
   self.side = side or 1
   self.transform.y = y
   self.transform.x = x
   self.class = megaman
-  self.icoTex = loader.get("weapon_select_icon")
+  self.icoTex = loader.get("weaponSelectIcon")
   self.iconQuad = love.graphics.newQuad(0, 0, 16, 16, 112, 48)
   self.icons = {}
   if globals.player[self.player] == "proto" then
@@ -464,7 +462,7 @@ function megaman:new(x, y, side, drop, p, g)
   self.knockbackUpdateFuncs = {}
   
   megautils.adde(megaman.weaponHandler[self.player])
-  self.healthHandler = megautils.add(healthhandler, {252, 224, 168}, {255, 255, 255}, {0, 0, 0},
+  self.healthHandler = megautils.add(healthHandler, {252, 224, 168}, {255, 255, 255}, {0, 0, 0},
     nil, nil, globals.lifeSegments, self)
   self.healthHandler.render = false
   
@@ -505,14 +503,14 @@ function megaman:new(x, y, side, drop, p, g)
   self.dashAnimation = {regular=(self:checkFalse(self.canDashShoot) and globals.player[self.player] == "mega") and "dash" or "slide", shoot="dashShoot"}
   self.trebleAnimation = {regular="treble", shoot="trebleShoot"}
   self.animations = {}
-  local pp = "mega_man_grid"
+  local pp = "megaManGrid"
   if globals.player[self.player] == "bass" then
-    pp = "bass_grid"
+    pp = "bassGrid"
     self.animations["trebleStart"] = anim8.newAnimation(loader.get(pp)(4, 10, "1-4", 11, 1, 12), 1/8, "pauseAtEnd")
     self.animations["treble"] = anim8.newAnimation(loader.get(pp)("2-3", 12), 1/12)
     self.animations["trebleShoot"] = anim8.newAnimation(loader.get(pp)(4, 12, 1, 13), 1/12)
   elseif globals.player[self.player] == "roll" then
-    pp = "roll_grid"
+    pp = "rollGrid"
   end
   if globals.player[self.player] == "proto" then
     self.animations["idle"] = anim8.newAnimation(loader.get(pp)(1, 1, 2, 1), 1/8)
@@ -712,14 +710,14 @@ function megaman:attemptWeaponUsage()
       if w.current == "rushCoil" and w.energy[w.currentSlot] > 0 and
       (not megautils.groups()["rushCoil" .. w.id] or #megautils.groups()["rushCoil" .. w.id] < 1) then
         megautils.add(rushCoil, self.transform.x+(self.side==1 and 18 or -32),
-          self.transform.y, self.side, self, w, "proto_rush")
+          self.transform.y, self.side, self, w, "protoRush")
         self.maxShootTime = 14
         self.shootTimer = 0
         self:useShootAnimation()
       elseif w.current == "rushJet" and w.energy[w.currentSlot] > 0 and
       (not megautils.groups()["rushJet" .. w.id] or #megautils.groups()["rushJet" .. w.id] < 1) then
         megautils.add(rushJet, self.transform.x+(self.side==1 and 18 or -32),
-            self.transform.y+6, self.side, self, w, "proto_rush")
+            self.transform.y+6, self.side, self, w, "protoRush")
         self.maxShootTime = 14
         self.shootTimer = 0
         self:useShootAnimation()
@@ -957,9 +955,9 @@ function megaman:healthChanged(o, c, i)
         self.render = false
         self.control = false
         self.died = true
-        healthhandler.playerTimers = {}
+        healthHandler.playerTimers = {}
         for i=1, maxPlayerCount do
-          healthhandler.playerTimers[i] = -2
+          healthHandler.playerTimers[i] = -2
         end
         megautils.add(timer, 160, function(t)
           megautils.add(fade, true, nil, nil, function(s)
@@ -1072,10 +1070,10 @@ function megaman:code(dt)
       if self.animations["trebleStart"].looped then
         self.treble = 2
         self.trebleTimer = 0
-        self.canBeInvincible["treble"] = false
+        self.canBeInvincible.treble = false
       elseif self.animations["trebleStart"].position == 4 and self.trebleTimer == 0 then
         self.trebleTimer = 1
-        mmSfx.play("treble_start")
+        mmSfx.play("trebleStart")
       end
     elseif self.treble == 2 then
       self:attemptWeaponUsage()
@@ -1084,7 +1082,7 @@ function megaman:code(dt)
       (megaman.weaponHandler[self.player].current == "trebleBoost" and
       megaman.weaponHandler[self.player].energy[megaman.weaponHandler[self.player].currentSlot] <= 0) then
       self.treble = false
-      self.canBeInvincible["treble"] = false
+      self.canBeInvincible.treble = false
       self.trebleSine = 0
       self.trebleTimer = 0
       self.trebleForce.velx = 0
@@ -1455,7 +1453,7 @@ function megaman:resetStates()
   self.trebleTimer = 0
   self.trebleForce.velx = 0
   self.trebleForce.vely = 0
-  self.canBeInvincible["treble"] = false
+  self.canBeInvincible.treble = false
   self.extraJumps = 0
   self.shootTimer = self.maxShootTime
   if self.slide then
@@ -1478,7 +1476,7 @@ function megaman:resetCharge()
     megaman.colorTwo[self.player] = self.chargeColorTwos[megaman.weaponHandler[self.player].current][self.chargeState][self.chargeFrame]
   end
   mmSfx.stop("charge")
-  mmSfx.stop("proto_charge")
+  mmSfx.stop("protoCharge")
 end
 
 function megaman:charge(animOnly)
@@ -1500,7 +1498,7 @@ function megaman:charge(animOnly)
       self.chargeFrame = 1
       if self.chargeState == 0 then
         if megaman.weaponHandler[self.player].current == "protoBuster" then
-          mmSfx.play("proto_charge")
+          mmSfx.play("protoCharge")
         else
           mmSfx.play("charge")
         end
@@ -1767,7 +1765,7 @@ function megaman:update(dt)
       end
       self.healthHandler.change = self.changeHealth
       self.healthHandler:updateThis()
-      healthhandler.playerTimers[self.player] = 180
+      healthHandler.playerTimers[self.player] = 180
       megautils.remove(megaman.weaponHandler[self.player], true)
       megautils.remove(self.healthHandler, true)
       megautils.unregisterPlayer(self)

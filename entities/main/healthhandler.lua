@@ -1,26 +1,26 @@
-healthhandler = basicEntity:extend()
+healthHandler = basicEntity:extend()
 
-megautils.resetGameObjectsFuncs["healthhandler"] = function()
-  healthhandler.playerTimers = {}
+megautils.resetGameObjectsFuncs["healthHandler"] = function()
+  healthHandler.playerTimers = {}
   for i=1, maxPlayerCount do
-    healthhandler.playerTimers[i] = -2
+    healthHandler.playerTimers[i] = -2
   end
 end
 
-healthhandler.playerTimers = {}
+healthHandler.playerTimers = {}
 
 for i=1, maxPlayerCount do
-  healthhandler.playerTimers[i] = -2
+  healthHandler.playerTimers[i] = -2
 end
 
-function healthhandler:new(colorOne, colorTwo, colorOutline, side, r, segments, player)
-  healthhandler.super.new(self)
+function healthHandler:new(colorOne, colorTwo, colorOutline, side, r, segments, player)
+  healthHandler.super.new(self)
   self.added = function(self)
     self:addToGroup("freezable")
   end
-  self.barOne = loader.get("bar_one")
-  self.barTwo = loader.get("bar_two")
-  self.barOutline = loader.get("bar_outline")
+  self.barOne = loader.get("barOne")
+  self.barTwo = loader.get("barTwo")
+  self.barOutline = loader.get("barOutline")
   self.colorOne = colorOne
   self.colorTwo = colorTwo
   self.colorOutline = colorOutline
@@ -43,7 +43,7 @@ function healthhandler:new(colorOne, colorTwo, colorOutline, side, r, segments, 
   self.render3 = 0
 end
 
-function healthhandler:updateThis()
+function healthHandler:updateThis()
   if self.change > 0 then
     if self.health ~= 4*self.segments then
       megautils.freeze(self.me)
@@ -56,7 +56,7 @@ function healthhandler:updateThis()
   self.change = 0
 end
 
-function healthhandler:update(dt)
+function healthHandler:update(dt)
   self.riseTimer = math.min(self.riseTimer+1, 4)
   if self.rise > 0 and self.riseTimer == 4 then
     megautils.freeze(self.me)
@@ -74,14 +74,14 @@ function healthhandler:update(dt)
   self.health = math.clamp(self.health, 0, 4*self.segments)
   if self.player and self.player == globals.mainPlayer and self.player.control and self.player.updated then
     for i=1, globals.playerCount do
-      if healthhandler.playerTimers[i] > -1 then
-        healthhandler.playerTimers[i] = math.max(healthhandler.playerTimers[i]-1, 0)
-        if healthhandler.playerTimers[i] == 0 then
-          healthhandler.playerTimers[i] = -1
+      if healthHandler.playerTimers[i] > -1 then
+        healthHandler.playerTimers[i] = math.max(healthHandler.playerTimers[i]-1, 0)
+        if healthHandler.playerTimers[i] == 0 then
+          healthHandler.playerTimers[i] = -1
         end
-      elseif healthhandler.playerTimers[i] == -1 and control.startPressed[i] then
+      elseif healthHandler.playerTimers[i] == -1 and control.startPressed[i] then
         if globals.lives > 0 then
-          healthhandler.playerTimers[i] = -2
+          healthHandler.playerTimers[i] = -2
           local p = megautils.add(megaman, self.player.transform.x, self.player.transform.y, self.player.side, true, i)
           self.player:transferState(p)
           megautils.revivePlayer(i)
@@ -117,7 +117,7 @@ function healthhandler:update(dt)
   end
 end
 
-function healthhandler:draw()
+function healthHandler:draw()
   if self.player and (self.player == globals.mainPlayer or (not globals.mainPlayer and self.lifeRecord)) then
     if not globals.infiniteLives then
       love.graphics.setColor(0, 0, 0, 1)
@@ -129,7 +129,7 @@ function healthhandler:draw()
     end
     if globals.mainPlayer == self.player then
       for i=1, globals.playerCount do
-        if healthhandler.playerTimers[i] == -1 then
+        if healthHandler.playerTimers[i] == -1 then
           love.graphics.setColor(0, 0, 0, 1)
           love.graphics.rectangle("fill", self.transform.x, self.transform.y+(i*8), 32, 8)
           love.graphics.setColor(1, 1, 1, 1)
@@ -138,12 +138,12 @@ function healthhandler:draw()
           else
             love.graphics.print("p" .. tostring(i) .. " `", self.transform.x, self.transform.y+(i*8))
           end
-        elseif healthhandler.playerTimers[i] > -1 then
+        elseif healthHandler.playerTimers[i] > -1 then
           love.graphics.setColor(0, 0, 0, 1)
           love.graphics.rectangle("fill", self.transform.x, self.transform.y+(i*8), 32, 8)
           love.graphics.setColor(1, 1, 1, 1)
           love.graphics.print("p" .. tostring(i) .. " " ..
-            tostring(math.abs(math.ceil(healthhandler.playerTimers[i]/20))), self.transform.x, self.transform.y+(i*8))
+            tostring(math.abs(math.ceil(healthHandler.playerTimers[i]/20))), self.transform.x, self.transform.y+(i*8))
         end
       end
     end

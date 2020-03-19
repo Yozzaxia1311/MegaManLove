@@ -1,27 +1,27 @@
-local gameoverstate = states.state:extend()
+local gameOverState = states.state:extend()
 
-function gameoverstate:begin()
+function gameOverState:begin()
   loader.load("assets/misc/cont.png", "cont", "texture")
   megautils.loadStage(self, "assets/maps/cont.tmx")
   megautils.add(contPanels)
   self.wait = 0
   megautils.add(fade, false, nil, nil, fade.remove)
   view.x, view.y = 0, 0
-  mmMusic.playFromFile(nil, "assets/sfx/music/game_over.ogg")
+  mmMusic.playFromFile(nil, "assets/sfx/music/gameOver.ogg")
 end
 
-function gameoverstate:update(dt)
+function gameOverState:update(dt)
   megautils.update(self, dt)
 end
 
-function gameoverstate:draw()
+function gameOverState:draw()
   megautils.draw(self)
 end
 
-megautils.cleanFuncs["unload_gameover"] = function()
+megautils.cleanFuncs.gameOver = function()
   contPanels = nil
   globals.gameOverContinueState = nil
-  megautils.cleanFuncs["unload_gameover"] = nil
+  megautils.cleanFuncs.gameOver = nil
 end
 
 contPanels = entity:extend()
@@ -62,7 +62,7 @@ function contSelect:new()
   contSelect.super.new(self)
   self.transform.x = 56
   self.transform.y = 144
-  self.tex = loader.get("menu_select")
+  self.tex = loader.get("menuSelect")
   self.pick = 0
   self.offY = self.transform.y
   self.picked = false
@@ -76,7 +76,7 @@ function contSelect:update(dt)
     self.pick = math.wrap(self.pick+1, 0, 1)
   end
   if old ~= self.pick then
-    mmSfx.play("cursor_move")
+    mmSfx.play("cursorMove")
   end
   if (control.jumpPressed[1] or control.startPressed[1]) and not self.picked then
     if self.pick == 1 then
@@ -98,4 +98,4 @@ function contSelect:draw()
   love.graphics.draw(self.tex, self.transform.x, self.transform.y)
 end
 
-return gameoverstate
+return gameOverState

@@ -1,6 +1,6 @@
-local weapongetstate = states.state:extend()
+local weaponGetState = states.state:extend()
 
-function weapongetstate:begin()
+function weaponGetState:begin()
   loader.clear()
   megautils.runFile("entities/misc/starfield.lua")
   megautils.add(banner)
@@ -23,17 +23,17 @@ function weapongetstate:begin()
   mmMusic.playFromFile("assets/sfx/music/get.ogg")
 end
 
-function weapongetstate:update(dt)
+function weaponGetState:update(dt)
   megautils.update(self, dt)
 end
 
-function weapongetstate:draw()
+function weaponGetState:draw()
   megautils.draw(self)
 end
 
-megautils.cleanFuncs["unload_weaponget"] = function()
+megautils.cleanFuncs.weaponGet = function()
   globals.weaponGet = nil
-  megautils.cleanFuncs["unload_weaponget"] = nil
+  megautils.cleanFuncs.weaponGet = nil
 end
 
-return weapongetstate
+return weaponGetState

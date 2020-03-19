@@ -832,35 +832,3 @@ function basicEntity:draw() end
 function basicEntity:removed() end
 function basicEntity:added() end
 function basicEntity:staticToggled() end
-
-mapentity = basicEntity:extend()
-
-mapentity.layers = {}
-mapentity.currentMap = nil
-
-megautils.cleanFuncs["mapentity_clean"] = function()
-  mapentity.layers = {}
-  mapentity.currentMap = nil
-end
-
-function mapentity:new(name, map)
-  mapentity.super.new(self)
-  self.added = function(self)
-    self:addToGroup("freezable")
-  end
-  self.name = name
-  self.data = mapentity.currentMap.layers[self.name]
-  mapentity.layers[self.name] = self
-  self:setLayer(-5)
-end
-
-function mapentity:drawAt(x, y)
-  self.data.offsetx = x
-  self.data.offsety = y
-  self.data:draw()
-end
-
-function mapentity:draw()
-  love.graphics.setColor(1, 1, 1, 1)
-  self:drawAt(math.round(self.transform.x), math.round(self.transform.y))
-end

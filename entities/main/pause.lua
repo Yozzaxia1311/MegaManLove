@@ -2,12 +2,12 @@ weaponSelect = entity:extend()
 
 function weaponSelect:new(w, h, p)
   weaponSelect.super.new(self)
-  self.t = loader.get("weapon_select")
-  self.bg = loader.get("weapon_select_img")
+  self.t = loader.get("weaponSelect")
+  self.bg = loader.get("weaponSelectImg")
   self.tex = loader.get("particles")
-  self.texOutline = loader.get("particles_outline")
-  self.texOne = loader.get("particles_one")
-  self.texTwo = loader.get("particles_two")
+  self.texOutline = loader.get("particlesOutline")
+  self.texOne = loader.get("particlesOne")
+  self.texTwo = loader.get("particlesTwo")
   self.quadE = love.graphics.newQuad(72, 12, 16, 16, 128, 98)
   self.quadW = love.graphics.newQuad(88, 12, 16, 16, 128, 98)
   self.heads = {}
@@ -41,7 +41,7 @@ function weaponSelect:new(w, h, p)
   for y=1, #self.list do
     for x=1, #self.list[y] do
       if self.w.weapons[self.list[y][x]] then
-        local h = healthhandler({124, 124, 124}, {188, 188, 188}, {0, 0, 0}, nil, "x", 8)
+        local h = healthHandler({124, 124, 124}, {188, 188, 188}, {0, 0, 0}, nil, "x", 8)
         if y == 1 and x == 1 then
           h.segments = self.h.segments
           h.health = self.h.health
@@ -220,7 +220,7 @@ function weaponSelect:update(dt)
           megaman.colorOutline[self.player] = self.w.colorOutline[self.cur]
           megaman.colorOne[self.player] = self.w.colorOne[self.cur]
           megaman.colorTwo[self.player] = self.w.colorTwo[self.cur]
-          mmSfx.play("cursor_move")
+          mmSfx.play("cursorMove")
          return
         end
         self.y = math.clamp(self.y+1, 1, 6)
@@ -233,7 +233,7 @@ function weaponSelect:update(dt)
       megaman.colorOutline[self.player] = self.w.colorOutline[self.list[self.y][self.x]]
       megaman.colorOne[self.player] = self.w.colorOne[self.list[self.y][self.x]]
       megaman.colorTwo[self.player] = self.w.colorTwo[self.list[self.y][self.x]]
-      mmSfx.play("cursor_move")
+      mmSfx.play("cursorMove")
     end
   elseif self.section == 1 then
     local olx, oly = self.x, self.y
@@ -275,7 +275,7 @@ function weaponSelect:update(dt)
       self.x = 1
     end
     if olx ~= self.x or oly ~= self.y then
-      mmSfx.play("cursor_move")
+      mmSfx.play("cursorMove")
     end
     for k, v in pairs(self.fills) do
       for i, j in pairs(v) do

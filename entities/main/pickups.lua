@@ -1,6 +1,6 @@
 smallHealth = entity:extend()
 
-addobjects.register("small_health", function(v)
+addobjects.register("smallHealth", function(v)
   megautils.add(spawner, v.x, v.y+10, 8, 6, function(s)
     megautils.add(smallHealth, s.transform.x, s.transform.y, false, v.id, s)
   end)
@@ -13,11 +13,11 @@ function smallHealth:new(x, y, despwn, id, spawner)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(8, 6)
-  self.anim = anim8.newAnimation(loader.get("small_health_grid")("1-2", 1), 1/8)
+  self.anim = anim8.newAnimation(loader.get("smallHealthGrid")("1-2", 1), 1/8)
   self.id = id
   self.spawner = spawner
   self.t = loader.get("particles")
-  self.tOutline = loader.get("particles_outline")
+  self.tOutline = loader.get("particlesOutline")
   self.despawn = despwn == nil and self.id == nil or despwn
   self.added = function()
     self:addToGroup("removeOnTransition")
@@ -108,11 +108,11 @@ function health:new(x, y, despwn, id, spawner)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(16, 14)
-  self.anim = anim8.newAnimation(loader.get("health_grid")("1-2", 1), 1/8)
+  self.anim = anim8.newAnimation(loader.get("healthGrid")("1-2", 1), 1/8)
   self.id = id
   self.spawner = spawner
   self.t = loader.get("particles")
-  self.tOutline = loader.get("particles_outline")
+  self.tOutline = loader.get("particlesOutline")
   self.despawn = despwn == nil and self.id == nil or despwn
   self.added = function()
     self:addToGroup("removeOnTransition")
@@ -190,7 +190,7 @@ end
 
 smallEnergy = entity:extend()
 
-addobjects.register("small_energy", function(v)
+addobjects.register("smallEnergy", function(v)
   megautils.add(spawner, v.x, v.y+10, 8, 6, function(s)
     megautils.add(smallEnergy, s.transform.x, s.transform.y, false, v.id, s)
   end)
@@ -203,12 +203,12 @@ function smallEnergy:new(x, y, despwn, id, spawner)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(8, 6)
-  self.anim = anim8.newAnimation(loader.get("small_energy_grid")("1-2", 1), 1/8)
+  self.anim = anim8.newAnimation(loader.get("smallEnergyGrid")("1-2", 1), 1/8)
   self.id = id
   self.spawner = spawner
-  self.texOutline = loader.get("particles_outline")
-  self.texOne = loader.get("particles_one")
-  self.texTwo = loader.get("particles_two")
+  self.texOutline = loader.get("particlesOutline")
+  self.texOne = loader.get("particlesOne")
+  self.texTwo = loader.get("particlesTwo")
   self.despawn = despwn == nil and self.id == nil or despwn
   self.added = function()
     self:addToGroup("removeOnTransition")
@@ -308,12 +308,12 @@ function energy:new(x, y, despwn, id, spawner)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(16, 10)
-  self.anim = anim8.newAnimation(loader.get("energy_grid")("1-2", 1), 1/8)
+  self.anim = anim8.newAnimation(loader.get("energyGrid")("1-2", 1), 1/8)
   self.id = id
   self.spawner = spawner
-  self.texOutline = loader.get("particles_outline")
-  self.texOne = loader.get("particles_one")
-  self.texTwo = loader.get("particles_two")
+  self.texOutline = loader.get("particlesOutline")
+  self.texOne = loader.get("particlesOne")
+  self.texTwo = loader.get("particlesTwo")
   self.despawn = despwn == nil and self.id == nil or despwn
   self.added = function()
     self:addToGroup("removeOnTransition")
@@ -417,9 +417,9 @@ function life:new(x, y, despwn, id, spawner)
   self.id = id
   self.spawner = spawner
   self.tex = loader.get("particles")
-  self.texTwo = loader.get("particles_two")
-  self.texOutline = loader.get("particles_outline")
-  self.texOne = loader.get("particles_one")
+  self.texTwo = loader.get("particlesTwo")
+  self.texOutline = loader.get("particlesOutline")
+  self.texOne = loader.get("particlesOne")
   self.despawn = despwn == nil and self.id == nil or despwn
   self.added = function()
     self:addToGroup("removeOnTransition")
@@ -541,7 +541,7 @@ end
 
 eTank = entity:extend()
 
-addobjects.register("e_tank", function(v)
+addobjects.register("eTank", function(v)
   megautils.add(spawner, v.x, v.y, 16, 15, function(s)
     megautils.add(eTank, s.transform.x, s.transform.y, false, v.id, s)
   end)
@@ -554,12 +554,12 @@ function eTank:new(x, y, despwn, id, spawner)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(16, 15)
-  self.anim = anim8.newAnimation(loader.get("tank_grid")(1, 1, 2, 2), 1/8)
+  self.anim = anim8.newAnimation(loader.get("tankGrid")(1, 1, 2, 2), 1/8)
   self.id = id
   self.spawner = spawner
-  self.texOutline = loader.get("particles_outline")
-  self.texOne = loader.get("particles_one")
-  self.texTwo = loader.get("particles_two")
+  self.texOutline = loader.get("particlesOutline")
+  self.texOne = loader.get("particlesOne")
+  self.texTwo = loader.get("particlesTwo")
   self.despawn = despwn == nil and self.id == nil or despwn
   self.added = function()
     self:addToGroup("removeOnTransition")
@@ -646,7 +646,7 @@ end
 
 wTank = entity:extend()
 
-addobjects.register("w_tank", function(v)
+addobjects.register("wTank", function(v)
   megautils.add(spawner, v.x, v.y, 16, 15, function(s)
     megautils.add(wTank, s.transform.x, s.transform.y, false, v.id, s)
   end)
@@ -659,12 +659,12 @@ function wTank:new(x, y, despwn, id, spawner)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(16, 15)
-  self.anim = anim8.newAnimation(loader.get("tank_grid")(2, 2, 2, 1), 1/8)
+  self.anim = anim8.newAnimation(loader.get("tankGrid")(2, 2, 2, 1), 1/8)
   self.id = id
   self.spawner = spawner
-  self.texOutline = loader.get("particles_outline")
-  self.texOne = loader.get("particles_one")
-  self.texTwo = loader.get("particles_two")
+  self.texOutline = loader.get("particlesOutline")
+  self.texOne = loader.get("particlesOne")
+  self.texTwo = loader.get("particlesTwo")
   self.despawn = despwn == nil and self.id == nil or despwn
   self.added = function()
     self:addToGroup("removeOnTransition")

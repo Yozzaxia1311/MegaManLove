@@ -1,8 +1,8 @@
-loader.load("assets/global/bosses/stick_man.png", "stick_man", "texture")
+loader.load("assets/global/bosses/stickMan.png", "stickMan", "texture")
 
 stickMan = entity:extend()
 
-addobjects.register("stick_man", function(v)
+addobjects.register("stickMan", function(v)
   megautils.add(spawner, v.x, v.y, 12, 28, function(s)
     megautils.add(stickMan, v.x, v.y, s)
   end)
@@ -13,20 +13,20 @@ function stickMan:new(x, y, s)
   self.added = function(self)
     self:addToGroup("freezable")
     self:addToGroup("hurtable")
-    self.canBeInvincible["global"] = true
+    self.canBeInvincible.global = true
     mmMusic.stopMusic()
   end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(12, 24)
-  self.t = loader.get("stick_man")
+  self.t = loader.get("stickMan")
   self.side = -1
   self.s = 0
   self.spawner = s
   self.render = false
   self.ss = 1
   self.health = 28
-  self.hBar = healthhandler({128, 128, 128}, {255, 255, 255}, {0, 0, 0}, nil, nil, 7)
+  self.hBar = healthHandler({128, 128, 128}, {255, 255, 255}, {0, 0, 0}, nil, nil, 7)
   camera.main.funcs["stick"] = function(s)
     self.hBar.transform.x = view.x + view.w - 24
     self.hBar.transform.y = view.y + 80
@@ -80,7 +80,7 @@ function stickMan:healthChanged(o, c, i)
     if o:is(megaChargedBuster) then
       megautils.remove(o, true)
     end
-    mmSfx.play("enemy_hit")
+    mmSfx.play("enemyHit")
   end
 end
 
@@ -112,7 +112,7 @@ function stickMan:update(dt)
           self.ss = 0
           globals.mainPlayer.curAnim = "idle"
           self.s = 2
-          mmMusic.playFromFile("assets/sfx/music/boss_loop.ogg", "assets/sfx/music/boss_intro.ogg")
+          mmMusic.playFromFile("assets/sfx/music/bossLoop.ogg", "assets/sfx/music/bossIntro.ogg")
           self.render = true
         end
       end
@@ -120,7 +120,7 @@ function stickMan:update(dt)
   elseif self.s == 2 then
     collision.doCollision(self)
     if self.ground then
-      self.canBeInvincible["global"] = false
+      self.canBeInvincible.global = false
       self.hBar.health = 0
       self.hBar.change = self.health
       self.hBar:updateThis()
@@ -152,7 +152,7 @@ function stickManIntro:new()
   stickManIntro.super.new(self)
   self.transform.y = -60
   self.transform.x = 108
-  self.t = loader.get("stick_man")
+  self.t = loader.get("stickMan")
   self.c = "idle"
   self.text = "stick man"
   self.pos = 0
@@ -214,29 +214,29 @@ function megamanStick:new()
   megamanStick.super.new(self)
   self.transform.y = -60
   self.transform.x = 100
-  local grid = "mega_man_grid"
+  local grid = "megaManGrid"
   if globals.player[1] == "mega" then
-    self.texOutline = loader.get("mega_man_outline")
-    self.texOne = loader.get("mega_man_one")
-    self.texTwo = loader.get("mega_man_two")
-    self.texFace = loader.get("mega_man_face")
+    self.texOutline = loader.get("megaManOutline")
+    self.texOne = loader.get("megaManOne")
+    self.texTwo = loader.get("megaManTwo")
+    self.texFace = loader.get("megaManFace")
   elseif globals.player[1] == "proto" then
-    self.texOutline = loader.get("proto_man_outline")
-    self.texOne = loader.get("proto_man_one")
-    self.texTwo = loader.get("proto_man_two")
-    self.texFace = loader.get("proto_man_face")
+    self.texOutline = loader.get("protoManOutline")
+    self.texOne = loader.get("protoManOne")
+    self.texTwo = loader.get("protoManTwo")
+    self.texFace = loader.get("protoManFace")
   elseif globals.player[1] == "bass" then
-    self.texOutline = loader.get("bass_outline")
-    self.texOne = loader.get("bass_one")
-    self.texTwo = loader.get("bass_two")
-    self.texFace = loader.get("bass_face")
-    grid = "bass_grid"
+    self.texOutline = loader.get("bassOutline")
+    self.texOne = loader.get("bassOne")
+    self.texTwo = loader.get("bassTwo")
+    self.texFace = loader.get("bassFace")
+    grid = "bassGrid"
   elseif globals.player[1] == "roll" then
-    self.texOutline = loader.get("roll_outline")
-    self.texOne = loader.get("roll_one")
-    self.texTwo = loader.get("roll_two")
-    self.texFace = loader.get("roll_face")
-    grid = "roll_grid"
+    self.texOutline = loader.get("rollOutline")
+    self.texOne = loader.get("rollOne")
+    self.texTwo = loader.get("rollTwo")
+    self.texFace = loader.get("rollFace")
+    grid = "rollGrid"
   end
   self.curAnim = pose and "pose" or "idle"
   self.animations = {}
@@ -370,10 +370,10 @@ function megamanStick:draw()
   love.graphics.printf(string.sub(self.text, 0, self.pos), 0, (120/2)+81, view.w, "center")
 end
 
-megautils.cleanFuncs["unload_stickman"] = function()
+megautils.cleanFuncs.stickMan = function()
   stickMan = nil
   stickManIntro = nil
   megamanStick = nil
-  addobjects.unregister("stick_man")
-  megautils.cleanFuncs["unload_stickman"] = nil
+  addobjects.unregister("stickMan")
+  megautils.cleanFuncs.stickMan = nil
 end

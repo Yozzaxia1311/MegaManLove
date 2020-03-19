@@ -10,7 +10,7 @@ function slideParticle:new(x, y, side)
   self.transform.x = x
   self:setRectangleCollision(2, 8)
   self.tex = loader.get("particles")
-  self.anim = anim8.newAnimation(loader.get("slide_particle_grid")("1-3",1), 1/10)
+  self.anim = anim8.newAnimation(loader.get("slideParticleGrid")("1-3",1), 1/10)
   self.side = side
 end
 
@@ -52,7 +52,7 @@ function damageSteam:new(x, y)
   self.transform.x = x
   self:setRectangleCollision(5, 8)
   self.tex = loader.get("particles")
-  self.anim = anim8.newAnimation(loader.get("damage_steam_grid")("1-3",1), 1/8)
+  self.anim = anim8.newAnimation(loader.get("damageSteamGrid")("1-3",1), 1/8)
 end
 
 function damageSteam:recycle(x, y)
@@ -136,7 +136,7 @@ function kickParticle:new(x, y, side)
   self.transform.x = x
   self:setRectangleCollision(8, 8)
   self.tex = loader.get("particles")
-  self.anim = anim8.newAnimation(loader.get("slide_particle_grid")("1-3",1), 1/10)
+  self.anim = anim8.newAnimation(loader.get("slideParticleGrid")("1-3",1), 1/10)
   self.render = false
   self.side = side
   self.once = false
@@ -192,7 +192,7 @@ function angleParticle:new(x, y, a)
   self.transform.x = x
   self:setRectangleCollision(2, 8)
   self.tex = loader.get("particles")
-  self.anim = anim8.newAnimation(loader.get("slide_particle_grid")("1-3",1), 1/10)
+  self.anim = anim8.newAnimation(loader.get("slideParticleGrid")("1-3",1), 1/10)
   self.once = false
   self.velocity = velocity()
   self.velocity.velx = megautils.calcX(a)
@@ -285,7 +285,7 @@ function explodeParticle:new(x, y, angle, spd)
   self.transform.x = x
   self:setRectangleCollision(24, 24)
   self.tex = loader.get("particles")
-  self.anim = anim8.newAnimation(loader.get("explode_particle_grid")("1-5", 1), 1/10)
+  self.anim = anim8.newAnimation(loader.get("explodeParticleGrid")("1-5", 1), 1/10)
   self.velocity = velocity()
   self.velocity.velx = megautils.calcX(angle)*spd
   self.velocity.vely = megautils.calcY(angle)*spd
@@ -324,7 +324,7 @@ function absorbParticle:new(x, y, towards, spd)
   self.transform.x = x
   self:setRectangleCollision(24, 24)
   self.tex = loader.get("particles")
-  self.anim = anim8.newAnimation(loader.get("explode_particle_grid")("1-5", 1), 1/10)
+  self.anim = anim8.newAnimation(loader.get("explodeParticleGrid")("1-5", 1), 1/10)
   self.towards = towards
   self.startX = x
   self.startY = y
@@ -399,7 +399,7 @@ function smallBlast:new(x, y, spd)
   self:setRectangleCollision(24, 24)
   self.tex = loader.get("particles")
   self.spd = spd or 0.065
-  self.anim = anim8.newAnimation(loader.get("explode_particle_grid")("1-5", 1), self.spd)
+  self.anim = anim8.newAnimation(loader.get("explodeParticleGrid")("1-5", 1), self.spd)
 end
 
 function smallBlast:recycle(x, y, spd)

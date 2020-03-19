@@ -1,3 +1,5 @@
+loader.load("assets/global/entities/met.png", "met", "texture")
+
 met = entity:extend()
 
 addobjects.register("met", function(v)
@@ -16,18 +18,19 @@ function met:new(x, y, s)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(14, 14)
-  self.t = loader.get("demo_objects")
+  self.t = loader.get("met")
   self.spawner = s
   self.c = "safe"
   self.quads = {}
-  self.quads["safe"] = love.graphics.newQuad(32, 0, 18, 15, 100, 100)
-  self.quads["up"] = love.graphics.newQuad(50, 0, 18, 15, 100, 100)
+  self.quads["safe"] = love.graphics.newQuad(0, 0, 18, 15, 42, 15)
+  self.quads["up"] = love.graphics.newQuad(0, 0, 18, 15, 42, 15)
   self.side = -1
   self.s = 0
   self.health = 2
-  self.canBeInvincible["global"] = true
+  self.canBeInvincible.global = true
   self.timer = 0
   self.blockCollision = true
+  self.gravityMultipliers.flipWithPlayer = 1
 end
 
 function met:grav()
@@ -72,16 +75,19 @@ function met:healthChanged(o, c, i)
     megautils.add(smallBlast, self.transform.x-4, self.transform.y-4)
     megautils.dropItem(self.transform.x, self.transform.y-4)
     megautils.remove(self, true)
-    mmSfx.play("enemy_explode")
+    mmSfx.play("enemyExplode")
   elseif self.changeHealth < 0 then
     if o:is(megaChargedBuster) then
       megautils.remove(o, true)
     end
-    mmSfx.play("enemy_hit")
+    mmSfx.play("enemyHit")
   end
 end
 
 function met:update(dt)
+  if globals.mainPlayer then
+    self.gravityMultipliers.flipWithPlayer = globals.mainPlayer.gravityFlip or 1
+  end
   local near = megautils.autoFace(self, globals.allPlayers)
   if self.s == 0 then
     if near and math.between(near.transform.x, 
@@ -93,7 +99,7 @@ function met:update(dt)
     if self.timer == 80 then
       self.timer = 0
       self.s = 1
-      self.canBeInvincible["global"] = false
+      self.canBeInvincible.global = false
       self.c = "up"
     end
   elseif self.s == 1 then
@@ -110,7 +116,7 @@ function met:update(dt)
     self.timer = math.min(self.timer+1, 20)
     if self.timer == 20 then
       self.c = "safe"
-      self.canBeInvincible["global"] = true
+      self.canBeInvincible.global = true
       self.timer = 0
       self.s = 0
     end
@@ -152,8 +158,8 @@ function metBullet:new(x, y, vx, vy)
   self.transform.x = x
   self.transform.y = y
   self:setRectangleCollision(6, 6)
-  self.tex = loader.get("demo_objects")
-  self.quad = love.graphics.newQuad(68, 0, 6, 6, 100, 100)
+  self.tex = loader.get("met")
+  self.quad = love.graphics.newQuad(36, 0, 6, 6, 42, 15)
   self.velocity = velocity()
   self.velocity.velx = vx
   self.velocity.vely = vy
@@ -194,9 +200,9 @@ function metBullet:draw()
   love.graphics.draw(self.tex, self.quad, math.round(self.transform.x), math.round(self.transform.y))
 end
 
-megautils.cleanFuncs["unload_met"] = function()
+megautils.cleanFuncs.met = function()
   met = nil
   metBullet = nil
   addobjects.unregister("met")
-  megautils.cleanFuncs["unload_met"] = nil
+  megautils.cleanFuncs.met = nil
 end

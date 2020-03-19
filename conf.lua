@@ -13,7 +13,7 @@ function love.conf(t)
   t.audio.mixwithsystem = true                  -- Keep background music playing when opening LOVE (boolean, iOS and Android only)
 
   t.window.title = "Mega Man Love"              -- The window title (string)
-  t.window.icon = "assets/misc/mm_icon.png"     -- Filepath to an image to use as the window's icon (string)
+  t.window.icon = "assets/misc/mmIcon.png"     -- Filepath to an image to use as the window's icon (string)
   t.window.width = 256*2                        -- The window width (number)
   t.window.height = 224*2                       -- The window height (number)
   t.window.borderless = false                   -- Remove all border visuals from the window (boolean)

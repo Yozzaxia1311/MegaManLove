@@ -6,7 +6,7 @@ function ready:new(text, proto, loop, intro, vol)
   self.added = function(self)
     self:addToGroup("ready")
     if self.proto then
-      mmSfx.play("proto_ready")
+      mmSfx.play("protoReady")
     end
   end
   if self.proto then

@@ -1,25 +1,25 @@
-local rebindstate = states.state:extend()
+local rebindState = states.state:extend()
 
-function rebindstate:begin()
+function rebindState:begin()
   megautils.add(rebinder)
   megautils.add(fade, false, nil, nil, fade.remove)
 end
 
-function rebindstate:update(dt)
+function rebindState:update(dt)
   megautils.update(self, dt)
 end
 
-function rebindstate:stop()
+function rebindState:stop()
   megautils.unload()
 end
 
-function rebindstate:draw()
+function rebindState:draw()
   megautils.draw(self)
 end
 
-megautils.cleanFuncs["unload_rebind"] = function()
+megautils.cleanFuncs.rebind = function()
   rebinder = nil
-  megautils.cleanFuncs["unload_rebind"] = nil
+  megautils.cleanFuncs.rebind = nil
 end
 
 rebinder = entity:extend()
@@ -87,4 +87,4 @@ function rebinder:draw()
     "\n\n(press escape to leave)", self.transform.x, self.transform.y, 200, "center")
 end
 
-return rebindstate
+return rebindState

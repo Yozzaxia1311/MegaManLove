@@ -1,6 +1,8 @@
-addobjects.register("move_across_platform", function(v)
+loader.load("assets/global/entities/moveAcrossPlatform.png", "moveArossPlatform", "texture")
+
+addobjects.register("moveAcrossPlatform", function(v)
   megautils.add(spawner, v.x-4, v.y-4, 32+8, 16+8, function(s)
-    megautils.add(moveAcrossPlatform, s.transform.x+4, s.transform.y+4, v.properties["to_x"], v.properties["to_y"], s)
+    megautils.add(moveAcrossPlatform, s.transform.x+4, s.transform.y+4, v.properties.toX, v.properties.toY, s)
   end)
 end)
 
@@ -16,8 +18,8 @@ function moveAcrossPlatform:new(x, y, toX, toY, s)
   self.transform.x = x
   self.transform.y = y
   self:setRectangleCollision(32, 16)
-  self.tex = loader.get("demo_objects")
-  self.quad = love.graphics.newQuad(0, 0, 32, 16, 100, 100)
+  self.tex = loader.get("moveArossPlatform")
+  self.quad = love.graphics.newQuad(0, 0, 32, 16, 32, 16)
   self.spawner = s
   self.velocity = velocity()
   self.tween = tween.new(1, self.transform, {x=toX, y=toY}, "inOutBack")
@@ -54,8 +56,8 @@ function moveAcrossPlatform:update(dt)
   end
 end
 
-megautils.cleanFuncs["unload_move_across_platform"] = function()
+megautils.cleanFuncs.moveAcrossPlatform = function()
   moveAcrossPlatform = nil
-  addobjects.unregister("move_across_platform")
-  megautils.cleanFuncs["unload_move_across_platform"] = nil
+  addobjects.unregister("moveAcrossPlatform")
+  megautils.cleanFuncs.moveAcrossPlatform = nil
 end

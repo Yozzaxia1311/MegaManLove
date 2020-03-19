@@ -1,29 +1,29 @@
-local stageselectstate = states.state:extend()
+local stageSelectState = states.state:extend()
 
-function stageselectstate:begin()
+function stageSelectState:begin()
   loader.load("assets/misc/select.png", "mugshots", "texture")
-  megautils.loadStage(self, "assets/maps/stage_select.tmx")
+  megautils.loadStage(self, "assets/maps/stageSelect.tmx")
   megautils.add(stageSelect)
   megautils.add(fade, false, nil, nil, fade.remove)
   view.x, view.y = 0, 0
-  mmMusic.playFromFile("assets/sfx/music/select_loop.ogg", "assets/sfx/music/select_intro.ogg")
+  mmMusic.playFromFile("assets/sfx/music/selectLoop.ogg", "assets/sfx/music/selectIntro.ogg")
 end
 
-function stageselectstate:update(dt)
+function stageSelectState:update(dt)
   megautils.update(self, dt)
 end
 
-function stageselectstate:stop()
+function stageSelectState:stop()
   megautils.unload()
 end
 
-function stageselectstate:draw()
+function stageSelectState:draw()
   megautils.draw(self)
 end
 
-megautils.cleanFuncs["unload_stageselect"] = function()
+megautils.cleanFuncs.stageSelect = function()
   stageSelect = nil
-  megautils.cleanFuncs["unload_stageselect"] = nil
+  megautils.cleanFuncs.stageSelect = nil
 end
 
 stageSelect = entity:extend()
@@ -72,7 +72,7 @@ function stageSelect:update(dt)
   self.y = math.wrap(self.y, 0, 2)
   
   if oldx ~= self.x or oldy ~= self.y then
-    mmSfx.play("cursor_move")
+    mmSfx.play("cursorMove")
     local newx, newy = 0, 0
     if self.x == 0 and self.y == 0 then
       newx = 1
@@ -166,4 +166,4 @@ function stageSelect:draw()
   end
 end
 
-return stageselectstate
+return stageSelectState

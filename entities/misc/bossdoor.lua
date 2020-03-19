@@ -1,22 +1,22 @@
 bossdoor = entity:extend()
 
-addobjects.register("boss_door", function(v)
-  local seg = (v.properties["dir"]=="up" or v.properties["dir"]=="down") and 
+addobjects.register("bossDoor", function(v)
+  local seg = (v.properties.dir=="up" or v.properties.dir=="down") and 
     math.round(v.width/16) or math.round(v.height/16)
-  megautils.add(bossdoor, v.x, v.y, seg, v.properties["dir"],
-  v.properties["doScrollX"], v.properties["doScrollY"], v.properties["speed"], v.properties["useTileLayer"])
+  megautils.add(bossdoor, v.x, v.y, seg, v.properties.dir,
+  v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.useTileLayer)
 end)
 
 function bossdoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt)
   bossdoor.super.new(self)
   self.added = function(self)
-    self:addToGroup("boss_door")
+    self:addToGroup("bossDoor")
     self:addToGroup("despawnable")
   end
   self.transform.y = y
   self.transform.x = x
   self:setLayer(0)
-  self.tex = loader.get("boss_door")
+  self.tex = loader.get("bossDoor")
   self.scrollx = scrollx
   self.scrolly = scrolly
   self.quad = love.graphics.newQuad(0, 0, 32, 16, 32, 16)
@@ -28,7 +28,7 @@ function bossdoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt)
   self.player = nil
   self:setDirection(dir)
   self.spawnEarlyDuringTransition = true
-  self.useMapTiles = mapentity.layers[umt] and umt
+  self.useMapTiles = megautils.getMapLayer(umt) and umt
 end
 
 function bossdoor:setDirection(dir)
@@ -71,7 +71,7 @@ function bossdoor:update(dt)
             for x=1, (self.dir=="right" or self.dir=="left") and 2 or self.maxSegments do
               self.tileList[x] = {}
               for y=1, (self.dir=="right" or self.dir=="left") and self.maxSegments or 2 do
-                self.tileList[x][y] = mapentity.layers[self.useMapTiles].data
+                self.tileList[x][y] = megautils.getMapLayer(self.useMapTiles).data
                   :getTileAtPixelPosition(self.transform.x+(x*16)-16, self.transform.y+(y*16)-16)
               end
             end
@@ -85,14 +85,14 @@ function bossdoor:update(dt)
       self.timer = 0
       self.segments = math.max(self.segments-1, 0)
       if self.useMapTiles then
-        mapentity.layers[self.useMapTiles].data
+        megautils.getMapLayer(self.useMapTiles).data
         :setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and self.transform.x or self.transform.x+(self.segments*16),
           (self.dir=="right" or self.dir=="left") and self.transform.y+((self.segments)*16) or self.transform.y, -1)
-        mapentity.layers[self.useMapTiles].data
+        megautils.getMapLayer(self.useMapTiles).data
         :setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and self.transform.x+16 or self.transform.x+(self.segments*16),
           (self.dir=="right" or self.dir=="left") and self.transform.y+((self.segments)*16) or self.transform.y+16, -1)
       end
-      mmSfx.play("boss_door_sfx")
+      mmSfx.play("bossDoorSfx")
     end
     if self.segments <= 0 then
       self.state = 2
@@ -131,16 +131,16 @@ function bossdoor:update(dt)
       self.timer = 0
       self.segments = math.min(self.segments+1, self.maxSegments)
       if self.useMapTiles then
-        mapentity.layers[self.useMapTiles].data
+        megautils.getMapLayer(self.useMapTiles).data
           :setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and self.transform.x or self.transform.x+(self.segments*16)-16,
           (self.dir=="right" or self.dir=="left") and self.transform.y+(self.segments*16)-16 or self.transform.y,
           self.tileList[(self.dir=="right" or self.dir=="left") and 1 or self.segments][(self.dir=="right" or self.dir=="left") and self.segments or 1])
-        mapentity.layers[self.useMapTiles].data
+        megautils.getMapLayer(self.useMapTiles).data
           :setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and self.transform.x+16 or self.transform.x+(self.segments*16)-16,
           (self.dir=="right" or self.dir=="left") and self.transform.y+(self.segments*16)-16 or self.transform.y+16,
           self.tileList[(self.dir=="right" or self.dir=="left") and 2 or self.segments][(self.dir=="right" or self.dir=="left") and self.segments or 2])
       end
-      mmSfx.play("boss_door_sfx")
+      mmSfx.play("bossDoorSfx")
     end
     if self.segments >= self.maxSegments and not megautils.state().system.afterUpdate then
       self.timer = 0

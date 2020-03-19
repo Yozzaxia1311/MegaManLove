@@ -4,7 +4,7 @@ addobjects.register("ice", function(v)
   megautils.add(ice, v.x, v.y, v.width, v.height)
 end)
 
-megautils.resetStateFuncs["ice"] = function()
+megautils.resetStateFuncs.ice = function()
   ice.active = {}
   ice.leftDecel = {}
   ice.rightDecel = {}

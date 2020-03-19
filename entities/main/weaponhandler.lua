@@ -1,10 +1,10 @@
-weaponhandler = basicEntity:extend()
+weaponHandler = basicEntity:extend()
 
-weaponhandler.removeGroups = {}
-weaponhandler.id = 0
+weaponHandler.removeGroups = {}
+weaponHandler.id = 0
 
-function weaponhandler:new(side, r, slots)
-  weaponhandler.super.new(self)
+function weaponHandler:new(side, r, slots)
+  weaponHandler.super.new(self)
   self.added = function(self)
     self:addToGroup("freezable")
   end
@@ -14,9 +14,9 @@ function weaponhandler:new(side, r, slots)
   self.weapons = {}
   self.energy = {}
   self.slots = {}
-  self.barOne = loader.get("bar_one")
-  self.barTwo = loader.get("bar_two")
-  self.barOutline = loader.get("bar_outline")
+  self.barOne = loader.get("barOne")
+  self.barTwo = loader.get("barTwo")
+  self.barOutline = loader.get("barOutline")
   self.quads = {}
   self.quads[0] = love.graphics.newQuad(0, 48, 8, 8, 232, 56)
   self.quads[1] = love.graphics.newQuad(8, 48, 8, 8, 232, 56)
@@ -37,11 +37,11 @@ function weaponhandler:new(side, r, slots)
   self.rot = r or "y"
   self.onceA = false
   self.me = {self}
-  self.id = tostring(weaponhandler.id)
-  weaponhandler.id = weaponhandler.id + 1
+  self.id = tostring(weaponHandler.id)
+  weaponHandler.id = weaponHandler.id + 1
 end
 
-function weaponhandler:reinit()
+function weaponHandler:reinit()
   self.current = self.weapons[0]
   self.curSegment = 0
   self.riseTimer = 4
@@ -50,7 +50,7 @@ function weaponhandler:reinit()
   self.currentSlot = 0
 end
 
-function weaponhandler:register(slot, name, pn, colorone, colortwo, coloroutline, segments)
+function weaponHandler:register(slot, name, pn, colorone, colortwo, coloroutline, segments)
   self.weapons[slot] = name
   self.segments[slot] = segments or 7
   self.energy[slot] = self.segments[slot]*4
@@ -61,9 +61,9 @@ function weaponhandler:register(slot, name, pn, colorone, colortwo, coloroutline
   self.pauseConf[slot] = pn
 end
 
-function weaponhandler:removeWeaponShots()
-  if weaponhandler.removeGroups[self.current] then
-    for _, i in ipairs(weaponhandler.removeGroups[self.current]) do
+function weaponHandler:removeWeaponShots()
+  if weaponHandler.removeGroups[self.current] then
+    for _, i in ipairs(weaponHandler.removeGroups[self.current]) do
       if megautils.groups()[i .. self.id] then
         for _, v in ipairs(megautils.groups()[i .. self.id]) do
           megautils.remove(v, true)
@@ -73,7 +73,7 @@ function weaponhandler:removeWeaponShots()
   end
 end
 
-function weaponhandler:switch(slot)
+function weaponHandler:switch(slot)
   if self.currentSlot ~= slot then
     self:removeWeaponShots()
   end
@@ -83,7 +83,7 @@ function weaponhandler:switch(slot)
   self.currentColorTwo = self.colorTwo[self.currentSlot]
 end
 
-function weaponhandler:switchName(name)
+function weaponHandler:switchName(name)
   if self.current ~= name then
     self:removeWeaponShots()
   end
@@ -93,7 +93,7 @@ function weaponhandler:switchName(name)
   self.currentColorTwo = self.colorTwo[self.currentSlot]
 end
 
-function weaponhandler:updateThis()
+function weaponHandler:updateThis()
   if self.change > 0 then
     if self.energy[self.currentSlot] ~= self.segments[self.currentSlot]*4 then
       megautils.freeze(self.me)
@@ -106,7 +106,7 @@ function weaponhandler:updateThis()
   self.change = 0
 end
 
-function weaponhandler:update(dt)
+function weaponHandler:update(dt)
   self.riseTimer = math.min(self.riseTimer+1, 4)
   if self.rise > 0 and self.riseTimer == 4 then
     megautils.freeze(self.me)
@@ -127,7 +127,7 @@ function weaponhandler:update(dt)
   end
 end
 
-function weaponhandler:draw(x, y)
+function weaponHandler:draw(x, y)
   love.graphics.setColor(1, 1, 1, 1)
   if self.currentSlot == 0 and self.energy[self.currentSlot] then return end
   local curSeg = math.ceil(self.energy[self.currentSlot]/4)
