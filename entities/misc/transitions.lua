@@ -231,7 +231,7 @@ lockSection = entity:extend()
 
 addobjects.register("lockSection", function(v)
   megautils.add(lockSection, v.x, v.y, v.width, v.height, v.properties.name)
-end, 2)
+end, 1)
 
 function lockSection:new(x, y, w, h, name)
   lockSection.super.new(self)
