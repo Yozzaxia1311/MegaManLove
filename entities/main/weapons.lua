@@ -2,7 +2,7 @@ weaponHandler.removeGroups.protoBuster = {"megaBuster", "protoChargedBuster"}
 
 protoSemiBuster = basicEntity:extend()
 
-function protoSemiBuster:new(x, y, dir, wpn, roll)
+function protoSemiBuster:new(x, y, dir, wpn, roll, grav)
   protoSemiBuster.super.new(self)
   self.added = function(self)
     self:addToGroup("megaBuster")
@@ -20,11 +20,12 @@ function protoSemiBuster:new(x, y, dir, wpn, roll)
   self.velocity.velx = dir * 5
   self.side = dir
   self.wpn = wpn
+  self.grav = grav
   megautils.playSound("semiCharged")
 end
 
 function protoSemiBuster:dink(e)
-  self.velocity.vely = -4
+  self.velocity.vely = -4 * self.grav
   self.velocity.velx = 4*-self.side
   self.dinked = 1
   megautils.playSound("dink")
@@ -48,7 +49,7 @@ end
 
 protoChargedBuster = basicEntity:extend()
 
-function protoChargedBuster:new(x, y, dir, wpn, roll)
+function protoChargedBuster:new(x, y, dir, wpn, roll, grav)
   protoChargedBuster.super.new(self)
   self.added = function(self)
     self:addToGroup("protoChargedBuster")
@@ -66,6 +67,7 @@ function protoChargedBuster:new(x, y, dir, wpn, roll)
   self.velocity.velx = dir * 6
   self.side = dir
   self.wpn = wpn
+  self.grav = grav
   megautils.playSound("protoCharged")
   self:face(-self.side)
 end
@@ -75,7 +77,7 @@ function protoChargedBuster:face(n)
 end
 
 function protoChargedBuster:dink(e)
-  self.velocity.vely = -4
+  self.velocity.vely = -4*self.grav
   self.velocity.velx = 4*-self.side
   self.dinked = 1
   megautils.playSound("dink")
@@ -140,7 +142,7 @@ function bassBuster:recycle(x, y, dir, wpn, t, grav)
 end
 
 function bassBuster:dink(e)
-  self.velocity.vely = -4
+  self.velocity.vely = -4 * (self.gravity >= 0 and 1 or -1)
   self.velocity.velx = 4*-self.side
   self.dinked = 1
   megautils.playSound("dink")
@@ -150,9 +152,11 @@ function bassBuster:update(dt)
   if not self.dinked then
     self:hurt(self:collisionTable(megautils.groups().hurtable), self.treble and -1 or -0.5, 2)
   end
-  collision.doCollision(self)
+  local col = collision.checkSolid(self, self.velocity.velx, self.velocity.vely)
+  self.transform.x = self.transform.x + self.velocity.velx
+  self.transform.y = self.transform.y + self.velocity.vely
   if megautils.outside(self) or
-    (not self.treble and not self.dinked and (collision.checkSolid(self) or #self:collisionTable(megautils.groups().bossDoor) ~= 0)) then
+    (not self.treble and not self.dinked and (col or #self:collisionTable(megautils.groups().bossDoor) ~= 0)) then
     megautils.remove(self, true)
   end
 end
@@ -166,7 +170,7 @@ megaBuster = basicEntity:extend()
 
 weaponHandler.removeGroups.megaBuster = {"megaBuster", "megaChargedBuster"}
 
-function megaBuster:new(x, y, dir, wpn)
+function megaBuster:new(x, y, dir, wpn, grav)
   megaBuster.super.new(self)
   self.added = function(self)
     self:addToGroup("megaBuster")
@@ -185,9 +189,10 @@ function megaBuster:new(x, y, dir, wpn)
   self.velocity.velx = dir * 5
   self.side = dir
   self.wpn = wpn
+  self.grav = grav
 end
 
-function megaBuster:recycle(x, y, dir, wpn)
+function megaBuster:recycle(x, y, dir, wpn, grav)
   self.wpn = wpn
   self.side = dir
   self.velocity.velx = dir * 5
@@ -195,10 +200,11 @@ function megaBuster:recycle(x, y, dir, wpn)
   self.dinked = nil
   self.transform.x = x
   self.transform.y = y
+  self.grav = grav
 end
 
 function megaBuster:dink(e)
-  self.velocity.vely = -4
+  self.velocity.vely = -4*self.grav
   self.velocity.velx = 4*-self.side
   self.dinked = 1
   megautils.playSound("dink")
@@ -222,7 +228,7 @@ end
 
 megaSemiBuster = basicEntity:extend()
 
-function megaSemiBuster:new(x, y, dir, wpn)
+function megaSemiBuster:new(x, y, dir, wpn, grav)
   megaSemiBuster.super.new(self)
   self.added = function(self)
     self:addToGroup("megaBuster")
@@ -240,6 +246,7 @@ function megaSemiBuster:new(x, y, dir, wpn)
   self.velocity.velx = dir * 5
   self.side = dir
   self.wpn = wpn
+  self.grav = grav
   megautils.playSound("semiCharged")
   self:face(-self.side)
 end
@@ -249,7 +256,7 @@ function megaSemiBuster:face(n)
 end
 
 function megaSemiBuster:dink(e)
-  self.velocity.vely = -4
+  self.velocity.vely = -4*self.grav
   self.velocity.velx = 4*-self.side
   self.dinked = 1
   megautils.playSound("dink")
@@ -274,7 +281,7 @@ end
 
 megaChargedBuster = basicEntity:extend()
 
-function megaChargedBuster:new(x, y, dir, wpn)
+function megaChargedBuster:new(x, y, dir, wpn, grav)
   megaChargedBuster.super.new(self)
   self.added = function(self)
     self:addToGroup("megaChargedBuster")
@@ -293,6 +300,7 @@ function megaChargedBuster:new(x, y, dir, wpn)
   self.velocity.velx = dir * 5.5
   self.side = dir
   self.wpn = wpn
+  self.grav = grav
   megautils.playSound("charged")
   self:face(-self.side)
 end
@@ -302,7 +310,7 @@ function megaChargedBuster:face(n)
 end
 
 function megaChargedBuster:dink(e)
-  self.velocity.vely = -4
+  self.velocity.vely = -4*self.grav
   self.velocity.velx = 4*-self.side
   self.dinked = 1
   megautils.playSound("dink")
@@ -690,7 +698,7 @@ stickWeapon = entity:extend()
 
 weaponHandler.removeGroups.stickWeapon = {"stickWeapon"}
 
-function stickWeapon:new(x, y, dir, wpn)
+function stickWeapon:new(x, y, dir, wpn, grav)
   stickWeapon.super.new(self)
   self.added = function(self)
     self:addToGroup("stickWeapon")
@@ -705,11 +713,12 @@ function stickWeapon:new(x, y, dir, wpn)
   self.velocity.velx = dir * 5
   self.side = dir
   self.wpn = wpn
+  self.grav = grav
   megautils.playSound("buster")
 end
 
 function stickWeapon:dink(e)
-  self.velocity.vely = -4
+  self.velocity.vely = -4*self.grav
   self.velocity.velx = 4*-self.side
   self.dinked = 1
   megautils.playSound("dink")

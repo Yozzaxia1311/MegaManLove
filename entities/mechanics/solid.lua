@@ -30,7 +30,7 @@ function collision.getTable(self, dx, dy)
     if (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
       (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) and
       (v.isSolid == 1 or v.isSolid == 2) then
-      if v.isSolid ~= 2 or (math.sign(ys) == cgrav and not v:collision(self) and v:collision(self, 0, -ys)) then
+      if v.isSolid ~= 2 or ((ys == 0 and 1 or math.sign(ys)) == cgrav and not v:collision(self) and v:collision(self, 0, -ys)) then
         solid[#solid+1] = v
       end
     end
@@ -55,8 +55,7 @@ function collision.checkSolid(self, dx, dy, noSlope)
   local ys = dy or 0
   local solid = {}
   
-  local cgrav = math.sign(self.gravity or 0)
-  cgrav = cgrav == 0 and 1 or cgrav
+  local cgrav = cgrav == 0 and 1 or math.sign(self.gravity or 0)
   
   local all = self.blockCollisionAgainst or megautils.state().system.all
   
@@ -65,7 +64,7 @@ function collision.checkSolid(self, dx, dy, noSlope)
     if (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
       (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) and
       (v.isSolid == 1 or v.isSolid == 2) then
-      if v.isSolid ~= 2 or (math.sign(ys) == cgrav and not v:collision(self) and v:collision(self, 0, -ys)) then
+      if v.isSolid ~= 2 or ((ys == 0 and 1 or math.sign(ys)) == cgrav and not v:collision(self) and v:collision(self, 0, -ys)) then
         solid[#solid+1] = v
       end
     end

@@ -673,7 +673,7 @@ function megaman:attemptWeaponUsage()
             if self.gravity < 0 then
               ty = ty + 3
             end
-            megautils.add(bassBuster, self.transform.x+tx, self.transform.y+ty, dir, w, nil, (self.gravity >= 0) and 1 or -1)
+            megautils.add(bassBuster, self.transform.x+tx, self.transform.y+ty, dir, w, nil, self.gravity >= 0 and 1 or -1)
           end
           self.maxShootTime = 14
           self.shootTimer = 0
@@ -707,7 +707,7 @@ function megaman:attemptWeaponUsage()
         self:useShootAnimation()
       else
         megautils.add(megaBuster, self.transform.x+(self.side==1 and 17 or -14), 
-          self.transform.y+(self.gravity >= 0 and 6 or (self.climb and 10 or 9)), self.side, w)
+          self.transform.y+(self.gravity >= 0 and 6 or (self.climb and 10 or 9)), self.side, w, self.gravity >= 0 and 1 or -1)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
@@ -732,7 +732,7 @@ function megaman:attemptWeaponUsage()
         self:useShootAnimation()
       else
         megautils.add(megaBuster, self.transform.x+(self.side==1 and 16 or -13), 
-          self.transform.y+(self.climb and (self.gravity >= 0 and 8 or 7) or (self.gravity >= 0 and 10 or 5)), self.side, w)
+          self.transform.y+(self.climb and (self.gravity >= 0 and 8 or 7) or (self.gravity >= 0 and 10 or 5)), self.side, w, self.gravity >= 0 and 1 or -1)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
@@ -757,7 +757,7 @@ function megaman:attemptWeaponUsage()
         self:useShootAnimation()
       else
         megautils.add(megaBuster, self.transform.x+(self.side==1 and 24 or -20), 
-          self.transform.y+(self.gravity >= 0 and 6 or 9), self.side, w)
+          self.transform.y+(self.gravity >= 0 and 6 or 9), self.side, w, self.gravity >= 0 and 1 or -1)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
@@ -770,11 +770,11 @@ function megaman:attemptWeaponUsage()
         if (not megautils.groups()["bassBuster" .. w.id] or
           #megautils.groups()["bassBuster" .. w.id] < 1) then
           megautils.add(bassBuster, self.transform.x+(self.side==1 and 16 or -14), self.transform.y+(self.gravity >= 0 and 5 or 10),
-            self.side==1 and 0 or 180, w, true)
+            self.side==1 and 0 or 180, w, true, self.gravity >= 0 and 1 or -1)
           megautils.add(bassBuster, self.transform.x+(self.side==1 and 16 or -14), self.transform.y+(self.gravity >= 0 and 5 or 10),
-            self.side==1 and 45 or 180+45, w, true)
+            self.side==1 and 45 or 180+45, w, true, self.gravity >= 0 and 1 or -1)
           megautils.add(bassBuster, self.transform.x+(self.side==1 and 16 or -14), self.transform.y+(self.gravity >= 0 and 5 or 10),
-            self.side==1 and -45 or 180-45, w, true)
+            self.side==1 and -45 or 180-45, w, true, self.gravity >= 0 and 1 or -1)
           self.maxShootTime = 14
           self.shootTimer = 0
           self:resetCharge()
@@ -793,7 +793,7 @@ function megaman:attemptWeaponUsage()
       (not megautils.groups()[w.current .. w.id] or
         #megautils.groups()[w.current .. w.id] < 1) and self.shootTimer == self.maxShootTime then
       megautils.add(stickWeapon, self.transform.x+(self.side==1 and 17 or -14), 
-        self.slide and self.transform.y+3 or self.transform.y+6, self.side, w)
+        self.slide and self.transform.y+3 or self.transform.y+6, self.side, w, self.gravity >= 0 and 1 or -1)
       self.maxShootTime = 14
       self.shootTimer = 0
       self:resetCharge()
@@ -805,14 +805,14 @@ function megaman:attemptWeaponUsage()
     if w.current == "megaBuster" then
       if self.chargeState == 1 then
         megautils.add(megaSemiBuster, self.transform.x+(self.side==1 and 17 or -20), 
-          self.transform.y+(self.gravity >= 0 and 4 or (self.climb and 8 or 7)), self.side, w)
+          self.transform.y+(self.gravity >= 0 and 4 or (self.climb and 8 or 7)), self.side, w, self.gravity >= 0 and 1 or -1)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
         self:useShootAnimation()
       elseif self.chargeState == 2 then
         megautils.add(megaChargedBuster, self.transform.x+(self.side==1 and 17 or -20), 
-          self.transform.y+(self.gravity >= 0 and -2 or 1), self.side, w)
+          self.transform.y+(self.gravity >= 0 and -2 or 1), self.side, w, self.gravity >= 0 and 1 or -1)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
@@ -821,14 +821,14 @@ function megaman:attemptWeaponUsage()
     elseif w.current == "protoBuster" then
       if self.chargeState == 1 then
         megautils.add(protoSemiBuster, self.transform.x+(self.side==1 and 17 or -16), 
-          self.transform.y+(self.climb and 9 or (self.gravity >= 0 and 10 or 7)), self.side, w)
+          self.transform.y+(self.climb and 9 or (self.gravity >= 0 and 10 or 7)), self.side, w, nil, self.gravity >= 0 and 1 or -1)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
         self:useShootAnimation()
       elseif self.chargeState == 2 then
         megautils.add(protoChargedBuster, self.transform.x+(self.side==1 and 16 or -34), 
-          self.transform.y+(self.climb and 7 or (self.gravity >= 0 and 9 or 5)), self.side, w)
+          self.transform.y+(self.climb and 7 or (self.gravity >= 0 and 9 or 5)), self.side, w, nil, self.gravity >= 0 and 1 or -1)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
@@ -837,14 +837,14 @@ function megaman:attemptWeaponUsage()
     elseif w.current == "rollBuster" then
       if self.chargeState == 1 then
         megautils.add(protoSemiBuster, self.transform.x+(self.side==1 and 19 or -18), 
-          self.transform.y+(self.climb and (self.gravity >= 0 and 5 or 9) or (self.gravity >= 0 and 7 or 10)), self.side, w, true)
+          self.transform.y+(self.climb and (self.gravity >= 0 and 5 or 9) or (self.gravity >= 0 and 7 or 10)), self.side, w, true, self.gravity >= 0 and 1 or -1)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
         self:useShootAnimation()
       elseif self.chargeState == 2 then
         megautils.add(protoChargedBuster, self.transform.x+(self.side==1 and 16 or -34), 
-          self.transform.y+(self.climb and (self.gravity >= 0 and 4 or 7) or (self.gravity >= 0 and 6 or 8)), self.side, w, true)
+          self.transform.y+(self.climb and (self.gravity >= 0 and 4 or 7) or (self.gravity >= 0 and 6 or 8)), self.side, w, true, self.gravity >= 0 and 1 or -1)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
