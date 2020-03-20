@@ -75,7 +75,7 @@ function water:removed()
   if megautils.groups().submergable and self.current then
     for k, v in ipairs(megautils.groups().submergable) do
       if #v:collisionTable(megautils.groups().water) == 0 then
-        v.gravityMultipliers.water = nil
+        v:setGravityMultiplier("water", nil)
         self.current = false
       end
     end
@@ -90,14 +90,14 @@ function water:update(dt)
       for k, v in pairs(self:collisionTable(megautils.groups().submergable)) do
         if not v.gravityMultipliers.water then
           self.current = true
-          v.gravityMultipliers.water = self.grav
+          v:setGravityMultiplier("water", self.grav)
         end
       end
     end
     for k, v in ipairs(megautils.groups().submergable) do
       if v:collision(self) and not v.gravityMultipliers.water then
         self.current = true
-        v.gravityMultipliers.water = self.grav
+        v:setGravityMultiplier("water", self.grav)
         if v.transform.y < self.transform.y then
           megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2), -8, self, -1)
           megautils.playSound("splash")
@@ -107,7 +107,7 @@ function water:update(dt)
           megautils.playSound("splash")
         end
       elseif self.current and v.gravityMultipliers.water and #v:collisionTable(megautils.groups().water) == 0 then
-        v.gravityMultipliers.water = nil
+        v:setGravityMultiplier("water", nil)
         if v.transform.y < self.transform.y then
           megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2), -8, self, -1)
           megautils.playSound("splash")
@@ -153,7 +153,7 @@ function space:removed()
   if megautils.groups().submergable and self.current then
     for k, v in ipairs(megautils.groups().submergable) do
       if #v:collisionTable(megautils.groups().space) == 0 then
-        v.gravityMultipliers.space = nil
+        v:setGravityMultiplier("space", nil)
         self.current = false
       end
     end
@@ -168,16 +168,16 @@ function space:update(dt)
       for k, v in pairs(self:collisionTable(megautils.groups().submergable)) do
         if not v.gravityMultipliers.space then
           self.current = true
-          v.gravityMultipliers.space = self.grav
+          v:setGravityMultiplier("space", self.grav)
         end
       end
     end
     for k, v in ipairs(megautils.groups().submergable) do
       if v:collision(self) and not v.gravityMultipliers.space then
         self.current = true
-        v.gravityMultipliers.space = self.grav
+        v:setGravityMultiplier("space", self.grav)
       elseif self.current and v.gravityMultipliers.space and #v:collisionTable(megautils.groups().space) == 0 then
-        v.gravityMultipliers.space = nil
+        v:setGravityMultiplier("space", nil)
         self.current = false
       end
       if not self.current and v.gravityMultipliers.space and v:collision(self) then

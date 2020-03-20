@@ -20,8 +20,7 @@ function collision.getTable(self, dx, dy)
   local ys = dy or 0
   local solid = {}
   
-  local cgrav = math.sign(self.gravity or 0)
-  cgrav = cgrav == 0 and 1 or cgrav
+  local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
   
   local all = self.blockCollisionAgainst or megautils.state().system.all
   
@@ -55,7 +54,7 @@ function collision.checkSolid(self, dx, dy, noSlope)
   local ys = dy or 0
   local solid = {}
   
-  local cgrav = cgrav == 0 and 1 or math.sign(self.gravity or 0)
+  local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
   
   local all = self.blockCollisionAgainst or megautils.state().system.all
   
@@ -262,7 +261,7 @@ end
 function collision.checkGround(self, noSlopeEffect)
   if not self.ground then self.onMovingFloor = nil self.inStandSolid = nil return end
   local solid = {}
-  local cgrav = cgrav == 0 and 1 or math.sign(self.gravity or 0)
+  local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 0)
   
   local slp = math.ceil(math.abs(self.velocity.velx) + 1)
   
@@ -325,7 +324,7 @@ function collision.generalCollision(self, noSlopeEffect)
   local xprev = self.transform.x
   local solid = {}
   local stand = {}
-  local cgrav = cgrav == 0 and 1 or math.sign(self.gravity or 0)
+  local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
   
   for i=1, #megautils.state().system.all do
     local v = megautils.state().system.all[i]
@@ -497,8 +496,8 @@ end
 function sinkIn:update(dt)
   for i=1, #globals.allPlayers do
     local p = globals.allPlayers[i]
-    if p:collision(self, 0, 1) or p:collision(self) then
-      collision.shiftObject(p, 0, self.sink, true)
+    if p:collision(self, 0, (p.gravity >= 0 and 1 or -1)) or p:collision(self) then
+      collision.shiftObject(p, 0, self.sink * (p.gravity >= 0 and 1 or -1), true)
     end
   end
 end
