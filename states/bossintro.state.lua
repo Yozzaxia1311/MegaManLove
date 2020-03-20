@@ -19,7 +19,7 @@ function bossIntroState:begin()
     megautils.add(stickManIntro)
   end
   megautils.add(fade, false, nil, nil, fade.remove)
-  megautils.playMusic(nil, "assets/sfx/music/stageStart.ogg")
+  megautils.playMusic("assets/sfx/music/stageStart.ogg")
 end
 
 function bossIntroState:update(dt)

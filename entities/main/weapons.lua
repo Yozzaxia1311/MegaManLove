@@ -344,6 +344,7 @@ function trebleBoost:new(x, y, side, player, wpn)
     self:addToGroup("trebleBoost" .. wpn.id)
     self:addToGroup("freezable")
     self:addToGroup("removeOnTransition")
+    self:addToGroup("submergable")
   end
   self.transform.x = x
   self.transform.y = view.y-8
@@ -367,7 +368,9 @@ function trebleBoost:new(x, y, side, player, wpn)
 end
 
 function trebleBoost:grav()
-  self.velocity.vely = math.clamp(self.velocity.vely+self.gravity, -7, 7)
+  if self.ground then return end
+  self.velocity.vely = self.velocity.vely+self.gravity
+  self.velocity:clampY(7)
 end
 
 function trebleBoost:face(n)
@@ -450,6 +453,7 @@ function rushJet:new(x, y, side, player, wpn, skin)
     self:addToGroup("rushJet" .. wpn.id)
     self:addToGroup("freezable")
     self:addToGroup("removeOnTransition")
+    self:addToGroup("submergable")
   end
   self.transform.x = x
   self.transform.y = view.y-8
@@ -586,6 +590,7 @@ function rushCoil:new(x, y, side, player, w, skin)
     self:addToGroup("rushCoil" .. w.id)
     self:addToGroup("freezable")
     self:addToGroup("removeOnTransition")
+    self:addToGroup("submergable")
   end
   self.transform.x = x
   self.transform.y = view.y-16
@@ -609,7 +614,9 @@ function rushCoil:new(x, y, side, player, w, skin)
 end
 
 function rushCoil:grav()
-  self.velocity.vely = math.clamp(self.velocity.vely+self.gravity, -7, 7)
+  if self.ground then return end
+  self.velocity.vely = self.velocity.vely+self.gravity
+  self.velocity:clampY(7)
 end
 
 function rushCoil:face(n)

@@ -32,6 +32,7 @@ function met:new(x, y, s)
 end
 
 function met:grav()
+  if self.ground then return end
   self.velocity.vely = self.velocity.vely+self.gravity
   self.velocity:clampY(7)
 end

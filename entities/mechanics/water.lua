@@ -98,10 +98,10 @@ function water:update(dt)
       if v:collision(self) and not v.gravityMultipliers.water then
         self.current = true
         v:setGravityMultiplier("water", self.grav)
-        if v.transform.y < self.transform.y then
+        if v.transform.y-v.velocity.vely <= self.transform.y then
           megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2), -8, self, -1)
           megautils.playSound("splash")
-        elseif v.transform.y-v.velocity.vely > self.transform.y+self.collisionShape.h then
+        elseif v.transform.y-v.velocity.vely >= self.transform.y+self.collisionShape.h then
           megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2), 
             self.collisionShape.h+8, self, 1)
           megautils.playSound("splash")

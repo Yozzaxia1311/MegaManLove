@@ -232,23 +232,14 @@ function megautils.getCurrentMusic()
   return megautils._curM
 end
 
-function megautils.playMusic(loop, intro, vol)
-  if megautils._lockM or (megautils._curM and megautils._curM.id == tostring(loop) .. tostring(intro)) then return end
+function megautils.playMusic(path, loop, lp, vol)
+  if megautils._lockM or (megautils._curM and megautils._curM.id == path) then return end
   megautils.stopMusic()
-  if intro then
-    if loop then
-      megautils._curM = mmMusic(love.audio.newSource(loop, "stream"), love.audio.newSource(intro, "stream"))
-    else
-      megautils._curM = mmMusic(nil, love.audio.newSource(intro, "stream"))
-    end
-  else
-    megautils._curM = mmMusic(love.audio.newSource(loop, "stream"), nil)
-  end
-  megautils._curM.id = tostring(loop) .. tostring(intro)
-  megautils._curM.introFile = intro
-  megautils._curM.loopFile = loop
+  
+  megautils._curM = mmMusic(love.audio.newSource(path, "stream"))
+  megautils._curM.id = path
   megautils._curM.playedVol = vol
-  megautils._curM:play(nil, vol)
+  megautils._curM:play(loop, lp, vol)
 end
 
 function megautils.stopMusic()

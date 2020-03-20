@@ -1,6 +1,6 @@
 ready = entity:extend()
 
-function ready:new(text, proto, loop, intro, vol)
+function ready:new(text, proto, music)
   ready.super.new(self)
   self.proto = proto
   self.added = function(self)
@@ -10,9 +10,7 @@ function ready:new(text, proto, loop, intro, vol)
     end
   end
   if self.proto then
-    self.inf = intro
-    self.lf = loop
-    self.vol = vol
+    self.music = music
   end
   self:setLayer(9)
   self.once = false
@@ -35,8 +33,8 @@ function ready:update(dt)
     self.render = not self.render
     if self.blinkCount == self.blinks then
       megautils.unfreeze()
-      if self.proto then
-        megautils.playMusic(self.lf, self.inf, self.vol)
+      if self.proto and self.music then
+        megautils.playMusic(unpack(self.music))
       end
       megautils.remove(self, true)
     end

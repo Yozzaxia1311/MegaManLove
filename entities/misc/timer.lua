@@ -64,7 +64,7 @@ end
 function timer.absorbCutscene(func, music)
   megautils.add(timer, 150, function(s)
       if not s.state then
-        megautils.playMusic(nil, music or "assets/sfx/music/win.ogg", nil, not music)
+        megautils.playMusic(music or "assets/sfx/music/win.ogg")
         if globals.mainPlayer then
           s.state = 0
           s.timer = 0

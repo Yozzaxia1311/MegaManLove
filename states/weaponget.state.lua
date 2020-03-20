@@ -19,7 +19,7 @@ function weaponGetState:begin()
   end
   view.x, view.y = 0, 0
   megautils.add(fade, false, nil, nil, fade.remove)
-  megautils.playMusic("assets/sfx/music/get.ogg")
+  megautils.playMusic("assets/sfx/music/get.ogg", true)
 end
 
 function weaponGetState:update(dt)

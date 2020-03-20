@@ -9,13 +9,13 @@ function demoState:begin()
       megautils.runFile("entities/mechanics/gravflip.lua")
     end
     
-    local lf, inf = "assets/sfx/music/cutLoop.ogg", "assets/sfx/music/cutIntro.ogg"
+    local f, lp, lep, vol = "assets/sfx/music/cut.ogg", 139666, 1830670, 0.8
     
     megautils.loadStage(self, "assets/maps/demo.tmx") --Load stage from .tmx
-    megautils.add(ready, nil, globals.player[1] == "proto", lf, inf) --READY
+    megautils.add(ready, nil, globals.player[1] == "proto", {f, true, lp, lep, vol}) --READY
     megautils.add(fade, false, nil, nil, fade.ready) --Fade in from black
     if globals.player[1] ~= "proto" then
-      megautils.playMusic(lf, inf) --Play music after everything is set up
+      megautils.playMusic(f, true, lp, lep, vol) --Play music after everything is set up
     end
   end
 end

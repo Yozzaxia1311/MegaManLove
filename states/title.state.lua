@@ -45,7 +45,7 @@ function title:update(dt)
   if self.transform.y == 32 and not self.once then
     self.once = true
     self.drawText = true
-    megautils.playMusic(nil, "assets/sfx/music/title.ogg")
+    megautils.playMusic("assets/sfx/music/title.ogg")
   end
   if self.drawText then
     self.timer = self.timer + 1

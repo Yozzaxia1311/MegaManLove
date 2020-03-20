@@ -6,7 +6,7 @@ function menuState:begin()
   megautils.add(fade, false, nil, nil, fade.remove)
   view.x, view.y = 0, 0
   if not globals.stopMusicMenu then
-    megautils.playMusic("assets/sfx/music/menu.ogg")
+    megautils.playMusic("assets/sfx/music/menu.ogg", true)
   end
 end
 

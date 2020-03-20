@@ -7,7 +7,7 @@ function gameOverState:begin()
   self.wait = 0
   megautils.add(fade, false, nil, nil, fade.remove)
   view.x, view.y = 0, 0
-  megautils.playMusic(nil, "assets/sfx/music/gameOver.ogg")
+  megautils.playMusic("assets/sfx/music/gameOver.ogg")
 end
 
 function gameOverState:update(dt)
@@ -43,7 +43,7 @@ function contPanels:update(dt)
   if self.timer == 198 then
     self.state = 1
     if globals.gameOverMenuMusic then
-      megautils.playMusic("assets/sfx/music/menu.ogg")
+      megautils.playMusic("assets/sfx/music/menu.ogg", true)
     end
     megautils.add(contSelect)
   end
