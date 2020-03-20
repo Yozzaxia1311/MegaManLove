@@ -98,11 +98,11 @@ function protoChargedBuster:draw()
   self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y-1))
 end
 
-bassBuster = basicEntity:extend()
+bassBuster = entity:extend()
 
 weaponHandler.removeGroups.bassBuster = {"bassBuster"}
 
-function bassBuster:new(x, y, dir, wpn, t)
+function bassBuster:new(x, y, dir, wpn, t, grav)
   bassBuster.super.new(self)
   self.added = function(self)
     self:addToGroup("bassBuster")
@@ -124,9 +124,10 @@ function bassBuster:new(x, y, dir, wpn, t)
   self.side = self.velocity.velx < 0 and -1 or 1
   self.wpn = wpn
   self.treble = t
+  self:setGravityMultiplier("global", grav)
 end
 
-function bassBuster:recycle(x, y, dir, wpn, t)
+function bassBuster:recycle(x, y, dir, wpn, t, grav)
   self.wpn = wpn
   self.velocity.velx = megautils.calcX(dir) * 5
   self.velocity.vely = megautils.calcY(dir) * 5
@@ -135,6 +136,7 @@ function bassBuster:recycle(x, y, dir, wpn, t)
   self.transform.x = x
   self.transform.y = y
   self.treble = t
+  self:setGravityMultiplier("global", grav)
 end
 
 function bassBuster:dink(e)
@@ -148,10 +150,9 @@ function bassBuster:update(dt)
   if not self.dinked then
     self:hurt(self:collisionTable(megautils.groups().hurtable), self.treble and -1 or -0.5, 2)
   end
-  self.transform.x = self.transform.x + self.velocity.velx
-  self.transform.y = self.transform.y + self.velocity.vely
+  collision.doCollision(self)
   if megautils.outside(self) or
-    (not self.treble and (collision.checkSolid(self) or #self:collisionTable(megautils.groups().bossDoor) ~= 0)) then
+    (not self.treble and not self.dinked and (collision.checkSolid(self) or #self:collisionTable(megautils.groups().bossDoor) ~= 0)) then
     megautils.remove(self, true)
   end
 end
@@ -354,7 +355,7 @@ function trebleBoost:new(x, y, side, player, wpn)
   self.player = player
   self.blockCollision = true
   self.timer = 0
-  self.gravityMultipliers.global = self.player.gravity >= 0 and 1 or -1
+  self:setGravityMultiplier("global", self.player.gravity >= 0 and 1 or -1)
 end
 
 function trebleBoost:grav()
@@ -418,7 +419,7 @@ function trebleBoost:update(dt)
     end
   end
   self:face(self.side)
-  self.gravityMultipliers.global = self.player.gravity >= 0 and 1 or -1
+  self:setGravityMultiplier("global", self.player.gravity >= 0 and 1 or -1)
   self.anims[self.c].flippedV = self.gravity < 0
   if megautils.outside(self) then
     megautils.remove(self, true)
@@ -596,7 +597,7 @@ function rushCoil:new(x, y, side, player, w, skin)
   self.wpn = w
   self.blockCollision = true
   self.player = player
-  self.gravityMultipliers.global = self.player.gravity >= 0 and 1 or -1
+  self:setGravityMultiplier("global", self.player.gravity >= 0 and 1 or -1)
 end
 
 function rushCoil:grav()
@@ -673,7 +674,7 @@ function rushCoil:update(dt)
     self:moveBy(0, -8)
   end
   self:face(self.side)
-  self.gravityMultipliers.global = self.player.gravity >= 0 and 1 or -1
+  self:setGravityMultiplier("global", self.player.gravity >= 0 and 1 or -1)
   self.anims[self.c].flippedV = self.gravity < 0
   if megautils.outside(self) then
     megautils.remove(self, true)

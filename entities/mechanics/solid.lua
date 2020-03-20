@@ -4,7 +4,6 @@ collision.maxSlope = 1
 
 function collision.doCollision(self)
   collision.checkGround(self)
-  self:calcGrav()
   if self.grav then self:grav() end
   if self.blockCollision then
     collision.generalCollision(self)
@@ -21,7 +20,7 @@ function collision.getTable(self, dx, dy)
   local ys = dy or 0
   local solid = {}
   
-  local cgrav = math.sign(self.gravity)
+  local cgrav = math.sign(self.gravity or 0)
   cgrav = cgrav == 0 and 1 or cgrav
   
   local all = self.blockCollisionAgainst or megautils.state().system.all
@@ -56,7 +55,7 @@ function collision.checkSolid(self, dx, dy, noSlope)
   local ys = dy or 0
   local solid = {}
   
-  local cgrav = math.sign(self.gravity)
+  local cgrav = math.sign(self.gravity or 0)
   cgrav = cgrav == 0 and 1 or cgrav
   
   local all = self.blockCollisionAgainst or megautils.state().system.all
@@ -264,7 +263,7 @@ end
 function collision.checkGround(self, noSlopeEffect)
   if not self.ground then self.onMovingFloor = nil self.inStandSolid = nil return end
   local solid = {}
-  local cgrav = math.sign(self.gravity)
+  local cgrav = math.sign(self.gravity or 0)
   cgrav = cgrav == 0 and 1 or cgrav
   
   local slp = math.ceil(math.abs(self.velocity.velx) + 1)
@@ -328,7 +327,7 @@ function collision.generalCollision(self, noSlopeEffect)
   local xprev = self.transform.x
   local solid = {}
   local stand = {}
-  local cgrav = math.sign(self.gravity)
+  local cgrav = math.sign(self.gravity or 0)
   cgrav = cgrav == 0 and 1 or cgrav
   
   for i=1, #megautils.state().system.all do
@@ -526,21 +525,7 @@ function slope:new(x, y, mask)
   end
 end
 
-oneway = basicEntity:extend()
-
 addobjects.register("oneway", function(v)
-  megautils.add(oneway, v.x, v.y, v.width, v.height)
+  local s = megautils.add(solid, v.x, v.y, v.width, v.height)
+  s.isSolid = 2
 end)
-
-function oneway:new(x, y, w, h)
-  oneway.super.new(self)
-  self.transform.y = y
-  self.transform.x = x
-  self:setRectangleCollision(w, h)
-  self:setLayer(-5)
-  self.isSolid = 2
-  self.added = function(self)
-    self:addToGroup("despawnable")
-    self:addStatic()
-  end
-end

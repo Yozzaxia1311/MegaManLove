@@ -87,13 +87,14 @@ end
 -- Decompress tile layer data
 -- https://github.com/karai17/Simple-Tiled-Implementation/blob/master/sti/utils.lua#L5
 function getDecompressedData(data)
-  local ffi = require "ffi"
+  local ffi = require("ffi")
   local d = {}
   local decoded = ffi.cast("uint32_t*", data)
-
-  for i = 0, data:len() / ffi.sizeof("uint32_t") do
+  
+  for i = 0, (data:len() / ffi.sizeof("uint32_t")) - 1 do
     table.insert(d, tonumber(decoded[i]))
   end
+  
   return d
 end
 
@@ -707,15 +708,16 @@ end
 
 function Map:drawBackground()
   if self.backgroundcolor then
-    love.graphics.push 'all'
+    love.graphics.push()
+    love.graphics.origin()
     local r = self.backgroundcolor[1] / 255
     local g = self.backgroundcolor[2] / 255
     local b = self.backgroundcolor[3] / 255
-    love.graphics.setColor(r, g, b)
+    love.graphics.setColor(r, g, b, 1)
     love.graphics.rectangle('fill', 0, 0,
-      self.width * self.tilewidth,
-      self.height * self.tileheight)
+      love.graphics.getCanvas():getDimensions())
     love.graphics.pop()
+    love.graphics.setColor(1, 1, 1, 1)
   end
 end
 

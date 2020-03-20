@@ -423,13 +423,11 @@ function entity:baseRecycle()
   self.flashRender = true
   self.updated = true
   self.render = true
-  self.isSolid = 0
   self.velocity.velx = 0
   self.velocity.vely = 0
   self.normalGravity = 0.25
   self.gravityMultipliers = {global=1}
   self:calcGrav()
-  self.blockCollision = false
   self.ground = false
   self.xcoll = 0
   self.ycoll = 0
@@ -446,6 +444,14 @@ function entity:baseRecycle()
   self.moveByMoveY = 0
   self.canBeInvincible = {global=true}
   self.canStandSolid = {global=true}
+end
+
+function entity:setGravityMultiplier(name, to)
+  local old = self.gravityMultipliers[name]
+  self.gravityMultipliers[name] = to
+  if old ~= self.gravityMultipliers[name] then
+    self:calcGrav()
+  end
 end
 
 function entity:calcGrav()

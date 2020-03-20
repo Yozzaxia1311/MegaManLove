@@ -1,181 +1,257 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="84" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#d3d3d3" nextlayerid="8" nextobjectid="169">
+<map version="1.2" tiledversion="1.3.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="89" height="84" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#d3d3d3" nextlayerid="8" nextobjectid="178">
  <editorsettings>
   <export target="demo.lua" format="lua"/>
  </editorsettings>
  <tileset firstgid="1" source="tilesets/demoTileset.tsx"/>
- <layer id="5" name="bg" width="64" height="84">
+ <layer id="5" name="bg" width="89" height="84">
   <data encoding="base64" compression="zlib">
-   eAHt0FEKwkAMBFCP4P1Pq34MlWFJf7ftEyTNDoHkvV5+BAgQIECAAAECBAgQIECAAAECBAgQIECAAAECBAgQIECAAIFD4P397P+R3v+rb//1+XWW99TOpz4zu9XVztmxs7yndj71mdmtrnbOjp3lPbXzqc/MbnW1c3bsLO+pnU99Znarq52zY2d5T+186jNzpdr39O6dT33PXqHve3rnzqe+Z+/Y/99/x/vObnr6/Wc+cgIECBAgQIAAAQIECBAgQIAAAQIECBAgQIAAAQIECBAgQIAAAQIECBAgQIDAUwU+BVwI0Q==
+   <chunk x="16" y="0" width="16" height="16">
+   eAFjYBgFoyEwGgKDMQQE6OAoAApAABE=
+  </chunk>
+   <chunk x="0" y="16" width="16" height="16">
+   eAFjYKANEKCNsUSbOmo/0UFFE4UDHf408dQwNBQA2IAAUQ==
+  </chunk>
+   <chunk x="16" y="16" width="16" height="16">
+   eAFjYMANBHBL0UVm1H66BDNOSwY6/HE6bFSCaiEAAOtAAFE=
+  </chunk>
+   <chunk x="32" y="32" width="16" height="16">
+   eAFjYIAAASCFjqFSRFHoekF8GECXg4kj0+hqRpp+5LBAZ6OHDbo8IT6l+gmZPyo/dEMAADElA6E=
+  </chunk>
+   <chunk x="48" y="32" width="16" height="16">
+   eAFjYKAcCACNIBZjs41YvSB12MCofsrCHz1MkcMTXY4YPqX6ibFjVA11QgAArFIFMQ==
+  </chunk>
   </data>
  </layer>
- <layer id="2" name="layout" width="64" height="84">
+ <layer id="2" name="layout" width="89" height="84">
   <data encoding="base64" compression="zlib">
-   eAHtWomO1TAMXO6b//9casGshnm2m8Rp2geNFOzYnrEn6a4Q4uWlvt7UKU5hmDX3LJ7VlzBr7j2eH5sw7NUas357c2dYzs3iYc4V/qy5Ix68udkrrmju3llHeAyjm/tyLopzjflft/2Ni3d8w8xYezzed6CY6BzFs7lb70G5M84sN8KjGDv/pG1nbI1ns3DuHR8cX2dwSppCEY/37iBUjJ5Rp7a1DrjsDnq5wKl2hEcxetYeOLfWod5sdAcjXMwLf4RHMXoGt9rWOsV5dzDKpdzG07M//KlnntZZWuuY23wP58UUN/tsPW/9j+/R+hZWN7r1LVt7Ks7Oo1jDee/v9Tgy9rZIPvoGZ+s33aNvV7yyV/hZ719981cBRecM/VfRble3Wv8Z2vX3A38yq/R/3Jp+4sYLff4dw76NcLT+M3Xjilkz+0fqtz7aC/OstjwH+0frX60z6seazfd2hB2Nc89Rjlm4M2Y5o2d0X2fMMtLTMEft6G6Oio/oP2qWM3gr+ivYTCu+raxmVq6ioYLN5n9W/fxvzuxnWr3cs+r3tIzEnlX/901s77a/13+R/az6be6eZfWmX1ekH3FYvbfsDIxntX/r2bh4edwa0/pe/cBrb8Qj21sf8XC8l1Pr7fy/6+f7hG/3ondlOY6xD1xme+szLuSM0/t9h7xancHO3s+sxbXWuDjGvuX2Vm/9Hl+Uz/poTs8RJ+Jczz7yme2tz7iyXNZHc3rOeC3H9ezv4RTbUj9aY3PxzwR/3zqznXs35vJwyJndy3PtUb7NkOmf2dd68dIz51b5e/qzGbPcqvmrfar6DT9jV3V4+Na5su/fOHrX5w1gu3WN9GjhHuFVjJ5b+t767/e/0vef/X89/Z71e9ez1nvnZ//+TTNvaOQYfOTYXk1/z/uzDvVNMy89I3c1/ZiralWvnsF/Nf0z398084ZmtlfTz7Ot8K+kn99qhm/3Zzy2evl+ox7/BN9j5loRzKm2ZUpgvNos59WviNlMla0zZhq9XKW3x6fz7J0rHB7Wi2EGL+fFUL9nK1hwVzg8rBfLemX1wEW2ggVnhcPDerGsV1YPXGQrWHBWODysF8t6ZfXARbaCBWeFw8N6saxXVg9cZCtYcFY4PKwXy3pl9cBFtoIFZ4XDw3qxrFdWD1xkK1hwVjg8rBfLemX1wEW2ggVnhcPDerGsV1YPXGQrWHBWODysF8t6ZfXARbaCBWeFw8N6saxXVg9cZCtYcFY4PCzHzNcz+sJyHrFWW8GiB2Zsse83EG+vP8fAyb3gw1oNc5oPXIsFz9E2mlP7Wh0W5uczfNhWXtSfZVkXZoA+tZrXc1TPdfCvYj39e7NB516d5kd6Kcfs88hMt/6/f/+3vsnIXbdyj9bhLVfZ0Tlv3H0D9w3cN3DfwH0D9w38+zfwC/vOB+Q=
+   <chunk x="0" y="0" width="16" height="16">
+   eAFjYBgFoyEwGgJDNQQYgQ6nBAMABiAAEQ==
+  </chunk>
+   <chunk x="16" y="0" width="16" height="16">
+   eAFjYBgFoyEwGgIDGQKMRFqOTR1IDJs4NiNhapFpAAWIAAo=
+  </chunk>
+   <chunk x="32" y="0" width="16" height="16">
+   eAHNj0EKwDAIBJNDj/3/dxOhC3PYKJJLBXGJjmvmuIt5h4+Kf/d+pbOqeMfw7cTLM2oWJ75iglNms+4OelJne9gjQ80Z56s+GWr1q0qGuuLUJxO6k883r12dGj5/4zt/d/cv7tsA6Q==
+  </chunk>
+   <chunk x="48" y="0" width="16" height="16">
+   eAFjYBgFlIQAI1AzCCMDmBg+cZgakD5s6vCJI9sFU8cHZMAwzGwQDRMD0ej2gPSCAC5xiCyCxKUOlzhCJ4SFSx0u8eGoH+RXZIzuR3rzAflAAHg=
+  </chunk>
+   <chunk x="64" y="0" width="16" height="16">
+   eAHdjzsOACAIQ/1sev/7agccSNHqKAnhk74SUnqL/IYt6hcefyDbzL6+OzfR/6pPxNvlak1QTzywnYfC7zxUPvK44ZmW7XCLBdPaDlVJ72u83ytzUUREA87fHbJIAFg=
+  </chunk>
+   <chunk x="0" y="16" width="16" height="16">
+   eAFjZKAMMFKmnWFUP2UBOBzCD+QHcjFloTeqGwA24AAb
+  </chunk>
+   <chunk x="16" y="16" width="16" height="16">
+   eAFjYBgFoyEwcCHACLSaEkwNl4PspwRQWz8f0DHYMC43UmI/ADy4AGk=
+  </chunk>
+   <chunk x="32" y="16" width="16" height="16">
+   eAFjYCANsAKVM5KmBUU1PfSD3IeMkR1AjP3I/kNmg8wZivqRwwLGRg4TdDa6n9HlCfFJ0Q9zDzpNyA56yMPcRK5dQ0E/AMAcAEw=
+  </chunk>
+   <chunk x="64" y="16" width="16" height="16">
+   eAFjYCAOMBGnDKuqgdDLBnQJO1bX4BckVx8j0FgQJhdQohdk56h+ckMeom+khh8Ae4QALQ==
+  </chunk>
+   <chunk x="16" y="32" width="16" height="16">
+   eAHNkOEKwCAIhO3nYO//vHk/hOuwMgi2wZHmfaYzM2su/l5PqgKnvObcO4vVj3wn7qM817JY/ZpnDN+pH3n2v5jhWHmuRbzyrGo3ed7p8cahyvsxB074g8X5Jx6zVDSb/3QXf27Y/2u+A/cdAZw=
+  </chunk>
+   <chunk x="32" y="32" width="16" height="16">
+   eAHVkMEKwDAIQ91hsEH//3tnDg9EutaOXiaEVGuibTOz5jgdd8LhuTAL9Uif401PHe8v+jhrhz76cWZPcpi9Y57/TvmKHq8K9+ZXdPT09OxaZbx2cN4neo7u6Bv1zN4jj5GeGZkvLwiKP+sfSf4A9g==
+  </chunk>
+   <chunk x="48" y="32" width="16" height="16">
+   eAHNjzEOACAIA3H0/x9WtuZSB9JFEpIWrhGrslo3vgfdPHtyQWe16HXnNHl6l9EZeXplnSZP7zI6I0+vrNPk27M1xx3zyrbmnp586t19r1nyVvqPX/MHxnMAkA==
+  </chunk>
+   <chunk x="64" y="32" width="16" height="16">
+   eAFjYIAARihNKgXSB8Ok6h1VPxoCoyEwsCEAABMsAAU=
+  </chunk>
+   <chunk x="16" y="48" width="16" height="16">
+   eAFjZIAAXiAFw1AhnBQjkgwyG0kYLxOkBxmDFMPsBtGkAHLsRzYfpn8g7UcOC1LZyH6hNxsWduTaO6qf3JCD6KNG+AEA5/cAmA==
+  </chunk>
+   <chunk x="32" y="48" width="16" height="16">
+   eAHtkMEKACAIQ+3W/39xeXgwRiQF3Qpk2NwcRkS0WaevT0FWalVPr7jyRu+ceiXnPfMv9Zr9dD/5KiS/72Kf4mqGP9+juuTofY4enxvE4warXJXn11cX2vPcbwC1UwCZ
+  </chunk>
+   <chunk x="48" y="48" width="16" height="16">
+   eAFjYCAOMBKnDKeqUf3YgwYULsgYuyqIGlxyMHF8YYxPjlz96Gai82Hmgmhscuhi6PxR/YgQwBY26GLofIRu3OEPAD9cACY=
+  </chunk>
+   <chunk x="64" y="48" width="16" height="16">
+   eAFjYBgFIzkEGIGeJxdTEm4gOykBo/opCT1InINMAAAl1AAX
+  </chunk>
+   <chunk x="16" y="64" width="16" height="16">
+   eAFjYCAfMJKvFaxzVD+FATiqfTQEKAwBABbYAAc=
+  </chunk>
+   <chunk x="32" y="64" width="16" height="16">
+   eAFjYCAPMJKnDa5ruOgH+YMYzAJUh4xJ8T9ILbJeEJtU/UAtKADmZhRBHBxS7MJmxGDQD/MvOo3NvSNJDACXDABA
+  </chunk>
+   <chunk x="48" y="64" width="16" height="16">
+   eAHljjEOwCAMA+H/n64ynLCukYo6tAMsju04eIz15hpvU+dZM88jnWfN/M98dck+OdPLWvKazcmB6ZeWfDfPHpi3u3vsgewbn3zvm3+V55+36N6n8QuKoAA+
+  </chunk>
+   <chunk x="64" y="64" width="16" height="16">
+   eAFjYCAPMJKnDa5ruOhnAfoIGYP8RSwGBQayXhB7uIQLyG/kAFL9jy2sybF3pOoBAJQkADs=
+  </chunk>
   </data>
  </layer>
  <group id="7" name="objects">
   <objectgroup id="4" name="objs">
-   <object id="4" name="solid" x="0" y="416" width="352" height="16"/>
-   <object id="18" name="solid" x="352" y="304" width="64" height="64"/>
-   <object id="19" name="solid" x="480" y="80" width="80" height="288"/>
-   <object id="20" name="solid" x="224" y="176" width="240" height="80"/>
-   <object id="21" name="solid" x="272" y="-32" width="16" height="208"/>
-   <object id="22" name="solid" x="608" y="80" width="48" height="32"/>
-   <object id="23" name="solid" x="704" y="80" width="112" height="144"/>
-   <object id="26" name="solid" x="976" y="240" width="16" height="16"/>
-   <object id="27" name="solid" x="816" y="336" width="32" height="192"/>
-   <object id="28" name="solid" x="720" y="528" width="96" height="112"/>
-   <object id="29" name="solid" x="304" y="640" width="304" height="16"/>
-   <object id="30" name="solid" x="480" y="528" width="64" height="112"/>
-   <object id="31" name="solid" x="384" y="416" width="32" height="192"/>
-   <object id="32" name="solid" x="224" y="528" width="80" height="272"/>
-   <object id="34" name="solid" x="96" y="528" width="128" height="32"/>
-   <object id="37" name="solid" x="32" y="416" width="16" height="176"/>
-   <object id="38" name="solid" x="48" y="608" width="80" height="32"/>
-   <object id="39" name="solid" x="32" y="640" width="144" height="80"/>
-   <object id="40" name="solid" x="16" y="720" width="16" height="144"/>
-   <object id="41" name="solid" x="32" y="864" width="320" height="32"/>
-   <object id="42" name="solid" x="336" y="784" width="80" height="64"/>
-   <object id="43" name="solid" x="416" y="688" width="288" height="16"/>
-   <object id="49" name="ladder" x="464" y="176" width="16" height="192"/>
-   <object id="50" name="oneway" x="368" y="128" width="48" height="16"/>
-   <object id="51" name="oneway" x="400" y="96" width="48" height="16"/>
-   <object id="52" name="oneway" x="368" y="64" width="48" height="16"/>
-   <object id="53" name="oneway" x="400" y="32" width="48" height="16"/>
-   <object id="54" name="oneway" x="48" y="832" width="48" height="16"/>
-   <object id="55" name="oneway" x="48" y="800" width="48" height="16"/>
-   <object id="56" name="oneway" x="48" y="768" width="48" height="16"/>
-   <object id="58" name="death" x="560" y="112" width="144" height="16"/>
-   <object id="62" name="slope" x="816" y="80" width="32" height="16">
+   <object id="4" name="solid" x="16" y="416" width="576" height="16"/>
+   <object id="18" name="solid" x="592" y="304" width="64" height="64"/>
+   <object id="19" name="solid" x="720" y="80" width="80" height="288"/>
+   <object id="20" name="solid" x="432" y="176" width="272" height="80"/>
+   <object id="21" name="solid" x="512" y="-32" width="16" height="208"/>
+   <object id="22" name="solid" x="848" y="80" width="48" height="32"/>
+   <object id="23" name="solid" x="944" y="80" width="112" height="144"/>
+   <object id="26" name="solid" x="1216" y="240" width="16" height="16"/>
+   <object id="27" name="solid" x="1056" y="336" width="32" height="192"/>
+   <object id="28" name="solid" x="960" y="528" width="96" height="112"/>
+   <object id="29" name="solid" x="544" y="640" width="304" height="16"/>
+   <object id="30" name="solid" x="720" y="528" width="64" height="112"/>
+   <object id="31" name="solid" x="624" y="416" width="32" height="192"/>
+   <object id="32" name="solid" x="464" y="528" width="80" height="272"/>
+   <object id="34" name="solid" x="336" y="528" width="128" height="32"/>
+   <object id="37" name="solid" x="272" y="416" width="16" height="176"/>
+   <object id="38" name="solid" x="288" y="608" width="80" height="32"/>
+   <object id="39" name="solid" x="272" y="640" width="144" height="80"/>
+   <object id="40" name="solid" x="256" y="720" width="16" height="144"/>
+   <object id="41" name="solid" x="272" y="864" width="320" height="32"/>
+   <object id="42" name="solid" x="576" y="784" width="80" height="64"/>
+   <object id="43" name="solid" x="656" y="688" width="288" height="16"/>
+   <object id="49" name="ladder" x="704" y="176" width="16" height="192"/>
+   <object id="50" name="oneway" x="608" y="128" width="48" height="8"/>
+   <object id="51" name="oneway" x="640" y="96" width="48" height="8"/>
+   <object id="52" name="oneway" x="608" y="64" width="48" height="8"/>
+   <object id="53" name="oneway" x="640" y="32" width="48" height="8"/>
+   <object id="54" name="oneway" x="288" y="832" width="48" height="8"/>
+   <object id="55" name="oneway" x="288" y="800" width="48" height="8"/>
+   <object id="56" name="oneway" x="288" y="768" width="48" height="8"/>
+   <object id="58" name="death" x="800" y="112" width="144" height="16"/>
+   <object id="62" name="slope" x="1056" y="80" width="32" height="16">
     <properties>
      <property name="mask" value="slopeLeftLong"/>
     </properties>
    </object>
-   <object id="63" name="slope" x="848" y="96" width="32" height="16">
+   <object id="63" name="slope" x="1088" y="96" width="32" height="16">
     <properties>
      <property name="mask" value="slopeLeftLong"/>
     </properties>
    </object>
-   <object id="64" name="slope" x="880" y="112" width="16" height="16">
+   <object id="64" name="slope" x="1120" y="112" width="16" height="16">
     <properties>
      <property name="mask" value="slopeLeft"/>
     </properties>
    </object>
-   <object id="65" name="slope" x="896" y="128" width="16" height="16">
+   <object id="65" name="slope" x="1136" y="128" width="16" height="16">
     <properties>
      <property name="mask" value="slopeLeft"/>
     </properties>
    </object>
-   <object id="66" name="slope" x="912" y="144" width="16" height="16">
+   <object id="66" name="slope" x="1152" y="144" width="16" height="16">
     <properties>
      <property name="mask" value="slopeLeft"/>
     </properties>
    </object>
-   <object id="67" name="slope" x="928" y="160" width="16" height="16">
+   <object id="67" name="slope" x="1168" y="160" width="16" height="16">
     <properties>
      <property name="mask" value="slopeLeft"/>
     </properties>
    </object>
-   <object id="68" name="solid" x="816" y="176" width="128" height="48"/>
-   <object id="69" name="slope" x="880" y="304" width="32" height="16">
+   <object id="68" name="solid" x="1056" y="176" width="128" height="48"/>
+   <object id="69" name="slope" x="1120" y="304" width="32" height="16">
     <properties>
      <property name="mask" value="slopeRightLong"/>
     </properties>
    </object>
-   <object id="70" name="slope" x="848" y="320" width="32" height="16">
+   <object id="70" name="slope" x="1088" y="320" width="32" height="16">
     <properties>
      <property name="mask" value="slopeRightLong"/>
     </properties>
    </object>
-   <object id="72" name="slope" x="912" y="288" width="16" height="16">
+   <object id="72" name="slope" x="1152" y="288" width="16" height="16">
     <properties>
      <property name="mask" value="slopeRight"/>
     </properties>
    </object>
-   <object id="73" name="slope" x="928" y="272" width="16" height="16">
+   <object id="73" name="slope" x="1168" y="272" width="16" height="16">
     <properties>
      <property name="mask" value="slopeRight"/>
     </properties>
    </object>
-   <object id="74" name="slope" x="944" y="256" width="16" height="16">
+   <object id="74" name="slope" x="1184" y="256" width="16" height="16">
     <properties>
      <property name="mask" value="slopeRight"/>
     </properties>
    </object>
-   <object id="75" name="slope" x="960" y="240" width="16" height="16">
+   <object id="75" name="slope" x="1200" y="240" width="16" height="16">
     <properties>
      <property name="mask" value="slopeRight"/>
     </properties>
    </object>
-   <object id="76" name="water" x="544" y="528" width="176" height="144"/>
-   <object id="77" name="water" x="304" y="512" width="80" height="96"/>
-   <object id="87" name="solid" x="656" y="640" width="64" height="32"/>
-   <object id="94" name="ladder" x="304" y="512" width="16" height="64"/>
-   <object id="96" name="player" x="528" y="64" width="16" height="16">
+   <object id="76" name="water" x="784" y="528" width="176" height="144"/>
+   <object id="77" name="water" x="544" y="512" width="80" height="96"/>
+   <object id="87" name="solid" x="896" y="640" width="64" height="32"/>
+   <object id="94" name="ladder" x="544" y="512" width="16" height="64"/>
+   <object id="96" name="player" x="768" y="64" width="16" height="16">
     <properties>
      <property name="checkpoint" value="one"/>
     </properties>
    </object>
-   <object id="97" name="checkpoint" x="544" y="0" width="16" height="16">
+   <object id="97" name="checkpoint" x="784" y="0" width="16" height="16">
     <properties>
      <property name="name" value="one"/>
     </properties>
    </object>
-   <object id="98" name="checkpoint" x="288" y="672" width="16" height="16">
+   <object id="98" name="checkpoint" x="528" y="672" width="16" height="16">
     <properties>
      <property name="name" value="boss"/>
     </properties>
    </object>
-   <object id="100" name="player" x="288" y="848" width="16" height="16">
+   <object id="100" name="player" x="528" y="848" width="16" height="16">
     <properties>
      <property name="checkpoint" value="boss"/>
     </properties>
    </object>
-   <object id="101" name="life" x="64" y="752" width="16" height="16"/>
-   <object id="102" name="health" x="48" y="816" width="16" height="16"/>
-   <object id="103" name="energy" x="80" y="816" width="16" height="16"/>
-   <object id="104" name="eTank" x="48" y="784" width="16" height="16"/>
-   <object id="105" name="wTank" x="80" y="784" width="16" height="16"/>
-   <object id="106" name="solid" x="352" y="368" width="128" height="48"/>
-   <object id="107" name="moveAcrossPlatform" x="272" y="384" width="32" height="16">
+   <object id="101" name="life" x="304" y="752" width="16" height="16"/>
+   <object id="102" name="health" x="288" y="816" width="16" height="16"/>
+   <object id="103" name="energy" x="320" y="816" width="16" height="16"/>
+   <object id="104" name="eTank" x="288" y="784" width="16" height="16"/>
+   <object id="105" name="wTank" x="320" y="784" width="16" height="16"/>
+   <object id="106" name="solid" x="592" y="368" width="128" height="48"/>
+   <object id="107" name="moveAcrossPlatform" x="496" y="384" width="32" height="16">
     <properties>
-     <property name="toX" type="int" value="320"/>
+     <property name="toX" type="int" value="560"/>
      <property name="toY" type="int" value="304"/>
     </properties>
    </object>
-   <object id="108" name="slope" x="992" y="224" width="16" height="16">
+   <object id="108" name="slope" x="1232" y="224" width="16" height="16">
     <properties>
      <property name="mask" value="slopeRight"/>
     </properties>
    </object>
-   <object id="109" name="solid" x="1008" y="-32" width="16" height="256"/>
-   <object id="112" name="solid" x="688" y="704" width="96" height="448"/>
-   <object id="113" name="solid" x="496" y="896" width="96" height="256"/>
-   <object id="114" name="solid" x="624" y="1088" width="32" height="112"/>
-   <object id="115" name="solid" x="432" y="1200" width="416" height="16"/>
-   <object id="116" name="solid" x="272" y="1104" width="160" height="96"/>
-   <object id="117" name="solid" x="256" y="912" width="16" height="192"/>
-   <object id="118" name="solid" x="272" y="896" width="224" height="16"/>
-   <object id="119" name="solid" x="848" y="1104" width="160" height="96"/>
-   <object id="120" name="solid" x="1008" y="912" width="16" height="192"/>
-   <object id="121" name="solid" x="784" y="896" width="224" height="16"/>
-   <object id="123" name="bossDoor" x="656" y="1104" width="32" height="32">
+   <object id="109" name="solid" x="1248" y="-32" width="16" height="256"/>
+   <object id="112" name="solid" x="928" y="704" width="96" height="448"/>
+   <object id="113" name="solid" x="736" y="896" width="96" height="256"/>
+   <object id="114" name="solid" x="864" y="1088" width="32" height="112"/>
+   <object id="115" name="solid" x="672" y="1200" width="416" height="16"/>
+   <object id="116" name="solid" x="512" y="1104" width="160" height="96"/>
+   <object id="117" name="solid" x="496" y="912" width="16" height="192"/>
+   <object id="118" name="solid" x="512" y="896" width="224" height="16"/>
+   <object id="119" name="solid" x="1088" y="1104" width="160" height="96"/>
+   <object id="120" name="solid" x="1248" y="912" width="16" height="192"/>
+   <object id="121" name="solid" x="1024" y="896" width="224" height="16"/>
+   <object id="123" name="bossDoor" x="896" y="1104" width="32" height="32">
     <properties>
      <property name="dir" value="down"/>
     </properties>
    </object>
-   <object id="126" name="ice" x="96" y="512" width="208" height="16"/>
-   <object id="128" name="ice" x="48" y="592" width="80" height="16"/>
-   <object id="129" name="ice" x="128" y="640" width="48" height="16"/>
-   <object id="130" name="met" x="192" y="400" width="16" height="16"/>
-   <object id="131" name="met" x="720" y="64" width="16" height="16"/>
-   <object id="132" name="stickMan" x="304" y="928" width="16" height="16"/>
-   <object id="133" name="stickMan" x="960" y="928" width="16" height="16"/>
-   <object id="134" name="solid" x="400" y="640" width="16" height="64"/>
-   <object id="135" name="solid" x="400" y="864" width="192" height="32"/>
-   <object id="136" name="solid" x="368" y="864" width="16" height="32"/>
-   <object id="139" name="space" x="416" y="528" width="64" height="112"/>
+   <object id="126" name="ice" x="336" y="512" width="208" height="16"/>
+   <object id="128" name="ice" x="288" y="592" width="80" height="16"/>
+   <object id="129" name="ice" x="368" y="640" width="48" height="16"/>
+   <object id="130" name="met" x="432" y="400" width="16" height="16"/>
+   <object id="131" name="met" x="960" y="64" width="16" height="16"/>
+   <object id="132" name="stickMan" x="544" y="928" width="16" height="16"/>
+   <object id="133" name="stickMan" x="1200" y="928" width="16" height="16"/>
+   <object id="134" name="solid" x="640" y="640" width="16" height="64"/>
+   <object id="135" name="solid" x="640" y="864" width="192" height="32"/>
+   <object id="136" name="solid" x="608" y="864" width="16" height="32"/>
+   <object id="139" name="space" x="656" y="528" width="64" height="112"/>
    <object id="142" name="player" x="64" y="400" width="16" height="16">
     <properties>
      <property name="checkpoint" value="start"/>
@@ -201,85 +277,105 @@
      <property name="individual" type="int" value="4"/>
     </properties>
    </object>
-   <object id="146" name="sinkIn" x="176" y="640" width="48" height="80"/>
-   <object id="152" name="checkpoint" x="128" y="720" width="16" height="16">
+   <object id="146" name="sinkIn" x="416" y="640" width="48" height="80"/>
+   <object id="152" name="checkpoint" x="368" y="720" width="16" height="16">
     <properties>
      <property name="name" value="two"/>
     </properties>
    </object>
-   <object id="153" name="player" x="128" y="848" width="16" height="16">
+   <object id="153" name="player" x="368" y="848" width="16" height="16">
     <properties>
      <property name="checkpoint" value="two"/>
     </properties>
    </object>
-   <object id="154" name="death" x="96" y="480" width="96" height="16"/>
+   <object id="154" name="death" x="336" y="480" width="96" height="16"/>
+   <object id="169" name="met" x="624" y="288" width="16" height="16"/>
+   <object id="170" name="gravFlip" x="96" y="256" width="16" height="160">
+    <properties>
+     <property name="dir" type="int" value="-1"/>
+    </properties>
+   </object>
+   <object id="172" name="gravFlip" x="368" y="224" width="16" height="192">
+    <properties>
+     <property name="dir" type="int" value="1"/>
+    </properties>
+   </object>
+   <object id="173" name="moveAcrossPlatform" x="288" y="272" width="32" height="16">
+    <properties>
+     <property name="toX" type="int" value="416"/>
+     <property name="toY" type="int" value="272"/>
+    </properties>
+   </object>
+   <object id="174" name="met" x="192" y="400" width="16" height="16"/>
+   <object id="176" name="solid" x="16" y="192" width="272" height="64"/>
+   <object id="177" name="solid" x="0" y="256" width="16" height="160"/>
   </objectgroup>
   <objectgroup id="6" name="transitions">
-   <object id="155" name="bossDoor" x="240" y="800" width="32" height="64"/>
-   <object id="156" name="bossDoor" x="496" y="704" width="32" height="160">
+   <object id="155" name="bossDoor" x="480" y="800" width="32" height="64"/>
+   <object id="156" name="bossDoor" x="736" y="704" width="32" height="160">
     <properties>
      <property name="useTileLayer" value="layout"/>
     </properties>
    </object>
-   <object id="157" name="bossDoor" x="592" y="880" width="96" height="32">
+   <object id="157" name="bossDoor" x="832" y="880" width="96" height="32">
     <properties>
      <property name="dir" value="down"/>
     </properties>
    </object>
-   <object id="158" name="upLadder" x="464" y="224" width="16" height="16"/>
-   <object id="159" name="down" x="464" y="208" width="16" height="16"/>
-   <object id="160" name="right" x="496" y="0" width="16" height="80"/>
-   <object id="161" name="down" x="768" y="432" width="48" height="16"/>
-   <object id="162" name="left" x="256" y="448" width="16" height="64"/>
-   <object id="163" name="down" x="176" y="656" width="48" height="16"/>
-   <object id="164" name="bossDoor" x="592" y="1104" width="32" height="32">
+   <object id="158" name="upLadder" x="704" y="224" width="16" height="16"/>
+   <object id="159" name="down" x="704" y="208" width="16" height="16"/>
+   <object id="160" name="right" x="736" y="0" width="16" height="80"/>
+   <object id="161" name="down" x="1008" y="432" width="48" height="16"/>
+   <object id="162" name="left" x="496" y="448" width="16" height="64"/>
+   <object id="163" name="down" x="416" y="656" width="48" height="16"/>
+   <object id="164" name="bossDoor" x="832" y="1104" width="32" height="32">
     <properties>
      <property name="dir" value="down"/>
     </properties>
    </object>
-   <object id="165" name="bossDoor" x="784" y="1104" width="64" height="32">
+   <object id="165" name="bossDoor" x="1024" y="1104" width="64" height="32">
     <properties>
      <property name="dir" value="up"/>
      <property name="useTileLayer" value="layout"/>
     </properties>
    </object>
-   <object id="166" name="bossDoor" x="432" y="1104" width="64" height="32">
+   <object id="166" name="bossDoor" x="672" y="1104" width="64" height="32">
     <properties>
      <property name="dir" value="up"/>
      <property name="useTileLayer" value="layout"/>
     </properties>
    </object>
-   <object id="167" name="lockShift" x="880" y="-32" width="144" height="256">
+   <object id="167" name="lockShift" x="1120" y="-32" width="144" height="256">
     <properties>
      <property name="name" value="two"/>
     </properties>
    </object>
-   <object id="168" name="lockShift" x="768" y="-32" width="80" height="128">
+   <object id="168" name="lockShift" x="1008" y="-32" width="80" height="128">
     <properties>
      <property name="name" value="one"/>
     </properties>
    </object>
   </objectgroup>
   <objectgroup id="3" name="sections" visible="0">
-   <object id="5" name="section" x="0" y="224" width="512" height="224"/>
-   <object id="6" name="section" x="256" y="0" width="256" height="224"/>
-   <object id="7" name="section" x="512" y="0" width="512" height="448"/>
-   <object id="9" name="section" x="256" y="448" width="592" height="224"/>
-   <object id="10" name="section" x="0" y="448" width="256" height="224"/>
-   <object id="11" name="section" x="0" y="672" width="256" height="224"/>
-   <object id="12" name="section" x="256" y="672" width="256" height="224"/>
-   <object id="13" name="section" x="512" y="672" width="256" height="224"/>
-   <object id="14" name="section" x="512" y="896" width="256" height="224"/>
-   <object id="15" name="section" x="640" y="1120" width="256" height="224"/>
-   <object id="16" name="section" x="768" y="896" width="256" height="224"/>
-   <object id="110" name="section" x="384" y="1120" width="256" height="224"/>
-   <object id="111" name="section" x="256" y="896" width="256" height="224"/>
-   <object id="147" name="lockSection" x="512" y="0" width="512" height="224">
+   <object id="5" name="section" x="-16" y="224" width="768" height="224"/>
+   <object id="6" name="section" x="496" y="0" width="256" height="224"/>
+   <object id="7" name="section" x="752" y="0" width="512" height="448"/>
+   <object id="9" name="section" x="496" y="448" width="592" height="224"/>
+   <object id="10" name="section" x="240" y="448" width="256" height="224"/>
+   <object id="11" name="section" x="240" y="672" width="256" height="224"/>
+   <object id="12" name="section" x="496" y="672" width="256" height="224"/>
+   <object id="13" name="section" x="752" y="672" width="256" height="224"/>
+   <object id="14" name="section" x="752" y="896" width="256" height="224"/>
+   <object id="15" name="section" x="880" y="1120" width="256" height="224"/>
+   <object id="16" name="section" x="1008" y="896" width="256" height="224"/>
+   <object id="110" name="section" x="624" y="1120" width="256" height="224"/>
+   <object id="111" name="section" x="496" y="896" width="256" height="224"/>
+   <object id="147" name="lockSection" x="752" y="0" width="512" height="224">
     <properties>
      <property name="name" value="one"/>
     </properties>
    </object>
-   <object id="148" name="lockSection" x="768" y="0" width="256" height="448">
+   <object id="148" name="lockSection" x="1008" y="0" width="256" height="448">
     <properties>
      <property name="name" value="two"/>
     </properties>

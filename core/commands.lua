@@ -245,7 +245,7 @@ concmd["checkpoints"] = {
 
 function cmdGivehealth(cmd)
   if not cmd[2] then return end
-  for i=1, globals.playerCount do
+  for i=1, #globals.allPlayers do
     globals.allPlayers[i].iFrame = globals.allPlayers[i].maxIFrame
     globals.allPlayers[i]:hurt({globals.allPlayers[i]}, numberSanitize(cmd[2]))
   end
@@ -256,20 +256,34 @@ concmd["givehealth"] = {
   fun = cmdGivehealth,
 }
 
-function cmdGravDir(cmd)
+function cmdGrav(cmd)
   if not cmd[2] then return end
-  for i=1, globals.playerCount do
-    globals.allPlayers[i].gravityMultipliers["global"] = numberSanitize(cmd[2])
+  for i=1, #globals.allPlayers do
+    globals.allPlayers[i]:setGravityMultiplier("global", numberSanitize(cmd[2]))
   end
 end
-concmd["gravdir"] = {
-  helptext = "set gravity direction",
+concmd["grav"] = {
+  helptext = "set gravity multiplier",
   flags = {"cheat"},
-  fun = cmdGravDir,
+  fun = cmdGrav,
+}
+
+function cmdFlip(cmd)
+  for i=1, #globals.allPlayers do
+    globals.allPlayers[i]:setGravityMultiplier("gravityFlip", -globals.allPlayers[i].gravityMultipliers.gravityFlip)
+  end
+  if globals.mainPlayer then
+    megautils.playSound("gravityFlip")
+  end
+end
+concmd["flip"] = {
+  helptext = "flip gravity",
+  flags = {"cheat"},
+  fun = cmdFlip,
 }
 
 function cmdKill(cmd)
-  for i=1, globals.playerCount do
+  for i=1, #globals.allPlayers do
     globals.allPlayers[i].iFrame = globals.allPlayers[i].maxIFrame
     globals.allPlayers[i]:hurt({globals.allPlayers[i]}, -9999)
   end

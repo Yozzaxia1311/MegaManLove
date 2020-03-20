@@ -93,7 +93,8 @@ end)
 function megaman.properties(self, g, gf)
   self.gravityType = 0
   self.normalGravity = 0.25
-  self.gravityMultipliers = {global=g or 1, gravityFlip=gf or 1}
+  self:setGravityMultiplier("global", g or 1)
+  self:setGravityMultiplier("gravityFlip", gf or 1)
   self.maxChargeTime = 50
   self.jumpSpeed = -5.25
   self.jumpDecel = 5.25
@@ -170,6 +171,7 @@ function megaman.properties(self, g, gf)
   self.canStepVelocity = {global=false}
   self.canIgnoreKnockback = {global=false}
   self.canProtoShield = {global=globals.player[self.player] == "proto"}
+  self.canTransferGravity = {global=true}
 end
 
 function megaman:transferState(to)
@@ -185,6 +187,10 @@ function megaman:transferState(to)
   end
   to.collisionShape = self.collisionShape
   to.side = self.side
+  if self:checkFalse(self.canTransferGravity) then
+    to.gravityMultipliers = table.clone(self.gravityMultipliers)
+    to.gravity = self.gravity
+  end
 end
 
 function megaman:regBox()
@@ -353,7 +359,6 @@ function megaman:new(x, y, side, drop, p, g, gf)
   megaman.super.new(self)
   megautils.registerPlayer(self, p)
   megaman.properties(self, g, gf)
-  self:calcGrav()
   if globals.player[self.player] == "mega" then
     self.texOutline = megautils.getResource("megaManOutline")
     self.texOne = megautils.getResource("megaManOne")
@@ -668,7 +673,7 @@ function megaman:attemptWeaponUsage()
             if self.gravity < 0 then
               ty = ty + 3
             end
-            megautils.add(bassBuster, self.transform.x+tx, self.transform.y+ty, dir, w)
+            megautils.add(bassBuster, self.transform.x+tx, self.transform.y+ty, dir, w, nil, (self.gravity >= 0) and 1 or -1)
           end
           self.maxShootTime = 14
           self.shootTimer = 0
@@ -1754,7 +1759,6 @@ function megaman:animate()
   else
     self:face(-1)
   end
-  self.animations[self.curAnim].flippedV = self.gravity < 0
   self.animations[self.curAnim]:update(1/60)
 end
 
@@ -1825,8 +1829,9 @@ function megaman:afterUpdate(dt)
 end
 
 function megaman:draw()
+  self.animations[self.curAnim].flippedV = self.gravity < 0
   local roundx, roundy = math.round(self.transform.x), math.round(self.transform.y)
-  local offsetx, offsety = self.offsetx, self.offsety
+  local offsetx, offsety = 0, 0
   
   if globals.player[self.player] == "bass" then
     offsety, offsetx = -10, -18

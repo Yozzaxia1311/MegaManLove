@@ -28,11 +28,12 @@ function met:new(x, y, s)
   self.canBeInvincible.global = true
   self.timer = 0
   self.blockCollision = true
-  self.gravityMultipliers.flipWithPlayer = 1
+  self:setGravityMultiplier("flipWithPlayer", 1)
 end
 
 function met:grav()
-  self.velocity.vely = math.clamp(self.velocity.vely+self.gravity, -7, 7)
+  self.velocity.vely = self.velocity.vely+self.gravity
+  self.velocity:clampY(7)
 end
 
 function met:healthChanged(o, c, i)
@@ -71,7 +72,7 @@ function met:healthChanged(o, c, i)
   self.iFrame = 0
   if self.health <= 0 then
     megautils.add(smallBlast, self.transform.x-4, self.transform.y-4)
-    megautils.dropItem(self.transform.x, self.transform.y-4)
+    megautils.dropItem(self.transform.x, self.transform.y+(self.gravity >= 0 and -4 or 4))
     megautils.remove(self, true)
     megautils.playSound("enemyExplode")
   elseif self.changeHealth < 0 then
@@ -84,7 +85,7 @@ end
 
 function met:update(dt)
   if globals.mainPlayer then
-    self.gravityMultipliers.flipWithPlayer = globals.mainPlayer.gravityFlip or 1
+    self:setGravityMultiplier("flipWithPlayer", globals.mainPlayer.gravityMultipliers.gravityFlip or 1)
   end
   local near = megautils.autoFace(self, globals.allPlayers)
   if self.s == 0 then
@@ -130,12 +131,14 @@ end
 
 function met:draw()
   love.graphics.setColor(1, 1, 1, 1)
-  if self.side == -1 then
-    love.graphics.draw(self.t, self.quads[self.c], self.transform.x-2, self.transform.y)
-  else
-    love.graphics.draw(self.t, self.quads[self.c], self.transform.x+16, self.transform.y, 0, -1, 1)
+  local offx, offy = -2, 0
+  if self.side == 1 then
+    offx = 16
   end
-  --self:drawCollision()
+  if self.gravity < 0 then
+    offy = 15
+  end
+  love.graphics.draw(self.t, self.quads[self.c], self.transform.x+offx, self.transform.y+offy, 0, -self.side, math.sign(self.gravity))
 end
 
 function met:removed()

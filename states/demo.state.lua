@@ -6,6 +6,7 @@ function demoState:begin()
       megautils.runFile("entities/demo/met.lua")
       megautils.runFile("entities/demo/moveacrossplatform.lua")
       megautils.runFile("entities/demo/stickman.lua")
+      megautils.runFile("entities/mechanics/gravflip.lua")
     end
     
     local lf, inf = "assets/sfx/music/cutLoop.ogg", "assets/sfx/music/cutIntro.ogg"
