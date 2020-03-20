@@ -71,7 +71,7 @@ function bossdoor:update(dt)
             for x=1, (self.dir=="right" or self.dir=="left") and 2 or self.maxSegments do
               self.tileList[x] = {}
               for y=1, (self.dir=="right" or self.dir=="left") and self.maxSegments or 2 do
-                self.tileList[x][y] = megautils.getMapLayer(self.useMapTiles).data
+                self.tileList[x][y] = megautils.getMapLayer(self.useMapTiles)
                   :getTileAtPixelPosition(self.transform.x+(x*16)-16, self.transform.y+(y*16)-16)
               end
             end
@@ -85,10 +85,10 @@ function bossdoor:update(dt)
       self.timer = 0
       self.segments = math.max(self.segments-1, 0)
       if self.useMapTiles then
-        megautils.getMapLayer(self.useMapTiles).data
+        megautils.getMapLayer(self.useMapTiles)
         :setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and self.transform.x or self.transform.x+(self.segments*16),
           (self.dir=="right" or self.dir=="left") and self.transform.y+((self.segments)*16) or self.transform.y, -1)
-        megautils.getMapLayer(self.useMapTiles).data
+        megautils.getMapLayer(self.useMapTiles)
         :setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and self.transform.x+16 or self.transform.x+(self.segments*16),
           (self.dir=="right" or self.dir=="left") and self.transform.y+((self.segments)*16) or self.transform.y+16, -1)
       end
@@ -131,11 +131,11 @@ function bossdoor:update(dt)
       self.timer = 0
       self.segments = math.min(self.segments+1, self.maxSegments)
       if self.useMapTiles then
-        megautils.getMapLayer(self.useMapTiles).data
+        megautils.getMapLayer(self.useMapTiles)
           :setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and self.transform.x or self.transform.x+(self.segments*16)-16,
           (self.dir=="right" or self.dir=="left") and self.transform.y+(self.segments*16)-16 or self.transform.y,
           self.tileList[(self.dir=="right" or self.dir=="left") and 1 or self.segments][(self.dir=="right" or self.dir=="left") and self.segments or 1])
-        megautils.getMapLayer(self.useMapTiles).data
+        megautils.getMapLayer(self.useMapTiles)
           :setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and self.transform.x+16 or self.transform.x+(self.segments*16)-16,
           (self.dir=="right" or self.dir=="left") and self.transform.y+(self.segments*16)-16 or self.transform.y+16,
           self.tileList[(self.dir=="right" or self.dir=="left") and 2 or self.segments][(self.dir=="right" or self.dir=="left") and self.segments or 2])
