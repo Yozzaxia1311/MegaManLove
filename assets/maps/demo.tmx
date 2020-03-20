@@ -289,7 +289,6 @@
     </properties>
    </object>
    <object id="154" name="death" x="336" y="480" width="96" height="16"/>
-   <object id="169" name="met" x="624" y="288" width="16" height="16"/>
    <object id="170" name="gravFlip" x="96" y="256" width="16" height="160">
     <properties>
      <property name="dir" type="int" value="-1"/>

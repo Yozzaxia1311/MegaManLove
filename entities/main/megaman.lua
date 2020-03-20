@@ -756,8 +756,8 @@ function megaman:attemptWeaponUsage()
         self.shootTimer = 0
         self:useShootAnimation()
       else
-        megautils.add(megaBuster, self.transform.x+(self.side==1 and 24 or -20), 
-          self.transform.y+(self.gravity >= 0 and 6 or 9), self.side, w, self.gravity >= 0 and 1 or -1)
+        megautils.add(megaBuster, self.transform.x+(self.side==1 and 21 or -18), 
+          self.transform.y+(self.gravity >= 0 and (self.climb and 5 or 6) or (self.climb and 8 or 9)), self.side, w, self.gravity >= 0 and 1 or -1)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
@@ -887,7 +887,7 @@ function megaman:attemptClimb()
       self:slideToReg()
     end
     if downDown and betwn and self.ground and not self:collision(self.currentLadder) then
-      self.transform.y = self.transform.y + (self.gravity >= 0 and (math.round(self.collisionShape.h/2) + 2) or (-math.round(self.collisionShape.h/2) - 2))
+      self.transform.y = self.transform.y + (self.gravity >= 0 and (math.round(self.collisionShape.h*0.3)) or (-math.round(self.collisionShape.h*0.3)))
     end
     self.velocity.vely = 0
     self.velocity.velx = 0
@@ -1132,8 +1132,8 @@ function megaman:code(dt)
     end
     if not self:collision(self.currentLadder) then
       self.climb = false
-    elseif upDown and ((self.gravity >= 0 and self.transform.y+((self.collisionShape.h/2)-2) < self.currentLadder.transform.y) or 
-      (self.gravity < 0 and self.transform.y+((self.collisionShape.h/2)+2) > self.currentLadder.transform.y+self.currentLadder.collisionShape.h)) then
+    elseif upDown and ((self.gravity >= 0 and self.transform.y+(self.collisionShape.h*0.8) < self.currentLadder.transform.y) or 
+      (self.gravity < 0 and self.transform.y+(self.collisionShape.h*0.2) > self.currentLadder.transform.y+self.currentLadder.collisionShape.h)) then
         self.velocity.vely = 0
         self.transform.y = math.round(self.transform.y)
         local hit = false
@@ -1168,9 +1168,9 @@ function megaman:code(dt)
       self.velocity.vely = 0      
     end
     if self.gravity >= 0 then
-      self.climbTip = self.transform.y < self.currentLadder.transform.y
+      self.climbTip = self.transform.y + self.collisionShape.h * 0.4 < self.currentLadder.transform.y
     else
-      self.climbTip = self.transform.y+self.collisionShape.h > self.currentLadder.transform.y+self.currentLadder.collisionShape.h
+      self.climbTip = self.transform.y + self.collisionShape.h * 0.6 > self.currentLadder.transform.y+self.currentLadder.collisionShape.h
     end
   elseif self.slide then
     local lastSide = self.side
@@ -1837,6 +1837,8 @@ function megaman:draw()
       table.contains(self.jumpAnimation, self.curAnim) or 
       table.contains(self.wallJumpAnimation, self.curAnim) then
       offsety = self.gravity >= 0 and -8 or -12
+    elseif table.contains(self.climbTipAnimation, self.curAnim) then
+      offsety = self.gravity >= 0 and -2 or -18
     elseif table.contains(self.hitAnimation, self.curAnim) then
       offsety = self.gravity >= 0 and -6 or -14
     elseif table.contains(self.dashAnimation, self.curAnim) then
@@ -1848,6 +1850,8 @@ function megaman:draw()
       table.contains(self.jumpAnimation, self.curAnim) or 
       table.contains(self.wallJumpAnimation, self.curAnim) then
       offsety = self.gravity >= 0 and -8 or -7
+    elseif table.contains(self.climbTipAnimation, self.curAnim) then
+      offsety = self.gravity >= 0 and -4 or -11
     elseif table.contains(self.hitAnimation, self.curAnim) then
       offsety = self.gravity >= 0 and -6 or -14
     elseif table.contains(self.dashAnimation, self.curAnim) then
@@ -1859,6 +1863,8 @@ function megaman:draw()
       table.contains(self.jumpAnimation, self.curAnim) or 
       table.contains(self.wallJumpAnimation, self.curAnim) then
       offsety = self.gravity >= 0 and -2 or -6
+    elseif table.contains(self.climbTipAnimation, self.curAnim) then
+      offsety = self.gravity >= 0 and 5 or -12
     elseif table.contains(self.hitAnimation, self.curAnim) then
       offsety = self.gravity >= 0 and -4 or -5
     elseif table.contains(self.dashAnimation, self.curAnim) then
@@ -1870,7 +1876,7 @@ function megaman:draw()
     if self.curAnim == "climbShoot" or self.curAnim == "climbShootDM" or self.curAnim == "climbShootUM"
       or self.curAnim == "climbShootU" or self.curAnim == "climbThrow" then
       offsetx = self.side == -1 and -17 or -18
-    elseif self.curAnim == "climb" then
+    elseif self.curAnim == "climb" or self.curAnim == "climbTip" then
       offsetx = self.animations.climb.position==1 and -18 or -17
     elseif self.curAnim == "slide" then
       offsetx = self.side==1 and -14 or -20
@@ -1879,7 +1885,7 @@ function megaman:draw()
     if self.curAnim == "climbShoot" or self.curAnim == "climbShootDM" or self.curAnim == "climbShootUM"
       or self.curAnim == "climbShootU" or self.curAnim == "climbThrow" then
       offsetx = self.side == -1 and -15 or -16
-    elseif self.curAnim == "climb" then
+    elseif self.curAnim == "climb" or self.curAnim == "climbTip" then
       offsetx = self.animations.climb.position==1 and -16 or -15
     elseif self.curAnim == "slide" then
       offsetx = self.side==1 and -12 or -18
