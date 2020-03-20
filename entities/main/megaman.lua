@@ -1437,14 +1437,12 @@ function megaman:code(dt)
   if globals.mainPlayer and control.startPressed[self.player] and self.control and globals.mainPlayer.control and globals.mainPlayer.updated
     and self:checkFalse(self.canPause) then
     self.weaponSwitchTimer = 70
+    megautils.freeze(nil, "pause")
     megautils.add(fade, true, nil, nil, function(s)
-          self.pauseMenu = megautils.add(weaponSelect, megaman.weaponHandler[self.player], self.healthHandler, self.player)
-          local ff = megautils.add(fade, false, nil, nil, function(ss)
-                megautils.freeze({self.pauseMenu})
-                megautils.remove(ss, true)
-              end)
+          megautils.add(weaponSelect, megaman.weaponHandler[self.player], self.healthHandler, self.player)
+          local ff = megautils.add(fade, false, nil, nil, fade.remove)
           megautils.remove(s, true)
-          end)
+        end)
     megautils.playSound("pause")
   end
 end

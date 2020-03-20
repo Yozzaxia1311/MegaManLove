@@ -59,7 +59,6 @@ end
 function healthHandler:update(dt)
   self.riseTimer = math.min(self.riseTimer+1, 4)
   if self.rise > 0 and self.riseTimer == 4 then
-    megautils.freeze(self.me)
     self.change = 0
     self.health = self.health + 1
     self.riseTimer = 0

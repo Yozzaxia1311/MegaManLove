@@ -71,14 +71,13 @@ function weaponSelect:new(w, h, p)
   self.activeTankColor = {self.w.colorOne[0], self.w.colorTwo[0], self.w.colorOutline[0]}
   self.inactiveTankColor = {{188, 188, 188}, {255, 255, 255}, {0, 0, 0}}
   local trig = megautils.add(trigger, function(s, dt)
-    for k, v in pairs(self.fills) do
+    for k, v in pairs(s.fills) do
       for i, j in pairs(v) do
-        if not j.updated then
-          j:update(dt)
-        end
+        j:update(dt)
       end
     end
   end)
+  trig.fills = self.fills
   trig:removeFromGroup("freezable")
   megaman.colorOutline[self.player] = self.w.colorOutline[self.list[self.y][self.x]]
   megaman.colorOne[self.player] = self.w.colorOne[self.list[self.y][self.x]]
@@ -98,6 +97,22 @@ function weaponSelect:addIcon(id)
 end
 
 function weaponSelect:update(dt)
+  if self.changing then
+    if self.changing == "health" and self.fills[1][1].health == self.h.segments * 4 then
+      self.changing = nil
+    elseif self.changing == "weapons" then
+      local res = true
+      for k, v in pairs(self.fills) do
+        for i, j in pairs(v) do
+          if j.id ~= 0 and j.health ~= self.w.segments[j.id] * 4 then
+            res = false
+          end
+        end
+      end
+      if res then self.changing = nil end
+    end
+    return
+  end
   if self.section == 0 then
     local olx, oly = self.x, self.y
     for k, v in pairs(self.fills) do
@@ -127,6 +142,7 @@ function weaponSelect:update(dt)
             megautils.remove(self, true)
             megautils.remove(s, true)
             megautils.add(fade, false, nil, nil, fade.remove)
+            megautils.unfreeze(nil, "pause")
           end)
       megautils.playSound("selected")
       return
@@ -241,6 +257,7 @@ function weaponSelect:update(dt)
       if self.x == 1 and globals.eTanks > 0 then
         self.fills[1][1].change = self.h.segments * 4
         self.fills[1][1]:updateThis()
+        self.changing = "health"
         globals.eTanks = math.clamp(globals.eTanks-1, 0, 9)
       elseif self.x == 2 and globals.wTanks > 0 then
         local frz = false
@@ -252,6 +269,7 @@ function weaponSelect:update(dt)
             end
           end
         end
+        self.changing = "weapons"
         globals.wTanks = math.clamp(globals.wTanks-1, 0, 9)
       end
     elseif control.upPressed[self.player] then

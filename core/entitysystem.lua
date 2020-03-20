@@ -297,7 +297,7 @@ function entitysystem:update(dt)
   if entitysystem.doBeforeUpdate then
     for i=1, #self.updates do
       local t = self.updates[i]
-      if t.updated and not t.isRemoved and t.beforeUpdate then
+      if t.updated and not t.isRemoved and t.beforeUpdate and t:checkFalse(t.updatedSpecial) then
         t:beforeUpdate(dt)
         if states.switched then
           return
@@ -309,7 +309,7 @@ function entitysystem:update(dt)
     local t = self.updates[i]
     t.previousX = t.transform.x
     t.previousY = t.transform.y
-    if t.updated and not t.isRemoved and t.update then
+    if t.updated and not t.isRemoved and t.update and t:checkFalse(t.updatedSpecial) then
       t:update(dt)
       if states.switched then
         return
@@ -319,7 +319,7 @@ function entitysystem:update(dt)
   if entitysystem.doAfterUpdate then
     for i=1, #self.updates do
       local t = self.updates[i]
-      if t.updated and not t.isRemoved and t.afterUpdate then
+      if t.updated and not t.isRemoved and t.afterUpdate and t:checkFalse(t.updatedSpecial) then
         t:afterUpdate(dt)
         if states.switched then
           return
@@ -415,6 +415,7 @@ function entity:new()
   self.moveByMoveY = 0
   self.canBeInvincible = {global=false}
   self.canStandSolid = {global=true}
+  self.updatedSpecial = {}
 end
 
 function entity:baseRecycle()
@@ -444,6 +445,7 @@ function entity:baseRecycle()
   self.moveByMoveY = 0
   self.canBeInvincible = {global=true}
   self.canStandSolid = {global=true}
+  self.updatedSpecial = {}
 end
 
 function entity:setGravityMultiplier(name, to)
@@ -684,6 +686,7 @@ function basicEntity:new()
   self.isRemoved = false
   self.updated = true
   self.render = true
+  self.updatedSpecial = {}
 end
 
 function basicEntity:baseRecycle()
@@ -691,6 +694,21 @@ function basicEntity:baseRecycle()
   self.transform.y = 0
   self.updated = true
   self.render = true
+  self.updatedSpecial = {}
+end
+
+function basicEntity:checkTrue(w)
+  for k, v in pairs(w) do
+    if v then return true end
+  end
+  return false
+end
+
+function basicEntity:checkFalse(w)
+  for k, v in pairs(w) do
+    if not v then return false end
+  end
+  return true
 end
 
 function basicEntity:hurt(t, h, f, single)

@@ -476,12 +476,16 @@ end
 
 megautils.frozen = {}
 
-function megautils.freeze(e)
+function megautils.freeze(e, name)
   if megautils.groups().freezable then
     for k, v in pairs(megautils.groups().freezable) do
       if not e or not table.contains(e, v) then
         megautils.frozen[#megautils.frozen+1] = v
-        v.updated = false
+        if name then
+          v.updatedSpecial[name] = false
+        else
+          v.updated = false
+        end
       end
     end
   end
@@ -490,8 +494,14 @@ function megautils.unfreeze(e, name)
   if megautils.groups().freezable then
     for k, v in pairs(megautils.groups().freezable) do
       if not e or not table.contains(e, v) then
-        table.removevalue(megautils.frozen, v)
-        v.updated = true
+        if name then
+          v.updatedSpecial[name] = true
+        else
+          v.updated = true
+        end
+        if not v:checkTrue(v.updatedSpecial) then
+          table.removevalue(megautils.frozen, v)
+        end
       end
     end
   end
