@@ -293,7 +293,7 @@ function camera:doView(ox, oy, without)
     local avx, avy = 0, 0
     for i=1, #globals.allPlayers do
       local p = globals.allPlayers[i]
-      if not p.rise and not p.drop and p ~= without then
+      if p ~= without then
         if self.doScrollX then
           avx = avx+(p.transform.x + (ox or 0) - (view.w/2) + (p.collisionShape.w/2))
         end
