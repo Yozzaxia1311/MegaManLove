@@ -1,7 +1,5 @@
 save = {}
 
-save.compress = true
-
 function save.createDirChain(p)
   local part = p:split("/")
   local whole = ""
@@ -24,9 +22,6 @@ end
 
 function save.save(file, data)
   local sv = binser.serialize(data)
-  if save.compress then
-    sv = love.data.compress("string", "zlib", sv)
-  end
   save.createDirChain(file)
   love.filesystem.write(file, sv)
 end
@@ -35,9 +30,6 @@ function save.load(file)
   local sv = love.filesystem.read(file)
   if not sv then
     return nil
-  end
-  if save.compress then
-    sv = love.data.decompress("string", "zlib", sv)
   end
   return unpack(binser.deserialize(sv))
 end

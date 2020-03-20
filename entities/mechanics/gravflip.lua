@@ -36,6 +36,6 @@ end
 
 megautils.cleanFuncs.gravFlip = function()
   gravFlip = nil
-  addobject.unregister("gravFlip")
+  addobjects.unregister("gravFlip")
   megautils.cleanFuncs.gravFlip = nil
 end
