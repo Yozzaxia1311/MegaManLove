@@ -706,7 +706,7 @@ function megaman:attemptWeaponUsage()
         self.shootTimer = 0
         self:useShootAnimation()
       else
-        megautils.add(megaBuster, self.transform.x+(self.side==1 and 17 or -14), 
+        megautils.add(megaBuster, self.transform.x+(self.side==1 and 21 or -18), 
           self.transform.y+(self.gravity >= 0 and 6 or (self.climb and 10 or 9)), self.side, w, self.gravity >= 0 and 1 or -1)
         self.maxShootTime = 14
         self.shootTimer = 0
