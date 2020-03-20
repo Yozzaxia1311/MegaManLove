@@ -262,8 +262,7 @@ end
 function collision.checkGround(self, noSlopeEffect)
   if not self.ground then self.onMovingFloor = nil self.inStandSolid = nil return end
   local solid = {}
-  local cgrav = math.sign(self.gravity or 0)
-  cgrav = cgrav == 0 and 1 or cgrav
+  local cgrav = cgrav == 0 and 1 or math.sign(self.gravity or 0)
   
   local slp = math.ceil(math.abs(self.velocity.velx) + 1)
   
@@ -326,8 +325,7 @@ function collision.generalCollision(self, noSlopeEffect)
   local xprev = self.transform.x
   local solid = {}
   local stand = {}
-  local cgrav = math.sign(self.gravity or 0)
-  cgrav = cgrav == 0 and 1 or cgrav
+  local cgrav = cgrav == 0 and 1 or math.sign(self.gravity or 0)
   
   for i=1, #megautils.state().system.all do
     local v = megautils.state().system.all[i]
