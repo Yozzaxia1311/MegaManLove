@@ -6,7 +6,7 @@ function stageSelectState:begin()
   megautils.add(stageSelect)
   megautils.add(fade, false, nil, nil, fade.remove)
   view.x, view.y = 0, 0
-  megautils.playMusic("assets/sfx/music/select.ogg", true, 80724, 315541)
+  megautils.playMusic("assets/sfx/music/select.wav", true, 80724, 315541)
 end
 
 function stageSelectState:update(dt)

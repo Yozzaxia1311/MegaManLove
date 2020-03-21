@@ -254,15 +254,15 @@ function harm:recycle(e)
   self.timer = 0
 end
 
-function harm:update(dt)
+function harm:afterUpdate(dt)
   if not self.follow or self.follow.isRemoved then
     megautils.remove(self, true)
     return
   end
-  self.transform.x = (self.follow.transform.x+self.follow.collisionShape.w/2)-24/2
-  self.transform.y = (self.follow.transform.y+self.follow.collisionShape.h/2)-24/2
+  self.transform.x = math.round(self.follow.transform.x)+(self.follow.collisionShape.w/2)-12
+  self.transform.y = math.round(self.follow.transform.y)+(self.follow.collisionShape.h/2)-12
   self.timer = math.min(self.timer+1, 32)
-  self.render = math.wrap(self.timer, 0, 6) < 3
+  self.render = not self.follow.flashRender
   if self.timer == 32 or self.follow.isRemoved then
     megautils.remove(self, true)
   end
@@ -270,7 +270,7 @@ end
 
 function harm:draw()
   love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.draw(self.tex, self.quad, math.round(self.transform.x or 0), math.round(self.transform.y or 0))
+  love.graphics.draw(self.tex, self.quad, self.transform.x, self.transform.y)
 end
 
 explodeParticle = entity:extend()
