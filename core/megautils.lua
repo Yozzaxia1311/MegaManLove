@@ -72,6 +72,14 @@ function megautils.unloadAllResources()
   loader.clear()
 end
 
+function megautils.setResourceLock(nick, w)
+  if w then
+    loader.lock(nick)
+  elseif w == false then
+    loader.unlock(nick)
+  end
+end
+
 function megautils.loadResource(...)
   local args = {...}
   if #args == 0 then error("megautils.load takes at least two arguments") end
@@ -93,18 +101,12 @@ function megautils.loadResource(...)
     end
     loader.load(nil, nick, t, {args[2], args[3], args[4], args[5],
         (type(args[6]) ~= "boolean") and args[6], (type(args[7]) ~= "boolean") and args[7]}, locked)
-  elseif checkExt(t, {"png", "jpeg", "jpg", "bmp", "tga", "csv", "hdr", "pic", "exr"}) then
+  elseif checkExt(t, {"png", "jpeg", "jpg", "bmp", "tga", "hdr", "pic", "exr"}) then
     t = "texture"
     if #args == 4 then
-      if type(args[3]) ~= "number" then
-        error("megautils.load requires the 3rd argument to be the width of the csv, which should be a number")
-      end
       locked = args[4]
       loader.load(path, nick, t, {args[3]}, locked)
     else
-      if t == "csv" then
-        error("megautils.load requires the 3rd argument to be the width of the csv when loading a .csv file")
-      end
       locked = args[3]
       loader.load(path, nick, t, nil, locked)
     end
@@ -190,18 +192,22 @@ function megautils.loadGlobalResources()
   megautils.loadResource("assets/misc/weapons/protoRush.png", "protoRush", true)
   megautils.loadResource("assets/misc/weapons/tango.png", "tango", true)
   megautils.loadResource("assets/misc/weapons/treble.png", "treble", true)
-  megautils.loadResource("assets/misc/slopes/slopeLeft.csv", "slopeLeft", 16, true)
-  megautils.loadResource("assets/misc/slopes/slopeRight.csv", "slopeRight", 16, true)
-  megautils.loadResource("assets/misc/slopes/slopeLeftLong.csv", "slopeLeftLong", 32, true)
-  megautils.loadResource("assets/misc/slopes/slopeRightLong.csv", "slopeRightLong", 32, true)
-  megautils.loadResource("assets/misc/slopes/slopeLeftInvert.csv", "slopeLeftInvert", 16, true)
-  megautils.loadResource("assets/misc/slopes/slopeRightInvert.csv", "slopeRightInvert", 16, true)
-  megautils.loadResource("assets/misc/slopes/slopeLeftLongInvert.csv", "slopeLeftLongInvert", 32, true)
-  megautils.loadResource("assets/misc/slopes/slopeRightLongInvert.csv", "slopeRightLongInvert", 32, true)
-  megautils.loadResource("assets/misc/slopes/slopeLeftHalf.csv", "slopeLeftHalf", 16, true)
-  megautils.loadResource("assets/misc/slopes/slopeRightHalf.csv", "slopeRightHalf", 16, true)
-  megautils.loadResource("assets/misc/slopes/slopeLeftHalfInvert.csv", "slopeLeftHalfInvert", 16, true)
-  megautils.loadResource("assets/misc/slopes/slopeRightHalfInvert.csv", "slopeRightHalfInvert", 16, true)
+  megautils.loadResource("assets/misc/slopes/slopeLeft.png", "slopeLeft", true, true)
+  megautils.loadResource("assets/misc/slopes/slopeRight.png", "slopeRight", true, true)
+  megautils.loadResource("assets/misc/slopes/slopeLeftLong.png", "slopeLeftLong", true, true)
+  megautils.loadResource("assets/misc/slopes/slopeRightLong.png", "slopeRightLong", true, true)
+  megautils.loadResource("assets/misc/slopes/slopeLeftInvert.png", "slopeLeftInvert", true, true)
+  megautils.loadResource("assets/misc/slopes/slopeRightInvert.png", "slopeRightInvert", true, true)
+  megautils.loadResource("assets/misc/slopes/slopeLeftLongInvert.png", "slopeLeftLongInvert", true, true)
+  megautils.loadResource("assets/misc/slopes/slopeRightLongInvert.png", "slopeRightLongInvert", true, true)
+  megautils.loadResource("assets/misc/slopes/slopeLeftHalf.png", "slopeLeftHalf", true, true)
+  megautils.loadResource("assets/misc/slopes/slopeRightHalf.png", "slopeRightHalf", true, true)
+  megautils.loadResource("assets/misc/slopes/slopeLeftHalfInvert.png", "slopeLeftHalfInvert", true, true)
+  megautils.loadResource("assets/misc/slopes/slopeRightHalfInvert.png", "slopeRightHalfInvert", true, true)
+  megautils.loadResource("assets/misc/slopes/slopeLeftHalfUpper.png", "slopeLeftHalfUpper", true, true)
+  megautils.loadResource("assets/misc/slopes/slopeRightHalfUpper.png", "slopeRightHalfUpper", true, true)
+  megautils.loadResource("assets/misc/slopes/slopeLeftHalfUpperInvert.png", "slopeLeftHalfUpperInvert", true, true)
+  megautils.loadResource("assets/misc/slopes/slopeRightHalfUpperInvert.png", "slopeRightHalfUpperInvert", true, true)
   megautils.loadResource("slideParticleGrid", 8, 8, 128, 98, true)
   megautils.loadResource("explodeParticleGrid", 24, 24, 128, 98, 0, 46, true)
   megautils.loadResource("megaManGrid", 41, 30, 164, 330, true)

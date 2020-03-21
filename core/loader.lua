@@ -4,23 +4,22 @@ loader.resources = {}
 loader.locked = {}
 
 local function imgColImage(x, y, r, g, b, a)
-  if loader.tmp[y+1][x+1] == 1 then
-    return 1, 1, 1, 1
+  if not loader.tmp[y+1] then
+    loader.tmp[y+1] = {}
   end
-  return 1, 1, 1, 0
+  loader.tmp[y+1][x+1] = (a > 0) and 1 or 0
+  return r, g, b, a
 end
 
 function loader.load(path, nick, typ, parameters, lock)
   if not table.containskey(loader.resources, nick) then
     if typ == "texture" then
       if lock then
-        if parameters then
-          local t = table.convert1Dto2D(table.stringtonumbervalues(love.filesystem.read(path):split(",")), parameters[1])
-          local img = love.image.newImageData(#t[1]-1, #t-1)
-          loader.tmp = t
+        if parameters and parameters[1] then
+          local img = love.image.newImageData(path)
+          loader.tmp = {}
           img:mapPixel(imgColImage)
-          loader.tmp = nil
-          loader.locked[nick] = {t, img}
+          loader.locked[nick] = {loader.tmp, love.graphics.newImage(img)}
         else
           loader.locked[nick] = love.graphics.newImage(path)
         end
@@ -30,12 +29,10 @@ function loader.load(path, nick, typ, parameters, lock)
           error("Cannot overwrite a locked resource")
         end
         if parameters then
-          local t = table.convert1Dto2D(table.stringtonumbervalues(love.filesystem.read(path):split(",")), parameters[1])
-          local img = love.image.newImageData(#t[1], #t)
-          loader.tmp = t
+          local img = love.image.newImageData(path)
+          loader.tmp = {}
           img:mapPixel(imgColImage)
-          loader.tmp = nil
-          loader.resources[nick] = {t, img}
+          loader.resources[nick] = {loader.tmp, love.graphics.newImage(img)}
         else
           loader.resources[nick] = love.graphics.newImage(path)
         end
@@ -73,6 +70,20 @@ function loader.load(path, nick, typ, parameters, lock)
         parameters[6] or 0)
       end
     end
+  end
+end
+
+function loader.lock(nick)
+  if loader.resources[nick] then
+    loader.locked[nick] = loader.resources[nick]
+    loader.resources[nick] = nil
+  end
+end
+
+function loader.unlock(nick)
+  if loader.locked[nick] then
+    loader.resources[nick] = loader.locked[nick]
+    loader.locked[nick] = nil
   end
 end
 
