@@ -727,6 +727,7 @@ end
 
 function Map:draw()
   self:drawBackground()
+	love.graphics.setColor(1, 1, 1, 1)
   for _, layer in ipairs(self.layers) do
     if layer.visible and layer.draw then layer:draw() end
   end
