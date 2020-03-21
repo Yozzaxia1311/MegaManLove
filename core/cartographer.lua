@@ -378,7 +378,9 @@ function Layer.tilelayer:_init(map)
     if self.chunks then
       for k, v in pairs(self.chunks) do
         local data = love.data.decode("string", "base64", v.data)
-        if self.compression == "gzip" then
+        if self.compression == "zstd" then
+          error("ZStandard is not a supported compression type")
+        elseif self.compression == "gzip" then
           data = love.data.decompress("string", "gzip", data)
         elseif self.compression == "zlib" then
           data = love.data.decompress("string", "zlib", data)
@@ -387,7 +389,9 @@ function Layer.tilelayer:_init(map)
       end
     else
       local data = love.data.decode("string", "base64", self.data)
-      if self.compression == "gzip" then
+      if self.compression == "zstd" then
+        error("ZStandard is not a supported compression type")
+      elseif self.compression == "gzip" then
         data = love.data.decompress("string", "gzip", data)
       elseif self.compression == "zlib" then
         data = love.data.decompress("string", "zlib", data)
