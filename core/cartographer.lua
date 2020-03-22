@@ -377,20 +377,22 @@ function Layer.tilelayer:_init(map)
     assert(require "ffi", "Compressed maps require LuaJIT FFI.\nPlease Switch your interperator to LuaJIT or your Tile Layer Format to \"CSV\".")
     if self.chunks then
       for k, v in pairs(self.chunks) do
-        local data = love.data.decode("string", "base64", v.data)
-        if self.compression == "zstd" then
-          error("ZStandard is not a supported compression type")
-        elseif self.compression == "gzip" then
-          data = love.data.decompress("string", "gzip", data)
-        elseif self.compression == "zlib" then
-          data = love.data.decompress("string", "zlib", data)
+        if v.data then
+          local data = love.data.decode("string", "base64", v.data)
+          if self.compression == "zstd" then
+            error("Zstandard is not a supported compression type")
+          elseif self.compression == "gzip" then
+            data = love.data.decompress("string", "gzip", data)
+          elseif self.compression == "zlib" then
+            data = love.data.decompress("string", "zlib", data)
+          end
+          v.data = getDecompressedData(data)
         end
-        v.data = getDecompressedData(data)
       end
     else
       local data = love.data.decode("string", "base64", self.data)
       if self.compression == "zstd" then
-        error("ZStandard is not a supported compression type")
+        error("Zstandard is not a supported compression type")
       elseif self.compression == "gzip" then
         data = love.data.decompress("string", "gzip", data)
       elseif self.compression == "zlib" then
@@ -758,6 +760,7 @@ local function finalXML2LuaTable(str, f)
   result.luaversion = "5.1"
   result.tileheight = tonumber(result.tileheight)
   result.tilewidth = tonumber(result.tilewidth)
+  local inf = result.infinite ~= "0"
   if result.backgroundcolor then
     result.backgroundcolor = result.backgroundcolor:gsub("#","")
     result.backgroundcolor = {tonumber("0x"..result.backgroundcolor:sub(1,2)),
@@ -966,39 +969,44 @@ local function finalXML2LuaTable(str, f)
               v.compression = v.data.compression
               v.data.compression = nil
             end
-              
-            if v.data.chunk then
-              if not (type(v.data.chunk[1]) == "table" and type(v.data.chunk[2]) == "table") then
-                v.data.chunk = {v.data.chunk}
-              end
-              v.chunks = v.data.chunk
-              
-              for i, j in pairs(v.chunks) do
-                j.data = j[1]
-                j[1] = nil
-              end
-              
-              v.data = nil
-              
-              for i, j in pairs(v.chunks) do
-                j.width = tonumber(j.width)
-                j.height = tonumber(j.height)
-                j.x = tonumber(j.x)
-                j.y = tonumber(j.y)
-              end
-              
-              if v.encoding  == "csv" then
+            
+            if inf then
+              if v.data.chunk then
+                if not (type(v.data.chunk[1]) == "table" and type(v.data.chunk[2]) == "table") then
+                  v.data.chunk = {v.data.chunk}
+                end
+                v.chunks = v.data.chunk
+
                 for i, j in pairs(v.chunks) do
-                  local full = string.split(j.data, "\r\n")
-                  j.data = ""
-                  for o, p in ipairs(full) do
-                    j.data = j.data .. p
-                  end
-                  j.data = string.split(j.data, ",")
-                  for o, p in ipairs(j.data) do
-                    j.data[o] = tonumber(p)
+                  j.data = j[1]
+                  j[1] = nil
+                end
+
+                v.data = nil
+
+                for i, j in pairs(v.chunks) do
+                  j.width = tonumber(j.width)
+                  j.height = tonumber(j.height)
+                  j.x = tonumber(j.x)
+                  j.y = tonumber(j.y)
+                end
+
+                if v.encoding  == "csv" then
+                  for i, j in pairs(v.chunks) do
+                    local full = string.split(j.data, "\r\n")
+                    j.data = ""
+                    for o, p in ipairs(full) do
+                      j.data = j.data .. p
+                    end
+                    j.data = string.split(j.data, ",")
+                    for o, p in ipairs(j.data) do
+                      j.data[o] = tonumber(p)
+                    end
                   end
                 end
+              else
+                v.data = nil
+                v.chunks = {}
               end
             else
               if v.encoding == "csv" then
