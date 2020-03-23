@@ -12,7 +12,7 @@ end
 
 function mmMusic:setVolume(v)
   if v then
-    self.musicLoop:setVolume(v)
+    self.musicLoop:setVolume(math.clamp(v, 0, 1))
   end
 end
 
