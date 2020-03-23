@@ -65,6 +65,9 @@ addobjects.register("player", function(v)
   if v.properties.checkpoint == globals.checkpoint and not camera.once and camera.main then
     camera.once = true
     camera.main:setRectangleCollision(8, 8)
+    if v.properties.lock then
+      camera.main.curLock = v.properties.lock
+    end
     camera.main:updateBounds()
     camera.main:setRectangleCollision(view.w, view.h)
     camera.main:doView()

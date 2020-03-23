@@ -74,8 +74,22 @@ end
 
 function camera:updateBounds()
   if not self.toSection then
-    self.toSection = self:collisionTable(megautils.groups().lock)[1] or
-      self:collisionTable(megautils.state().sectionHandler.sections)[1]
+    local presetLock = false
+    if self.curLock then
+      if megautils.groups().lock then
+        for k, v in ipairs(self:collisionTable(megautils.groups().lock)) do
+          if v.name == self.curLock then
+            presetLock = true
+            self.toSection = v
+            break
+          end
+        end
+      end
+    end
+    if not presetLock then
+      self.toSection = self:collisionTable(megautils.groups().lock)[1] or
+        self:collisionTable(megautils.state().sectionHandler.sections)[1]
+    end
   end
   if self.toSection then
     self.curLock = nil
