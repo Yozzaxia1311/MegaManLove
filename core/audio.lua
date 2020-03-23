@@ -41,6 +41,7 @@ function mmMusic:play(loop, loopPoint, loopEndPoint, vol)
   else
     self.musicLoop:setLooping(loop ~= nil and loop)
   end
+  self:setVolume(1)
   self:setVolume(vol)
   self.musicLoop:play()
   self.paused = false
