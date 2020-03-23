@@ -667,6 +667,14 @@ function megautils.arcXVel(yvel, grav, x, y, tox, toy)
   return result
 end
 
+function megautils.getDifficulty()
+  return convar.getString("diff")
+end
+
+function megautils.setDifficulty(d)
+  convar.setValue("diff", d or convar.getString("diff"))
+end
+
 function megautils.diff(...)
   for k, v in pairs({...}) do
     if v == convar.getString("diff") then
