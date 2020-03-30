@@ -308,7 +308,7 @@ function megautils.unload()
   collectgarbage()
 end
 
-function megautils.loadStage(self, path, call)
+function megautils.loadStage(self, path)
   self.sectionHandler = sectionHandler()
   self.currentMap = cartographer.load(path)
   local map = self.currentMap
@@ -329,6 +329,7 @@ function megautils.loadStage(self, path, call)
   local tmp = megautils.add(trigger, function(s, dt)
     s.map:update(1/60)
   end, function(s)
+    s.map:setDrawRange(view.x, view.y, view.w, view.h)
     s.map:draw()
   end)
   tmp.map = map
@@ -366,6 +367,16 @@ function megautils.getMapLayerByID(name)
     end
   end
   return recursiveCheck(megautils.map(), name)
+end
+
+function megautils.setMapLayerTile(name, x, y, gid, ts)
+  local l = megautils.getMapLayer(name)
+  l:setTileAtGridPosition(x, y, gid, ts)
+end
+
+function megautils.setMapLayerIDTile(name, x, y, gid, ts)
+  local l = megautils.getMapLayerByID(name)
+  l:setTileAtGridPosition(x, y, gid, ts)
 end
 
 function megautils.transitionToState(s, before, after, chunk)

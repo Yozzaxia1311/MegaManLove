@@ -150,157 +150,69 @@ function Layer.spritelayer:_initAnimations()
   end
 end
 
-function Layer.spritelayer:_createSpriteBatches()
-  self._spriteBatches = {}
-  for _, tileset in ipairs(self._map.tilesets) do
-    if tileset.image then
-      local image = self._map._images[tileset.image]
-      self._spriteBatches[tileset] = love.graphics.newSpriteBatch(image)
-    end
-  end
-end
-
---[[
-	About sprites
-	-------------
-	In Tiled, both tile layers and object layers can display tiles.
-	Since this behavior is similar for both layer types, I encapsulated
-	them in a parent type called a "sprite layer".
-
-	In this case, a "sprite" is just an occurrence of a tile in the map.
-	Each sprite has a tile global ID, an x position, and a y position.
-
-	Tiled has two kinds of tilesets: single-image tilesets and image
-	collection tilesets. In single-image tilesets, each tile is a rectangular
-	piece of a single image. In image collection tilesets, each tile is the
-	entirety of a separate image.
-
-	For single-image tilesets, it makes sense to use sprite batches to draw
-	each tile that belongs to the same image. For image collection tilesets,
-	it does not. Therefore, sprites can either be batched or unbatched.
-	Batched sprites have two additional fields:
-	- spriteBatch - the sprite batch that the sprite belongs to
-	- id - the ID of the sprite in the sprite batch (sorry for the confusing
-	terminology)
-
-	The setTile function adds, changes, and removes sprites as needed, and it
-	adds and removes sprites from sprite batches automatically (depending
-	on whether the sprite's tile belongs to a single-image or image collection
-	tileset).
-
-	A sprite layer draws all of its sprite batches first, and then it
-	manually draws each unbatched sprite.
-
-	How sprites are stored
-	======================
-	Each sprite has the following fields:
-	- tileGid (number)
-	- x (number)
-	- y (number)
-	- spriteBatch (spriteBatch or nil)
-	- id (number or nil)
-
-	Normally, I'd represent a list of sprites like this:
-
-	sprites = {
-		{
-			tileGid = tileGid,
-			x = x,
-			...
-		},
-		{
-			tileGid = tileGid,
-			x = x,
-			...
-		},
-		...
-	}
-
-	However, since large maps have a lot of sprites, all of these
-	tables use a lot of memory. So instead, since I know that every
-	sprite has the same fields, I organize them like this:
-
-	sprites = {
-		exists = {sprite1Exists, sprite2Exists, ...},
-		tileGid = {sprite1TileGid, sprite2TileGid, ...},
-		x = {sprite1X, sprite2X, ...},
-		...
-	}
-
-	It's a little awkward to work with, but it means that I only ever
-	have 7 tables total dedicated to sprites for any given item layer.
-
-	The biggest concern is that you have to insert and remove from all of the
-	tables at the same time, otherwise the data for each sprite will get
-	misaligned. To keep Lua's table functions working smoothly, I set
-	spriteBatch and id to false instead of nil when I want to "remove" them;
-	that way I don't make holes in the tables.
-
-	Note: the exists field isn't really necessary, but I'd feel weird using
-	the x/y/tileGid fields as indicators that a sprite exists.
-]]
-
-function Layer.spritelayer:_setSprite(x, y, gid)
+function Layer.spritelayer:_setSprite(x, y, gid, offGrid)
   -- if the gid is 0 (empty), remove the sprite at (x, y)
   -- (if it exists)
-  if gid == 0 then
-    for i = #self._sprites.exists, 1, -1 do
-      if self._sprites.x[i] == x and self._sprites.y[i] == y then
-        if self._sprites.spriteBatch[i] then
-          self._sprites.spriteBatch[i]:set(self._sprites.id[i], 0, 0, 0, 0, 0)
-        end
-        table.remove(self._sprites.exists, i)
-        table.remove(self._sprites.tileGid, i)
-        table.remove(self._sprites.x, i)
-        table.remove(self._sprites.y, i)
-        table.remove(self._sprites.spriteBatch, i)
-        table.remove(self._sprites.id, i)
-        break
+  if offGrid then
+    if gid == 0 then
+      if self._sprites.offGridMap[y] and self._sprites.offGridMap[y][x] then
+        self._sprites.offGridMap[y][x] = nil
+      end
+      if self._sprites.offGridQuads[y] and self._sprites.offGridQuads[y][x] then
+        self._sprites.offGridQuads[y][x] = nil
       end
     end
-    return
-  end
-  local index
-  -- check if a sprite already exists at (x, y)
-  for i = 1, #self._sprites.exists do
-    if self._sprites.x[i] == x and self._sprites.y[i] == y then
-      index = i
-      break
+    
+    if not self._sprites.offGridMap[y] then
+      self._sprites.offGridMap[y] = {}
     end
-  end
-  -- if the sprite doesn't exist, create a new one and add it to the sprite batch
-  if not index then
-    table.insert(self._sprites.exists, true)
-    table.insert(self._sprites.tileGid, gid)
-    table.insert(self._sprites.x, x)
-    table.insert(self._sprites.y, y)
-    table.insert(self._sprites.spriteBatch, false)
-    table.insert(self._sprites.id, false)
-    index = #self._sprites.exists
-  end
-  -- update the sprite's tile GID
-  self._sprites.tileGid[index] = gid
-  local tileset = self._map:getTileset(gid)
-  -- if the sprite should be batched...
-  if tileset.image then
-    -- get the new quad
-    local animation = self._animations[gid]
-    local quad = self._map:_getTileQuad(gid, animation and animation.currentFrame)
-    -- if the sprite isn't batched, add it to the sprite batch
-    if not self._sprites.spriteBatch[index] then
-      self._sprites.spriteBatch[index] = self._spriteBatches[tileset]
-      self._sprites.id[index] = self._spriteBatches[tileset]:add(quad, x, y)
-      -- otherwise, just update the sprite batch
-    else
-      self._sprites.spriteBatch[index]:set(self._sprites.id[index], quad, x, y)
+    self._sprites.offGridMap[y][x] = gid
+    
+    local tileset = self._map:getTileset(gid)
+    
+    if tileset.image then
+      -- get the new quad
+      local animation = self._animations[gid]
+      local quad = self._map:_getTileQuad(gid, animation and animation.currentFrame)
+      -- if the sprite doesn't have a quad, add one
+      if not self._sprites.offGridQuads[y] then
+        self._sprites.offGridQuads[y] = {}
+      end
+      self._sprites.offGridQuads[y][x] = quad
+      --otherwise, if there's no image, remove any quad that may be there
+    elseif self._sprites.offGridQuads[y] and self._sprites.offGridQuads[y][x] then
+      self._sprites.offGridQuads[y][x] = nil
     end
-    -- otherwise...
   else
-    -- if the sprite is batched, remove it from the sprite batch
-    if self._sprites.spriteBatch[index] then
-      self._sprites.spriteBatch[index]:set(self._sprites.id[index], 0, 0, 0, 0, 0)
-      self._sprites.spriteBatch[index] = false
-      self._sprites.id[index] = false
+    if gid == 0 then
+      if self._sprites.map[y] and self._sprites.map[y][x] then
+        self._sprites.map[y][x] = nil
+      end
+      if self._sprites.quads[y] and self._sprites.quads[y][x] then
+        self._sprites.quads[y][x] = nil
+      end
+      return
+    end
+    
+    if not self._sprites.map[y] then
+      self._sprites.map[y] = {}
+    end
+    self._sprites.map[y][x] = gid
+    -- update the sprite's tile GID
+    local tileset = self._map:getTileset(gid)
+    -- if the sprite should have a quad...
+    if tileset.image then
+      -- get the new quad
+      local animation = self._animations[gid]
+      local quad = self._map:_getTileQuad(gid, animation and animation.currentFrame)
+      -- if the sprite doesn't have a quad, add one
+      if not self._sprites.quads[y] then
+        self._sprites.quads[y] = {}
+      end
+      self._sprites.quads[y][x] = quad
+      --otherwise, if there's no image, remove any quad that may be there
+    elseif self._sprites.quads[y] and self._sprites.quads[y][x] then
+      self._sprites.quads[y][x] = nil
     end
   end
 end
@@ -308,18 +220,59 @@ end
 function Layer.spritelayer:_init(map)
   Layer.base._init(self, map)
   self:_initAnimations()
-  self:_createSpriteBatches()
   self._sprites = {
-    exists = {},
-    tileGid = {},
-    x = {},
-    y = {},
-    spriteBatch = {},
-    id = {},
+    map = {},
+    quads = {},
+    offGridMap = {},
+    offGridQuads = {},
+    drawRange = {x=0, y=0, w=self._map.width*self._map.tilewidth, h=self._map.height*self._map.tileheight}
   }
 end
 
+function Layer.spritelayer:setDrawRange(x, y, w, h)
+  local update = self._sprites.drawRange.x ~= x or self._sprites.drawRange.y ~= y or self._sprites.drawRange.w ~= w or self._sprites.drawRange.h ~= h
+  
+  self._sprites.drawRange.x = x or self._sprites.drawRange.x
+  self._sprites.drawRange.y = y or self._sprites.drawRange.y
+  self._sprites.drawRange.w = w or self._sprites.drawRange.w
+  self._sprites.drawRange.h = h or self._sprites.drawRange.h
+  
+  if update then
+    local ty = math.ceil(self._sprites.drawRange.y/self._map.tileheight)-1
+    local th = math.floor(self._sprites.drawRange.h/self._map.tileheight)+1
+    local tx = math.ceil(self._sprites.drawRange.x/self._map.tilewidth)-1
+    local tw = math.floor(self._sprites.drawRange.w/self._map.tilewidth)+1
+    for gid, animation in pairs(self._animations) do
+      local tileset = self._map:getTileset(gid)
+      if tileset.image then
+        if #self._sprites.offGridQuads ~= 0 then
+          for y, ytable in pairs(self._sprites.offGridQuads) do
+            for x, _ in pairs(ytable) do
+              if self._sprites.offGridMap[y] and self._sprites.offGridMap[y][x] then
+                local quad = self._map:_getTileQuad(self._sprites.offGridMap[y][x], animation.currentFrame)
+                self._sprites.offGridQuads[y][x] = quad
+              end
+            end
+          end
+        end
+        for y=ty, ty+th do
+          for x=tx, tx+tw do
+            if self._sprites.map[y] and self._sprites.map[y][x] == gid and self._sprites.quads[y] and self._sprites.quads[y][x] then
+              local quad = self._map:_getTileQuad(gid, animation.currentFrame)
+              self._sprites.quads[y][x] = quad
+            end
+          end
+        end
+      end
+    end
+  end
+end
+
 function Layer.spritelayer:_updateAnimations(dt)
+  local ty = math.ceil(self._sprites.drawRange.y/self._map.tileheight)-1
+  local th = math.floor(self._sprites.drawRange.h/self._map.tileheight)+1
+  local tx = math.ceil(self._sprites.drawRange.x/self._map.tilewidth)-1
+  local tw = math.floor(self._sprites.drawRange.w/self._map.tilewidth)+1
   for gid, animation in pairs(self._animations) do
     -- decrement the animation timer
     animation.timer = animation.timer - 1000 * dt
@@ -334,10 +287,22 @@ function Layer.spritelayer:_updateAnimations(dt)
       -- update sprites
       local tileset = self._map:getTileset(gid)
       if tileset.image then
-        local quad = self._map:_getTileQuad(gid, animation.currentFrame)
-        for i = 1, #self._sprites.exists do
-          if self._sprites.tileGid[i] == gid then
-            self._sprites.spriteBatch[i]:set(self._sprites.id[i], quad, self._sprites.x[i], self._sprites.y[i])
+        if #self._sprites.offGridQuads ~= 0 then
+          for y, ytable in pairs(self._sprites.offGridQuads) do
+            for x, _ in pairs(ytable) do
+              if self._sprites.offGridMap[y] and self._sprites.offGridMap[y][x] then
+                local quad = self._map:_getTileQuad(self._sprites.offGridMap[y][x], animation.currentFrame)
+                self._sprites.offGridQuads[y][x] = quad
+              end
+            end
+          end
+        end
+        for y=ty, ty+th do
+          for x=tx, tx+tw do
+            if self._sprites.map[y] and self._sprites.map[y][x] == gid and self._sprites.quads[y] and self._sprites.quads[y][x] then
+              local quad = self._map:_getTileQuad(gid, animation.currentFrame)
+              self._sprites.quads[y][x] = quad
+            end
           end
         end
       end
@@ -352,16 +317,20 @@ end
 function Layer.spritelayer:draw()
   love.graphics.push()
   love.graphics.translate(self.offsetx, self.offsety)
-  -- draw the sprite batches
-  for _, spriteBatch in pairs(self._spriteBatches) do
-    love.graphics.draw(spriteBatch)
-  end
-  -- draw the unbatched sprites
-  for i = 1, #self._sprites.exists do
-    if not self._sprites.spriteBatch[i] then
-      local animation = self._animations[self._sprites.tileGid[i]]
-      local image = self._map:_getTileImage(self._sprites.tileGid[i], animation and animation.currentFrame)
-      love.graphics.draw(image, self._sprites.x[i], self._sprites.y[i])
+  -- draw the tiles within the draw range
+  local ty = math.ceil(self._sprites.drawRange.y/self._map.tileheight)-1
+  local th = math.floor(self._sprites.drawRange.h/self._map.tileheight)+1
+  local tx = math.ceil(self._sprites.drawRange.x/self._map.tilewidth)-1
+  local tw = math.floor(self._sprites.drawRange.w/self._map.tilewidth)+1
+  
+  for y=ty, ty+th do
+    for x=tx, tx+tw do
+      if self._sprites.map[y] and self._sprites.map[y][x] and self._sprites.quads[y] and self._sprites.quads[y][x] then
+        local tileset = self._map:getTileset(self._sprites.map[y][x])
+        if tileset.image then
+          love.graphics.draw(self._map._images[tileset.image], self._sprites.quads[y][x], x*self._map.tilewidth, y*self._map.tileheight)
+        end
+      end
     end
   end
   love.graphics.pop()
@@ -401,8 +370,8 @@ function Layer.tilelayer:_init(map)
       self.data = getDecompressedData(data)
     end
   end
-  for _, gid, _, _, pixelX, pixelY in self:getTiles() do
-    self:_setSprite(pixelX, pixelY, gid)
+  for _, gid, gridX, gridY, _, _ in self:getTiles() do
+    self:_setSprite(gridX, gridY, gid)
   end
 end
 
@@ -472,8 +441,7 @@ function Layer.tilelayer:setTileAtGridPosition(x, y, id, tileset)
   else
     self.data[coordinatesToIndex(x, y, self.width)] = gid
   end
-  local pixelX, pixelY = self:gridToPixel(x, y)
-  self:_setSprite(pixelX, pixelY, gid-1)
+  self:_setSprite(x, y, gid-1)
 end
 
 -- Returns the global ID of the tile at the given pixel position,
@@ -532,7 +500,7 @@ function Layer.objectgroup:_init(map)
   Layer.spritelayer._init(self, map)
   for _, object in ipairs(self.objects) do
     if object.gid and object.visible then
-      self:_setSprite(object.x, object.y - object.height, object.gid)
+      self:_setSprite(object.x, object.y - object.height, object.gid, true)
     end
   end
 end
@@ -566,6 +534,12 @@ function Layer.group:update(dt)
   end
 end
 
+function Layer.group:setDrawRange(x, y, w, h)
+  for _, layer in ipairs(self.layers) do
+    if layer.setDrawRange then layer:setDrawRange(x, y, w, h) end
+  end
+end
+
 function Layer.group:draw()
   for _, layer in ipairs(self.layers) do
     if layer.visible and layer.draw then layer:draw() end
@@ -593,11 +567,17 @@ function Map:_loadImages()
       if tile.image then self:_loadImage(tile.image) end
     end
   end
-  for _, layer in ipairs(self.layers) do
-    if layer.type == 'imagelayer' then
-      self:_loadImage(layer.image)
+  
+  local function recursiveImageLayer(l)
+      for _, layer in ipairs(l) do
+        if layer.type == 'imagelayer' then
+          self:_loadImage(layer.image)
+        elseif layer.type == 'group' then
+          recursiveImageLayer(layer.layers)
+        end
+      end
     end
-  end
+  recursiveImageLayer(self.layers)
 end
 
 function Map:_initLayers()
@@ -720,10 +700,16 @@ function Map:drawBackground()
     local g = self.backgroundcolor[2] / 255
     local b = self.backgroundcolor[3] / 255
     love.graphics.setColor(r, g, b, 1)
-    love.graphics.rectangle('fill', 0, 0,
+    love.graphics.rectangle("fill", 0, 0,
       love.graphics.getCanvas():getDimensions())
     love.graphics.pop()
     love.graphics.setColor(1, 1, 1, 1)
+  end
+end
+
+function Map:setDrawRange(x, y, w, h)
+  for _, layer in ipairs(self.layers) do
+    if layer.setDrawRange then layer:setDrawRange(x, y, w, h) end
   end
 end
 
@@ -753,7 +739,6 @@ local function finalXML2LuaTable(str, f)
   result.compressionLevel = nil
   result.height = tonumber(result.height)
   result.width = tonumber(result.width)
-  result.infinite = nil
   result.editorsettings = nil
   result.nextlayerid = tonumber(result.nextlayerid)
   result.nextobjectid = tonumber(result.nextobjectid)

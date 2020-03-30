@@ -259,8 +259,8 @@ function harm:afterUpdate(dt)
     megautils.remove(self, true)
     return
   end
-  self.transform.x = math.round(self.follow.transform.x)+(self.follow.collisionShape.w/2)-12
-  self.transform.y = math.round(self.follow.transform.y)+(self.follow.collisionShape.h/2)-12
+  self.transform.x = math.round(self.follow.transform.x)+math.round(self.follow.collisionShape.w/2)-12
+  self.transform.y = math.round(self.follow.transform.y)+math.round(self.follow.collisionShape.h/2)-12
   self.timer = math.min(self.timer+1, 32)
   self.render = not self.follow.flashRender
   if self.timer == 32 or self.follow.isRemoved then
