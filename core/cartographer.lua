@@ -47,6 +47,20 @@ local function formatPath(path)
   return path
 end
 
+-- Decompress tile layer data
+-- https://github.com/karai17/Simple-Tiled-Implementation/blob/master/sti/utils.lua#L67
+function getDecompressedData(data)
+  local ffi = require("ffi")
+  local d = {}
+  local decoded = ffi.cast("uint32_t*", data)
+  
+  for i = 0, (data:len() / ffi.sizeof("uint32_t")) - 1 do
+    table.insert(d, tonumber(decoded[i]))
+  end
+  
+  return d
+end
+
 -- given a grid with w items per row, return the column and row of the nth item
 -- (going from left to right, top to bottom)
 -- https://stackoverflow.com/a/9816217
@@ -82,20 +96,6 @@ local function getLayer(self, ...)
     layer = layer.layers[layerName]
   end
   return layer
-end
-
--- Decompress tile layer data
--- https://github.com/karai17/Simple-Tiled-Implementation/blob/master/sti/utils.lua#L5
-function getDecompressedData(data)
-  local ffi = require("ffi")
-  local d = {}
-  local decoded = ffi.cast("uint32_t*", data)
-  
-  for i = 0, (data:len() / ffi.sizeof("uint32_t")) - 1 do
-    table.insert(d, tonumber(decoded[i]))
-  end
-  
-  return d
 end
 
 local Layer = {}
@@ -345,11 +345,11 @@ function Layer.tilelayer:_init(map)
   if self.encoding == "base64" then
     assert(require "ffi", "Compressed maps require LuaJIT FFI.\nPlease Switch your interperator to LuaJIT or your Tile Layer Format to \"CSV\".")
     if self.chunks then
-      for k, v in pairs(self.chunks) do
+      for k, v in ipairs(self.chunks) do
         if v.data then
           local data = love.data.decode("string", "base64", v.data)
           if self.compression == "zstd" then
-            error("Zstandard is not a supported compression type")
+            error("Zstandard is not a supported compression type.")
           elseif self.compression == "gzip" then
             data = love.data.decompress("string", "gzip", data)
           elseif self.compression == "zlib" then
@@ -361,7 +361,7 @@ function Layer.tilelayer:_init(map)
     else
       local data = love.data.decode("string", "base64", self.data)
       if self.compression == "zstd" then
-        error("Zstandard is not a supported compression type")
+        error("Zstandard is not a supported compression type.")
       elseif self.compression == "gzip" then
         data = love.data.decompress("string", "gzip", data)
       elseif self.compression == "zlib" then
