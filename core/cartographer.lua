@@ -49,7 +49,7 @@ end
 
 -- Decompress tile layer data
 -- https://github.com/karai17/Simple-Tiled-Implementation/blob/master/sti/utils.lua#L67
-function getDecompressedData(data)
+local function getDecompressedData(data)
   local ffi = require("ffi")
   local d = {}
   local decoded = ffi.cast("uint32_t*", data)
