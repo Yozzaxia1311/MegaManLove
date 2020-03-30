@@ -591,6 +591,8 @@ end
 function Map:_init(path)
   self.dir = splitPath(path)
   self.quadCache = {}
+  self.tilesetCache = {}
+  self.tileCache = {}
   self:_loadImages()
   setmetatable(self.tilesets, getByNameMetatable)
   self:_initLayers()
@@ -637,9 +639,11 @@ end
 
 -- Gets the tileset that has the tile with the given global ID.
 function Map:getTileset(gid)
+  if self.tilesetCache[gid] then return self.tilesetCache[gid] end
   for i = #self.tilesets, 1, -1 do
     local tileset = self.tilesets[i]
     if tileset.firstgid <= gid then
+      self.tilesetCache[gid] = tileset
       return tileset
     end
   end
@@ -647,9 +651,11 @@ end
 
 -- Gets the data table for the tile with the given global ID, if it exists.
 function Map:getTile(gid)
+  if self.tileCache[gid] then return self.tileCache[gid] end
   local tileset = self:getTileset(gid)
   for _, tile in ipairs(tileset.tiles) do
     if tileset.firstgid + tile.id == gid then
+      self.tileCache[gid] = tile
       return tile
     end
   end
