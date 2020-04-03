@@ -426,7 +426,7 @@ end
 
 -- Sets the tile at the given grid position to the specified global ID.
 function Layer.tilelayer:setTileAtGridPosition(x, y, id, tileset)
-  local gid = self._map.tilesets[tileset or 1].firstgid + id - 1
+  local gid = self._map.tilesets[tileset or 1].firstgid + id
   if self.chunks then
     for _, chunk in ipairs(self.chunks) do
       local pointInChunk = x >= chunk.x
@@ -451,10 +451,9 @@ function Layer.tilelayer:getTileAtPixelPosition(x, y)
 end
 
 -- Sets the tile at the given pixel position to the specified global ID.
-function Layer.tilelayer:setTileAtPixelPosition(gridX, gridY, id, tileset)
-  local gid = self._map.tilesets[tileset or 1].firstgid + id
-  local pixelX, pixelY = self:pixelToGrid(gridX, gridY)
-  return self:setTileAtGridPosition(pixelX, pixelY, gid)
+function Layer.tilelayer:setTileAtPixelPosition(pixelX, pixelY, id, tileset)
+  local gridX, gridY = self:pixelToGrid(pixelX, pixelY)
+  return self:setTileAtGridPosition(gridX, gridY, id, tileset)
 end
 
 function Layer.tilelayer:_getTileAtIndex(index)
