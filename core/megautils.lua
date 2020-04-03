@@ -332,6 +332,7 @@ function megautils.loadStage(self, path)
     s.map:setDrawRange(view.x, view.y, view.w, view.h)
     s.map:draw()
   end)
+  tmp:setLayer(-5)
   tmp.map = map
 end
 
