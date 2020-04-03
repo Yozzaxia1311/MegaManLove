@@ -426,7 +426,7 @@ end
 
 -- Sets the tile at the given grid position to the specified global ID.
 function Layer.tilelayer:setTileAtGridPosition(x, y, id, tileset)
-  local gid = self._map.tilesets[tileset or 1].firstgid + id
+  local gid = self._map.tilesets[tileset or 1].firstgid + id - 1
   if self.chunks then
     for _, chunk in ipairs(self.chunks) do
       local pointInChunk = x >= chunk.x
@@ -441,7 +441,7 @@ function Layer.tilelayer:setTileAtGridPosition(x, y, id, tileset)
   else
     self.data[coordinatesToIndex(x, y, self.width)] = gid
   end
-  self:_setSprite(x, y, gid-1)
+  self:_setSprite(x, y, gid)
 end
 
 -- Returns the global ID of the tile at the given pixel position,
