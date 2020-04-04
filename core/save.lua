@@ -22,12 +22,12 @@ end
 
 function save.save(file, data)
   local sv = binser.serialize(data)
-  save.createDirChain(dataDir .. file)
-  love.filesystem.write(dataDir .. file, sv)
+  save.createDirChain(file)
+  love.filesystem.write(file, sv)
 end
 
 function save.load(file)
-  local sv = love.filesystem.read(dataDir .. file)
+  local sv = love.filesystem.read(file)
   if not sv then
     return nil
   end

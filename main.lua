@@ -1,7 +1,4 @@
 function initEngine()
-  if love.filesystem.isFused() then
-    love.filesystem.mount(love.filesystem.getSourceBaseDirectory(), "data")
-  end
   inputHandler.init()
   control.init()
   globals = {}
@@ -52,7 +49,6 @@ function love.load()
   love.graphics.setDefaultFilter("nearest", "nearest")
   consoleFont = love.graphics.getFont() -- needs to be preserved
   OSSystem = love.system.getOS()
-  dataDir = love.filesystem.isFused() and "data/" or ""
   altEnterOnce = false
   deadZone = 0.8
   maxPlayerCount = 4
