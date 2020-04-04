@@ -48,7 +48,6 @@ function love.load()
   love.keyboard.setKeyRepeat(true)
   love.graphics.setDefaultFilter("nearest", "nearest")
   consoleFont = love.graphics.getFont() -- needs to be preserved
-  OSSystem = love.system.getOS()
   altEnterOnce = false
   deadZone = 0.8
   maxPlayerCount = 4
