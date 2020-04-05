@@ -644,12 +644,16 @@ function megautils.autoFace(e, to, single)
 end
 
 function megautils.pointVelAt(e, to)
-  local p = megautils.calcPath(megautils.center(e), megautils.center(to))
+  local cx, cy = megautils.center(e)
+  local cx2, cy2 = megautils.center(to)
+  local p = megautils.calcPath(cx, cy, cx2, cy2)
   return megautils.calcX(p), megautils.calcY(p)
 end
 
 function megautils.pointAt(e, to)
-  return megautils.calcPath(megautils.center(e), megautils.center(to))
+  local cx, cy = megautils.center(e)
+  local cx2, cy2 = megautils.center(to)
+  return megautils.calcPath(cx, cy, cx2, cy2)
 end
 
 function megautils.arcXVel(yvel, grav, x, y, tox, toy)

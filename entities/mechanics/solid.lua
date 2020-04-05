@@ -15,7 +15,7 @@ function collision.doCollision(self)
   collision.checkGround(self)
 end
 
-function collision.getTable(self, dx, dy)
+function collision.getTable(self, dx, dy, noSlope)
   local xs = dx or 0
   local ys = dy or 0
   local solid = {}
