@@ -315,6 +315,7 @@ function Layer.spritelayer:update(dt)
 end
 
 function Layer.spritelayer:draw()
+  if not self.visible then return end
   love.graphics.push()
   love.graphics.translate(self.offsetx, self.offsety)
   -- draw the tiles within the draw range
@@ -509,7 +510,9 @@ Layer.imagelayer = setmetatable({}, Layer.base)
 Layer.imagelayer.__index = Layer.imagelayer
 
 function Layer.imagelayer:draw()
-  love.graphics.draw(self._map._images[self.image], self.offsetx, self.offsety)
+  if self.visible then
+    love.graphics.draw(self._map._images[self.image], self.offsetx, self.offsety)
+  end
 end
 
 -- Represents a layer group in an exported Tiled map.
@@ -540,8 +543,10 @@ function Layer.group:setDrawRange(x, y, w, h)
 end
 
 function Layer.group:draw()
-  for _, layer in ipairs(self.layers) do
-    if layer.visible and layer.draw then layer:draw() end
+  if self.visible then
+    for _, layer in ipairs(self.layers) do
+      if layer.draw then layer:draw() end
+    end
   end
 end
 
@@ -722,7 +727,7 @@ function Map:draw()
   self:drawBackground()
 	love.graphics.setColor(1, 1, 1, 1)
   for _, layer in ipairs(self.layers) do
-    if layer.visible and layer.draw then layer:draw() end
+    if layer.draw then layer:draw() end
   end
 end
 
