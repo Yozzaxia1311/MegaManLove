@@ -2,17 +2,17 @@ collision = {}
 
 collision.maxSlope = 1
 
-function collision.doCollision(self)
-  collision.checkGround(self)
+function collision.doCollision(self, noSlope)
+  collision.checkGround(self, noSlope)
   if self.grav then self:grav() end
   if self.blockCollision then
-    collision.generalCollision(self)
+    collision.generalCollision(self, noSlope)
   else
     self.transform.x = self.transform.x + self.velocity.velx
     self.transform.y = self.transform.y + self.velocity.vely
   end
   collision.entityPlatform(self)
-  collision.checkGround(self)
+  collision.checkGround(self, noSlope)
 end
 
 function collision.getTable(self, dx, dy, noSlope)
@@ -231,7 +231,7 @@ function collision.entityPlatform(self)
   end
 end
 
-function collision.shiftObject(self, dx, dy, checkforcol, ep)
+function collision.shiftObject(self, dx, dy, checkforcol, ep, noSlope)
   local xsub = self.velocity.velx
   local ysub = self.velocity.vely
   
@@ -243,7 +243,7 @@ function collision.shiftObject(self, dx, dy, checkforcol, ep)
   
   if checkforcol then
     self.canStandSolid.global = false
-    collision.generalCollision(self)
+    collision.generalCollision(self, noSlope)
     self.canStandSolid.global = true
   else
     self.transform.x = self.transform.x + self.velocity.velx
