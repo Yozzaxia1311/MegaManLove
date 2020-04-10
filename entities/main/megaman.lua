@@ -1225,6 +1225,7 @@ function megaman:code(dt)
         self.slide = false
         jumped = true
         self.velocity.vely = self.jumpSpeed * (self.gravity < 0 and -1 or 1)
+        self.ground = false
         self.slideTimer = self.maxSlideTime
         self.hitTimer = self.maxHitTime
         self:slideToReg()
@@ -1314,6 +1315,7 @@ function megaman:code(dt)
       not (control[self.gravity >= 0 and "downDown" or "upDown"][self.player] and self:checkBasicSlideBox(self.side, 0)) then
       self.velocity.vely = self.jumpSpeed * (self.gravity < 0 and -1 or 1)
       self.protoShielding = self:checkFalse(self.canProtoShield)
+      self.ground = false
     else
       self.velocity.vely = 0
     end
@@ -1825,7 +1827,7 @@ function megaman:afterUpdate(dt)
   if not self.dying and camera.main and globals.mainPlayer == self and
     self:checkFalse(self.canHaveCameraFocus) and not self.drop and not self.rise
     and self.collisionShape then
-    camera.main:updateCam(0, self.slide and -3 or 0)
+    camera.main:updateCam(0, (self.gravity >= 0) and (self.slide and -3 or 0) or (self.slide and 4 or 0))
   end
 end
 

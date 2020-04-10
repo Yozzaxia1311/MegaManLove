@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="89" height="84" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#d3d3d3" nextlayerid="8" nextobjectid="178">
+<map version="1.2" tiledversion="1.3.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="89" height="84" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#d3d3d3" nextlayerid="8" nextobjectid="193">
  <tileset firstgid="1" source="tilesets/demoTileset.tsx"/>
  <layer id="5" name="bg" width="89" height="84">
   <data encoding="base64" compression="zlib">
@@ -32,10 +32,10 @@
    eAHNj0EKwDAIBJNDj/3/dxOhC3PYKJJLBXGJjmvmuIt5h4+Kf/d+pbOqeMfw7cTLM2oWJ75iglNms+4OelJne9gjQ80Z56s+GWr1q0qGuuLUJxO6k883r12dGj5/4zt/d/cv7tsA6Q==
   </chunk>
    <chunk x="48" y="0" width="16" height="16">
-   eAFjYBgFlIQAI1AzCCMDmBg+cZgakD5s6vCJI9sFU8cHZMAwzGwQDRMD0ej2gPSCAC5xiCyCxKUOlzhCJ4SFSx0u8eGoH+RXZIzuR3rzAflAAHg=
+   eAFjYBgFlIQAI1AzCCMDmBg+cZgakD5s6vCJI9sFU8cHZMAwzGwQDRMD0ej2gPSCAC5xiCyCxKUOlzhCJ4SFSx0u8ZGiH92fuPjEhhMp+gH3gAB2
   </chunk>
    <chunk x="64" y="0" width="16" height="16">
-   eAHdjzsOACAIQ/1sev/7agccSNHqKAnhk74SUnqL/IYt6hcefyDbzL6+OzfR/6pPxNvlak1QTzywnYfC7zxUPvK44ZmW7XCLBdPaDlVJ72u83ytzUUREA87fHbJIAFg=
+   eAGVj0sKgDAQQ6vudKU7vf9BbcDQEjLtKJT5NO9RS2nf0tpp57JuF4lc9qzhKwJk73hGMp4Rn/GQR8XZ6zkISr1lxkheryKPOiKevo1NV+Hge2c8MOegLsOPHFk+cvzhXdbt+G9aXdbtlOPssm7HvFbNrhqYzM93D05dL7cqASI=
   </chunk>
    <chunk x="0" y="16" width="16" height="16">
    eAFjZKAMMFKmnWFUP2UBOBzCD+QHcjFloTeqGwA24AAb
@@ -46,8 +46,11 @@
    <chunk x="32" y="16" width="16" height="16">
    eAFjYCANsAKVM5KmBUU1PfSD3IeMkR1AjP3I/kNmg8wZivqRwwLGRg4TdDa6n9HlCfFJ0Q9zDzpNyA56yMPcRK5dQ0E/AMAcAEw=
   </chunk>
+   <chunk x="48" y="16" width="16" height="16">
+   eAFjYCAeMBKvFKtKkH50jFXhqOBoCIyGAF1CAAAZkAAH
+  </chunk>
    <chunk x="64" y="16" width="16" height="16">
-   eAFjYCAOMBGnDKuqgdDLBnQJO1bX4BckVx8j0FgQJhdQohdk56h+ckMeom+khh8Ae4QALQ==
+   eAFjYMAPpKDSTDiUMQLFsWFRoLgYAb04jEQRxmUviiIsHDagGDsWcUJC5OqDhQEh83HJg/RTAkb1UxJ6kDRMiQlDNfwBk3cAeA==
   </chunk>
    <chunk x="16" y="32" width="16" height="16">
    eAHNkOEKwCAIhO3nYO//vHk/hOuwMgi2wZHmfaYzM2su/l5PqgKnvObcO4vVj3wn7qM817JY/ZpnDN+pH3n2v5jhWHmuRbzyrGo3ed7p8cahyvsxB074g8X5Jx6zVDSb/3QXf27Y/2u+A/cdAZw=
@@ -150,7 +153,7 @@
      <property name="mask" value="slopeLeft"/>
     </properties>
    </object>
-   <object id="68" name="solid" x="1056" y="176" width="128" height="48"/>
+   <object id="68" name="solid" x="1168" y="176" width="16" height="64"/>
    <object id="69" name="slope" x="1120" y="304" width="32" height="16">
     <properties>
      <property name="mask" value="slopeRightLong"/>
@@ -222,7 +225,7 @@
      <property name="mask" value="slopeRight"/>
     </properties>
    </object>
-   <object id="109" name="solid" x="1248" y="-32" width="16" height="256"/>
+   <object id="109" name="solid" x="1248" y="128" width="16" height="96"/>
    <object id="112" name="solid" x="928" y="704" width="96" height="448"/>
    <object id="113" name="solid" x="736" y="896" width="96" height="256"/>
    <object id="114" name="solid" x="864" y="1088" width="32" height="112"/>
@@ -305,8 +308,56 @@
    <object id="174" name="met" x="192" y="400" width="16" height="16"/>
    <object id="176" name="solid" x="16" y="192" width="272" height="64"/>
    <object id="177" name="solid" x="0" y="256" width="16" height="160"/>
+   <object id="181" name="solid" x="944" y="224" width="176" height="64"/>
+   <object id="182" name="solid" x="1216" y="112" width="32" height="16"/>
+   <object id="183" name="slope" x="1200" y="112" width="16" height="16">
+    <properties>
+     <property name="mask" value="slopeRightInvert"/>
+    </properties>
+   </object>
+   <object id="184" name="slope" x="1184" y="96" width="16" height="16">
+    <properties>
+     <property name="mask" value="slopeRightInvert"/>
+    </properties>
+   </object>
+   <object id="185" name="slope" x="1168" y="80" width="16" height="16">
+    <properties>
+     <property name="mask" value="slopeRightInvert"/>
+    </properties>
+   </object>
+   <object id="186" name="slope" x="1136" y="64" width="32" height="16">
+    <properties>
+     <property name="mask" value="slopeRightLongInvert"/>
+    </properties>
+   </object>
+   <object id="187" name="slope" x="1104" y="48" width="32" height="16">
+    <properties>
+     <property name="mask" value="slopeRightLongInvert"/>
+    </properties>
+   </object>
+   <object id="188" name="slope" x="1072" y="32" width="32" height="16">
+    <properties>
+     <property name="mask" value="slopeRightLongInvert"/>
+    </properties>
+   </object>
+   <object id="189" name="solid" x="1072" y="-32" width="16" height="64"/>
+   <object id="190" name="slope" x="1168" y="240" width="16" height="16">
+    <properties>
+     <property name="mask" value="slopeLeftInvert"/>
+    </properties>
+   </object>
+   <object id="191" name="slope" x="1152" y="256" width="16" height="16">
+    <properties>
+     <property name="mask" value="slopeLeftInvert"/>
+    </properties>
+   </object>
+   <object id="192" name="slope" x="1120" y="272" width="32" height="16">
+    <properties>
+     <property name="mask" value="slopeLeftLongInvert"/>
+    </properties>
+   </object>
   </objectgroup>
-  <objectgroup id="6" name="transitions">
+  <objectgroup id="6" name="transitions" visible="0">
    <object id="155" name="bossDoor" x="480" y="800" width="32" height="64"/>
    <object id="156" name="bossDoor" x="736" y="704" width="32" height="160">
     <properties>

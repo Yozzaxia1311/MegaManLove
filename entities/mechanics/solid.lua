@@ -261,9 +261,9 @@ end
 function collision.checkGround(self, noSlopeEffect)
   if not self.ground then self.onMovingFloor = nil self.inStandSolid = nil return end
   local solid = {}
-  local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 0)
+  local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
   
-  local slp = math.ceil(math.abs(self.velocity.velx) + 1)
+  local slp = (math.ceil(math.abs(self.velocity.velx)) + 1) * cgrav
   
   for i=1, #megautils.state().system.all do
     local v = megautils.state().system.all[i]
@@ -281,27 +281,35 @@ function collision.checkGround(self, noSlopeEffect)
   end
   
   if #self:collisionTable(solid) == 0 then
-    local i = 1
-    while i <= slp do
-      if #self:collisionTable(solid, 0, cgrav * i) == 0 then
+    local i = cgrav
+    while math.abs(i) <= math.abs(slp) do
+      if #self:collisionTable(solid, 0, i) == 0 then
         self.ground = false
         self.onMovingFloor = nil
         self.inStandSolid = nil
-      elseif self.velocity.vely * cgrav >= 0 then
+      else
         self.ground = true
-        self.transform.y = math.round(self.transform.y+cgrav) + (i - 1) * cgrav
+        self.transform.y = math.round(self.transform.y+cgrav) + (i - cgrav)
         local dec = 0
         while true do
           local tmp = self:collisionTable(solid)
           if #tmp ~= 0 then
+            dec = (cgrav >= 0) and 0 or 1
+            for k, v in ipairs(tmp) do
+              local nd = v.transform.y - math.floor(v.transform.y)
+              if cgrav >= 0 and nd > dec then
+                dec = nd
+              elseif cgrav < 0 and nd < dec then
+                dec = nd
+              end
+            end
             self.transform.y = self.transform.y - cgrav
-            dec = tmp[1].transform.y - math.floor(tmp[1].transform.y)
           else
             break
           end
         end
         if dec ~= 0 then
-          if cgrav > 0 then
+          if cgrav >= 0 then
             self.transform.y = self.transform.y + dec
           elseif cgrav < 0 then
             self.transform.y = self.transform.y - (1 - dec)
@@ -312,7 +320,7 @@ function collision.checkGround(self, noSlopeEffect)
       if noSlopeEffect then
         break
       end
-      i = i + 1
+      i = i + cgrav
     end
   end
 end
@@ -341,8 +349,7 @@ function collision.generalCollision(self, noSlopeEffect)
   end
   
   if self.velocity.velx ~= 0 then
-    local slp = (math.ceil(math.abs(self.velocity.velx)) * collision.maxSlope * cgrav) *
-      ((self.velocity.vely * cgrav) <= 0 and 1 or 0)
+    local slp = math.ceil(math.abs(self.velocity.velx)) * collision.maxSlope * cgrav
     if slp ~= 0 then
       for i=1, #megautils.state().system.all do
         local v = megautils.state().system.all[i]
@@ -374,29 +381,25 @@ function collision.generalCollision(self, noSlopeEffect)
       self.xcoll = self.velocity.velx
       self.velocity.velx = 0
       
-      if not noSlopeEffect then
-        if self.xcoll ~= 0 then
-          if slp ~= 0 then
-            local xsl = self.xcoll - (self.transform.x - xprev)
-            if math.sign(self.xcoll) == math.sign(xsl) then
-              local iii=1
-              while iii <= math.ceil(math.abs(xsl)) * collision.maxSlope do
-                if #self:collisionTable(solid, xsl, -iii) == 0 then
-                  self.transform.x = self.transform.x + xsl
-                  self.transform.y = self.transform.y - iii
-                  self.velocity.velx = self.xcoll
-                  self.xcoll = 0
-                  break
-                elseif #self:collisionTable(solid, xsl, iii) == 0 then
-                  self.transform.x = self.transform.x + xsl
-                  self.transform.y = self.transform.y + iii
-                  self.velocity.velx = self.xcoll
-                  self.xcoll = 0
-                  break
-                end
-                iii = iii + 1
-              end
+      if not noSlopeEffect and self.xcoll ~= 0 and slp ~= 0 then
+        local xsl = self.xcoll - (self.transform.x - xprev)
+        if math.sign(self.xcoll) == math.sign(xsl) then
+          local iii=1
+          while iii <= math.ceil(math.abs(xsl)) * collision.maxSlope do
+            if #self:collisionTable(solid, xsl, -iii) == 0 then
+              self.transform.x = self.transform.x + xsl
+              self.transform.y = self.transform.y - iii
+              self.velocity.velx = self.xcoll
+              self.xcoll = 0
+              break
+            elseif #self:collisionTable(solid, xsl, iii) == 0 then
+              self.transform.x = self.transform.x + xsl
+              self.transform.y = self.transform.y + iii
+              self.velocity.velx = self.xcoll
+              self.xcoll = 0
+              break
             end
+            iii = iii + 1
           end
         end
       end
