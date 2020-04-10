@@ -1766,7 +1766,12 @@ function megaman:animate()
 end
 
 function megaman:update(dt)
-  self.player = megautils.networkGameStarted and 1 or self.player
+  if self.blockCollision and megautils.groups().bossDoor then
+    for k, v in ipairs(megautils.groups().bossDoor) do
+      v.lastSolid = v.isSolid
+      v.isSolid = v.canWalkThrough and 0 or 1
+    end
+  end
   if self.dying then
     if self.cameraTween:update(1/60) then
       self.control = false
@@ -1820,6 +1825,11 @@ function megaman:update(dt)
     if self.doAnimation then self:animate(dt) end
     if self:checkFalse(self.canSwitchWeapons) then self:updatePallete() end
     self.weaponSwitchTimer = math.min(self.weaponSwitchTimer+1, 70)
+  end
+  if megautils.groups().bossDoor then
+    for k, v in ipairs(megautils.groups().bossDoor) do
+      v.isSolid = v.lastSolid
+    end
   end
 end
 

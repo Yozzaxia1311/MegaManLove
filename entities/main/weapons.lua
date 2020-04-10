@@ -155,8 +155,7 @@ function bassBuster:update(dt)
   local col = collision.checkSolid(self, self.velocity.velx, self.velocity.vely)
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
-  if megautils.outside(self) or
-    (not self.treble and not self.dinked and (col or #self:collisionTable(megautils.groups().bossDoor) ~= 0)) then
+  if megautils.outside(self) or (not self.treble and not self.dinked and col) then
     megautils.remove(self, true)
   end
 end
