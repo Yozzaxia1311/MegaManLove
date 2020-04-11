@@ -1535,7 +1535,6 @@ function megaman:charge(animOnly)
 end
 
 function megaman:grav()
-  if self.ground or self.climb or self.slide or self.treble then return end
   if self.gravityType == 0 then
     self.velocity.vely = self.velocity.vely+self.gravity
   elseif self.gravityType == 1 then

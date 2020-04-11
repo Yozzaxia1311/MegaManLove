@@ -294,7 +294,6 @@ function collision.checkGround(self, noSlope)
       end
     end
   end
-  
   if #self:collisionTable(solid) == 0 then
     local i = cgrav
     while math.abs(i) <= math.abs(slp) do
@@ -453,7 +452,7 @@ function collision.generalCollision(self, noSlope)
       end
       
       self.ycoll = self.velocity.vely
-      if (cgrav == 1 and self.velocity.vely * cgrav > 0) or (cgrav == -1 and self.velocity.vely * cgrav < 0) then
+      if self.velocity.vely * cgrav > 0 then
         self.ground = true
       end
       
