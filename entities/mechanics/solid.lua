@@ -1,10 +1,16 @@
 collision = {}
 
+collision.noSlope = false
 collision.maxSlope = 1
 
-function collision.doCollision(self, noSlope)
+function collision.doGrav(self, noSlope)
+  noSlope = noSlope or collision.noSlope
   collision.checkGround(self, noSlope)
   if self.grav then self:grav() end
+end
+
+function collision.doCollision(self, noSlope)
+  noSlope = noSlope or collision.noSlope
   if self.blockCollision then
     collision.generalCollision(self, noSlope)
   else
@@ -16,6 +22,8 @@ function collision.doCollision(self, noSlope)
 end
 
 function collision.getTable(self, dx, dy, noSlope)
+  noSlope = noSlope or collision.noSlope
+  
   local xs = dx or 0
   local ys = dy or 0
   local solid = {}
@@ -50,6 +58,8 @@ function collision.getTable(self, dx, dy, noSlope)
 end
 
 function collision.checkSolid(self, dx, dy, noSlope)
+  noSlope = noSlope or collision.noSlope
+  
   local xs = dx or 0
   local ys = dy or 0
   local solid = {}
@@ -232,6 +242,8 @@ function collision.entityPlatform(self)
 end
 
 function collision.shiftObject(self, dx, dy, checkforcol, ep, noSlope)
+  noSlope = noSlope or collision.noSlope
+  
   local xsub = self.velocity.velx
   local ysub = self.velocity.vely
   
@@ -258,8 +270,11 @@ function collision.shiftObject(self, dx, dy, checkforcol, ep, noSlope)
   self.velocity.vely = ysub
 end
 
-function collision.checkGround(self, noSlopeEffect)
+function collision.checkGround(self, noSlope)
   if not self.ground then self.onMovingFloor = nil self.inStandSolid = nil return end
+  
+  noSlope = noSlope or collision.noSlope
+  
   local solid = {}
   local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
   
@@ -317,7 +332,7 @@ function collision.checkGround(self, noSlopeEffect)
         end
         break
       end
-      if noSlopeEffect then
+      if noSlope then
         break
       end
       i = i + cgrav
@@ -325,7 +340,9 @@ function collision.checkGround(self, noSlopeEffect)
   end
 end
 
-function collision.generalCollision(self, noSlopeEffect)
+function collision.generalCollision(self, noSlope)
+  noSlope = noSlope or collision.noSlope
+  
   self.xcoll = 0
   self.ycoll = 0
   
@@ -381,7 +398,7 @@ function collision.generalCollision(self, noSlopeEffect)
       self.xcoll = self.velocity.velx
       self.velocity.velx = 0
       
-      if not noSlopeEffect and self.xcoll ~= 0 and slp ~= 0 then
+      if not noSlope and self.xcoll ~= 0 and slp ~= 0 then
         local xsl = self.xcoll - (self.transform.x - xprev)
         if math.sign(self.xcoll) == math.sign(xsl) then
           local iii=1
@@ -436,7 +453,7 @@ function collision.generalCollision(self, noSlopeEffect)
       end
       
       self.ycoll = self.velocity.vely
-      if self.velocity.vely * cgrav > 0 then
+      if (cgrav == 1 and self.velocity.vely * cgrav > 0) or (cgrav == -1 and self.velocity.vely * cgrav < 0) then
         self.ground = true
       end
       

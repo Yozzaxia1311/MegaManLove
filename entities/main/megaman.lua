@@ -560,7 +560,7 @@ function megaman:new(x, y, side, drop, p, g, gf)
   self.animations.dash = anim8.newAnimation(megautils.getResource(pp)("1-2", 10), 1/8, "pauseAtEnd")
   self.animations.dashShoot = anim8.newAnimation(megautils.getResource(pp)(4, 10), 1)
   self.animations.dashThrow = anim8.newAnimation(megautils.getResource(pp)(1, 11), 1)
-  self.animations.spawn = anim8.newAnimation(megautils.getResource(pp)("3-4", 5), 0.08)
+  self.animations.spawn = anim8.newAnimation(megautils.getResource(pp)(4, 5), 1)
   self.animations.spawnLand = anim8.newAnimation(megautils.getResource(pp)("1-2", 6, 1, 6), 1/20)
   
   self:face(self.side)
@@ -1038,6 +1038,7 @@ function megaman:code(dt)
   self.protoShielding = false
   self.runCheck = ((control.leftDown[self.player] and not control.rightDown[self.player]) or (control.rightDown[self.player] and not control.leftDown[self.player]))
   if self.hitTimer ~= self.maxHitTime then
+    collision.doGrav(self)
     self.hitTimer = math.min(self.hitTimer+1, self.maxHitTime)
     for k, v in pairs(self.knockbackUpdateFuncs) do
       v(self)
@@ -1176,6 +1177,7 @@ function megaman:code(dt)
       self.climbTip = self.transform.y + self.collisionShape.h * 0.6 > self.currentLadder.transform.y+self.currentLadder.collisionShape.h
     end
   elseif self.slide then
+    collision.doGrav(self)
     local lastSide = self.side
     if control.leftDown[self.player] then
       self.side = -1
@@ -1260,6 +1262,7 @@ function megaman:code(dt)
     end
     self:attemptClimb()
   elseif self.ground then
+    collision.doGrav(self)
     if self:checkFalse(self.canWalk) and not (self.stopOnShot and self.shootTimer ~= self.maxShootTime) then
       if self.runCheck and not self.step then
         self.side = control.leftDown[self.player] and -1 or 1
@@ -1340,6 +1343,7 @@ function megaman:code(dt)
     end
     self:attemptClimb()
   else
+    collision.doGrav(self)
     self.protoShielding = self:checkFalse(self.canProtoShield)
     self.wallJumping = false
     local ns = control.leftDown[self.player] and -1 or (control.rightDown[self.player] and 1 or 0)

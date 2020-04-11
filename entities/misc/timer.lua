@@ -37,6 +37,7 @@ function timer.winCutscene(func)
         end
       end
     elseif s.state == 0 then
+      collision.doGrav(globals.mainPlayer)
       globals.mainPlayer:phys()
       if globals.mainPlayer.ground then
         globals.mainPlayer.curAnim = "idle"
@@ -121,6 +122,7 @@ function timer.absorbCutscene(func, music)
           globals.mainPlayer.curAnim = "idle"
         end
         globals.mainPlayer.animations[globals.mainPlayer.curAnim]:update(1/60)
+        collision.doGrav(globals.mainPlayer)
         globals.mainPlayer:phys()
         if not globals.mainPlayer.ground then
           globals.mainPlayer.curAnim = "jump"

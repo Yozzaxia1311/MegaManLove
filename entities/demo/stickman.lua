@@ -106,6 +106,7 @@ function stickMan:update(dt)
   elseif self.s == 1 then
     if self.ss == 1 then
       if globals.mainPlayer then
+        collision.doGrav(globals.mainPlayer)
         globals.mainPlayer:phys()
         globals.mainPlayer.curAnim = "jump"
         if globals.mainPlayer.ground then

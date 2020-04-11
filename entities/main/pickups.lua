@@ -50,6 +50,7 @@ function smallHealth:update(dt)
     self.once = true
     self.render = true
   end
+  collision.doGrav(self)
   collision.doCollision(self)
   for i=1, globals.playerCount do
     local p = globals.allPlayers[i]
@@ -153,6 +154,7 @@ function health:update(dt)
     self.once = true
     self.render = true
   end
+  collision.doGrav(self)
   collision.doCollision(self)
   for i=1, globals.playerCount do
     local p = globals.allPlayers[i]
@@ -257,6 +259,7 @@ function smallEnergy:update(dt)
     self.once = true
     self.render = true
   end
+  collision.doGrav(self)
   collision.doCollision(self)
   for i=1, globals.playerCount do
     local p = globals.allPlayers[i]
@@ -370,6 +373,7 @@ function energy:update(dt)
     self.once = true
     self.render = true
   end
+  collision.doGrav(self)
   collision.doCollision(self)
   for i=1, globals.playerCount do
     local p = globals.allPlayers[i]
@@ -489,6 +493,7 @@ function life:update(dt)
     self.once = true
     self.render = true
   end
+  collision.doGrav(self)
   collision.doCollision(self)
   for i=1, globals.playerCount do
     local p = globals.allPlayers[i]
@@ -643,6 +648,7 @@ function eTank:update(dt)
     self.once = true
     self.render = true
   end
+  collision.doGrav(self)
   collision.doCollision(self)
   for i=1, globals.playerCount do
     local p = globals.allPlayers[i]
@@ -752,6 +758,7 @@ function wTank:update(dt)
     self.once = true
     self.render = true
   end
+  collision.doGrav(self)
   collision.doCollision(self)
   for i=1, globals.playerCount do
     local p = globals.allPlayers[i]

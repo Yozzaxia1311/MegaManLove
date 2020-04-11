@@ -88,6 +88,7 @@ function met:update(dt)
   if globals.mainPlayer then
     self:setGravityMultiplier("flipWithPlayer", globals.mainPlayer.gravityMultipliers.gravityFlip or 1)
   end
+  collision.doGrav(self)
   local near = megautils.autoFace(self, globals.allPlayers)
   if self.s == 0 then
     if near and math.between(near.transform.x, 
