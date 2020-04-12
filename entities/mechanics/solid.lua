@@ -301,7 +301,7 @@ function collision.checkGround(self, noSlope)
         self.ground = false
         self.onMovingFloor = nil
         self.inStandSolid = nil
-      else
+      elseif self.velocity.vely * cgrav >= 0 then
         self.ground = true
         self.transform.y = math.round(self.transform.y+cgrav) + (i - cgrav)
         local dec = 0
