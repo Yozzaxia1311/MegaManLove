@@ -11,7 +11,6 @@ function entitysystem:new()
   self.updates = {}
   self.groups = {}
   self.static = {}
-  self.layers = {}
   self.all = {}
   self.addQueue = {}
   self.removeQueue = {}
@@ -84,6 +83,8 @@ function entitysystem:add(c, ...)
   e:added()
   e.previousX = e.transform.x
   e.previousY = e.transform.y
+  e.epX = e.previousX
+  e.epY = e.previousY
   return e
 end
 
@@ -114,6 +115,8 @@ function entitysystem:adde(e)
   e:added()
   e.previousX = e.transform.x
   e.previousY = e.transform.y
+  e.epX = e.previousX
+  e.epY = e.previousY
   return e
 end
 
@@ -258,6 +261,7 @@ function entitysystem:clear()
   self.removeQueue = {}
   self.recycle = {}
   self.afterUpdate = nil
+  self.doSort = false
 end
 
 function entitysystem:draw()
@@ -297,6 +301,10 @@ function entitysystem:update(dt)
   if entitysystem.doBeforeUpdate then
     for i=1, #self.updates do
       local t = self.updates[i]
+      t.previousX = t.transform.x
+      t.previousY = t.transform.y
+      t.epX = t.previousX
+      t.epY = t.previousY
       if t.updated and not t.isRemoved and t.beforeUpdate and t:checkFalse(t.updatedSpecial) then
         t:beforeUpdate(dt)
         if states.switched then
@@ -309,6 +317,8 @@ function entitysystem:update(dt)
     local t = self.updates[i]
     t.previousX = t.transform.x
     t.previousY = t.transform.y
+    t.epX = t.previousX
+    t.epY = t.previousY
     if t.updated and not t.isRemoved and t.update and t:checkFalse(t.updatedSpecial) then
       t:update(dt)
       if states.switched then
@@ -319,6 +329,10 @@ function entitysystem:update(dt)
   if entitysystem.doAfterUpdate then
     for i=1, #self.updates do
       local t = self.updates[i]
+      t.previousX = t.transform.x
+      t.previousY = t.transform.y
+      t.epX = t.previousX
+      t.epY = t.previousY
       if t.updated and not t.isRemoved and t.afterUpdate and t:checkFalse(t.updatedSpecial) then
         t:afterUpdate(dt)
         if states.switched then

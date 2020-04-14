@@ -93,7 +93,7 @@ end
 
 function collision.entityPlatform(self)
   if self.isSolid ~= 0 and self.collisionShape then
-    if self.transform.x ~= self.previousX or self.transform.y ~= self.previousY then
+    if self.transform.x ~= self.epX or self.transform.y ~= self.epY then
       local all = megautils.state().system.all
       if self.exclusivelySolidFor then
         all = self.exclusivelySolidFor
@@ -105,10 +105,10 @@ function collision.entityPlatform(self)
       
       local epCanCrush = true
       
-      local myyspeed = self.transform.y - self.previousY
-      local myxspeed = self.transform.x - self.previousX
-      self.transform.x = self.previousX
-      self.transform.y = self.previousY
+      local myyspeed = self.transform.y - self.epY
+      local myxspeed = self.transform.x - self.epX
+      self.transform.x = self.epX
+      self.transform.y = self.epY
       
       if myyspeed ~= 0 then
         for i=1, #all do
@@ -235,8 +235,8 @@ function collision.entityPlatform(self)
       
       self.isSolid = resolid
       
-      self.previousX = self.transform.x
-      self.previousY = self.transform.y
+      self.epX = self.transform.x
+      self.epY = self.transform.y
     end
   end
 end
@@ -250,8 +250,8 @@ function collision.shiftObject(self, dx, dy, checkforcol, ep, noSlope)
   self.velocity.velx = dx
   self.velocity.vely = dy
   
-  self.previousX = self.transform.x
-  self.previousY = self.transform.y
+  self.epX = self.transform.x
+  self.epY = self.transform.y
   
   if checkforcol then
     self.canStandSolid.global = false
