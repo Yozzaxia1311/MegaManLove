@@ -84,21 +84,7 @@ function healthHandler:update(dt)
           local p = megautils.add(megaman, self.player.transform.x, self.player.transform.y, self.player.side, true, i)
           self.player:transferState(p)
           megautils.revivePlayer(i)
-          
-          local keys = {}
-          local vals = {}
-          for k, v in pairs(globals.allPlayers) do
-            keys[#keys+1] = v.player
-            vals[v.player] = v
-            globals.allPlayers[k] = nil
-          end
-          table.sort(keys)
-          for j=1, #keys do
-            globals.allPlayers[j] = vals[keys[j]]
-          end
-          
-          if globals.allPlayers[1] == p then
-            globals.mainPlayer = p
+          if camera.main then
             camera.main:updateFuncs()
           end
           if not globals.infiniteLives then
@@ -117,14 +103,13 @@ function healthHandler:update(dt)
 end
 
 function healthHandler:draw()
-  if self.player and (self.player == globals.mainPlayer or (not globals.mainPlayer and self.lifeRecord)) then
+  if self.player and self.player == globals.mainPlayer then
     if not globals.infiniteLives then
       love.graphics.setColor(0, 0, 0, 1)
       love.graphics.rectangle("fill", self.transform.x, self.transform.y, 8, 8)
       love.graphics.setColor(1, 1, 1, 1)
       love.graphics.setFont(mmFont)
-      self.lifeRecord = globals.lives
-      love.graphics.print(tostring(self.lifeRecord), self.transform.x, self.transform.y)
+      love.graphics.print(tostring(globals.lives), self.transform.x, self.transform.y)
     end
     if globals.mainPlayer == self.player then
       for i=1, globals.playerCount do

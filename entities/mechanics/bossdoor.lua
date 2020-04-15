@@ -41,8 +41,9 @@ function bossdoor:setDirection(dir)
 end
 
 function bossdoor:update(dt)
-  if not camera.main or not rectOverlapsRect(self.transform.x, self.transform.y, self.collisionShape.w,
-    self.collisionShape.h, camera.main.scrollx, camera.main.scrolly, camera.main.scrollw, camera.main.scrollh) then return end
+  if not globals.mainPlayer or not camera.main or not rectOverlapsRect(self.transform.x, self.transform.y, self.collisionShape.w,
+    self.collisionShape.h, camera.main.scrollx, camera.main.scrolly,
+    camera.main.scrollw, camera.main.scrollh) then return end
   if ((self.transform.x < camera.main.scrollx and self.dir == "left") or
     (self.transform.x+self.collisionShape.w > camera.main.scrollx+camera.main.scrollw and self.dir == "right") or
     (self.transform.y < camera.main.scrolly and self.dir == "up") or
@@ -145,11 +146,11 @@ function bossdoor:update(dt)
       end
       megautils.playSound("bossDoorSfx")
     end
-    if self.segments >= self.maxSegments and not megautils.state().system.afterUpdate then
+    if self.segments >= self.maxSegments and not megautils.state().system.cameraUpdate then
       self.timer = 0
       camera.main.freeze = true
       camera.main.updateSections = true
-      megautils.state().system.afterUpdate = function()
+      megautils.state().system.cameraUpdate = function()
         camera.main:updateBounds()
         camera.main.toSection = nil
         camera.main.tweenFinished = nil
@@ -158,7 +159,7 @@ function bossdoor:update(dt)
           globals.allPlayers[i].control = true
           globals.allPlayers[i].doAnimation = true
         end
-        megautils.state().system.afterUpdate = nil
+        megautils.state().system.cameraUpdate = nil
         camera.main.once = false
         camera.main.transition = false
         camera.main.preTrans = false

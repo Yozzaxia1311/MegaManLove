@@ -474,6 +474,24 @@ function megautils.registerPlayer(e, p)
   end
   globals.allPlayers[#globals.allPlayers+1] = e
   e.player = p
+  
+  if #globals.allPlayers > 1 then
+    local keys = {}
+    local vals = {}
+    for k, v in pairs(globals.allPlayers) do
+      keys[#keys+1] = v.player
+      vals[v.player] = v
+      globals.allPlayers[k] = nil
+    end
+    table.sort(keys)
+    for j=1, #keys do
+      globals.allPlayers[j] = vals[keys[j]]
+    end
+  end
+  
+  if e == globals.allPlayers[1] then
+    globals.mainPlayer = e
+  end
 end
 
 function megautils.unregisterPlayer(e)
@@ -525,7 +543,7 @@ function megautils.outside(o, ex, ey)
 end
 
 function megautils.outsideSection(o)
-  if o.collisionShape and camera.main and not camera.main.isRemoved then
+  if o.collisionShape and camera.main then
     return not rectOverlapsRect(camera.main.scrollx, camera.main.scrolly, camera.main.scrollw, camera.main.scrollh, 
       o.transform.x, o.transform.y, o.collisionShape.w, o.collisionShape.h)
   end

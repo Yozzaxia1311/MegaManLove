@@ -341,8 +341,8 @@ function entitysystem:update(dt)
       end
     end
   end
-  if self.afterUpdate then
-    self.afterUpdate(self)
+  if self.cameraUpdate then
+    self.cameraUpdate(self)
   end
   for i=1, #self.addQueue do
     self:adde(self.addQueue[i])
@@ -639,6 +639,20 @@ function entity:baseRecycle()
   self.moveByMoveY = 0
   self.canBeInvincible = {global=true}
   self.canStandSolid = {global=true}
+end
+
+function entity:moveBy(xx, yy, round)
+  local x, y = xx or 0, yy or 0
+  if round then
+    self.moveByMoveX = self.moveByMoveX + x
+    self.moveByMoveY = self.moveByMoveY + y
+    x = math.round(self.moveByMoveX)
+    y = math.round(self.moveByMoveY)
+    self.moveByMoveX = self.moveByMoveX - x
+    self.moveByMoveY = self.moveByMoveY - y
+  end
+  self.transform.x = self.transform.x + x
+  self.transform.y = self.transform.y + y
 end
 
 function entity:setGravityMultiplier(name, to)

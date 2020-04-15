@@ -55,15 +55,14 @@ end
 megaman = entity:extend()
 
 addobjects.register("player", function(v)
-  if v.properties.checkpoint == globals.checkpoint then
+  if v.properties.checkpoint == globals.checkpoint and not camera.once then
+    camera.once = true
     megautils.add(camera, v.x, v.y, v.properties.doScrollX, v.properties.doScrollY)
-    camera.once = false
   end
 end, -1)
 
 addobjects.register("player", function(v)
-  if v.properties.checkpoint == globals.checkpoint and not camera.once and camera.main then
-    camera.once = true
+  if v.properties.checkpoint == globals.checkpoint and camera.main then
     camera.main:setRectangleCollision(8, 8)
     if v.properties.lock then
       camera.main.curLock = v.properties.lock
@@ -72,6 +71,7 @@ addobjects.register("player", function(v)
     camera.main:setRectangleCollision(view.w, view.h)
     camera.main:doView()
   end
+  camera.once = nil
 end, 2)
 
 addobjects.register("player", function(v)
@@ -481,7 +481,7 @@ function megaman:new(x, y, side, drop, p, g, gf)
   megaman.weaponHandler[self.player].render = false
   self.health = self.healthHandler.health
   self.healthHandler:updateThis()
-  if not camera.main.funcs.megaman then
+  if camera.main and not camera.main.funcs.megaman then
     camera.main.funcs.megaman = function(s)
       for i=0, #globals.allPlayers-1 do
         local player = globals.allPlayers[i+1]
@@ -974,7 +974,6 @@ function megaman:healthChanged(o, c, i)
         megautils.add(timer, 160, function(t)
           megautils.add(fade, true, nil, nil, function(s)
             globals.resetState = true
-            globals.mainPlayer = nil
             if not globals.infiniteLives and globals.lives <= 0 then
               megautils.resetGameObjects()
               globals.gameOverContinueState = states.current
@@ -999,14 +998,18 @@ function megaman:healthChanged(o, c, i)
         self.dying = true
         self.iFrame = self.maxIFrame
         megautils.freeze({self})
-        local dx, dy
-        local ox, oy = camera.main.transform.x, camera.main.transform.y
-        camera.main:doView(nil, nil, self)
-        dx = camera.main.transform.x
-        dy = camera.main.transform.y
-        camera.main.transform.x = ox
-        camera.main.transform.y = oy
-        self.cameraTween = tween.new(0.4, camera.main.transform, {x=dx, y=dy})
+        if camera.main then
+          local dx, dy
+          local ox, oy = camera.main.transform.x, camera.main.transform.y
+          camera.main:doView(nil, nil, self)
+          dx = camera.main.transform.x
+          dy = camera.main.transform.y
+          camera.main.transform.x = ox
+          camera.main.transform.y = oy
+          self.cameraTween = tween.new(0.4, camera.main.transform, {x=dx, y=dy})
+        else
+          self.cameraTween = true
+        end
         return
       end
     else
@@ -1793,8 +1796,10 @@ function megaman:update(dt)
       megautils.playSound("die")
       return
     end
-    view.x, view.y = math.round(camera.main.transform.x), math.round(camera.main.transform.y)
-    camera.main:updateFuncs()
+    if camera.main then
+      view.x, view.y = math.round(camera.main.transform.x), math.round(camera.main.transform.y)
+      camera.main:updateFuncs()
+    end
   else
     self.runCheck = false
     if self.rise then

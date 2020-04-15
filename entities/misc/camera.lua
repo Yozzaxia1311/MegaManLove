@@ -1,19 +1,5 @@
 camera = basicEntity:extend()
 
-addobjects.register("camera", function(v)
-  if v.propertiescheckpoint == globals.checkpoint then
-    megautils.add(camera, v.x, v.y, v.properties.doScrollX, v.properties.doScrollY)
-    camera.once = false
-  end
-end, -1)
-
-addobjects.register("camera", function(v)
-  if v.propertiescheckpoint == globals.checkpoint and not camera.once and camera.main then
-    camera.once = true
-    camera.main:updateBounds()
-  end
-end, 2)
-
 megautils.resetStateFuncs.camera = function() camera.main = nil end
 
 function camera:new(x, y, doScrollX, doScrollY)
@@ -24,7 +10,6 @@ function camera:new(x, y, doScrollX, doScrollY)
   self:setLayer(-5)
   self.transition = false
   self.transitiondirection = "right"
-  self.doShift = false
   self.freeze = true
   self.updateSections = true
   self.shiftX = 0
@@ -45,11 +30,14 @@ function camera:new(x, y, doScrollX, doScrollY)
   self.speed = 1
   self.toSection = nil
   self.once = false
-  self.updateOnce = false
-  camera.main = self
   self.player = nil
   view.x, view.y = self.transform.x, self.transform.y
   self.funcs = {}
+  camera.main = self
+end
+
+function camera:removed()
+  camera.main = nil
 end
 
 function camera:updateLock()
@@ -245,7 +233,7 @@ function camera:updateCam(ox, oy)
         self.flx = self.player.onMovingFloor.transform.x - self.player.transform.x
       end
       self.once = true
-      megautils.state().system.afterUpdate = function(s)
+      megautils.state().system.cameraUpdate = function(s)
         for i=1, #globals.allPlayers do
           camera.main.tween2[i]:update(1/60)
         end
@@ -275,7 +263,7 @@ function camera:updateCam(ox, oy)
           end
           camera.main.tween = nil
           camera.main.tween2 = nil
-          megautils.state().system.afterUpdate = nil
+          megautils.state().system.cameraUpdate = nil
         end
         if camera.main.player and camera.main.player.onMovingFloor then
           camera.main.player.onMovingFloor.transform.x = camera.main.player.transform.x + camera.main.flx
