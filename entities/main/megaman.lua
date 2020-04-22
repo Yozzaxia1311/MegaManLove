@@ -196,6 +196,14 @@ function megaman:transferState(to)
   end
 end
 
+function megaman:camOffX()
+  return self.cameraOffsetX
+end
+
+function megaman:camOffY()
+  return self.cameraOffsetY + ((self.gravity >= 0) and (self.slide and -3 or 0) or (self.slide and 4 or 0))
+end
+
 function megaman:regBox()
   self:setRectangleCollision(11, 21)
 end
@@ -1845,7 +1853,7 @@ function megaman:afterUpdate(dt)
   if not self.dying and camera.main and globals.mainPlayer == self and
     self:checkFalse(self.canHaveCameraFocus) and not self.drop and not self.rise
     and self.collisionShape then
-    camera.main:updateCam(0, (self.gravity >= 0) and (self.slide and -3 or 0) or (self.slide and 4 or 0))
+    camera.main:updateCam()
   end
 end
 

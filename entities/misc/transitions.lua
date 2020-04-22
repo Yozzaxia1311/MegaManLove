@@ -227,26 +227,6 @@ function upLadder:update(dt)
   end
 end
 
-lockSection = entity:extend()
-
-addobjects.register("lockSection", function(v)
-  megautils.add(lockSection, v.x, v.y, v.width, v.height, v.properties.name)
-end, 1)
-
-function lockSection:new(x, y, w, h, name)
-  lockSection.super.new(self)
-  self:setRectangleCollision(w, h)
-  self:setLayer(-5)
-  self.transform.y = y
-  self.transform.x = x
-  self.name = name
-  self.section = self:collisionTable(megautils.state().sectionHandler.sections)[1]
-  self.added = function(self)
-    self:addToGroup("lock")
-    self:addStatic()
-  end
-end
-
 lockShift = entity:extend()
 
 addobjects.register("lockShift", function(v)

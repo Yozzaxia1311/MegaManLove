@@ -1,14 +1,24 @@
 section = basicEntity:extend()
 
 addobjects.register("section", function(v)
-  megautils.state().sectionHandler:add(v.x, v.y, v.width, v.height)
+  megautils.state().sectionHandler:add(v.x, v.y, v.width, v.height, v.properties.infiniteX, v.properties.infiniteY,
+    v.properties.infiniteW, v.properties.infiniteH, v.properties.bounds)
 end, 1)
 
-function section:new(x, y, w, h)
+function section:new(x, y, w, h, ix, iy, iw, ih, b)
   section.super.new(self)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(w, h)
+  self.scrollx = ix and -math.huge or x
+  self.scrolly = iy and -math.huge or y
+  self.scrollw = iw and math.huge or w
+  self.scrollh = ih and math.huge or h
+  self.bounds = (b == nil) or b
+  if not self.bounds then
+    self.scrollw = 0
+    self.scrollh = 0
+  end
   self.group = self:collisionTable(megautils.groups().despawnable)
 end
 
@@ -57,15 +67,19 @@ end
 function sectionHandler:updateAll()
   if not self.current then
     for k, v in pairs(self.sections) do
-      for i, j in pairs(v.group) do
-        megautils.remove(j)
+      if v.bounds then
+        for i, j in pairs(v.group) do
+          megautils.remove(j)
+        end
       end
     end
   else
     self.current.group = self.current:collisionTable(megautils.groups().despawnable)
-    for k, v in pairs(self.current.group) do
-      if not v.dontRemove and not table.contains(self.next.group, v) then
-        megautils.remove(v)
+    if self.current.bounds then
+      for k, v in pairs(self.current.group) do
+        if not v.dontRemove and not table.contains(self.next.group, v) then
+          megautils.remove(v)
+        end
       end
     end
   end
@@ -77,5 +91,35 @@ function sectionHandler:updateAll()
     end
     self.current = self.next
     self.next = nil
+  end
+end
+
+lockSection = basicEntity:extend()
+
+addobjects.register("lockSection", function(v)
+  megautils.add(lockSection, v.x, v.y, v.width, v.height, v.properties.name, v.properties.infiniteX, v.properties.infiniteY,
+    v.properties.infiniteW, v.properties.infiniteH, v.properties.bounds)
+end, 1)
+
+function lockSection:new(x, y, w, h, name, ix, iy, iw, ih, b)
+  lockSection.super.new(self)
+  self:setRectangleCollision(w, h)
+  self:setLayer(-5)
+  self.transform.y = y
+  self.transform.x = x
+  self.name = name
+  self.scrollx = ix and -math.huge or x
+  self.scrolly = iy and -math.huge or y
+  self.scrollw = iw and math.huge or w
+  self.scrollh = ih and math.huge or h
+  self.bounds = (b == nil) or b
+  if not self.bounds then
+    self.scrollw = 0
+    self.scrollh = 0
+  end
+  self.section = self:collisionTable(megautils.state().sectionHandler.sections)[1]
+  self.added = function(self)
+    self:addToGroup("lock")
+    self:addStatic()
   end
 end

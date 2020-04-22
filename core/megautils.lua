@@ -535,19 +535,14 @@ function megautils.unfreeze(e, name)
 end
 
 function megautils.outside(o, ex, ey)
-  if not o.collisionShape then
-    return false
-  end
-  return not rectOverlapsRect(view.x-(ex or 0), view.y-(ey or 0), view.w+((ex or 0)*2), view.h+((ey or 0)*2), 
+  return o.collisionShape and not rectOverlapsRect(view.x-(ex or 0), view.y-(ey or 0), view.w+((ex or 0)*2), view.h+((ey or 0)*2), 
     o.transform.x, o.transform.y, o.collisionShape.w, o.collisionShape.h)
 end
 
-function megautils.outsideSection(o)
-  if o.collisionShape and camera.main then
-    return not rectOverlapsRect(camera.main.scrollx, camera.main.scrolly, camera.main.scrollw, camera.main.scrollh, 
-      o.transform.x, o.transform.y, o.collisionShape.w, o.collisionShape.h)
-  end
-  return false
+function megautils.outsideSection(o, ex, ey)
+  return o.collisionShape and camera.main and
+    not rectOverlapsRect(camera.main.scrollx-(ex or 0), camera.main.scrolly-(ey or 0), camera.main.scrollw+((ex or 0)*2), camera.main.scrollh+((ey or 0)*2), 
+    o.transform.x, o.transform.y, o.collisionShape.w, o.collisionShape.h)
 end
 
 --w: Width of drawable

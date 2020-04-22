@@ -45,14 +45,15 @@ function camera:updateLock()
     for i=1, #megautils.groups().lock do
       local v = megautils.groups().lock[i]
       if v.name == self.curLock then
-        self.lockx = v.transform.x
-        self.locky = v.transform.y
-        self.lockw = v.collisionShape.w
-        self.lockh = v.collisionShape.h
+        self.lockx = v.scrollx
+        self.locky = v.scrolly
+        self.lockw = v.scrollw
+        self.lockh = v.scrollh
         break
       end
     end
   else
+    self.curLock = nil
     self.lockx = 0
     self.locky = 0
     self.lockw = 0
@@ -88,15 +89,15 @@ function camera:updateBounds()
     self:updateLock()
     megautils.state().sectionHandler.next = self.toSection
     megautils.state().sectionHandler:updateAll()
-    self.scrollx = self.toSection.transform.x
-    self.scrollw = self.toSection.collisionShape.w
-    self.scrolly = self.toSection.transform.y
-    self.scrollh = self.toSection.collisionShape.h
+    self.scrollx = self.toSection.scrollx
+    self.scrollw = self.toSection.scrollw
+    self.scrolly = self.toSection.scrolly
+    self.scrollh = self.toSection.scrollh
   else
-    self.scrollx = -math.huge
-    self.scrollw = math.huge
-    self.scrolly = -math.huge
-    self.scrollh = math.huge
+    self.scrollx = 0
+    self.scrollw = 0
+    self.scrolly = 0
+    self.scrollh = 0
   end
 end
 
@@ -121,21 +122,30 @@ function camera:updateCam(ox, oy)
   if self.transition then
     if not self.preTrans then
       if not self.toPos then
-        if self.lockw ~= 0 and self.lockh ~= 0 then
+        self:updateLock()
+        if self.curLock then
           if self.transitiondirection == "up" or self.transitiondirection == "down" then
-            self.toPos = math.round(self.player.transform.x) - (view.w/2) + (self.player.collisionShape.w/2)
-            self.toPos = math.clamp(self.toPos, self.lockx, self.lockx+self.lockh-view.w)
+            self.toPos = math.round(self.player.transform.x) - (view.w/2) + (self.player.collisionShape.w/2) + self.player:camOffX()
+            if self.lockw > 0 then
+              self.toPos = math.clamp(self.toPos, self.lockx, self.lockx+self.lockh-view.w)
+            end
           elseif self.transitiondirection == "left" or self.transitiondirection == "right" then
-            self.toPos = math.round(self.player.transform.y) - (view.h/2) + (self.player.collisionShape.h/2)
-            self.toPos = math.clamp(self.toPos+(self.player.slide and -3 or 0), self.locky, self.locky+self.lockh-view.h)
+            self.toPos = math.round(self.player.transform.y) - (view.h/2) + (self.player.collisionShape.h/2) + self.player:camOffY()
+            if self.lockh > 0 then
+              self.toPos = math.clamp(self.toPos, self.locky, self.locky+self.lockh-view.h)
+            end
           end
         else
           if self.transitiondirection == "up" or self.transitiondirection == "down" then
-            self.toPos = math.round(self.player.transform.x) - (view.w/2) + (self.player.collisionShape.w/2)
-            self.toPos = math.clamp(self.toPos, self.scrollx, self.scrollx+self.scrollw-view.w)
+            self.toPos = math.round(self.player.transform.x) - (view.w/2) + (self.player.collisionShape.w/2) + self.player:camOffX()
+            if self.scrollw > 0 then
+              self.toPos = math.clamp(self.toPos, self.scrollx, self.scrollx+self.scrollw-view.w)
+            end
           elseif self.transitiondirection == "left" or self.transitiondirection == "right" then
-            self.toPos = math.round(self.player.transform.y) - (view.h/2) + (self.player.collisionShape.h/2)
-            self.toPos = math.clamp(self.toPos+(self.player.slide and -3 or 0), self.scrolly, self.scrolly+self.scrollh-view.h)
+            self.toPos = math.round(self.player.transform.y) - (view.h/2) + (self.player.collisionShape.h/2) + self.player:camOffY()
+            if self.scrollh > 0 then
+              self.toPos = math.clamp(self.toPos, self.scrolly, self.scrolly+self.scrollh-view.h)
+            end
           end
         end
       end
@@ -177,13 +187,15 @@ function camera:updateCam(ox, oy)
             megautils.adde(v)
           end
         end
-        local sx, sy, sw, sh = self.toSection.transform.x, self.toSection.transform.y,
-          self.toSection.collisionShape.w, self.toSection.collisionShape.h
+        local sx, sy, sw, sh = self.toSection.scrollx, self.toSection.scrolly,
+          self.toSection.scrollw, self.toSection.scrollh
         if self.transitiondirection == "right" then
           if self.doScrollY then
-            self.tween = tween.new(self.speed, self.transform, {x=self.transform.x+self.collisionShape.w,
-              y=math.clamp(self.player.transform.y
-              - (view.h/2) + (self.player.collisionShape.h/2)+(self.player.slide and -3 or 0), sy, (sy+sh)-view.h)})
+            local ny = self.player.transform.y - (view.h/2) + (self.player.collisionShape.h/2) + self.player:camOffY()
+            if sh > 0 then
+              math.clamp(ny, sy, (sy+sh)-view.h)
+            end
+            self.tween = tween.new(self.speed, self.transform, {x=self.transform.x+self.collisionShape.w, y=ny})
           else
             self.tween = tween.new(self.speed, self.transform, {x=self.transform.x+self.collisionShape.w})
           end
@@ -193,9 +205,11 @@ function camera:updateCam(ox, oy)
           end
         elseif self.transitiondirection == "left" then
           if self.doScrollY then
-            self.tween = tween.new(self.speed, self.transform, {x=self.transform.x-self.collisionShape.w,
-              y=math.clamp(self.player.transform.y
-              - (view.h/2) + (self.player.collisionShape.h/2)+(self.player.slide and -3 or 0), sy, (sy+sh)-view.h)})
+            local ny = self.player.transform.y - (view.h/2) + (self.player.collisionShape.h/2) + self.player:camOffY()
+            if sh > 0 then
+              ny = math.clamp(ny, sy, (sy+sh)-view.h)
+            end
+            self.tween = tween.new(self.speed, self.transform, {x=self.transform.x-self.collisionShape.w, y=ny})
           else
             self.tween = tween.new(self.speed, self.transform, {x=self.transform.x-self.collisionShape.w})
           end
@@ -205,9 +219,11 @@ function camera:updateCam(ox, oy)
           end
         elseif self.transitiondirection == "down" then
           if self.doScrollX then
-            self.tween = tween.new(self.speed, self.transform, {y=self.transform.y+self.collisionShape.h,
-              x=math.clamp(self.player.transform.x
-              - (view.w/2) + (self.player.collisionShape.w/2)+(self.player.slide and -3 or 0), sx, (sx+sw)-view.w)})
+            local nx = self.player.transform.x - (view.w/2) + (self.player.collisionShape.w/2) + self.player:camOffX()
+            if sw > 0 then
+              nx = math.clamp(nx, sx, (sx+sw)-view.w)
+            end
+            self.tween = tween.new(self.speed, self.transform, {y=self.transform.y+self.collisionShape.h, x=nx})
           else
             self.tween = tween.new(self.speed, self.transform, {y=self.transform.y+self.collisionShape.h})
           end
@@ -217,9 +233,11 @@ function camera:updateCam(ox, oy)
           end
         elseif self.transitiondirection == "up" then
           if self.doScrollX then
-            self.tween = tween.new(self.speed, self.transform, {y=self.transform.y-self.collisionShape.h,
-              x=math.clamp(self.player.transform.x
-              - (view.w/2) + (self.player.collisionShape.w/2)+(self.player.slide and -3 or 0), sx, (sx+sw)-view.w)})
+            local nx = self.player.transform.x - (view.w/2) + (self.player.collisionShape.w/2) + self.player:camOffX()
+            if sw > 0 then
+              nx = math.clamp(nx, sx, (sx+sw)-view.w)
+            end
+            self.tween = tween.new(self.speed, self.transform, {y=self.transform.y-self.collisionShape.h, x=nx})
           else
             self.tween = tween.new(self.speed, self.transform, {y=self.transform.y-self.collisionShape.h})
           end
@@ -276,20 +294,24 @@ function camera:updateCam(ox, oy)
       end
     end
   else
-    self:doView(ox, oy)
+    self:doView()
   end
 end
 
-function camera:doView(ox, oy, without)
+function camera:doView(without)
   if #globals.allPlayers <= 1 then
     local o = globals.allPlayers[1]
     if self.doScrollX then
-      self.transform.x = math.round(o.transform.x) - (view.w/2) + (o.collisionShape.w/2)
-      self.transform.x = math.clamp(self.transform.x + (ox or 0), self.scrollx, self.scrollx+self.scrollw-view.w)
+      self.transform.x = math.round(o.transform.x) - (view.w/2) + (o.collisionShape.w/2) + o:camOffX()
+      if self.scrollw > 0 then
+        self.transform.x = math.clamp(self.transform.x, self.scrollx, self.scrollx+self.scrollw-view.w)
+      end
     end
     if self.doScrollY then
-      self.transform.y = math.round(o.transform.y) - (view.h/2) + (o.collisionShape.h/2)
-      self.transform.y = math.clamp(self.transform.y + (oy or 0), self.scrolly, self.scrolly+self.scrollh-view.h)
+      self.transform.y = math.round(o.transform.y) - (view.h/2) + (o.collisionShape.h/2) + o:camOffY()
+      if self.scrollh > 0 then
+        self.transform.y = math.clamp(self.transform.y, self.scrolly, self.scrolly+self.scrollh-view.h)
+      end
     end
   else
     local avx, avy = 0, 0
@@ -297,25 +319,31 @@ function camera:doView(ox, oy, without)
       local p = globals.allPlayers[i]
       if p ~= without then
         if self.doScrollX then
-          avx = avx+(p.transform.x + (ox or 0) - (view.w/2) + (p.collisionShape.w/2))
+          avx = avx+(p.transform.x + o:camOffX() - (view.w/2) + (p.collisionShape.w/2))
         end
         if self.doScrollY then
-          avy = avy+(p.transform.y + (oy or 0) - (view.h/2) + (p.collisionShape.h/2))
+          avy = avy+(p.transform.y + o:camOffY() - (view.h/2) + (p.collisionShape.h/2))
         end
       end
     end
     if self.doScrollX then
       self.transform.x = (avx/#globals.allPlayers)
-      self.transform.x = math.clamp(self.transform.x, self.scrollx, self.scrollx+self.scrollw-view.w)
+      if self.scrollw > 0 then
+        self.transform.x = math.clamp(self.transform.x, self.scrollx, self.scrollx+self.scrollw-view.w)
+      end
     end
     if self.doScrollY then
       self.transform.y = (avy/#globals.allPlayers)
-      self.transform.y = math.clamp(self.transform.y, self.scrolly, self.scrolly+self.scrollh-view.h)
+      if self.scrollh > 0 then
+        self.transform.y = math.clamp(self.transform.y, self.scrolly, self.scrolly+self.scrollh-view.h)
+      end
     end
   end
   self:updateLock()
-  if self.lockw ~= 0 and self.lockh ~= 0 then
+  if self.lockw > 0 then
     self.transform.x = math.clamp(self.transform.x, self.lockx, self.lockx+self.lockw-view.w)
+  end
+  if self.lockh > 0 then
     self.transform.y = math.clamp(self.transform.y, self.locky, self.locky+self.lockh-view.h)
   end
   view.x, view.y = math.round(self.transform.x), math.round(self.transform.y)
