@@ -5,7 +5,6 @@ function timer:new(time, func)
   self.time = 0
   self.max = time
   self.func = func
-  self:setLayer(-5)
   self.added = function(self)
     self:addToGroup("freezable")
   end

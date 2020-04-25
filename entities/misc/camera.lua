@@ -7,7 +7,6 @@ function camera:new(x, y, doScrollX, doScrollY)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(view.w, view.h)
-  self:setLayer(-5)
   self.transition = false
   self.transitiondirection = "right"
   self.freeze = true
@@ -118,7 +117,7 @@ function camera:setSection(s)
   self:updateBounds()
 end
 
-function camera:updateCam(ox, oy)
+function camera:updateCam(spdx, spdy)
   if self.transition then
     if not self.preTrans then
       if not self.toPos then
@@ -150,13 +149,13 @@ function camera:updateCam(ox, oy)
         end
       end
       if self.transitiondirection == "up" or self.transitiondirection == "down" then
-        self.transform.x = math.approach(self.transform.x, self.toPos, 4)
+        self.transform.x = math.approach(self.transform.x, self.toPos, spdx or 4)
         if self.transform.x == self.toPos then
           self.toPos = nil
           self.preTrans = true
         end
       elseif self.transitiondirection == "left" or self.transitiondirection == "right" then
-        self.transform.y = math.approach(self.transform.y, self.toPos, 4)
+        self.transform.y = math.approach(self.transform.y, self.toPos, spdy or 4)
         if self.transform.y == self.toPos then
           self.toPos = nil
           self.preTrans = true
@@ -193,7 +192,7 @@ function camera:updateCam(ox, oy)
           if self.doScrollY then
             local ny = self.player.transform.y - (view.h/2) + (self.player.collisionShape.h/2) + self.player:camOffY()
             if sh > 0 then
-              math.clamp(ny, sy, (sy+sh)-view.h)
+              ny = math.clamp(ny, sy, (sy+sh)-view.h)
             end
             self.tween = tween.new(self.speed, self.transform, {x=self.transform.x+self.collisionShape.w, y=ny})
           else
@@ -294,21 +293,21 @@ function camera:updateCam(ox, oy)
       end
     end
   else
-    self:doView()
+    self:doView(spdx, spdy)
   end
 end
 
-function camera:doView(without)
+function camera:doView(spdx, spdy, without)
   if #globals.allPlayers <= 1 then
     local o = globals.allPlayers[1]
     if self.doScrollX then
-      self.transform.x = math.round(o.transform.x) - (view.w/2) + (o.collisionShape.w/2) + o:camOffX()
+      self.transform.x = math.approach(self.transform.x, math.round(o.transform.x) - (view.w/2) + (o.collisionShape.w/2) + o:camOffX(), spdx or 4)
       if self.scrollw > 0 then
         self.transform.x = math.clamp(self.transform.x, self.scrollx, self.scrollx+self.scrollw-view.w)
       end
     end
     if self.doScrollY then
-      self.transform.y = math.round(o.transform.y) - (view.h/2) + (o.collisionShape.h/2) + o:camOffY()
+      self.transform.y = math.approach(self.transform.y, math.round(o.transform.y) - (view.h/2) + (o.collisionShape.h/2) + o:camOffY(), spdy or 8)
       if self.scrollh > 0 then
         self.transform.y = math.clamp(self.transform.y, self.scrolly, self.scrolly+self.scrollh-view.h)
       end
@@ -327,13 +326,13 @@ function camera:doView(without)
       end
     end
     if self.doScrollX then
-      self.transform.x = (avx/#globals.allPlayers)
+      self.transform.x = math.approach(self.transform.x, avx/#globals.allPlayers, spdx or 4)
       if self.scrollw > 0 then
         self.transform.x = math.clamp(self.transform.x, self.scrollx, self.scrollx+self.scrollw-view.w)
       end
     end
     if self.doScrollY then
-      self.transform.y = (avy/#globals.allPlayers)
+      self.transform.y = math.approach(self.transform.y, avy/#globals.allPlayers, spdy or 8)
       if self.scrollh > 0 then
         self.transform.y = math.clamp(self.transform.y, self.scrolly, self.scrolly+self.scrollh-view.h)
       end

@@ -278,15 +278,16 @@ function collision.checkGround(self, noSlope)
   local solid = {}
   local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
   
-  local slp = (math.ceil(math.abs(self.velocity.velx)) + 1) * cgrav
+  local slp = math.ceil(math.abs(self.velocity.velx)) + 1
   
-  for i=1, #megautils.state().system.all do
-    local v = megautils.state().system.all[i]
+  local all = megautils.state().system.all
+  for i=1, #all do
+    local v = all[i]
     if v ~= self and v.collisionShape and
-      (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
-      (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) then
+      (not self.exclusivelySolidFor or table.contains(self.exclusivelySolidFor, v)) and
+      (not self.excludeSolidFor or not table.contains(self.excludeSolidFor, v)) then
       if v.isSolid == 1 or v.isSolid == 2 then
-        if not v:collision(self, 0, cgrav) and (v.isSolid ~= 2 or v:collision(self, 0, -cgrav * slp)) then
+        if not v:collision(self) and (v.isSolid ~= 2 or v:collision(self, 0, -cgrav * slp)) then
           solid[#solid+1] = v
         end
       elseif v.isSolid == 3 then
@@ -296,7 +297,7 @@ function collision.checkGround(self, noSlope)
   end
   if #self:collisionTable(solid) == 0 then
     local i = cgrav
-    while math.abs(i) <= math.abs(slp) do
+    while math.abs(i) <= slp do
       if #self:collisionTable(solid, 0, i) == 0 then
         self.ground = false
         self.onMovingFloor = nil
@@ -350,8 +351,9 @@ function collision.generalCollision(self, noSlope)
   local stand = {}
   local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
   
-  for i=1, #megautils.state().system.all do
-    local v = megautils.state().system.all[i]
+  local all = megautils.state().system.all
+  for i=1, #all do
+    local v = all[i]
     if v ~= self and v.collisionShape and (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
       (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) then
       if v.isSolid == 1 then
@@ -367,8 +369,8 @@ function collision.generalCollision(self, noSlope)
   if self.velocity.velx ~= 0 then
     local slp = math.ceil(math.abs(self.velocity.velx)) * collision.maxSlope * cgrav
     if slp ~= 0 then
-      for i=1, #megautils.state().system.all do
-        local v = megautils.state().system.all[i]
+      for i=1, #all do
+        local v = all[i]
         if v ~= self and v.collisionShape and not table.contains(solid, v) and
           (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
           (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) then
@@ -424,8 +426,8 @@ function collision.generalCollision(self, noSlope)
   
   if self.velocity.vely ~= 0 then
     if self.velocity.vely * cgrav > 0 then
-      for i=1, #megautils.state().system.all do
-        local v = megautils.state().system.all[i]
+      for i=1, #all do
+        local v = all[i]
         if v ~= self and v.collisionShape and v.isSolid == 2 and
           (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
           (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) then
@@ -484,7 +486,6 @@ function solid:new(x, y, w, h)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(w, h)
-  self:setLayer(-5)
   self.isSolid = 1
   self.added = function(self)
     self:addToGroup("despawnable")
@@ -503,7 +504,6 @@ function sinkIn:new(x, y, w, h, s)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(w, h)
-  self:setLayer(-5)
   self.sink = s or 0.125
   self.isSolid = 3
   self.added = function(self)
@@ -532,7 +532,6 @@ function slope:new(x, y, mask)
   self.transform.x = x
   self.transform.y = y
   self:setImageCollision(mask)
-  self:setLayer(-5)
   self.isSolid = 1
   self.added = function(self)
     self:addToGroup("despawnable")

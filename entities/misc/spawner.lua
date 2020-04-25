@@ -5,7 +5,6 @@ function spawner:new(x, y, w, h, func)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(w, h)
-  self:setLayer(-5)
   self.func = func
   self.added = function(self)
     self:addToGroup("despawnable")
@@ -33,7 +32,6 @@ function intervalSpawner:new(x, y, w, h, time, func)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(w, h)
-  self:setLayer(-5)
   self.func = func
   self.added = function(self)
     self:addToGroup("despawnable")

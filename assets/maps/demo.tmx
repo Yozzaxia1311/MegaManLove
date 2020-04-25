@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="89" height="84" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#d3d3d3" nextlayerid="8" nextobjectid="193">
+<map version="1.2" tiledversion="1.3.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="89" height="84" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#d3d3d3" nextlayerid="8" nextobjectid="195">
  <tileset firstgid="1" source="tilesets/demoTileset.tsx"/>
  <layer id="5" name="bg" width="89" height="84">
   <data encoding="base64" compression="zlib">
    <chunk x="16" y="0" width="16" height="16">
    eAFjYBgFoyEwGgKDMQQE6OAoAApAABE=
+  </chunk>
+   <chunk x="64" y="0" width="16" height="16">
+   eAFjYKAuECDDOHL04LKGHLPI0UNN+3GZNSo+GgK0DgEABI8AUQ==
   </chunk>
    <chunk x="0" y="16" width="16" height="16">
    eAFjYKANEKCNsUSbOmo/0UFFE4UDHf408dQwNBQA2IAAUQ==
@@ -35,7 +38,7 @@
    eAFjYBgFlIQAI1AzCCMDmBg+cZgakD5s6vCJI9sFU8cHZMAwzGwQDRMD0ej2gPSCAC5xiCyCxKUOlzhCJ4SFSx0u8ZGiH92fuPjEhhMp+gH3gAB2
   </chunk>
    <chunk x="64" y="0" width="16" height="16">
-   eAGVj0sKgDAQQ6vudKU7vf9BbcDQEjLtKJT5NO9RS2nf0tpp57JuF4lc9qzhKwJk73hGMp4Rn/GQR8XZ6zkISr1lxkheryKPOiKevo1NV+Hge2c8MOegLsOPHFk+cvzhXdbt+G9aXdbtlOPssm7HvFbNrhqYzM93D05dL7cqASI=
+   eAFjZKAMMAK1o2PKTGRgEAQaIESpIUD99DAH3e9cQHu5cbhdEoc4NmFc5pBiBshcZiyGU8MMkL+JBdjUYhPDZR42tdjERop+JlwexSEuBRUH6UMPNwCjDgEa
   </chunk>
    <chunk x="0" y="16" width="16" height="16">
    eAFjZKAMMFKmnWFUP2UBOBzCD+QHcjFloTeqGwA24AAb
@@ -98,7 +101,7 @@
    <object id="20" name="solid" x="432" y="176" width="272" height="80"/>
    <object id="21" name="solid" x="512" y="-32" width="16" height="208"/>
    <object id="22" name="solid" x="848" y="80" width="48" height="32"/>
-   <object id="23" name="solid" x="944" y="80" width="112" height="144"/>
+   <object id="23" name="solid" x="944" y="80" width="144" height="144"/>
    <object id="26" name="solid" x="1216" y="240" width="16" height="16"/>
    <object id="27" name="solid" x="1056" y="336" width="32" height="192"/>
    <object id="28" name="solid" x="960" y="528" width="96" height="112"/>
@@ -123,37 +126,27 @@
    <object id="55" name="oneway" x="288" y="800" width="48" height="8"/>
    <object id="56" name="oneway" x="288" y="768" width="48" height="8"/>
    <object id="58" name="death" x="800" y="112" width="144" height="16"/>
-   <object id="62" name="slope" x="1056" y="80" width="32" height="16">
+   <object id="62" name="slope" x="1088" y="80" width="32" height="16">
     <properties>
      <property name="mask" value="slopeLeftLong"/>
     </properties>
    </object>
-   <object id="63" name="slope" x="1088" y="96" width="32" height="16">
+   <object id="63" name="slope" x="1120" y="96" width="32" height="16">
     <properties>
      <property name="mask" value="slopeLeftLong"/>
     </properties>
    </object>
-   <object id="64" name="slope" x="1120" y="112" width="16" height="16">
+   <object id="64" name="slope" x="1152" y="112" width="16" height="16">
     <properties>
      <property name="mask" value="slopeLeft"/>
     </properties>
    </object>
-   <object id="65" name="slope" x="1136" y="128" width="16" height="16">
+   <object id="65" name="slope" x="1168" y="128" width="16" height="16">
     <properties>
      <property name="mask" value="slopeLeft"/>
     </properties>
    </object>
-   <object id="66" name="slope" x="1152" y="144" width="16" height="16">
-    <properties>
-     <property name="mask" value="slopeLeft"/>
-    </properties>
-   </object>
-   <object id="67" name="slope" x="1168" y="160" width="16" height="16">
-    <properties>
-     <property name="mask" value="slopeLeft"/>
-    </properties>
-   </object>
-   <object id="68" name="solid" x="1168" y="176" width="16" height="64"/>
+   <object id="68" name="solid" x="1168" y="144" width="16" height="96"/>
    <object id="69" name="slope" x="1120" y="304" width="32" height="16">
     <properties>
      <property name="mask" value="slopeRightLong"/>
@@ -309,38 +302,37 @@
    <object id="176" name="solid" x="16" y="192" width="272" height="64"/>
    <object id="177" name="solid" x="0" y="256" width="16" height="160"/>
    <object id="181" name="solid" x="944" y="224" width="176" height="64"/>
-   <object id="182" name="solid" x="1216" y="112" width="32" height="16"/>
-   <object id="183" name="slope" x="1200" y="112" width="16" height="16">
+   <object id="183" name="slope" x="1232" y="112" width="16" height="16">
     <properties>
      <property name="mask" value="slopeRightInvert"/>
     </properties>
    </object>
-   <object id="184" name="slope" x="1184" y="96" width="16" height="16">
+   <object id="184" name="slope" x="1216" y="96" width="16" height="16">
     <properties>
      <property name="mask" value="slopeRightInvert"/>
     </properties>
    </object>
-   <object id="185" name="slope" x="1168" y="80" width="16" height="16">
+   <object id="185" name="slope" x="1200" y="80" width="16" height="16">
     <properties>
      <property name="mask" value="slopeRightInvert"/>
     </properties>
    </object>
-   <object id="186" name="slope" x="1136" y="64" width="32" height="16">
+   <object id="186" name="slope" x="1168" y="64" width="32" height="16">
     <properties>
      <property name="mask" value="slopeRightLongInvert"/>
     </properties>
    </object>
-   <object id="187" name="slope" x="1104" y="48" width="32" height="16">
+   <object id="187" name="slope" x="1136" y="48" width="32" height="16">
     <properties>
      <property name="mask" value="slopeRightLongInvert"/>
     </properties>
    </object>
-   <object id="188" name="slope" x="1072" y="32" width="32" height="16">
+   <object id="188" name="slope" x="1104" y="32" width="32" height="16">
     <properties>
      <property name="mask" value="slopeRightLongInvert"/>
     </properties>
    </object>
-   <object id="189" name="solid" x="1072" y="-32" width="16" height="64"/>
+   <object id="189" name="solid" x="1024" y="-32" width="80" height="64"/>
    <object id="190" name="slope" x="1168" y="240" width="16" height="16">
     <properties>
      <property name="mask" value="slopeLeftInvert"/>
@@ -354,6 +346,16 @@
    <object id="192" name="slope" x="1120" y="272" width="32" height="16">
     <properties>
      <property name="mask" value="slopeLeftLongInvert"/>
+    </properties>
+   </object>
+   <object id="193" name="gravFlip" x="1088" y="32" width="16" height="64">
+    <properties>
+     <property name="dir" type="int" value="-1"/>
+    </properties>
+   </object>
+   <object id="194" name="gravFlip" x="1040" y="32" width="16" height="48">
+    <properties>
+     <property name="dir" type="int" value="1"/>
     </properties>
    </object>
   </objectgroup>
@@ -392,14 +394,10 @@
      <property name="useTileLayer" value="layout"/>
     </properties>
    </object>
-   <object id="167" name="lockShift" x="1120" y="-32" width="144" height="256">
+   <object id="168" name="lockChangeBorderX" x="1152" y="-32" width="112" height="256">
     <properties>
-     <property name="name" value="two"/>
-    </properties>
-   </object>
-   <object id="168" name="lockShift" x="1008" y="-32" width="80" height="128">
-    <properties>
-     <property name="name" value="one"/>
+     <property name="leftName" value="one"/>
+     <property name="rightName" value="two"/>
     </properties>
    </object>
   </objectgroup>

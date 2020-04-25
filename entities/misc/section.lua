@@ -2,10 +2,10 @@ section = basicEntity:extend()
 
 addobjects.register("section", function(v)
   megautils.state().sectionHandler:add(v.x, v.y, v.width, v.height, v.properties.infiniteX, v.properties.infiniteY,
-    v.properties.infiniteW, v.properties.infiniteH, v.properties.bounds)
+    v.properties.infiniteW, v.properties.infiniteH, v.properties.boundsX, v.properties.boundsY)
 end, 1)
 
-function section:new(x, y, w, h, ix, iy, iw, ih, b)
+function section:new(x, y, w, h, ix, iy, iw, ih, bx, by)
   section.super.new(self)
   self.transform.y = y
   self.transform.x = x
@@ -14,9 +14,12 @@ function section:new(x, y, w, h, ix, iy, iw, ih, b)
   self.scrolly = iy and -math.huge or y
   self.scrollw = iw and math.huge or w
   self.scrollh = ih and math.huge or h
-  self.bounds = (b == nil) or b
-  if not self.bounds then
+  self.boundsX = (bx == nil) or bx
+  self.boundsY = (by == nil) or by
+  if not self.boundsX then
     self.scrollw = 0
+  end
+  if not self.boundsY then
     self.scrollh = 0
   end
   self.group = self:collisionTable(megautils.groups().despawnable)
@@ -98,13 +101,12 @@ lockSection = basicEntity:extend()
 
 addobjects.register("lockSection", function(v)
   megautils.add(lockSection, v.x, v.y, v.width, v.height, v.properties.name, v.properties.infiniteX, v.properties.infiniteY,
-    v.properties.infiniteW, v.properties.infiniteH, v.properties.bounds)
+    v.properties.infiniteW, v.properties.infiniteH, v.properties.boundsX, v.properties.boundsY)
 end, 1)
 
-function lockSection:new(x, y, w, h, name, ix, iy, iw, ih, b)
+function lockSection:new(x, y, w, h, name, ix, iy, iw, ih, bx, by)
   lockSection.super.new(self)
   self:setRectangleCollision(w, h)
-  self:setLayer(-5)
   self.transform.y = y
   self.transform.x = x
   self.name = name
@@ -112,9 +114,12 @@ function lockSection:new(x, y, w, h, name, ix, iy, iw, ih, b)
   self.scrolly = iy and -math.huge or y
   self.scrollw = iw and math.huge or w
   self.scrollh = ih and math.huge or h
-  self.bounds = (b == nil) or b
-  if not self.bounds then
+  self.boundsX = (bx == nil) or bx
+  self.boundsY = (by == nil) or by
+  if not self.boundsX then
     self.scrollw = 0
+  end
+  if not self.boundsY then
     self.scrollh = 0
   end
   self.section = self:collisionTable(megautils.state().sectionHandler.sections)[1]

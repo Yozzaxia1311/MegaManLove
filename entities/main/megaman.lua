@@ -69,7 +69,7 @@ addobjects.register("player", function(v)
     end
     camera.main:updateBounds()
     camera.main:setRectangleCollision(view.w, view.h)
-    camera.main:doView()
+    camera.main:doView(999, 999)
   end
   camera.once = nil
 end, 2)

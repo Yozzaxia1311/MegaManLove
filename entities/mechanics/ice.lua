@@ -31,7 +31,6 @@ function ice:new(x, y, w, h)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(w, h)
-  self:setLayer(-5)
   self.isSolid = 1
   self.added = function(self)
     self:addToGroup("despawnable")

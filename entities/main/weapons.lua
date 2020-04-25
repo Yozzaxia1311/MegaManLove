@@ -391,6 +391,7 @@ function trebleBoost:update(dt)
       end
     end
   elseif self.s == 1 then
+    collision.doGrav(self)
     collision.doCollision(self)
     if self.ground then
       self.c = "spawnLand"
@@ -501,7 +502,7 @@ function rushJet:update(dt)
       self.isSolid = 2
     end
   elseif self.s == 2 then
-    if self.player.ground and self.player:collision(self, 0, self.player.gravity < 0 and -1 or 1) and
+    if self.player.ground and self.player:collision(self, 0, self.player.gravity >= 0 and 1 or -1) and
       not self.player:collision(self) then
       self.s = 3
       self.velocity.velx = self.side
@@ -637,6 +638,7 @@ function rushCoil:update(dt)
       end
     end
   elseif self.s == 1 then
+    collision.doGrav(self)
     collision.doCollision(self)
     if self.ground then
       self.c = "spawnLand"
@@ -649,6 +651,7 @@ function rushCoil:update(dt)
       self.s = 3
     end
   elseif self.s == 3 then
+    collision.doGrav(self)
     collision.doCollision(self)
     if not self.player.climb and (self.player.gravity >= 0 and (self.player.velocity.vely > 0) or (self.player.velocity.vely < 0)) and
       math.between(self.player.transform.x+self.player.collisionShape.w/2,
@@ -671,6 +674,7 @@ function rushCoil:update(dt)
       self.wpn.energy[self.wpn.currentSlot] = self.wpn.energy[self.wpn.currentSlot] - 7
     end
   elseif self.s == 4 then
+    collision.doGrav(self)
     collision.doCollision(self)
     self.timer = math.min(self.timer+1, 40)
     if self.timer == 40 then

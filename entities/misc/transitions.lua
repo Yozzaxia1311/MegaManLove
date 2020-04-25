@@ -8,7 +8,6 @@ end)
 function right:new(x, y, h, scrollx, scrolly, spd, p)
   right.super.new(self)
   self:setRectangleCollision(2, h)
-  self:setLayer(-5)
   self.transform.x = x + 14
   self.transform.y = y
   self.scrollx = scrollx
@@ -53,7 +52,6 @@ end)
 function left:new(x, y, h, scrollx, scrolly, spd, p)
   left.super.new(self)
   self:setRectangleCollision(2, h)
-  self:setLayer(-5)
   self.transform.x = x
   self.transform.y = y
   self.scrollx = scrollx
@@ -98,7 +96,6 @@ end)
 function down:new(x, y, w, scrollx, scrolly, spd, p)
   down.super.new(self)
   self:setRectangleCollision(w, 2)
-  self:setLayer(-5)
   self.transform.y = y + 14
   self.transform.x = x
   self.scrollx = scrollx
@@ -143,7 +140,6 @@ end)
 function up:new(x, y, w, scrollx, scrolly, spd, p)
   up.super.new(self)
   self:setRectangleCollision(w, 2)
-  self:setLayer(-5)
   self.transform.y = y
   self.transform.x = x
   self.scrollx = scrollx
@@ -189,7 +185,6 @@ end)
 function upLadder:new(x, y, w, scrollx, scrolly, spd, p)
   upLadder.super.new(self)
   self:setRectangleCollision(w, 2)
-  self:setLayer(-5)
   self.transform.y = y
   self.transform.x = x
   self.scrollx = scrollx
@@ -227,81 +222,105 @@ function upLadder:update(dt)
   end
 end
 
-lockShift = entity:extend()
+lockChange = entity:extend()
 
-addobjects.register("lockShift", function(v)
-  megautils.add(lockShift, v.x, v.y, v.width, v.height, v.properties.name, v.properties.dir, v.properties.speed)
+addobjects.register("lockChange", function(v)
+  megautils.add(lockChange, v.x, v.y, v.width, v.height, v.properties.name)
 end)
 
-function lockShift:new(x, y, w, h, name, spd)
-  lockShift.super.new(self)
+function lockChange:new(x, y, w, h, name)
+  lockChange.super.new(self)
   self:setRectangleCollision(w, h)
-  self:setLayer(-5)
   self.transform.y = y
   self.transform.x = x
   self.name = name
-  self.spd = spd or 0.4
   self.added = function(self)
     self:addToGroup("despawnable")
   end
 end
 
-function lockShift:update(dt)
-  if #self:collisionTable(globals.allPlayers) >= math.floor(globals.playerCount/2)+1
-    and self.name ~= camera.main.curLock and not self.tween then
-    megautils.freeze(globals.allPlayers)
-    for k, v in pairs(globals.allPlayers) do
-      v.control = false
-      v.canHaveCameraFocus.ls = false
-    end
-    local l = camera.main.curLock
+function lockChange:update(dt)
+  if #self:collisionTable(globals.allPlayers) == #globals.allPlayers and self.name ~= camera.main.curLock then
     camera.main.curLock = self.name
-    camera.main:doView()
-    self.tween = tween.new(self.spd, camera.main.transform, {x=camera.main.transform.x, y=camera.main.transform.y})
-    self.pTween = {}
-    for i=1, #globals.allPlayers do
-      local v = globals.allPlayers[i]
-      if v.transform.x < camera.main.lockx+(-v.collisionShape.w/2)+2 or
-        v.transform.x > (camera.main.lockx+camera.main.lockw)+(-v.collisionShape.w/2)-2 or
-        v.transform.y < camera.main.locky-(v.collisionShape.h*1.4) or
-        v.transform.y > camera.main.locky+camera.main.lockh+4 then
-        local p
-        for j=1, #globals.allPlayers do
-          p = globals.allPlayers[j]
-          if p ~= v and p.transform.x >= camera.main.lockx+(-p.collisionShape.w/2)+2 or
-            p.transform.x <= (camera.main.lockx+camera.main.lockw)+(-p.collisionShape.w/2)-2 or
-            p.transform.y >= camera.main.locky-(p.collisionShape.h*1.4) or
-            p.transform.y <= camera.main.locky+camera.main.lockh+4 then
-            break
-          end
-        end
-        self.pTween[#self.pTween+1] = tween.new(self.spd, v.transform, {x=p.transform.x, y=p.transform.y})
-      end
-    end
-    camera.main.curLock = l
-    camera.main:doView()
   end
-  if self.pTween then
-    for i=1, #self.pTween do
-      self.pTween[i]:update(1/60)
+end
+
+lockChangeBorderX = entity:extend()
+
+addobjects.register("lockChangeBorderX", function(v)
+  megautils.add(lockChangeBorderX, v.x, v.y, v.width, v.height, v.properties.leftName, v.properties.rightName)
+end)
+
+function lockChangeBorderX:new(x, y, w, h, lname, rname)
+  lockChangeBorderX.super.new(self)
+  self:setRectangleCollision(w, h)
+  self.transform.y = y
+  self.transform.x = x
+  self.lname = lname
+  self.rname = rname
+  self.added = function(self)
+    self:addToGroup("despawnable")
+  end
+end
+
+function lockChangeBorderX:getSide()
+  local same = 0
+  for k, v in ipairs(self:collisionTable(globals.allPlayers)) do
+    if v.transform.x > self.transform.x then
+      same = same + 1
     end
   end
-  if self.tween then
-    if self.tween:update(1/60) then
-      self.tween = nil
-      self.pTween = nil
-      megautils.unfreeze()
-      for k, v in pairs(globals.allPlayers) do
-        v.control = true
-        v.canHaveCameraFocus.ls = true
-      end
-      camera.main.curLock = self.name
-      camera.main:doView()
-    else
-      camera.main.transform.x = math.round(camera.main.transform.x)
-      camera.main.transform.y = math.round(camera.main.transform.y)
-      view.x, view.y = math.round(camera.main.transform.x), math.round(camera.main.transform.y)
-      camera.main:updateFuncs()
+  
+  if same == #globals.allPlayers then
+    return self.rname
+  elseif same == 0 then
+    return self.lname
+  end
+end
+
+function lockChangeBorderX:update(dt)
+  local s = self:getSide()
+  if #self:collisionTable(globals.allPlayers) == #globals.allPlayers and s then
+    camera.main.curLock = s
+  end
+end
+
+lockChangeBorderY = entity:extend()
+
+addobjects.register("lockChangeBorderY", function(v)
+  megautils.add(lockChangeBorderY, v.x, v.y, v.width, v.height, v.properties.upName, v.properties.downName)
+end)
+
+function lockChangeBorderY:new(x, y, h, uname, dname)
+  lockChangeBorderY.super.new(self)
+  self:setRectangleCollision(w, h)
+  self.transform.y = y
+  self.transform.x = x
+  self.uname = uname
+  self.dname = dname
+  self.added = function(self)
+    self:addToGroup("despawnable")
+  end
+end
+
+function lockChangeBorderY:getSide()
+  local same = 0
+  for k, v in ipairs(self:collisionTable(globals.allPlayers)) do
+    if v.transform.y > self.transform.y then
+      same = same + 1
     end
+  end
+  
+  if same == #globals.allPlayers then
+    return self.dname
+  elseif same == 0 then
+    return self.uname
+  end
+end
+
+function lockChangeBorderY:update(dt)
+  local s = self:getSide()
+  if #self:collisionTable(globals.allPlayers) == #globals.allPlayers and s then
+    camera.main.curLock = s
   end
 end
