@@ -1,4 +1,4 @@
-weaponSelect = entity:extend()
+weaponSelect = basicEntity:extend()
 
 function weaponSelect:new(w, h, p)
   weaponSelect.super.new(self)

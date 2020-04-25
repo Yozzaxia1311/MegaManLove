@@ -1,4 +1,4 @@
-fade = entity:extend()
+fade = basicEntity:extend()
 
 function fade:new(fadeToColor, gap, color, after)
   fade.super.new(self)

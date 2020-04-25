@@ -1,4 +1,4 @@
-trigger = entity:extend()
+trigger = basicEntity:extend()
 
 function trigger:new(call, drawCall)
   trigger.super.new(self, tran)

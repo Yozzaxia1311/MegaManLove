@@ -1,4 +1,4 @@
-ready = entity:extend()
+ready = basicEntity:extend()
 
 function ready:new(text, proto, music)
   ready.super.new(self)

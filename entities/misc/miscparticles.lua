@@ -1,6 +1,6 @@
-slideParticle = entity:extend()
+slideParticle = basicEntity:extend()
 
-function slideParticle:new(x, y, side)
+function slideParticle:new(x, y, side, g)
   slideParticle.super.new(self)
   self.added = function(self)
     self:addToGroup("freezable")
@@ -8,17 +8,19 @@ function slideParticle:new(x, y, side)
   end
   self.transform.y = y
   self.transform.x = x
-  self:setRectangleCollision(2, 8)
+  self:setRectangleCollision(8, 8)
   self.tex = megautils.getResource("particles")
   self.anim = anim8.newAnimation(megautils.getResource("slideParticleGrid")("1-3",1), 1/10)
   self.side = side
+  self.anim.flippedV = g < 0
 end
 
-function slideParticle:recycle(x, y, side)
+function slideParticle:recycle(x, y, side, g)
   self.side = side
   self.transform.y = y
   self.transform.x = x
   self.anim:gotoFrame(1)
+  self.anim.flippedV = g < 0
 end
 
 function slideParticle:face(n)
@@ -37,12 +39,12 @@ end
 
 function slideParticle:draw()
   love.graphics.setColor(1, 1, 1, 1)
-  self.anim:draw(self.tex, math.round(self.transform.x)-6, math.round(self.transform.y))
+  self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
 end
 
-damageSteam = entity:extend()
+damageSteam = basicEntity:extend()
 
-function damageSteam:new(x, y)
+function damageSteam:new(x, y, g)
   damageSteam.super.new(self)
   self.added = function(self)
     self:addToGroup("freezable")
@@ -53,12 +55,14 @@ function damageSteam:new(x, y)
   self:setRectangleCollision(5, 8)
   self.tex = megautils.getResource("particles")
   self.anim = anim8.newAnimation(megautils.getResource("damageSteamGrid")("1-3",1), 1/8)
+  self.anim.flippedV = g < 0
 end
 
-function damageSteam:recycle(x, y)
+function damageSteam:recycle(x, y, g)
   self.transform.y = y
   self.transform.x = x
   self.anim:gotoFrame(1)
+  self.anim.flippedV = g < 0
 end
 
 function damageSteam:update(dt)
@@ -72,7 +76,7 @@ end
 
 function damageSteam:draw()
   love.graphics.setColor(1, 1, 1, 1)
-  self.anim:draw(self.tex, math.round(self.transform.x)-6, math.round(self.transform.y))
+  self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
 end
 
 airBubble = entity:extend()

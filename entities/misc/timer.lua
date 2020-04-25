@@ -1,4 +1,4 @@
-timer = entity:extend()
+timer = basicEntity:extend()
 
 function timer:new(time, func)
   timer.super.new(self)

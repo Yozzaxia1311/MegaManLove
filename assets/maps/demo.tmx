@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="89" height="84" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#d3d3d3" nextlayerid="8" nextobjectid="195">
+<map version="1.2" tiledversion="1.3.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="89" height="84" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#d3d3d3" nextlayerid="8" nextobjectid="198">
  <tileset firstgid="1" source="tilesets/demoTileset.tsx"/>
  <layer id="5" name="bg" width="89" height="84">
   <data encoding="base64" compression="zlib">
@@ -14,6 +14,12 @@
   </chunk>
    <chunk x="16" y="16" width="16" height="16">
    eAFjYMANBHBL0UVm1H66BDNOSwY6/HE6bFSCaiEAAOtAAFE=
+  </chunk>
+   <chunk x="48" y="16" width="16" height="16">
+   eAFjYBgF9AwBAahlMJqedo/aNRoC6CEAAFWAACE=
+  </chunk>
+   <chunk x="64" y="16" width="16" height="16">
+   eAFjYBgFlISAAFQzjKbErFG9oyFA7xAAAFuAACE=
   </chunk>
    <chunk x="32" y="32" width="16" height="16">
    eAFjYIAAASCFjqFSRFHoekF8GECXg4kj0+hqRpp+5LBAZ6OHDbo8IT6l+gmZPyo/dEMAADElA6E=
@@ -38,7 +44,7 @@
    eAFjYBgFlIQAI1AzCCMDmBg+cZgakD5s6vCJI9sFU8cHZMAwzGwQDRMD0ej2gPSCAC5xiCyCxKUOlzhCJ4SFSx0u8ZGiH92fuPjEhhMp+gH3gAB2
   </chunk>
    <chunk x="64" y="0" width="16" height="16">
-   eAFjZKAMMAK1o2PKTGRgEAQaIESpIUD99DAH3e9cQHu5cbhdEoc4NmFc5pBiBshcZiyGU8MMkL+JBdjUYhPDZR42tdjERop+JlwexSEuBRUH6UMPNwCjDgEa
+   eAFjZKAMMAK1o2PKTGRgEAQaIESpIUD99DAH3e9cQHu5cbhdEoc4NmFc5pBiBshcZiyGU8MMkL+JBdjUYhPDZR5ILS8aJlU/utmk6h9o+5Hdz4TMIYItBVUD0ofubwASbQGC
   </chunk>
    <chunk x="0" y="16" width="16" height="16">
    eAFjZKAMMFKmnWFUP2UBOBzCD+QHcjFloTeqGwA24AAb
@@ -358,8 +364,15 @@
      <property name="dir" type="int" value="1"/>
     </properties>
    </object>
+   <object id="195" name="oneway" x="1184" y="160" width="64" height="8"/>
+   <object id="196" name="oneway" x="1184" y="192" width="64" height="8"/>
+   <object id="197" name="gravFlip" x="944" y="336" width="112" height="16">
+    <properties>
+     <property name="dir" type="int" value="1"/>
+    </properties>
+   </object>
   </objectgroup>
-  <objectgroup id="6" name="transitions" visible="0">
+  <objectgroup id="6" name="transitions">
    <object id="155" name="bossDoor" x="480" y="800" width="32" height="64"/>
    <object id="156" name="bossDoor" x="736" y="704" width="32" height="160">
     <properties>

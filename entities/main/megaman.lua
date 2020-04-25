@@ -1036,9 +1036,12 @@ function megaman:healthChanged(o, c, i)
       self.climb = false
       self.dashJump = false
       megautils.add(harm, self)
-      megautils.add(damageSteam, self.transform.x+((self.collisionShape.w/2)+2)-11, self.transform.y-8)
-      megautils.add(damageSteam, self.transform.x+((self.collisionShape.w/2)+2), self.transform.y-8)
-      megautils.add(damageSteam, self.transform.x+((self.collisionShape.w/2)+2)+11, self.transform.y-8)
+      megautils.add(damageSteam, self.transform.x+(self.collisionShape.w/2)-2.5-11,
+        self.transform.y+(self.gravity >= 0 and -8 or self.collisionShape.h), self.gravity)
+      megautils.add(damageSteam, self.transform.x+(self.collisionShape.w/2)-2.5,
+        self.transform.y+(self.gravity >= 0 and -8 or self.collisionShape.h), self.gravity)
+      megautils.add(damageSteam, self.transform.x+(self.collisionShape.w/2)-2.5+11,
+        self.transform.y+(self.gravity >= 0 and -8 or self.collisionShape.h), self.gravity)
       megautils.playSound("hurt")
     end
   end
@@ -1318,8 +1321,8 @@ function megaman:code(dt)
       self.slide = true
       self:regToSlide()
       self.slideTimer = 0
-      megautils.add(slideParticle, self.transform.x+(self.side==-1 and self.collisionShape.w or 4),
-        self.transform.y+(self.gravity > 0 and self.collisionShape.h-6 or 0), self.side)
+      megautils.add(slideParticle, self.transform.x+(self.side==-1 and self.collisionShape.w-8 or 0),
+        self.transform.y+(self.gravity >= 0 and self.collisionShape.h-6 or -2), self.side, self.gravity)
     elseif self:checkFalse(self.canJump) and self.inStandSolid and control.jumpDown[self.player] and
       self.standSolidJumpTimer ~= self.maxStandSolidJumpTime and
       self.standSolidJumpTimer ~= -1 then

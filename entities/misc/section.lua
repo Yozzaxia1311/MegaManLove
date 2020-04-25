@@ -70,7 +70,7 @@ end
 function sectionHandler:updateAll()
   if not self.current then
     for k, v in pairs(self.sections) do
-      if v.bounds then
+      if v.boundsX or v.boundsY then
         for i, j in pairs(v.group) do
           megautils.remove(j)
         end
@@ -78,7 +78,7 @@ function sectionHandler:updateAll()
     end
   else
     self.current.group = self.current:collisionTable(megautils.groups().despawnable)
-    if self.current.bounds then
+    if self.current.boundsX or self.current.boundsY then
       for k, v in pairs(self.current.group) do
         if not v.dontRemove and not table.contains(self.next.group, v) then
           megautils.remove(v)

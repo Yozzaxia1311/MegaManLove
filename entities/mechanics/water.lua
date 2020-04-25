@@ -1,4 +1,4 @@
-splash = entity:extend()
+splash = basicEntity:extend()
 
 function splash:new(offx, offy, follow, side)
   splash.super.new(self)
@@ -49,7 +49,7 @@ function splash:draw()
   self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y), self.rot, 1, 1, 16, 8)
 end
 
-water = entity:extend()
+water = basicEntity:extend()
 
 addobjects.register("water", function(v)
   megautils.add(water, v.x, v.y, v.width, v.height, v.properties.grav)

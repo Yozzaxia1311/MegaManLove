@@ -298,19 +298,26 @@ function camera:updateCam(spdx, spdy)
 end
 
 function camera:doView(spdx, spdy, without)
+  self:updateLock()
+  local sx = self.curLock and self.lockx or self.scrollx
+  local sy = self.curLock and self.locky or self.scrolly
+  local sw = self.curLock and self.lockw or self.scrollw
+  local sh = self.curLock and self.lockh or self.scrollh
   if #globals.allPlayers <= 1 then
     local o = globals.allPlayers[1]
     if self.doScrollX then
-      self.transform.x = math.approach(self.transform.x, math.round(o.transform.x) - (view.w/2) + (o.collisionShape.w/2) + o:camOffX(), spdx or 4)
-      if self.scrollw > 0 then
-        self.transform.x = math.clamp(self.transform.x, self.scrollx, self.scrollx+self.scrollw-view.w)
+      local to = math.round(o.transform.x) - (view.w/2) + (o.collisionShape.w/2) + o:camOffX()
+      if sw > 0 then
+        to = math.clamp(to, sx, sx+sw-view.w)
       end
+      self.transform.x = math.approach(self.transform.x, to, spdx or 8)
     end
     if self.doScrollY then
-      self.transform.y = math.approach(self.transform.y, math.round(o.transform.y) - (view.h/2) + (o.collisionShape.h/2) + o:camOffY(), spdy or 8)
-      if self.scrollh > 0 then
-        self.transform.y = math.clamp(self.transform.y, self.scrolly, self.scrolly+self.scrollh-view.h)
+      local to = math.round(o.transform.y) - (view.h/2) + (o.collisionShape.h/2) + o:camOffY()
+      if sh > 0 then
+        to = math.clamp(to, sy, sy+sh-view.h)
       end
+      self.transform.y = math.approach(self.transform.y, to, spdy or 8)
     end
   else
     local avx, avy = 0, 0
@@ -326,25 +333,21 @@ function camera:doView(spdx, spdy, without)
       end
     end
     if self.doScrollX then
-      self.transform.x = math.approach(self.transform.x, avx/#globals.allPlayers, spdx or 4)
-      if self.scrollw > 0 then
-        self.transform.x = math.clamp(self.transform.x, self.scrollx, self.scrollx+self.scrollw-view.w)
+      local to = avx/#globals.allPlayers
+      if sw > 0 then
+        to = math.clamp(to, sx, sx+sw-view.w)
       end
+      self.transform.x = math.approach(self.transform.x, to, spdx or 8)
     end
     if self.doScrollY then
-      self.transform.y = math.approach(self.transform.y, avy/#globals.allPlayers, spdy or 8)
-      if self.scrollh > 0 then
-        self.transform.y = math.clamp(self.transform.y, self.scrolly, self.scrolly+self.scrollh-view.h)
+      local to = avy/#globals.allPlayers
+      if sh > 0 then
+        to = math.clamp(to, sy, sy+sh-view.h)
       end
+      self.transform.y = math.approach(self.transform.y, to, spdy or 8)
     end
   end
-  self:updateLock()
-  if self.lockw > 0 then
-    self.transform.x = math.clamp(self.transform.x, self.lockx, self.lockx+self.lockw-view.w)
-  end
-  if self.lockh > 0 then
-    self.transform.y = math.clamp(self.transform.y, self.locky, self.locky+self.lockh-view.h)
-  end
+  
   view.x, view.y = math.round(self.transform.x), math.round(self.transform.y)
   self:updateFuncs()
 end

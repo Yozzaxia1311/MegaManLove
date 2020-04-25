@@ -1,4 +1,4 @@
-right = entity:extend()
+right = basicEntity:extend()
 
 addobjects.register("right", function(v)
   megautils.add(right, v.x, v.y, v.height,
@@ -22,7 +22,7 @@ end
 function right:update(dt)
   for i=1, #globals.allPlayers do
     local player = globals.allPlayers[i]
-    if camera.main and player.control and not camera.main.transition and self:collision(player)
+    if camera.main and player.control and not camera.main.transition and self:collision(player, 2, 0)
       and (not self.platform or (self.platform and player.onMovingFloor)) then
       camera.main.transitiondirection = "right"
       camera.main.transition = true
@@ -42,7 +42,7 @@ function right:update(dt)
   end
 end
 
-left = entity:extend()
+left = basicEntity:extend()
 
 addobjects.register("left", function(v)
   megautils.add(left, v.x, v.y, v.height,
@@ -67,7 +67,7 @@ function left:update(dt)
   for i=1, #globals.allPlayers do
     local player = globals.allPlayers[i]
     if camera.main and player.control and not camera.main.transition
-      and self:collision(player) and (not self.platform or (self.platform and player.onMovingFloor)) then
+      and self:collision(player, -2, 0) and (not self.platform or (self.platform and player.onMovingFloor)) then
       camera.main.transitiondirection = "left"
       camera.main.transition = true
       camera.main.doScrollY = self.scrolly and self.scrolly or camera.main.doScrollY
@@ -86,7 +86,7 @@ function left:update(dt)
   end
 end
 
-down = entity:extend()
+down = basicEntity:extend()
 
 addobjects.register("down", function(v)
   megautils.add(down, v.x, v.y, v.width,
@@ -111,7 +111,7 @@ function down:update(dt)
   for i=1, #globals.allPlayers do
     local player = globals.allPlayers[i]
     if camera.main and player.control and not camera.main.transition
-      and self:collision(player) and (not self.platform or (self.platform and player.onMovingFloor)) then
+      and self:collision(player, 0, 2) and (not self.platform or (self.platform and player.onMovingFloor)) then
       camera.main.transitiondirection = "down"
       camera.main.transition = true
       camera.main.doScrollY = self.scrolly and self.scrolly or camera.main.doScrollY
@@ -130,7 +130,7 @@ function down:update(dt)
   end
 end
 
-up = entity:extend()
+up = basicEntity:extend()
 
 addobjects.register("up", function(v)
   megautils.add(up, v.x, v.y, v.width,
@@ -155,7 +155,7 @@ function up:update(dt)
   for i=1, #globals.allPlayers do
     local player = globals.allPlayers[i]
     if camera.main and player.control and not camera.main.transition
-      and self:collision(player) and (not self.platform or (self.platform and 
+      and self:collision(player, 0, -2) and (not self.platform or (self.platform and 
         player.onMovingFloor)) then
       camera.main.transitiondirection = "up"
       camera.main.transition = true
@@ -175,7 +175,7 @@ function up:update(dt)
   end
 end
 
-upLadder = entity:extend()
+upLadder = basicEntity:extend()
 
 addobjects.register("upLadder", function(v)
   megautils.add(upLadder, v.x, v.y, v.width,
@@ -205,7 +205,7 @@ function upLadder:update(dt)
     local player = globals.allPlayers[i]
     if camera.main and not camera.main.transition and
       (self.ladder or (not self.platform or (self.platform and player.onMovingFloor))) then
-      if player.control and (player.climb or player.treble == 2) and player.transform.y < self.transform.y then
+      if player.control and (player.climb or player.treble == 2) and self:collision(player, 0, -2) then
         camera.main.transitiondirection = "up"
         camera.main.transition = true
         camera.main.doScrollY = self.scrolly and self.scrolly or camera.main.doScrollY
@@ -222,7 +222,7 @@ function upLadder:update(dt)
   end
 end
 
-lockChange = entity:extend()
+lockChange = basicEntity:extend()
 
 addobjects.register("lockChange", function(v)
   megautils.add(lockChange, v.x, v.y, v.width, v.height, v.properties.name)
@@ -245,7 +245,7 @@ function lockChange:update(dt)
   end
 end
 
-lockChangeBorderX = entity:extend()
+lockChangeBorderX = basicEntity:extend()
 
 addobjects.register("lockChangeBorderX", function(v)
   megautils.add(lockChangeBorderX, v.x, v.y, v.width, v.height, v.properties.leftName, v.properties.rightName)
@@ -285,7 +285,7 @@ function lockChangeBorderX:update(dt)
   end
 end
 
-lockChangeBorderY = entity:extend()
+lockChangeBorderY = basicEntity:extend()
 
 addobjects.register("lockChangeBorderY", function(v)
   megautils.add(lockChangeBorderY, v.x, v.y, v.width, v.height, v.properties.upName, v.properties.downName)
