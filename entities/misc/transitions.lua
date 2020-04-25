@@ -279,8 +279,8 @@ function lockChangeBorderX:getSide()
 end
 
 function lockChangeBorderX:update(dt)
-  local s = self:getSide()
-  if #self:collisionTable(globals.allPlayers) == #globals.allPlayers and s then
+  local s = not megautils.outside(self) and self:getSide()
+  if s then
     camera.main.curLock = s
   end
 end
@@ -319,8 +319,8 @@ function lockChangeBorderY:getSide()
 end
 
 function lockChangeBorderY:update(dt)
-  local s = self:getSide()
-  if #self:collisionTable(globals.allPlayers) == #globals.allPlayers and s then
+  local s = not megautils.outside(self) and self:getSide()
+  if s then
     camera.main.curLock = s
   end
 end
