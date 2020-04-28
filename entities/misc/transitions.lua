@@ -239,88 +239,23 @@ function lockChange:new(x, y, w, h, name)
   end
 end
 
+function lockChange:check()
+  local count = 0
+  local sx, sy, sw, sh = self.transform.x, self.transform.y, self.collisionShape.w, self.collisionShape.h
+  
+  for k, v in ipairs(globals.allPlayers) do
+    local x, y, w, h = v.transform.x, v.transform.y, v.collisionShape.w, v.collisionShape.h
+    if pointOverlapsRect(x, y, sx, sy, sw, sh) and pointOverlapsRect(x+w, y, sx, sy, sw, sh) and
+      pointOverlapsRect(x+w, y+h, sx, sy, sw, sh) and pointOverlapsRect(x, y+h, sx, sy, sw, sh) then
+      count = count + 1
+    end
+  end
+  
+  return count
+end
+
 function lockChange:update(dt)
-  if #self:collisionTable(globals.allPlayers) == #globals.allPlayers and self.name ~= camera.main.curLock then
+  if camera.main and self.name ~= camera.main.curLock and self:check() == #globals.allPlayers then
     camera.main.curLock = self.name
-  end
-end
-
-lockChangeBorderX = basicEntity:extend()
-
-addobjects.register("lockChangeBorderX", function(v)
-  megautils.add(lockChangeBorderX, v.x, v.y, v.width, v.height, v.properties.leftName, v.properties.rightName)
-end)
-
-function lockChangeBorderX:new(x, y, w, h, lname, rname)
-  lockChangeBorderX.super.new(self)
-  self:setRectangleCollision(w, h)
-  self.transform.y = y
-  self.transform.x = x
-  self.lname = lname
-  self.rname = rname
-  self.added = function(self)
-    self:addToGroup("despawnable")
-  end
-end
-
-function lockChangeBorderX:getSide()
-  local same = 0
-  for k, v in ipairs(self:collisionTable(globals.allPlayers)) do
-    if v.transform.x > self.transform.x then
-      same = same + 1
-    end
-  end
-  
-  if same == #globals.allPlayers then
-    return self.rname
-  elseif same == 0 then
-    return self.lname
-  end
-end
-
-function lockChangeBorderX:update(dt)
-  local s = not megautils.outside(self) and self:getSide()
-  if s then
-    camera.main.curLock = s
-  end
-end
-
-lockChangeBorderY = basicEntity:extend()
-
-addobjects.register("lockChangeBorderY", function(v)
-  megautils.add(lockChangeBorderY, v.x, v.y, v.width, v.height, v.properties.upName, v.properties.downName)
-end)
-
-function lockChangeBorderY:new(x, y, h, uname, dname)
-  lockChangeBorderY.super.new(self)
-  self:setRectangleCollision(w, h)
-  self.transform.y = y
-  self.transform.x = x
-  self.uname = uname
-  self.dname = dname
-  self.added = function(self)
-    self:addToGroup("despawnable")
-  end
-end
-
-function lockChangeBorderY:getSide()
-  local same = 0
-  for k, v in ipairs(self:collisionTable(globals.allPlayers)) do
-    if v.transform.y > self.transform.y then
-      same = same + 1
-    end
-  end
-  
-  if same == #globals.allPlayers then
-    return self.dname
-  elseif same == 0 then
-    return self.uname
-  end
-end
-
-function lockChangeBorderY:update(dt)
-  local s = not megautils.outside(self) and self:getSide()
-  if s then
-    camera.main.curLock = s
   end
 end
