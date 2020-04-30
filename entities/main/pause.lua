@@ -139,8 +139,8 @@ function weaponSelect:update(dt)
         end 
       end
       local ff = megautils.add(fade, true, nil, nil, function(s)
-            megautils.remove(self, true)
-            megautils.remove(s, true)
+            megautils.removeq(self)
+            megautils.removeq(s)
             megautils.add(fade, false, nil, nil, fade.remove)
             megautils.unfreeze(nil, "pause")
           end)

@@ -40,7 +40,7 @@ function splash:update(dt)
     self.transform.y = self.follow.transform.y + self.offy
   end
   if megautils.outside(self) or self.anim.looped then
-    megautils.remove(self, true)
+    megautils.removeq(self)
   end
 end
 

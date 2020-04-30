@@ -89,7 +89,7 @@ function entitysystem:add(c, ...)
 end
 
 function entitysystem:adde(e)
-  if not e then return end
+  if not e or not e.isRemoved or e.isAdded then return end
   if not e.static then
     local done = false
     for i=1, #self.entities do
@@ -122,10 +122,14 @@ end
 
 function entitysystem:addq(c, ...)
   if not c then return end
-  if not table.contains(self.addQueue, c) then
-    self.addQueue[#self.addQueue+1] = self:getRecycled(c, ...)
-    return self.addQueue[#self.addQueue]
-  end
+  self.addQueue[#self.addQueue+1] = self:getRecycled(c, ...)
+  return self.addQueue[#self.addQueue]
+end
+
+function entitysystem:addeq(e)
+  if not e or not e.isRemoved or e.isAdded or table.contains(self.addQueue, e) then return end
+  self.addQueue[#self.addQueue+1] = e
+  return self.addQueue[#self.addQueue]
 end
 
 function entitysystem:removeFromGroup(e, g)
@@ -141,7 +145,7 @@ function entitysystem:removeFromAllGroups(e)
   end
 end
 
-function entitysystem:addStatic(e)
+function entitysystem:makeStatic(e)
   table.quickremovevaluearray(self.updates, e)
   table.quickremovevaluearray(e.actualLayer.data, e)
   if #e.actualLayer.data == 0 then
@@ -152,7 +156,7 @@ function entitysystem:addStatic(e)
   e:staticToggled()
 end
 
-function entitysystem:removeStatic(e)
+function entitysystem:revertFromStatic(e)
   if e.static then
     table.quickremovevaluearray(self.static, e)
     local done = false
@@ -212,37 +216,36 @@ function entitysystem:setLayerFlicker(l, b)
   end
 end
 
-function entitysystem:remove(e, queue)
-  if e == nil then return end
-  if queue then
-    if not table.contains(self.removeQueue, e) then
-      self.removeQueue[#self.removeQueue+1] = e
-    end
-  elseif not e.isRemoved and e.isAdded then
-    e.isRemoved = true
-    e:removed()
-    e:removeFromAllGroups()
-    if e.static then
-      table.quickremovevaluearray(self.static, e)
-      e.static = false
-      e:staticToggled()
-    else
-      table.quickremovevaluearray(e.actualLayer.data, e)
-      table.quickremovevaluearray(self.updates, e)
-    end
-    if #e.actualLayer.data == 0 then
-      table.removevaluearray(self.entities, e.actualLayer)
-    end
-    table.quickremovevaluearray(self.all, e)
-    e.isAdded = false
-    if e.recycle then
-      if not self.recycle[e.__index] then
-        self.recycle[e.__index] = {e}
-      elseif not table.contains(self.recycle[e.__index], e) then
-        self.recycle[e.__index][#self.recycle[e.__index]+1] = e
-      end
+function entitysystem:remove(e)
+  if not e or e.isRemoved then return end
+  e.isRemoved = true
+  e:removed()
+  e:removeFromAllGroups()
+  if e.static then
+    table.quickremovevaluearray(self.static, e)
+    e.static = false
+    e:staticToggled()
+  else
+    table.quickremovevaluearray(e.actualLayer.data, e)
+    table.quickremovevaluearray(self.updates, e)
+  end
+  if #e.actualLayer.data == 0 then
+    table.removevaluearray(self.entities, e.actualLayer)
+  end
+  table.quickremovevaluearray(self.all, e)
+  e.isAdded = false
+  if e.recycle then
+    if not self.recycle[e.__index] then
+      self.recycle[e.__index] = {e}
+    elseif not table.contains(self.recycle[e.__index], e) then
+      self.recycle[e.__index][#self.recycle[e.__index]+1] = e
     end
   end
+end
+
+function entitysystem:removeq(e)
+  if not e or e.isRemoved or table.contains(self.removeQueue, e) then return end
+  self.removeQueue[#self.removeQueue+1] = e
 end
 
 function entitysystem:clear()
@@ -260,7 +263,7 @@ function entitysystem:clear()
   self.addQueue = {}
   self.removeQueue = {}
   self.recycle = {}
-  self.afterUpdate = nil
+  self.cameraUpdate = nil
   self.doSort = false
 end
 
@@ -344,13 +347,13 @@ function entitysystem:update(dt)
   if self.cameraUpdate then
     self.cameraUpdate(self)
   end
-  for i=1, #self.addQueue do
-    self:adde(self.addQueue[i])
-    self.addQueue[i] = nil
-  end
-  for i=1, #self.removeQueue do
+  for i=#self.removeQueue, 1, -1 do
     self:remove(self.removeQueue[i])
     self.removeQueue[i] = nil
+  end
+  for i=#self.addQueue, 1, -1 do
+    self:adde(self.addQueue[i])
+    self.addQueue[i] = nil
   end
   if self.doSort then
     self.doSort = false
@@ -396,13 +399,13 @@ end
 basicEntity = class:extend()
 
 function basicEntity:new()
-  self.isAdded = false
   self.transform = {}
   self.transform.x = 0
   self.transform.y = 0
   self.collisionShape = nil
   self.layer = 1
-  self.isRemoved = false
+  self.isRemoved = true
+  self.isAdded = false
   self.updated = true
   self.render = true
   self.maxIFrame = 80
@@ -416,6 +419,8 @@ function basicEntity:baseRecycle()
   self.transform.y = 0
   self.updated = true
   self.render = true
+  self.isRemoved = true
+  self.isAdded = false
   self.changeHealth = 0
   self.iFrame = self.maxIFrame
   self.updatedSpecial = {}
@@ -459,12 +464,12 @@ function basicEntity:setLayer(l)
   end
 end
 
-function basicEntity:addStatic()
-  megautils.state().system:addStatic(self)
+function basicEntity:makeStatic()
+  megautils.state().system:makeStatic(self)
 end
 
-function basicEntity:removeStatic()
-  megautils.state().system:removeStatic(self)
+function basicEntity:revertFromStatic()
+  megautils.state().system:revertFromStatic(self)
 end
 
 function basicEntity:removeFromGroup(g)

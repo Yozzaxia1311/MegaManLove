@@ -121,7 +121,7 @@ function stageSelect:update(dt)
           globals.bossIntroBoss = "stick"
           megautils.transitionToState("states/bossintro.state.lua")
         end
-        megautils.remove(s, true)
+        megautils.removeq(s)
       end)
       self.stop = true
     end

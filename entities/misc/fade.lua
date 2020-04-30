@@ -41,10 +41,10 @@ function fade:draw()
 end
 
 function fade.remove(s)
-  megautils.remove(s, true)
+  megautils.removeq(s)
 end
 
 function fade.ready(s)
-  megautils.remove(s, true)
+  megautils.removeq(s)
   megautils.freeze()
 end

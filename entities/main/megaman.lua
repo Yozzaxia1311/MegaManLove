@@ -62,16 +62,16 @@ addobjects.register("player", function(v)
 end, -1)
 
 addobjects.register("player", function(v)
-  if v.properties.checkpoint == globals.checkpoint and camera.main then
+  if v.properties.checkpoint == globals.checkpoint and camera.main and camera.once then
     camera.main:setRectangleCollision(8, 8)
-    if v.properties.lock then
-      camera.main.curLock = v.properties.lock
+    if v.properties.name then
+      camera.main.curBoundName = v.properties.name
     end
     camera.main:updateBounds()
     camera.main:setRectangleCollision(view.w, view.h)
     camera.main:doView(999, 999)
+    camera.once = nil
   end
-  camera.once = nil
 end, 2)
 
 addobjects.register("player", function(v)
@@ -993,12 +993,12 @@ function megaman:healthChanged(o, c, i)
               end
               megautils.gotoState(states.current)
             end
-            megautils.remove(s, true)
+            megautils.removeq(s)
           end)
-          megautils.remove(t, true)
+          megautils.removeq(t)
         end)
         megautils.unregisterPlayer(self)
-        megautils.remove(self, true)
+        megautils.removeq(self)
         megautils.stopMusic()
         megautils.playSound("die")
         return
@@ -1464,7 +1464,7 @@ function megaman:code(dt)
     megautils.add(fade, true, nil, nil, function(s)
           megautils.add(weaponSelect, megaman.weaponHandler[self.player], self.healthHandler, self.player)
           local ff = megautils.add(fade, false, nil, nil, fade.remove)
-          megautils.remove(s, true)
+          megautils.removeq(s)
         end)
     megautils.playSound("pause")
   end
@@ -1799,10 +1799,10 @@ function megaman:update(dt)
       self.healthHandler.change = self.changeHealth
       self.healthHandler:updateThis()
       healthHandler.playerTimers[self.player] = 180
-      megautils.remove(megaman.weaponHandler[self.player], true)
-      megautils.remove(self.healthHandler, true)
+      megautils.removeq(megaman.weaponHandler[self.player])
+      megautils.removeq(self.healthHandler)
       megautils.unregisterPlayer(self)
-      megautils.remove(self, true)
+      megautils.removeq(self)
       megautils.unfreeze()
       megautils.playSound("die")
       return

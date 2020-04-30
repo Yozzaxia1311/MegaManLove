@@ -309,7 +309,6 @@ function megautils.unload()
 end
 
 function megautils.loadStage(self, path)
-  self.sectionHandler = sectionHandler()
   self.currentMap = cartographer.load(path)
   local map = self.currentMap
   local function recursiveLayerChecking(tab, otab)
@@ -397,8 +396,28 @@ function megautils.setLayerFlicker(l, b)
   states.currentstate.system:setLayerFlicker(l, b)
 end
 
-function megautils.remove(o, queue)
-  states.currentstate.system:remove(o, queue)
+function megautils.remove(o)
+  states.currentstate.system:remove(o)
+end
+
+function megautils.removeq(o)
+  states.currentstate.system:removeq(o)
+end
+
+function megautils.inAddQueue(o)
+  return table.contains(states.currentstate.system.addQueue, o)
+end
+
+function megautils.inRemoveQueue(o)
+  return table.contains(states.currentstate.system.removeQueue, o)
+end
+
+function megautils.stopAddQueue(o)
+  table.quickremovevaluearray(states.currentstate.system.addQueue, o)
+end
+
+function megautils.stopRemoveQueue(o)
+  table.quickremovevaluearray(states.currentstate.system.removeQueue, o)
 end
 
 function megautils.state()
@@ -415,6 +434,10 @@ end
 
 function megautils.addq(o, ...)
   return states.currentstate.system:addq(o, ...)
+end
+
+function megautils.addeq(o)
+  return states.currentstate.system:addeq(o)
 end
 
 function megautils.getRecycled(o, ...)
@@ -540,9 +563,19 @@ function megautils.outside(o, ex, ey)
 end
 
 function megautils.outsideSection(o, ex, ey)
-  return o.collisionShape and camera.main and
-    not rectOverlapsRect(camera.main.scrollx-(ex or 0), camera.main.scrolly-(ey or 0), camera.main.scrollw+((ex or 0)*2), camera.main.scrollh+((ey or 0)*2), 
-    o.transform.x, o.transform.y, o.collisionShape.w, o.collisionShape.h)
+  local result = true
+  if o.collisionShape and o.actualSectionGroups then
+    local lw, lh = o.collisionShape.w, o.collisionShape.h
+    o.collisionShape.w = o.collisionShape.w + ((ex or 0)*2)
+    o.collisionShape.h = o.collisionShape.h + ((ey or 0)*2)
+    for k, v in ipairs(o.actualSectionGroups) do
+      if o:collision(v, -ex or 0, -ey or 0) then
+        result = false
+      end
+    end
+    o.collisionShape.w, o.collisionShape.h = lw, lh
+  end
+  return result
 end
 
 --w: Width of drawable

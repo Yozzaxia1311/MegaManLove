@@ -1,14 +1,14 @@
-bossdoor = entity:extend()
+bossDoor = entity:extend()
 
 addobjects.register("bossDoor", function(v)
   local seg = (v.properties.dir=="up" or v.properties.dir=="down") and 
     math.round(v.width/16) or math.round(v.height/16)
-  megautils.add(bossdoor, v.x, v.y, seg, v.properties.dir,
+  megautils.add(bossDoor, v.x, v.y, seg, v.properties.dir,
   v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.useTileLayer)
 end)
 
-function bossdoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt)
-  bossdoor.super.new(self)
+function bossDoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt)
+  bossDoor.super.new(self)
   self.added = function(self)
     self:addToGroup("bossDoor")
     self:addToGroup("despawnable")
@@ -23,7 +23,7 @@ function bossdoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt)
   self.timer = 0
   self.segments = seg
   self.maxSegments = seg
-  self.spd = spd or 1
+  self.spd = spd
   self.state = 0
   self.player = nil
   self:setDirection(dir)
@@ -34,13 +34,73 @@ function bossdoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt)
   self.useMapTiles = megautils.getMapLayer(umt) and umt
 end
 
-function bossdoor:setDirection(dir)
+function bossDoor:setDirection(dir)
   self:setRectangleCollision((dir=="up" or dir=="down") and self.maxSegments*16 or 32,
     (dir=="up" or dir=="down") and 32 or self.maxSegments*16)
   self.dir = dir or "right"
 end
 
-function bossdoor:update(dt)
+function bossDoor:left()
+  camera.main.transitionDirection = "left"
+  camera.main.transition = true
+  camera.main.doScrollY = (self.scrolly~=nil) and self.scrolly or camera.main.doScrollY
+  camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
+  camera.main.player = player
+  camera.main.speed = self.spd or 0.8
+  local s = self:collisionTable(section.getBounds(self.transform.x-16, self.transform.y, self.collisionShape.w, self.collisionShape.h), -16, 0)[1]
+  camera.main.transform.x = self.transform.x+16
+  camera.main.transX = camera.main.transform.x-camera.main.player.collisionShape.w-28
+  camera.main.curBoundName = to.name
+  camera.main.dontUpdateSections = true
+  camera.main.freeze = false
+end
+
+function bossDoor:right()
+  camera.main.transitionDirection = "right"
+  camera.main.transition = true
+  camera.main.doScrollY = (self.scrolly~=nil) and self.scrolly or camera.main.doScrollY
+  camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
+  camera.main.player = player
+  camera.main.speed = self.spd or 0.8
+  local s = self:collisionTable(section.getBounds(self.transform.x+16, self.transform.y, self.collisionShape.w, self.collisionShape.h), 16, 0)[1]
+  camera.main.transform.x = self.transform.x+16-camera.main.collisionShape.w
+  camera.main.transX = camera.main.transform.x+camera.main.collisionShape.w+28
+  camera.main.curBoundName = s.name
+  camera.main.dontUpdateSections = true
+  camera.main.freeze = false
+end
+
+function bossDoor:up()
+  camera.main.transitionDirection = "up"
+  camera.main.transition = true
+  camera.main.doScrollY = (self.scrolly~=nil) and self.scrolly or camera.main.doScrollY
+  camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
+  camera.main.player = player
+  camera.main.speed = self.spd or 0.8
+  local s = self:collisionTable(section.getBounds(self.transform.x, self.transform.y-16, self.collisionShape.w, self.collisionShape.h), 0, -16)[1]
+  camera.main.transform.y = self.transform.y+16
+  camera.main.transY = camera.main.transform.y-camera.main.player.collisionShape.h-28
+  camera.main.curBoundName = s.name
+  camera.main.dontUpdateSections = true
+  camera.main.freeze = false
+end
+
+function bossDoor:down()
+  camera.main.transitionDirection = "down"
+  camera.main.transition = true
+  camera.main.doScrollY = (self.scrolly~=nil) and self.scrolly or camera.main.doScrollY
+  camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
+  camera.main.player = player
+  camera.main.speed = self.spd or 0.8
+  local s = self:collisionTable(section.getBounds(self.transform.x, self.transform.y+16, self.collisionShape.w, self.collisionShape.h), 0, 16)[1]
+  camera.main.transform.y = self.transform.y+16-camera.main.collisionShape.h
+  camera.main.transY = camera.main.transform.y+camera.main.collisionShape.h+28
+  camera.main.curBoundName = s.name
+  camera.main.dontUpdateSections = true
+  camera.main.freeze = false
+end
+
+function bossDoor:update(dt)
   if not globals.mainPlayer or not camera.main or not rectOverlapsRect(self.transform.x, self.transform.y, self.collisionShape.w,
     self.collisionShape.h, camera.main.scrollx, camera.main.scrolly,
     camera.main.scrollw, camera.main.scrollh) then return end
@@ -67,7 +127,7 @@ function bossdoor:update(dt)
           megautils.freeze(globals.allPlayers)
           if megautils.groups().removeOnTransition then
             for k, v in pairs(megautils.groups().removeOnTransition) do
-              megautils.remove(v, true)
+              megautils.removeq(v)
             end
           end
           if self.useMapTiles then
@@ -101,28 +161,16 @@ function bossdoor:update(dt)
     if self.segments <= 0 then
       self.state = 2
       self.timer = 0
-      self.c = "open"
       self.player.doAnimation = true
-      camera.main.transX = (self.dir=="up" or self.dir=="down") and 0 or 
-        (self.dir=="left" and camera.main.scrollx-self.player.collisionShape.w-28 or
-          camera.main.scrollx+camera.main.scrollw+28)
-      camera.main.transY = (self.dir=="up" or self.dir=="down") and
-        (self.dir=="up" and camera.main.scrolly-self.player.collisionShape.h-28 or
-          camera.main.scrolly+camera.main.scrollh+28) or 0
-      camera.main.transitiondirection = self.dir
-      camera.main.doScrollY = self.scrolly and self.scrolly or camera.main.doScrollY
-      camera.main.doScrollX = self.scrollx and self.scrollx or camera.main.doScrollX
-      camera.main.transition = true
-      camera.main.toSection = self:collisionTable(megautils.groups().lock, 
-        (self.dir=="left" or self.dir=="right") and (self.dir=="left" and -16 or 16) or 0,
-        (self.dir=="up" or self.dir=="down") and (self.dir=="up" and -16 or 16) or 0)[1]
-      or self:collisionTable(megautils.state().sectionHandler.sections, 
-        (self.dir=="left" or self.dir=="right") and (self.dir=="left" and -16 or 16) or 0,
-        (self.dir=="up" or self.dir=="down") and (self.dir=="up" and -16 or 16) or 0)[1]
-      camera.main.speed = self.spd
-      camera.main.player = self.player
-      camera.main.updateSections = false
-      camera.main.freeze = false
+      if self.dir == "left" then
+        self:left()
+      elseif self.dir == "right" then
+        self:right()
+      elseif self.dir == "up" then
+        self:up()
+      elseif self.dir == "down" then
+        self:down()
+      end
     end
   elseif self.state == 2 then
     if camera.main.tweenFinished then
@@ -149,7 +197,7 @@ function bossdoor:update(dt)
     if self.segments >= self.maxSegments and not megautils.state().system.cameraUpdate then
       self.timer = 0
       camera.main.freeze = true
-      camera.main.updateSections = true
+      camera.main.dontUpdateSections = false
       megautils.state().system.cameraUpdate = function()
         camera.main:updateBounds()
         camera.main.toSection = nil
@@ -159,17 +207,21 @@ function bossdoor:update(dt)
           globals.allPlayers[i].control = true
           globals.allPlayers[i].doAnimation = true
         end
-        megautils.state().system.cameraUpdate = nil
         camera.main.once = false
         camera.main.transition = false
         camera.main.preTrans = false
+        megautils.state().system.cameraUpdate = function()
+            if camera.main then
+              camera.main:updateBounds()
+            end
+          end
       end
       self.state = 0
     end
   end
 end
 
-function bossdoor:draw()
+function bossDoor:draw()
   if self.useMapTiles or megautils.outside(self) then return end
   love.graphics.setColor(1, 1, 1, 1)
   for i=1, self.segments do

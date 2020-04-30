@@ -44,7 +44,7 @@ function smallHealth:update(dt)
     self:setGravityMultiplier("flipWithPlayer", globals.mainPlayer.gravityMultipliers.gravityFlip or 1)
   end
   if not self.despawn and table.contains(smallHealth.banIds, self.id) then
-    megautils.remove(self, true)
+    megautils.removeq(self)
     return
   elseif not self.once then
     self.once = true
@@ -59,9 +59,9 @@ function smallHealth:update(dt)
       if not self.despawn then
         smallHealth.banIds[#smallHealth.banIds+1] = self.id
       end
-      megautils.state().sectionHandler:removeEntity(self.spawner)
-      megautils.remove(self.spawner, true)
-      megautils.remove(self, true)
+      section.removeEntity(self.spawner)
+      megautils.removeq(self.spawner)
+      megautils.removeq(self)
       return
     end
   end
@@ -71,9 +71,9 @@ function smallHealth:update(dt)
       self.render = math.wrap(self.timer, 0, 8) > 4
     end
     if self.timer == 400 then
-      megautils.state().sectionHandler:removeEntity(self.spawner)
-      megautils.remove(self.spawner, true)
-      megautils.remove(self, true)
+      section.removeEntity(self.spawner)
+      megautils.removeq(self.spawner)
+      megautils.removeq(self)
     end
   end
   self.anim:update(1/60)
@@ -148,7 +148,7 @@ function health:update(dt)
     self:setGravityMultiplier("flipWithPlayer", globals.mainPlayer.gravityMultipliers.gravityFlip or 1)
   end
   if not self.despawn and table.contains(health.banIds, self.id) then
-    megautils.remove(self, true)
+    megautils.removeq(self)
     return
   elseif not self.once then
     self.once = true
@@ -163,9 +163,9 @@ function health:update(dt)
       if not self.despawn then
         health.banIds[#health.banIds+1] = self.id
       end
-      megautils.state().sectionHandler:removeEntity(self.spawner)
-      megautils.remove(self.spawner, true)
-      megautils.remove(self, true)
+      section.removeEntity(self.spawner)
+      megautils.removeq(self.spawner)
+      megautils.removeq(self)
       return
     end
   end
@@ -175,9 +175,9 @@ function health:update(dt)
       self.render = math.wrap(self.timer, 0, 8) > 4
     end
     if self.timer == 400 then
-      megautils.state().sectionHandler:removeEntity(self.spawner)
-      megautils.remove(self.spawner, true)
-      megautils.remove(self, true)
+      section.removeEntity(self.spawner)
+      megautils.removeq(self.spawner)
+      megautils.removeq(self)
     end
   end
   self.anim:update(1/60)
@@ -253,7 +253,7 @@ function smallEnergy:update(dt)
     self:setGravityMultiplier("flipWithPlayer", globals.mainPlayer.gravityMultipliers.gravityFlip or 1)
   end
   if not self.despawn and table.contains(smallEnergy.banIds, self.id) then
-    megautils.remove(self, true)
+    megautils.removeq(self)
     return
   elseif not self.once then
     self.once = true
@@ -269,9 +269,9 @@ function smallEnergy:update(dt)
       if not self.despawn then
         smallEnergy.banIds[#smallEnergy.banIds+1] = self.id
       end
-      megautils.state().sectionHandler:removeEntity(self.spawner)
-      megautils.remove(self.spawner, true)
-      megautils.remove(self, true)
+      section.removeEntity(self.spawner)
+      megautils.removeq(self.spawner)
+      megautils.removeq(self)
       return
     end
   end
@@ -281,9 +281,9 @@ function smallEnergy:update(dt)
       self.render = math.wrap(self.timer, 0, 8) > 4
     end
     if self.timer == 400 then
-      megautils.state().sectionHandler:removeEntity(self.spawner)
-      megautils.remove(self.spawner, true)
-      megautils.remove(self, true)
+      section.removeEntity(self.spawner)
+      megautils.removeq(self.spawner)
+      megautils.removeq(self)
     end
   end
   self.anim:update(1/60)
@@ -367,7 +367,7 @@ function energy:update(dt)
     self:setGravityMultiplier("flipWithPlayer", globals.mainPlayer.gravityMultipliers.gravityFlip or 1)
   end
   if not self.despawn and table.contains(energy.banIds, self.id) then
-    megautils.remove(self, true)
+    megautils.removeq(self)
     return
   elseif not self.once then
     self.once = true
@@ -383,9 +383,9 @@ function energy:update(dt)
       if not self.despawn then
         energy.banIds[#energy.banIds+1] = self.id
       end
-      megautils.state().sectionHandler:removeEntity(self.spawner)
-      megautils.remove(self.spawner, true)
-      megautils.remove(self, true)
+      section.removeEntity(self.spawner)
+      megautils.removeq(self.spawner)
+      megautils.removeq(self)
       return
     end
   end
@@ -395,9 +395,9 @@ function energy:update(dt)
       self.render = math.wrap(self.timer, 0, 8) > 4
     end
     if self.timer == 400 then
-      megautils.state().sectionHandler:removeEntity(self.spawner)
-      megautils.remove(self.spawner, true)
-      megautils.remove(self, true)
+      section.removeEntity(self.spawner)
+      megautils.removeq(self.spawner)
+      megautils.removeq(self)
     end
   end
   self.anim:update(1/60)
@@ -487,7 +487,7 @@ function life:update(dt)
     self:setGravityMultiplier("flipWithPlayer", globals.mainPlayer.gravityMultipliers.gravityFlip or 1)
   end
   if not self.despawn and table.contains(life.banIds, self.id) then
-    megautils.remove(self, true)
+    megautils.removeq(self)
     return
   elseif not self.once then
     self.once = true
@@ -503,18 +503,18 @@ function life:update(dt)
         if not self.despawn then
           life.banIds[#life.banIds+1] = self.id
         end
-        megautils.state().sectionHandler:removeEntity(self.spawner)
-        megautils.remove(self.spawner, true)
-        megautils.remove(self, true)
+        section.removeEntity(self.spawner)
+        megautils.removeq(self.spawner)
+        megautils.removeq(self)
       else
         globals.lives = math.min(globals.lives+1, globals.maxLives)
         if not self.despawn then
           life.banIds[#life.banIds+1] = self.id
         end
         megautils.playSound("life")
-        megautils.state().sectionHandler:removeEntity(self.spawner)
-        megautils.remove(self.spawner, true)
-        megautils.remove(self, true)
+        section.removeEntity(self.spawner)
+        megautils.removeq(self.spawner)
+        megautils.removeq(self)
       end
       return
     end
@@ -525,9 +525,9 @@ function life:update(dt)
       self.render = math.wrap(self.timer, 0, 8) > 4
     end
     if self.timer == 400 then
-      megautils.state().sectionHandler:removeEntity(self.spawner)
-      megautils.remove(self.spawner, true)
-      megautils.remove(self, true)
+      section.removeEntity(self.spawner)
+      megautils.removeq(self.spawner)
+      megautils.removeq(self)
     end
   end
 end
@@ -642,7 +642,7 @@ function eTank:update(dt)
     self:setGravityMultiplier("flipWithPlayer", globals.mainPlayer.gravityMultipliers.gravityFlip or 1)
   end
   if not self.despawn and table.contains(eTank.banIds, self.id) then
-    megautils.remove(self, true)
+    megautils.removeq(self)
     return
   elseif not self.once then
     self.once = true
@@ -658,9 +658,9 @@ function eTank:update(dt)
         eTank.banIds[#eTank.banIds+1] = self.id
       end
       megautils.playSound("life")
-      megautils.state().sectionHandler:removeEntity(self.spawner)
-      megautils.remove(self.spawner, true)
-      megautils.remove(self, true)
+      section.removeEntity(self.spawner)
+      megautils.removeq(self.spawner)
+      megautils.removeq(self)
       return
     end
   end
@@ -670,9 +670,9 @@ function eTank:update(dt)
       self.render = math.wrap(self.timer, 0, 8) > 4
     end
     if self.timer == 400 then
-      megautils.state().sectionHandler:removeEntity(self.spawner)
-      megautils.remove(self.spawner, true)
-      megautils.remove(self, true)
+      section.removeEntity(self.spawner)
+      megautils.removeq(self.spawner)
+      megautils.removeq(self)
     end
   end
   self.anim:update(1/60)
@@ -752,7 +752,7 @@ function wTank:update(dt)
     self:setGravityMultiplier("flipWithPlayer", globals.mainPlayer.gravityMultipliers.gravityFlip or 1)
   end
   if not self.despawn and table.contains(wTank.banIds, self.id) then
-    megautils.remove(self, true)
+    megautils.removeq(self)
     return
   elseif not self.once then
     self.once = true
@@ -768,9 +768,9 @@ function wTank:update(dt)
         wTank.banIds[#wTank.banIds+1] = self.id
       end
       megautils.playSound("life")
-      megautils.state().sectionHandler:removeEntity(self.spawner)
-      megautils.remove(self.spawner, true)
-      megautils.remove(self, true)
+      section.removeEntity(self.spawner)
+      megautils.removeq(self.spawner)
+      megautils.removeq(self)
       return
     end
   end
@@ -780,9 +780,9 @@ function wTank:update(dt)
       self.render = math.wrap(self.timer, 0, 8) > 4
     end
     if self.timer == 400 then
-      megautils.state().sectionHandler:removeEntity(self.spawner)
-      megautils.remove(self.spawner, true)
-      megautils.remove(self, true)
+      section.removeEntity(self.spawner)
+      megautils.removeq(self.spawner)
+      megautils.removeq(self)
     end
   end
   self.anim:update(1/60)

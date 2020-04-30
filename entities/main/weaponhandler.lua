@@ -66,7 +66,7 @@ function weaponHandler:removeWeaponShots()
     for _, i in ipairs(weaponHandler.removeGroups[self.current]) do
       if megautils.groups()[i .. self.id] then
         for _, v in ipairs(megautils.groups()[i .. self.id]) do
-          megautils.remove(v, true)
+          megautils.removeq(v)
         end
       end
     end

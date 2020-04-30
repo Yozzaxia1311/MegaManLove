@@ -223,18 +223,14 @@ concmd["checkpoint"] = {
 }
 
 function cmdCheckpoints(cmd)
-  if megautils.state().sectionHandler then
-    local result = {globals.checkpoint}
-    megautils.state().sectionHandler:iterate(function(e)
-        if e:is(checkpoint) and e.name ~= globals.checkpoint then
-          result[#result+1] = e.name
-        end
-      end)
-    for i=1, #result do
-      console.print(result[i])
-    end
-  else
-    console.print("This state does not have a section handler")
+  local result = {globals.checkpoint}
+  section.iterate(function(e)
+      if e:is(checkpoint) and e.name ~= globals.checkpoint then
+        result[#result+1] = e.name
+      end
+    end)
+  for i=1, #result do
+    console.print(result[i])
   end
 end
 concmd["checkpoints"] = {

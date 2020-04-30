@@ -39,7 +39,7 @@ end
 function stickMan:healthChanged(o, c, i)
   if o.dinked then return end
   if c < 0 and not o:is(megaChargedBuster) and not o:is(megaSemiBuster) then --Remove shots
-    megautils.remove(o, true)
+    megautils.removeq(o)
   end
   if self.maxIFrame ~= self.iFrame then return end
   if (o:is(megaSemiBuster) or self:checkTrue(self.canBeInvincible)) and o.dink then --Semi charged shots get reflected
@@ -61,7 +61,7 @@ function stickMan:healthChanged(o, c, i)
   if self.health <= 0 then
     if megautils.groups().removeOnDefeat then
       for k, v in ipairs(megautils.groups().removeOnDefeat) do
-        megautils.remove(v, true)
+        megautils.removeq(v)
       end
     end
     explodeParticle.createExplosion(self.transform.x+((self.collisionShape.w/2)-24/2),
@@ -73,12 +73,12 @@ function stickMan:healthChanged(o, c, i)
       megautils.resetGameObjects()
       megautils.gotoState("states/weaponget.state.lua")
     end)
-    megautils.remove(self, true)
+    megautils.removeq(self)
     megautils.playSound("die")
   elseif self.changeHealth < 0 then
     megautils.add(harm, self)
     if o:is(megaChargedBuster) then
-      megautils.remove(o, true)
+      megautils.removeq(o)
     end
     megautils.playSound("enemyHit")
   end
@@ -91,7 +91,7 @@ function stickMan:update(dt)
         megautils.resetGameObjects()
         megautils.gotoState("states/menu.state.lua")
       end)
-      megautils.remove(self, true)
+      megautils.removeq(self)
     elseif globals.mainPlayer then
       self.s = 1
       globals.mainPlayer.control = false

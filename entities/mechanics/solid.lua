@@ -489,7 +489,7 @@ function solid:new(x, y, w, h)
   self.isSolid = 1
   self.added = function(self)
     self:addToGroup("despawnable")
-    self:addStatic()
+    --self:makeStatic()
   end
 end
 
@@ -535,7 +535,7 @@ function slope:new(x, y, mask)
   self.isSolid = 1
   self.added = function(self)
     self:addToGroup("despawnable")
-    self:addStatic()
+    self:makeStatic()
   end
 end
 

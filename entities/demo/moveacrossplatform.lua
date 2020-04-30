@@ -52,7 +52,7 @@ function moveAcrossPlatform:update(dt)
   end
   collision.doCollision(self)
   if megautils.outside(self, 4, 4) then
-    megautils.remove(self, true)
+    megautils.removeq(self)
   end
 end
 

@@ -38,7 +38,7 @@ function protoSemiBuster:update(dt)
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
   if megautils.outside(self) then
-    megautils.remove(self, true)
+    megautils.removeq(self)
   end
 end
 
@@ -91,7 +91,7 @@ function protoChargedBuster:update(dt)
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
   if megautils.outside(self) then
-    megautils.remove(self, true)
+    megautils.removeq(self)
   end
 end
 
@@ -156,7 +156,7 @@ function bassBuster:update(dt)
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
   if megautils.outside(self) or (not self.treble and not self.dinked and col) then
-    megautils.remove(self, true)
+    megautils.removeq(self)
   end
 end
 
@@ -216,7 +216,7 @@ function megaBuster:update(dt)
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
   if megautils.outside(self) then
-    megautils.remove(self, true)
+    megautils.removeq(self)
   end
 end
 
@@ -269,7 +269,7 @@ function megaSemiBuster:update(dt)
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
   if megautils.outside(self) then
-    megautils.remove(self, true)
+    megautils.removeq(self)
   end
 end
 
@@ -323,7 +323,7 @@ function megaChargedBuster:update(dt)
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
   if megautils.outside(self) then
-    megautils.remove(self, true)
+    megautils.removeq(self)
   end
 end
 
@@ -426,14 +426,14 @@ function trebleBoost:update(dt)
   elseif self.s == 5 then
     self.timer = self.timer + 1
     if self.timer == 20 then
-      megautils.remove(self, true)
+      megautils.removeq(self)
     end
   end
   self:face(self.side)
   self:setGravityMultiplier("global", self.player.gravity >= 0 and 1 or -1)
   self.anims[self.c].flippedV = self.gravity < 0
   if megautils.outside(self) then
-    megautils.remove(self, true)
+    megautils.removeq(self)
   end
 end
 
@@ -561,7 +561,7 @@ function rushJet:update(dt)
   self:face(self.side)
   self.anims[self.c].flippedV = self.player.gravity < 0
   if megautils.outside(self) then
-    megautils.remove(self, true)
+    megautils.removeq(self)
   end
 end
 
@@ -695,7 +695,7 @@ function rushCoil:update(dt)
   self:setGravityMultiplier("global", self.player.gravity >= 0 and 1 or -1)
   self.anims[self.c].flippedV = self.gravity < 0
   if megautils.outside(self) then
-    megautils.remove(self, true)
+    megautils.removeq(self)
   end
 end
 
@@ -740,7 +740,7 @@ function stickWeapon:update(dt)
   end
   self:moveBy(self.velocity.velx, self.velocity.vely)
   if megautils.outside(self) then
-    megautils.remove(self, true)
+    megautils.removeq(self)
   end
 end
 

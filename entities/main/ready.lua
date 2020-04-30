@@ -36,7 +36,7 @@ function ready:update(dt)
       if self.proto and self.music then
         megautils.playMusic(unpack(self.music))
       end
-      megautils.remove(self, true)
+      megautils.removeq(self)
     end
   end
 end

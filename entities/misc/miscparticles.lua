@@ -31,9 +31,9 @@ function slideParticle:update(dt)
   self:face(self.side)
   self.anim:update(1/60)
   if self.anim.looped then
-    megautils.remove(self, true)
+    megautils.removeq(self)
   elseif megautils.outside(self) then
-    megautils.remove(self, true)
+    megautils.removeq(self)
   end
 end
 
@@ -68,9 +68,9 @@ end
 function damageSteam:update(dt)
   self.anim:update(1/60)
   if self.anim.looped then
-    megautils.remove(self, true)
+    megautils.removeq(self)
   elseif megautils.outside(self) then
-    megautils.remove(self, true)
+    megautils.removeq(self)
   end
 end
 
@@ -119,7 +119,7 @@ function airBubble:update(dt)
   end
   self.transform.y = self.transform.y - 1
   if megautils.outside(self) or self:check(0, -8) then
-    megautils.remove(self, true)
+    megautils.removeq(self)
   end
 end
 
@@ -163,7 +163,7 @@ function kickParticle:update(dt)
   if not self.once then
     self.once = true
     if not collision.checkSolid(self) then
-      megautils.remove(self, true)
+      megautils.removeq(self)
       return
     end
     self.render = true
@@ -173,9 +173,9 @@ function kickParticle:update(dt)
   self.transform.x = self.transform.x + (0.1 * self.side)
   self.transform.y = self.transform.y +  0.25
   if self.anim.looped then
-    megautils.remove(self, true)
+    megautils.removeq(self)
   elseif megautils.outside(self) then
-    megautils.remove(self, true)
+    megautils.removeq(self)
   end
 end
 
@@ -223,9 +223,9 @@ function angleParticle:update(dt)
   self.anim:update(1/60)
   self:moveBy(self.velocity.velx, self.velocity.vely)
   if self.anim.looped then
-    megautils.remove(self, true)
+    megautils.removeq(self)
   elseif megautils.outside(self) then
-    megautils.remove(self, true)
+    megautils.removeq(self)
   end
 end
 
@@ -260,7 +260,7 @@ end
 
 function harm:afterUpdate(dt)
   if not self.follow or self.follow.isRemoved then
-    megautils.remove(self, true)
+    megautils.removeq(self)
     return
   end
   self.transform.x = math.round(self.follow.transform.x)+math.round(self.follow.collisionShape.w/2)-12
@@ -268,7 +268,7 @@ function harm:afterUpdate(dt)
   self.timer = math.min(self.timer+1, 32)
   self.render = not self.follow.flashRender
   if self.timer == 32 or self.follow.isRemoved then
-    megautils.remove(self, true)
+    megautils.removeq(self)
   end
 end
 
@@ -298,7 +298,7 @@ end
 function explodeParticle:update(dt)
   self:moveBy(self.velocity.velx, self.velocity.vely)
   if megautils.outside(self) then
-    megautils.remove(self, true)
+    megautils.removeq(self)
   end
   self.anim:update(1/60)
 end
@@ -343,7 +343,7 @@ function absorbParticle:update(dt)
     self.pos = math.min(self.pos+(self.spd/view.w), 1)
   end
   if self:collision(self.towards) or self.towards.isRemoved then
-    megautils.remove(self, true)
+    megautils.removeq(self)
   end
   self.anim:update(1/60)
 end
@@ -385,7 +385,7 @@ function absorb:update(dt)
     megautils.playSound("absorb")
     absorbParticle.createAbsorbtion(self.towards, self.spd)
     if self.times == self.maxTimes then
-      megautils.remove(self, true)
+      megautils.removeq(self)
     end
   end
 end
@@ -419,7 +419,7 @@ end
 function smallBlast:update(dt)
   self.anim:update(1/60)
   if megautils.outside(self) or self.anim.looped then
-    megautils.remove(self, true)
+    megautils.removeq(self)
   end
 end
 
@@ -466,6 +466,6 @@ function blast:update(dt)
     self.times = self.times + 1
   end
   if self.times == self.max then
-    megautils.remove(self, true)
+    megautils.removeq(self)
   end
 end

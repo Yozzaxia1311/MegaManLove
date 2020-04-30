@@ -40,7 +40,7 @@ end
 function met:healthChanged(o, c, i)
   if o.dinked == 1 then return end
   if c < 0 and not self:checkTrue(self.canBeInvincible) and not o:is(megaChargedBuster) then
-    megautils.remove(o, true)
+    megautils.removeq(o)
   end
   if self.maxIFrame ~= self.iFrame then return end
   if self:checkTrue(self.canBeInvincible) and o.dink then
@@ -74,11 +74,11 @@ function met:healthChanged(o, c, i)
   if self.health <= 0 then
     megautils.add(smallBlast, self.transform.x-4, self.transform.y-4)
     megautils.dropItem(self.transform.x, self.transform.y+(self.gravity >= 0 and -4 or 4))
-    megautils.remove(self, true)
+    megautils.removeq(self)
     megautils.playSound("enemyExplode")
   elseif self.changeHealth < 0 then
     if o:is(megaChargedBuster) then
-      megautils.remove(o, true)
+      megautils.removeq(o)
     end
     megautils.playSound("enemyHit")
   end
@@ -127,7 +127,7 @@ function met:update(dt)
   self:updateIFrame()
   self:updateFlash()
   if megautils.outside(self) then
-    megautils.remove(self, true)
+    megautils.removeq(self)
   end
 end
 
@@ -194,7 +194,7 @@ function metBullet:update(dt)
     self:hurt(self:collisionTable(globals.allPlayers), megautils.diffValue(-2, {easy=-1, normal=-2, hard=-3}), 80)
   end
   if megautils.outside(self) then
-    megautils.remove(self, true)
+    megautils.removeq(self)
   end
 end
 

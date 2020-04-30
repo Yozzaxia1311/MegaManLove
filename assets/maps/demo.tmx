@@ -251,7 +251,7 @@
    <object id="135" name="solid" x="640" y="864" width="192" height="32"/>
    <object id="136" name="solid" x="608" y="864" width="16" height="32"/>
    <object id="139" name="space" x="656" y="528" width="64" height="112"/>
-   <object id="142" name="player" x="64" y="400" width="16" height="16">
+   <object id="142" name="player" x="672" y="160" width="16" height="16">
     <properties>
      <property name="checkpoint" value="start"/>
      <property name="grav" type="int" value="1"/>
@@ -372,7 +372,7 @@
     </properties>
    </object>
   </objectgroup>
-  <objectgroup id="6" name="transitions">
+  <objectgroup id="6" name="transitions" locked="1">
    <object id="155" name="bossDoor" x="480" y="800" width="32" height="64"/>
    <object id="156" name="bossDoor" x="736" y="704" width="32" height="160">
     <properties>
@@ -407,21 +407,10 @@
      <property name="useTileLayer" value="layout"/>
     </properties>
    </object>
-   <object id="168" name="lockChange" x="1152" y="-32" width="112" height="256">
-    <properties>
-     <property name="name" value="two"/>
-    </properties>
-   </object>
-   <object id="198" name="lockChange" x="1008" y="-32" width="144" height="144">
-    <properties>
-     <property name="name" value="one"/>
-    </properties>
-   </object>
   </objectgroup>
-  <objectgroup id="3" name="sections" visible="0">
+  <objectgroup id="3" name="sections" locked="1">
    <object id="5" name="section" x="-16" y="224" width="768" height="224"/>
    <object id="6" name="section" x="496" y="0" width="256" height="224"/>
-   <object id="7" name="section" x="752" y="0" width="512" height="448"/>
    <object id="9" name="section" x="496" y="448" width="592" height="224"/>
    <object id="10" name="section" x="240" y="448" width="256" height="224"/>
    <object id="11" name="section" x="240" y="672" width="256" height="224"/>
@@ -432,16 +421,8 @@
    <object id="16" name="section" x="1008" y="896" width="256" height="224"/>
    <object id="110" name="section" x="624" y="1120" width="256" height="224"/>
    <object id="111" name="section" x="496" y="896" width="256" height="224"/>
-   <object id="147" name="lockSection" x="752" y="0" width="512" height="224">
-    <properties>
-     <property name="name" value="one"/>
-    </properties>
-   </object>
-   <object id="148" name="lockSection" x="1008" y="0" width="256" height="448">
-    <properties>
-     <property name="name" value="two"/>
-    </properties>
-   </object>
+   <object id="147" name="section" x="752" y="0" width="512" height="224"/>
+   <object id="148" name="section" x="1008" y="0" width="256" height="448"/>
   </objectgroup>
  </group>
 </map>
