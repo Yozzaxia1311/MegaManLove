@@ -16,7 +16,6 @@ function right:new(x, y, h, scrollx, scrolly, spd, p)
   self.platform = p
   self.added = function(self)
     self:addToGroup("despawnable")
-    self:addToGroup("sectionConnector")
   end
 end
 
@@ -58,7 +57,6 @@ function left:new(x, y, h, scrollx, scrolly, spd, p)
   self.platform = p
   self.added = function(self)
     self:addToGroup("despawnable")
-    self:addToGroup("sectionConnector")
   end
 end
 
@@ -100,7 +98,6 @@ function down:new(x, y, w, scrollx, scrolly, spd, p)
   self.platform = p
   self.added = function(self)
     self:addToGroup("despawnable")
-    self:addToGroup("sectionConnector")
   end
 end
 
@@ -142,7 +139,6 @@ function up:new(x, y, w, scrollx, scrolly, spd, p)
   self.platform = p
   self.added = function(self)
     self:addToGroup("despawnable")
-    self:addToGroup("sectionConnector")
   end
 end
 
@@ -184,7 +180,6 @@ function upLadder:new(x, y, w, scrollx, scrolly, spd, p)
   self.platform = p
   self.added = function(self)
     self:addToGroup("despawnable")
-    self:addToGroup("sectionConnector")
     self.ladder = self:collisionTable(megautils.groups().ladder)[1]
   end
 end
