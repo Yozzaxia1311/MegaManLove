@@ -4,7 +4,7 @@ megautils.resetStateFuncs.camera = function()
   camera.main = nil
   section.hash = {}
   section.names = {}
-  section.activated = {}
+  section.init = {}
 end
 
 function camera:new(x, y, doScrollX, doScrollY)
@@ -274,18 +274,9 @@ function camera:updateBounds(dae)
   local bounds
   
   if self.curBoundName and section.names[self.curBoundName] then
-    if not dae then
-      section.doSpatialUpdate(self.transform.x, self.transform.y, self.collisionShape.w, self.collisionShape.h)
-    end
     bounds = section.names[self.curBoundName]
   else
-    local sects
-    if dae then
-      sects = section.getSections(self.transform.x, self.transform.y, self.collisionShape.w, self.collisionShape.h)
-    else
-      section.doSpatialUpdate(self.transform.x, self.transform.y, self.collisionShape.w, self.collisionShape.h)
-      sects = section.activated
-    end
+    local sects = section.getSections(self.transform.x, self.transform.y, self.collisionShape.w, self.collisionShape.h)
     
     local biggestArea = 0
     local lx, ly = self.transform.x, self.transform.y
@@ -294,9 +285,11 @@ function camera:updateBounds(dae)
       local x, y, x2, y2 = s.transform.x, s.transform.y, s.transform.x+s.collisionShape.w, s.transform.y+s.collisionShape.h
       local p = {}
       
-      if megautils.groups().sectionTransitionStopper then
+      if megautils.groups().sectionConnector then
         for k, v in ipairs(globals.allPlayers) do
-          if #v:collisionTable(megautils.groups().sectionTransitionStopper) == 0 then
+          if #v:collisionTable(megautils.groups().sectionConnector) ~= 0 or
+            rectOverlapsRect(s.transform.x, s.transform.y, s.collisionShape.w, s.collisionShape.h,
+            self.transform.x, self.transform.y, self.collisionShape.w, self.collisionShape.h) then
             p[#p+1] = v
           end
         end
@@ -331,12 +324,24 @@ function camera:updateBounds(dae)
     self.scrolly = bounds.transform.y
     self.scrollw = bounds.collisionShape.w
     self.scrollh = bounds.collisionShape.h
-    self.bounds = bounds
+    if self.bounds ~= bounds then
+      local old = self.bounds
+      if not dae and old then
+        old:deactivate(bounds)
+      end
+      self.bounds = bounds
+      if not dae then
+        self.bounds:activate(old)
+      end
+    end
   else
     self.scrollx = self.transform.x
     self.scrolly = self.transform.y
     self.scrollw = self.collisionShape.w
     self.scrollh = self.collisionShape.h
+    if not dae and self.bounds then
+      self.bounds:deactivate()
+    end
     self.bounds = nil
   end
 end
@@ -348,6 +353,15 @@ addobjects.register("section", function(v)
     v.properties.lockUp, v.properties.lockDown, v.properties.name))
 end, 1)
 
+addobjects.register("section", function(v)
+  if #section.init ~= 0 then
+    for k, v in ipairs(section.init) do
+      v:deactivate()
+    end
+  end
+  section.init = {}
+end, 2)
+
 function section:new(x, y, w, h, lx, ly, lw, lh, n)
   section.super.new(self)
   self.transform.x = x
@@ -357,28 +371,28 @@ function section:new(x, y, w, h, lx, ly, lw, lh, n)
   self.lockUp = (ly==nil) or ly
   self.lockRight = (lw==nil) or lw
   self.lockDown = (lh==nil) or lh
-  self.active = true
   if n then
     self.name = n
     section.names[self.name] = self
   end
-  self.group = self:collisionTable(megautils.groups().despawnable)  
   self.cells = {}
+  self.group = self:collisionTable(megautils.groups().despawnable)
+  section.init[#section.init+1] = self
 end
 
-function section:activate()
-  self.active = true
+function section:activate(old)
   for k, v in ipairs(self.group) do
-    if not v.isAdded and not megautils.inAddQueue(v) then
+    if not v.isAdded and not megautils.inAddQueue(v) and
+      (not old or not table.contains(old, v)) then
       megautils.adde(v)
     end
   end
 end
 
-function section:deactivate()
-  --self.active = false
+function section:deactivate(new)
   for k, v in ipairs(self.group) do
-    if not v.isRemoved and not v.dontRemove and not megautils.inRemoveQueue(v) then
+    if not v.isRemoved and not v.dontRemove and not megautils.inRemoveQueue(v) and
+      (not new or not table.contains(new, v)) then
       megautils.remove(v)
     end
   end
@@ -386,36 +400,7 @@ end
 
 section.hash = {}
 section.names = {}
-section.activated = {}
-
-function section.doSpatialUpdate(xx, yy, ww, hh)
-  local cx, cy = math.floor(xx/view.w), math.floor(yy/view.h)
-  local cx2, cy2 = math.floor((xx+ww)/view.w), math.floor((yy+hh)/view.h)
-  
-  for x=cx, cx2 do
-    for y=cy, cy2 do
-      if section.hash[x] and section.hash[x][y] then
-        for k, v in ipairs(section.hash[x][y]) do
-          if not table.contains(section.activated, self) then
-            section.activated[#section.activated+1] = self
-          end
-        end
-      end
-    end
-  end
-  
-  for k, v in ipairs(section.activated) do
-    if v.active then
-      v:deactivate()
-    end
-  end
-  
-  for k, v in ipairs(section.activated) do
-    if rectOverlapsRect(v.transform.x, v.transform.y, v.collisionShape.w, v.collisionShape.h, xx, yy, ww, hh) and not v.active then
-      v:activate()
-    end
-  end
-end
+section.init = {}
 
 function section.getSections(xx, yy, ww, hh)
   local result = {}
@@ -448,7 +433,6 @@ function section.removeSection(s)
       end
     end
   end
-  table.quickremovevaluearray(section.activated, self)
 end
 
 function section.addSection(s)
@@ -465,7 +449,6 @@ function section.addSection(s)
         section.hash[x][y] = {}
       end
       section.hash[x][y][#section.hash[x][y]+1] = s
-      section.activated[#section.activated+1] = s
       s.cells[#s.cells+1] = {["x"]=x, ["y"]=y}
     end
   end

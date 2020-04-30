@@ -72,7 +72,7 @@ addobjects.register("player", function(v)
     camera.main:doView(999, 999)
     camera.once = nil
   end
-end, 2)
+end, 3)
 
 addobjects.register("player", function(v)
   if v.properties.checkpoint == globals.checkpoint then

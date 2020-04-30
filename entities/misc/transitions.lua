@@ -16,7 +16,7 @@ function right:new(x, y, h, scrollx, scrolly, spd, p)
   self.platform = p
   self.added = function(self)
     self:addToGroup("despawnable")
-    self:addToGroup("sectionTransitionStopper")
+    self:addToGroup("sectionConnector")
   end
 end
 
@@ -58,7 +58,7 @@ function left:new(x, y, h, scrollx, scrolly, spd, p)
   self.platform = p
   self.added = function(self)
     self:addToGroup("despawnable")
-    self:addToGroup("sectionTransitionStopper")
+    self:addToGroup("sectionConnector")
   end
 end
 
@@ -100,7 +100,7 @@ function down:new(x, y, w, scrollx, scrolly, spd, p)
   self.platform = p
   self.added = function(self)
     self:addToGroup("despawnable")
-    self:addToGroup("sectionTransitionStopper")
+    self:addToGroup("sectionConnector")
   end
 end
 
@@ -142,7 +142,7 @@ function up:new(x, y, w, scrollx, scrolly, spd, p)
   self.platform = p
   self.added = function(self)
     self:addToGroup("despawnable")
-    self:addToGroup("sectionTransitionStopper")
+    self:addToGroup("sectionConnector")
   end
 end
 
@@ -184,7 +184,7 @@ function upLadder:new(x, y, w, scrollx, scrolly, spd, p)
   self.platform = p
   self.added = function(self)
     self:addToGroup("despawnable")
-    self:addToGroup("sectionTransitionStopper")
+    self:addToGroup("sectionConnector")
     self.ladder = self:collisionTable(megautils.groups().ladder)[1]
   end
 end
@@ -251,19 +251,19 @@ function sectionPrioritySetter:update(dt)
   end
 end
 
-sectionTransitionStopper = basicEntity:extend()
+sectionConnector = basicEntity:extend()
 
-addobjects.register("sectionTransitionStopper", function(v)
-  megautils.add(sectionTransitionStopper, v.x, v.y, v.width, v.height)
+addobjects.register("sectionConnector", function(v)
+  megautils.add(sectionConnector, v.x, v.y, v.width, v.height)
 end)
 
-function sectionTransitionStopper:new(x, y, w, h)
-  sectionTransitionStopper.super.new(self, true)
+function sectionConnector:new(x, y, w, h)
+  sectionConnector.super.new(self, true)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(w, h)
   self.added = function(self)
     self:addToGroup("despawnable")
-    self:addToGroup("sectionTransitionStopper")
+    self:addToGroup("sectionConnector")
   end
 end
