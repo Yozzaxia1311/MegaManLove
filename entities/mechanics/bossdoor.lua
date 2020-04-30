@@ -45,9 +45,10 @@ function bossDoor:left()
   camera.main.transition = true
   camera.main.doScrollY = (self.scrolly~=nil) and self.scrolly or camera.main.doScrollY
   camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
-  camera.main.player = player
-  camera.main.speed = self.spd or 0.8
-  local s = self:collisionTable(section.getBounds(self.transform.x-16, self.transform.y, self.collisionShape.w, self.collisionShape.h), -16, 0)[1]
+  camera.main.player = self.player
+  camera.main.speed = self.spd or 1
+  local s = self:collisionTable(section.getSections(self.transform.x-16, self.transform.y, self.collisionShape.w, self.collisionShape.h), -16, 0)[1]
+  camera.main.toSection = s
   camera.main.transform.x = self.transform.x+16
   camera.main.transX = camera.main.transform.x-camera.main.player.collisionShape.w-28
   camera.main.curBoundName = to.name
@@ -60,9 +61,10 @@ function bossDoor:right()
   camera.main.transition = true
   camera.main.doScrollY = (self.scrolly~=nil) and self.scrolly or camera.main.doScrollY
   camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
-  camera.main.player = player
-  camera.main.speed = self.spd or 0.8
-  local s = self:collisionTable(section.getBounds(self.transform.x+16, self.transform.y, self.collisionShape.w, self.collisionShape.h), 16, 0)[1]
+  camera.main.player = self.player
+  camera.main.speed = self.spd or 1
+  local s = self:collisionTable(section.getSections(self.transform.x+16, self.transform.y, self.collisionShape.w, self.collisionShape.h), 16, 0)[1]
+  camera.main.toSection = s
   camera.main.transform.x = self.transform.x+16-camera.main.collisionShape.w
   camera.main.transX = camera.main.transform.x+camera.main.collisionShape.w+28
   camera.main.curBoundName = s.name
@@ -75,9 +77,10 @@ function bossDoor:up()
   camera.main.transition = true
   camera.main.doScrollY = (self.scrolly~=nil) and self.scrolly or camera.main.doScrollY
   camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
-  camera.main.player = player
-  camera.main.speed = self.spd or 0.8
-  local s = self:collisionTable(section.getBounds(self.transform.x, self.transform.y-16, self.collisionShape.w, self.collisionShape.h), 0, -16)[1]
+  camera.main.player = self.player
+  camera.main.speed = self.spd or 1
+  local s = self:collisionTable(section.getSections(self.transform.x, self.transform.y-16, self.collisionShape.w, self.collisionShape.h), 0, -16)[1]
+  camera.main.toSection = s
   camera.main.transform.y = self.transform.y+16
   camera.main.transY = camera.main.transform.y-camera.main.player.collisionShape.h-28
   camera.main.curBoundName = s.name
@@ -90,9 +93,10 @@ function bossDoor:down()
   camera.main.transition = true
   camera.main.doScrollY = (self.scrolly~=nil) and self.scrolly or camera.main.doScrollY
   camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
-  camera.main.player = player
-  camera.main.speed = self.spd or 0.8
-  local s = self:collisionTable(section.getBounds(self.transform.x, self.transform.y+16, self.collisionShape.w, self.collisionShape.h), 0, 16)[1]
+  camera.main.player = self.player
+  camera.main.speed = self.spd or 1
+  local s = self:collisionTable(section.getSections(self.transform.x, self.transform.y+16, self.collisionShape.w, self.collisionShape.h), 0, 16)[1]
+  camera.main.toSection = s
   camera.main.transform.y = self.transform.y+16-camera.main.collisionShape.h
   camera.main.transY = camera.main.transform.y+camera.main.collisionShape.h+28
   camera.main.curBoundName = s.name
@@ -194,14 +198,14 @@ function bossDoor:update(dt)
       end
       megautils.playSound("bossDoorSfx")
     end
-    if self.segments >= self.maxSegments and not megautils.state().system.cameraUpdate then
+    if self.segments >= self.maxSegments then
       self.timer = 0
       camera.main.freeze = true
       camera.main.dontUpdateSections = false
       megautils.state().system.cameraUpdate = function()
+        camera.main.bounds = nil
         camera.main:updateBounds()
-        camera.main.toSection = nil
-        camera.main.tweenFinished = nil
+        camera.main.tweenFinished = false
         megautils.unfreeze(globals.allPlayers)
         for i=1, #globals.allPlayers do
           globals.allPlayers[i].control = true

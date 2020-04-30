@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="89" height="84" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#d3d3d3" nextlayerid="8" nextobjectid="199">
+<map version="1.2" tiledversion="1.3.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="89" height="84" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#d3d3d3" nextlayerid="8" nextobjectid="201">
  <tileset firstgid="1" source="tilesets/demoTileset.tsx"/>
  <layer id="5" name="bg" width="89" height="84">
   <data encoding="base64" compression="zlib">
@@ -251,7 +251,7 @@
    <object id="135" name="solid" x="640" y="864" width="192" height="32"/>
    <object id="136" name="solid" x="608" y="864" width="16" height="32"/>
    <object id="139" name="space" x="656" y="528" width="64" height="112"/>
-   <object id="142" name="player" x="672" y="160" width="16" height="16">
+   <object id="142" name="player" x="64" y="400" width="16" height="16">
     <properties>
      <property name="checkpoint" value="start"/>
      <property name="grav" type="int" value="1"/>

@@ -21,6 +21,7 @@ function camera:new(x, y, doScrollX, doScrollY)
   self.scrollh = self.collisionShape.h
   self.curPriority = nil
   self.dontUpdateSections = false
+  self.tweenFinished = false
   self.doScrollY = doScrollY == nil and true or doScrollY
   self.doScrollX = doScrollX == nil and true or doScrollX
   self.transX = 0
@@ -91,37 +92,22 @@ function camera:updateCam(spdx, spdy)
         end
       end 
       if self.player then
-        local lx, ly = self.transform.x, self.transform.y
-        local lsx, lsy, lsw, lsh, lb = self.scrollx, self.scrolly, self.scrollw, self.scrollh, self.bounds
-        if self.transitionDirection == "right" then
-          self.transform.x = self.transform.x + self.collisionShape.w
-        elseif self.transitionDirection == "left" then
-          self.transform.x = self.transform.x - self.collisionShape.w
-        elseif self.transitionDirection == "down" then
-          self.transform.y = self.transform.y + self.collisionShape.h
-        elseif self.transitionDirection == "up" then
-          self.transform.y = self.transform.y - self.collisionShape.h
+        local sx, sy, sw, sh
+        local nx, ny = self.transform.x, self.transform.y
+        if self.toSection then
+          sx, sy, sw, sh = self.toSection.transform.x, self.toSection.transform.y, self.toSection.collisionShape.w, self.toSection.collisionShape.h
         end
-        self:updateBounds(true)
-        if self.bounds then
-          for k, v in ipairs(self.bounds) do
-            for i, j in ipairs(v.group) do
-              if j.spawnEarlyDuringTransition and not j.isAdded then
-                megautils.adde(j)
-              end
-            end
-          end
-        end
-        self.transform.x, self.transform.y = lx, ly
-        self.scrollx, self.scrolly, self.scrollw, self.scrollh, self.bounds = lsx, lsy, lsw, lsh, lb
-        local sx, sy, sw, sh = self.scrollx, self.scrolly, self.scrollw, self.scrollh
         if self.transitionDirection == "right" then
           if self.doScrollY then
-            local ny = self.player.transform.y - (view.h/2) + (self.player.collisionShape.h/2) + self.player:camOffY()
-            ny = math.clamp(ny, sy, sy+sh-view.h)
-            self.tween = tween.new(self.speed, self.transform, {x=self.transform.x+self.collisionShape.w, y=ny})
+            ny = self.player.transform.y - (self.collisionShape.h/2) + (self.player.collisionShape.h/2) + self.player:camOffY()
+            if self.toSection then
+              ny = math.clamp(ny, sy, sy+sh-self.collisionShape.h)
+            end
+            nx = self.transform.x+self.collisionShape.w
+            self.tween = tween.new(self.speed, self.transform, {x=nx, y=ny})
           else
-            self.tween = tween.new(self.speed, self.transform, {x=self.transform.x+self.collisionShape.w})
+            nx = self.transform.x+self.collisionShape.w
+            self.tween = tween.new(self.speed, self.transform, {x=nx})
           end
           self.tween2 = {}
           for i=1, #globals.allPlayers do
@@ -129,10 +115,14 @@ function camera:updateCam(spdx, spdy)
           end
         elseif self.transitionDirection == "left" then
           if self.doScrollY then
-            local ny = self.player.transform.y - (view.h/2) + (self.player.collisionShape.h/2) + self.player:camOffY()
-            ny = math.clamp(ny, sy, sy+sh-view.h)
-            self.tween = tween.new(self.speed, self.transform, {x=self.transform.x-self.collisionShape.w, y=ny})
+            local ny = self.player.transform.y - (self.collisionShape.h/2) + (self.player.collisionShape.h/2) + self.player:camOffY()
+            if self.toSection then
+              ny = math.clamp(ny, sy, sy+sh-self.collisionShape.h)
+            end
+            nx = self.transform.x-self.collisionShape.w
+            self.tween = tween.new(self.speed, self.transform, {x=nx, y=ny})
           else
+            nx = self.transform.x-self.collisionShape.w
             self.tween = tween.new(self.speed, self.transform, {x=self.transform.x-self.collisionShape.w})
           end
           self.tween2 = {}
@@ -141,11 +131,15 @@ function camera:updateCam(spdx, spdy)
           end
         elseif self.transitionDirection == "down" then
           if self.doScrollX then
-            local nx = self.player.transform.x - (view.w/2) + (self.player.collisionShape.w/2) + self.player:camOffX()
-            nx = math.clamp(nx, sx, sx+sw-view.w)
-            self.tween = tween.new(self.speed, self.transform, {y=self.transform.y+self.collisionShape.h, x=nx})
+            local nx = self.player.transform.x - (self.collisionShape.w/2) + (self.player.collisionShape.w/2) + self.player:camOffX()
+            if self.toSection then
+              nx = math.clamp(nx, sx, sx+sw-self.collisionShape.w)
+            end
+            ny = self.transform.y+self.collisionShape.h
+            self.tween = tween.new(self.speed, self.transform, {y=ny, x=nx})
           else
-            self.tween = tween.new(self.speed, self.transform, {y=self.transform.y+self.collisionShape.h})
+            ny = self.transform.y+self.collisionShape.h
+            self.tween = tween.new(self.speed, self.transform, {y=ny})
           end
           self.tween2 = {}
           for i=1, #globals.allPlayers do
@@ -153,10 +147,14 @@ function camera:updateCam(spdx, spdy)
           end
         elseif self.transitionDirection == "up" then
           if self.doScrollX then
-            local nx = self.player.transform.x - (view.w/2) + (self.player.collisionShape.w/2) + self.player:camOffX()
-            nx = math.clamp(nx, sx, sx+sw-view.w)
-            self.tween = tween.new(self.speed, self.transform, {y=self.transform.y-self.collisionShape.h, x=nx})
+            local nx = self.player.transform.x - (self.collisionShape.w/2) + (self.player.collisionShape.w/2) + self.player:camOffX()
+            if self.toSection then
+              nx = math.clamp(nx, sx, sx+sw-self.collisionShape.w)
+            end
+            ny = self.transform.y-self.collisionShape.h
+            self.tween = tween.new(self.speed, self.transform, {y=ny, x=nx})
           else
+            ny = self.transform.y-self.collisionShape.h
             self.tween = tween.new(self.speed, self.transform, {y=self.transform.y-self.collisionShape.h})
           end
           self.tween2 = {}
@@ -164,7 +162,24 @@ function camera:updateCam(spdx, spdy)
             self.tween2[i] = tween.new(self.speed, globals.allPlayers[i].transform, {x=self.player.transform.x, y=self.transY})
           end
         end
+        local lx, ly = self.transform.x, self.transform.y
+        local lsx, lsy, lsw, lsh, lb = self.scrollx, self.scrolly, self.scrollw, self.scrollh, self.bounds
+        self.transform.x = nx
+        self.transform.y = ny
+        self.bounds = nil
+        self:updateBounds(true)
+        if self.bounds then
+          for k, v in ipairs(self.bounds.group) do
+            if v.spawnEarlyDuringTransition and not v.isAdded and not megautils.inAddQueue(v) then
+              megautils.adde(v)
+            end
+          end
+        end
+        self.transform.x, self.transform.y = lx, ly
+        self.scrollx, self.scrolly, self.scrollw, self.scrollh, self.bounds = lsx, lsy, lsw, lsh, lb
       end
+      
+      self.toSection = nil
       if self.player.onMovingFloor then
         self.flx = self.player.onMovingFloor.transform.x - self.player.transform.x
       end
@@ -174,14 +189,14 @@ function camera:updateCam(spdx, spdy)
           camera.main.tween2[i]:update(1/60)
         end
         if camera.main.tween:update(1/60) then
-          camera.main.tweenFinished = true
+          camera.main.bounds = nil
+          camera.main:updateBounds(camera.main.dontUpdateSections)
           if not camera.main.dontUpdateSections then
-            camera.main:updateBounds()
+            camera.main.transition = false
+            camera.main.once = false
+            camera.main.preTrans = false
           end
-          camera.main.transition = false
-          camera.main.once = false
-          camera.main.tweenFinished = nil
-          camera.main.preTrans = false
+          camera.main.tweenFinished = true
           if camera.main.freeze then
             megautils.unfreeze(globals.allPlayers)
             for k, v in pairs(globals.allPlayers) do
@@ -196,13 +211,14 @@ function camera:updateCam(spdx, spdy)
               camera.main.player:transferState(globals.allPlayers[i])
             end
           end
-          camera.main.tween = nil
-          camera.main.tween2 = nil
-          megautils.state().system.cameraUpdate = function()
-              if camera.main then
-                camera.main:updateBounds()
+          if not camera.main.dontUpdateSections then
+            camera.main.tweenFinished = false
+            megautils.state().system.cameraUpdate = function()
+                if camera.main then
+                  camera.main:updateBounds()
+                end
               end
-            end
+          end
         end
         if camera.main.player and camera.main.player.onMovingFloor then
           camera.main.player.onMovingFloor.transform.x = camera.main.player.transform.x + camera.main.flx
@@ -225,10 +241,10 @@ function camera:doView(spdx, spdy, without)
   if #globals.allPlayers <= 1 then
     local o = globals.allPlayers[1]
     if self.doScrollX then
-      self.transform.x = math.round(o.transform.x) - (view.w/2) + (o.collisionShape.w/2) + o:camOffX()
+      self.transform.x = math.round(o.transform.x) - (self.collisionShape.w/2) + (o.collisionShape.w/2) + o:camOffX()
     end
     if self.doScrollY then
-      self.transform.y = math.round(o.transform.y) - (view.h/2) + (o.collisionShape.h/2) + o:camOffY()
+      self.transform.y = math.round(o.transform.y) - (self.collisionShape.h/2) + (o.collisionShape.h/2) + o:camOffY()
     end
   else
     local avx, avy = 0, 0
@@ -236,10 +252,10 @@ function camera:doView(spdx, spdy, without)
       local p = globals.allPlayers[i]
       if p ~= without then
         if self.doScrollX then
-          avx = avx+(p.transform.x + o:camOffX() - (view.w/2) + (p.collisionShape.w/2))
+          avx = avx+(p.transform.x + o:camOffX() - (self.collisionShape.w/2) + (p.collisionShape.w/2))
         end
         if self.doScrollY then
-          avy = avy+(p.transform.y + o:camOffY() - (view.h/2) + (p.collisionShape.h/2))
+          avy = avy+(p.transform.y + o:camOffY() - (self.collisionShape.h/2) + (p.collisionShape.h/2))
         end
       end
     end
@@ -251,8 +267,7 @@ function camera:doView(spdx, spdy, without)
     end
   end
   
-  self:updateBounds(true)
-  
+  self:updateBounds()
   local sx, sy, sw, sh = self.scrollx, self.scrolly, self.scrollw, self.scrollh
   
   self.transform.x = math.clamp(self.transform.x, sx, sx+sw-self.collisionShape.w)
@@ -270,49 +285,43 @@ function camera:updateFuncs()
   end
 end
 
-function camera:updateBounds(dae)
+function camera:updateBounds(noBounds)
   local bounds
   
   if self.curBoundName and section.names[self.curBoundName] then
     bounds = section.names[self.curBoundName]
   else
-    local sects = section.getSections(self.transform.x, self.transform.y, self.collisionShape.w, self.collisionShape.h)
-    
+    local tmp = section.getSections(self.transform.x, self.transform.y, self.collisionShape.w, self.collisionShape.h)
     local biggestArea = 0
     local lx, ly = self.transform.x, self.transform.y
+    local sects
     
-    for k, s in ipairs(sects) do
-      local x, y, x2, y2 = s.transform.x, s.transform.y, s.transform.x+s.collisionShape.w, s.transform.y+s.collisionShape.h
-      local p = {}
+    if self.bounds then
+      sects = self.bounds:collisionTable(tmp)
       
       if megautils.groups().sectionConnector then
-        for k, v in ipairs(globals.allPlayers) do
-          if #v:collisionTable(megautils.groups().sectionConnector) ~= 0 or
-            rectOverlapsRect(s.transform.x, s.transform.y, s.collisionShape.w, s.collisionShape.h,
-            self.transform.x, self.transform.y, self.collisionShape.w, self.collisionShape.h) then
-            p[#p+1] = v
+        local bConnectors = self.bounds:collisionTable(megautils.groups().sectionConnector)
+        for k, v in ipairs(bConnectors) do
+          for i, j in ipairs(v:collisionTable(tmp)) do
+            if not table.contains(sects, j) then
+              sects[#sects+1] = j
+            end
           end
         end
       end
-      
-      local cont = not self:collision(s) and #s:collisionTable(p) < #globals.allPlayers
+    else
+      sects = tmp
+    end
+    
+    for k, s in ipairs(sects) do
+      if self:collision(s) then
+        local left, top, right, bottom = s.transform.x, s.transform.y, s.transform.x+s.collisionShape.w, s.transform.y+s.collisionShape.h
+        local cleft, ctop, cright, cbottom = self.transform.x, self.transform.y, self.transform.x+self.collisionShape.w, self.transform.y+self.collisionShape.h
+        local xoverlap = math.max(0, math.min(right, cright) - math.max(left, cleft))
+        local yoverlap = math.max(0, math.min(bottom, cbottom) - math.max(top, ctop))
         
-      if not cont then
-        if x < self.transform.x then
-          x = self.transform.x
-        end
-        if x2 > self.transform.x+self.collisionShape.w then
-          x2 = self.transform.x+self.collisionShape.w
-        end
-        if y < self.transform.y then
-          y = self.transform.y
-        end
-        if y2 > self.transform.y+self.collisionShape.h then
-          y2 = self.transform.y+self.collisionShape.h
-        end
-        
-        if (x2-x)*(y2-y) > biggestArea then
-          biggestArea = (x2-x)*(y2-y)
+        if xoverlap*yoverlap > biggestArea then
+          biggestArea = xoverlap*yoverlap
           bounds = s
         end
       end
@@ -325,21 +334,20 @@ function camera:updateBounds(dae)
     self.scrollw = bounds.collisionShape.w
     self.scrollh = bounds.collisionShape.h
     if self.bounds ~= bounds then
-      local old = self.bounds
-      if not dae and old then
-        old:deactivate(bounds)
+      if not noBounds then
+        if self.bounds then
+          self.bounds:deactivate(bounds.group)
+        end
+        bounds:activate(self.bounds and self.bounds.group)
       end
       self.bounds = bounds
-      if not dae then
-        self.bounds:activate(old)
-      end
     end
   else
     self.scrollx = self.transform.x
     self.scrolly = self.transform.y
     self.scrollw = self.collisionShape.w
     self.scrollh = self.collisionShape.h
-    if not dae and self.bounds then
+    if not noBounds and self.bounds then
       self.bounds:deactivate()
     end
     self.bounds = nil
@@ -356,10 +364,10 @@ end, 1)
 addobjects.register("section", function(v)
   if #section.init ~= 0 then
     for k, v in ipairs(section.init) do
-      v:deactivate()
+      v:initSection()
     end
+    section.init = {}
   end
-  section.init = {}
 end, 2)
 
 function section:new(x, y, w, h, lx, ly, lw, lh, n)
@@ -380,19 +388,28 @@ function section:new(x, y, w, h, lx, ly, lw, lh, n)
   section.init[#section.init+1] = self
 end
 
-function section:activate(old)
+function section:activate(ignore)
   for k, v in ipairs(self.group) do
     if not v.isAdded and not megautils.inAddQueue(v) and
-      (not old or not table.contains(old, v)) then
+      (not ignore or not table.contains(ignore, v)) then
       megautils.adde(v)
     end
   end
 end
 
-function section:deactivate(new)
+function section:deactivate(ignore)
   for k, v in ipairs(self.group) do
     if not v.isRemoved and not v.dontRemove and not megautils.inRemoveQueue(v) and
-      (not new or not table.contains(new, v)) then
+      (not ignore or not table.contains(ignore, v)) then
+      megautils.removeq(v)
+    end
+  end
+end
+
+function section:initSection()
+  for k, v in ipairs(self.group) do
+    if not v.isRemoved and not v.dontRemove then
+      megautils.stopRemoveQueue(v)
       megautils.remove(v)
     end
   end
@@ -411,7 +428,9 @@ function section.getSections(xx, yy, ww, hh)
     for y=cy, cy2 do
       if section.hash[x] and section.hash[x][y] and not table.contains(result, section.hash[x][y]) then
         for k, v in ipairs(section.hash[x][y]) do
-          result[#result+1] = v
+          if not table.contains(result, v) then
+            result[#result+1] = v
+          end
         end
       end
     end

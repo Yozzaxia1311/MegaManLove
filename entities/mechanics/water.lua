@@ -46,7 +46,7 @@ end
 
 function splash:draw()
   love.graphics.setColor(1, 1, 1, 1)
-  self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y), self.rot, 1, 1, 16, 8)
+  self.anim:draw(self.tex, math.round(self.transform.x)+16, math.round(self.transform.y), self.rot, 1, 1, 16, 8)
 end
 
 water = basicEntity:extend()
@@ -98,20 +98,20 @@ function water:update(dt)
         self.current = true
         v:setGravityMultiplier("water", self.grav)
         if v.transform.y-v.velocity.vely <= self.transform.y then
-          megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2), -8, self, -1)
+          megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2)-16, -8, self, -1)
           megautils.playSound("splash")
         elseif v.transform.y-v.velocity.vely >= self.transform.y+self.collisionShape.h then
-          megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2), 
+          megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2)-16, 
             self.collisionShape.h+8, self, 1)
           megautils.playSound("splash")
         end
       elseif self.current and v.gravityMultipliers.water and #v:collisionTable(megautils.groups().water) == 0 then
         v:setGravityMultiplier("water", nil)
         if v.transform.y < self.transform.y then
-          megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2), -8, self, -1)
+          megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2)-16, -8, self, -1)
           megautils.playSound("splash")
         elseif v.transform.y > self.transform.y+self.collisionShape.h then
-          megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2), 
+          megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2)-16, 
             self.collisionShape.h+8, self, 1)
           megautils.playSound("splash")
         end

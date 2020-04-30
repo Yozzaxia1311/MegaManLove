@@ -31,6 +31,7 @@ function right:update(dt)
       camera.main.player = player
       camera.main.speed = self.spd or 0.8
       local s = self:collisionTable(section.getSections(self.transform.x+2, self.transform.y, 2, self.collisionShape.h), 2, 0)[1]
+      camera.main.toSection = s
       camera.main.transform.x = self.transform.x+2-camera.main.collisionShape.w
       camera.main.transX = camera.main.transform.x+camera.main.collisionShape.w+8
       camera.main.curBoundName = s.name
@@ -72,6 +73,7 @@ function left:update(dt)
       camera.main.player = player
       camera.main.speed = self.spd or 0.8
       local s = self:collisionTable(section.getSections(self.transform.x-2, self.transform.y, 2, self.collisionShape.h), -2, 0)[1]
+      camera.main.toSection = s
       camera.main.transform.x = self.transform.x
       camera.main.transX = camera.main.transform.x-camera.main.player.collisionShape.w-8
       camera.main.curBoundName = s.name
@@ -113,6 +115,7 @@ function down:update(dt)
       camera.main.player = player
       camera.main.speed = self.spd or 0.8
       local s = self:collisionTable(section.getSections(self.transform.x, self.transform.y+2, self.collisionShape.w, 2), 0, 2)[1]
+      camera.main.toSection = s
       camera.main.transform.y = self.transform.y+2-camera.main.collisionShape.h
       camera.main.transY = camera.main.transform.y+camera.main.collisionShape.h+8
       camera.main.curBoundName = s.name
@@ -154,6 +157,7 @@ function up:update(dt)
       camera.main.player = player
       camera.main.speed = self.spd or 0.8
       local s = self:collisionTable(section.getSections(self.transform.x, self.transform.y-2, self.collisionShape.w, 2), 0, -2)[1]
+      camera.main.toSection = s
       camera.main.transform.y = self.transform.y
       camera.main.transY = camera.main.transform.y-camera.main.player.collisionShape.h-8
       camera.main.curBoundName = s.name
@@ -200,6 +204,7 @@ function upLadder:update(dt)
       camera.main.player = player
       camera.main.speed = self.spd or 0.8
       local s = self:collisionTable(section.getSections(self.transform.x, self.transform.y-2, self.collisionShape.w, 2), 0, -2)[1]
+      camera.main.toSection = s
       camera.main.transform.y = self.transform.y
       camera.main.transY = camera.main.transform.y-camera.main.player.collisionShape.h-8
       camera.main.curBoundName = s.name
@@ -246,19 +251,128 @@ function sectionPrioritySetter:update(dt)
   end
 end
 
-sectionConnector = basicEntity:extend()
+sectionPrioritySetterXBorder = basicEntity:extend()
 
-addobjects.register("sectionConnector", function(v)
-  megautils.add(sectionConnector, v.x, v.y, v.width, v.height)
+addobjects.register("sectionPrioritySetterXBorder", function(v)
+  megautils.add(sectionPrioritySetterXBorder, v.x, v.y, v.height, v.properties.lname, v.properties.rname)
 end)
 
-function sectionConnector:new(x, y, w, h)
-  sectionConnector.super.new(self, true)
+function sectionPrioritySetterXBorder:new(x, y, h, lname, rname)
+  sectionPrioritySetterXBorder.super.new(self)
+  self:setRectangleCollision(32, h)
   self.transform.y = y
   self.transform.x = x
-  self:setRectangleCollision(w, h)
+  self.lname = lname
+  self.rname = rname
   self.added = function(self)
     self:addToGroup("despawnable")
-    self:addToGroup("sectionConnector")
+  end
+end
+
+function sectionPrioritySetterXBorder:getSide()
+  local same = 0
+  for k, v in ipairs(globals.allPlayers) do
+    if v.transform.x+(v.collisionShape.w/2) > self.transform.x+16 and
+      math.between(v.transform.y, self.transform.y, self.transform.y+self.collisionShape.h-v.collisionShape.h) then
+      same = same + 1
+    end
+  end
+  
+  if same == #globals.allPlayers then
+    return self.rname
+  elseif same == 0 then
+    return self.lname
+  end
+end
+
+function sectionPrioritySetterXBorder:update(dt)
+  local s = self:getSide()
+  if camera.main and not megautils.outside(self) and s then
+    camera.main.curBoundName = s
+  end
+end
+
+sectionPrioritySetterYBorder = basicEntity:extend()
+
+addobjects.register("sectionPrioritySetterYBorder", function(v)
+  megautils.add(sectionPrioritySetterYBorder, v.x, v.y, v.width, v.properties.uname, v.properties.dname)
+end)
+
+function sectionPrioritySetterYBorder:new(x, y, w, uname, dname)
+  sectionPrioritySetterYBorder.super.new(self)
+  self:setRectangleCollision(w, 32)
+  self.transform.y = y
+  self.transform.x = x
+  self.uname = uname
+  self.dname = dname
+  self.added = function(self)
+    self:addToGroup("despawnable")
+  end
+end
+
+function sectionPrioritySetterYBorder:getSide()
+  local same = 0
+  for k, v in ipairs(globals.allPlayers) do
+    if v.transform.x+(v.collisionShape.w/2) > self.transform.x+16 and
+      math.between(v.transform.y, self.transform.y, self.transform.y+self.collisionShape.h-v.collisionShape.h) then
+      same = same + 1
+    end
+  end
+  
+  if same == #globals.allPlayers then
+    return self.dname
+  elseif same == 0 then
+    return self.uname
+  end
+end
+
+function sectionPrioritySetterYBorder:update(dt)
+  local s = self:getSide()
+  if camera.main and not megautils.outside(self) and s then
+    camera.main.curBoundName = s
+  end
+end
+
+sectionPrioritySetterArea = basicEntity:extend()
+
+addobjects.register("sectionPrioritySetterArea", function(v)
+  megautils.add(sectionPrioritySetterArea, v.x, v.y, v.width, v.height, v.properties.inname, v.properties.outname)
+end)
+
+function sectionPrioritySetterArea:new(x, y, w, h, name, name2)
+  sectionPrioritySetterArea.super.new(self)
+  self:setRectangleCollision(w, h)
+  self.transform.y = y
+  self.transform.x = x
+  self.inName = name
+  self.outName = name2
+  self.added = function(self)
+    self:addToGroup("despawnable")
+  end
+end
+
+function sectionPrioritySetterArea:check()
+  local count = 0
+  local sx, sy, sw, sh = self.transform.x, self.transform.y, self.collisionShape.w, self.collisionShape.h
+  
+  for k, v in ipairs(globals.allPlayers) do
+    local x, y, w, h = v.transform.x, v.transform.y, v.collisionShape.w, v.collisionShape.h
+    if pointOverlapsRect(x, y, sx, sy, sw, sh) and pointOverlapsRect(x+w, y, sx, sy, sw, sh) and
+      pointOverlapsRect(x+w, y+h, sx, sy, sw, sh) and pointOverlapsRect(x, y+h, sx, sy, sw, sh) then
+      count = count + 1
+    end
+  end
+  
+  return count
+end
+
+function sectionPrioritySetterArea:update(dt)
+  if not megautils.outside(self) and camera.main then
+    local c = self:check()
+    if c == #globals.allPlayers then
+      camera.main.curBoundName = self.name
+    else
+      camera.main.curBoundName = self.outName
+    end
   end
 end

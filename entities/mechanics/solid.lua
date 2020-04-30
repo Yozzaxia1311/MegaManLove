@@ -489,7 +489,7 @@ function solid:new(x, y, w, h)
   self.isSolid = 1
   self.added = function(self)
     self:addToGroup("despawnable")
-    --self:makeStatic()
+    self:makeStatic()
   end
 end
 
@@ -540,6 +540,5 @@ function slope:new(x, y, mask)
 end
 
 addobjects.register("oneway", function(v)
-  local s = megautils.add(solid, v.x, v.y, v.width, v.height)
-  s.isSolid = 2
+  megautils.add(solid, v.x, v.y, v.width, v.height).isSolid = 2
 end)

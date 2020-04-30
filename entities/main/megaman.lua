@@ -1191,7 +1191,8 @@ function megaman:code(dt)
       self.climbTip = self.transform.y + self.collisionShape.h * 0.6 > self.currentLadder.transform.y+self.currentLadder.collisionShape.h
     end
   elseif self.slide then
-    collision.doGrav(self)
+    self.ground = true
+    collision.checkGround(self)
     local lastSide = self.side
     if control.leftDown[self.player] then
       self.side = -1
