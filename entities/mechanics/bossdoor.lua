@@ -4,10 +4,10 @@ addobjects.register("bossDoor", function(v)
   local seg = (v.properties.dir=="up" or v.properties.dir=="down") and 
     math.round(v.width/16) or math.round(v.height/16)
   megautils.add(bossDoor, v.x, v.y, seg, v.properties.dir,
-  v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.useTileLayer)
+  v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.useTileLayer, v.properties.name)
 end)
 
-function bossDoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt)
+function bossDoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt, n)
   bossDoor.super.new(self)
   self.added = function(self)
     self:addToGroup("bossDoor")
@@ -32,6 +32,7 @@ function bossDoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt)
   self.isLocked = {global=false}
   self.spawnEarlyDuringTransition = true
   self.useMapTiles = megautils.getMapLayer(umt) and umt
+  self.name = n
 end
 
 function bossDoor:setDirection(dir)
@@ -51,7 +52,7 @@ function bossDoor:left()
   camera.main.toSection = s
   camera.main.transform.x = self.transform.x+16
   camera.main.transX = camera.main.transform.x-camera.main.player.collisionShape.w-28
-  camera.main.curBoundName = to.name
+  camera.main.curBoundName = self.name
   camera.main.dontUpdateSections = true
   camera.main.freeze = false
 end
@@ -67,7 +68,7 @@ function bossDoor:right()
   camera.main.toSection = s
   camera.main.transform.x = self.transform.x+16-camera.main.collisionShape.w
   camera.main.transX = camera.main.transform.x+camera.main.collisionShape.w+28
-  camera.main.curBoundName = s.name
+  camera.main.curBoundName = self.name
   camera.main.dontUpdateSections = true
   camera.main.freeze = false
 end
@@ -83,7 +84,7 @@ function bossDoor:up()
   camera.main.toSection = s
   camera.main.transform.y = self.transform.y+16
   camera.main.transY = camera.main.transform.y-camera.main.player.collisionShape.h-28
-  camera.main.curBoundName = s.name
+  camera.main.curBoundName = self.name
   camera.main.dontUpdateSections = true
   camera.main.freeze = false
 end
@@ -99,7 +100,7 @@ function bossDoor:down()
   camera.main.toSection = s
   camera.main.transform.y = self.transform.y+16-camera.main.collisionShape.h
   camera.main.transY = camera.main.transform.y+camera.main.collisionShape.h+28
-  camera.main.curBoundName = s.name
+  camera.main.curBoundName = self.name
   camera.main.dontUpdateSections = true
   camera.main.freeze = false
 end

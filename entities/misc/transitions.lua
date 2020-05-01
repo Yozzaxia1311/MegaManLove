@@ -2,10 +2,10 @@ right = basicEntity:extend()
 
 addobjects.register("right", function(v)
   megautils.add(right, v.x, v.y, v.height,
-    v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.platform)
+    v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.platform, v.properties.name)
 end)
 
-function right:new(x, y, h, scrollx, scrolly, spd, p)
+function right:new(x, y, h, scrollx, scrolly, spd, p, n)
   right.super.new(self)
   self:setRectangleCollision(2, h)
   self.transform.x = x + 14
@@ -14,6 +14,7 @@ function right:new(x, y, h, scrollx, scrolly, spd, p)
   self.scrolly = scrolly
   self.spd = spd
   self.platform = p
+  self.name = n
   self.added = function(self)
     self:addToGroup("despawnable")
   end
@@ -34,7 +35,7 @@ function right:update(dt)
       camera.main.toSection = s
       camera.main.transform.x = self.transform.x+2-camera.main.collisionShape.w
       camera.main.transX = camera.main.transform.x+camera.main.collisionShape.w+8
-      camera.main.curBoundName = s.name
+      camera.main.curBoundName = self.name
       break
     end
   end
@@ -44,10 +45,10 @@ left = basicEntity:extend()
 
 addobjects.register("left", function(v)
   megautils.add(left, v.x, v.y, v.height,
-    v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.platform)
+    v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.platform, v.properties.name)
 end)
 
-function left:new(x, y, h, scrollx, scrolly, spd, p)
+function left:new(x, y, h, scrollx, scrolly, spd, p, n)
   left.super.new(self)
   self:setRectangleCollision(2, h)
   self.transform.x = x
@@ -56,6 +57,7 @@ function left:new(x, y, h, scrollx, scrolly, spd, p)
   self.scrolly = scrolly
   self.spd = spd
   self.platform = p
+  self.name = n
   self.added = function(self)
     self:addToGroup("despawnable")
   end
@@ -76,7 +78,7 @@ function left:update(dt)
       camera.main.toSection = s
       camera.main.transform.x = self.transform.x
       camera.main.transX = camera.main.transform.x-camera.main.player.collisionShape.w-8
-      camera.main.curBoundName = s.name
+      camera.main.curBoundName = self.name
       break
     end
   end
@@ -86,18 +88,19 @@ down = basicEntity:extend()
 
 addobjects.register("down", function(v)
   megautils.add(down, v.x, v.y, v.width,
-    v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.platform)
+    v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.platform, v.properties.name)
 end)
 
-function down:new(x, y, w, scrollx, scrolly, spd, p)
+function down:new(x, y, w, scrollx, scrolly, spd, p, n)
   down.super.new(self)
   self:setRectangleCollision(w, 2)
   self.transform.y = y + 14
   self.transform.x = x
   self.scrollx = scrollx
   self.scrolly = scrolly
-  self.spd = spd or 0.8
+  self.spd = spd
   self.platform = p
+  self.name = n
   self.added = function(self)
     self:addToGroup("despawnable")
   end
@@ -118,7 +121,7 @@ function down:update(dt)
       camera.main.toSection = s
       camera.main.transform.y = self.transform.y+2-camera.main.collisionShape.h
       camera.main.transY = camera.main.transform.y+camera.main.collisionShape.h+8
-      camera.main.curBoundName = s.name
+      camera.main.curBoundName = self.name
       break
     end
   end
@@ -128,10 +131,10 @@ up = basicEntity:extend()
 
 addobjects.register("up", function(v)
   megautils.add(up, v.x, v.y, v.width,
-    v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.platform)
+    v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.platform, v.properties.name)
 end)
 
-function up:new(x, y, w, scrollx, scrolly, spd, p)
+function up:new(x, y, w, scrollx, scrolly, spd, p, n)
   up.super.new(self)
   self:setRectangleCollision(w, 2)
   self.transform.y = y
@@ -140,6 +143,7 @@ function up:new(x, y, w, scrollx, scrolly, spd, p)
   self.scrolly = scrolly
   self.spd = spd
   self.platform = p
+  self.name = n
   self.added = function(self)
     self:addToGroup("despawnable")
   end
@@ -160,7 +164,7 @@ function up:update(dt)
       camera.main.toSection = s
       camera.main.transform.y = self.transform.y
       camera.main.transY = camera.main.transform.y-camera.main.player.collisionShape.h-8
-      camera.main.curBoundName = s.name
+      camera.main.curBoundName = self.name
       break
     end
   end
@@ -170,10 +174,10 @@ upLadder = basicEntity:extend()
 
 addobjects.register("upLadder", function(v)
   megautils.add(upLadder, v.x, v.y, v.width,
-    v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.platform)
+    v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.platform, v.properties.name)
 end)
 
-function upLadder:new(x, y, w, scrollx, scrolly, spd, p)
+function upLadder:new(x, y, w, scrollx, scrolly, spd, p, n)
   upLadder.super.new(self)
   self:setRectangleCollision(w, 2)
   self.transform.y = y
@@ -182,6 +186,7 @@ function upLadder:new(x, y, w, scrollx, scrolly, spd, p)
   self.scrolly = scrolly
   self.spd = spd
   self.platform = p
+  self.name = n
   self.added = function(self)
     self:addToGroup("despawnable")
     self.ladder = self:collisionTable(megautils.groups().ladder)[1]
@@ -207,7 +212,7 @@ function upLadder:update(dt)
       camera.main.toSection = s
       camera.main.transform.y = self.transform.y
       camera.main.transY = camera.main.transform.y-camera.main.player.collisionShape.h-8
-      camera.main.curBoundName = s.name
+      camera.main.curBoundName = self.name
       break
     end
   end
