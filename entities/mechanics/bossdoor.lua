@@ -203,7 +203,6 @@ function bossDoor:update(dt)
       camera.main.freeze = true
       camera.main.dontUpdateSections = false
       megautils.state().system.cameraUpdate = function()
-        camera.main.bounds = nil
         camera.main:updateBounds()
         camera.main.tweenFinished = false
         megautils.unfreeze(globals.allPlayers)

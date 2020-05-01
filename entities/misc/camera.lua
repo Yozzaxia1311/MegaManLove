@@ -162,7 +162,6 @@ function camera:updateCam(spdx, spdy)
         local lsx, lsy, lsw, lsh, lb = self.scrollx, self.scrolly, self.scrollw, self.scrollh, self.bounds
         self.transform.x = nx
         self.transform.y = ny
-        self.bounds = nil
         self:updateBounds(true)
         if self.bounds then
           for k, v in ipairs(self.bounds.group) do
@@ -185,10 +184,9 @@ function camera:updateCam(spdx, spdy)
           camera.main.tween2[i]:update(1/60)
         end
         if camera.main.tween:update(1/60) then
-          camera.main.bounds = nil
-          camera.main:updateBounds(camera.main.dontUpdateSections)
           camera.main.tweenFinished = true
           if not camera.main.dontUpdateSections then
+            camera.main:updateBounds()
             camera.main.transition = false
             camera.main.once = false
             camera.main.preTrans = false
@@ -286,7 +284,7 @@ function camera:updateBounds(noBounds)
     local lx, ly = self.transform.x, self.transform.y
     local sects
     
-    if self.bounds then
+    if self.bounds and self:collision(self.bounds) then
       sects = self.bounds:collisionTable(tmp)
       
       if megautils.groups().sectionConnector then
