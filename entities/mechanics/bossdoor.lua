@@ -214,11 +214,7 @@ function bossDoor:update(dt)
         camera.main.once = false
         camera.main.transition = false
         camera.main.preTrans = false
-        megautils.state().system.cameraUpdate = function()
-            if camera.main then
-              camera.main:updateBounds()
-            end
-          end
+        megautils.state().system.cameraUpdate = nil
       end
       self.state = 0
     end

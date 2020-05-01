@@ -34,11 +34,7 @@ function camera:new(x, y, doScrollX, doScrollY)
   view.x, view.y = self.transform.x, self.transform.y
   self.funcs = {}
   camera.main = self
-  megautils.state().system.cameraUpdate = function()
-      if camera.main then
-        camera.main:updateBounds()
-      end
-    end
+  megautils.state().system.cameraUpdate = nil
 end
 
 function camera:removed()
@@ -191,12 +187,14 @@ function camera:updateCam(spdx, spdy)
         if camera.main.tween:update(1/60) then
           camera.main.bounds = nil
           camera.main:updateBounds(camera.main.dontUpdateSections)
+          camera.main.tweenFinished = true
           if not camera.main.dontUpdateSections then
             camera.main.transition = false
             camera.main.once = false
             camera.main.preTrans = false
+            camera.main.tweenFinished = false
+            megautils.state().system.cameraUpdate = nil
           end
-          camera.main.tweenFinished = true
           if camera.main.freeze then
             megautils.unfreeze(globals.allPlayers)
             for k, v in pairs(globals.allPlayers) do
@@ -210,14 +208,6 @@ function camera:updateCam(spdx, spdy)
             if globals.allPlayers[i] ~= camera.main.player then
               camera.main.player:transferState(globals.allPlayers[i])
             end
-          end
-          if not camera.main.dontUpdateSections then
-            camera.main.tweenFinished = false
-            megautils.state().system.cameraUpdate = function()
-                if camera.main then
-                  camera.main:updateBounds()
-                end
-              end
           end
         end
         if camera.main.player and camera.main.player.onMovingFloor then
