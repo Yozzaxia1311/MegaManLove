@@ -13,7 +13,8 @@ end
 function timer:update(dt)
   self.time = math.min(self.time+1, self.max)
   if self.time == self.max then
-    self.func(self)
+    if self.func then self.func(self) end
+    return true
   end
 end
 

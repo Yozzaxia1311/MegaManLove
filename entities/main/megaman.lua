@@ -967,46 +967,15 @@ function megaman:healthChanged(o, c, i)
     self.maxIFrame = i
     self.iFrame = 0
     if self.health <= 0 then
-      if #globals.allPlayers == 1 then
-        if ((self.gravity >= 0 and self.transform.y < view.y+view.h) or (self.gravity < 0 and self.transform.y+self.collisionShape.h > view.y)) then
-          explodeParticle.createExplosion(self.transform.x+((self.collisionShape.w/2)-12),
-            self.transform.y+((self.collisionShape.h/2)-12))
-        end
-        self.render = false
-        self.control = false
-        self.died = true
-        healthHandler.playerTimers = {}
-        for i=1, maxPlayerCount do
-          healthHandler.playerTimers[i] = -2
-        end
-        megautils.add(timer, 160, function(t)
-          megautils.add(fade, true, nil, nil, function(s)
-            globals.resetState = true
-            if not globals.infiniteLives and globals.lives <= 0 then
-              megautils.resetGameObjects()
-              globals.gameOverContinueState = states.current
-              megautils.gotoState("states/gameover.state.lua")
-            else
-              globals.manageStageResources = false
-              if not globals.infiniteLives then
-                globals.lives = globals.lives - 1
-              end
-              megautils.gotoState(states.current)
-            end
-            megautils.removeq(s)
-          end)
-          megautils.removeq(t)
-        end)
-        megautils.unregisterPlayer(self)
-        megautils.removeq(self)
-        megautils.stopMusic()
-        megautils.playSound("die")
-        return
-      else
-        self.dying = true
-        self.iFrame = self.maxIFrame
-        megautils.freeze({self})
-        if camera.main then
+      self.dying = true
+      self.iFrame = self.maxIFrame
+      megautils.freeze({self})
+      if camera.main then
+        if #globals.allPlayers == 1 then
+          self.cameraTween = timer((((self.gravity >= 0 and self.transform.y < view.y+view.h) or
+            (self.gravity < 0 and self.transform.y+self.collisionShape.h > view.y)) and 28 or 0))
+          megautils.stopMusic()
+        else
           local dx, dy
           local ox, oy = camera.main.transform.x, camera.main.transform.y
           camera.main:doView(nil, nil, self)
@@ -1015,11 +984,11 @@ function megaman:healthChanged(o, c, i)
           camera.main.transform.x = ox
           camera.main.transform.y = oy
           self.cameraTween = tween.new(0.4, camera.main.transform, {x=dx, y=dy})
-        else
-          self.cameraTween = true
         end
-        return
+      else
+        self.cameraTween = true
       end
+      return
     else
       if not self:checkTrue(self.canIgnoreKnockback) then
         self.velocity.velx = (self.side==1 and self.leftKnockBackSpeed or self.rightKnockBackSpeed)
@@ -1792,19 +1761,48 @@ function megaman:update(dt)
   end
   if self.dying then
     if self.cameraTween:update(1/60) then
-      self.control = false
-      if self.transform.y < view.y+view.h then
+      if ((self.gravity >= 0 and self.transform.y < view.y+view.h) or (self.gravity < 0 and self.transform.y+self.collisionShape.h > view.y)) then
         explodeParticle.createExplosion(self.transform.x+((self.collisionShape.w/2)-12),
           self.transform.y+((self.collisionShape.h/2)-12))
       end
-      self.healthHandler.change = self.changeHealth
-      self.healthHandler:updateThis()
-      healthHandler.playerTimers[self.player] = 180
-      megautils.removeq(megaman.weaponHandler[self.player])
-      megautils.removeq(self.healthHandler)
+      
+      if #globals.allPlayers == 1 then
+        healthHandler.playerTimers = {}
+        for i=1, maxPlayerCount do
+          healthHandler.playerTimers[i] = -2
+        end
+        
+        megautils.add(timer, 160, function(t)
+          megautils.add(fade, true, nil, nil, function(s)
+            globals.resetState = true
+            if not globals.infiniteLives then
+              globals.lives = globals.lives - 1
+            end
+            if not globals.infiniteLives and globals.lives < 0 then
+              megautils.resetGameObjects()
+              globals.gameOverContinueState = states.current
+              megautils.gotoState("states/gameover.state.lua")
+            else
+              globals.manageStageResources = false
+              megautils.gotoState(states.current)
+            end
+            megautils.removeq(s)
+          end)
+          megautils.removeq(t)
+        end)
+      else
+        self.healthHandler.change = self.changeHealth
+        self.healthHandler:updateThis()
+        healthHandler.playerTimers[self.player] = 180
+        megautils.removeq(megaman.weaponHandler[self.player])
+        megautils.removeq(self.healthHandler)
+        megautils.unfreeze()
+      end
+      self.render = false
+      self.control = false
+      self.died = true
       megautils.unregisterPlayer(self)
       megautils.removeq(self)
-      megautils.unfreeze()
       megautils.playSound("die")
       return
     end

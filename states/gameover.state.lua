@@ -42,10 +42,8 @@ function contPanels:update(dt)
   self.timer = math.min(self.timer+1, 199)
   if self.timer == 198 then
     self.state = 1
-    if globals.gameOverMenuMusic then
-      megautils.playMusic("assets/sfx/music/menu.ogg", true)
-    end
     megautils.add(contSelect)
+    megautils.playMusic("assets/sfx/music/menu.ogg", true)
   end
 end
 
@@ -66,6 +64,7 @@ function contSelect:new()
   self.pick = 0
   self.offY = self.transform.y
   self.picked = false
+  self:setLayer(2)
 end
 
 function contSelect:update(dt)

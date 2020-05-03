@@ -236,22 +236,25 @@ function camera:doView(spdx, spdy, without)
     end
   else
     local avx, avy = 0, 0
+    local pStuffX, pStuffY = 0, 0
     for i=1, #globals.allPlayers do
       local p = globals.allPlayers[i]
       if p ~= without then
         if self.doScrollX then
-          avx = avx+(p.transform.x + o:camOffX() - (self.collisionShape.w/2) + (p.collisionShape.w/2))
+          pStuffX = pStuffX + 1
+          avx = avx+(p.transform.x + p:camOffX() - (self.collisionShape.w/2) + (p.collisionShape.w/2))
         end
         if self.doScrollY then
-          avy = avy+(p.transform.y + o:camOffY() - (self.collisionShape.h/2) + (p.collisionShape.h/2))
+          pStuffY = pStuffY + 1
+          avy = avy+(p.transform.y + p:camOffY() - (self.collisionShape.h/2) + (p.collisionShape.h/2))
         end
       end
     end
     if self.doScrollX then
-      self.transform.x = avx/#globals.allPlayers
+      self.transform.x = avx/pStuffX
     end
     if self.doScrollY then
-      self.transform.y = avy/#globals.allPlayers
+      self.transform.y = avy/pStuffY
     end
   end
   

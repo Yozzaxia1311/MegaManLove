@@ -103,7 +103,10 @@ function healthHandler:update(dt)
 end
 
 function healthHandler:draw()
-  if self.player and self.player == globals.mainPlayer then
+  if globals.mainPlayer then
+    self.mp = globals.mainPlayer
+  end
+  if self.player and self.player == self.mp then
     if not globals.infiniteLives then
       love.graphics.setColor(0, 0, 0, 1)
       love.graphics.rectangle("fill", self.transform.x, self.transform.y, 8, 8)
@@ -111,7 +114,7 @@ function healthHandler:draw()
       love.graphics.setFont(mmFont)
       love.graphics.print(tostring(globals.lives), self.transform.x, self.transform.y)
     end
-    if globals.mainPlayer == self.player then
+    if self.mp == self.player then
       for i=1, globals.playerCount do
         if healthHandler.playerTimers[i] == -1 then
           love.graphics.setColor(0, 0, 0, 1)
