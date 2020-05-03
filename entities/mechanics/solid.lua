@@ -375,7 +375,7 @@ function collision.generalCollision(self, noSlope)
           (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
           (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) then
           if v.isSolid == 2 and v:collision(self, -self.velocity.velx, 0) and
-            not v:collision(self, -self.velocity.velx, slp) and not v:collision(self, math.sign(self.velocity.velx), math.sign(self.velocity.vely)) then
+            not v:collision(self, -self.velocity.velx, slp) and not v:collision(self) then
             solid[#solid+1] = v
           end
         end
