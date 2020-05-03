@@ -37,7 +37,7 @@ function collision.getTable(self, dx, dy, noSlope)
     if (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
       (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) and
       (v.isSolid == 1 or v.isSolid == 2) then
-      if v.isSolid ~= 2 or ((ys == 0 and 1 or math.sign(ys)) == cgrav and not v:collision(self) and v:collision(self, 0, -ys)) then
+      if v.isSolid ~= 2 or ((ys == 0 and 1 or math.sign(ys)) == cgrav and not v:collision(self, 0, cgrav) and v:collision(self, 0, -ys)) then
         solid[#solid+1] = v
       end
     end
@@ -73,7 +73,7 @@ function collision.checkSolid(self, dx, dy, noSlope)
     if (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
       (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) and
       (v.isSolid == 1 or v.isSolid == 2) then
-      if v.isSolid ~= 2 or ((ys == 0 and 1 or math.sign(ys)) == cgrav and not v:collision(self) and v:collision(self, 0, -ys)) then
+      if v.isSolid ~= 2 or ((ys == 0 and 1 or math.sign(ys)) == cgrav and not v:collision(self, 0, cgrav) and v:collision(self, 0, -ys)) then
         solid[#solid+1] = v
       end
     end
@@ -287,7 +287,7 @@ function collision.checkGround(self, noSlope)
       (not self.exclusivelySolidFor or table.contains(self.exclusivelySolidFor, v)) and
       (not self.excludeSolidFor or not table.contains(self.excludeSolidFor, v)) then
       if v.isSolid == 1 or v.isSolid == 2 then
-        if not v:collision(self) and (v.isSolid ~= 2 or v:collision(self, 0, -cgrav * slp)) then
+        if not v:collision(self, 0, cgrav) and (v.isSolid ~= 2 or v:collision(self, 0, -cgrav * slp)) then
           solid[#solid+1] = v
         end
       elseif v.isSolid == 3 then
@@ -357,7 +357,7 @@ function collision.generalCollision(self, noSlope)
     if v ~= self and v.collisionShape and (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
       (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) then
       if v.isSolid == 1 then
-        if not v:collision(self) and not table.contains(solid, v) then
+        if not v:collision(self, math.sign(self.velocity.velx), math.sign(self.velocity.vely)) and not table.contains(solid, v) then
           solid[#solid+1] = v
         end
       elseif v.isSolid == 3 then
@@ -368,14 +368,14 @@ function collision.generalCollision(self, noSlope)
   
   if self.velocity.velx ~= 0 then
     local slp = math.ceil(math.abs(self.velocity.velx)) * collision.maxSlope * cgrav
-    if slp ~= 0 then
+    if not noSlope and slp ~= 0 then
       for i=1, #all do
         local v = all[i]
         if v ~= self and v.collisionShape and not table.contains(solid, v) and
           (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
           (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) then
           if v.isSolid == 2 and v:collision(self, -self.velocity.velx, 0) and
-            not v:collision(self, -self.velocity.velx, slp) and not v:collision(self) then
+            not v:collision(self, -self.velocity.velx, slp) and not v:collision(self, math.sign(self.velocity.velx), math.sign(self.velocity.vely)) then
             solid[#solid+1] = v
           end
         end
@@ -432,7 +432,7 @@ function collision.generalCollision(self, noSlope)
           (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
           (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) then
           table.removevaluearray(solid, v)
-          if not v:collision(self) then
+          if not v:collision(self, math.sign(self.velocity.velx), math.sign(self.velocity.vely)) then
             solid[#solid+1] = v
           end
         end
