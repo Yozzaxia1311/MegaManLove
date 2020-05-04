@@ -171,7 +171,7 @@ function megaman.properties(self, g, gf)
   self.canBeInvincible = {global=false}
   self.canGetCrushed = {global=false}
   self.canStopJump = {global=true}
-  self.canStepVelocity = {global=false}
+  self.canStep = {global=true}
   self.canIgnoreKnockback = {global=false}
   self.canProtoShield = {global=globals.player[self.player] == "proto"}
   self.canTransferGravity = {global=true}
@@ -1250,11 +1250,9 @@ function megaman:code(dt)
     if self:checkFalse(self.canWalk) and not (self.stopOnShot and self.shootTimer ~= self.maxShootTime) then
       if self.runCheck and not self.step then
         self.side = control.leftDown[self.player] and -1 or 1
-        local sv = self:checkFalse(self.canStepVelocity)
-        if sv or self.stepTime == 0 then
-          self.velocity.velx = self.velocity.velx + (self.side==1 and self.stepRightSpeed or self.stepLeftSpeed)
-        elseif not sv then
-          self.velocity.velx = 0
+        local sv = self:checkFalse(self.canStep)
+        if sv and self.stepTime == 0 then
+          collision.shiftObject(self, (self.side == -1) and self.stepLeftSpeed or self.stepRightSpeed, 0, true)
         end
         self.stepTime = math.min(self.stepTime+1, self.maxStepTime)
         if self.stepTime == self.maxStepTime then
