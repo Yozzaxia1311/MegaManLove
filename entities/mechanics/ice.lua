@@ -63,3 +63,17 @@ function ice:new(x, y, w, h)
     end
   end
 end
+
+function ice:update(dt)
+  for k, v in ipairs(globals.allPlayers) do
+    if not v.groundUpdateFuncs.ice then
+      v.groundUpdateFuncs.ice = self.gFunc
+    end
+    if not v.airUpdateFuncs.ice then
+      v.airUpdateFuncs.ice = self.elseFunc
+    end
+    if not v.climbUpdateFuncs.ice then
+      v.climbUpdateFuncs.ice = self.elseFunc
+    end
+  end
+end
