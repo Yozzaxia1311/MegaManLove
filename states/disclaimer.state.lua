@@ -33,13 +33,15 @@ function disclaimer:new()
     "\n\n\n\nthe mega man love engine is a non-profit fanmade engine created by " .. 
     "various contributors.\n\nit is not for sale.\n\n" .. 
     "have fun!"
+  self.bottomText = "press start to continue" .. (cutBackForWeb and "" or "\npress alt+enter for fullscreen") .. "\npress " .. 
+    (cutBackForWeb and "1" or "escape") .. " to rebind controls"
 end
 
 function disclaimer:update()
   if control.startPressed[1] and self.check then
     megautils.transitionToState("states/title.state.lua")
     self.updated = false
-  elseif globals.lastKeyPressed and globals.lastKeyPressed[2] == "escape" and self.check then
+  elseif globals.lastKeyPressed and globals.lastKeyPressed[2] == (cutBackForWeb and "1" or "escape") and self.check then
     globals.lastKeyPressed = nil
     globals.sendBackToDisclaimer = true
     megautils.transitionToState("states/rebind.state.lua")
@@ -72,7 +74,7 @@ function disclaimer:draw()
   love.graphics.setFont(mmFont)
   love.graphics.printf(self.disclaimerText, 4, 24, 248, "center")
   love.graphics.setColor(1, 1, 1, self.alpha/255)
-  love.graphics.printf("press start to continue\npress alt+enter for fullscreen\npress escape to rebind controls", -21, 200, 300, "center")
+  love.graphics.printf(self.bottomText, -21, 200, 300, "center")
 end
 
 return disclaimerState

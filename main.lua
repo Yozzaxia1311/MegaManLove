@@ -1,3 +1,5 @@
+cutBackForWeb = love.system.getOS() == "Web"
+
 -- Initializes the whole game to it's base state.
 function initEngine()
   inputHandler.init()
@@ -57,7 +59,7 @@ function love.load()
   showFPS = false
   showEntityCount = false
   framerate = 1/60
-  nesShader = love.graphics.getSupported().glsl3 and love.graphics.newShader("assets/nesLUT.glsl")
+  nesShader = not cutBackForWeb and love.graphics.getSupported().glsl3 and love.graphics.newShader("assets/nesLUT.glsl")
   if nesShader then nesShader:send("pal", love.graphics.newImage("assets/nesLUT.png")) end
   
   love.filesystem.load("requirelibs.lua")()
@@ -70,7 +72,7 @@ function love.load()
     megautils.setFullscreen(true)
   end
   megautils.gotoState("states/disclaimer.state.lua")
-  console.parse("exec autoexec")
+  if not cutBackForWeb then console.parse("exec autoexec") end
 end
 
 function love.resize(w, h)
@@ -210,36 +212,38 @@ function love.draw()
   if useConsole then console.draw() end
 end
 
-function love.run()
-  if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
-  if love.timer then love.timer.step() end
-  local dt = 0
-  return function()
-      if love.event then
-        love.event.pump()
-        for name, a,b,c,d,e,f in love.event.poll() do
-          if name == "quit" then
-            if not love.quit or not love.quit() then
-              return a or 0
+if not cutBackForWeb then
+  function love.run()
+    if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
+    if love.timer then love.timer.step() end
+    local dt = 0
+    return function()
+        if love.event then
+          love.event.pump()
+          for name, a,b,c,d,e,f in love.event.poll() do
+            if name == "quit" then
+              if not love.quit or not love.quit() then
+                return a or 0
+              end
             end
+            love.handlers[name](a,b,c,d,e,f)
           end
-          love.handlers[name](a,b,c,d,e,f)
         end
+        if love.timer then
+          love.timer.step()
+          dt = love.timer.getDelta()
+        end
+        local bu = love.timer.getTime()
+        if love.update then love.update(dt) end
+        if love.graphics and love.graphics.isActive() then
+          love.graphics.origin()
+          love.graphics.clear(love.graphics.getBackgroundColor())
+          if love.draw then love.draw() end
+          love.graphics.present()
+        end
+        local delta = love.timer.getTime() - bu
+        if delta < framerate then love.timer.sleep(framerate - delta) end
+        resized = false
       end
-      if love.timer then
-        love.timer.step()
-        dt = love.timer.getDelta()
-      end
-      local bu = love.timer.getTime()
-      if love.update then love.update(dt) end
-      if love.graphics and love.graphics.isActive() then
-        love.graphics.origin()
-        love.graphics.clear(love.graphics.getBackgroundColor())
-        if love.draw then love.draw() end
-        love.graphics.present()
-      end
-      local delta = love.timer.getTime() - bu
-      if delta < framerate then love.timer.sleep(framerate - delta) end
-      resized = false
-    end
+  end
 end

@@ -31,7 +31,7 @@ function rebinder:new()
 end
 
 function rebinder:update(dt)
-  if globals.lastKeyPressed and globals.lastKeyPressed[2] == "escape" and not self.done then
+  if globals.lastKeyPressed and globals.lastKeyPressed[2] == (cutBackForWeb and "1" or "escape") and not self.done then
     globals.lastKeyPressed = nil
     megautils.add(fade, true, nil, nil, function(s)
       megautils.gotoState(globals.sendBackToDisclaimer and "states/disclaimer.state.lua" or globals.lastStateName)
@@ -72,7 +72,7 @@ function rebinder:draw()
   love.graphics.setFont(mmFont)
   love.graphics.printf("press the player " .. tostring((self.step/11)+1) .. " \n'"
     .. self.keyNames[self.currentKey] .. "'!" ..
-    "\n\n(press escape to leave)", self.transform.x, self.transform.y, 200, "center")
+    "\n\n(press " .. (cutBackForWeb and "1" or "escape") .. " to leave)", self.transform.x, self.transform.y, 200, "center")
 end
 
 return rebindState

@@ -34,7 +34,11 @@ function ready:update(dt)
     if self.blinkCount == self.blinks then
       megautils.unfreeze()
       if self.proto and self.music then
-        megautils.playMusic(unpack(self.music))
+        if self.proto == "old" then
+          megautils.playMusicWithSeperateIntroFile(unpack(self.music))
+        else
+          megautils.playMusic(unpack(self.music))
+        end
       end
       megautils.removeq(self)
     end

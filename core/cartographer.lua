@@ -1200,6 +1200,9 @@ end
 function cartographer.load(path)
   if not path then error('No map path provided', 2) end
   local map
+  if cutBackForWeb then
+    path = string.gsub(path, ".tmx", ".lua")
+  end
   if path:sub(path:len()-3, path:len()) == ".tmx" then
     map = setmetatable(finalXML2LuaTable(love.filesystem.read(path), path), Map)
   else
