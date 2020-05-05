@@ -5,18 +5,6 @@ function rebindState:begin()
   megautils.add(fade, false, nil, nil, fade.remove)
 end
 
-function rebindState:update(dt)
-  megautils.update(self, dt)
-end
-
-function rebindState:stop()
-  megautils.unload()
-end
-
-function rebindState:draw()
-  megautils.draw(self)
-end
-
 megautils.cleanFuncs.rebind = function()
   rebinder = nil
   megautils.cleanFuncs.rebind = nil

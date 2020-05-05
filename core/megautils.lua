@@ -1,7 +1,37 @@
 megautils = {}
 
-megautils.resetStateFuncs = {}
+--Game / state callback functions.
+--[[
+  Examples:
+  megautils.reloadStateFuncs.exampleFunc = function()
+      *Code here will execute whenever the state is changed and `globals.reloadState` is true.*
+    end
+  
+  megautils.cleanFuncs.exampleFunc = function()
+      *Code here will execute whenever the state is changed and `globals.reloadState` and `globals.manageStageResources` is true*
+    end
+  
+  megautils.resetGameObjectsFuncs.exampleFunc = function()
+      *Code here will execute when you gameover, a boss dies and changes the state,
+      or `initEngine` is called (usually when the game is first initialized, or is coming back from a demo)*
+    end
+]]--
+megautils.reloadStateFuncs = {}
 megautils.cleanFuncs = {}
+megautils.resetGameObjectsFuncs = {}
+
+--Player callback functions. These apply to all active players.
+megautils.playerCreatedFuncs = {}       --megautils.playerCreatedFuncs.exampleFunc = function(player) end
+megautils.playerTransferFuncs = {}      --megautils.playerTransferFuncs.exampleFunc = function(fromPlayer, toPlayer) end
+megautils.playerGroundFuncs = {}        --megautils.playerGroundFuncs.exampleFunc = function(player) end
+megautils.playerAirFuncs = {}           --megautils.playerAirFuncs.exampleFunc = function(player) end
+megautils.playerSlideFuncs = {}         --megautils.playerSlideFuncs.exampleFunc = function(player) end
+megautils.playerClimbFuncs = {}         --megautils.playerClimbFuncs.exampleFunc = function(player) end
+megautils.playerKnockbackFuncs = {}     --megautils.playerKnockbackFuncs.exampleFunc = function(player) end
+megautils.playerTrebleFuncs = {}        --megautils.playerTrebleFuncs.exampleFunc = function(player) end
+megautils.playerHealthChangedFuncs = {} --megautils.playerHealthChangedFuncs.exampleFunc = function(player) end
+megautils.playerDeathFuncs = {}         --megautils.playerDeathFuncs.exampleFunc = function(player) end
+megautils.playerAttemptWeaponFuncs = {} --megautils.playerAttemptWeaponFuncs.exampleFunc = function(player, shotsInTable) end
 
 function megautils.setFullscreen(what)
   convar.setValue("fullscreen", what and 1 or 0, true)
@@ -33,7 +63,7 @@ function megautils.resetGame(s, saveSfx, saveMusic)
   if not saveMusic then
     megautils.stopMusic()
   end
-  globals.resetState = true
+  globals.reloadState = true
   globals.manageStageResources = true
   megautils.unload()
   initEngine()
@@ -293,8 +323,8 @@ function megautils.draw(self)
 end
 
 function megautils.unload()
-  if globals.resetState then
-    for k, v in pairs(megautils.resetStateFuncs) do
+  if globals.reloadState then
+    for k, v in pairs(megautils.reloadStateFuncs) do
       v()
     end
     if globals.manageStageResources then
@@ -470,8 +500,6 @@ end
 function megautils.circlePathY(y, deg, dist)
   return y + (megautils.calcY(deg) * dist)
 end
-
-megautils.resetGameObjectsFuncs = {}
 
 function megautils.resetGameObjects()
   globals.mainPlayer = nil

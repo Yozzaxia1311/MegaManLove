@@ -7,18 +7,6 @@ function disclaimerState:begin()
   megautils.add(fade, false, nil, nil, fade.remove)
 end
 
-function disclaimerState:update(dt)
-  megautils.update(self)
-end
-
-function disclaimerState:stop()
-  megautils.unload()
-end
-
-function disclaimerState:draw()
-  megautils.draw(self, dt)
-end
-
 megautils.cleanFuncs.disclaimer = function()
   disclaimer = nil
   megautils.cleanFuncs.disclaimer = nil

@@ -5,24 +5,7 @@ function menuState:begin()
   megautils.add(menuSelect)
   megautils.add(fade, false, nil, nil, fade.remove)
   view.x, view.y = 0, 0
-  if not globals.stopMusicMenu then
-    megautils.playMusic("assets/sfx/music/menu.ogg", true)
-  end
-end
-
-function menuState:update(dt)
-  megautils.update(self, dt)
-end
-
-function menuState:stop()
-  self.system:clear()
-  if not globals.stopMusicMenu then
-    megautils.unload()
-  end
-end
-
-function menuState:draw()
-  megautils.draw(self)
+  megautils.playMusic("assets/sfx/music/menu.ogg", true)
 end
 
 megautils.cleanFuncs.menu = function()
@@ -64,7 +47,6 @@ function menuSelect:update(dt)
         self.section = -1
         megautils.stopMusic()
         megautils.transitionToState("states/stageselect.state.lua")
-        globals.stopMusicMenu = nil
       elseif self.pick == 1 then
         megautils.setFullscreen(not megautils.getFullscreen())
         local data = save.load("main.sav") or {}
@@ -75,7 +57,6 @@ function menuSelect:update(dt)
         self.section = -1
         globals.lastStateName = states.current
         megautils.transitionToState("states/rebind.state.lua")
-        globals.stopMusicMenu = nil
       elseif self.pick == 3 then
         megautils.playSound("selected")
         local data = save.load("save.sav")
@@ -109,7 +90,6 @@ function menuSelect:update(dt)
         self.section = -1
         megautils.stopMusic()
         megautils.transitionToState("states/title.state.lua")
-        globals.stopMusicMenu = nil
       end
     end
     self.transform.y = self.offY + self.pick*16

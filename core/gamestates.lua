@@ -6,12 +6,25 @@ states.switched = false
 states.recordOnSwitch = false
 states.openRecord = nil
 
-states.state = class:extend()
+states.baseState = class:extend()
+
+function states.baseState:begin() end
+function states.baseState:update(dt) end
+function states.baseState:draw() end
+function states.baseState:stop() end
+
+states.state = states.baseState:extend()
 
 function states.state:begin() end
-function states.state:update(dt) end
-function states.state:draw() end
-function states.state:stop() end
+function states.state:update(dt)
+  megautils.update(self, dt)
+end
+function states.state:draw()
+  megautils.draw(self)
+end
+function states.state:stop()
+  megautils.unload()
+end
 
 function states.set(n, s, after)
   local nick = n

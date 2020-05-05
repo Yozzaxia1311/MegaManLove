@@ -6,18 +6,6 @@ function titleState:begin()
   megautils.setMusicLock(false)
 end
 
-function titleState:update(dt)
-  megautils.update(self, dt)
-end
-
-function titleState:stop()
-  megautils.unload()
-end
-
-function titleState:draw()
-  megautils.draw(self)
-end
-
 megautils.cleanFuncs.title = function()
   title = nil
   megautils.cleanFuncs.title = nil

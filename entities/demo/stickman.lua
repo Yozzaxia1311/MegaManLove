@@ -336,7 +336,6 @@ function megamanStick:update(dt)
   elseif self.s == 6 then
     self.timer = math.min(self.timer+1, 60)
     if self.timer == 60 then
-      globals.stopMusicMenu = true
       megautils.transitionToState("states/menu.state.lua")
       self.updated = false
     end

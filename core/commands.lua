@@ -175,7 +175,7 @@ function cmdState(cmd)
   love.audio.stop()
   megautils.stopMusic()
   globals.manageStageResources = true
-  globals.resetState = true
+  globals.reloadState = true
   if cmd[3] then globals.checkpoint = cmd[3] end
   megautils.gotoState(map)
 end

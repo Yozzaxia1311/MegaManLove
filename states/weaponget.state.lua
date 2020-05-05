@@ -22,14 +22,6 @@ function weaponGetState:begin()
   megautils.playMusic("assets/sfx/music/get.ogg", true)
 end
 
-function weaponGetState:update(dt)
-  megautils.update(self, dt)
-end
-
-function weaponGetState:draw()
-  megautils.draw(self)
-end
-
 megautils.cleanFuncs.weaponGet = function()
   globals.weaponGet = nil
   megautils.cleanFuncs.weaponGet = nil

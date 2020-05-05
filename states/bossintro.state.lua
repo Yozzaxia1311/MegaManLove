@@ -22,18 +22,6 @@ function bossIntroState:begin()
   megautils.playMusic("assets/sfx/music/stageStart.ogg")
 end
 
-function bossIntroState:update(dt)
-  megautils.update(self, dt)
-end
-
-function bossIntroState:stop()
-  megautils.unload()
-end
-
-function bossIntroState:draw()
-  megautils.draw(self)
-end
-
 megautils.cleanFuncs.bossIntro = function()
   globals.bossIntroBoss = nil
   megautils.cleanFuncs.bossIntro = nil

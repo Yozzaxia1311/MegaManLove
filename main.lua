@@ -30,7 +30,7 @@ function initEngine()
   globals.defeats = {}
   globals.defeats.stickMan = false
   
-  globals.resetState = true
+  globals.reloadState = true
   globals.manageStageResources = true
   globals.keyboardCheck = {}
   globals.gamepadCheck = {}

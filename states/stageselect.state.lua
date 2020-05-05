@@ -9,18 +9,6 @@ function stageSelectState:begin()
   megautils.playMusic("assets/sfx/music/select.wav", true, 80724, 315541)
 end
 
-function stageSelectState:update(dt)
-  megautils.update(self, dt)
-end
-
-function stageSelectState:stop()
-  megautils.unload()
-end
-
-function stageSelectState:draw()
-  megautils.draw(self)
-end
-
 megautils.cleanFuncs.stageSelect = function()
   stageSelect = nil
   megautils.cleanFuncs.stageSelect = nil

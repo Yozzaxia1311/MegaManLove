@@ -1,6 +1,6 @@
 camera = basicEntity:extend()
 
-megautils.resetStateFuncs.camera = function()
+megautils.reloadStateFuncs.camera = function()
   camera.main = nil
   section.hash = {}
   section.names = {}
@@ -289,17 +289,6 @@ function camera:updateBounds(noBounds)
     
     if self.bounds and self:collision(self.bounds) then
       sects = self.bounds:collisionTable(tmp)
-      
-      if megautils.groups().sectionConnector then
-        local bConnectors = self.bounds:collisionTable(megautils.groups().sectionConnector)
-        for k, v in ipairs(bConnectors) do
-          for i, j in ipairs(v:collisionTable(tmp)) do
-            if not table.contains(sects, j) then
-              sects[#sects+1] = j
-            end
-          end
-        end
-      end
     else
       sects = tmp
     end

@@ -10,14 +10,6 @@ function gameOverState:begin()
   megautils.playMusic("assets/sfx/music/gameOver.ogg")
 end
 
-function gameOverState:update(dt)
-  megautils.update(self, dt)
-end
-
-function gameOverState:draw()
-  megautils.draw(self)
-end
-
 megautils.cleanFuncs.gameOver = function()
   contPanels = nil
   globals.gameOverContinueState = nil
@@ -86,7 +78,6 @@ function contSelect:update(dt)
     elseif self.pick == 0 then
       self.picked = true
       self.render = false
-      globals.stopMusicMenu = true
       megautils.transitionToState("states/menu.state.lua")
     end
   end
