@@ -4,11 +4,11 @@ megautils = {}
 --[[
   Examples:
   megautils.reloadStateFuncs.exampleFunc = function()
-      *Code here will execute whenever the state is changed and `globals.reloadState` is true.*
+      *Code here will execute whenever the state is changed and `megautils.reloadState` is true.*
     end
   
   megautils.cleanFuncs.exampleFunc = function()
-      *Code here will execute whenever the state is changed and `globals.reloadState` and `globals.manageStageResources` is true*
+      *Code here will execute whenever the state is changed and `megautils.reloadState` and `megautils.manageStageResources` is true*
     end
   
   megautils.resetGameObjectsFuncs.exampleFunc = function()
@@ -16,6 +16,8 @@ megautils = {}
       or `initEngine` is called (usually when the game is first initialized, or is coming back from a demo)*
     end
 ]]--
+megautils.reloadState = true
+megautils.manageStageResources = true
 megautils.reloadStateFuncs = {}
 megautils.cleanFuncs = {}
 megautils.resetGameObjectsFuncs = {}
@@ -63,8 +65,8 @@ function megautils.resetGame(s, saveSfx, saveMusic)
   if not saveMusic then
     megautils.stopMusic()
   end
-  globals.reloadState = true
-  globals.manageStageResources = true
+  megautils.reloadState = true
+  megautils.manageStageResources = true
   megautils.unload()
   initEngine()
   states.set(s or "states/disclaimer.state.lua")
@@ -323,11 +325,11 @@ function megautils.draw(self)
 end
 
 function megautils.unload()
-  if globals.reloadState then
+  if megautils.reloadState then
     for k, v in pairs(megautils.reloadStateFuncs) do
       v()
     end
-    if globals.manageStageResources then
+    if megautils.manageStageResources then
       for k, v in pairs(megautils.cleanFuncs) do
         v()
       end
@@ -504,7 +506,7 @@ end
 function megautils.resetGameObjects()
   globals.mainPlayer = nil
   globals.allPlayers = {}
-  globals.manageStageResources = true
+  megautils.manageStageResources = true
   globals.checkpoint = "start"
   globals.lives = globals.lives > 2 and globals.lives or globals.startingLives
   for k, v in pairs(megautils.resetGameObjectsFuncs) do

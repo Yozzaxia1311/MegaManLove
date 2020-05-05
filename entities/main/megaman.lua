@@ -1771,7 +1771,7 @@ function megaman:die()
     
     megautils.add(timer, 160, function(t)
       megautils.add(fade, true, nil, nil, function(s)
-        globals.reloadState = true
+        megautils.reloadState = true
         if not globals.infiniteLives then
           globals.lives = globals.lives - 1
         end
@@ -1780,7 +1780,7 @@ function megaman:die()
           globals.gameOverContinueState = states.current
           megautils.gotoState("states/gameover.state.lua")
         else
-          globals.manageStageResources = false
+          megautils.manageStageResources = false
           megautils.gotoState(states.current)
         end
         megautils.removeq(s)

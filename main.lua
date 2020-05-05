@@ -1,3 +1,4 @@
+-- Initializes the whole game to it's base state.
 function initEngine()
   inputHandler.init()
   control.init()
@@ -7,31 +8,32 @@ function initEngine()
   view.init(256, 224, 1)
   
   mmFont = love.graphics.newImageFont("assets/misc/mm.png", "$abcdefghijklmnopqrstuvwxyz"
-        .. "1234567890!?<>;/ :,-.+()%'`")
+    .. "1234567890!?<>;/ :,-.+()%'`")
   
   cscreen.init(view.w*view.scale, view.h*view.scale, true)
   
+  -- Game globals.
   globals.mainPlayer = nil
   globals.player = {"mega", "proto", "bass", "roll"}
   globals.allPlayers = {}
   globals.checkpoint = "start"
   globals.infiniteLives = false
-  globals.lives = 2
+  -- `globals.lifeSegements` is how big the player's healthbar is.
   globals.lifeSegments = 7
-  globals.eTanks = 1
-  globals.wTanks = 1
   globals.maxLifeSegments = 7
-  globals.maxLives = 10
+  globals.eTanks = 1
   globals.maxETanks = 10
+  globals.wTanks = 1
   globals.maxWTanks = 10
+  globals.lives = 2
+  globals.maxLives = 10
   globals.startingLives = 2
   globals.playerCount = 1
   
+  -- `globals.defeats` tells who you've defeated. Add to this to track what bosses you've defeated.
   globals.defeats = {}
   globals.defeats.stickMan = false
   
-  globals.reloadState = true
-  globals.manageStageResources = true
   globals.keyboardCheck = {}
   globals.gamepadCheck = {}
   
