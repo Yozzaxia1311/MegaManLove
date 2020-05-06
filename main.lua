@@ -55,7 +55,7 @@ function love.load()
   altEnterOnce = false
   deadZone = 0.8
   maxPlayerCount = 4
-  useConsole = love.keyboard
+  useConsole = not cutBackForWeb and love.keyboard
   showFPS = false
   showEntityCount = false
   framerate = 1/60
