@@ -1,4 +1,4 @@
-cutBackForWeb = love.system.getOS() == "Web"
+isWeb = love.system.getOS() == "Web"
 
 -- Initializes the whole game to it's base state.
 function initEngine()
@@ -55,11 +55,11 @@ function love.load()
   altEnterOnce = false
   deadZone = 0.8
   maxPlayerCount = 4
-  useConsole = not cutBackForWeb and love.keyboard
+  useConsole = not isWeb and love.keyboard
   showFPS = false
   showEntityCount = false
   framerate = 1/60
-  nesShader = not cutBackForWeb and love.graphics.getSupported().glsl3 and love.graphics.newShader("assets/nesLUT.glsl")
+  nesShader = not isWeb and love.graphics.getSupported().glsl3 and love.graphics.newShader("assets/nesLUT.glsl")
   if nesShader then nesShader:send("pal", love.graphics.newImage("assets/nesLUT.png")) end
   
   love.filesystem.load("requirelibs.lua")()
@@ -72,7 +72,7 @@ function love.load()
     megautils.setFullscreen(true)
   end
   megautils.gotoState("states/disclaimer.state.lua")
-  if not cutBackForWeb then console.parse("exec autoexec") end
+  if not isWeb then console.parse("exec autoexec") end
 end
 
 function love.resize(w, h)
@@ -212,7 +212,7 @@ function love.draw()
   if useConsole then console.draw() end
 end
 
-if not cutBackForWeb then
+if not isWeb then
   function love.run()
     if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
     if love.timer then love.timer.step() end

@@ -36,7 +36,7 @@ function title:update(dt)
     megautils.playMusic("assets/sfx/music/title.ogg")
   end
   if self.drawText then
-    if not cutBackForWeb then
+    if not isWeb then
       self.timer = self.timer + 1
       if self.timer == 400 then
         states.openRecord = "assets/demo.rd"

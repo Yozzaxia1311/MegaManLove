@@ -6,7 +6,7 @@ love.filesystem.load("core/view.lua")()
 cartographer = love.filesystem.load("core/cartographer.lua")()
 love.filesystem.load("core/input.lua")()
 love.filesystem.load("core/megautils.lua")()
-if not cutBackForWeb then binser = love.filesystem.load("core/binser.lua")() end
+if not isWeb then binser = love.filesystem.load("core/binser.lua")() end
 local x2l = love.filesystem.load("core/xml2lua.lua")()
 xml2lua = x2l.parser(love.filesystem.load("core/xmlhandler/tree.lua")())
 love.filesystem.load("core/utils.lua")()

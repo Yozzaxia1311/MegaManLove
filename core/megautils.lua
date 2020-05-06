@@ -274,7 +274,7 @@ function megautils.playMusic(path, loop, lp, lep, vol)
   if megautils._lockM or (megautils._curM and megautils._curM.id == path) then return end
   megautils.stopMusic()
   
-  megautils._curM = mmMusic(love.audio.newSource(path, cutBackForWeb and "static" or "stream"))
+  megautils._curM = mmMusic(love.audio.newSource(path, isWeb and "static" or "stream"))
   megautils._curM.id = path
   megautils._curM.playedVol = vol
   megautils._curM:play(loop, lp, lep, vol)
@@ -284,7 +284,7 @@ function megautils.playMusicWithSeperateIntroFile(lPath, iPath, vol)
   if megautils._lockM or (megautils._curM and megautils._curM.id == (lPath .. ", " .. iPath)) then return end
   megautils.stopMusic()
   
-  local t = cutBackForWeb and "static" or "stream"
+  local t = isWeb and "static" or "stream"
   megautils._curM = mmMusicOld(love.audio.newSource(lPath, t), love.audio.newSource(iPath, t))
   megautils._curM.id = lPath .. ", " .. iPath
   megautils._curM.playedVol = vol

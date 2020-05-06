@@ -47,7 +47,7 @@ convar["fullscreen"] = {
   helptext = "fullscreen mode",
   flags = {"client"},
   value = 0,
-  fun = function(arg) local n = numberSanitize(arg) if not cutBackForWeb then love.window.setFullscreen(n == 1) end end
+  fun = function(arg) local n = numberSanitize(arg) if not isWeb then love.window.setFullscreen(n == 1) end end
 }
 convar["framerate"] = {
   helptext = "framerate",

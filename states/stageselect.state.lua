@@ -6,7 +6,7 @@ function stageSelectState:begin()
   megautils.add(stageSelect)
   megautils.add(fade, false, nil, nil, fade.remove)
   view.x, view.y = 0, 0
-  if cutBackForWeb then
+  if isWeb then
     megautils.playMusicWithSeperateIntroFile("assets/sfx/music/select_loop.ogg", "assets/sfx/music/select_intro.ogg")
   else
     megautils.playMusic("assets/sfx/music/select.wav", true, 80724, 315541)

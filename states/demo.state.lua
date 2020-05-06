@@ -19,12 +19,12 @@ function demoState:begin()
     -- Load stage from `.tmx`...
     megautils.loadStage(self, "assets/maps/demo.tmx")
     -- READY
-    megautils.add(ready, nil, (globals.player[1] == "proto") and (cutBackForWeb and "old" or "new"), cutBackForWeb and musicTableOld or musicTable)
+    megautils.add(ready, nil, (globals.player[1] == "proto") and (isWeb and "old" or "new"), isWeb and musicTableOld or musicTable)
     -- Fade in from black
     megautils.add(fade, false, nil, nil, fade.ready)
     -- Play music after everything is set up. If the main player is Proto Man, then the READY object handles the music.
     if globals.player[1] ~= "proto" then
-      if cutBackForWeb then
+      if isWeb then
         megautils.playMusicWithSeperateIntroFile(ol, oi, ov)
       else
         megautils.playMusic(f, true, lp, lep, vol)
