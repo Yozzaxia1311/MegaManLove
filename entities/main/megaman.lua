@@ -459,7 +459,7 @@ function megaman:new(x, y, side, drop, p, g, gf, c)
   self.dashJump = false
   self.wallJumpTimer = 0
   self.dropLanded = not self.drop
-  self.control = c
+  self.control = (c == nil) or c
   self.bubbleTimer = 0
   self.runCheck = false
   self.standSolidJumpTimer = 0
