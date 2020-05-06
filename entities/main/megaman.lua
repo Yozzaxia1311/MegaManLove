@@ -80,13 +80,13 @@ addobjects.register("player", function(v)
       if v.properties.individual <= globals.playerCount then
         megaman.individualLanded[#megaman.individualLanded+1] = v.properties.individual
         megautils.add(megaman, v.x, v.y+((v.properties.grav == nil or v.properties.grav >= 0) and -5 or 0),
-          v.properties.side, v.properties.draw, v.properties.individual, v.properties.grav, v.properties.gravFlip)
+          v.properties.side, v.properties.draw, v.properties.individual, v.properties.grav, v.properties.gravFlip, v.properties.control)
       end
     else
       for i=1, globals.playerCount do
         if not table.contains(v.properties.individual, i) then
           megautils.add(megaman, v.x, v.y+((v.properties.grav == nil or v.properties.grav >= 0) and -5 or 0),
-            v.properties.side, v.properties.drop, i, v.properties.grav, v.properties.gravFlip)
+            v.properties.side, v.properties.drop, i, v.properties.grav, v.properties.gravFlip, v.properties.control)
         end
       end
     end
@@ -366,7 +366,7 @@ function megaman:initChargingColors()
   end
 end
 
-function megaman:new(x, y, side, drop, p, g, gf)
+function megaman:new(x, y, side, drop, p, g, gf, c)
   megaman.super.new(self)
   megautils.registerPlayer(self, p)
   megaman.properties(self, g, gf)
@@ -459,7 +459,7 @@ function megaman:new(x, y, side, drop, p, g, gf)
   self.dashJump = false
   self.wallJumpTimer = 0
   self.dropLanded = not self.drop
-  self.control = not self.drop
+  self.control = (c == nil) or c
   self.bubbleTimer = 0
   self.runCheck = false
   self.standSolidJumpTimer = 0
@@ -1825,7 +1825,6 @@ function megaman:update(dt)
   else
     self.runCheck = false
     if self.rise then
-      self.control = false
       if self.dropLanded then
         self.dropLanded = not self.animations[self.dropLandAnimation.regular].looped
         if not self.dropLanded then
@@ -1845,7 +1844,6 @@ function megaman:update(dt)
         if self.animations[self.dropLandAnimation.regular].looped then
           self.drop = false
           self.animations[self.dropLandAnimation.regular]:gotoFrame(1)
-          self.control = true
           megautils.playSound("start")
         end
       end

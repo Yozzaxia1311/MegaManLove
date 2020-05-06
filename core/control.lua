@@ -139,7 +139,7 @@ function control.init()
   end
   
   step = 0
-  local data = save.load("main.sav")
+  local data = not isWeb and save.load("main.sav")
   if data and data.controls then
     for i=1, maxPlayerCount do
       binds[1+step] = data.controls[1+step] or binds[1+step]
@@ -268,7 +268,7 @@ function control.loadBinds()
   end
   
   step = 0
-  local data = save.load("main.sav")
+  local data = not isWeb and save.load("main.sav")
   if data and data.controls then
     for i=1, maxPlayerCount do
       binds[1+step] = data.controls[1+step] or binds[1+step]

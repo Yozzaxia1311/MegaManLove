@@ -12,16 +12,23 @@ function demoState:begin()
     end
     
     local f, lp, lep, vol = "assets/sfx/music/cut.wav", 139666, 1830670, 0.8
+    local musicTable = {f, true, lp, lep, vol}
+    local ol, oi, ov = "assets/sfx/music/cut_loop.ogg", "assets/sfx/music/cut_intro.ogg", 0.8
+    local musicTableOld = {ol, oi, ov}
     
     -- Load stage from `.tmx`...
     megautils.loadStage(self, "assets/maps/demo.tmx")
     -- READY
-    megautils.add(ready, nil, globals.player[1] == "proto", {f, true, lp, lep, vol})
+    megautils.add(ready, nil, (globals.player[1] == "proto") and (isWeb and "old" or "new"), isWeb and musicTableOld or musicTable)
     -- Fade in from black
     megautils.add(fade, false, nil, nil, fade.ready)
     -- Play music after everything is set up. If the main player is Proto Man, then the READY object handles the music.
     if globals.player[1] ~= "proto" then
-      megautils.playMusic(f, true, lp, lep, vol)
+      if isWeb then
+        megautils.playMusicWithSeperateIntroFile(ol, oi, ov)
+      else
+        megautils.playMusic(f, true, lp, lep, vol)
+      end
     end
   end
 end

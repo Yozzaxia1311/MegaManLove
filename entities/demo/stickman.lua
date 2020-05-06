@@ -113,7 +113,11 @@ function stickMan:update(dt)
           self.ss = 0
           globals.mainPlayer.curAnim = "idle"
           self.s = 2
-          megautils.playMusic("assets/sfx/music/boss.wav", true, 162898, 444759)
+          if isWeb then
+            megautils.playMusic("assets/sfx/music/boss_loop.ogg", "assets/sfx/music/boss_intro.ogg")
+          else
+            megautils.playMusic("assets/sfx/music/boss.wav", true, 162898, 444759)
+          end
           self.render = true
         end
       end

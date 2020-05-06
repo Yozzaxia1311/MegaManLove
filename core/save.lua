@@ -1,6 +1,7 @@
 save = {}
 
 function save.createDirChain(p)
+  if isWeb then return end
   local part = p:split("/")
   local whole = ""
   
@@ -21,12 +22,14 @@ function save.createDirChain(p)
 end
 
 function save.save(file, data)
+  if isWeb then return end
   local sv = binser.serialize(data)
   save.createDirChain(file)
   love.filesystem.write(file, sv)
 end
 
 function save.load(file)
+  if isWeb then return end
   local sv = love.filesystem.read(file)
   if not sv then
     return nil

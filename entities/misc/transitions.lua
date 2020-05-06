@@ -318,8 +318,8 @@ end
 function sectionPrioritySetterYBorder:getSide()
   local same = 0
   for k, v in ipairs(globals.allPlayers) do
-    if v.transform.x+(v.collisionShape.w/2) > self.transform.x+16 and
-      math.between(v.transform.y, self.transform.y, self.transform.y+self.collisionShape.h-v.collisionShape.h) then
+    if v.transform.y+(v.collisionShape.h/2) > self.transform.y+16 and
+      math.between(v.transform.x, self.transform.x, self.transform.x+self.collisionShape.w-v.collisionShape.w) then
       same = same + 1
     end
   end
