@@ -139,13 +139,6 @@ function love.joystickremoved(j)
   control.loadBinds()
 end
 
-if isWeb then
-  keyConv = {["space"]=" ", ["kp0"]="0", ["kp1"]="1", ["kp2"]="2", ["kp3"]="3", ["kp4"]="4", ["kp5"]="5", ["kp6"]="6", ["kp7"]="7", ["kp8"]="8",
-    ["kp9"]="9", ["kp."]=".", ["kp,"]=",", ["kp/"]="/", ["kp*"]="*", ["kp-"]="-", ["kp+"]="+"}
-  shiftTable = {["`"]="~", ["1"]="!", ["2"]="@", ["3"]="#", ["4"]="$", ["5"]="%", ["6"]="^", ["7"]="&", ["8"]="*", ["9"]="(", ["0"]=")",
-    ["-"]="_", ["="]="+", ["["]="{", ["]"]="}", [";"]=":", ["'"]="\"", [","]="<", ["."]=">", ["/"]="?"}
-end
-
 function love.keypressed(k, s, r)
   -- keypressed event must be hijacked for console to work
 	if useConsole and console.state == 1 then
@@ -161,28 +154,8 @@ function love.keypressed(k, s, r)
 		if (k == "tab" and #console.input > 0 and #console.getCompletion(console.input) > 0) then
 			console.complete()
 		end
+    return
 	end
-  
-  -- For some reason, `love.textinput(k)` isn't implemented.
-  if isWeb then
-    local shift = love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift")
-    local key = k
-    if k:len() > 1 then
-      key = keyConv[k]
-    end
-    if key then
-      if shift then
-        if shiftTable[k] then
-          key = shiftTable[k]
-        else
-          key = string.upper(key)
-        end
-      end
-      love.textinput(key)
-    end
-  end
-  
-  if useConsole and console.state == 1 then return end
   
   if not globals.keyboardCheck[k] then
     globals.lastKeyPressed = {"keyboard", k}
