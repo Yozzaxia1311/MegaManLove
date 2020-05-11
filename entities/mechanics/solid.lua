@@ -298,7 +298,7 @@ function collision.checkGround(self, noSlope)
   if #self:collisionTable(solid) == 0 then
     local i = cgrav
     while math.abs(i) <= slp do
-      if #self:collisionTable(solid, 0, i) == 0 then
+      if #self:collisionTable(solid, 0, i + cgrav) == 0 then
         self.ground = false
         self.onMovingFloor = nil
         self.inStandSolid = nil
