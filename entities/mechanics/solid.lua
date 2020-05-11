@@ -432,7 +432,7 @@ function collision.generalCollision(self, noSlope)
           (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
           (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) then
           table.removevaluearray(solid, v)
-          if not v:collision(self, math.sign(self.velocity.velx), math.sign(self.velocity.vely)) then
+          if not v:collision(self) then
             solid[#solid+1] = v
           end
         end
