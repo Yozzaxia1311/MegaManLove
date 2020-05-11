@@ -964,8 +964,10 @@ function megaman:healthChanged(o, c, i)
     return
   end
   self:addHealth((c < 0 and (self:checkTrue(self.canBeInvincible) or self.maxIFrame ~= self.iFrame)) and 0 or c)
-  self.maxIFrame = i
-  self.iFrame = 0
+  if self.changeHealth > 0 or (self.changeHealth < 0 and self.iFrame == self.maxIFrame) then
+    self.maxIFrame = i
+    self.iFrame = 0
+  end
   for k, v in pairs(megautils.playerHealthChangedFuncs) do
     v(self)
   end
