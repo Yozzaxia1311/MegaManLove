@@ -251,7 +251,7 @@ function sectionPrioritySetter:check()
 end
 
 function sectionPrioritySetter:update(dt)
-  if camera.main and self.name ~= camera.main.curBoundName and self:check() == #globals.allPlayers then
+  if camera.main and not camera.main.transition and self.name ~= camera.main.curBoundName and self:check() == #globals.allPlayers then
     camera.main.curBoundName = self.name
   end
 end
@@ -292,7 +292,7 @@ end
 
 function sectionPrioritySetterXBorder:update(dt)
   local s = self:getSide()
-  if camera.main and not megautils.outside(self) and s then
+  if camera.main and not camera.main.transition and not megautils.outside(self) and s then
     camera.main.curBoundName = s
   end
 end
@@ -333,7 +333,7 @@ end
 
 function sectionPrioritySetterYBorder:update(dt)
   local s = self:getSide()
-  if camera.main and not megautils.outside(self) and s then
+  if camera.main and not camera.main.transition and not megautils.outside(self) and s then
     camera.main.curBoundName = s
   end
 end
@@ -372,7 +372,7 @@ function sectionPrioritySetterArea:check()
 end
 
 function sectionPrioritySetterArea:update(dt)
-  if not megautils.outside(self) and camera.main then
+  if not megautils.outside(self) and camera.main and not camera.main.transition then
     local c = self:check()
     if c == #globals.allPlayers then
       camera.main.curBoundName = self.name
