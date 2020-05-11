@@ -19,6 +19,7 @@ function fade:setAfter(f)
 end
 
 function fade:update(dt)
+  self.timer = math.min(self.timer+1, self.gap)
   if ((self.alpha == 255 and self.fadeToColor) or (self.alpha == 0 and not self.fadeToColor)) and self.timer == self.gap then
     if not self.once2 then
       self.once2 = true
@@ -28,7 +29,6 @@ function fade:update(dt)
   else
     megautils.freeze()
   end
-  self.timer = math.min(self.timer+1, self.gap)
   if self.timer == self.gap then
     self.timer = 0
     self.alpha = self.fadeToColor and math.min(self.alpha+(255/3), 255) or math.max(self.alpha-(255/3), 0)

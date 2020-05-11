@@ -23,9 +23,8 @@ function disclaimer:new()
   self.transform.y = 0
   self.t = megautils.getResource("face")
   self.timer = 0
-  self.timer2 = 2
   self.alpha = 0
-  self.otherTimer = 6
+  self.otherTimer = 5
   self.check = false
   self.cycler = 1
   self.colors = {{0, 70, 90}, {0, 120, 248}, {60, 188, 252}, {255, 255, 255}}
@@ -46,12 +45,11 @@ function disclaimer:update()
     globals.sendBackToDisclaimer = true
     megautils.transitionToState("states/rebind.state.lua")
   end
-  globals.lastKeyPressed = nil
-  self.timer = math.min(self.timer+1, 80)
+  self.timer = self.timer + 1
   if self.timer == 80 then
     self.check = true
   end
-  self.otherTimer = math.min(self.otherTimer+1, 6)
+  self.otherTimer = self.otherTimer + 1
   if self.otherTimer == 6 then
     self.otherTimer = 0
     if self.check then

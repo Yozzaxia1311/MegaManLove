@@ -36,25 +36,23 @@ function title:update(dt)
     megautils.playMusic("assets/sfx/music/title.ogg")
   end
   if self.drawText then
-    if not isWeb then
-      self.timer = self.timer + 1
-      if self.timer == 400 then
-        states.openRecord = "assets/demo.rd"
-        megautils.add(fade, true, nil, nil, function(s)
-            megautils.setMusicLock(true)
-            control.drawDemoFunc = function()
-                if control.demo and math.wrap(control.recPos, 0, 40) < 20 then
-                  love.graphics.setFont(mmFont)
-                  love.graphics.setColor(1, 1, 1, 1)
-                  love.graphics.print("demo", view.w - 48, view.h - 16)
-                end
+    self.timer = self.timer + 1
+    if self.timer == 400 then
+      states.openRecord = "assets/demo.rd"
+      megautils.add(fade, true, nil, nil, function(s)
+          megautils.setMusicLock(true)
+          control.drawDemoFunc = function()
+              if control.demo and math.wrap(control.recPos, 0, 40) < 20 then
+                love.graphics.setFont(mmFont)
+                love.graphics.setColor(1, 1, 1, 1)
+                love.graphics.print("demo", view.w - 48, view.h - 16)
               end
-            control.returning = function()
-                megautils.add(fade, true, nil, nil, function(s) megautils.resetGame("states/title.state.lua", false, true) end)
-              end
-            megautils.gotoState()
-          end)
-      end
+            end
+          control.returning = function()
+              megautils.add(fade, true, nil, nil, function(s) megautils.resetGame("states/title.state.lua", false, true) end)
+            end
+          megautils.gotoState()
+        end)
     end
     self.textTimer = math.wrap(self.textTimer+1, 0, 40)
     if control.startDown[1] then

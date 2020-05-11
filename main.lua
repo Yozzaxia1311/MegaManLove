@@ -1,5 +1,52 @@
 isWeb = love.system.getOS() == "Web"
 
+if isWeb then
+  -- `love.filesystem.getInfo` doesn't exist in the current love.js, so here's an implementation.
+  function love.filesystem.getInfo(str, arg1, arg2)
+    if love.filesystem.exists(str) then
+      local t = "other"
+      if love.filesystem.isFile(str) then
+        t = "file"
+      elseif love.filesystem.isDirectory(str) then
+        t = "directory"
+      elseif love.filesystem.isSymlink(str) then
+        t = "symlink"
+      end
+      
+      local fCheck = true
+      local result = (type(arg1) == "table") and arg1
+      
+      if type(arg1) == "string" then
+        fCheck = arg1 == t
+      elseif type(arg1) == "table" and type(arg2) == "string" then
+        fCheck = arg2 == t
+      end
+      
+      if fCheck then
+        if not result then
+          result = {}
+        end
+        result.type = t
+        result.size = love.filesystem.getSize(str)
+        result.modtime = love.filesystem.getLastModified(str)
+      end
+      
+      return result
+    end
+  end
+  
+  --Fullscreening is broken.
+  function love.window.setFullscreen() end
+else
+  -- Love2D doesn't fire the resize event when exiting fullscreen, so here's a hack.
+  local lf = love.window.setFullscreen
+
+  function love.window.setFullscreen(s)
+    lf(s)
+    love.resize(love.graphics.getDimensions())
+  end
+end
+
 -- Initializes the whole game to it's base state.
 function initEngine()
   inputHandler.init()
@@ -55,7 +102,7 @@ function love.load()
   altEnterOnce = false
   deadZone = 0.8
   maxPlayerCount = 4
-  useConsole = not isWeb and love.keyboard
+  useConsole = love.keyboard
   showFPS = false
   showEntityCount = false
   framerate = 1/60
@@ -72,7 +119,7 @@ function love.load()
     megautils.setFullscreen(true)
   end
   megautils.gotoState("states/disclaimer.state.lua")
-  if not isWeb then console.parse("exec autoexec") end
+  console.parse("exec autoexec")
 end
 
 function love.resize(w, h)
@@ -84,14 +131,6 @@ function love.resize(w, h)
   resized = true
 end
 
---Love2D doesn't fire the resize event when exiting fullscreen, so here's a hack.
-local lf = love.window.setFullscreen
-
-function love.window.setFullscreen(s)
-  lf(s)
-  love.resize(love.graphics.getDimensions())
-end
-
 function love.joystickadded(j)
   control.loadBinds()
 end
@@ -100,9 +139,16 @@ function love.joystickremoved(j)
   control.loadBinds()
 end
 
+if isWeb then
+  keyConv = {["space"]=" ", ["kp0"]="0", ["kp1"]="1", ["kp2"]="2", ["kp3"]="3", ["kp4"]="4", ["kp5"]="5", ["kp6"]="6", ["kp7"]="7", ["kp8"]="8",
+    ["kp9"]="9", ["kp."]=".", ["kp,"]=",", ["kp/"]="/", ["kp*"]="*", ["kp-"]="-", ["kp+"]="+"}
+  shiftTable = {["`"]="~", ["1"]="!", ["2"]="@", ["3"]="#", ["4"]="$", ["5"]="%", ["6"]="^", ["7"]="&", ["8"]="*", ["9"]="(", ["0"]=")",
+    ["-"]="_", ["="]="+", ["["]="{", ["]"]="}", [";"]=":", ["'"]="\"", [","]="<", ["."]=">", ["/"]="?"}
+end
+
 function love.keypressed(k, s, r)
   -- keypressed event must be hijacked for console to work
-	if useConsole and (console.state == 1) then
+	if useConsole and console.state == 1 then
 		if (k == "backspace") then
 			console.backspace()
 		end
@@ -115,8 +161,29 @@ function love.keypressed(k, s, r)
 		if (k == "tab" and #console.input > 0 and #console.getCompletion(console.input) > 0) then
 			console.complete()
 		end
-		return
 	end
+  
+  -- For some reason, `love.textinput(k)` isn't implemented.
+  if isWeb then
+    local shift = love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift")
+    local key = k
+    if k:len() > 1 then
+      key = keyConv[k]
+    end
+    if key then
+      if shift then
+        if shiftTable[k] then
+          key = shiftTable[k]
+        else
+          key = string.upper(key)
+        end
+      end
+      love.textinput(key)
+    end
+  end
+  
+  if useConsole and console.state == 1 then return end
+  
   if not globals.keyboardCheck[k] then
     globals.lastKeyPressed = {"keyboard", k}
   end
@@ -125,6 +192,8 @@ function love.keypressed(k, s, r)
 end
 
 function love.gamepadpressed(j, b)
+  if useConsole and console.state == 1 then return end
+  
   if not globals.gamepadCheck[b] then
     globals.lastKeyPressed = {"gamepad", b, j:getName()}
   end
@@ -133,6 +202,8 @@ function love.gamepadpressed(j, b)
 end
 
 function love.gamepadaxis(j, b, v)
+  if useConsole and console.state == 1 then return end
+  
   if not math.between(v, -deadZone, deadZone) then
     if not globals.gamepadCheck[b] then
       if (b == "leftx" or b == "lefty" or b == "rightx" or b == "righty") then
