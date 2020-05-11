@@ -1,7 +1,7 @@
 collision = {}
 
 collision.noSlope = false
-collision.maxSlope = 1
+collision.maxSlope = 2
 
 function collision.doGrav(self, noSlope)
   noSlope = noSlope or collision.noSlope
