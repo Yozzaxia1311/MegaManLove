@@ -292,7 +292,7 @@ end
 
 function sectionPrioritySetterXBorder:update(dt)
   local s = self:getSide()
-  if camera.main and not camera.main.transition and not megautils.outside(self) and s then
+  if camera.main and not camera.main.transition and not megautils.outside(self) then
     camera.main.curBoundName = s
   end
 end
@@ -333,7 +333,7 @@ end
 
 function sectionPrioritySetterYBorder:update(dt)
   local s = self:getSide()
-  if camera.main and not camera.main.transition and not megautils.outside(self) and s then
+  if camera.main and not camera.main.transition and not megautils.outside(self) then
     camera.main.curBoundName = s
   end
 end
