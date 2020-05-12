@@ -1,3 +1,4 @@
+isMobile = love.system.getOS() == "Android" or love.system.getOS() == "iOS"
 isWeb = love.system.getOS() == "Web"
 
 if isWeb then
@@ -106,7 +107,7 @@ function love.load()
   showFPS = false
   showEntityCount = false
   framerate = 1/60
-  nesShader = not isWeb and love.graphics.getSupported().glsl3 and love.graphics.newShader("assets/nesLUT.glsl")
+  nesShader = not isWeb and not isMobile and love.graphics.getSupported().glsl3 and love.graphics.newShader("assets/nesLUT.glsl")
   if nesShader then nesShader:send("pal", love.graphics.newImage("assets/nesLUT.png")) end
   
   love.filesystem.load("requirelibs.lua")()
