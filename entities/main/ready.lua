@@ -19,7 +19,7 @@ function ready:new(text, proto, music)
   self.maxBlinkTime = 6
   self.blinkCount = 0
   self.blinks = self.proto and 32 or 12
-  self.text = text or "ready"
+  self.text = text or "READY"
   self.width = self.text:len() * 8
   megautils.freeze()
 end

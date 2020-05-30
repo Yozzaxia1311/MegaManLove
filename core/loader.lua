@@ -3,7 +3,7 @@ loader = {}
 loader.resources = {}
 loader.locked = {}
 
-local function imgColImage(x, y, r, g, b, a)
+function loader.imgMap(x, y, r, g, b, a)
   if not loader.tmp[y+1] then
     loader.tmp[y+1] = {}
   end
@@ -16,10 +16,21 @@ function loader.load(path, nick, typ, parameters, lock)
     if typ == "texture" then
       if lock then
         if parameters and parameters[1] then
-          local img = love.image.newImageData(path)
-          loader.tmp = {}
-          img:mapPixel(imgColImage)
-          loader.locked[nick] = {loader.tmp, love.graphics.newImage(img)}
+          if is3DS then
+            local data = love.filesystem.read(path):split("#")
+            local size = tonumber(data[1])
+            local csv = data[2]:split(",")
+            for i = 1, #csv do
+              csv[i] = tonumber(csv[i])
+            end
+            local t = table.convert1Dto2D(csv, size)
+            loader.locked[nick] = {t}
+          else
+            local img = love.image.newImageData(path)
+            loader.tmp = {}
+            img:mapPixel(loader.imgMap)
+            loader.locked[nick] = {loader.tmp, love.graphics.newImage(img)}
+          end
         else
           loader.locked[nick] = love.graphics.newImage(path)
         end
@@ -29,10 +40,21 @@ function loader.load(path, nick, typ, parameters, lock)
           error("Cannot overwrite a locked resource")
         end
         if parameters then
-          local img = love.image.newImageData(path)
-          loader.tmp = {}
-          img:mapPixel(imgColImage)
-          loader.resources[nick] = {loader.tmp, love.graphics.newImage(img)}
+          if is3DS then
+            local data = love.filesystem.read(path):split("#")
+            local size = tonumber(data[1])
+            local csv = data[2]:split(",")
+            for i = 1, #csv do
+              csv[i] = tonumber(csv[i])
+            end
+            local t = table.convert1Dto2D(csv, size)
+            loader.resources[nick] = {t}
+          else
+            local img = love.image.newImageData(path)
+            loader.tmp = {}
+            img:mapPixel(loader.imgMap)
+            loader.resources[nick] = {loader.tmp, love.graphics.newImage(img)}
+          end
         else
           loader.resources[nick] = love.graphics.newImage(path)
         end

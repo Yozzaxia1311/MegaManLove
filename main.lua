@@ -1,5 +1,6 @@
 isMobile = love.system.getOS() == "Android" or love.system.getOS() == "iOS"
 isWeb = love.system.getOS() == "Web"
+is3DS = love._console_name == "3DS"
 
 if isWeb then
   -- `love.filesystem.getInfo` doesn't exist in the current love.js, so here's an implementation.
@@ -36,8 +37,11 @@ if isWeb then
     end
   end
   
-  --Fullscreening is broken.
+  -- Fullscreening is broken.
   function love.window.setFullscreen() end
+elseif is3DS then
+  -- Non-existant functions in LovePotion.
+  function love.keyboard.setKeyRepeat() end
 else
   -- Love2D doesn't fire the resize event when exiting fullscreen, so here's a hack.
   local lf = love.window.setFullscreen
@@ -46,6 +50,31 @@ else
     lf(s)
     love.resize(love.graphics.getDimensions())
   end
+end
+
+imageToCSV = {}
+
+imageToCSV.tmp = {}
+
+function imageToCSV.imgMap(x, y, r, g, b, a)
+  imageToCSV.tmp[#imageToCSV.tmp+1] = (a > 0) and 1 or 0
+  return r, g, b, a
+end
+
+function imageToCSV.output(path, out)
+  local result
+  local img = love.image.newImageData(path)
+  
+  imageToCSV.tmp = {}
+  img:mapPixel(imageToCSV.imgMap)
+  
+  result = tostring(img:getWidth()) .. "#"
+  for i=1, #imageToCSV.tmp do
+    result = result .. tostring(imageToCSV.tmp[i]) .. ((i == #imageToCSV.tmp) and "" or ",")
+  end
+  
+  save.createDirChain(out)
+  love.filesystem.write(out, result)
 end
 
 -- Initializes the whole game to it's base state.
@@ -57,8 +86,7 @@ function initEngine()
   
   view.init(256, 224, 1)
   
-  mmFont = love.graphics.newImageFont("assets/misc/mm.png", "$abcdefghijklmnopqrstuvwxyz"
-    .. "1234567890!?<>;/ :,-.+()%'`")
+  mmFont = love.graphics.newFont("assets/misc/mm.ttf", 8)
   
   cscreen.init(view.w*view.scale, view.h*view.scale, true)
   
@@ -107,7 +135,7 @@ function love.load()
   showFPS = false
   showEntityCount = false
   framerate = 1/60
-  nesShader = not isWeb and not isMobile and love.graphics.getSupported().glsl3 and love.graphics.newShader("assets/nesLUT.glsl")
+  nesShader = not isWeb and not isMobile and not is3DS and love.graphics.getSupported().glsl3 and love.graphics.newShader("assets/nesLUT.glsl")
   if nesShader then nesShader:send("pal", love.graphics.newImage("assets/nesLUT.png")) end
   
   love.filesystem.load("requirelibs.lua")()
@@ -250,14 +278,16 @@ function love.update(dt)
   end
 end
 
-function love.draw()
-  love.graphics.push()
-  states.draw()
-  love.graphics.pop()
-  if useConsole then console.draw() end
+function love.draw(screen)
+  if not is3DS or screen == "top" then
+    love.graphics.push()
+    states.draw()
+    love.graphics.pop()
+    if useConsole then console.draw() end
+  end
 end
 
-if not isWeb then
+if not isWeb and not is3DS then
   function love.run()
     if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
     if love.timer then love.timer.step() end

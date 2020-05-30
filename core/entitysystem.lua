@@ -518,7 +518,7 @@ function basicEntity:setImageCollision(data)
 end
 
 function basicEntity:collision(e, x, y)
-  if e == nil or self.collisionShape == nil or e.collisionShape == nil then return false end
+  if not e or not self.collisionShape or not e.collisionShape then return false end
   if self.collisionShape.type == 0 then
     if e.collisionShape.type == 0 then
       return rectOverlapsRect(self.transform.x + (x or 0), self.transform.y + (y or 0),
@@ -561,12 +561,12 @@ function basicEntity:collision(e, x, y)
 end
 
 function basicEntity:drawCollision()
-  if self.collisionShape == nil then return false end
+  if not self.collisionShape then return end
   love.graphics.setColor(1, 1, 1, 0.8)
   if self.collisionShape.type == 0 then
     love.graphics.rectangle("line", math.round(self.transform.x), math.round(self.transform.y),
       self.collisionShape.w, self.collisionShape.h)
-  elseif self.collisionShape.type == 1 then
+  elseif self.collisionShape.type == 1 and self.collisionShape.image then
     love.graphics.draw(self.collisionShape.image, math.round(self.transform.x), math.round(self.transform.y))
   elseif self.collisionShape.type == 2 then
     love.graphics.circle("line", math.round(self.transform.x), math.round(self.transform.y), self.collisionShape.r)
@@ -576,7 +576,7 @@ end
 
 function basicEntity:collisionTable(t, x, y, func)
   local result = {}
-  if t == nil then return result end
+  if not t then return result end
   for k=1, #t do
     local v = t[k]
     if self:collision(v, x, y) and (func == nil and true or func(v)) then

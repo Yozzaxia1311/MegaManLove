@@ -72,15 +72,6 @@ function megautils.resetGame(s, saveSfx, saveMusic)
   states.set(s or "states/disclaimer.state.lua")
 end
 
-local function checkExt(ext, list)
-  for k, v in ipairs(list) do
-    if ext:lower() == v then
-      return true
-    end
-  end
-  return false
-end
-
 function megautils.getResource(nick)
   return loader.get(nick)
 end
@@ -112,6 +103,15 @@ function megautils.setResourceLock(nick, w)
   end
 end
 
+local function checkExt(ext, list)
+  for k, v in ipairs(list) do
+    if ext:lower() == v then
+      return true
+    end
+  end
+  return false
+end
+
 function megautils.loadResource(...)
   local args = {...}
   if #args == 0 then error("megautils.load takes at least two arguments") end
@@ -134,9 +134,13 @@ function megautils.loadResource(...)
     loader.load(nil, nick, t, {args[2], args[3], args[4], args[5],
         (type(args[6]) ~= "boolean") and args[6], (type(args[7]) ~= "boolean") and args[7]}, locked)
   elseif checkExt(t, {"png", "jpeg", "jpg", "bmp", "tga", "hdr", "pic", "exr"}) then
+    local ext = t
     t = "texture"
     if #args == 4 then
       locked = args[4]
+      if is3DS then
+        path = path:gsub(ext, ".csv")
+      end
       loader.load(path, nick, t, {args[3]}, locked)
     else
       locked = args[3]

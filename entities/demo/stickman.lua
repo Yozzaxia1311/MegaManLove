@@ -159,7 +159,7 @@ function stickManIntro:new()
   self.transform.x = 108
   self.t = megautils.getResource("stickMan")
   self.c = "idle"
-  self.text = "stick man"
+  self.text = "STICK MAN"
   self.pos = 0
   self.textTimer = 0
   self.timer = 0
@@ -248,7 +248,7 @@ function megamanStick:new()
   self.animations.idle = anim8.newAnimation(megautils.getResource(grid)(1, 1, 2, 1), {2.5, 0.1})
   self.animations.idleShoot = anim8.newAnimation(megautils.getResource(grid)(1, 4), 1)
   self:face(1)
-  self.text = "weapon get... stick weapon!"
+  self.text = "WEAPON GET... STICK WEAPON!"
   self.pos = 0
   self.textTimer = 0
   self.timer = 0

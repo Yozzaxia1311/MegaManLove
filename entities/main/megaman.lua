@@ -10,41 +10,41 @@ megautils.resetGameObjectsFuncs.megaman = function()
   for i=1, globals.playerCount do
     megaman.weaponHandler[i] = weaponHandler(nil, nil, 10)
     if globals.player[i] == "proto" then
-      megaman.weaponHandler[i]:register(0, "protoBuster", {"p.buster", {48, 32, 16, 16}, {64, 32, 16, 16}},
+      megaman.weaponHandler[i]:register(0, "protoBuster", {"P.BUSTER", {48, 32, 16, 16}, {64, 32, 16, 16}},
         {216, 40, 0}, {184, 184, 184}, {0, 0, 0})
     elseif globals.player[i] == "bass" then
-      megaman.weaponHandler[i]:register(0, "bassBuster", {"b.buster", {144, 32, 16, 16}, {160, 32, 16, 16}},
+      megaman.weaponHandler[i]:register(0, "bassBuster", {"B.BUSTER", {144, 32, 16, 16}, {160, 32, 16, 16}},
         {112, 112, 112}, {248, 152, 56}, {0, 0, 0})
     elseif globals.player[i] == "roll" then
-      megaman.weaponHandler[i]:register(0, "rollBuster", {"r.buster", {80, 32, 16, 16}, {96, 32, 16, 16}},
+      megaman.weaponHandler[i]:register(0, "rollBuster", {"R.BUSTER", {80, 32, 16, 16}, {96, 32, 16, 16}},
         {248, 56, 0}, {0, 168, 0}, {0, 0, 0})
     else
-      megaman.weaponHandler[i]:register(0, "megaBuster", {"m.buster", {16, 32, 16, 16}, {32, 32, 16, 16}},
+      megaman.weaponHandler[i]:register(0, "megaBuster", {"M.BUSTER", {16, 32, 16, 16}, {32, 32, 16, 16}},
         {0, 120, 248}, {0, 232, 216}, {0, 0, 0})
     end
     
     if globals.player[i] == "bass" then
-      megaman.weaponHandler[i]:register(9, "trebleBoost", {"t. boost", {144, 16, 16, 16}, {160, 16, 16, 16}},
+      megaman.weaponHandler[i]:register(9, "trebleBoost", {"T. BOOST", {144, 16, 16, 16}, {160, 16, 16, 16}},
         {112, 112, 112}, {128, 0, 240}, {0, 0, 0})
     elseif globals.player[i] == "proto" then
-      megaman.weaponHandler[i]:register(9, "rushCoil", {"proto c.", {176, 0, 16, 16}, {192, 0, 16, 16}},
+      megaman.weaponHandler[i]:register(9, "rushCoil", {"PROTO C.", {176, 0, 16, 16}, {192, 0, 16, 16}},
         {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
-      megaman.weaponHandler[i]:register(10, "rushJet", {"proto jet", {176, 16, 16, 16}, {192, 16, 16, 16}},
+      megaman.weaponHandler[i]:register(10, "rushJet", {"PROTO JET", {176, 16, 16, 16}, {192, 16, 16, 16}},
         {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
     elseif globals.player[i] == "roll" then
-      megaman.weaponHandler[i]:register(9, "rushCoil", {"tango c.", {208, 0, 16, 16}, {224, 0, 16, 16}},
+      megaman.weaponHandler[i]:register(9, "rushCoil", {"TANGO C.", {208, 0, 16, 16}, {224, 0, 16, 16}},
         {0, 168, 0}, {255, 255, 255}, {0, 0, 0})
-      megaman.weaponHandler[i]:register(10, "rushJet", {"tango jet", {208, 16, 16, 16}, {224, 16, 16, 16}},
+      megaman.weaponHandler[i]:register(10, "rushJet", {"TANGO JET", {208, 16, 16, 16}, {224, 16, 16, 16}},
         {0, 168, 0}, {255, 255, 255}, {0, 0, 0})
     else
-      megaman.weaponHandler[i]:register(9, "rushCoil", {"rush c.", {144, 0, 16, 16}, {160, 0, 16, 16}},
+      megaman.weaponHandler[i]:register(9, "rushCoil", {"RUSH C.", {144, 0, 16, 16}, {160, 0, 16, 16}},
         {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
-      megaman.weaponHandler[i]:register(10, "rushJet", {"rush jet", {112, 32, 16, 16}, {128, 32, 16, 16}},
+      megaman.weaponHandler[i]:register(10, "rushJet", {"RUSH JET", {112, 32, 16, 16}, {128, 32, 16, 16}},
         {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
     end
     
     if globals.defeats.stickMan then
-      megaman.weaponHandler[i]:register(1, "stickWeapon", {"stick w.", {16, 0, 16, 16}, {32, 0, 16, 16}},
+      megaman.weaponHandler[i]:register(1, "stickWeapon", {"STICK W.", {16, 0, 16, 16}, {32, 0, 16, 16}},
         {188, 188, 188}, {124, 124, 124}, {0, 0, 0})
     end
   end

@@ -20,6 +20,20 @@ concmd["help"] = {
   fun = cmdHelp,
 }
 
+function cmdImg2CSV(cmd)
+  if not cmd[2] or not cmd[3] then return end
+  if not love.filesystem.getInfo(cmd[2]) then
+    console.print("No such image file \"" .. cmd[2] .. "\"")
+  end
+  imageToCSV.output(cmd[2], cmd[3])
+  console.print(cmd[2] .. " converted into " .. cmd[3])
+end
+concmd["imgtocsv"] = {
+  helptext = "convert an image to csv (used for image mask collision on 3DS version)",
+  flags = {},
+  fun = cmdImg2CSV,
+}
+
 function cmdRec(cmd)
   if states.recordOnSwitch then
     states.recordOnSwitch = false

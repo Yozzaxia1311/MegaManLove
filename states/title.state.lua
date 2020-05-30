@@ -69,7 +69,7 @@ function title:draw()
     love.graphics.setFont(mmFont)
     love.graphics.print(self.text, self.textPos, 208)
     if self.textTimer < 20 then
-      love.graphics.print("press start", 84, 124)
+      love.graphics.print("PRESS START", 84, 124)
     end
   end
   love.graphics.draw(self.tex, self.transform.x, self.transform.y)

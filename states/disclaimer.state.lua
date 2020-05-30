@@ -28,12 +28,12 @@ function disclaimer:new()
   self.check = false
   self.cycler = 1
   self.colors = {{0, 70, 90}, {0, 120, 248}, {60, 188, 252}, {255, 255, 255}}
-  self.disclaimerText = "mega man and all related content (c) capcom 2020." .. 
-    "\n\n\n\nthe mega man love engine is a non-profit fanmade engine created by " .. 
+  self.disclaimerText = "Mega Man and all related content (c) Capcom 2020." .. 
+    "\n\n\n\nthe Mega Man Love engine is a non-profit fanmade engine created by " .. 
     "various contributors.\n\nit is not for sale.\n\n" .. 
     "have fun!"
-  self.bottomText = "press start to continue" .. (isWeb and "" or "\npress alt+enter for fullscreen") .. "\npress " .. 
-    (isWeb and "1" or "escape") .. " to rebind controls"
+  self.bottomText = "Press start to continue" .. (isWeb and "" or "\nPress Alt+Enter for fullscreen") .. "\nPress " .. 
+    (isWeb and "1" or "Escape") .. " to rebind controls"
 end
 
 function disclaimer:update()
@@ -70,9 +70,9 @@ function disclaimer:draw()
   love.graphics.draw(self.t, 200, 160)
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.setFont(mmFont)
-  love.graphics.printf(self.disclaimerText, 4, 24, 248, "center")
+  love.graphics.printf(self.disclaimerText, 4, 16, 248, "center")
   love.graphics.setColor(1, 1, 1, self.alpha/255)
-  love.graphics.printf(self.bottomText, -21, 200, 300, "center")
+  love.graphics.printf(self.bottomText, -21, 192, 300, "center")
 end
 
 return disclaimerState
