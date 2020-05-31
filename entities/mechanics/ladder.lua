@@ -16,3 +16,9 @@ function ladder:new(x, y, w, h)
     self:addToGroup("despawnable")
   end
 end
+
+megautils.cleanFuncs.ladder = function()
+    ladder = nil
+    addobjects.unregister("ladder")
+    megautils.cleanFuncs.ladder = nil
+  end

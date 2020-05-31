@@ -1,3 +1,5 @@
+megautils.loadResource("assets/global/bossDoor.png", "bossDoor")
+
 bossDoor = entity:extend()
 
 addobjects.register("bossDoor", function(v)
@@ -123,6 +125,7 @@ function bossDoor:update(dt)
       for i=1, #globals.allPlayers do
         local player = globals.allPlayers[i]
         if player.control and self:collision(player) then
+          megautils.loadResource("assets/sfx/bossDoor.ogg", "bossDoorSfx")
           self.player = player
           self.state = 1
           for j=1, #globals.allPlayers do
@@ -217,6 +220,7 @@ function bossDoor:update(dt)
         megautils.state().system.cameraUpdate = nil
       end
       self.state = 0
+      megautils.unloadResource("bossDoorSfx")
     end
   end
 end
@@ -232,3 +236,9 @@ function bossDoor:draw()
     end
   end
 end
+
+megautils.cleanFuncs.bossDoor = function()
+    bossDoor = nil
+    addobjects.unregister("bossDoor")
+    megautils.cleanFuncs.bossDoor = nil
+  end

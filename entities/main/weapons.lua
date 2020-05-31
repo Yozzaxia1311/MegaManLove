@@ -1,8 +1,32 @@
-weaponHandler.removeGroups.protoBuster = {"megaBuster", "protoChargedBuster"}
+weapons = {}
+weapons.removeGroups = {}
+weapons.resources = {}
+
+weapons.removeGroups.protoBuster = {"megaBuster", "protoChargedBuster"}
+
+weapons.resources.protoBuster = function()
+    megautils.loadResource("assets/misc/weapons/buster.png", "busterTex")
+    megautils.loadResource("assets/misc/weapons/protoBuster.png", "protoBuster")
+    megautils.loadResource("assets/sfx/buster.ogg", "buster")
+    megautils.loadResource("assets/sfx/protoCharge.ogg", "protoCharge")
+    megautils.loadResource("assets/sfx/protoCharged.ogg", "protoCharged")
+    megautils.loadResource("assets/sfx/reflect.ogg", "dink")
+    megautils.loadResource("protoBusterGrid", 29, 10, 68, 10, 10, 0)
+  end
+
+weapons.resources.rollBuster = function()
+    megautils.loadResource("assets/misc/weapons/buster.png", "busterTex")
+    megautils.loadResource("assets/misc/weapons/rollBuster.png", "rollBuster")
+    megautils.loadResource("assets/sfx/buster.ogg", "buster")
+    megautils.loadResource("assets/sfx/protoCharge.ogg", "protoCharge")
+    megautils.loadResource("assets/sfx/protoCharged.ogg", "protoCharged")
+    megautils.loadResource("assets/sfx/reflect.ogg", "dink")
+    megautils.loadResource("protoBusterGrid", 29, 10, 68, 10, 10, 0)
+  end
 
 protoSemiBuster = basicEntity:extend()
 
-function protoSemiBuster:new(x, y, dir, wpn, roll, grav)
+function protoSemiBuster:new(x, y, dir, wpn, skin, grav)
   protoSemiBuster.super.new(self)
   self.added = function(self)
     self:addToGroup("megaBuster")
@@ -14,7 +38,7 @@ function protoSemiBuster:new(x, y, dir, wpn, roll, grav)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(10, 10)
-  self.tex = megautils.getResource(roll and "rollBuster" or "protoBuster")
+  self.tex = megautils.getResource(skin)
   self.quad = love.graphics.newQuad(0, 0, 10, 10, 68, 10)
   self.velocity = velocity()
   self.velocity.velx = dir * 5
@@ -49,7 +73,7 @@ end
 
 protoChargedBuster = basicEntity:extend()
 
-function protoChargedBuster:new(x, y, dir, wpn, roll, grav)
+function protoChargedBuster:new(x, y, dir, wpn, skin, grav)
   protoChargedBuster.super.new(self)
   self.added = function(self)
     self:addToGroup("protoChargedBuster")
@@ -57,7 +81,7 @@ function protoChargedBuster:new(x, y, dir, wpn, roll, grav)
     self:addToGroup("freezable")
     self:addToGroup("removeOnTransition")
   end
-  self.tex = megautils.getResource(roll and "rollBuster" or "protoBuster")
+  self.tex = megautils.getResource(skin)
   self.anim = anim8.newAnimation(megautils.getResource("protoBusterGrid")("1-2", 1), 1/20)
   self.transform.y = y
   self.transform.x = x
@@ -102,7 +126,13 @@ end
 
 bassBuster = entity:extend()
 
-weaponHandler.removeGroups.bassBuster = {"bassBuster"}
+weapons.removeGroups.bassBuster = {"bassBuster"}
+
+weapons.resources.bassBuster = function()
+    megautils.loadResource("assets/misc/weapons/bassBuster.png", "bassBuster")
+    megautils.loadResource("assets/sfx/buster.ogg", "buster")
+    megautils.loadResource("assets/sfx/reflect.ogg", "dink")
+  end
 
 function bassBuster:new(x, y, dir, wpn, t, grav)
   bassBuster.super.new(self)
@@ -167,7 +197,18 @@ end
 
 megaBuster = basicEntity:extend()
 
-weaponHandler.removeGroups.megaBuster = {"megaBuster", "megaChargedBuster"}
+weapons.removeGroups.megaBuster = {"megaBuster", "megaChargedBuster"}
+
+weapons.resources.megaBuster = function()
+    megautils.loadResource("assets/misc/weapons/buster.png", "busterTex")
+    megautils.loadResource("assets/sfx/buster.ogg", "buster")
+    megautils.loadResource("assets/sfx/charge.ogg", "charge")
+    megautils.loadResource("assets/sfx/semi.ogg", "semiCharged")
+    megautils.loadResource("assets/sfx/charged.ogg", "charged")
+    megautils.loadResource("assets/sfx/reflect.ogg", "dink")
+    megautils.loadResource("chargeGrid", 33, 30, 133, 47)
+    megautils.loadResource("smallChargeGrid", 17, 16, 133, 47, 8, 31)
+  end
 
 function megaBuster:new(x, y, dir, wpn, grav)
   megaBuster.super.new(self)
@@ -334,7 +375,17 @@ end
 
 trebleBoost = entity:extend()
 
-weaponHandler.removeGroups.trebleBoost = {"trebleBoost", "bassBuster"}
+weapons.removeGroups.trebleBoost = {"trebleBoost", "bassBuster"}
+
+weapons.resources.trebleBoost = function()
+    megautils.loadResource("assets/misc/weapons/bassBuster.png", "bassBuster")
+    megautils.loadResource("assets/sfx/treble.ogg", "treble")
+    megautils.loadResource("assets/sfx/mmStart.ogg", "start")
+    megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
+    megautils.loadResource("trebleGrid", 33, 32, 264, 32)
+    
+    weapons.resources.bassBuster() -- Just incase it isn't already loaded.
+  end
 
 function trebleBoost:new(x, y, side, player, wpn)
   trebleBoost.super.new(self)
@@ -349,7 +400,8 @@ function trebleBoost:new(x, y, side, player, wpn)
   self.transform.y = view.y-8
   self.toY = y
   self:setRectangleCollision(20, 19)
-  self.tex = megautils.getResource("treble")
+  self.skin = "assets/misc/weapons/treble.png"
+  self.tex = megautils.getResource(self.skin) or megautils.loadResource(self.skin, self.skin)
   self.c = "spawn"
   self.anims = {}
   self.anims.spawn = anim8.newAnimation(megautils.getResource("trebleGrid")(1, 1), 1)
@@ -444,7 +496,34 @@ end
 
 rushJet = entity:extend()
 
-weaponHandler.removeGroups.rushJet = {"rushJet", "megaBuster", "bassBuster"}
+weapons.removeGroups.rushJet = {"rushJet", "megaBuster", "bassBuster"}
+
+weapons.resources.rushJet = function()
+    megautils.loadResource("assets/misc/weapons/rush.png", "rush")
+    megautils.loadResource("assets/sfx/mmStart.ogg", "start")
+    megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
+    megautils.loadResource("rushGrid", 32, 32, 128, 64)
+    
+    weapons.resources.megaBuster() -- So it's possible to use the Mega Buster shots even if the weapon wasn't already loaded in for some reason...
+  end
+
+weapons.resources.protoRushJet = function()
+    megautils.loadResource("assets/misc/weapons/protoRush.png", "protoRush")
+    megautils.loadResource("assets/sfx/mmStart.ogg", "start")
+    megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
+    megautils.loadResource("rushGrid", 32, 32, 128, 64)
+    
+    weapons.resources.megaBuster()
+  end
+
+weapons.resources.tangoJet = function()
+    megautils.loadResource("assets/misc/weapons/tango.png", "tango")
+    megautils.loadResource("assets/sfx/mmStart.ogg", "start")
+    megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
+    megautils.loadResource("rushGrid", 32, 32, 128, 64)
+    
+    weapons.resources.megaBuster()
+  end
 
 function rushJet:new(x, y, side, player, wpn, skin)
   rushJet.super.new(self)
@@ -459,7 +538,8 @@ function rushJet:new(x, y, side, player, wpn, skin)
   self.transform.y = view.y-8
   self.toY = y
   self:setRectangleCollision(27, 8)
-  self.tex = megautils.getResource(skin or "rush")
+  self.tex = megautils.getResource(skin) or megautils.loadResource(skin, skin)
+  self.skin = skin
   self.c = "spawn"
   self.anims = {}
   self.anims.spawn = anim8.newAnimation(megautils.getResource("rushGrid")(1, 1), 1)
@@ -496,10 +576,10 @@ function rushJet:update(dt)
     end
   elseif self.s == 1 then
     if self.anims.spawnLand.looped then
-      megautils.playSound("start")
       self.c = "jet"
       self.s = 2
       self.isSolid = 2
+      megautils.playSound("start")
     end
   elseif self.s == 2 then
     if self.player.ground and self.player:collision(self, 0, self.player.gravity >= 0 and 1 or -1) and
@@ -580,7 +660,34 @@ end
 
 rushCoil = entity:extend()
 
-weaponHandler.removeGroups.rushCoil = {"rushCoil", "megaBuster", "bassBuster", "rollBuster"}
+weapons.removeGroups.rushCoil = {"rushCoil", "megaBuster", "bassBuster", "rollBuster"}
+
+weapons.resources.rushCoil = function()
+    megautils.loadResource("assets/misc/weapons/rush.png", "rush")
+    megautils.loadResource("assets/sfx/mmStart.ogg", "start")
+    megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
+    megautils.loadResource("rushGrid", 32, 32, 128, 64)
+    
+    weapons.resources.megaBuster() -- So it's possible to use the Mega Buster shots even if the weapon wasn't already loaded in for some reason...
+  end
+
+weapons.resources.protoRushCoil = function()
+    megautils.loadResource("assets/misc/weapons/protoRush.png", "protoRush")
+    megautils.loadResource("assets/sfx/mmStart.ogg", "start")
+    megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
+    megautils.loadResource("rushGrid", 32, 32, 128, 64)
+    
+    weapons.resources.megaBuster()
+  end
+
+weapons.resources.tangoCoil = function()
+    megautils.loadResource("assets/misc/weapons/tango.png", "tango")
+    megautils.loadResource("assets/sfx/mmStart.ogg", "start")
+    megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
+    megautils.loadResource("rushGrid", 32, 32, 128, 64)
+    
+    weapons.resources.megaBuster()
+  end
 
 function rushCoil:new(x, y, side, player, w, skin)
   rushCoil.super.new(self)
@@ -596,7 +703,8 @@ function rushCoil:new(x, y, side, player, w, skin)
   self.transform.y = view.y-16
   self.toY = y
   self:setRectangleCollision(20, 19)
-  self.tex = megautils.getResource(skin or "rush")
+  self.tex = megautils.getResource(skin)
+  self.skin = skin
   self.c = "spawn"
   self.anims = {}
   self.anims.spawn = anim8.newAnimation(megautils.getResource("rushGrid")(1, 1), 1)
@@ -646,9 +754,9 @@ function rushCoil:update(dt)
     end
   elseif self.s == 2 then
     if self.anims.spawnLand.looped then
-      megautils.playSound("start")
       self.c = "idle"
       self.s = 3
+      megautils.playSound("start")
     end
   elseif self.s == 3 then
     collision.doGrav(self)
@@ -706,7 +814,13 @@ end
 
 stickWeapon = entity:extend()
 
-weaponHandler.removeGroups.stickWeapon = {"stickWeapon"}
+weapons.removeGroups.stickWeapon = {"stickWeapon"}
+
+weapons.resources.stickWeapon = function()
+    megautils.loadResource("assets/misc/weapons/stickWeapon.png", "stickWeapon")
+    megautils.loadResource("assets/sfx/buster.ogg", "buster")
+    megautils.loadResource("assets/sfx/reflect.ogg", "dink")
+  end
 
 function stickWeapon:new(x, y, dir, wpn, grav)
   stickWeapon.super.new(self)

@@ -586,6 +586,18 @@ function basicEntity:collisionTable(t, x, y, func)
   return result
 end
 
+function basicEntity:collisionNumber(t, x, y, func)
+  local result = 0
+  if not t then return result end
+  for k=1, #t do
+    local v = t[k]
+    if self:collision(v, x, y) and (func == nil and true or func(v)) then
+      result = result + 1
+    end
+  end
+  return result
+end
+
 function basicEntity:beforeUpdate(dt) end
 function basicEntity:update(dt) end
 function basicEntity:afterUpdate(dt) end

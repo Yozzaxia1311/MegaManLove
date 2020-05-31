@@ -1,11 +1,3 @@
-megautils.resetGameObjectsFuncs.ice = function()
-    megautils.playerGroundFuncs.ice = ice.gFunc
-    megautils.playerKnockbackFuncs.ice = ice.gFunc
-    megautils.playerAirFuncs.ice = ice.elseFunc
-    megautils.playerClimbFuncs.ice = ice.elseFunc
-    megautils.playerTrebleFuncs.ice = ice.elseFunc
-  end
-
 ice = basicEntity:extend()
 
 addobjects.register("ice", function(v)
@@ -36,7 +28,7 @@ function ice.elseFunc(s)
 end
   
 function ice.gFunc(s)
-  local doIce = megautils.groups().ice and #s:collisionTable(megautils.groups().ice, 0, s.gravity >= 0 and 1 or -1) ~= 0
+  local doIce = megautils.groups().ice and s:collisionNumber(megautils.groups().ice, 0, s.gravity >= 0 and 1 or -1) ~= 0
   if doIce then
     if not s.nonIceLeftDecel then
       s.nonIceLeftDecel = s.leftDecel
@@ -62,3 +54,22 @@ function ice.gFunc(s)
     end
   end
 end
+
+megautils.resetGameObjectsFuncs.ice = function()
+    megautils.playerGroundFuncs.ice = ice.gFunc
+    megautils.playerKnockbackFuncs.ice = ice.gFunc
+    megautils.playerAirFuncs.ice = ice.elseFunc
+    megautils.playerClimbFuncs.ice = ice.elseFunc
+    megautils.playerTrebleFuncs.ice = ice.elseFunc
+  end
+
+megautils.cleanFuncs.ice = function()
+    ice = nil
+    addobjects.unregister("ice")
+    megautils.playerGroundFuncs.ice = nil
+    megautils.playerKnockbackFuncs.ice = nil
+    megautils.playerAirFuncs.ice = nil
+    megautils.playerClimbFuncs.ice = nil
+    megautils.playerTrebleFuncs.ice = nil
+    megautils.cleanFuncs.ice = nil
+  end

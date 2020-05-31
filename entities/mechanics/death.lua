@@ -17,3 +17,9 @@ function death:new(x, y, w, h, harm)
     self:addToGroup("death")
   end
 end
+
+megautils.cleanFuncs.death = function()
+    death = nil
+    addobjects.unregister("death")
+    megautils.cleanFuncs.death = nil
+  end

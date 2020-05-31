@@ -1,3 +1,8 @@
+megautils.loadResource("assets/misc/particles.png", "particles", true)
+megautils.loadResource("slideParticleGrid", 8, 8, 128, 98, true)
+megautils.loadResource("explodeParticleGrid", 24, 24, 128, 98, 0, 46, true)
+megautils.loadResource("damageSteamGrid", 5, 8, 128, 98, 108, 28, true)
+
 slideParticle = basicEntity:extend()
 
 function slideParticle:new(x, y, side, g)
@@ -107,7 +112,7 @@ end
 
 function airBubble:check(x, y)
   return collision.checkSolid(self) or
-    #self:collisionTable(megautils.groups().water, x, y) == 0
+    self:collisionNumber(megautils.groups().water, x, y) == 0
 end
 
 function airBubble:update(dt)
@@ -382,7 +387,7 @@ function absorb:update(dt)
   if self.timer == 60 then
     self.timer = 0
     self.times = self.times + 1
-    megautils.playSound("absorb")
+    megautils.playSoundFromFile("assets/sfx/absorb.ogg")
     absorbParticle.createAbsorbtion(self.towards, self.spd)
     if self.times == self.maxTimes then
       megautils.removeq(self)

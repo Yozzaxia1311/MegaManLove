@@ -2,10 +2,12 @@ local stageSelectState = states.state:extend()
 
 function stageSelectState:begin()
   megautils.loadResource("assets/misc/select.png", "mugshots")
-  megautils.loadStage(self, "assets/maps/stageSelect.tmx")
+  megautils.loadMap(self, "assets/maps/stageSelect.tmx")
   megautils.add(stageSelect)
   megautils.add(fade, false, nil, nil, fade.remove)
   view.x, view.y = 0, 0
+  megautils.loadResource("assets/sfx/selected.ogg", "selected")
+  megautils.loadResource("assets/sfx/cursorMove.ogg", "cursorMove")
   if isWeb then
     megautils.playMusicWithSeperateIntroFile("assets/sfx/music/select_loop.ogg", "assets/sfx/music/select_intro.ogg")
   else

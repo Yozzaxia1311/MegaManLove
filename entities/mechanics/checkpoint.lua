@@ -43,3 +43,11 @@ function collisionCheckpoint:update(dt)
     globals.checkpoint = self.name
   end
 end
+
+megautils.cleanFuncs.checkpoint = function()
+    checkpoint = nil
+    collisionCheckpoint = nil
+    addobjects.unregister("checkpoint")
+    addobjects.unregister("collisionCheckpoint")
+    megautils.cleanFuncs.checkpoint = nil
+  end

@@ -2,7 +2,9 @@ local gameOverState = states.state:extend()
 
 function gameOverState:begin()
   megautils.loadResource("assets/misc/cont.png", "cont")
-  megautils.loadStage(self, "assets/maps/cont.tmx")
+  megautils.loadResource("assets/misc/menuSelect.png", "menuSelect")
+  megautils.loadResource("assets/sfx/cursorMove.ogg", "cursorMove")
+  megautils.loadMap(self, "assets/maps/cont.tmx")
   megautils.add(contPanels)
   self.wait = 0
   megautils.add(fade, false, nil, nil, fade.remove)

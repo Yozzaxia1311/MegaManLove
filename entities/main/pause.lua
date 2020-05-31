@@ -1,9 +1,27 @@
-weaponSelect = basicEntity:extend()
+mmWeaponsMenu = basicEntity:extend()
 
-function weaponSelect:new(w, h, p)
-  weaponSelect.super.new(self)
+function mmWeaponsMenu.resources()
+  megautils.loadResource("assets/misc/weaponSelect.png", "weaponSelectBG")
+  megautils.loadResource("assets/misc/weapons/weaponSelect.png", "weaponSelect")
+  megautils.loadResource("assets/sfx/pause.ogg", "pause")
+  megautils.loadResource("assets/sfx/selected.ogg", "selected")
+  megautils.loadResource("assets/sfx/cursorMove.ogg", "cursorMove")
+end
+  
+function mmWeaponsMenu.pause(self)
+  megautils.freeze(nil, "pause")
+  megautils.add(fade, true, nil, nil, function(s)
+      megautils.add(mmWeaponsMenu, megaMan.weaponHandler[self.player], self.healthHandler, self.player)
+      local ff = megautils.add(fade, false, nil, nil, fade.remove)
+      megautils.removeq(s)
+    end)
+  megautils.playSound("pause")
+end
+
+function mmWeaponsMenu:new(w, h, p)
+  mmWeaponsMenu.super.new(self)
   self.t = megautils.getResource("weaponSelect")
-  self.bg = megautils.getResource("weaponSelectImg")
+  self.bg = megautils.getResource("weaponSelectBG")
   self.tex = megautils.getResource("particles")
   self.texOutline = megautils.getResource("particlesOutline")
   self.texOne = megautils.getResource("particlesOne")
@@ -79,16 +97,20 @@ function weaponSelect:new(w, h, p)
   end)
   trig.fills = self.fills
   trig:removeFromGroup("freezable")
-  megaman.colorOutline[self.player] = self.w.colorOutline[self.list[self.y][self.x]]
-  megaman.colorOne[self.player] = self.w.colorOne[self.list[self.y][self.x]]
-  megaman.colorTwo[self.player] = self.w.colorTwo[self.list[self.y][self.x]]
+  megaMan.colorOutline[self.player] = self.w.colorOutline[self.list[self.y][self.x]]
+  megaMan.colorOne[self.player] = self.w.colorOne[self.list[self.y][self.x]]
+  megaMan.colorTwo[self.player] = self.w.colorTwo[self.list[self.y][self.x]]
   self:setLayer(10)
   self.added = function(self)
     self:addToGroup("freezable")
   end
 end
 
-function weaponSelect:addIcon(id)
+function mmWeaponsMenu:removed()
+  megautils.unloadResource("cursorMove")
+end
+
+function mmWeaponsMenu:addIcon(id)
   self.active[id] = love.graphics.newQuad(self.w.pauseConf[id][2][1], self.w.pauseConf[id][2][2],
     self.w.pauseConf[id][2][3], self.w.pauseConf[id][2][4], 240, 48)
   self.inactive[id] = love.graphics.newQuad(self.w.pauseConf[id][3][1], self.w.pauseConf[id][3][2],
@@ -96,7 +118,7 @@ function weaponSelect:addIcon(id)
   self.text[id] = self.w.pauseConf[id][1]
 end
 
-function weaponSelect:update(dt)
+function mmWeaponsMenu:update(dt)
   if self.changing then
     if self.changing == "health" and self.fills[1][1].health == self.h.segments * 4 then
       self.changing = nil
@@ -126,9 +148,9 @@ function weaponSelect:update(dt)
     if control.startPressed[self.player] then
       self.updated = false
       self.w:switch(self.list[self.y][self.x])
-      megaman.colorOutline[self.player] = self.w.colorOutline[self.list[self.y][self.x]]
-      megaman.colorOne[self.player] = self.w.colorOne[self.list[self.y][self.x]]
-      megaman.colorTwo[self.player] = self.w.colorTwo[self.list[self.y][self.x]]
+      megaMan.colorOutline[self.player] = self.w.colorOutline[self.list[self.y][self.x]]
+      megaMan.colorOne[self.player] = self.w.colorOne[self.list[self.y][self.x]]
+      megaMan.colorTwo[self.player] = self.w.colorTwo[self.list[self.y][self.x]]
       for k, v in pairs(self.fills) do
         for i, j in pairs(v) do
           if j.id ~= 0 then
@@ -145,6 +167,8 @@ function weaponSelect:update(dt)
             megautils.unfreeze(nil, "pause")
           end)
       megautils.playSound("selected")
+      megautils.unloadResource("weaponSelectBG")
+      megautils.unloadResource("cursorMove")
       return
     elseif control.rightPressed[self.player] then
       self.x = math.clamp(self.x+1, 1, 2)
@@ -233,9 +257,9 @@ function weaponSelect:update(dt)
           self.section = 1
           self.x = 1
           self.y = 1
-          megaman.colorOutline[self.player] = self.w.colorOutline[self.cur]
-          megaman.colorOne[self.player] = self.w.colorOne[self.cur]
-          megaman.colorTwo[self.player] = self.w.colorTwo[self.cur]
+          megaMan.colorOutline[self.player] = self.w.colorOutline[self.cur]
+          megaMan.colorOne[self.player] = self.w.colorOne[self.cur]
+          megaMan.colorTwo[self.player] = self.w.colorTwo[self.cur]
           megautils.playSound("cursorMove")
          return
         end
@@ -246,9 +270,9 @@ function weaponSelect:update(dt)
       end
     end
     if olx ~= self.x or oly ~= self.y then
-      megaman.colorOutline[self.player] = self.w.colorOutline[self.list[self.y][self.x]]
-      megaman.colorOne[self.player] = self.w.colorOne[self.list[self.y][self.x]]
-      megaman.colorTwo[self.player] = self.w.colorTwo[self.list[self.y][self.x]]
+      megaMan.colorOutline[self.player] = self.w.colorOutline[self.list[self.y][self.x]]
+      megaMan.colorOne[self.player] = self.w.colorOne[self.list[self.y][self.x]]
+      megaMan.colorTwo[self.player] = self.w.colorTwo[self.list[self.y][self.x]]
       megautils.playSound("cursorMove")
     end
   elseif self.section == 1 then
@@ -282,9 +306,9 @@ function weaponSelect:update(dt)
         end
         self.y = self.y-1
       end
-      megaman.colorOutline[self.player] = self.w.colorOutline[self.list[self.y][self.x]]
-      megaman.colorOne[self.player] = self.w.colorOne[self.list[self.y][self.x]]
-      megaman.colorTwo[self.player] = self.w.colorTwo[self.list[self.y][self.x]]
+      megaMan.colorOutline[self.player] = self.w.colorOutline[self.list[self.y][self.x]]
+      megaMan.colorOne[self.player] = self.w.colorOne[self.list[self.y][self.x]]
+      megaMan.colorTwo[self.player] = self.w.colorTwo[self.list[self.y][self.x]]
       olx = -69
     end
     if self.x == 1 and control.rightPressed[self.player] then
@@ -304,7 +328,7 @@ function weaponSelect:update(dt)
   end
 end
 
-function weaponSelect:draw()
+function mmWeaponsMenu:draw()
   love.graphics.setFont(mmFont)
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.draw(self.bg, view.x, view.y)
@@ -323,11 +347,11 @@ function weaponSelect:draw()
   end
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.draw(self.tex, self.heads[globals.player[self.player]], tx+ox, ty+oy)
-  love.graphics.setColor(megaman.colorTwo[self.player][1]/255, megaman.colorTwo[self.player][2]/255, megaman.colorTwo[self.player][3]/255, 1)
+  love.graphics.setColor(megaMan.colorTwo[self.player][1]/255, megaMan.colorTwo[self.player][2]/255, megaMan.colorTwo[self.player][3]/255, 1)
   love.graphics.draw(self.texTwo, self.heads[globals.player[self.player]], tx+ox, ty+oy)
-  love.graphics.setColor(megaman.colorOutline[self.player][1]/255, megaman.colorOutline[self.player][2]/255, megaman.colorOutline[self.player][3]/255, 1)
+  love.graphics.setColor(megaMan.colorOutline[self.player][1]/255, megaMan.colorOutline[self.player][2]/255, megaMan.colorOutline[self.player][3]/255, 1)
   love.graphics.draw(self.texOutline, self.heads[globals.player[self.player]], tx+ox, ty+oy)
-  love.graphics.setColor(megaman.colorOne[self.player][1]/255, megaman.colorOne[self.player][2]/255, megaman.colorOne[self.player][3]/255, 1)
+  love.graphics.setColor(megaMan.colorOne[self.player][1]/255, megaMan.colorOne[self.player][2]/255, megaMan.colorOne[self.player][3]/255, 1)
   love.graphics.draw(self.texOne, self.heads[globals.player[self.player]], tx+ox, ty+oy)
   
   if self.section == 0 then

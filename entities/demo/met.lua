@@ -1,4 +1,8 @@
 megautils.loadResource("assets/global/entities/met.png", "met")
+megautils.loadResource("assets/sfx/enemyHit.ogg", "enemyHit")
+megautils.loadResource("assets/sfx/enemyExplode.ogg", "enemyExplode")
+megautils.loadResource("assets/sfx/buster.ogg", "buster")
+megautils.loadResource("assets/sfx/reflect.ogg", "dink")
 
 met = entity:extend()
 
@@ -177,7 +181,7 @@ function metBullet:recycle(x, y, vx, vy)
 end
 
 function metBullet:dink(e)
-  if e:is(megaman) then
+  if e:is(megaMan) then
     self.velocity.velx = -self.velocity.velx
     self.velocity.vely = -self.velocity.vely
     self.dinked = 2

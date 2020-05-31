@@ -1,3 +1,13 @@
+megautils.loadResource("assets/misc/particles.png", "particles", true)
+megautils.loadResource("assets/misc/particlesOutline.png", "particlesOutline", true)
+megautils.loadResource("assets/misc/particlesOne.png", "particlesOne", true)
+megautils.loadResource("assets/misc/particlesTwo.png", "particlesTwo", true)
+megautils.loadResource("smallHealthGrid", 8, 8, 128, 98, 24, 0, true)
+megautils.loadResource("healthGrid", 16, 16, 128, 98, 40, 0, true)
+megautils.loadResource("smallEnergyGrid", 8, 8, 128, 98, 72, 0, true)
+megautils.loadResource("energyGrid", 16, 12, 128, 98, 88, 0, true)
+megautils.loadResource("tankGrid", 16, 16, 128, 98, 72, 12, true)
+
 smallHealth = entity:extend()
 
 addobjects.register("smallHealth", function(v)
@@ -93,8 +103,8 @@ function smallHealth:draw()
   end
   self.anim:draw(self.t, math.round(self.transform.x), math.round(self.transform.y)+offy, 0, 1, math.sign(self.gravity))
   if globals.mainPlayer then
-    love.graphics.setColor(megaman.colorOutline[globals.mainPlayer.player][1]/255, megaman.colorOutline[globals.mainPlayer.player][2]/255,
-      megaman.colorOutline[globals.mainPlayer.player][3]/255, 1)
+    love.graphics.setColor(megaMan.colorOutline[globals.mainPlayer.player][1]/255, megaMan.colorOutline[globals.mainPlayer.player][2]/255,
+      megaMan.colorOutline[globals.mainPlayer.player][3]/255, 1)
     self.anim:draw(self.tOutline, math.round(self.transform.x), math.round(self.transform.y)+offy, 0, 1, math.sign(self.gravity))
   else
     love.graphics.setColor(0, 0, 0, 1)
@@ -197,8 +207,8 @@ function health:draw()
   end
   self.anim:draw(self.t, math.round(self.transform.x), math.round(self.transform.y)+offy, 0, 1, math.sign(self.gravity))
   if globals.mainPlayer then
-    love.graphics.setColor(megaman.colorOutline[globals.mainPlayer.player][1]/255, megaman.colorOutline[globals.mainPlayer.player][2]/255,
-      megaman.colorOutline[globals.mainPlayer.player][3]/255, 1)
+    love.graphics.setColor(megaMan.colorOutline[globals.mainPlayer.player][1]/255, megaMan.colorOutline[globals.mainPlayer.player][2]/255,
+      megaMan.colorOutline[globals.mainPlayer.player][3]/255, 1)
     self.anim:draw(self.tOutline, math.round(self.transform.x), math.round(self.transform.y)+offy, 0, 1, math.sign(self.gravity))
   else
     love.graphics.setColor(0, 0, 0, 1)
@@ -264,8 +274,8 @@ function smallEnergy:update(dt)
   for i=1, globals.playerCount do
     local p = globals.allPlayers[i]
     if self:collision(p) then
-      megaman.weaponHandler[p.player].change = 2
-      megaman.weaponHandler[p.player]:updateThis()
+      megaMan.weaponHandler[p.player].change = 2
+      megaMan.weaponHandler[p.player]:updateThis()
       if not self.despawn then
         smallEnergy.banIds[#smallEnergy.banIds+1] = self.id
       end
@@ -301,14 +311,14 @@ function smallEnergy:draw()
     offy = 8
   end
   if globals.mainPlayer then
-    love.graphics.setColor(megaman.colorTwo[globals.mainPlayer.player][1]/255, megaman.colorTwo[globals.mainPlayer.player][2]/255,
-      megaman.colorTwo[globals.mainPlayer.player][3]/255, 1)
+    love.graphics.setColor(megaMan.colorTwo[globals.mainPlayer.player][1]/255, megaMan.colorTwo[globals.mainPlayer.player][2]/255,
+      megaMan.colorTwo[globals.mainPlayer.player][3]/255, 1)
     self.anim:draw(self.texTwo, math.round(self.transform.x), math.round(self.transform.y)+offy, 0, 1, math.sign(self.gravity))
-    love.graphics.setColor(megaman.colorOutline[globals.mainPlayer.player][1]/255, megaman.colorOutline[globals.mainPlayer.player][2]/255,
-      megaman.colorOutline[globals.mainPlayer.player][3]/255, 1)
+    love.graphics.setColor(megaMan.colorOutline[globals.mainPlayer.player][1]/255, megaMan.colorOutline[globals.mainPlayer.player][2]/255,
+      megaMan.colorOutline[globals.mainPlayer.player][3]/255, 1)
     self.anim:draw(self.texOutline, math.round(self.transform.x), math.round(self.transform.y)+offy, 0, 1, math.sign(self.gravity))
-    love.graphics.setColor(megaman.colorOne[globals.mainPlayer.player][1]/255, megaman.colorOne[globals.mainPlayer.player][2]/255,
-      megaman.colorOne[globals.mainPlayer.player][3]/255, 1)
+    love.graphics.setColor(megaMan.colorOne[globals.mainPlayer.player][1]/255, megaMan.colorOne[globals.mainPlayer.player][2]/255,
+      megaMan.colorOne[globals.mainPlayer.player][3]/255, 1)
     self.anim:draw(self.texOne, math.round(self.transform.x), math.round(self.transform.y)+offy, 0, 1, math.sign(self.gravity))
   else
     love.graphics.setColor(0, 232/255, 216/255, 1)
@@ -378,8 +388,8 @@ function energy:update(dt)
   for i=1, globals.playerCount do
     local p = globals.allPlayers[i]
     if self:collision(p) then
-      megaman.weaponHandler[p.player].change = 10
-      megaman.weaponHandler[p.player]:updateThis()
+      megaMan.weaponHandler[p.player].change = 10
+      megaMan.weaponHandler[p.player]:updateThis()
       if not self.despawn then
         energy.banIds[#energy.banIds+1] = self.id
       end
@@ -415,14 +425,14 @@ function energy:draw()
     offy = 11
   end
   if globals.mainPlayer then
-    love.graphics.setColor(megaman.colorTwo[globals.mainPlayer.player][1]/255, megaman.colorTwo[globals.mainPlayer.player][2]/255,
-      megaman.colorTwo[globals.mainPlayer.player][3]/255, 1)
+    love.graphics.setColor(megaMan.colorTwo[globals.mainPlayer.player][1]/255, megaMan.colorTwo[globals.mainPlayer.player][2]/255,
+      megaMan.colorTwo[globals.mainPlayer.player][3]/255, 1)
     self.anim:draw(self.texTwo, math.round(self.transform.x), math.round(self.transform.y)+offy, 0, 1, math.sign(self.gravity))
-    love.graphics.setColor(megaman.colorOutline[globals.mainPlayer.player][1]/255, megaman.colorOutline[globals.mainPlayer.player][2]/255,
-      megaman.colorOutline[globals.mainPlayer.player][3]/255, 1)
+    love.graphics.setColor(megaMan.colorOutline[globals.mainPlayer.player][1]/255, megaMan.colorOutline[globals.mainPlayer.player][2]/255,
+      megaMan.colorOutline[globals.mainPlayer.player][3]/255, 1)
     self.anim:draw(self.texOutline, math.round(self.transform.x), math.round(self.transform.y)+offy, 0, 1, math.sign(self.gravity))
-    love.graphics.setColor(megaman.colorOne[globals.mainPlayer.player][1]/255, megaman.colorOne[globals.mainPlayer.player][2]/255,
-      megaman.colorOne[globals.mainPlayer.player][3]/255, 1)
+    love.graphics.setColor(megaMan.colorOne[globals.mainPlayer.player][1]/255, megaMan.colorOne[globals.mainPlayer.player][2]/255,
+      megaMan.colorOne[globals.mainPlayer.player][3]/255, 1)
     self.anim:draw(self.texOne, math.round(self.transform.x), math.round(self.transform.y)+offy, 0, 1, math.sign(self.gravity))
   else
     love.graphics.setColor(0, 232/255, 216/255, 1)
@@ -511,7 +521,7 @@ function life:update(dt)
         if not self.despawn then
           life.banIds[#life.banIds+1] = self.id
         end
-        megautils.playSound("life")
+        megautils.playSoundFromFile("assets/sfx/life.ogg")
         section.removeEntity(self.spawner)
         megautils.removeq(self.spawner)
         megautils.removeq(self)
@@ -559,16 +569,16 @@ function life:draw()
     love.graphics.setColor(1, 1, 1, 1)
     love.graphics.draw(self.tex, self.quad[globals.player[globals.mainPlayer.player]],
       math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, math.sign(self.gravity))
-    love.graphics.setColor(megaman.colorTwo[globals.mainPlayer.player][1]/255, megaman.colorTwo[globals.mainPlayer.player][2]/255,
-      megaman.colorTwo[globals.mainPlayer.player][3]/255, 1)
+    love.graphics.setColor(megaMan.colorTwo[globals.mainPlayer.player][1]/255, megaMan.colorTwo[globals.mainPlayer.player][2]/255,
+      megaMan.colorTwo[globals.mainPlayer.player][3]/255, 1)
     love.graphics.draw(self.texTwo, self.quad[globals.player[globals.mainPlayer.player]],
       math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, math.sign(self.gravity))
-    love.graphics.setColor(megaman.colorOutline[globals.mainPlayer.player][1]/255, megaman.colorOutline[globals.mainPlayer.player][2]/255,
-      megaman.colorOutline[globals.mainPlayer.player][3]/255, 1)
+    love.graphics.setColor(megaMan.colorOutline[globals.mainPlayer.player][1]/255, megaMan.colorOutline[globals.mainPlayer.player][2]/255,
+      megaMan.colorOutline[globals.mainPlayer.player][3]/255, 1)
     love.graphics.draw(self.texOutline, self.quad[globals.player[globals.mainPlayer.player]],
       math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, math.sign(self.gravity))
-    love.graphics.setColor(megaman.colorOne[globals.mainPlayer.player][1]/255, megaman.colorOne[globals.mainPlayer.player][2]/255,
-      megaman.colorOne[globals.mainPlayer.player][3]/255, 1)
+    love.graphics.setColor(megaMan.colorOne[globals.mainPlayer.player][1]/255, megaMan.colorOne[globals.mainPlayer.player][2]/255,
+      megaMan.colorOne[globals.mainPlayer.player][3]/255, 1)
     love.graphics.draw(self.texOne, self.quad[globals.player[globals.mainPlayer.player]],
       math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, math.sign(self.gravity))
   else
@@ -657,7 +667,7 @@ function eTank:update(dt)
       if not self.despawn then
         eTank.banIds[#eTank.banIds+1] = self.id
       end
-      megautils.playSound("life")
+      megautils.playSoundFromFile("assets/sfx/life.ogg")
       section.removeEntity(self.spawner)
       megautils.removeq(self.spawner)
       megautils.removeq(self)
@@ -686,14 +696,14 @@ end
 
 function eTank:draw()
   if globals.mainPlayer then
-    love.graphics.setColor(megaman.colorTwo[globals.mainPlayer.player][1]/255, megaman.colorTwo[globals.mainPlayer.player][2]/255,
-      megaman.colorTwo[globals.mainPlayer.player][3]/255, 1)
+    love.graphics.setColor(megaMan.colorTwo[globals.mainPlayer.player][1]/255, megaMan.colorTwo[globals.mainPlayer.player][2]/255,
+      megaMan.colorTwo[globals.mainPlayer.player][3]/255, 1)
     self.anim:draw(self.texTwo, math.round(self.transform.x), math.round(self.transform.y))
-    love.graphics.setColor(megaman.colorOutline[globals.mainPlayer.player][1]/255, megaman.colorOutline[globals.mainPlayer.player][2]/255,
-      megaman.colorOutline[globals.mainPlayer.player][3]/255, 1)
+    love.graphics.setColor(megaMan.colorOutline[globals.mainPlayer.player][1]/255, megaMan.colorOutline[globals.mainPlayer.player][2]/255,
+      megaMan.colorOutline[globals.mainPlayer.player][3]/255, 1)
     self.anim:draw(self.texOutline, math.round(self.transform.x), math.round(self.transform.y))
-    love.graphics.setColor(megaman.colorOne[globals.mainPlayer.player][1]/255, megaman.colorOne[globals.mainPlayer.player][2]/255,
-      megaman.colorOne[globals.mainPlayer.player][3]/255, 1)
+    love.graphics.setColor(megaMan.colorOne[globals.mainPlayer.player][1]/255, megaMan.colorOne[globals.mainPlayer.player][2]/255,
+      megaMan.colorOne[globals.mainPlayer.player][3]/255, 1)
     self.anim:draw(self.texOne, math.round(self.transform.x), math.round(self.transform.y))
   else
     love.graphics.setColor(0, 232/255, 216/255, 1)
@@ -767,7 +777,7 @@ function wTank:update(dt)
       if not self.despawn then
         wTank.banIds[#wTank.banIds+1] = self.id
       end
-      megautils.playSound("life")
+      megautils.playSoundFromFile("assets/sfx/life.ogg")
       section.removeEntity(self.spawner)
       megautils.removeq(self.spawner)
       megautils.removeq(self)
@@ -796,14 +806,14 @@ end
 
 function wTank:draw()
   if globals.mainPlayer then
-    love.graphics.setColor(megaman.colorTwo[globals.mainPlayer.player][1]/255, megaman.colorTwo[globals.mainPlayer.player][2]/255,
-      megaman.colorTwo[globals.mainPlayer.player][3]/255, 1)
+    love.graphics.setColor(megaMan.colorTwo[globals.mainPlayer.player][1]/255, megaMan.colorTwo[globals.mainPlayer.player][2]/255,
+      megaMan.colorTwo[globals.mainPlayer.player][3]/255, 1)
     self.anim:draw(self.texTwo, math.round(self.transform.x), math.round(self.transform.y))
-    love.graphics.setColor(megaman.colorOutline[globals.mainPlayer.player][1]/255, megaman.colorOutline[globals.mainPlayer.player][2]/255,
-      megaman.colorOutline[globals.mainPlayer.player][3]/255, 1)
+    love.graphics.setColor(megaMan.colorOutline[globals.mainPlayer.player][1]/255, megaMan.colorOutline[globals.mainPlayer.player][2]/255,
+      megaMan.colorOutline[globals.mainPlayer.player][3]/255, 1)
     self.anim:draw(self.texOutline, math.round(self.transform.x), math.round(self.transform.y))
-    love.graphics.setColor(megaman.colorOne[globals.mainPlayer.player][1]/255, megaman.colorOne[globals.mainPlayer.player][2]/255,
-      megaman.colorOne[globals.mainPlayer.player][3]/255, 1)
+    love.graphics.setColor(megaMan.colorOne[globals.mainPlayer.player][1]/255, megaMan.colorOne[globals.mainPlayer.player][2]/255,
+      megaMan.colorOne[globals.mainPlayer.player][3]/255, 1)
     self.anim:draw(self.texOne, math.round(self.transform.x), math.round(self.transform.y))
   else
     love.graphics.setColor(0, 232/255, 216/255, 1)

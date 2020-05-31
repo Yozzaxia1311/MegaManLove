@@ -1,4 +1,5 @@
 megautils.loadResource("assets/global/bosses/stickMan.png", "stickMan")
+megautils.loadResource("assets/sfx/enemyHit.ogg", "enemyHit")
 
 stickMan = entity:extend()
 
@@ -70,11 +71,10 @@ function stickMan:healthChanged(o, c, i)
     timer.absorbCutscene(function()
       globals.defeats.stickMan = true
       globals.weaponGet = "stick"
-      megautils.resetGameObjects()
       megautils.gotoState("states/weaponget.state.lua")
     end)
     megautils.removeq(self)
-    megautils.playSound("die")
+    megautils.playSoundFromFile("assets/sfx/dieExplode.ogg")
   elseif self.changeHealth < 0 then
     megautils.add(harm, self)
     if o:is(megaChargedBuster) then
@@ -88,7 +88,6 @@ function stickMan:update(dt)
   if self.s == 0 then
     if globals.defeats.stickMan then
       timer.winCutscene(function()
-        megautils.resetGameObjects()
         megautils.gotoState("states/menu.state.lua")
       end)
       megautils.removeq(self)
@@ -213,7 +212,7 @@ function stickManIntro:draw()
   love.graphics.print(string.sub(self.text, 0, self.pos), 85, 141)
 end
 
-megamanStick = entity:extend()
+megamanStick = basicEntity:extend()
 
 function megamanStick:new()
   megamanStick.super.new(self)
@@ -221,28 +220,29 @@ function megamanStick:new()
   self.transform.x = 100
   local grid = "megaManGrid"
   if globals.player[1] == "mega" then
-    self.texOutline = megautils.getResource("megaManOutline")
-    self.texOne = megautils.getResource("megaManOne")
-    self.texTwo = megautils.getResource("megaManTwo")
-    self.texFace = megautils.getResource("megaManFace")
+    self.texOutline = megautils.loadResource("assets/players/megaman/megaManOutline.png", "megaManOutline")
+    self.texOne = megautils.loadResource("assets/players/megaman/megaManOne.png", "megaManOne")
+    self.texTwo = megautils.loadResource("assets/players/megaman/megaManTwo.png", "megaManTwo")
+    self.texFace = megautils.loadResource("assets/players/megaman/megaManFace.png", "megaManFace")
   elseif globals.player[1] == "proto" then
-    self.texOutline = megautils.getResource("protoManOutline")
-    self.texOne = megautils.getResource("protoManOne")
-    self.texTwo = megautils.getResource("protoManTwo")
-    self.texFace = megautils.getResource("protoManFace")
+    self.texOutline = megautils.loadResource("assets/players/proto/protoManOutline.png", "protoManOutline")
+    self.texOne = megautils.loadResource("assets/players/proto/protoManOne.png", "protoManOne")
+    self.texTwo = megautils.loadResource("assets/players/proto/protoManTwo.png", "protoManTwo")
+    self.texFace = megautils.loadResource("assets/players/proto/protoManFace.png", "protoManFace")
   elseif globals.player[1] == "bass" then
-    self.texOutline = megautils.getResource("bassOutline")
-    self.texOne = megautils.getResource("bassOne")
-    self.texTwo = megautils.getResource("bassTwo")
-    self.texFace = megautils.getResource("bassFace")
+    self.texOutline = megautils.loadResource("assets/players/bass/bassOutline.png", "bassOutline")
+    self.texOne = megautils.loadResource("assets/players/bass/bassOne.png", "bassOne")
+    self.texTwo = megautils.loadResource("assets/players/bass/bassTwo.png", "bassTwo")
+    self.texFace = megautils.loadResource("assets/players/bass/bassFace.png", "bassFace")
     grid = "bassGrid"
   elseif globals.player[1] == "roll" then
-    self.texOutline = megautils.getResource("rollOutline")
-    self.texOne = megautils.getResource("rollOne")
-    self.texTwo = megautils.getResource("rollTwo")
-    self.texFace = megautils.getResource("rollFace")
+    self.texOutline = megautils.loadResource("assets/players/roll/rollOutline.png", "rollOutline")
+    self.texOne = megautils.loadResource("assets/players/roll/rollOne.png", "rollOne")
+    self.texTwo = megautils.loadResource("assets/players/roll/rollTwo.png", "rollTwo")
+    self.texFace = megautils.loadResource("assets/players/roll/rollFace.png", "rollFace")
     grid = "rollGrid"
   end
+  weapons.resources.stickWeapon()
   self.curAnim = pose and "pose" or "idle"
   self.animations = {}
   self.animations.idle = anim8.newAnimation(megautils.getResource(grid)(1, 1, 2, 1), {2.5, 0.1})
@@ -255,8 +255,8 @@ function megamanStick:new()
   self.timer2 = 0
   self.shootTimer = 14
   self.s = 0
-  self.megaOne = megaman.weaponHandler[1].colorOne[0]
-  self.megaTwo = megaman.weaponHandler[1].colorTwo[0]
+  self.megaOne = megaMan.weaponHandler[1].colorOne[0]
+  self.megaTwo = megaMan.weaponHandler[1].colorTwo[0]
   self.toOne = {255, 255, 255}
   self.toTwo = {128, 128, 128}
   banner.colorOne = self.megaOne

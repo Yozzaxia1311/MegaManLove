@@ -183,7 +183,6 @@ function cmdState(cmd)
   local map
   if love.filesystem.getInfo(cmd[2] .. ".state.lua") then
     map = cmd[2] .. ".state.lua"
-    megautils.resetGameObjects()
   end
   if map == nil then console.print("No such state \""..cmd[2].."\"") return end
   love.audio.stop()

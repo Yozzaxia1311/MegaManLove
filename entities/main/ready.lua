@@ -6,7 +6,7 @@ function ready:new(text, proto, music)
   self.added = function(self)
     self:addToGroup("ready")
     if self.proto then
-      megautils.playSound("protoReady")
+      megautils.playSoundFromFile("assets/sfx/protoReady.ogg")
     end
   end
   if self.proto then

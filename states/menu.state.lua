@@ -1,7 +1,9 @@
 local menuState = states.state:extend()
 
 function menuState:begin()
-  megautils.loadStage(self, "assets/maps/menu.tmx")
+  megautils.loadResource("assets/misc/menuSelect.png", "menuSelect")
+  megautils.loadResource("assets/sfx/cursorMove.ogg", "cursorMove")
+  megautils.loadMap(self, "assets/maps/menu.tmx")
   megautils.add(menuSelect)
   megautils.add(fade, false, nil, nil, fade.remove)
   view.x, view.y = 0, 0
@@ -69,7 +71,6 @@ function menuSelect:update(dt)
           globals.wTanks = data.wTanks
           globals.player = data.player
         end
-        megautils.resetGameObjects()
       elseif self.pick == 4 then
         local data = save.load("save.sav") or {}
         data.defeats = globals.defeats
@@ -107,7 +108,6 @@ function menuSelect:update(dt)
     if control.jumpPressed[1] or control.startPressed[1] then
       self.section = 0
       self.timer = 20
-      megautils.resetGameObjects()
       megautils.playSound("selected")
     end
   end

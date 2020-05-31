@@ -21,6 +21,7 @@ megautils.manageStageResources = true
 megautils.reloadStateFuncs = {}
 megautils.cleanFuncs = {}
 megautils.resetGameObjectsFuncs = {}
+megautils.initEngineFuncs = {}
 
 --Player callback functions. These apply to all active players.
 megautils.playerCreatedFuncs = {}       --megautils.playerCreatedFuncs.exampleFunc = function(player) end
@@ -98,7 +99,7 @@ end
 function megautils.setResourceLock(nick, w)
   if w then
     loader.lock(nick)
-  elseif w == false then
+  else
     loader.unlock(nick)
   end
 end
@@ -131,8 +132,8 @@ function megautils.loadResource(...)
     if type(args[#args]) == "boolean" then
       locked = args[#args]
     end
-    loader.load(nil, nick, t, {args[2], args[3], args[4], args[5],
-        (type(args[6]) ~= "boolean") and args[6], (type(args[7]) ~= "boolean") and args[7]}, locked)
+    return loader.load(nil, nick, t, {args[2], args[3], args[4], args[5],
+      (type(args[6]) ~= "boolean") and args[6], (type(args[7]) ~= "boolean") and args[7]}, locked)
   elseif checkExt(t, {"png", "jpeg", "jpg", "bmp", "tga", "hdr", "pic", "exr"}) then
     local ext = t
     t = "texture"
@@ -141,126 +142,24 @@ function megautils.loadResource(...)
       if is3DS then
         path = path:gsub(ext, ".csv")
       end
-      loader.load(path, nick, t, {args[3]}, locked)
+      return loader.load(path, nick, t, {args[3]}, locked)
     else
       locked = args[3]
-      loader.load(path, nick, t, nil, locked)
+      return loader.load(path, nick, t, nil, locked)
     end
   elseif checkExt(t, {"ogg", "mp3", "wav", "flac", "oga", "ogv", "xm", "it", "mod", "mid", "669", "amf", "ams", "dbm", "dmf", "dsm", "far",
       "j2b", "mdl", "med", "mt2", "mtm", "okt", "psm", "s3m", "stm", "ult", "umx", "abc", "pat"}) then
-    if args[3] == "music" or args[3] == "sound" then
+    if type(args[3]) == "string" then
       t = args[3]
       locked = args[4]
-      loader.load(path, nick, t, nil, locked)
     else
-      error("megautils.load requires the 3rd argument to be \"music\" or \"sound\" when loading audio")
+      t = "sound"
+      locked = args[3]
     end
+    return loader.load(path, nick, t, nil, locked)
   else
     error("Could not detect resource type of \"" .. path .. "\" based on file extension")
   end
-end
-
-function megautils.loadGlobalResources()
-  megautils.loadResource("assets/players/megaman/megaManOne.png", "megaManOne", true)
-  megautils.loadResource("assets/players/megaman/megaManTwo.png", "megaManTwo", true)
-  megautils.loadResource("assets/players/megaman/megaManOutline.png", "megaManOutline", true)
-  megautils.loadResource("assets/players/megaman/megaManFace.png", "megaManFace", true)
-  megautils.loadResource("assets/players/proto/protoManOne.png", "protoManOne", true)
-  megautils.loadResource("assets/players/proto/protoManTwo.png", "protoManTwo", true)
-  megautils.loadResource("assets/players/proto/protoManOutline.png", "protoManOutline", true)
-  megautils.loadResource("assets/players/proto/protoManFace.png", "protoManFace", true)
-  megautils.loadResource("assets/players/bass/bassOne.png", "bassOne", true)
-  megautils.loadResource("assets/players/bass/bassTwo.png", "bassTwo", true)
-  megautils.loadResource("assets/players/bass/bassOutline.png", "bassOutline", true)
-  megautils.loadResource("assets/players/bass/bassFace.png", "bassFace", true)
-  megautils.loadResource("assets/players/roll/rollOne.png", "rollOne", true)
-  megautils.loadResource("assets/players/roll/rollTwo.png", "rollTwo", true)
-  megautils.loadResource("assets/players/roll/rollOutline.png", "rollOutline", true)
-  megautils.loadResource("assets/players/roll/rollFace.png", "rollFace", true)
-  megautils.loadResource("assets/players/bar/barOne.png", "barOne", true)
-  megautils.loadResource("assets/players/bar/barTwo.png", "barTwo", true)
-  megautils.loadResource("assets/players/bar/barOutline.png", "barOutline", true)
-  megautils.loadResource("assets/misc/weapons/weaponSelect.png", "weaponSelect", true)
-  megautils.loadResource("assets/misc/weapons/weaponSelectIcon.png", "weaponSelectIcon", true)
-  megautils.loadResource("assets/misc/particles.png", "particles", true)
-  megautils.loadResource("assets/misc/particlesOutline.png", "particlesOutline", true)
-  megautils.loadResource("assets/misc/particlesOne.png", "particlesOne", true)
-  megautils.loadResource("assets/misc/particlesTwo.png", "particlesTwo", true)
-  megautils.loadResource("assets/misc/weaponSelect.png", "weaponSelectImg", true)
-  megautils.loadResource("assets/global/bossDoor.png", "bossDoor", true)
-  megautils.loadResource("assets/misc/menuSelect.png", "menuSelect", true)
-  megautils.loadResource("assets/misc/weapons/stickWeapon.png", "stickWeapon", true)
-  megautils.loadResource("assets/sfx/mmStart.ogg", "start", "sound", true)
-  megautils.loadResource("assets/sfx/semi.ogg", "semiCharged", "sound", true)
-  megautils.loadResource("assets/sfx/charged.ogg", "charged", "sound", true)
-  megautils.loadResource("assets/sfx/protoCharge.ogg", "protoCharge", "sound", true)
-  megautils.loadResource("assets/sfx/protoCharged.ogg", "protoCharged", "sound", true)
-  megautils.loadResource("assets/sfx/mmLand.ogg", "land", "sound", true)
-  megautils.loadResource("assets/sfx/mmHurt.ogg", "hurt", "sound", true)
-  megautils.loadResource("assets/sfx/life.ogg", "life", "sound", true)
-  megautils.loadResource("assets/sfx/dieExplode.ogg", "die", "sound", true)
-  megautils.loadResource("assets/sfx/bossDoor.ogg", "bossDoorSfx", "sound", true)
-  megautils.loadResource("assets/sfx/buster.ogg", "buster", "sound", true)
-  megautils.loadResource("assets/sfx/enemyHit.ogg", "enemyHit", "sound", true)
-  megautils.loadResource("assets/sfx/enemyExplode.ogg", "enemyExplode", "sound", true)
-  megautils.loadResource("assets/sfx/reflect.ogg", "dink", "sound", true)
-  megautils.loadResource("assets/sfx/hugeExplode.ogg", "hugeExplode", "sound", true)
-  megautils.loadResource("assets/sfx/mmHeal.ogg", "heal", "sound", true)
-  megautils.loadResource("assets/sfx/absorb.ogg", "absorb", "sound", true)
-  megautils.loadResource("assets/sfx/ascend.ogg", "ascend", "sound", true)
-  megautils.loadResource("assets/sfx/selected.ogg", "selected", "sound", true)
-  megautils.loadResource("assets/sfx/pause.ogg", "pause", "sound", true)
-  megautils.loadResource("assets/sfx/splash.ogg", "splash", "sound", true)
-  megautils.loadResource("assets/sfx/pause.ogg", "pause", "sound", true)
-  megautils.loadResource("assets/sfx/cursorMove.ogg", "cursorMove", "sound", true)
-  megautils.loadResource("assets/sfx/charge.ogg", "charge", "sound", true)
-  megautils.loadResource("assets/sfx/switch.ogg", "switch", "sound", true)
-  megautils.loadResource("assets/sfx/selected.ogg", "selected", "sound", true)
-  megautils.loadResource("assets/sfx/error.ogg", "error", "sound", true)
-  megautils.loadResource("assets/sfx/treble.ogg", "trebleStart", "sound", true)
-  megautils.loadResource("assets/sfx/protoReady.ogg", "protoReady", "sound", true)
-  megautils.loadResource("assets/sfx/gravityFlip.ogg", "gravityFlip", "sound", true)
-  megautils.loadResource("assets/misc/weapons/buster.png", "busterTex", true)
-  megautils.loadResource("assets/misc/weapons/protoBuster.png", "protoBuster", true)
-  megautils.loadResource("assets/misc/weapons/rollBuster.png", "rollBuster", true)
-  megautils.loadResource("assets/misc/weapons/bassBuster.png", "bassBuster", true)
-  megautils.loadResource("assets/misc/weapons/rush.png", "rush", true)
-  megautils.loadResource("assets/misc/weapons/protoRush.png", "protoRush", true)
-  megautils.loadResource("assets/misc/weapons/tango.png", "tango", true)
-  megautils.loadResource("assets/misc/weapons/treble.png", "treble", true)
-  megautils.loadResource("assets/misc/slopes/slopeLeft.png", "slopeLeft", true, true)
-  megautils.loadResource("assets/misc/slopes/slopeRight.png", "slopeRight", true, true)
-  megautils.loadResource("assets/misc/slopes/slopeLeftLong.png", "slopeLeftLong", true, true)
-  megautils.loadResource("assets/misc/slopes/slopeRightLong.png", "slopeRightLong", true, true)
-  megautils.loadResource("assets/misc/slopes/slopeLeftInvert.png", "slopeLeftInvert", true, true)
-  megautils.loadResource("assets/misc/slopes/slopeRightInvert.png", "slopeRightInvert", true, true)
-  megautils.loadResource("assets/misc/slopes/slopeLeftLongInvert.png", "slopeLeftLongInvert", true, true)
-  megautils.loadResource("assets/misc/slopes/slopeRightLongInvert.png", "slopeRightLongInvert", true, true)
-  megautils.loadResource("assets/misc/slopes/slopeLeftHalf.png", "slopeLeftHalf", true, true)
-  megautils.loadResource("assets/misc/slopes/slopeRightHalf.png", "slopeRightHalf", true, true)
-  megautils.loadResource("assets/misc/slopes/slopeLeftHalfInvert.png", "slopeLeftHalfInvert", true, true)
-  megautils.loadResource("assets/misc/slopes/slopeRightHalfInvert.png", "slopeRightHalfInvert", true, true)
-  megautils.loadResource("assets/misc/slopes/slopeLeftHalfUpper.png", "slopeLeftHalfUpper", true, true)
-  megautils.loadResource("assets/misc/slopes/slopeRightHalfUpper.png", "slopeRightHalfUpper", true, true)
-  megautils.loadResource("assets/misc/slopes/slopeLeftHalfUpperInvert.png", "slopeLeftHalfUpperInvert", true, true)
-  megautils.loadResource("assets/misc/slopes/slopeRightHalfUpperInvert.png", "slopeRightHalfUpperInvert", true, true)
-  megautils.loadResource("slideParticleGrid", 8, 8, 128, 98, true)
-  megautils.loadResource("explodeParticleGrid", 24, 24, 128, 98, 0, 46, true)
-  megautils.loadResource("megaManGrid", 41, 30, 164, 330, true)
-  megautils.loadResource("bassGrid", 45, 41, 180, 533, true)
-  megautils.loadResource("trebleGrid", 33, 32, 264, 32, true)
-  megautils.loadResource("rollGrid", 45, 34, 180, 374, true)
-  megautils.loadResource("smallHealthGrid", 8, 8, 128, 98, 24, 0, true)
-  megautils.loadResource("healthGrid", 16, 16, 128, 98, 40, 0, true)
-  megautils.loadResource("smallEnergyGrid", 8, 8, 128, 98, 72, 0, true)
-  megautils.loadResource("energyGrid", 16, 12, 128, 98, 88, 0, true)
-  megautils.loadResource("tankGrid", 16, 16, 128, 98, 72, 12, true)
-  megautils.loadResource("splashGrid", 32, 28, 128, 98, 0, 70, true)
-  megautils.loadResource("damageSteamGrid", 5, 8, 128, 98, 108, 28, true)
-  megautils.loadResource("smallChargeGrid", 17, 16, 133, 47, 8, 31, true)
-  megautils.loadResource("chargeGrid", 33, 30, 133, 47, true)
-  megautils.loadResource("rushGrid", 32, 32, 128, 64, true)
-  megautils.loadResource("protoBusterGrid", 29, 10, 68, 10, 10, 0, true)
 end
 
 megautils._curM = nil
@@ -275,7 +174,7 @@ function megautils.getCurrentMusic()
 end
 
 function megautils.playMusic(path, loop, lp, lep, vol)
-  if megautils._lockM or (megautils._curM and megautils._curM.id == path) then return end
+  if megautils._lockM or (megautils._curM and megautils._curM.id == path and not megautils_curM:stopped()) then return end
   megautils.stopMusic()
   
   megautils._curM = mmMusic(love.audio.newSource(path, isWeb and "static" or "stream"))
@@ -285,7 +184,7 @@ function megautils.playMusic(path, loop, lp, lep, vol)
 end
 
 function megautils.playMusicWithSeperateIntroFile(lPath, iPath, vol)
-  if megautils._lockM or (megautils._curM and megautils._curM.id == (lPath .. ", " .. iPath)) then return end
+  if megautils._lockM or (megautils._curM and megautils._curM.id == (lPath .. ", " .. iPath) and not megautils_curM:stopped()) then return end
   megautils.stopMusic()
   
   local t = isWeb and "static" or "stream"
@@ -303,16 +202,40 @@ function megautils.stopMusic()
 end
 
 function megautils.playSound(p, l, v, stack)
-  if not stack then
-    megautils.getResource(p):stop()
+  if megautils.getResource(p) then
+    if not stack then
+      megautils.getResource(p):stop()
+    end
+    megautils.getResource(p):setLooping(l or false)
+    megautils.getResource(p):setVolume(v or 1)
+    megautils.getResource(p):play()
   end
-  megautils.getResource(p):setLooping(l or false)
-  megautils.getResource(p):setVolume(v or 1)
-  megautils.getResource(p):play()
+end
+
+megautils._curS = {}
+
+function megautils.playSoundFromFile(p, l, v, stack)
+  local s = megautils._curS.sfx
+  if s and not stack then
+    s:stop()
+  end
+  if not s or megautils._curS.id ~= p then
+    s = love.audio.newSource(p, "static")
+  end
+  s:setLooping(l == true)
+  s:setVolume(v or 1)
+  s:play()
+  megautils._curS.id = p
+  megautils._curS.sfx = s
 end
 
 function megautils.stopSound(s)
-  megautils.getResource(s):stop()
+  if megautils.getResource(s) then
+    megautils.getResource(s):stop()
+  end
+  if s == megautils._curS.id and megautils._curS.sfx then
+    megautils._curS.sfx:stop()
+  end
 end
 
 function megautils.stopAllSounds()
@@ -325,6 +248,9 @@ function megautils.stopAllSounds()
     if v.type and v:type() == "Source" then
       v:stop()
     end
+  end
+  if megautils._curS.sfx then
+    megautils._curS.sfx:stop()
   end
 end
 
@@ -352,10 +278,9 @@ function megautils.unload()
     end
     megautils.frozen = {}
   end
-  collectgarbage()
 end
 
-function megautils.loadStage(self, path)
+function megautils.loadMap(self, path)
   self.currentMap = cartographer.load(path)
   local map = self.currentMap
   local function recursiveLayerChecking(tab, otab)
@@ -380,6 +305,20 @@ function megautils.loadStage(self, path)
   end)
   tmp:setLayer(-5)
   tmp.map = map
+end
+
+function megautils.loadStage(self, path)
+  if megautils.reloadState and megautils.manageStageResources then
+    megautils.runFile("entities/mechanics/bossdoor.lua")
+    megautils.runFile("entities/mechanics/death.lua")
+    megautils.runFile("entities/mechanics/ladder.lua")
+    megautils.runFile("entities/mechanics/checkpoint.lua")
+    megautils.runFile("entities/mechanics/solid.lua")
+    
+    megautils.resetGameObjects()
+  end
+  
+  megautils.loadMap(self, path)
 end
 
 function megautils.map()
@@ -519,21 +458,16 @@ function megautils.circlePathY(y, deg, dist)
 end
 
 function megautils.resetGameObjects()
-  globals.mainPlayer = nil
-  globals.allPlayers = {}
-  megautils.manageStageResources = true
-  globals.checkpoint = "start"
-  globals.lives = globals.lives > 2 and globals.lives or globals.startingLives
   for k, v in pairs(megautils.resetGameObjectsFuncs) do
     v()
   end
 end
 
 function megautils.revivePlayer(p)
-  megaman.weaponHandler[p]:switch(0)
-  megaman.colorOutline[p] = megaman.weaponHandler[p].colorOutline[0]
-  megaman.colorOne[p] = megaman.weaponHandler[p].colorOne[0]
-  megaman.colorTwo[p] = megaman.weaponHandler[p].colorTwo[0]
+  megaMan.weaponHandler[p]:switch(0)
+  megaMan.colorOutline[p] = megaMan.weaponHandler[p].colorOutline[0]
+  megaMan.colorOne[p] = megaMan.weaponHandler[p].colorOne[0]
+  megaMan.colorTwo[p] = megaMan.weaponHandler[p].colorTwo[0]
 end
 
 function megautils.registerPlayer(e, p)

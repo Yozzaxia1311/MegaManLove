@@ -1,83 +1,11 @@
+io.stdout:setvbuf("no")
+collectgarbage("setpause", 100)
+
 isMobile = love.system.getOS() == "Android" or love.system.getOS() == "iOS"
 isWeb = love.system.getOS() == "Web"
 is3DS = love._console_name == "3DS"
 
-if isWeb then
-  -- `love.filesystem.getInfo` doesn't exist in the current love.js, so here's an implementation.
-  function love.filesystem.getInfo(str, arg1, arg2)
-    if love.filesystem.exists(str) then
-      local t = "other"
-      if love.filesystem.isFile(str) then
-        t = "file"
-      elseif love.filesystem.isDirectory(str) then
-        t = "directory"
-      elseif love.filesystem.isSymlink(str) then
-        t = "symlink"
-      end
-      
-      local fCheck = true
-      local result = (type(arg1) == "table") and arg1
-      
-      if type(arg1) == "string" then
-        fCheck = arg1 == t
-      elseif type(arg1) == "table" and type(arg2) == "string" then
-        fCheck = arg2 == t
-      end
-      
-      if fCheck then
-        if not result then
-          result = {}
-        end
-        result.type = t
-        result.size = love.filesystem.getSize(str)
-        result.modtime = love.filesystem.getLastModified(str)
-      end
-      
-      return result
-    end
-  end
-  
-  -- Fullscreening is broken.
-  function love.window.setFullscreen() end
-elseif is3DS then
-  -- Non-existant functions in LovePotion.
-  function love.keyboard.setKeyRepeat() end
-else
-  -- Love2D doesn't fire the resize event when exiting fullscreen, so here's a hack.
-  local lf = love.window.setFullscreen
-
-  function love.window.setFullscreen(s)
-    lf(s)
-    love.resize(love.graphics.getDimensions())
-  end
-end
-
-imageToCSV = {}
-
-imageToCSV.tmp = {}
-
-function imageToCSV.imgMap(x, y, r, g, b, a)
-  imageToCSV.tmp[#imageToCSV.tmp+1] = (a > 0) and 1 or 0
-  return r, g, b, a
-end
-
-function imageToCSV.output(path, out)
-  local result
-  local img = love.image.newImageData(path)
-  
-  imageToCSV.tmp = {}
-  img:mapPixel(imageToCSV.imgMap)
-  
-  result = tostring(img:getWidth()) .. "#"
-  for i=1, #imageToCSV.tmp do
-    result = result .. tostring(imageToCSV.tmp[i]) .. ((i == #imageToCSV.tmp) and "" or ",")
-  end
-  
-  save.createDirChain(out)
-  love.filesystem.write(out, result)
-end
-
--- Initializes the whole game to it's base state.
+-- Initializes the whole game to its base state.
 function initEngine()
   inputHandler.init()
   control.init()
@@ -119,9 +47,9 @@ function initEngine()
     v()
   end
   megautils.unloadAllResources()
-  megautils.loadGlobalResources()
-  megautils.resetGameObjects()
-  collectgarbage()
+  for k, v in pairs(megautils.initEngineFuncs) do
+    v()
+  end
 end
 
 function love.load()
@@ -147,7 +75,8 @@ function love.load()
   if data.fullscreen then
     megautils.setFullscreen(true)
   end
-  megautils.gotoState("states/disclaimer.state.lua")
+  
+  megautils.gotoState(is3DS and "states/title.state.lua" or "states/disclaimer.state.lua")
   console.parse("exec autoexec")
 end
 
@@ -284,6 +213,56 @@ function love.draw(screen)
     states.draw()
     love.graphics.pop()
     if useConsole then console.draw() end
+  end
+end
+
+if isWeb then
+  -- `love.filesystem.getInfo` doesn't exist in the current love.js, so here's an implementation.
+  function love.filesystem.getInfo(str, arg1, arg2)
+    if love.filesystem.exists(str) then
+      local t = "other"
+      if love.filesystem.isFile(str) then
+        t = "file"
+      elseif love.filesystem.isDirectory(str) then
+        t = "directory"
+      elseif love.filesystem.isSymlink(str) then
+        t = "symlink"
+      end
+      
+      local fCheck = true
+      local result = (type(arg1) == "table") and arg1
+      
+      if type(arg1) == "string" then
+        fCheck = arg1 == t
+      elseif type(arg1) == "table" and type(arg2) == "string" then
+        fCheck = arg2 == t
+      end
+      
+      if fCheck then
+        if not result then
+          result = {}
+        end
+        result.type = t
+        result.size = love.filesystem.getSize(str)
+        result.modtime = love.filesystem.getLastModified(str)
+      end
+      
+      return result
+    end
+  end
+  
+  -- Fullscreening is broken.
+  function love.window.setFullscreen() end
+elseif is3DS then
+  -- Non-existant functions in LovePotion.
+  function love.keyboard.setKeyRepeat() end
+else
+  -- Love2D doesn't fire the resize event when exiting fullscreen, so here's a hack.
+  local lf = love.window.setFullscreen
+
+  function love.window.setFullscreen(s)
+    lf(s)
+    love.resize(love.graphics.getDimensions())
   end
 end
 

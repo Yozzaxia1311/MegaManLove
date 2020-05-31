@@ -592,6 +592,11 @@ function Map:_init(path)
   self.quadCache = {}
   self.tilesetCache = {}
   self.tileCache = {}
+  if self.backgroundcolor then
+    self.backgroundcolor[1] = self.backgroundcolor[1] / 255
+    self.backgroundcolor[2] = self.backgroundcolor[2] / 255
+    self.backgroundcolor[3] = self.backgroundcolor[3] / 255
+  end
   self:_loadImages()
   setmetatable(self.tilesets, getByNameMetatable)
   self:_initLayers()
@@ -609,7 +614,7 @@ function Map:_getTileQuad(gid, frame)
     id = tile.animation[frame].tileid
   end
   local image = self._images[tileset.image]
-  local gridWidth = math.floor(image:getWidth() / (tileset.tilewidth + tileset.spacing))
+  local gridWidth = math.floor(tileset.imagewidth / (tileset.tilewidth + tileset.spacing))
   local x, y = indexToCoordinates(id + 1, gridWidth)
   id = id + tileset.firstgid
   if not self.quadCache[id] then
@@ -617,7 +622,7 @@ function Map:_getTileQuad(gid, frame)
       x * (tileset.tilewidth + tileset.spacing),
       y * (tileset.tileheight + tileset.spacing),
       tileset.tilewidth, tileset.tileheight,
-      image:getWidth(), image:getHeight()
+      tileset.imagewidth, tileset.imageheight
     )
   end
   return self.quadCache[id]
@@ -699,15 +704,8 @@ end
 
 function Map:drawBackground()
   if self.backgroundcolor then
-    love.graphics.push()
-    love.graphics.origin()
-    local r = self.backgroundcolor[1] / 255
-    local g = self.backgroundcolor[2] / 255
-    local b = self.backgroundcolor[3] / 255
-    love.graphics.setColor(r, g, b, 1)
-    love.graphics.rectangle("fill", 0, 0,
-      love.graphics.getCanvas():getDimensions())
-    love.graphics.pop()
+    love.graphics.setColor(self.backgroundcolor[1], self.backgroundcolor[2], self.backgroundcolor[3], 1)
+    love.graphics.rectangle("fill", view.x-1, view.y-1, view.w+1, view.h+1)
     love.graphics.setColor(1, 1, 1, 1)
   end
 end
@@ -814,7 +812,7 @@ local function finalXML2LuaTable(str, f)
           v.image = v.image.source
         end
       end
-            
+      
       ts.properties = ts.properties or {}
       local ref = ts.properties
       ts.properties = {}

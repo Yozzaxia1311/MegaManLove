@@ -1,7 +1,6 @@
 love.filesystem.load("entities/addobjects.lua")()
 
-love.filesystem.load("entities/main/weaponhandler.lua")()
-love.filesystem.load("entities/main/healthhandler.lua")()
+love.filesystem.load("entities/main/barhandler.lua")()
 love.filesystem.load("entities/main/megaman.lua")()
 love.filesystem.load("entities/main/pickups.lua")()
 love.filesystem.load("entities/main/pause.lua")()
@@ -9,12 +8,6 @@ love.filesystem.load("entities/main/weapons.lua")()
 love.filesystem.load("entities/main/ready.lua")()
 
 love.filesystem.load("entities/mechanics/solid.lua")()
-love.filesystem.load("entities/mechanics/water.lua")()
-love.filesystem.load("entities/mechanics/ladder.lua")()
-love.filesystem.load("entities/mechanics/checkpoint.lua")()
-love.filesystem.load("entities/mechanics/bossdoor.lua")()
-love.filesystem.load("entities/mechanics/death.lua")()
-love.filesystem.load("entities/mechanics/ice.lua")()
 
 love.filesystem.load("entities/misc/section.lua")()
 love.filesystem.load("entities/misc/spawner.lua")()
