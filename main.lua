@@ -76,7 +76,7 @@ function love.load()
     megautils.setFullscreen(true)
   end
   
-  megautils.gotoState(is3DS and "states/title.state.lua" or "states/disclaimer.state.lua")
+  megautils.gotoState("states/disclaimer.state.lua")
   console.parse("exec autoexec")
 end
 
