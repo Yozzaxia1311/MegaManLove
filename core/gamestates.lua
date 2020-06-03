@@ -60,6 +60,11 @@ function states.set(n, s, after)
   states.currentstate.system = states.currentstate.system or entitysystem()
   states.switched = true
   if after then after() end
+  if megautils.reloadState and megautils.resetGameObjects then
+    for k, v in pairs(megautils.resetGameObjectsPreFuncs) do
+      v()
+    end
+  end
   states.currentstate:begin()
 end
 

@@ -58,16 +58,24 @@ megaMan.resources.roll = function()
     megautils.loadResource("rollGrid", 45, 34, 180, 374)
   end
 
+megautils.resetGameObjectsPreFuncs.megaMan = function()
+    megaMan.colorOutline = {}
+    megaMan.colorOne = {}
+    megaMan.colorTwo = {}
+    megaMan.weaponHandler = {}
+    globals.mainPlayer = nil
+    globals.allPlayers = {}
+    globals.lives = (globals.lives > globals.startingLives) and globals.lives or globals.startingLives
+    
+    globals.checkpoint = globals.overrideCheckpoint or "start"
+    globals.gameOverContinueState = globals.overrideGOCS or states.current
+    globals.deathState = globals.overrideDeathState or states.current
+    globals.overrideCheckpoint = nil
+    globals.overrideGOCS = nil
+    globals.overrideDeathState = nil
+  end
+
 megautils.resetGameObjectsFuncs.megaMan = function()
-  megaMan.colorOutline = {}
-  megaMan.colorOne = {}
-  megaMan.colorTwo = {}
-  megaMan.weaponHandler = {}
-  globals.mainPlayer = nil
-  globals.allPlayers = {}
-  globals.checkpoint = "start"
-  globals.lives = globals.lives > 2 and globals.lives or globals.startingLives
-  
   megautils.loadResource("assets/misc/weapons/weaponSelectIcon.png", "weaponSelectIcon")
   mmWeaponsMenu.resources()
   
@@ -1851,11 +1859,10 @@ function megaMan:die()
           globals.lives = globals.lives - 1
         end
         if not globals.infiniteLives and globals.lives < 0 then
-          globals.gameOverContinueState = states.current
           megautils.gotoState("states/gameover.state.lua")
         else
-          megautils.manageStageResources = false
-          megautils.gotoState(states.current)
+          megautils.resetGameObjects = false
+          megautils.gotoState(globals.deathState)
         end
         megautils.removeq(s)
       end)

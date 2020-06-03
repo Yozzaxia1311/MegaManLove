@@ -8,7 +8,7 @@ megautils = {}
     end
   
   megautils.cleanFuncs.exampleFunc = function()
-      *Code here will execute whenever the state is changed and `megautils.reloadState` and `megautils.manageStageResources` is true*
+      *Code here will execute whenever the state is changed and `megautils.reloadState` and `megautils.resetGameObjects` is true*
     end
   
   megautils.resetGameObjectsFuncs.exampleFunc = function()
@@ -17,10 +17,11 @@ megautils = {}
     end
 ]]--
 megautils.reloadState = true
-megautils.manageStageResources = true
+megautils.resetGameObjects = true
 megautils.reloadStateFuncs = {}
 megautils.cleanFuncs = {}
 megautils.resetGameObjectsFuncs = {}
+megautils.resetGameObjectsPreFuncs = {}
 megautils.initEngineFuncs = {}
 
 --Player callback functions. These apply to all active players.
@@ -67,7 +68,7 @@ function megautils.resetGame(s, saveSfx, saveMusic)
     megautils.stopMusic()
   end
   megautils.reloadState = true
-  megautils.manageStageResources = true
+  megautils.resetGameObjects = true
   megautils.unload()
   initEngine()
   states.set(s or "states/disclaimer.state.lua")
@@ -282,7 +283,7 @@ function megautils.unload()
     for k, v in pairs(megautils.reloadStateFuncs) do
       v()
     end
-    if megautils.manageStageResources then
+    if megautils.resetGameObjects then
       for k, v in pairs(megautils.cleanFuncs) do
         v()
       end
@@ -320,14 +321,10 @@ function megautils.loadMap(self, path)
 end
 
 function megautils.loadStage(self, path)
-  if megautils.reloadState and megautils.manageStageResources then
-    megautils.runFile("entities/mechanics/bossdoor.lua")
-    megautils.runFile("entities/mechanics/death.lua")
-    megautils.runFile("entities/mechanics/ladder.lua")
-    megautils.runFile("entities/mechanics/checkpoint.lua")
-    megautils.runFile("entities/mechanics/solid.lua")
-    
-    megautils.resetGameObjects()
+  if megautils.reloadState and megautils.resetGameObjects then
+    for k, v in pairs(megautils.resetGameObjectsFuncs) do
+      v()
+    end
   end
   
   megautils.loadMap(self, path)
@@ -467,12 +464,6 @@ function megautils.circlePathX(x, deg, dist)
 end
 function megautils.circlePathY(y, deg, dist)
   return y + (megautils.calcY(deg) * dist)
-end
-
-function megautils.resetGameObjects()
-  for k, v in pairs(megautils.resetGameObjectsFuncs) do
-    v()
-  end
 end
 
 function megautils.revivePlayer(p)

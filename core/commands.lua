@@ -173,9 +173,9 @@ function cmdState(cmd)
   if map == nil then console.print("No such state \""..cmd[2].."\"") return end
   love.audio.stop()
   megautils.stopMusic()
-  megautils.manageStageResources = true
+  megautils.resetGameObjects = true
   megautils.reloadState = true
-  if cmd[3] then globals.checkpoint = cmd[3] end
+  if cmd[3] then globals.overrideCheckpoint = cmd[3] end
   megautils.gotoState(map)
 end
 concmd["state"] = {

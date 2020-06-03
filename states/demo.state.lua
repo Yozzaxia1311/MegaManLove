@@ -4,7 +4,7 @@ function demoState:begin()
   -- Reload stage at all?
   if megautils.reloadState then
     -- Do stage resources need to be loaded?
-    if megautils.manageStageResources then
+    if megautils.resetGameObjects then      
       megautils.loadResource("assets/misc/slopes/slopeLeft.png", "slopeLeft", true, false)
       megautils.loadResource("assets/misc/slopes/slopeRight.png", "slopeRight", true, false)
       megautils.loadResource("assets/misc/slopes/slopeLeftLong.png", "slopeLeftLong", true, false)
