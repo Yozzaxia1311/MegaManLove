@@ -12,52 +12,35 @@ function loader.imgMap(x, y, r, g, b, a)
 end
 
 function loader.load(path, nick, typ, parameters, lock)
+  if not nick then
+    error("Specify nickname for resource \"" .. path .. "\".")
+  end
+  
   if (loader.resources[nick] and loader.resources[nick][2] == path and not lock) or
     (loader.locked[nick] and loader.locked[nick][2] == path) then return end
   if typ == "texture" then
     if lock then
       if parameters and parameters[1] then
-        if is3DS then
-          local data = love.filesystem.read(path):split("#")
-          local size = tonumber(data[1])
-          local csv = data[2]:split(",")
-          for i = 1, #csv do
-            csv[i] = tonumber(csv[i])
-          end
-          local t = table.convert1Dto2D(csv, size)
-          loader.locked[nick] = {{t}, path}
-        else
-          local img = love.image.newImageData(path)
-          loader.tmp = {}
-          img:mapPixel(loader.imgMap)
-          loader.locked[nick] = {{loader.tmp, love.graphics.newImage(img)}, path}
-        end
+        local img = love.image.newImageData(path)
+        loader.tmp = {}
+        img:mapPixel(loader.imgMap)
+        loader.locked[nick] = {loader.tmp, path, love.graphics.newImage(img)}
       else
         loader.locked[nick] = {love.graphics.newImage(path), path}
       end
+      
       loader.resources[nick] = nil
       
       return loader.locked[nick]
     else
       if loader.locked[nick] then
-        error("Cannot overwrite a locked resource")
+        error("Cannot overwrite a locked resource.")
       end
-      if parameters then
-        if is3DS then
-          local data = love.filesystem.read(path):split("#")
-          local size = tonumber(data[1])
-          local csv = data[2]:split(",")
-          for i = 1, #csv do
-            csv[i] = tonumber(csv[i])
-          end
-          local t = table.convert1Dto2D(csv, size)
-          loader.resources[nick] = {{t}, path}
-        else
-          local img = love.image.newImageData(path)
-          loader.tmp = {}
-          img:mapPixel(loader.imgMap)
-          loader.resources[nick] = {{loader.tmp, love.graphics.newImage(img)}, path}
-        end
+      if parameters and parameters[1] then
+        local img = love.image.newImageData(path)
+        loader.tmp = {}
+        img:mapPixel(loader.imgMap)
+        loader.resources[nick] = {loader.tmp, path, love.graphics.newImage(img)}
       else
         loader.resources[nick] = {love.graphics.newImage(path), path}
       end
@@ -72,7 +55,7 @@ function loader.load(path, nick, typ, parameters, lock)
       return loader.locked[nick]
     else
       if loader.locked[nick] then
-        error("Cannot overwrite a locked resource")
+        error("Cannot overwrite a locked resource.")
       end
       loader.resources[nick] = {love.audio.newSource(path), path}
       
@@ -86,7 +69,7 @@ function loader.load(path, nick, typ, parameters, lock)
       return loader.locked[nick]
     else
       if loader.locked[nick] then
-        error("Cannot overwrite a locked resource")
+        error("Cannot overwrite a locked resource.")
       end
       loader.resources[nick] = {love.audio.newSource(path, "static"), path}
       
@@ -101,7 +84,7 @@ function loader.load(path, nick, typ, parameters, lock)
       return loader.locked[nick]
     else
       if loader.locked[nick] then
-        error("Cannot overwrite a locked resource")
+        error("Cannot overwrite a locked resource.")
       end
       loader.resources[nick] = {anim8.newGrid(parameters[1], parameters[2], parameters[3], parameters[4], parameters[5] or 0,
       parameters[6] or 0), path}
@@ -136,6 +119,10 @@ function loader.unload(nick)
     end
     loader.resources[nick] = nil
   end
+end
+
+function loader.getTable(nick)
+  return loader.resources[nick] or loader.locked[nick]
 end
 
 function loader.clear()

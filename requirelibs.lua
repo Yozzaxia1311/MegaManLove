@@ -1,5 +1,4 @@
 class = love.filesystem.load("core/classic.lua")()
-imageToCSV = love.filesystem.load("core/imagetocsv.lua")()
 inspect = love.filesystem.load("core/inspect.lua")()
 tween = love.filesystem.load("core/tween.lua")()
 anim8 = love.filesystem.load("core/anim8.lua")()

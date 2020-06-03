@@ -47,7 +47,7 @@ end
 slope = basicEntity:extend()
 
 addobjects.register("slope", function(v)
-  megautils.add(slope, v.x, v.y, megautils.getResource(v.properties.mask))
+  megautils.add(slope, v.x, v.y, megautils.getResourceTable(v.properties.mask))
 end)
 
 function slope:new(x, y, mask)

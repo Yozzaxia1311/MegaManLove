@@ -3,7 +3,6 @@ collectgarbage("setpause", 100)
 
 isMobile = love.system.getOS() == "Android" or love.system.getOS() == "iOS"
 isWeb = love.system.getOS() == "Web"
-is3DS = love._console_name == "3DS"
 
 -- Initializes the whole game to its base state.
 function initEngine()
@@ -63,7 +62,7 @@ function love.load()
   showFPS = false
   showEntityCount = false
   framerate = 1/60
-  nesShader = not isWeb and not isMobile and not is3DS and love.graphics.getSupported().glsl3 and love.graphics.newShader("assets/nesLUT.glsl")
+  nesShader = not isWeb and not isMobile and love.graphics.getSupported().glsl3 and love.graphics.newShader("assets/nesLUT.glsl")
   if nesShader then nesShader:send("pal", love.graphics.newImage("assets/nesLUT.png")) end
   
   love.filesystem.load("requirelibs.lua")()
@@ -208,15 +207,14 @@ function love.update(dt)
 end
 
 function love.draw(screen)
-  if not is3DS or screen == "top" then
-    love.graphics.push()
-    states.draw()
-    love.graphics.pop()
-    if useConsole then console.draw() end
-  end
+  love.graphics.push()
+  states.draw()
+  love.graphics.pop()
+  if useConsole then console.draw() end
 end
 
 if isWeb then
+
   -- `love.filesystem.getInfo` doesn't exist in the current love.js, so here's an implementation.
   function love.filesystem.getInfo(str, arg1, arg2)
     if love.filesystem.exists(str) then
@@ -253,10 +251,9 @@ if isWeb then
   
   -- Fullscreening is broken.
   function love.window.setFullscreen() end
-elseif is3DS then
-  -- Non-existant functions in LovePotion.
-  function love.keyboard.setKeyRepeat() end
+
 else
+
   -- Love2D doesn't fire the resize event when exiting fullscreen, so here's a hack.
   local lf = love.window.setFullscreen
 
@@ -264,9 +261,10 @@ else
     lf(s)
     love.resize(love.graphics.getDimensions())
   end
+
 end
 
-if not isWeb and not is3DS then
+if not isWeb then
   function love.run()
     if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
     if love.timer then love.timer.step() end

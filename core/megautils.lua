@@ -77,7 +77,22 @@ function megautils.getResource(nick)
   return loader.get(nick)
 end
 
+function megautils.getResourceTable(nick)
+  return loader.getTable(nick)
+end
+
 function megautils.getAllResources()
+  local all = {}
+  for k, v in pairs(loader.locked) do
+    all[k] = v[1]
+  end
+  for k, v in pairs(loader.resources) do
+    all[k] = v[1]
+  end
+  return all
+end
+
+function megautils.getAllResourceTables()
   local all = {}
   for k, v in pairs(loader.locked) do
     all[k] = v
@@ -139,9 +154,6 @@ function megautils.loadResource(...)
     t = "texture"
     if #args == 4 then
       locked = args[4]
-      if is3DS then
-        path = path:gsub(ext, ".csv")
-      end
       return loader.load(path, nick, t, {args[3]}, locked)
     else
       locked = args[3]

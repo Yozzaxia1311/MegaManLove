@@ -510,11 +510,18 @@ end
 
 function basicEntity:setImageCollision(data)
   self.collisionShape = {}
-  self.collisionShape.type = 1
-  self.collisionShape.data = data[1]
-  self.collisionShape.image = data[2]
-  self.collisionShape.w = #self.collisionShape.data[1]
-  self.collisionShape.h = #self.collisionShape.data
+  if data and type(data[2]) == "string" then
+    self.collisionShape.type = 1
+    self.collisionShape.data = data[1]
+    self.collisionShape.image = data[3]
+    self.collisionShape.w = #self.collisionShape.data[1]
+    self.collisionShape.h = #self.collisionShape.data
+  else
+    self.collisionShape.type = 1
+    self.collisionShape.data = data
+    self.collisionShape.w = #self.collisionShape.data[1]
+    self.collisionShape.h = #self.collisionShape.data
+  end
 end
 
 function basicEntity:collision(e, x, y)

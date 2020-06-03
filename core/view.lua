@@ -6,65 +6,39 @@ function view.init(sw, sh, s)
   view.w = sw or 1
   view.h = sh or 1
   view.scale = s or 1
-  view.canvas = not is3DS and love.graphics.newCanvas(view.w*view.scale, view.h*view.scale)
+  view.canvas = love.graphics.newCanvas(view.w*view.scale, view.h*view.scale)
 end
 
 function view.draw(sys)
-  if is3DS then
-    love.graphics.clear()
-    love.graphics.push()
-    love.graphics.scale(view.scale)
-    love.graphics.translate(-view.x, -view.y)
-    sys:draw()
-    love.graphics.pop()
-    sys:drawQuality()
-    megautils.updateShake()
-    love.graphics.setColor(1, 1, 1, 1)
-    control.drawDemo()
-    if showEntityCount then
-      local count = #megautils.state().system.all
-      love.graphics.setFont(mmFont)
-      love.graphics.setColor(1, 1, 1, 0.8)
-      love.graphics.print(count, view.w - 24, 24)
-    end
-    if showFPS then
-      local fps = love.timer.getFPS()
-      love.graphics.setFont(mmFont)
-      love.graphics.setColor(1, 1, 1, 0.8)
-      love.graphics.print(fps, view.w - 24, 8)
-    end
-    cscreen.apply()
-  else
-    love.graphics.setCanvas(view.canvas)
-    love.graphics.clear()
-    love.graphics.push()
-    love.graphics.scale(view.scale)
-    love.graphics.translate(-view.x, -view.y)
-    sys:draw()
-    love.graphics.pop()
-    sys:drawQuality()
-    megautils.updateShake()
-    love.graphics.setColor(1, 1, 1, 1)
-    control.drawDemo()
-    if showEntityCount then
-      local count = #megautils.state().system.all
-      love.graphics.setFont(mmFont)
-      love.graphics.setColor(1, 1, 1, 0.8)
-      love.graphics.print(count, view.w - 24, 24)
-    end
-    if showFPS then
-      local fps = love.timer.getFPS()
-      love.graphics.setFont(mmFont)
-      love.graphics.setColor(1, 1, 1, 0.8)
-      love.graphics.print(fps, view.w - 24, 8)
-    end
-    love.graphics.setColor(1, 1, 1, 1)
-    love.graphics.setCanvas()
-    cscreen.apply()
-    if nesShader then
-      love.graphics.setShader(nesShader)
-    end
-    love.graphics.draw(view.canvas)
-    love.graphics.setShader()
+  love.graphics.setCanvas(view.canvas)
+  love.graphics.clear()
+  love.graphics.push()
+  love.graphics.scale(view.scale)
+  love.graphics.translate(-view.x, -view.y)
+  sys:draw()
+  love.graphics.pop()
+  sys:drawQuality()
+  megautils.updateShake()
+  love.graphics.setColor(1, 1, 1, 1)
+  control.drawDemo()
+  if showEntityCount then
+    local count = #megautils.state().system.all
+    love.graphics.setFont(mmFont)
+    love.graphics.setColor(1, 1, 1, 0.8)
+    love.graphics.print(count, view.w - 24, 24)
   end
+  if showFPS then
+    local fps = love.timer.getFPS()
+    love.graphics.setFont(mmFont)
+    love.graphics.setColor(1, 1, 1, 0.8)
+    love.graphics.print(fps, view.w - 24, 8)
+  end
+  love.graphics.setColor(1, 1, 1, 1)
+  love.graphics.setCanvas()
+  cscreen.apply()
+  if nesShader then
+    love.graphics.setShader(nesShader)
+  end
+  love.graphics.draw(view.canvas)
+  love.graphics.setShader()
 end
