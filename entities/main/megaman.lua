@@ -1200,20 +1200,15 @@ function megaMan:code(dt)
       downDown = control.upDown[self.player]
       upDown = control.downDown[self.player]
     end
-    if self.gravity >= 0 then
-      downDown = control.downDown[self.player]
-      upDown = control.upDown[self.player]
-    else
-      downDown = control.upDown[self.player]
-      upDown = control.downDown[self.player]
-    end
-    
     if control.upDown[self.player] and self.shootTimer == self.maxShootTime then
       self.velocity.vely = self.climbUpSpeed
     elseif control.downDown[self.player] and self.shootTimer == self.maxShootTime then
       self.velocity.vely = self.climbDownSpeed
     end
-    if not self:collision(self.currentLadder) then
+    if not self:collision(self.currentLadder) or self.ground or
+      (control.jumpPressed[self.player] and not (downDown or upDown)) or
+      self.transform.x <= view.x+(-self.collisionShape.w/2)+2 or
+      self.transform.x >= (view.x+view.w)+(-self.collisionShape.w/2)-2 then
       self.climb = false
     elseif upDown and ((self.gravity >= 0 and self.transform.y+(self.collisionShape.h*0.8) < self.currentLadder.transform.y) or 
       (self.gravity < 0 and self.transform.y+(self.collisionShape.h*0.2) > self.currentLadder.transform.y+self.currentLadder.collisionShape.h)) then
@@ -1231,16 +1226,6 @@ function megaMan:code(dt)
           collision.shiftObject(self, 0, self.gravity >= 0 and 1 or -1, true)
         end
         self.climb = false
-    end
-    if self.transform.x == view.x-self.collisionShape.w/2 or
-      self.transform.x == (view.x+view.w)-self.collisionShape.w/2 or not self:collision(self.currentLadder) then
-      self.climb = false
-    end
-    if self.ground and downDown then
-      self.climb = false
-    end
-    if control.jumpPressed[self.player] and not (downDown or upDown) then
-      self.climb = false
     end
     for k, v in pairs(megautils.playerClimbFuncs) do
       v(self)
