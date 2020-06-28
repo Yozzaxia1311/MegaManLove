@@ -1207,8 +1207,8 @@ function megaMan:code(dt)
     end
     if not self:collision(self.currentLadder) or self.ground or
       (control.jumpPressed[self.player] and not (downDown or upDown)) or
-      self.transform.x <= view.x+(-self.collisionShape.w/2)+2 or
-      self.transform.x >= (view.x+view.w)+(-self.collisionShape.w/2)-2 then
+      self.transform.x <= view.x-(self.collisionShape.w/2)+2 or
+      self.transform.x >= (view.x+view.w)-(self.collisionShape.w/2)-2 then
       self.climb = false
     elseif upDown and ((self.gravity >= 0 and self.transform.y+(self.collisionShape.h*0.8) < self.currentLadder.transform.y) or 
       (self.gravity < 0 and self.transform.y+(self.collisionShape.h*0.2) > self.currentLadder.transform.y+self.currentLadder.collisionShape.h)) then
