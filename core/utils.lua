@@ -10,6 +10,20 @@ function booleanToString(v)
   end
 end
 
+function checkTrue(w)
+  for k, v in pairs(w) do
+    if v then return true end
+  end
+  return false
+end
+
+function checkFalse(w)
+  for k, v in pairs(w) do
+    if not v then return false end
+  end
+  return true
+end
+
 function table.convert2Dto1D(t)
   local tmp = {}
   for y=1, table.length(t) do

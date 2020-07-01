@@ -23,7 +23,7 @@ end
 function right:update(dt)
   for i=1, #globals.allPlayers do
     local player = globals.allPlayers[i]
-    if camera.main and player.control and not camera.main.transition and self:collision(player, 2, 0)
+    if camera.main and checkFalse(player.canControl) and not camera.main.transition and self:collision(player, 2, 0)
       and (not self.platform or (self.platform and player.onMovingFloor)) then
       camera.main.transitionDirection = "right"
       camera.main.transition = true
@@ -66,7 +66,7 @@ end
 function left:update(dt)
   for i=1, #globals.allPlayers do
     local player = globals.allPlayers[i]
-    if camera.main and player.control and not camera.main.transition
+    if camera.main and checkFalse(player.canControl) and not camera.main.transition
       and self:collision(player, -2, 0) and (not self.platform or (self.platform and player.onMovingFloor)) then
       camera.main.transitionDirection = "left"
       camera.main.transition = true
@@ -109,7 +109,7 @@ end
 function down:update(dt)
   for i=1, #globals.allPlayers do
     local player = globals.allPlayers[i]
-    if camera.main and player.control and not camera.main.transition
+    if camera.main and checkFalse(player.canControl) and not camera.main.transition
       and self:collision(player, 0, 2) and (not self.platform or (self.platform and player.onMovingFloor)) then
       camera.main.transitionDirection = "down"
       camera.main.transition = true
@@ -152,7 +152,7 @@ end
 function up:update(dt)
   for i=1, #globals.allPlayers do
     local player = globals.allPlayers[i]
-    if camera.main and player.control and not camera.main.transition
+    if camera.main and checkFalse(player.canControl) and not camera.main.transition
       and self:collision(player, 0, -2) and (not self.platform or (self.platform and player.onMovingFloor)) then
       camera.main.transitionDirection = "up"
       camera.main.transition = true
@@ -201,7 +201,7 @@ function upLadder:update(dt)
     local player = globals.allPlayers[i]
     if camera.main and not camera.main.transition and
       (self.ladder or (not self.platform or (self.platform and player.onMovingFloor))) and
-      player.control and (player.climb or player.treble == 2) and self:collision(player, 0, -2) then
+      checkFalse(player.canControl) and (player.climb or player.treble == 2) and self:collision(player, 0, -2) then
       camera.main.transitionDirection = "up"
       camera.main.transition = true
       camera.main.doScrollY = (self.scrolly~=nil) and self.scrolly or camera.main.doScrollY

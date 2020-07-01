@@ -33,7 +33,7 @@ function demoState:begin()
     
     local f, lp, lep, vol = "assets/sfx/music/cut.wav", 139666, 1830670, 0.8
     local musicTable = {f, true, lp, lep, vol}
-    local ol, oi, ov = "assets/sfx/music/cut_loop.ogg", "assets/sfx/music/cut_intro.ogg", 0.8
+    local ol, oi, ov = "assets/sfx/music/cutLoop.ogg", "assets/sfx/music/cutIntro.ogg", 0.8
     local musicTableOld = {ol, oi, ov}
     
     -- Load stage from `.tmx`...

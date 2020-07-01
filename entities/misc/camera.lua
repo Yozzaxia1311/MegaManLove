@@ -84,7 +84,7 @@ function camera:updateCam(spdx, spdy)
       if self.freeze then
         megautils.freeze(globals.allPlayers)
         for k, v in pairs(globals.allPlayers) do
-          v.control = false
+          v.canControl.trans = false
         end
       end 
       if self.player then
@@ -196,7 +196,7 @@ function camera:updateCam(spdx, spdy)
           if camera.main.freeze then
             megautils.unfreeze(globals.allPlayers)
             for k, v in pairs(globals.allPlayers) do
-              v.control = true
+              v.canControl.trans = true
             end
           end
           if camera.main.player and camera.main.player.onMovingFloor then

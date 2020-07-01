@@ -308,7 +308,7 @@ function entitysystem:update(dt)
       t.previousY = t.transform.y
       t.epX = t.previousX
       t.epY = t.previousY
-      if t.updated and not t.isRemoved and t.beforeUpdate and t:checkFalse(t.updatedSpecial) then
+      if t.updated and not t.isRemoved and t.beforeUpdate and checkFalse(t.updatedSpecial) then
         t:beforeUpdate(dt)
         if states.switched then
           return
@@ -322,7 +322,7 @@ function entitysystem:update(dt)
     t.previousY = t.transform.y
     t.epX = t.previousX
     t.epY = t.previousY
-    if t.updated and not t.isRemoved and t.update and t:checkFalse(t.updatedSpecial) then
+    if t.updated and not t.isRemoved and t.update and checkFalse(t.updatedSpecial) then
       t:update(dt)
       if states.switched then
         return
@@ -336,7 +336,7 @@ function entitysystem:update(dt)
       t.previousY = t.transform.y
       t.epX = t.previousX
       t.epY = t.previousY
-      if t.updated and not t.isRemoved and t.afterUpdate and t:checkFalse(t.updatedSpecial) then
+      if t.updated and not t.isRemoved and t.afterUpdate and checkFalse(t.updatedSpecial) then
         t:afterUpdate(dt)
         if states.switched then
           return
@@ -424,20 +424,6 @@ function basicEntity:baseRecycle()
   self.changeHealth = 0
   self.iFrame = self.maxIFrame
   self.updatedSpecial = {}
-end
-
-function basicEntity:checkTrue(w)
-  for k, v in pairs(w) do
-    if v then return true end
-  end
-  return false
-end
-
-function basicEntity:checkFalse(w)
-  for k, v in pairs(w) do
-    if not v then return false end
-  end
-  return true
 end
 
 function basicEntity:hurt(t, h, f, single)

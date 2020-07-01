@@ -1,160 +1,230 @@
-function cmdHelp(cmd)
-  if not cmd or not cmd[1] or not cmd[2] then
-    cmd = {"help", "help"}
-  end
-  if concmd.isValid(cmd[2]) then
-    if concmd[cmd[2]].helptext then
-      console.print(" - "..concmd[cmd[2]].helptext)
+convar["cl_test"] = {
+  helptext = "convar test",
+  flags = {"test"},
+  value = 1,
+}
+convar["cheats"] = {
+  helptext = "enable cheats",
+  flags = {},
+  value = 0,
+}
+convar["fullscreen"] = {
+  helptext = "fullscreen mode",
+  flags = {"client"},
+  value = 0,
+  fun = function(arg) local n = numberSanitize(arg) love.window.setFullscreen(n == 1) end
+}
+convar["framerate"] = {
+  helptext = "framerate",
+  flags = {"client"},
+  value = 60,
+  fun = function(arg) local n = numberSanitize(arg) framerate = 1/n end
+}
+convar["volume"] = {
+  helptext = "game volume",
+  flags = {"archive"},
+  value = 1,
+  fun = function(arg) local n = numberSanitize(arg) love.audio.setVolume(n) end
+}
+convar["showcollision"] = {
+  helptext = "draw hitboxes",
+  flags = {"client"},
+  value = 0,
+  fun = function(arg) local n = numberSanitize(arg) entitysystem.drawCollision = n == 1 end
+}
+
+convar["showfps"] = {
+  helptext = "draw framerate",
+  flags = {"client"},
+  value = 0,
+  fun = function(arg) local n = numberSanitize(arg) showFPS = n == 1 end
+}
+
+convar["showentitycount"] = {
+  helptext = "draw entity count",
+  flags = {"client"},
+  value = 0,
+  fun = function(arg) local n = numberSanitize(arg) showEntityCount = n == 1 end
+}
+
+convar["infinitelives"] = {
+  helptext = "never gameover",
+  flags = {"cheat"},
+  value = 0,
+  fun = function(arg) local n = numberSanitize(arg) globals.infiniteLives = n == 1 end
+}
+
+convar["diff"] = {
+  helptext = "difficulty (easy, normal, hard, etc.)",
+  flags = {"cheat"},
+  value = "normal",
+}
+
+convar["scale"] = {
+  helptext = "set scale of the window",
+  flags = {"client"},
+  value = math.ceil(love.graphics.getWidth() / view.w),
+  fun = function(arg)
+      local n = math.ceil(numberSanitize(arg))
+      local w, h = love.graphics.getDimensions()
+      
+      if n <= 0 then
+        convar.setValue("scale", convar.getValue("scale"), false)
+        console.print("window scale must be a positive integer")
+      else
+        if view.w * n ~= love.graphics.getWidth() or view.h * n ~= love.graphics.getHeight() then
+          local width, height = love.graphics.getDimensions()
+          love.window.updateMode(n * view.w, n * view.h)
+        end
+      end
     end
-  elseif convar.isValid(cmd[2]) then
-    if convar[cmd[2]].helptext then
-      console.print(" - "..convar[cmd[2]].helptext)
-    end
-  else
-    console.print("Unknown command: "..cmd[2])
-  end
-end
+}
+
 concmd["help"] = {
   helptext = "get info about commands",
   flags = {},
-  fun = cmdHelp,
+  fun = function(cmd)
+      if not cmd or not cmd[1] or not cmd[2] then
+        cmd = {"help", "help"}
+      end
+      if concmd.isValid(cmd[2]) then
+        if concmd[cmd[2]].helptext then
+          console.print(" - "..concmd[cmd[2]].helptext)
+        end
+      elseif convar.isValid(cmd[2]) then
+        if convar[cmd[2]].helptext then
+          console.print(" - "..convar[cmd[2]].helptext)
+        end
+      else
+        console.print("Unknown command: "..cmd[2])
+      end
+    end
 }
 
-function cmdRec(cmd)
-  if states.recordOnSwitch then
-    states.recordOnSwitch = false
-    console.print("Recording disabled")
-  else
-    states.recordOnSwitch = true
-    console.print("Recording on state switch...")
-  end
-end
 concmd["rec"] = {
   helptext = "record after the state switches",
   flags = {},
-  fun = cmdRec,
+  fun = function(cmd)
+      if states.recordOnSwitch then
+        states.recordOnSwitch = false
+        console.print("Recording disabled")
+      else
+        states.recordOnSwitch = true
+        console.print("Recording on state switch...")
+      end
+    end
 }
 
-function cmdRecEnd(cmd)
-  control.recordInput = false
-  console.print("Recording ended")
-  console.print("Remember to save with recsave")
-end
 concmd["recend"] = {
   helptext = "stop recording",
   flags = {},
-  fun = cmdRecEnd,
+  fun = function(cmd)
+      control.recordInput = false
+      console.print("Recording ended")
+      console.print("Remember to save with recsave")
+    end
 }
 
-function cmdRecSave(cmd)
-  if not cmd[2] then return end
-  if not control.recordInput and #control.record > 0 then
-    control.recordName = cmd[2]
-    control.finishRecord()
-    console.print("Recording saved")
-  else
-    console.print("No recording ready to save")
-  end
-end
 concmd["recsave"] = {
-  helptext = "stop recording",
+  helptext = "save recording",
   flags = {},
-  fun = cmdRecSave,
+  fun = function(cmd)
+      if not cmd[2] then return end
+      if not control.recordInput and #control.record > 0 then
+        control.recordName = cmd[2]
+        control.finishRecord()
+        console.print("Recording saved")
+      else
+        console.print("No recording ready to save")
+      end
+    end
 }
 
-function cmdRecDel(cmd)
-  if not cmd[2] then return end
-  if not love.filesystem.getInfo(cmd[2] .. ".rd") then
-    console.print("No such record file \""..cmd[2].."\"")
-  else
-    love.filesystem.remove(cmd[2] .. ".rd")
-    console.print("Recording deleted")
-  end
-end
 concmd["recdel"] = {
   helptext = "delete recording",
   flags = {},
-  fun = cmdRecDel,
+  fun = function(cmd)
+      if not cmd[2] then return end
+      if not love.filesystem.getInfo(cmd[2] .. ".rd") then
+        console.print("No such record file \""..cmd[2].."\"")
+      else
+        love.filesystem.remove(cmd[2] .. ".rd")
+        console.print("Recording deleted")
+      end
+    end
 }
 
-function cmdRecOpen(cmd)
-  if not cmd[2] then return end
-  if love.filesystem.getInfo(cmd[2] .. ".rd") then
-    states.openRecord = cmd[2] .. ".rd"
-    megautils.add(fade, true, nil, nil, function(s)
-          megautils.stopMusic()
-          love.audio.stop()
-          control.updateDemoFunc = function()
-              return console.state == 1
-            end
-          megautils.gotoState()
-        end)
-    console.close()
-    console.y = -112*2
-  else
-    console.print("No such record file \""..cmd[2].."\"")
-  end
-end
 concmd["recopen"] = {
-  helptext = "stop recording",
+  helptext = "open recording file",
   flags = {},
-  fun = cmdRecOpen,
+  fun = function(cmd)
+      if not cmd[2] then return end
+      if love.filesystem.getInfo(cmd[2] .. ".rd") then
+        states.openRecord = cmd[2] .. ".rd"
+        megautils.add(fade, true, nil, nil, function(s)
+              megautils.stopMusic()
+              love.audio.stop()
+              control.updateDemoFunc = function()
+                  return console.state == 1
+                end
+              megautils.gotoState()
+            end)
+        console.close()
+        console.y = -112*2
+      else
+        console.print("No such record file \""..cmd[2].."\"")
+      end
+    end
 }
 
-function cmdDefBinds(cmd)
-  control.defaultBinds()
-  console.print("Now using default input binds")
-end
 concmd["defbinds"] = {
   helptext = "load default input binds",
-  flags = {},
-  fun = cmdDefBinds,
+  flags = {"client"},
+  fun = function(cmd)
+      control.defaultBinds()
+      console.print("Now using default input binds")
+    end
 }
 
-function cmdOpenDir(cmd)
-  love.system.openURL(love.filesystem.getSaveDirectory())
-end
 concmd["opendir"] = {
   helptext = "open save directory",
-  flags = {},
-  fun = cmdOpenDir,
+  flags = {"client"},
+  fun = function(cmd) love.system.openURL(love.filesystem.getSaveDirectory()) end
 }
 
-function cmdRecs(cmd)
-  local check
-  if cmd[2] then
-    check = cmd[2]
-    if not love.filesystem.getInfo(check) then console.print("No such directory \""..cmd[2].."\"") return end
-  end
-  local result = iterateDirs(function(f)
-      return f:sub(-3) == ".rd"
-    end, check)
-  if #result == 0 then
-    if check then
-      console.print("No recordings in directory \""..cmd[2].."\"")
-    else
-      console.print("No recordings exist")
-    end
-    return
-  end
-  for i=1, #result do
-    console.print(result[i]:sub(1, -4))
-  end
-end
 concmd["recs"] = {
   helptext = "gives a list of recordings",
   flags = {},
-  fun = cmdRecs,
+  fun = function(cmd)
+      local check
+      if cmd[2] then
+        check = cmd[2]
+        if not love.filesystem.getInfo(check) then console.print("No such directory \""..cmd[2].."\"") return end
+      end
+      local result = iterateDirs(function(f)
+          return f:sub(-3) == ".rd"
+        end, check)
+      if #result == 0 then
+        if check then
+          console.print("No recordings in directory \""..cmd[2].."\"")
+        else
+          console.print("No recordings exist")
+        end
+        return
+      end
+      for i=1, #result do
+        console.print(result[i]:sub(1, -4))
+      end
+    end
 }
 
-function cmdEcho(cmd)
-  if not cmd[2] then return end
-  console.print(cmd[2])
-end
 concmd["echo"] = {
   helptext = "print to console",
   flags = {},
-  fun = cmdEcho,
+  fun = function(cmd)
+      if not cmd[2] then return end
+      console.print(cmd[2])
+    end
 }
 
 concmd["quit"] = {
@@ -164,291 +234,267 @@ concmd["quit"] = {
 }
 concmd["exit"] = concmd["quit"]
 
-function cmdState(cmd)
-  if not cmd[2] then return end
-  local map
-  if love.filesystem.getInfo(cmd[2] .. ".state.lua") then
-    map = cmd[2] .. ".state.lua"
-  end
-  if map == nil then console.print("No such state \""..cmd[2].."\"") return end
-  love.audio.stop()
-  megautils.stopMusic()
-  megautils.resetGameObjects = true
-  megautils.reloadState = true
-  if cmd[3] then globals.overrideCheckpoint = cmd[3] end
-  megautils.gotoState(map)
-end
 concmd["state"] = {
   helptext = "load a state",
   flags = {"cheat"},
-  fun = cmdState,
+  fun = function(cmd)
+      if not cmd[2] then return end
+      local map
+      if love.filesystem.getInfo(cmd[2] .. ".state.lua") then
+        map = cmd[2] .. ".state.lua"
+      end
+      if map == nil then console.print("No such state \""..cmd[2].."\"") return end
+      love.audio.stop()
+      megautils.stopMusic()
+      megautils.resetGameObjects = true
+      megautils.reloadState = true
+      if cmd[3] then globals.overrideCheckpoint = cmd[3] end
+      megautils.gotoState(map)
+    end
 }
 
-function cmdStates(cmd)
-  local check
-  if cmd[2] then
-    check = cmd[2]
-    if not love.filesystem.getInfo(check) then console.print("No such directory \""..cmd[2].."\"") return end
-  end
-  local result = iterateDirs(function(f)
-      return f:sub(-10) == ".state.lua"
-    end, check)
-  if #result == 0 then
-    if check then
-      console.print("No states in directory \""..cmd[2].."\"")
-    else
-      console.print("No states exist")
-    end
-    return
-  end
-  for i=1, #result do
-    console.print(result[i]:sub(1, -11))
-  end
-end
 concmd["states"] = {
   helptext = "gives a list of states",
   flags = {},
-  fun = cmdStates,
+  fun = function(cmd)
+      local check
+      if cmd[2] then
+        check = cmd[2]
+        if not love.filesystem.getInfo(check) then console.print("No such directory \""..cmd[2].."\"") return end
+      end
+      local result = iterateDirs(function(f)
+          return f:sub(-10) == ".state.lua"
+        end, check)
+      if #result == 0 then
+        if check then
+          console.print("No states in directory \""..cmd[2].."\"")
+        else
+          console.print("No states exist")
+        end
+        return
+      end
+      for i=1, #result do
+        console.print(result[i]:sub(1, -11))
+      end
+    end
 }
 
-function cmdCheckpoint(cmd)
-  if not cmd[2] then return end
-  globals.checkpoint = cmd[2]
-end
 concmd["checkpoint"] = {
   helptext = "set the checkpoint",
   flags = {"cheat"},
-  fun = cmdCheckpoint,
+  fun = function(cmd)
+      if not cmd[2] then return end
+      globals.checkpoint = cmd[2]
+    end
 }
 
-function cmdCheckpoints(cmd)
-  local result = {globals.checkpoint}
-  section.iterate(function(e)
-      if e:is(checkpoint) and e.name ~= globals.checkpoint then
-        result[#result+1] = e.name
-      end
-    end)
-  for i=1, #result do
-    console.print(result[i])
-  end
-end
 concmd["checkpoints"] = {
   helptext = "gives a list of checkpoints",
   flags = {},
-  fun = cmdCheckpoints,
+  fun = function(cmd)
+      local result = {globals.checkpoint}
+      section.iterate(function(e)
+          if e:is(checkpoint) and e.name ~= globals.checkpoint then
+            result[#result+1] = e.name
+          end
+        end)
+      for i=1, #result do
+        console.print(result[i])
+      end
+    end
 }
 
-function cmdGivehealth(cmd)
-  if not cmd[2] then return end
-  for i=1, #globals.allPlayers do
-    globals.allPlayers[i].iFrame = globals.allPlayers[i].maxIFrame
-    globals.allPlayers[i]:hurt({globals.allPlayers[i]}, numberSanitize(cmd[2]))
-  end
-end
-concmd["givehealth"] = {
-  helptext = "negatively and positively add health",
+concmd["hurt"] = {
+  helptext = "hurt all players",
   flags = {"cheat"},
-  fun = cmdGivehealth,
+  fun = function(cmd)
+      if not cmd[2] then return end
+      for i=1, #globals.allPlayers do
+        globals.allPlayers[i].iFrame = globals.allPlayers[i].maxIFrame
+        globals.allPlayers[i]:hurt({globals.allPlayers[i]}, -numberSanitize(cmd[2]))
+      end
+    end
 }
 
-function cmdGrav(cmd)
-  if not cmd[2] then return end
-  for i=1, #globals.allPlayers do
-    globals.allPlayers[i]:setGravityMultiplier("global", numberSanitize(cmd[2]))
-  end
-end
 concmd["grav"] = {
   helptext = "set gravity multiplier",
   flags = {"cheat"},
-  fun = cmdGrav,
+  fun = function(cmd)
+      if not cmd[2] then return end
+      for i=1, #globals.allPlayers do
+        globals.allPlayers[i]:setGravityMultiplier("global", numberSanitize(cmd[2]))
+      end
+    end
 }
 
-function cmdFlip(cmd)
-  for i=1, #globals.allPlayers do
-    globals.allPlayers[i]:setGravityMultiplier("gravityFlip", -globals.allPlayers[i].gravityMultipliers.gravityFlip)
-  end
-  if globals.mainPlayer then
-    megautils.playSound("gravityFlip")
-  end
-end
 concmd["flip"] = {
   helptext = "flip gravity",
   flags = {"cheat"},
-  fun = cmdFlip,
+  fun = function(cmd)
+      for i=1, #globals.allPlayers do
+        globals.allPlayers[i]:setGravityMultiplier("gravityFlip", -globals.allPlayers[i].gravityMultipliers.gravityFlip)
+        if i == 1 then
+          megautils.playSound("gravityFlip")
+        end
+      end
+    end
 }
 
-function cmdKill(cmd)
-  for i=1, #globals.allPlayers do
-    globals.allPlayers[i].iFrame = globals.allPlayers[i].maxIFrame
-    globals.allPlayers[i]:hurt({globals.allPlayers[i]}, -9999)
-  end
-end
 concmd["kill"] = {
-  helptext = "suicide",
+  helptext = "kill all players",
   flags = {},
-  fun = cmdKill,
+  fun = function(cmd)
+      for i=1, #globals.allPlayers do
+        globals.allPlayers[i].iFrame = globals.allPlayers[i].maxIFrame
+        globals.allPlayers[i]:hurt({globals.allPlayers[i]}, -9999)
+      end
+    end
 }
 
-function cmdGetpos(cmd)
-  if globals.mainPlayer then
-    console.print(tostring(globals.mainPlayer.transform.x)..", "..tostring(globals.mainPlayer.transform.y))
-  end
-end
 concmd["getpos"] = {
   helptext = "print player position",
   flags = {},
-  fun = cmdGetpos,
+  fun = function(cmd)
+      if globals.mainPlayer then
+        console.print(tostring(globals.mainPlayer.transform.x) .. ", " .. tostring(globals.mainPlayer.transform.y))
+      end
+    end
 }
 
-function cmdClear(cmd)
-  console.lines = {}
-end
 concmd["clear"] = {
   helptext = "clear the screen and line history",
   flags = {},
-  fun = cmdClear,
+  fun = function(cmd) console.lines = {} end
 }
 
-function cmdLockCheats(cmd)
-  if convar.getValue("cheats") ~= 0 then
-    convar.setValue("cheats", 0)
-  end
-  if convar.isValid("cheats") and not table.contains(convar["cheats"].flags, "cheat") then table.insert(convar["cheats"].flags, "cheat") end
-end
 concmd["lockcheats"] = {
   helptext = "lock cheats for the rest of the game",
   flags = {},
-  fun = cmdLockCheats,
+  fun = function(cmd)
+      if convar.getValue("cheats") ~= 0 then
+        convar.setValue("cheats", 0)
+      end
+      if convar.isValid("cheats") and not table.contains(convar["cheats"].flags, "cheat") then
+        table.insert(convar["cheats"].flags, "cheat")
+      end
+    end
 }
 
-function cmdGive(cmd)
-  if globals.mainPlayer and cmd[2] then
-    addobjects.add({{name=cmd[2], x=globals.mainPlayer.transform.x+numberSanitize(cmd[3]),
-          y=globals.mainPlayer.transform.y+numberSanitize(cmd[4])}})
-  end
-end
 concmd["give"] = {
   helptext = "spawn registered entity",
   flags = {"cheat"},
-  fun = cmdGive,
+  fun = function(cmd)
+      if globals.mainPlayer and cmd[2] then
+        addobjects.add({{name=cmd[2], x=globals.mainPlayer.transform.x+numberSanitize(cmd[3]),
+          y=globals.mainPlayer.transform.y+numberSanitize(cmd[4])}})
+      end
+    end
 }
 
-function cmdRunLua(cmd)
-  if not cmd[2] then return end
-  if not love.filesystem.getInfo(cmd[2]) then
-    console.print("\""..cmd[2].."\" does not exist")
-    return
-  end
-  love.filesystem.load(cmd[2])()
-end
 concmd["runlua"] = {
   helptext = "run a lua file",
   flags = {"cheat"},
-  fun = cmdRunLua,
+  fun = function(cmd)
+      if not cmd[2] then return end
+      if not love.filesystem.getInfo(cmd[2]) then
+        console.print("\""..cmd[2].."\" does not exist")
+        return
+      end
+      love.filesystem.load(cmd[2])()
+    end
 }
 
-function cmdReset(cmd)
-  megautils.resetGame()
-end
 concmd["reset"] = {
   helptext = "reset the game",
   flags = {},
-  fun = cmdReset,
+  fun = function(cmd) megautils.resetGame() end
 }
 
-function cmdExec(cmd)
-  if not cmd[2] then return end
-  if not love.filesystem.getInfo("cfg/"..cmd[2]..".cfg") then
-    console.print("\""..cmd[2]..".cfg\" does not exist")
-    return
-  end
-  local cfg = love.filesystem.lines("cfg/"..cmd[2]..".cfg")
-  for line in cfg do
-    --console.print(line)
-    console.parse(line)
-  end
-end
 concmd["exec"] = {
   helptext = "execute a config file",
   flags = {},
-  fun = cmdExec,
-}
-
-function cmdFindcvar(cmd)
-  local result = {}
-  local cut = 1
-  local step = 0
-  for k, v in pairs(convar) do
-    if convar.isValid(k) then
-      if not result[cut] then result[cut] = "" end
-      result[cut] = result[cut] .. (result[cut] == "" and "" or ", ") .. k
-      step = step + 1
-      if step == 4 then
-        step = 0
-        cut = cut + 1
+  fun = function(cmd)
+      if not cmd[2] then return end
+      if not love.filesystem.getInfo("cfg/"..cmd[2]..".cfg") then
+        console.print("\""..cmd[2]..".cfg\" does not exist")
+        return
+      end
+      local cfg = love.filesystem.lines("cfg/"..cmd[2]..".cfg")
+      for line in cfg do
+        console.parse(line)
       end
     end
-  end
-  for k, v in ipairs(result) do
-    if k ~= #result then
-      result[k] = result[k] .. ","
-    end
-  end
-  for k, v in ipairs(result) do
-    console.print(v)
-  end
-end
+}
+
 concmd["findcvar"] = {
-  helptext = "find convars by substring",
+  helptext = "gives a list of console variables",
   flags = {},
-  fun = cmdFindcvar,
-}
-
-function cmdFindcmd(cmd)
-  local result = {}
-  local cut = 1
-  local step = 0
-  for k, v in pairs(concmd) do
-    if concmd.isValid(k) then
-      if not result[cut] then result[cut] = "" end
-      result[cut] = result[cut] .. (result[cut] == "" and "" or ", ") .. k
-      step = step + 1
-      if step == 4 then
-        step = 0
-        cut = cut + 1
+  fun = function(cmd)
+      local result = {}
+      local cut = 1
+      local step = 0
+      for k, v in pairs(convar) do
+        if convar.isValid(k) then
+          if not result[cut] then result[cut] = "" end
+          result[cut] = result[cut] .. (result[cut] == "" and "" or ", ") .. k
+          step = step + 1
+          if step == 4 then
+            step = 0
+            cut = cut + 1
+          end
+        end
+      end
+      for k, v in ipairs(result) do
+        if k ~= #result then
+          result[k] = result[k] .. ","
+        end
+      end
+      for k, v in ipairs(result) do
+        console.print(v)
       end
     end
-  end
-  for k, v in ipairs(result) do
-    if k ~= #result then
-      result[k] = result[k] .. ","
-    end
-  end
-  for k, v in ipairs(result) do
-    console.print(v)
-  end
-end
-concmd["findcmd"] = {
-  helptext = "find concommands by substring",
-  flags = {},
-  fun = cmdFindcmd,
 }
 
-function cmdWait(cmd)
-  console.wait = console.wait + 1
-end
+concmd["findcmd"] = {
+  helptext = "gives a list of console commands",
+  flags = {},
+  fun = function(cmd)
+      local result = {}
+      local cut = 1
+      local step = 0
+      for k, v in pairs(concmd) do
+        if concmd.isValid(k) then
+          if not result[cut] then result[cut] = "" end
+          result[cut] = result[cut] .. (result[cut] == "" and "" or ", ") .. k
+          step = step + 1
+          if step == 4 then
+            step = 0
+            cut = cut + 1
+          end
+        end
+      end
+      for k, v in ipairs(result) do
+        if k ~= #result then
+          result[k] = result[k] .. ","
+        end
+      end
+      for k, v in ipairs(result) do
+        console.print(v)
+      end
+    end
+}
+
 concmd["wait"] = {
   helptext = "delay console execution by 1 frame",
   flags = {},
-  fun = cmdWait,
+  fun = function(cmd) console.wait = console.wait + 1 end
 }
 
-function cmdAlias(cmd)
-  if not cmd[2] or not cmd[3] then return end
-  console.aliases[cmd[2]] = cmd[3]
-end
 concmd["alias"] = {
   helptext = "alias a command",
   flags = {},
-  fun = cmdAlias,
+  fun = function(cmd)
+      if not cmd[2] or not cmd[3] then return end
+      console.aliases[cmd[2]] = cmd[3]
+    end
 }

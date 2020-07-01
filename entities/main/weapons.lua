@@ -628,7 +628,7 @@ function rushJet:update(dt)
     self.timer = math.min(self.timer+1, 60)
     if self.timer == 60 then
       self.timer = 0
-      self.wpn.energy[self.wpn.currentSlot] = self.wpn.energy[self.wpn.currentSlot] - 1
+      self.wpn:updateCurrent(self.wpn:currentWE() - 1)
     end
   elseif self.s == 4 then
     if self.anims.spawnLand.looped then
@@ -779,7 +779,7 @@ function rushCoil:update(dt)
       end
       self.s = 4
       self.c = "coil"
-      self.wpn.energy[self.wpn.currentSlot] = self.wpn.energy[self.wpn.currentSlot] - 7
+      self.wpn:updateCurrent(self.wpn:currentWE() - 7)
     end
   elseif self.s == 4 then
     collision.doGrav(self)

@@ -474,11 +474,11 @@ function control.drawDemo()
     if control.demo and math.wrap(control.recPos, 0, 40) < 20 then
       love.graphics.setFont(mmFont)
       love.graphics.setColor(1, 1, 1, 1)
-      love.graphics.print("replay", view.w - 64, view.h - 16)
+      love.graphics.print("REPLAY", view.w - 64, view.h - 16)
     elseif control.recordInput then
       love.graphics.setFont(mmFont)
       love.graphics.setColor(1, 1, 1, 0.8)
-      love.graphics.print("recording", view.w - 88, view.h - 16)
+      love.graphics.print("RECORDING", view.w - 88, view.h - 16)
     end
   end
 end

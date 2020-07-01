@@ -45,7 +45,7 @@ function title:update(dt)
               if control.demo and math.wrap(control.recPos, 0, 40) < 20 then
                 love.graphics.setFont(mmFont)
                 love.graphics.setColor(1, 1, 1, 1)
-                love.graphics.print("demo", view.w - 48, view.h - 16)
+                love.graphics.print("DEMO", view.w - 48, view.h - 16)
               end
             end
           control.returning = function()

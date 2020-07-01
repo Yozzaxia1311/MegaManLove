@@ -21,13 +21,17 @@ function save.createDirChain(p)
 end
 
 function save.save(file, data)
-  local sv = binser.serialize(data)
+  local sv = lualzw.compress(binser.serialize(data))
   save.createDirChain(file)
   love.filesystem.write(file, sv)
 end
 
 function save.load(file)
   local sv = love.filesystem.read(file)
+  if not sv then
+    return nil
+  end
+  sv = lualzw.decompress(sv)
   if not sv then
     return nil
   end

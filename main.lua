@@ -10,14 +10,13 @@ function initEngine()
   control.init()
   globals = {}
   love.filesystem.load("requires.lua")()
-  
   view.init(256, 224, 1)
-  
-  mmFont = love.graphics.newFont("assets/misc/mm.ttf", 8)
-  
   cscreen.init(view.w*view.scale, view.h*view.scale, true)
   
+  megautils.runFile("core/commands.lua")
+  
   -- Game globals.
+  mmFont = love.graphics.newFont("assets/misc/mm.ttf", 8)
   globals.mainPlayer = nil
   globals.player = {"mega", "proto", "bass", "roll"}
   globals.allPlayers = {}
@@ -64,6 +63,7 @@ function love.load()
   love.graphics.setDefaultFilter("nearest", "nearest")
   consoleFont = love.graphics.getFont() -- needs to be preserved
   altEnterOnce = false
+  scaleOnce = false
   deadZone = 0.8
   maxPlayerCount = 4
   useConsole = love.keyboard
@@ -81,6 +81,9 @@ function love.load()
   local data = save.load("main.sav") or {}
   if data.fullscreen then
     megautils.setFullscreen(true)
+  end
+  if data.scale then
+    megautils.setScale(data.scale)
   end
   
   megautils.gotoState("states/disclaimer.state.lua")
@@ -126,6 +129,7 @@ function love.keypressed(k, s, r)
     globals.lastKeyPressed = {"keyboard", k}
   end
   globals.keyboardCheck[k] = 5
+  
   control.anyPressed = true
 end
 
@@ -164,7 +168,7 @@ function love.textinput(k)
 end
 
 function love.update(dt)
-  if love.keyboard then
+  if love.keyboard and not (useConsole and console.state == 1) then
     if (love.keyboard.isDown("ralt") or love.keyboard.isDown("lalt")) and love.keyboard.isDown("return") then
       if not altEnterOnce then
         megautils.setFullscreen(not megautils.getFullscreen())
@@ -173,11 +177,36 @@ function love.update(dt)
         save.save("main.sav", data)
       end
       altEnterOnce = 10
-      return
-    elseif altEnterOnce then
+    end
+    
+    if altEnterOnce then
       altEnterOnce = altEnterOnce - 1
       if altEnterOnce == 0 then
         altEnterOnce = false
+      end
+      return
+    end
+    
+    for i=1, 9 do
+      local k = tostring(i)
+      if love.keyboard.isDown(k) or love.keyboard.isDown("kp" .. k) then
+        if view.w * i ~= love.graphics.getWidth() or
+          view.h * i ~= love.graphics.getHeight() then
+          if not scaleOnce then
+            megautils.setScale(i)
+            local data = save.load("main.sav") or {}
+            data.scale = megautils.getScale()
+            save.save("main.sav", data)
+          end
+          scaleOnce = 10
+        end
+      end
+    end
+    
+    if scaleOnce then
+      scaleOnce = scaleOnce - 1
+      if scaleOnce == 0 then
+        scaleOnce = false
       end
       return
     end
@@ -262,11 +291,23 @@ if isWeb then
 
 else
 
-  -- Love2D doesn't fire the resize event when exiting fullscreen, so here's a hack.
+  -- Love2D doesn't fire the resize event for several functions, so here's some hacks.
   local lf = love.window.setFullscreen
+  local lsm = love.window.setMode
+  local lum = love.window.updateMode
 
   function love.window.setFullscreen(s)
     lf(s)
+    love.resize(love.graphics.getDimensions())
+  end
+  
+  function love.window.setMode(w, h, f)
+    lsm(w, h, f)
+    love.resize(love.graphics.getDimensions())
+  end
+  
+  function love.window.updateMode(w, h, f)
+    lum(w, h, f)
     love.resize(love.graphics.getDimensions())
   end
 

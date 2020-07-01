@@ -27,7 +27,7 @@ function timer.winCutscene(func)
         megautils.stopMusic()
         globals.mainPlayer:resetStates()
         globals.mainPlayer.velocity.velx = 0
-        globals.mainPlayer.control = false
+        globals.mainPlayer.canControl.global = false
         globals.mainPlayer.doAnimation = false
         globals.mainPlayer.canSwitchWeapons.global = false
         if globals.mainPlayer.slide then
@@ -56,6 +56,8 @@ function timer.winCutscene(func)
       s.timer = math.min(s.timer+1, 80)
       if s.timer == 80 then
         s.state = -1
+        banner.colorOne = megaMan.weaponHandler[1].colorOne[0]
+        banner.colorTwo = megaMan.weaponHandler[1].colorTwo[0]
         megautils.add(fade, true, nil, nil, func)
       end
     end
@@ -71,7 +73,7 @@ function timer.absorbCutscene(func, music)
           s.timer = 0
           s.to = (view.x+view.w/2)-globals.mainPlayer.collisionShape.w/2
           globals.mainPlayer:resetStates()
-          globals.mainPlayer.control = false
+          globals.mainPlayer.canControl.global = false
           globals.mainPlayer.doAnimation = false
           globals.mainPlayer.canSwitchWeapons.global = false
           if not globals.mainPlayer.ground then

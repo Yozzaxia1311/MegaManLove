@@ -9,7 +9,7 @@ function stageSelectState:begin()
   megautils.loadResource("assets/sfx/selected.ogg", "selected")
   megautils.loadResource("assets/sfx/cursorMove.ogg", "cursorMove")
   if isWeb then
-    megautils.playMusicWithSeperateIntroFile("assets/sfx/music/select_loop.ogg", "assets/sfx/music/select_intro.ogg")
+    megautils.playMusicWithSeperateIntroFile("assets/sfx/music/selectLoop.ogg", "assets/sfx/music/selectIntro.ogg")
   else
     megautils.playMusic("assets/sfx/music/select.wav", true, 80724, 315541)
   end

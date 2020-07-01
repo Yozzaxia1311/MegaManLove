@@ -70,8 +70,8 @@ end
 function rebinder:draw()
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.setFont(mmFont)
-  love.graphics.printf("press the player " .. tostring((self.step/11)+1) .. " \n'"
-    .. self.keyNames[self.currentKey] .. "'!" ..
+  love.graphics.printf("press the player " .. tostring((self.step/11)+1) .. " \n\""
+    .. self.keyNames[self.currentKey] .. "\"!" ..
     "\n\n(press " .. (isWeb and "1" or "escape") .. " to leave)", self.transform.x, self.transform.y, 200, "center")
 end
 

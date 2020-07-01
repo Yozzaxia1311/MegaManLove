@@ -43,11 +43,11 @@ end
 
 function met:healthChanged(o, c, i)
   if o.dinked == 1 then return end
-  if c < 0 and not self:checkTrue(self.canBeInvincible) and not o:is(megaChargedBuster) then
+  if c < 0 and not checkTrue(self.canBeInvincible) and not o:is(megaChargedBuster) then
     megautils.removeq(o)
   end
   if self.maxIFrame ~= self.iFrame then return end
-  if self:checkTrue(self.canBeInvincible) and o.dink then
+  if checkTrue(self.canBeInvincible) and o.dink then
     o:dink(self)
     return
   end

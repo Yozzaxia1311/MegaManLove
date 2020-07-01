@@ -107,7 +107,7 @@ function mmWeaponsMenu:new(w, h, p)
 end
 
 function mmWeaponsMenu:removed()
-  megautils.unloadResource("cursorMove")
+  megautils.unfreeze(nil, "pause")
 end
 
 function mmWeaponsMenu:addIcon(id)
@@ -154,21 +154,18 @@ function mmWeaponsMenu:update(dt)
       for k, v in pairs(self.fills) do
         for i, j in pairs(v) do
           if j.id ~= 0 then
-            self.w.energy[j.id] = j.health
+            self.w:instantUpdate(j.health, j.id)
           else
-            self.h.health = j.health
+            self.h:instantUpdate(j.health)
           end
         end 
       end
       local ff = megautils.add(fade, true, nil, nil, function(s)
-            megautils.removeq(self)
-            megautils.removeq(s)
-            megautils.add(fade, false, nil, nil, fade.remove)
-            megautils.unfreeze(nil, "pause")
-          end)
+          megautils.removeq(self)
+          megautils.removeq(s)
+          megautils.add(fade, false, nil, nil, fade.remove)
+        end)
       megautils.playSound("selected")
-      megautils.unloadResource("weaponSelectBG")
-      megautils.unloadResource("cursorMove")
       return
     elseif control.rightPressed[self.player] then
       self.x = math.clamp(self.x+1, 1, 2)
@@ -279,8 +276,7 @@ function mmWeaponsMenu:update(dt)
     local olx, oly = self.x, self.y
     if control.startPressed[self.player] then
       if self.x == 1 and globals.eTanks > 0 then
-        self.fills[1][1].change = self.h.segments * 4
-        self.fills[1][1]:updateThis()
+        self.fills[1][1]:updateThis(self.h.segments * 4)
         self.changing = "health"
         globals.eTanks = math.clamp(globals.eTanks-1, 0, 9)
       elseif self.x == 2 and globals.wTanks > 0 then
@@ -288,8 +284,7 @@ function mmWeaponsMenu:update(dt)
         for k, v in pairs(self.fills) do
           for i, j in pairs(v) do
             if j.id ~= 0 then
-              j.change = self.w.segments[j.id] * 4
-              j:updateThis()
+              j:updateThis(self.w.segments[j.id] * 4)
             end
           end
         end

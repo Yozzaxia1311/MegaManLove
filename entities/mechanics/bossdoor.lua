@@ -115,7 +115,7 @@ function bossDoor:update(dt)
     (self.transform.x+self.collisionShape.w > camera.main.scrollx+camera.main.scrollw and self.dir == "right") or
     (self.transform.y < camera.main.scrolly and self.dir == "up") or
     (self.transform.y+self.collisionShape.h > camera.main.scrolly+camera.main.scrollh and self.dir == "down")) then
-    self.canWalkThrough = not self:checkTrue(self.isLocked)
+    self.canWalkThrough = not checkTrue(self.isLocked)
   else
     self.canWalkThrough = false
   end
@@ -124,12 +124,12 @@ function bossDoor:update(dt)
     if camera.main and not camera.main.transition then
       for i=1, #globals.allPlayers do
         local player = globals.allPlayers[i]
-        if player.control and self:collision(player) then
+        if checkFalse(player.canControl) and self:collision(player) then
           megautils.loadResource("assets/sfx/bossDoor.ogg", "bossDoorSfx")
           self.player = player
           self.state = 1
           for j=1, #globals.allPlayers do
-            globals.allPlayers[j].control = false
+            globals.allPlayers[j].canControl.trans = false
             globals.allPlayers[j].doAnimation = false
           end
           megautils.freeze(globals.allPlayers)
@@ -211,7 +211,7 @@ function bossDoor:update(dt)
         camera.main.tweenFinished = false
         megautils.unfreeze(globals.allPlayers)
         for i=1, #globals.allPlayers do
-          globals.allPlayers[i].control = true
+          globals.allPlayers[i].canControl.trans = true
           globals.allPlayers[i].doAnimation = true
         end
         camera.main.once = false

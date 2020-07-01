@@ -21,7 +21,7 @@ function mmMusic:getVolume()
 end
 
 function mmMusic:stopped()
-  return self.musicLoop:isStopped()
+  return not self.musicLoop:isPlaying()
 end
 
 function mmMusic:unpause()

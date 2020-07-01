@@ -33,67 +33,6 @@ end
 
 convar = {}
 concmd = {}
-convar["cl_test"] = {
-  helptext = "convar test",
-  flags = {"test"},
-  value = 1,
-}
-convar["cheats"] = {
-  helptext = "enable cheats",
-  flags = {},
-  value = 0,
-}
-convar["fullscreen"] = {
-  helptext = "fullscreen mode",
-  flags = {"client"},
-  value = 0,
-  fun = function(arg) local n = numberSanitize(arg) love.window.setFullscreen(n == 1) end
-}
-convar["framerate"] = {
-  helptext = "framerate",
-  flags = {"client"},
-  value = 60,
-  fun = function(arg) local n = numberSanitize(arg) framerate = 1/n end
-}
-convar["volume"] = {
-  helptext = "game volume",
-  flags = {"archive"},
-  value = 1,
-  fun = function(arg) local n = numberSanitize(arg) love.audio.setVolume(n) end
-}
-convar["showcollision"] = {
-  helptext = "draw hitboxes",
-  flags = {"client"},
-  value = 0,
-  fun = function(arg) local n = numberSanitize(arg) entitysystem.drawCollision = n == 1 end
-}
-
-convar["showfps"] = {
-  helptext = "draw framerate",
-  flags = {"client"},
-  value = 0,
-  fun = function(arg) local n = numberSanitize(arg) showFPS = n == 1 end
-}
-
-convar["showentitycount"] = {
-  helptext = "draw entity count",
-  flags = {"client"},
-  value = 0,
-  fun = function(arg) local n = numberSanitize(arg) showEntityCount = n == 1 end
-}
-
-convar["infinitelives"] = {
-  helptext = "never gameover",
-  flags = {"cheat"},
-  value = 0,
-  fun = function(arg) local n = numberSanitize(arg) globals.infiniteLives = n == 1 end
-}
-
-convar["diff"] = {
-  helptext = "difficulty (easy, normal, hard, etc.)",
-  flags = {"cheat"},
-  value = "normal",
-}
 
 conaction = {}
 
@@ -182,10 +121,10 @@ function convar.setValue(str, val, call)
   if val == true then val = 1 end
   if val == false or val == nil then val = 0 end
   if not convar.isValid(str) then return false end
-  convar[str].value = val
   if call and convar[str].fun then
     convar[str].fun(val)
   end
+  convar[str].value = val
   return true
 end
 

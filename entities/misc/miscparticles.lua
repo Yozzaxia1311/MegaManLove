@@ -343,11 +343,11 @@ end
 
 function absorbParticle:update(dt)
   if self.towards and not self.towards.isRemoved then
-    self.transform.x = math.lerp(self.startX, self.towards.transform.x, self.pos)
-    self.transform.y = math.lerp(self.startY, self.towards.transform.y, self.pos)
-    self.pos = math.min(self.pos+(self.spd/view.w), 1)
+    self.transform.x = math.lerp(self.startX, self.towards.transform.x+(self.towards.collisionShape.w/2), self.pos)
+    self.transform.y = math.lerp(self.startY, self.towards.transform.y+(self.towards.collisionShape.h/2), self.pos)
+    self.pos = math.min(self.pos + self.spd, 1)
   end
-  if self:collision(self.towards) or self.towards.isRemoved then
+  if not self.towards or self.pos == 1 or self.towards.isRemoved then
     megautils.removeq(self)
   end
   self.anim:update(1/60)
@@ -355,15 +355,15 @@ end
 
 function absorbParticle:draw()
   love.graphics.setColor(1, 1, 1, 1)
-  self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
+  self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y), 0, 1, 1, 12, 12)
 end
 
 function absorbParticle.createAbsorbtion(towards, spd)
   for i=1, 8 do
     megautils.add(absorbParticle, (view.x+view.w/2)+megautils.calcX(i*45)*view.w,
-        (view.y+view.h/2)+megautils.calcY(i*45)*view.w, towards, (spd or 5))
+        (view.y+view.h/2)+megautils.calcY(i*45)*view.w, towards, (spd or 0.02))
     megautils.add(absorbParticle, (view.x+view.w/2)+megautils.calcX(i*45)*view.w,
-        (view.y+view.h/2)+megautils.calcY(i*45)*view.w, towards, ((spd or 5)*1.5))
+        (view.y+view.h/2)+megautils.calcY(i*45)*view.w, towards, ((spd or 0.02)*1.5))
   end
 end
 

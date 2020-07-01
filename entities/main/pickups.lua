@@ -274,8 +274,7 @@ function smallEnergy:update(dt)
   for i=1, globals.playerCount do
     local p = globals.allPlayers[i]
     if self:collision(p) then
-      megaMan.weaponHandler[p.player].change = 2
-      megaMan.weaponHandler[p.player]:updateThis()
+      megaMan.weaponHandler[p.player]:updateCurrent(megaMan.weaponHandler[p.player]:currentWE() + 2)
       if not self.despawn then
         smallEnergy.banIds[#smallEnergy.banIds+1] = self.id
       end
@@ -388,8 +387,7 @@ function energy:update(dt)
   for i=1, globals.playerCount do
     local p = globals.allPlayers[i]
     if self:collision(p) then
-      megaMan.weaponHandler[p.player].change = 10
-      megaMan.weaponHandler[p.player]:updateThis()
+      megaMan.weaponHandler[p.player]:updateCurrent(megaMan.weaponHandler[p.player]:currentWE() + 10)
       if not self.despawn then
         energy.banIds[#energy.banIds+1] = self.id
       end

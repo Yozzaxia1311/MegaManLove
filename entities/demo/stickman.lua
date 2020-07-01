@@ -26,8 +26,9 @@ function stickMan:new(x, y, s)
   self.spawner = s
   self.render = false
   self.ss = 1
-  self.health = 28
+  self.health = 1
   self.hBar = healthHandler({128, 128, 128}, {255, 255, 255}, {0, 0, 0}, nil, nil, 7)
+  self.hBar:instantUpdate(0)
   camera.main.funcs.stick = function(s)
     self.hBar.transform.x = view.x + view.w - 24
     self.hBar.transform.y = view.y + 80
@@ -43,7 +44,7 @@ function stickMan:healthChanged(o, c, i)
     megautils.removeq(o)
   end
   if self.maxIFrame ~= self.iFrame then return end
-  if (o:is(megaSemiBuster) or self:checkTrue(self.canBeInvincible)) and o.dink then --Semi charged shots get reflected
+  if (o:is(megaSemiBuster) or checkTrue(self.canBeInvincible)) and o.dink then --Semi charged shots get reflected
     o:dink(self)
     return
   end
@@ -55,8 +56,7 @@ function stickMan:healthChanged(o, c, i)
     self.changeHealth = -1
   end
   self.health = self.health + self.changeHealth
-  self.hBar.change = self.changeHealth
-  self.hBar:updateThis()
+  self.hBar:updateThis(self.health)
   self.maxIFrame = 60
   self.iFrame = 0
   if self.health <= 0 then
@@ -93,7 +93,7 @@ function stickMan:update(dt)
       megautils.removeq(self)
     elseif globals.mainPlayer then
       self.s = 1
-      globals.mainPlayer.control = false
+      globals.mainPlayer.canControl.global = false
       globals.mainPlayer.velocity.velx = 0
       globals.mainPlayer:resetStates()
       if not globals.mainPlayer.ground then
@@ -113,7 +113,7 @@ function stickMan:update(dt)
           globals.mainPlayer.curAnim = "idle"
           self.s = 2
           if isWeb then
-            megautils.playMusic("assets/sfx/music/boss_loop.ogg", "assets/sfx/music/boss_intro.ogg")
+            megautils.playMusic("assets/sfx/music/bossLoop.ogg", "assets/sfx/music/bossIntro.ogg")
           else
             megautils.playMusic("assets/sfx/music/boss.wav", true, 162898, 444759)
           end
@@ -125,13 +125,14 @@ function stickMan:update(dt)
     collision.doCollision(self)
     if self.ground then
       self.canBeInvincible.global = false
-      self.hBar.health = 0
-      self.hBar.change = self.health
-      self.hBar:updateThis()
+      self.hBar:updateThis(self.health)
       megautils.adde(self.hBar)
-      globals.mainPlayer.control = true
+      globals.mainPlayer.updatedSpecial.hb = true
       self.s = 3
     end
+  elseif self.s == 3 then
+    globals.mainPlayer.canControl.global = true
+    self.s = 4
   end
   self:hurt(self:collisionTable(globals.allPlayers), -4, 80)
   self:updateIFrame()
@@ -218,35 +219,36 @@ function megamanStick:new()
   megamanStick.super.new(self)
   self.transform.y = -60
   self.transform.x = 100
-  local grid = "megaManGrid"
   if globals.player[1] == "mega" then
     self.texOutline = megautils.loadResource("assets/players/megaman/megaManOutline.png", "megaManOutline")
     self.texOne = megautils.loadResource("assets/players/megaman/megaManOne.png", "megaManOne")
     self.texTwo = megautils.loadResource("assets/players/megaman/megaManTwo.png", "megaManTwo")
     self.texFace = megautils.loadResource("assets/players/megaman/megaManFace.png", "megaManFace")
+    self.grid = megautils.loadResource("megaManGrid", 41, 30, 164, 330)
   elseif globals.player[1] == "proto" then
     self.texOutline = megautils.loadResource("assets/players/proto/protoManOutline.png", "protoManOutline")
     self.texOne = megautils.loadResource("assets/players/proto/protoManOne.png", "protoManOne")
     self.texTwo = megautils.loadResource("assets/players/proto/protoManTwo.png", "protoManTwo")
     self.texFace = megautils.loadResource("assets/players/proto/protoManFace.png", "protoManFace")
+    self.grid = megautils.loadResource("megaManGrid", 41, 30, 164, 330)
   elseif globals.player[1] == "bass" then
     self.texOutline = megautils.loadResource("assets/players/bass/bassOutline.png", "bassOutline")
     self.texOne = megautils.loadResource("assets/players/bass/bassOne.png", "bassOne")
     self.texTwo = megautils.loadResource("assets/players/bass/bassTwo.png", "bassTwo")
     self.texFace = megautils.loadResource("assets/players/bass/bassFace.png", "bassFace")
-    grid = "bassGrid"
+    self.grid = megautils.loadResource("bassGrid", 45, 41, 180, 533)
   elseif globals.player[1] == "roll" then
     self.texOutline = megautils.loadResource("assets/players/roll/rollOutline.png", "rollOutline")
     self.texOne = megautils.loadResource("assets/players/roll/rollOne.png", "rollOne")
     self.texTwo = megautils.loadResource("assets/players/roll/rollTwo.png", "rollTwo")
     self.texFace = megautils.loadResource("assets/players/roll/rollFace.png", "rollFace")
-    grid = "rollGrid"
+    self.grid = megautils.loadResource("rollGrid", 45, 34, 180, 374)
   end
   weapons.resources.stickWeapon()
   self.curAnim = pose and "pose" or "idle"
   self.animations = {}
-  self.animations.idle = anim8.newAnimation(megautils.getResource(grid)(1, 1, 2, 1), {2.5, 0.1})
-  self.animations.idleShoot = anim8.newAnimation(megautils.getResource(grid)(1, 4), 1)
+  self.animations.idle = anim8.newAnimation(self.grid(1, 1, 2, 1), {2.5, 0.1})
+  self.animations.idleShoot = anim8.newAnimation(self.grid(1, 4), 1)
   self:face(1)
   self.text = "WEAPON GET... STICK WEAPON!"
   self.pos = 0
@@ -255,12 +257,12 @@ function megamanStick:new()
   self.timer2 = 0
   self.shootTimer = 14
   self.s = 0
-  self.megaOne = megaMan.weaponHandler[1].colorOne[0]
-  self.megaTwo = megaMan.weaponHandler[1].colorTwo[0]
+  self.megaOne = banner.colorOne
+  self.megaTwo = banner.colorTwo
   self.toOne = {255, 255, 255}
   self.toTwo = {128, 128, 128}
-  banner.colorOne = self.megaOne
-  banner.colorTwo = self.megaTwo
+  banner.colorOne = table.clone(self.megaOne)
+  banner.colorTwo = table.clone(self.megaTwo)
   banner.colorOutline = {0, 0, 0}
   self.wh = {}
   self.wh.currentSlot = 1

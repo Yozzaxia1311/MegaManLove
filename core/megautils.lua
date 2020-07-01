@@ -45,6 +45,14 @@ function megautils.getFullscreen()
   return convar.getNumber("fullscreen") == 1
 end
 
+function megautils.setScale(what)
+  convar.setValue("scale", what, true)
+end
+
+function megautils.getScale(what)
+  return convar.getNumber("scale")
+end
+
 function megautils.enableConsole()
   useConsole = true
 end
@@ -148,17 +156,20 @@ function megautils.loadResource(...)
     if type(args[#args]) == "boolean" then
       locked = args[#args]
     end
-    return loader.load(nil, nick, t, {args[2], args[3], args[4], args[5],
+    loader.load(nil, nick, t, {args[2], args[3], args[4], args[5],
       (type(args[6]) ~= "boolean") and args[6], (type(args[7]) ~= "boolean") and args[7]}, locked)
+    return loader.get(nick)
   elseif checkExt(t, {"png", "jpeg", "jpg", "bmp", "tga", "hdr", "pic", "exr"}) then
     local ext = t
     t = "texture"
     if #args == 4 then
       locked = args[4]
-      return loader.load(path, nick, t, {args[3]}, locked)
+      loader.load(path, nick, t, {args[3]}, locked)
+      return loader.get(nick)
     else
       locked = args[3]
-      return loader.load(path, nick, t, nil, locked)
+      loader.load(path, nick, t, nil, locked)
+      return loader.get(nick)
     end
   elseif checkExt(t, {"ogg", "mp3", "wav", "flac", "oga", "ogv", "xm", "it", "mod", "mid", "669", "amf", "ams", "dbm", "dmf", "dsm", "far",
       "j2b", "mdl", "med", "mt2", "mtm", "okt", "psm", "s3m", "stm", "ult", "umx", "abc", "pat"}) then
@@ -169,7 +180,8 @@ function megautils.loadResource(...)
       t = "sound"
       locked = args[3]
     end
-    return loader.load(path, nick, t, nil, locked)
+    loader.load(path, nick, t, nil, locked)
+    return loader.get(nick)
   else
     error("Could not detect resource type of \"" .. path .. "\" based on file extension")
   end
@@ -187,7 +199,7 @@ function megautils.getCurrentMusic()
 end
 
 function megautils.playMusic(path, loop, lp, lep, vol)
-  if megautils._lockM or (megautils._curM and megautils._curM.id == path and not megautils_curM:stopped()) then return end
+  if megautils._lockM or (megautils._curM and megautils._curM.id == path and not megautils._curM:stopped()) then return end
   megautils.stopMusic()
   
   megautils._curM = mmMusic(love.audio.newSource(path, isWeb and "static" or "stream"))
@@ -197,7 +209,7 @@ function megautils.playMusic(path, loop, lp, lep, vol)
 end
 
 function megautils.playMusicWithSeperateIntroFile(lPath, iPath, vol)
-  if megautils._lockM or (megautils._curM and megautils._curM.id == (lPath .. ", " .. iPath) and not megautils_curM:stopped()) then return end
+  if megautils._lockM or (megautils._curM and megautils._curM.id == (lPath .. ", " .. iPath) and not megautils._curM:stopped()) then return end
   megautils.stopMusic()
   
   local t = isWeb and "static" or "stream"
@@ -531,7 +543,7 @@ function megautils.unfreeze(e, name)
         else
           v.updated = true
         end
-        if not v:checkTrue(v.updatedSpecial) then
+        if not checkTrue(v.updatedSpecial) then
           table.removevalue(megautils.frozen, v)
         end
       end

@@ -32,8 +32,9 @@ function disclaimer:new()
     "\n\n\n\nthe Mega Man Love engine is a non-profit fanmade engine created by " .. 
     "various contributors.\n\nit is not for sale.\n\n" .. 
     "have fun!"
-  self.bottomText = "Press start to continue" .. (isWeb and "" or "\nPress Alt+Enter for fullscreen") .. "\nPress " .. 
-    (isWeb and "1" or "Escape") .. " to rebind controls"
+  self.bottomText = "Press start to continue" .. (isWeb and "" or "\nPress Alt+Enter for fullscreen") ..
+    "\nPress 1-9 to set the scale" ..
+    "\nPress " .. (isWeb and "1" or "Escape") .. " here to rebind"
 end
 
 function disclaimer:update()
@@ -65,14 +66,14 @@ end
 
 function disclaimer:draw()
   love.graphics.setColor(self.colors[self.cycler][1]/255, self.colors[self.cycler][2]/255, self.colors[self.cycler][3]/255, 1)
-  love.graphics.draw(self.t, 40, 160)
-  love.graphics.draw(self.t, 120, 160)
-  love.graphics.draw(self.t, 200, 160)
+  love.graphics.draw(self.t, 40, 150)
+  love.graphics.draw(self.t, 120, 150)
+  love.graphics.draw(self.t, 200, 150)
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.setFont(mmFont)
   love.graphics.printf(self.disclaimerText, 4, 16, 248, "center")
   love.graphics.setColor(1, 1, 1, self.alpha/255)
-  love.graphics.printf(self.bottomText, -21, 192, 300, "center")
+  love.graphics.printf(self.bottomText, -21, 181, 300, "center")
 end
 
 return disclaimerState
