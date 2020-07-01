@@ -526,9 +526,9 @@ function megautils.freeze(e, name)
       if not e or not table.contains(e, v) then
         megautils.frozen[#megautils.frozen+1] = v
         if name then
-          v.updatedSpecial[name] = false
+          v.canUpdate[name] = false
         else
-          v.updated = false
+          v.canUpdate.global = false
         end
       end
     end
@@ -539,11 +539,11 @@ function megautils.unfreeze(e, name)
     for k, v in pairs(megautils.groups().freezable) do
       if not e or not table.contains(e, v) then
         if name then
-          v.updatedSpecial[name] = true
+          v.canUpdate[name] = true
         else
-          v.updated = true
+          v.canUpdate.global = true
         end
-        if not checkTrue(v.updatedSpecial) then
+        if not checkTrue(v.canUpdate) then
           table.removevalue(megautils.frozen, v)
         end
       end

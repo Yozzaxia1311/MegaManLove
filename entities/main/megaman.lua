@@ -476,8 +476,6 @@ function megaMan:new(x, y, side, drop, p, g, gf, c)
 
   self.healthHandler = megautils.add(healthHandler, {252, 224, 168}, {255, 255, 255}, {0, 0, 0},
     nil, nil, globals.lifeSegments, self)
-  self.health = 4*globals.lifeSegments
-  self.healthHandler:updateThis(self.health)
   self.healthHandler.render = false
   
   megautils.adde(megaMan.weaponHandler[self.player])
@@ -1063,13 +1061,12 @@ end
 function megaMan:addHealth(c)
   self.changeHealth = c
   if self.changeHealth ~= 0 then
-    self.health = self.health + self.changeHealth
-    self.healthHandler:updateThis(self.health)
+    self.healthHandler:updateThis(self.healthHandler.health + self.changeHealth)
   end
 end
 
-function megaMan:healthChanged(o, c, i)
-  if not checkFalse(self.canControl) or o.dinked == 2 then return end
+function megaMan:gettingHurt(o, c, i)
+  if not checkFalse(self.canControl) or o.reflectedBack then return end
   if self.protoShielding and o.dink and self:checkProtoShield(o, self.side) then
     o:dink(self)
     return
@@ -1083,7 +1080,7 @@ function megaMan:healthChanged(o, c, i)
     v(self)
   end
   if self.changeHealth < 0 then
-    if self.health <= 0 and not self.dying then
+    if self.healthHandler.health <= 0 and not self.dying then
       self.dying = true
       self.iFrame = self.maxIFrame
       megautils.freeze({self}, "dying")
@@ -1536,12 +1533,11 @@ function megaMan:code(dt)
   end
   self:updateIFrame()
   self:updateFlash()
-  self.health = self.healthHandler.health
   if self.stopOnShot and self.shootTimer == self.maxShootTime then
     self.stopOnShot = false
   end
-  if globals.mainPlayer and control.startPressed[self.player] and checkFalse(globals.mainPlayer.canControl) and globals.mainPlayer.updated
-    and checkFalse(self.canPause) then
+  if globals.mainPlayer and control.startPressed[self.player] and
+    checkFalse(globals.mainPlayer.canControl) and checkFalse(globals.mainPlayer.canUpdate) and checkFalse(self.canPause) then
     self.weaponSwitchTimer = 70
     mmWeaponsMenu.pause(self)
   end
@@ -1631,8 +1627,10 @@ function megaMan:phys()
       end
       if collision.checkSolid(self) then
         local dv = self:collisionTable(megautils.groups().death)
-        self:hurt({self}, dv[1] and dv[1].harm or -9999999, 80)
-        if self.health <= 0 then
+        if dv[1] and dv[1].harm > 0 then
+          dv[1]:hurt(self, dv[1].harm, 80, true)
+        end
+        if self.healthHandler.health <= 0 then
           self.ground = false
         else
           self.ground = lg
@@ -1848,8 +1846,9 @@ function megaMan:die()
       healthHandler.playerTimers[i] = -2
     end
     
-    self.health = 0
-    self.healthHandler:updateThis(self.health)
+    if self.healthHandler.health ~= 0 then
+      self.healthHandler:updateThis(0)
+    end
     
     megautils.add(timer, 160, function(t)
       megautils.add(fade, true, nil, nil, function(s)
@@ -1868,8 +1867,9 @@ function megaMan:die()
       megautils.removeq(t)
     end)
   else
-    self.health = 0
-    self.healthHandler:updateThis(self.health)
+    if self.healthHandler.health ~= 0 then
+      self.healthHandler:updateThis(0)
+    end
     healthHandler.playerTimers[self.player] = 180
     megautils.removeq(megaMan.weaponHandler[self.player])
     megautils.removeq(self.healthHandler)

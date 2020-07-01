@@ -308,7 +308,7 @@ function entitysystem:update(dt)
       t.previousY = t.transform.y
       t.epX = t.previousX
       t.epY = t.previousY
-      if t.updated and not t.isRemoved and t.beforeUpdate and checkFalse(t.updatedSpecial) then
+      if not t.isRemoved and t.beforeUpdate and checkFalse(t.canUpdate) then
         t:beforeUpdate(dt)
         if states.switched then
           return
@@ -322,7 +322,7 @@ function entitysystem:update(dt)
     t.previousY = t.transform.y
     t.epX = t.previousX
     t.epY = t.previousY
-    if t.updated and not t.isRemoved and t.update and checkFalse(t.updatedSpecial) then
+    if not t.isRemoved and t.update and checkFalse(t.canUpdate) then
       t:update(dt)
       if states.switched then
         return
@@ -336,7 +336,7 @@ function entitysystem:update(dt)
       t.previousY = t.transform.y
       t.epX = t.previousX
       t.epY = t.previousY
-      if t.updated and not t.isRemoved and t.afterUpdate and checkFalse(t.updatedSpecial) then
+      if not t.isRemoved and t.afterUpdate and checkFalse(t.canUpdate) then
         t:afterUpdate(dt)
         if states.switched then
           return
@@ -406,32 +406,30 @@ function basicEntity:new()
   self.layer = 1
   self.isRemoved = true
   self.isAdded = false
-  self.updated = true
   self.render = true
   self.maxIFrame = 80
   self.iFrame = self.maxIFrame
   self.changeHealth = 0
-  self.updatedSpecial = {}
+  self.canUpdate = {global=true}
 end
 
 function basicEntity:baseRecycle()
   self.transform.x = 0
   self.transform.y = 0
-  self.updated = true
   self.render = true
   self.isRemoved = true
   self.isAdded = false
   self.changeHealth = 0
   self.iFrame = self.maxIFrame
-  self.updatedSpecial = {}
+  self.canUpdate = {global=true}
 end
 
 function basicEntity:hurt(t, h, f, single)
   if single then
-    t:healthChanged(self, h, f or 80)
+    t:gettingHurt(self, h, f or 80)
   else
     for i=1, #t do
-      t[i]:healthChanged(self, h, f or 80)
+      t[i]:gettingHurt(self, h, f or 80)
     end
   end
 end
@@ -440,7 +438,7 @@ function basicEntity:updateIFrame()
   self.iFrame = math.min(self.iFrame+1, self.maxIFrame)
 end
 
-function basicEntity:healthChanged(other, c, i) end
+function basicEntity:gettingHurt(other, c, i) end
 
 function basicEntity:setLayer(l)
   if not self.isAdded or self.static then

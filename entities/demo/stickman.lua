@@ -26,7 +26,6 @@ function stickMan:new(x, y, s)
   self.spawner = s
   self.render = false
   self.ss = 1
-  self.health = 1
   self.hBar = healthHandler({128, 128, 128}, {255, 255, 255}, {0, 0, 0}, nil, nil, 7)
   self.hBar:instantUpdate(0)
   camera.main.funcs.stick = function(s)
@@ -38,16 +37,17 @@ function stickMan:new(x, y, s)
   self.blockCollision = true
 end
 
-function stickMan:healthChanged(o, c, i)
-  if o.dinked then return end
-  if c < 0 and not o:is(megaChargedBuster) and not o:is(megaSemiBuster) then --Remove shots
+function stickMan:gettingHurt(o, c, i)
+  if o:is(megaSemiBuster) or checkTrue(self.canBeInvincible) then --Semi charged shots get reflected
+    if o.dink and not o.dinked then
+      o:dink(self)
+    end
+    return
+  end
+  if c < 0 and not o:is(megaChargedBuster) then --Remove shots
     megautils.removeq(o)
   end
   if self.maxIFrame ~= self.iFrame then return end
-  if (o:is(megaSemiBuster) or checkTrue(self.canBeInvincible)) and o.dink then --Semi charged shots get reflected
-    o:dink(self)
-    return
-  end
   if o:is(stickWeapon) then --The weakness
     self.changeHealth = -8
   elseif o:is(megaChargedBuster) then --Semi-weakness
@@ -55,11 +55,10 @@ function stickMan:healthChanged(o, c, i)
   else
     self.changeHealth = -1
   end
-  self.health = self.health + self.changeHealth
-  self.hBar:updateThis(self.health)
+  self.hBar:updateThis(self.hBar.health + self.changeHealth)
   self.maxIFrame = 60
   self.iFrame = 0
-  if self.health <= 0 then
+  if self.hBar.health <= 0 then
     if megautils.groups().removeOnDefeat then
       for k, v in ipairs(megautils.groups().removeOnDefeat) do
         megautils.removeq(v)
@@ -125,9 +124,9 @@ function stickMan:update(dt)
     collision.doCollision(self)
     if self.ground then
       self.canBeInvincible.global = false
-      self.hBar:updateThis(self.health)
+      self.hBar:updateThis(28)
       megautils.adde(self.hBar)
-      globals.mainPlayer.updatedSpecial.hb = true
+      globals.mainPlayer.canUpdate.hb = true
       self.s = 3
     end
   elseif self.s == 3 then
@@ -201,7 +200,7 @@ function stickManIntro:update(dt)
     if self.timer == 300 then
       megautils.stopMusic()
       megautils.transitionToState("states/demo.state.lua")
-      self.updated = false
+      self.s = 5
     end
   end
 end
@@ -343,7 +342,7 @@ function megamanStick:update(dt)
     self.timer = math.min(self.timer+1, 60)
     if self.timer == 60 then
       megautils.transitionToState("states/menu.state.lua")
-      self.updated = false
+      megautils.removeq(self)
     end
   end
   self.shootTimer = math.min(self.shootTimer+1, 14)

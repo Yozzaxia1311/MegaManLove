@@ -38,13 +38,14 @@ function disclaimer:new()
 end
 
 function disclaimer:update()
-  if control.startPressed[1] and self.check then
-    megautils.transitionToState("states/title.state.lua")
-    self.updated = false
-  elseif globals.lastKeyPressed and globals.lastKeyPressed[2] == (isWeb and "1" or "escape") and self.check then
-    globals.lastKeyPressed = nil
-    globals.sendBackToDisclaimer = true
-    megautils.transitionToState("states/rebind.state.lua")
+  if self.check then
+    if control.startPressed[1] then
+      megautils.transitionToState("states/title.state.lua")
+    elseif globals.lastKeyPressed and globals.lastKeyPressed[2] == (isWeb and "1" or "escape") then
+      globals.lastKeyPressed = nil
+      globals.sendBackToDisclaimer = true
+      megautils.transitionToState("states/rebind.state.lua")
+    end
   end
   self.timer = self.timer + 1
   if self.timer == 80 then

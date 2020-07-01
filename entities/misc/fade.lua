@@ -8,8 +8,11 @@ function fade:new(fadeToColor, gap, color, after)
   self.after = after
   self.timer = 0
   self.color = color or {0, 0, 0}
-  megautils.freeze()
   self:setLayer(11)
+end
+
+function fade:added()
+  megautils.freeze()
   fade.main = self
 end
 

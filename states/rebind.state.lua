@@ -37,7 +37,6 @@ function rebinder:update(dt)
       megautils.gotoState(globals.sendBackToDisclaimer and "states/disclaimer.state.lua" or globals.lastStateName)
       globals.sendBackToDisclaimer = nil
     end)
-    self.updated = false
     return
   end
   if globals.lastKeyPressed and not self.done then

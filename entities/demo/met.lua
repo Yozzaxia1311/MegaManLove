@@ -14,11 +14,6 @@ end)
 
 function met:new(x, y, s)
   met.super.new(self)
-  self.added = function(self)
-    self:addToGroup("hurtable")
-    self:addToGroup("removeOnTransition")
-    self:addToGroup("freezable")
-  end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(14, 14)
@@ -35,22 +30,29 @@ function met:new(x, y, s)
   self:setGravityMultiplier("flipWithPlayer", 1)
 end
 
+function met:added()
+  self:addToGroup("hurtable")
+  self:addToGroup("removeOnTransition")
+  self:addToGroup("freezable")
+end
+
 function met:grav()
   if self.ground then return end
   self.velocity.vely = self.velocity.vely+self.gravity
   self.velocity:clampY(7)
 end
 
-function met:healthChanged(o, c, i)
-  if o.dinked == 1 then return end
+function met:gettingHurt(o, c, i)
+  if checkTrue(self.canBeInvincible) or (o.dinked and not o.reflectedBack) then
+    if o.dink and not o.dinked then
+      o:dink(self)
+    end
+    return
+  end
   if c < 0 and not checkTrue(self.canBeInvincible) and not o:is(megaChargedBuster) then
     megautils.removeq(o)
   end
   if self.maxIFrame ~= self.iFrame then return end
-  if checkTrue(self.canBeInvincible) and o.dink then
-    o:dink(self)
-    return
-  end
   
   if o:is(megaBuster) then
     self.changeHealth = -1
@@ -178,13 +180,15 @@ function metBullet:recycle(x, y, vx, vy)
   self.velocity.velx = vx
   self.velocity.vely = vy
   self.dinked = nil
+  self.reflectedBack = nil
 end
 
 function metBullet:dink(e)
   if e:is(megaMan) then
     self.velocity.velx = -self.velocity.velx
     self.velocity.vely = -self.velocity.vely
-    self.dinked = 2
+    self.dinked = true
+    self.reflectedBack = true
     megautils.playSound("dink")
   end
 end

@@ -68,7 +68,6 @@ function mmWeaponsMenu:new(w, h, p)
           h.health = self.w.energy[self.list[y][x]]
         end
         h.side = -1
-        --h:removeFromGroup("freezable")
         h.transform.x = view.x+((x*80)-16)
         h.transform.y = view.y+(40+(y*16))
         h.icoX = (x*80)-32
@@ -146,7 +145,6 @@ function mmWeaponsMenu:update(dt)
     self.fills[self.y][self.x].colorOne = self.w.colorOne[self.list[self.y][self.x]]
     self.fills[self.y][self.x].colorTwo = self.w.colorTwo[self.list[self.y][self.x]]
     if control.startPressed[self.player] then
-      self.updated = false
       self.w:switch(self.list[self.y][self.x])
       megaMan.colorOutline[self.player] = self.w.colorOutline[self.list[self.y][self.x]]
       megaMan.colorOne[self.player] = self.w.colorOne[self.list[self.y][self.x]]
