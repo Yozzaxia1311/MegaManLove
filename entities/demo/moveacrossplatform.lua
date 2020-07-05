@@ -39,8 +39,8 @@ end
 
 function moveAcrossPlatform:update(dt)
   if self.state == 0 then
-    for i=1, #globals.allPlayers do
-      local p = globals.allPlayers[i]
+    for i=1, #megaMan.allPlayers do
+      local p = megaMan.allPlayers[i]
       if p.ground and p:collision(self, 0, p.gravity < 0 and -1 or 1) then
         self.state = 1
       end

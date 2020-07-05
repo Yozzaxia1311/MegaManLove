@@ -1,4 +1,4 @@
-convar["cl_test"] = {
+convar["cltest"] = {
   helptext = "convar test",
   flags = {"test"},
   value = 1,
@@ -14,11 +14,10 @@ convar["fullscreen"] = {
   value = 0,
   fun = function(arg) local n = numberSanitize(arg) love.window.setFullscreen(n == 1) end
 }
-convar["framerate"] = {
-  helptext = "framerate",
+convar["fps"] = {
+  helptext = "fps",
   flags = {"client"},
   value = 60,
-  fun = function(arg) local n = numberSanitize(arg) framerate = 1/n end
 }
 convar["volume"] = {
   helptext = "game volume",
@@ -36,22 +35,19 @@ convar["showcollision"] = {
 convar["showfps"] = {
   helptext = "draw framerate",
   flags = {"client"},
-  value = 0,
-  fun = function(arg) local n = numberSanitize(arg) showFPS = n == 1 end
+  value = 0
 }
 
 convar["showentitycount"] = {
   helptext = "draw entity count",
   flags = {"client"},
-  value = 0,
-  fun = function(arg) local n = numberSanitize(arg) showEntityCount = n == 1 end
+  value = 0
 }
 
 convar["infinitelives"] = {
   helptext = "never gameover",
   flags = {"cheat"},
-  value = 0,
-  fun = function(arg) local n = numberSanitize(arg) globals.infiniteLives = n == 1 end
+  value = 0
 }
 
 convar["diff"] = {
@@ -79,6 +75,15 @@ convar["scale"] = {
       end
     end
 }
+
+for i=1, maxPlayerCount do
+  convar["player" .. tostring(i)] = {
+    helptext = "set player " .. tostring(i) .. " (mega, proto, bass, roll,-- or maybe something custom, if you've programmed it in)",
+    flags = {"cheat"},
+    value = ((i == 1) and "mega" or ((i == 2) and "proto" or ((i == 3) and "bass" or ((i == 4) and "roll" or "mega"))))
+  }
+end
+
 
 concmd["help"] = {
   helptext = "get info about commands",
@@ -309,9 +314,9 @@ concmd["hurt"] = {
   flags = {"cheat"},
   fun = function(cmd)
       if not cmd[2] then return end
-      for i=1, #globals.allPlayers do
-        globals.allPlayers[i].iFrame = globals.allPlayers[i].maxIFrame
-        globals.allPlayers[i]:hurt({globals.allPlayers[i]}, -numberSanitize(cmd[2]))
+      for i=1, #megaMan.allPlayers do
+        megaMan.allPlayers[i].iFrame = megaMan.allPlayers[i].maxIFrame
+        megaMan.allPlayers[i]:hurt({megaMan.allPlayers[i]}, -numberSanitize(cmd[2]))
       end
     end
 }
@@ -321,8 +326,8 @@ concmd["grav"] = {
   flags = {"cheat"},
   fun = function(cmd)
       if not cmd[2] then return end
-      for i=1, #globals.allPlayers do
-        globals.allPlayers[i]:setGravityMultiplier("global", numberSanitize(cmd[2]))
+      for i=1, #megaMan.allPlayers do
+        megaMan.allPlayers[i]:setGravityMultiplier("global", numberSanitize(cmd[2]))
       end
     end
 }
@@ -331,8 +336,8 @@ concmd["flip"] = {
   helptext = "flip gravity",
   flags = {"cheat"},
   fun = function(cmd)
-      for i=1, #globals.allPlayers do
-        globals.allPlayers[i]:setGravityMultiplier("gravityFlip", -globals.allPlayers[i].gravityMultipliers.gravityFlip)
+      for i=1, #megaMan.allPlayers do
+        megaMan.allPlayers[i]:setGravityMultiplier("gravityFlip", -megaMan.allPlayers[i].gravityMultipliers.gravityFlip)
         if i == 1 then
           megautils.playSound("gravityFlip")
         end
@@ -344,9 +349,9 @@ concmd["kill"] = {
   helptext = "kill all players",
   flags = {},
   fun = function(cmd)
-      for i=1, #globals.allPlayers do
-        globals.allPlayers[i].iFrame = globals.allPlayers[i].maxIFrame
-        globals.allPlayers[i]:hurt({globals.allPlayers[i]}, -9999)
+      for i=1, #megaMan.allPlayers do
+        megaMan.allPlayers[i].iFrame = megaMan.allPlayers[i].maxIFrame
+        megaMan.allPlayers[i]:hurt({megaMan.allPlayers[i]}, -9999)
       end
     end
 }
@@ -355,8 +360,8 @@ concmd["getpos"] = {
   helptext = "print player position",
   flags = {},
   fun = function(cmd)
-      if globals.mainPlayer then
-        console.print(tostring(globals.mainPlayer.transform.x) .. ", " .. tostring(globals.mainPlayer.transform.y))
+      if megaMan.mainPlayer then
+        console.print(tostring(megaMan.mainPlayer.transform.x) .. ", " .. tostring(megaMan.mainPlayer.transform.y))
       end
     end
 }
@@ -384,9 +389,9 @@ concmd["give"] = {
   helptext = "spawn registered entity",
   flags = {"cheat"},
   fun = function(cmd)
-      if globals.mainPlayer and cmd[2] then
-        addobjects.add({{name=cmd[2], x=globals.mainPlayer.transform.x+numberSanitize(cmd[3]),
-          y=globals.mainPlayer.transform.y+numberSanitize(cmd[4])}})
+      if megaMan.mainPlayer and cmd[2] then
+        addobjects.add({{name=cmd[2], x=megaMan.mainPlayer.transform.x+numberSanitize(cmd[3]),
+          y=megaMan.mainPlayer.transform.y+numberSanitize(cmd[4])}})
       end
     end
 }

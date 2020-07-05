@@ -17,11 +17,7 @@ function initEngine()
   
   -- Game globals.
   mmFont = love.graphics.newFont("assets/misc/mm.ttf", 8)
-  globals.mainPlayer = nil
-  globals.player = {"mega", "proto", "bass", "roll"}
-  globals.allPlayers = {}
   globals.checkpoint = "start"
-  globals.infiniteLives = false
   -- `globals.lifeSegements` is how big the player's healthbar is.
   globals.lifeSegments = 7
   globals.maxLifeSegments = 7
@@ -67,9 +63,6 @@ function love.load()
   deadZone = 0.8
   maxPlayerCount = 4
   useConsole = love.keyboard
-  showFPS = false
-  showEntityCount = false
-  framerate = 1/60
   nesShader = not isWeb and not isMobile and love.graphics.getSupported().glsl3 and love.graphics.newShader("assets/nesLUT.glsl")
   if nesShader then nesShader:send("pal", love.graphics.newImage("assets/nesLUT.png")) end
   
@@ -318,7 +311,11 @@ if not isWeb then
     if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
     if love.timer then love.timer.step() end
     local dt = 0
+    local bu = 0
     return function()
+        if love.timer then
+          bu = love.timer.getTime()
+        end
         if love.event then
           love.event.pump()
           for name, a,b,c,d,e,f in love.event.poll() do
@@ -331,10 +328,8 @@ if not isWeb then
           end
         end
         if love.timer then
-          love.timer.step()
-          dt = love.timer.getDelta()
+          dt = love.timer.step()
         end
-        local bu = love.timer.getTime()
         if love.update then love.update(dt) end
         if love.graphics and love.graphics.isActive() then
           love.graphics.origin()
@@ -342,8 +337,10 @@ if not isWeb then
           if love.draw then love.draw() end
           love.graphics.present()
         end
-        local delta = love.timer.getTime() - bu
-        if delta < framerate then love.timer.sleep(framerate - delta) end
+        if love.timer then
+          local delta, fps = love.timer.getTime() - bu, 1/megautils.getFPS()
+          if delta < fps then love.timer.sleep(fps - delta) end
+        end
         resized = false
       end
   end

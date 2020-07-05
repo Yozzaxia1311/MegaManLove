@@ -49,8 +49,58 @@ function megautils.setScale(what)
   convar.setValue("scale", what, true)
 end
 
-function megautils.getScale(what)
+function megautils.getScale()
   return convar.getNumber("scale")
+end
+
+function megautils.setFPS(what)
+  convar.setValue("fps", what, false)
+end
+
+function megautils.getFPS()
+  return convar.getNumber("fps")
+end
+
+function megautils.showFPS(what)
+  convar.setValue("showfps", what == 1, false)
+end
+
+function megautils.isShowingFPS()
+  return convar.getNumber("showfps") == 1
+end
+
+function megautils.showEntityCount(what)
+  convar.setValue("showentitycount", what == 1, false)
+end
+
+function megautils.isShowingEntityCount()
+  return convar.getNumber("showentitycount") == 1
+end
+
+function megautils.infiniteLifes(what)
+  convar.setValue("infinitelives", what == 1, false)
+end
+
+function megautils.hasInfiniteLives()
+  return convar.getNumber("infinitelives") == 1
+end
+
+function megautils.setPlayer(p, what)
+  convar.setValue("player" .. tostring(p), what, false)
+end
+
+function megautils.getPlayer(p)
+  return convar.getString("infinitelives")
+end
+
+function megautils.getAllPlayers()
+  local result = {}
+  
+  for i=1, maxPlayerCount do
+    result = megautils.getPlayer(i)
+  end
+  
+  return result
 end
 
 function megautils.enableConsole()
@@ -486,35 +536,35 @@ function megautils.revivePlayer(p)
 end
 
 function megautils.registerPlayer(e, p)
-  if not globals.mainPlayer then
-    globals.mainPlayer = e
+  if not megaMan.mainPlayer then
+    megaMan.mainPlayer = e
   end
-  globals.allPlayers[#globals.allPlayers+1] = e
+  megaMan.allPlayers[#megaMan.allPlayers+1] = e
   e.player = p
   
-  if #globals.allPlayers > 1 then
+  if #megaMan.allPlayers > 1 then
     local keys = {}
     local vals = {}
-    for k, v in pairs(globals.allPlayers) do
+    for k, v in pairs(megaMan.allPlayers) do
       keys[#keys+1] = v.player
       vals[v.player] = v
-      globals.allPlayers[k] = nil
+      megaMan.allPlayers[k] = nil
     end
     table.sort(keys)
     for j=1, #keys do
-      globals.allPlayers[j] = vals[keys[j]]
+      megaMan.allPlayers[j] = vals[keys[j]]
     end
   end
   
-  if e == globals.allPlayers[1] then
-    globals.mainPlayer = e
+  if e == megaMan.allPlayers[1] then
+    megaMan.mainPlayer = e
   end
 end
 
 function megautils.unregisterPlayer(e)
-  table.removevaluearray(globals.allPlayers, e)
-  if globals.mainPlayer == e then
-    globals.mainPlayer = globals.allPlayers[1]
+  table.removevaluearray(megaMan.allPlayers, e)
+  if megaMan.mainPlayer == e then
+    megaMan.mainPlayer = megaMan.allPlayers[1]
   end
 end
 

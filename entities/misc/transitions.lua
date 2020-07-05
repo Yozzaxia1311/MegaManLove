@@ -21,8 +21,8 @@ function right:new(x, y, h, scrollx, scrolly, spd, p, n)
 end
 
 function right:update(dt)
-  for i=1, #globals.allPlayers do
-    local player = globals.allPlayers[i]
+  for i=1, #megaMan.allPlayers do
+    local player = megaMan.allPlayers[i]
     if camera.main and checkFalse(player.canControl) and not camera.main.transition and self:collision(player, 2, 0)
       and (not self.platform or (self.platform and player.onMovingFloor)) then
       camera.main.transitionDirection = "right"
@@ -64,8 +64,8 @@ function left:new(x, y, h, scrollx, scrolly, spd, p, n)
 end
 
 function left:update(dt)
-  for i=1, #globals.allPlayers do
-    local player = globals.allPlayers[i]
+  for i=1, #megaMan.allPlayers do
+    local player = megaMan.allPlayers[i]
     if camera.main and checkFalse(player.canControl) and not camera.main.transition
       and self:collision(player, -2, 0) and (not self.platform or (self.platform and player.onMovingFloor)) then
       camera.main.transitionDirection = "left"
@@ -107,8 +107,8 @@ function down:new(x, y, w, scrollx, scrolly, spd, p, n)
 end
 
 function down:update(dt)
-  for i=1, #globals.allPlayers do
-    local player = globals.allPlayers[i]
+  for i=1, #megaMan.allPlayers do
+    local player = megaMan.allPlayers[i]
     if camera.main and checkFalse(player.canControl) and not camera.main.transition
       and self:collision(player, 0, 2) and (not self.platform or (self.platform and player.onMovingFloor)) then
       camera.main.transitionDirection = "down"
@@ -150,8 +150,8 @@ function up:new(x, y, w, scrollx, scrolly, spd, p, n)
 end
 
 function up:update(dt)
-  for i=1, #globals.allPlayers do
-    local player = globals.allPlayers[i]
+  for i=1, #megaMan.allPlayers do
+    local player = megaMan.allPlayers[i]
     if camera.main and checkFalse(player.canControl) and not camera.main.transition
       and self:collision(player, 0, -2) and (not self.platform or (self.platform and player.onMovingFloor)) then
       camera.main.transitionDirection = "up"
@@ -197,8 +197,8 @@ function upLadder:update(dt)
   if not self.ladder then
     self.ladder = self:collisionTable(megautils.groups().ladder)[1]
   end
-  for i=1, #globals.allPlayers do
-    local player = globals.allPlayers[i]
+  for i=1, #megaMan.allPlayers do
+    local player = megaMan.allPlayers[i]
     if camera.main and not camera.main.transition and
       (self.ladder or (not self.platform or (self.platform and player.onMovingFloor))) and
       checkFalse(player.canControl) and (player.climb or player.treble == 2) and self:collision(player, 0, -2) then
@@ -239,7 +239,7 @@ function sectionPrioritySetter:check()
   local count = 0
   local sx, sy, sw, sh = self.transform.x, self.transform.y, self.collisionShape.w, self.collisionShape.h
   
-  for k, v in ipairs(globals.allPlayers) do
+  for k, v in ipairs(megaMan.allPlayers) do
     local x, y, w, h = v.transform.x, v.transform.y, v.collisionShape.w, v.collisionShape.h
     if pointOverlapsRect(x, y, sx, sy, sw, sh) and pointOverlapsRect(x+w, y, sx, sy, sw, sh) and
       pointOverlapsRect(x+w, y+h, sx, sy, sw, sh) and pointOverlapsRect(x, y+h, sx, sy, sw, sh) then
@@ -251,7 +251,7 @@ function sectionPrioritySetter:check()
 end
 
 function sectionPrioritySetter:update(dt)
-  if camera.main and not camera.main.transition and self.name ~= camera.main.curBoundName and self:check() == #globals.allPlayers then
+  if camera.main and not camera.main.transition and self.name ~= camera.main.curBoundName and self:check() == #megaMan.allPlayers then
     camera.main.curBoundName = self.name
   end
 end
@@ -276,14 +276,14 @@ end
 
 function sectionPrioritySetterXBorder:getSide()
   local same = 0
-  for k, v in ipairs(globals.allPlayers) do
+  for k, v in ipairs(megaMan.allPlayers) do
     if v.transform.x+(v.collisionShape.w/2) > self.transform.x+16 and
       math.between(v.transform.y, self.transform.y, self.transform.y+self.collisionShape.h-v.collisionShape.h) then
       same = same + 1
     end
   end
   
-  if same == #globals.allPlayers then
+  if same == #megaMan.allPlayers then
     return self.rname
   elseif same == 0 then
     return self.lname
@@ -317,14 +317,14 @@ end
 
 function sectionPrioritySetterYBorder:getSide()
   local same = 0
-  for k, v in ipairs(globals.allPlayers) do
+  for k, v in ipairs(megaMan.allPlayers) do
     if v.transform.y+(v.collisionShape.h/2) > self.transform.y+16 and
       math.between(v.transform.x, self.transform.x, self.transform.x+self.collisionShape.w-v.collisionShape.w) then
       same = same + 1
     end
   end
   
-  if same == #globals.allPlayers then
+  if same == #megaMan.allPlayers then
     return self.dname
   elseif same == 0 then
     return self.uname
@@ -360,7 +360,7 @@ function sectionPrioritySetterArea:check()
   local count = 0
   local sx, sy, sw, sh = self.transform.x, self.transform.y, self.collisionShape.w, self.collisionShape.h
   
-  for k, v in ipairs(globals.allPlayers) do
+  for k, v in ipairs(megaMan.allPlayers) do
     local x, y, w, h = v.transform.x, v.transform.y, v.collisionShape.w, v.collisionShape.h
     if pointOverlapsRect(x, y, sx, sy, sw, sh) and pointOverlapsRect(x+w, y, sx, sy, sw, sh) and
       pointOverlapsRect(x+w, y+h, sx, sy, sw, sh) and pointOverlapsRect(x, y+h, sx, sy, sw, sh) then
@@ -374,7 +374,7 @@ end
 function sectionPrioritySetterArea:update(dt)
   if not megautils.outside(self) and camera.main and not camera.main.transition then
     local c = self:check()
-    if c == #globals.allPlayers then
+    if c == #megaMan.allPlayers then
       camera.main.curBoundName = self.name
     else
       camera.main.curBoundName = self.outName

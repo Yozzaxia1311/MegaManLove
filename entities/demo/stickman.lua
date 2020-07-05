@@ -90,26 +90,26 @@ function stickMan:update(dt)
         megautils.gotoState("states/menu.state.lua")
       end)
       megautils.removeq(self)
-    elseif globals.mainPlayer then
+    elseif megaMan.mainPlayer then
       self.s = 1
-      globals.mainPlayer.canControl.global = false
-      globals.mainPlayer.velocity.velx = 0
-      globals.mainPlayer:resetStates()
-      if not globals.mainPlayer.ground then
-        globals.mainPlayer.curAnim = "jump"
+      megaMan.mainPlayer.canControl.global = false
+      megaMan.mainPlayer.velocity.velx = 0
+      megaMan.mainPlayer:resetStates()
+      if not megaMan.mainPlayer.ground then
+        megaMan.mainPlayer.curAnim = "jump"
       end
-      globals.mainPlayer.side = self.transform.x>globals.mainPlayer.transform.x and 1 or -1
-      globals.mainPlayer:face(globals.mainPlayer.side)
+      megaMan.mainPlayer.side = self.transform.x>megaMan.mainPlayer.transform.x and 1 or -1
+      megaMan.mainPlayer:face(megaMan.mainPlayer.side)
     end
   elseif self.s == 1 then
     if self.ss == 1 then
-      if globals.mainPlayer then
-        collision.doGrav(globals.mainPlayer)
-        globals.mainPlayer:phys()
-        globals.mainPlayer.curAnim = "jump"
-        if globals.mainPlayer.ground then
+      if megaMan.mainPlayer then
+        collision.doGrav(megaMan.mainPlayer)
+        megaMan.mainPlayer:phys()
+        megaMan.mainPlayer.curAnim = "jump"
+        if megaMan.mainPlayer.ground then
           self.ss = 0
-          globals.mainPlayer.curAnim = "idle"
+          megaMan.mainPlayer.curAnim = "idle"
           self.s = 2
           if isWeb then
             megautils.playMusic("assets/sfx/music/bossLoop.ogg", "assets/sfx/music/bossIntro.ogg")
@@ -126,14 +126,14 @@ function stickMan:update(dt)
       self.canBeInvincible.global = false
       self.hBar:updateThis(28)
       megautils.adde(self.hBar)
-      globals.mainPlayer.canUpdate.hb = true
+      megaMan.mainPlayer.canUpdate.hb = true
       self.s = 3
     end
   elseif self.s == 3 then
-    globals.mainPlayer.canControl.global = true
+    megaMan.mainPlayer.canControl.global = true
     self.s = 4
   end
-  self:hurt(self:collisionTable(globals.allPlayers), -4, 80)
+  self:hurt(self:collisionTable(megaMan.allPlayers), -4, 80)
   self:updateIFrame()
   self:updateFlash()
 end
@@ -218,25 +218,25 @@ function megamanStick:new()
   megamanStick.super.new(self)
   self.transform.y = -60
   self.transform.x = 100
-  if globals.player[1] == "mega" then
+  if megautils.getPlayer(1) == "mega" then
     self.texOutline = megautils.loadResource("assets/players/megaman/megaManOutline.png", "megaManOutline")
     self.texOne = megautils.loadResource("assets/players/megaman/megaManOne.png", "megaManOne")
     self.texTwo = megautils.loadResource("assets/players/megaman/megaManTwo.png", "megaManTwo")
     self.texFace = megautils.loadResource("assets/players/megaman/megaManFace.png", "megaManFace")
     self.grid = megautils.loadResource("megaManGrid", 41, 30, 164, 330)
-  elseif globals.player[1] == "proto" then
+  elseif megautils.getPlayer(1) == "proto" then
     self.texOutline = megautils.loadResource("assets/players/proto/protoManOutline.png", "protoManOutline")
     self.texOne = megautils.loadResource("assets/players/proto/protoManOne.png", "protoManOne")
     self.texTwo = megautils.loadResource("assets/players/proto/protoManTwo.png", "protoManTwo")
     self.texFace = megautils.loadResource("assets/players/proto/protoManFace.png", "protoManFace")
     self.grid = megautils.loadResource("megaManGrid", 41, 30, 164, 330)
-  elseif globals.player[1] == "bass" then
+  elseif megautils.getPlayer(1) == "bass" then
     self.texOutline = megautils.loadResource("assets/players/bass/bassOutline.png", "bassOutline")
     self.texOne = megautils.loadResource("assets/players/bass/bassOne.png", "bassOne")
     self.texTwo = megautils.loadResource("assets/players/bass/bassTwo.png", "bassTwo")
     self.texFace = megautils.loadResource("assets/players/bass/bassFace.png", "bassFace")
     self.grid = megautils.loadResource("bassGrid", 45, 41, 180, 533)
-  elseif globals.player[1] == "roll" then
+  elseif megautils.getPlayer(1) == "roll" then
     self.texOutline = megautils.loadResource("assets/players/roll/rollOutline.png", "rollOutline")
     self.texOne = megautils.loadResource("assets/players/roll/rollOne.png", "rollOne")
     self.texTwo = megautils.loadResource("assets/players/roll/rollTwo.png", "rollTwo")

@@ -21,36 +21,36 @@ end
 function timer.winCutscene(func)
   megautils.add(timer, 150, function(s)
     if not s.state then
-      if globals.mainPlayer then
+      if megaMan.mainPlayer then
         s.timer = 0
         s.state = 0
         megautils.stopMusic()
-        globals.mainPlayer:resetStates()
-        globals.mainPlayer.velocity.velx = 0
-        globals.mainPlayer.canControl.global = false
-        globals.mainPlayer.doAnimation = false
-        globals.mainPlayer.canSwitchWeapons.global = false
-        if globals.mainPlayer.slide then
-          globals.mainPlayer.slide = false
-          globals.mainPlayer:slideToReg()
-          globals.mainPlayer.curAnim = "idle"
+        megaMan.mainPlayer:resetStates()
+        megaMan.mainPlayer.velocity.velx = 0
+        megaMan.mainPlayer.canControl.global = false
+        megaMan.mainPlayer.doAnimation = false
+        megaMan.mainPlayer.canSwitchWeapons.global = false
+        if megaMan.mainPlayer.slide then
+          megaMan.mainPlayer.slide = false
+          megaMan.mainPlayer:slideToReg()
+          megaMan.mainPlayer.curAnim = "idle"
         end
       end
     elseif s.state == 0 then
-      collision.doGrav(globals.mainPlayer)
-      globals.mainPlayer:phys()
-      if globals.mainPlayer.ground then
-        globals.mainPlayer.curAnim = "idle"
+      collision.doGrav(megaMan.mainPlayer)
+      megaMan.mainPlayer:phys()
+      if megaMan.mainPlayer.ground then
+        megaMan.mainPlayer.curAnim = "idle"
       else
-        globals.mainPlayer.curAnim = "jump"
+        megaMan.mainPlayer.curAnim = "jump"
       end
-      globals.mainPlayer:face(globals.mainPlayer.side)
+      megaMan.mainPlayer:face(megaMan.mainPlayer.side)
       s.timer = math.min(s.timer+1, 60)
       if s.timer == 60 then
         s.state = 1
         s.timer = 0
-        globals.mainPlayer.rise = true
-        globals.mainPlayer.doAnimation = true
+        megaMan.mainPlayer.rise = true
+        megaMan.mainPlayer.doAnimation = true
       end
     elseif s.state == 1 then
       s.timer = math.min(s.timer+1, 80)
@@ -68,28 +68,28 @@ function timer.absorbCutscene(func, music)
   megautils.add(timer, 150, function(s)
       if not s.state then
         megautils.playMusic(music or "assets/sfx/music/win.ogg")
-        if globals.mainPlayer then
+        if megaMan.mainPlayer then
           s.state = 0
           s.timer = 0
-          s.to = (view.x+view.w/2)-globals.mainPlayer.collisionShape.w/2
-          globals.mainPlayer:resetStates()
-          globals.mainPlayer.canControl.global = false
-          globals.mainPlayer.doAnimation = false
-          globals.mainPlayer.canSwitchWeapons.global = false
-          if not globals.mainPlayer.ground then
-            globals.mainPlayer.curAnim = "jump"
+          s.to = (view.x+view.w/2)-megaMan.mainPlayer.collisionShape.w/2
+          megaMan.mainPlayer:resetStates()
+          megaMan.mainPlayer.canControl.global = false
+          megaMan.mainPlayer.doAnimation = false
+          megaMan.mainPlayer.canSwitchWeapons.global = false
+          if not megaMan.mainPlayer.ground then
+            megaMan.mainPlayer.curAnim = "jump"
           end
-          globals.mainPlayer:face(globals.mainPlayer.side)
-          globals.mainPlayer.animations[globals.mainPlayer.curAnim]:update(1/60)
+          megaMan.mainPlayer:face(megaMan.mainPlayer.side)
+          megaMan.mainPlayer.animations[megaMan.mainPlayer.curAnim]:update(1/60)
         end
       elseif s.state == 0 then
-        if globals.mainPlayer then
+        if megaMan.mainPlayer then
           s.state = 1
-          globals.mainPlayer.velocity.velx = 0
-        if globals.mainPlayer.slide then
-          globals.mainPlayer.slide = false
-          globals.mainPlayer:slideToReg()
-          globals.mainPlayer.curAnim = "idle"
+          megaMan.mainPlayer.velocity.velx = 0
+        if megaMan.mainPlayer.slide then
+          megaMan.mainPlayer.slide = false
+          megaMan.mainPlayer:slideToReg()
+          megaMan.mainPlayer.curAnim = "idle"
         end
           s.timer = 0
         end
@@ -98,51 +98,51 @@ function timer.absorbCutscene(func, music)
         if s.timer == 300 then
           if not s.once then
             s.once = true
-            globals.mainPlayer.side = (globals.mainPlayer.transform.x > s.to and -1 or 1)
+            megaMan.mainPlayer.side = (megaMan.mainPlayer.transform.x > s.to and -1 or 1)
           end
-          globals.mainPlayer.velocity.velx = 1.3 * globals.mainPlayer.side
-          if globals.mainPlayer.ground then
-            globals.mainPlayer.curAnim = "run"
-          elseif collision.checkSolid(self, globals.mainPlayer.side, 0) then
-            globals.mainPlayer.curAnim = "jump"
-            globals.mainPlayer.velocity.vely = globals.mainPlayer.jumpSpeed * (globals.mainPlayer.gravity >= 0 and 1 or -1)
-            globals.mainPlayer:face(globals.mainPlayer.side)
+          megaMan.mainPlayer.velocity.velx = 1.3 * megaMan.mainPlayer.side
+          if megaMan.mainPlayer.ground then
+            megaMan.mainPlayer.curAnim = "run"
+          elseif collision.checkSolid(self, megaMan.mainPlayer.side, 0) then
+            megaMan.mainPlayer.curAnim = "jump"
+            megaMan.mainPlayer.velocity.vely = megaMan.mainPlayer.jumpSpeed * (megaMan.mainPlayer.gravity >= 0 and 1 or -1)
+            megaMan.mainPlayer:face(megaMan.mainPlayer.side)
           else
-            globals.mainPlayer.curAnim = "jump"
+            megaMan.mainPlayer.curAnim = "jump"
           end
-          if (globals.mainPlayer.side == -1 and globals.mainPlayer.transform.x < s.to) or
-            (globals.mainPlayer.side == 1 and globals.mainPlayer.transform.x > s.to) then
+          if (megaMan.mainPlayer.side == -1 and megaMan.mainPlayer.transform.x < s.to) or
+            (megaMan.mainPlayer.side == 1 and megaMan.mainPlayer.transform.x > s.to) then
             s.state = 2
             s.timer = 0
-            globals.mainPlayer.velocity.velx = 0
-            globals.mainPlayer.curAnim = "jump"
-            globals.mainPlayer.velocity.vely = globals.mainPlayer.jumpSpeed * (globals.mainPlayer.gravity >= 0 and 1 or -1)
-            globals.mainPlayer:face(globals.mainPlayer.side)
+            megaMan.mainPlayer.velocity.velx = 0
+            megaMan.mainPlayer.curAnim = "jump"
+            megaMan.mainPlayer.velocity.vely = megaMan.mainPlayer.jumpSpeed * (megaMan.mainPlayer.gravity >= 0 and 1 or -1)
+            megaMan.mainPlayer:face(megaMan.mainPlayer.side)
             return
           end
         else
-          globals.mainPlayer.curAnim = "idle"
+          megaMan.mainPlayer.curAnim = "idle"
         end
-        globals.mainPlayer.animations[globals.mainPlayer.curAnim]:update(1/60)
-        collision.doGrav(globals.mainPlayer)
-        globals.mainPlayer:phys()
-        if not globals.mainPlayer.ground then
-          globals.mainPlayer.curAnim = "jump"
+        megaMan.mainPlayer.animations[megaMan.mainPlayer.curAnim]:update(1/60)
+        collision.doGrav(megaMan.mainPlayer)
+        megaMan.mainPlayer:phys()
+        if not megaMan.mainPlayer.ground then
+          megaMan.mainPlayer.curAnim = "jump"
         end
-        globals.mainPlayer:face(globals.mainPlayer.side)
+        megaMan.mainPlayer:face(megaMan.mainPlayer.side)
       elseif s.state == 2 then
-        globals.mainPlayer.velocity:slowY(0.25)
-        globals.mainPlayer:moveBy(globals.mainPlayer.velocity.velx, globals.mainPlayer.velocity.vely)
-        if globals.mainPlayer.velocity.vely == 0 then
-          megautils.add(absorb, globals.mainPlayer)
+        megaMan.mainPlayer.velocity:slowY(0.25)
+        megaMan.mainPlayer:moveBy(megaMan.mainPlayer.velocity.velx, megaMan.mainPlayer.velocity.vely)
+        if megaMan.mainPlayer.velocity.vely == 0 then
+          megautils.add(absorb, megaMan.mainPlayer)
           s.state = 3
           s.timer = 0
         end
       elseif s.state == 3 then
         s.timer = math.min(s.timer+1, 230)
         if s.timer == 230 then
-          globals.mainPlayer.rise = true
-          globals.mainPlayer.doAnimation = true
+          megaMan.mainPlayer.rise = true
+          megaMan.mainPlayer.doAnimation = true
           s.timer = 0
           s.state = 4
         end

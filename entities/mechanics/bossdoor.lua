@@ -108,7 +108,7 @@ function bossDoor:down()
 end
 
 function bossDoor:update(dt)
-  if not globals.mainPlayer or not camera.main or not rectOverlapsRect(self.transform.x, self.transform.y, self.collisionShape.w,
+  if not megaMan.mainPlayer or not camera.main or not rectOverlapsRect(self.transform.x, self.transform.y, self.collisionShape.w,
     self.collisionShape.h, camera.main.scrollx, camera.main.scrolly,
     camera.main.scrollw, camera.main.scrollh) then return end
   if ((self.transform.x < camera.main.scrollx and self.dir == "left") or
@@ -122,17 +122,17 @@ function bossDoor:update(dt)
   if self.state == 0 then
     self.timer = 0
     if camera.main and not camera.main.transition then
-      for i=1, #globals.allPlayers do
-        local player = globals.allPlayers[i]
+      for i=1, #megaMan.allPlayers do
+        local player = megaMan.allPlayers[i]
         if checkFalse(player.canControl) and self:collision(player) then
           megautils.loadResource("assets/sfx/bossDoor.ogg", "bossDoorSfx")
           self.player = player
           self.state = 1
-          for j=1, #globals.allPlayers do
-            globals.allPlayers[j].canControl.trans = false
-            globals.allPlayers[j].doAnimation = false
+          for j=1, #megaMan.allPlayers do
+            megaMan.allPlayers[j].canControl.trans = false
+            megaMan.allPlayers[j].doAnimation = false
           end
-          megautils.freeze(globals.allPlayers)
+          megautils.freeze(megaMan.allPlayers)
           if megautils.groups().removeOnTransition then
             for k, v in pairs(megautils.groups().removeOnTransition) do
               megautils.removeq(v)
@@ -209,10 +209,10 @@ function bossDoor:update(dt)
       megautils.state().system.cameraUpdate = function()
         camera.main:updateBounds()
         camera.main.tweenFinished = false
-        megautils.unfreeze(globals.allPlayers)
-        for i=1, #globals.allPlayers do
-          globals.allPlayers[i].canControl.trans = true
-          globals.allPlayers[i].doAnimation = true
+        megautils.unfreeze(megaMan.allPlayers)
+        for i=1, #megaMan.allPlayers do
+          megaMan.allPlayers[i].canControl.trans = true
+          megaMan.allPlayers[i].doAnimation = true
         end
         camera.main.once = false
         camera.main.transition = false

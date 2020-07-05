@@ -64,22 +64,24 @@ function menuSelect:update(dt)
         local data = save.load("save.sav")
         if data then
           globals.defeats = data.defeats
-          globals.infiniteLives = data.infiniteLives
+          megautils.infiniteLives(data.infiniteLives)
           globals.lives = data.lives
           globals.lifeSegments = data.lifeSegments
           globals.eTanks = data.eTanks
           globals.wTanks = data.wTanks
-          globals.player = data.player
+          for k, v in ipairs(data.player) do
+            megautils.setPlayer(k, v)
+          end
         end
       elseif self.pick == 4 then
         local data = save.load("save.sav") or {}
         data.defeats = globals.defeats
-        data.infiniteLives = globals.infiniteLives
+        data.infiniteLives = megautils.hasInfiniteLives()
         data.lives = globals.lives
         data.lifeSegments = globals.lifeSegments
         data.eTanks = globals.eTanks
         data.wTanks = globals.wTanks
-        data.player = globals.player
+        data.player = megautils.getAllPlayers()
         save.save("save.sav", data)
         megautils.playSound("selected")
       elseif self.pick == 5 then

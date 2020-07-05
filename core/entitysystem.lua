@@ -512,40 +512,40 @@ function basicEntity:collision(e, x, y)
   if not e or not self.collisionShape or not e.collisionShape then return false end
   if self.collisionShape.type == 0 then
     if e.collisionShape.type == 0 then
-      return rectOverlapsRect(self.transform.x + (x or 0), self.transform.y + (y or 0),
+      return rectOverlapsRect(math.round(self.transform.x) + (x or 0), math.round(self.transform.y) + (y or 0),
         self.collisionShape.w, self.collisionShape.h,
-        e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h)
+        math.round(e.transform.x), math.round(e.transform.y), e.collisionShape.w, e.collisionShape.h)
     elseif e.collisionShape.type == 1 then
-      return imageOverlapsRect(e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h, e.collisionShape.data,
-        self.transform.x + (x or 0), self.transform.y + (y or 0), self.collisionShape.w, self.collisionShape.h)
+      return imageOverlapsRect(math.round(e.transform.x), math.round(e.transform.y), e.collisionShape.w, e.collisionShape.h, e.collisionShape.data,
+        math.round(self.transform.x) + (x or 0), math.round(self.transform.y) + (y or 0), self.collisionShape.w, self.collisionShape.h)
     elseif e.collisionShape.type == 2 then
-      return circleOverlapsRect(e.transform.x, e.transform.y, e.collisionShape.r,
-        self.transform.x + (x or 0), self.transform.y + (y or 0), self.collisionShape.w, self.collisionShape.h)
+      return circleOverlapsRect(math.round(e.transform.x), math.round(e.transform.y), e.collisionShape.r,
+        math.round(self.transform.x) + (x or 0), math.round(self.transform.y) + (y or 0), self.collisionShape.w, self.collisionShape.h)
     end
   elseif self.collisionShape.type == 1 then
     if e.collisionShape.type == 0 then
-      return imageOverlapsRect(self.transform.x + (x or 0), self.transform.y + (y or 0),
+      return imageOverlapsRect(math.round(self.transform.x) + (x or 0), math.round(self.transform.y) + (y or 0),
         self.collisionShape.w, self.collisionShape.h, self.collisionShape.data,
-        e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h)
+        math.round(e.transform.x), math.round(e.transform.y), e.collisionShape.w, e.collisionShape.h)
     elseif e.collisionShape.type == 1 then
-      return imageOverlapsImage(self.transform.x + (x or 0), self.transform.y + (y or 0),
+      return imageOverlapsImage(math.round(self.transform.x) + (x or 0), math.round(self.transform.y) + (y or 0),
         self.collisionShape.w, self.collisionShape.h, self.collisionShape.data,
-        e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h, e.collisionShape.data)
+        math.round(e.transform.x), math.round(e.transform.y), e.collisionShape.w, e.collisionShape.h, e.collisionShape.data)
     elseif e.collisionShape.type == 2 then
-      return imageOverlapsCircle(self.transform.x + (x or 0), self.transform.y + (y or 0),
+      return imageOverlapsCircle(math.round(self.transform.x) + (x or 0), math.round(self.transform.y) + (y or 0),
         self.collisionShape.w, self.collisionShape.h, self.collisionShape.data,
-        e.transform.x, e.transform.y, e.collisionShape.r)
+        math.round(e.transform.x), math.round(e.transform.y), e.collisionShape.r)
     end
   elseif self.collisionShape.type == 2 then
     if e.collisionShape.type == 0 then
-      return circleOverlapsRect(self.transform.x + (x or 0), self.transform.y + (y or 0), self.collisionShape.r,
-        e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h)
+      return circleOverlapsRect(math.round(self.transform.x) + (x or 0), math.round(self.transform.y) + (y or 0), self.collisionShape.r,
+        math.round(e.transform.x), math.round(e.transform.y), e.collisionShape.w, e.collisionShape.h)
     elseif e.collisionShape.type == 1 then
       return imageOverlapsCircle(e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h, e.collisionShape.data,
-        self.transform.x + (x or 0), self.transform.y + (y or 0), self.collisionShape.r)
+        math.round(self.transform.x) + (x or 0), math.round(self.transform.y) + (y or 0), self.collisionShape.r)
     elseif e.collisionShape.type == 2 then
-      return circleOverlapsCircle(self.transform.x + (x or 0), self.transform.y + (y or 0), self.collisionShape.r,
-        e.transform.x, e.transform.y, e.collisionShape.r)
+      return circleOverlapsCircle(math.round(self.transform.x) + (x or 0), math.round(self.transform.y) + (y or 0), self.collisionShape.r,
+        math.round(e.transform.x), math.round(e.transform.y), e.collisionShape.r)
     end
   end
   return false

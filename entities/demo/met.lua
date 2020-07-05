@@ -91,11 +91,11 @@ function met:gettingHurt(o, c, i)
 end
 
 function met:update(dt)
-  if globals.mainPlayer then
-    self:setGravityMultiplier("flipWithPlayer", globals.mainPlayer.gravityMultipliers.gravityFlip or 1)
+  if megaMan.mainPlayer then
+    self:setGravityMultiplier("flipWithPlayer", megaMan.mainPlayer.gravityMultipliers.gravityFlip or 1)
   end
   collision.doGrav(self)
-  local near = megautils.autoFace(self, globals.allPlayers)
+  local near = megautils.autoFace(self, megaMan.allPlayers)
   if self.s == 0 then
     if near and math.between(near.transform.x, 
       self.transform.x - 120, self.transform.x + 120) then
@@ -129,7 +129,7 @@ function met:update(dt)
     end
   end
   collision.doCollision(self)
-  self:hurt(self:collisionTable(globals.allPlayers), megautils.diffValue(-2, {easy=-1, normal=-2, hard=-3}), 80)
+  self:hurt(self:collisionTable(megaMan.allPlayers), megautils.diffValue(-2, {easy=-1, normal=-2, hard=-3}), 80)
   self:updateIFrame()
   self:updateFlash()
   if megautils.outside(self) then
@@ -199,7 +199,7 @@ function metBullet:update(dt)
   if self.dinked then
     self:hurt(self:collisionTable(megautils.groups().hurtable), -2, 2)
   else
-    self:hurt(self:collisionTable(globals.allPlayers), megautils.diffValue(-2, {easy=-1, normal=-2, hard=-3}), 80)
+    self:hurt(self:collisionTable(megaMan.allPlayers), megautils.diffValue(-2, {easy=-1, normal=-2, hard=-3}), 80)
   end
   if megautils.outside(self) then
     megautils.removeq(self)

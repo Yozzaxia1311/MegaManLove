@@ -82,8 +82,8 @@ function camera:updateCam(spdx, spdy)
         end
       end
       if self.freeze then
-        megautils.freeze(globals.allPlayers)
-        for k, v in pairs(globals.allPlayers) do
+        megautils.freeze(megaMan.allPlayers)
+        for k, v in pairs(megaMan.allPlayers) do
           v.canControl.trans = false
         end
       end 
@@ -106,8 +106,8 @@ function camera:updateCam(spdx, spdy)
             self.tween = tween.new(self.speed, self.transform, {x=nx})
           end
           self.tween2 = {}
-          for i=1, #globals.allPlayers do
-            self.tween2[i] = tween.new(self.speed, globals.allPlayers[i].transform, {x=self.transX, y=self.player.transform.y})
+          for i=1, #megaMan.allPlayers do
+            self.tween2[i] = tween.new(self.speed, megaMan.allPlayers[i].transform, {x=self.transX, y=self.player.transform.y})
           end
         elseif self.transitionDirection == "left" then
           if self.doScrollY then
@@ -122,8 +122,8 @@ function camera:updateCam(spdx, spdy)
             self.tween = tween.new(self.speed, self.transform, {x=self.transform.x-self.collisionShape.w})
           end
           self.tween2 = {}
-          for i=1, #globals.allPlayers do
-            self.tween2[i] = tween.new(self.speed, globals.allPlayers[i].transform, {x=self.transX, y=self.player.transform.y})
+          for i=1, #megaMan.allPlayers do
+            self.tween2[i] = tween.new(self.speed, megaMan.allPlayers[i].transform, {x=self.transX, y=self.player.transform.y})
           end
         elseif self.transitionDirection == "down" then
           if self.doScrollX then
@@ -138,8 +138,8 @@ function camera:updateCam(spdx, spdy)
             self.tween = tween.new(self.speed, self.transform, {y=ny})
           end
           self.tween2 = {}
-          for i=1, #globals.allPlayers do
-            self.tween2[i] = tween.new(self.speed, globals.allPlayers[i].transform, {x=self.player.transform.x, y=self.transY})
+          for i=1, #megaMan.allPlayers do
+            self.tween2[i] = tween.new(self.speed, megaMan.allPlayers[i].transform, {x=self.player.transform.x, y=self.transY})
           end
         elseif self.transitionDirection == "up" then
           if self.doScrollX then
@@ -154,8 +154,8 @@ function camera:updateCam(spdx, spdy)
             self.tween = tween.new(self.speed, self.transform, {y=self.transform.y-self.collisionShape.h})
           end
           self.tween2 = {}
-          for i=1, #globals.allPlayers do
-            self.tween2[i] = tween.new(self.speed, globals.allPlayers[i].transform, {x=self.player.transform.x, y=self.transY})
+          for i=1, #megaMan.allPlayers do
+            self.tween2[i] = tween.new(self.speed, megaMan.allPlayers[i].transform, {x=self.player.transform.x, y=self.transY})
           end
         end
         local lx, ly = self.transform.x, self.transform.y
@@ -180,7 +180,7 @@ function camera:updateCam(spdx, spdy)
       end
       self.once = true
       megautils.state().system.cameraUpdate = function(s)
-        for i=1, #globals.allPlayers do
+        for i=1, #megaMan.allPlayers do
           camera.main.tween2[i]:update(1/60)
         end
         if camera.main.tween:update(1/60) then
@@ -194,17 +194,17 @@ function camera:updateCam(spdx, spdy)
             megautils.state().system.cameraUpdate = nil
           end
           if camera.main.freeze then
-            megautils.unfreeze(globals.allPlayers)
-            for k, v in pairs(globals.allPlayers) do
+            megautils.unfreeze(megaMan.allPlayers)
+            for k, v in pairs(megaMan.allPlayers) do
               v.canControl.trans = true
             end
           end
           if camera.main.player and camera.main.player.onMovingFloor then
             camera.main.player.onMovingFloor.dontRemove = nil
           end
-          for i=1, #globals.allPlayers do
-            if globals.allPlayers[i] ~= camera.main.player then
-              camera.main.player:transferState(globals.allPlayers[i])
+          for i=1, #megaMan.allPlayers do
+            if megaMan.allPlayers[i] ~= camera.main.player then
+              camera.main.player:transferState(megaMan.allPlayers[i])
             end
           end
         end
@@ -226,8 +226,8 @@ function camera:updateCam(spdx, spdy)
 end
 
 function camera:doView(spdx, spdy, without)
-  if #globals.allPlayers <= 1 then
-    local o = globals.allPlayers[1]
+  if #megaMan.allPlayers <= 1 then
+    local o = megaMan.allPlayers[1]
     if self.doScrollX then
       self.transform.x = math.round(o.transform.x) - (self.collisionShape.w/2) + (o.collisionShape.w/2) + o:camOffX()
     end
@@ -237,8 +237,8 @@ function camera:doView(spdx, spdy, without)
   else
     local avx, avy = 0, 0
     local pStuffX, pStuffY = 0, 0
-    for i=1, #globals.allPlayers do
-      local p = globals.allPlayers[i]
+    for i=1, #megaMan.allPlayers do
+      local p = megaMan.allPlayers[i]
       if p ~= without then
         if self.doScrollX then
           pStuffX = pStuffX + 1

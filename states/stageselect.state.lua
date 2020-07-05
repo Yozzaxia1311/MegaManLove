@@ -137,11 +137,11 @@ end
 
 function stageSelect:draw()
   if not self:allDefeated() then
-    if globals.player[1] == "proto" then
+    if megautils.getPlayer(1) == "proto" then
       love.graphics.draw(self.tex, self.protoQuad, 112, 88)
-    elseif globals.player[1] == "bass" then
+    elseif megautils.getPlayer(1) == "bass" then
       love.graphics.draw(self.tex, self.bassQuad, 112, 88)
-    elseif globals.player[1] == "roll" then
+    elseif megautils.getPlayer(1) == "roll" then
       love.graphics.draw(self.tex, self.rollQuad, 112, 88)
     else
       love.graphics.draw(self.tex, self.megaQuad, 112, 88)

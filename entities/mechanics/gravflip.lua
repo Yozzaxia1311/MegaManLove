@@ -20,7 +20,7 @@ function gravFlip:new(x, y, w, h, dir)
 end
 
 function gravFlip:update(dt)
-  local tmp = self:collisionTable(globals.allPlayers)
+  local tmp = self:collisionTable(megaMan.allPlayers)
   if #tmp ~= 0 then
     local ds = false
     for k, v in ipairs(tmp) do

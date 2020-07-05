@@ -21,13 +21,13 @@ function view.draw(sys)
   megautils.updateShake()
   love.graphics.setColor(1, 1, 1, 1)
   control.drawDemo()
-  if showEntityCount then
+  if megautils.isShowingEntityCount() then
     local count = #megautils.state().system.all
     love.graphics.setFont(mmFont)
     love.graphics.setColor(1, 1, 1, 0.8)
     love.graphics.print(count, view.w - 24, 24)
   end
-  if showFPS then
+  if megautils.isShowingFPS() then
     local fps = love.timer.getFPS()
     love.graphics.setFont(mmFont)
     love.graphics.setColor(1, 1, 1, 0.8)

@@ -1,5 +1,7 @@
 megaMan = entity:extend()
 
+megaMan.mainPlayer = nil
+megaMan.allPlayers = {}
 megaMan.resources = {}
 
 megaMan.resources.megaMan = function()
@@ -63,8 +65,8 @@ megautils.resetGameObjectsPreFuncs.megaMan = function()
     megaMan.colorOne = {}
     megaMan.colorTwo = {}
     megaMan.weaponHandler = {}
-    globals.mainPlayer = nil
-    globals.allPlayers = {}
+    megaMan.mainPlayer = nil
+    megaMan.allPlayers = {}
     globals.lives = (globals.lives > globals.startingLives) and globals.lives or globals.startingLives
     
     globals.checkpoint = globals.overrideCheckpoint or "start"
@@ -82,7 +84,7 @@ megautils.resetGameObjectsFuncs.megaMan = function()
   for i=1, globals.playerCount do
     megaMan.weaponHandler[i] = weaponHandler(nil, nil, 10)
     
-    if globals.player[i] == "proto" then
+    if megautils.getPlayer(i) == "proto" then
       megaMan.resources.protoMan()
       
       megaMan.weaponHandler[i]:register(0, "protoBuster", {"P.BUSTER", {48, 32, 16, 16}, {64, 32, 16, 16}},
@@ -94,7 +96,7 @@ megautils.resetGameObjectsFuncs.megaMan = function()
       megaMan.weaponHandler[i]:register(10, "rushJet", {"PROTO JET", {176, 16, 16, 16}, {192, 16, 16, 16}},
         {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
       
-    elseif globals.player[i] == "bass" then
+    elseif megautils.getPlayer(i) == "bass" then
       megaMan.resources.bass()
       
       megaMan.weaponHandler[i]:register(0, "bassBuster", {"B.BUSTER", {144, 32, 16, 16}, {160, 32, 16, 16}},
@@ -103,7 +105,7 @@ megautils.resetGameObjectsFuncs.megaMan = function()
       megaMan.weaponHandler[i]:register(9, "trebleBoost", {"T. BOOST", {144, 16, 16, 16}, {160, 16, 16, 16}},
         {112, 112, 112}, {128, 0, 240}, {0, 0, 0})
       
-    elseif globals.player[i] == "roll" then
+    elseif megautils.getPlayer(i) == "roll" then
       megaMan.resources.roll()
       
       megaMan.weaponHandler[i]:register(0, "rollBuster", {"R.BUSTER", {80, 32, 16, 16}, {96, 32, 16, 16}},
@@ -227,7 +229,7 @@ function megaMan.properties(self, g, gf, c)
   self.maxBubbleTime = 120
   self.blockCollision = true
   self.maxStandSolidJumpTime = 4
-  self.maxExtraJumps = globals.player[self.player] == "bass" and 1 or 0
+  self.maxExtraJumps = megautils.getPlayer(self.player) == "bass" and 1 or 0
   self.maxRapidShotTime = 5
   self.maxTrebleSpeed = 2
   self.trebleDecel = 0.1
@@ -245,7 +247,7 @@ function megaMan.properties(self, g, gf, c)
   self.canPause = {global=true}
   self.canDieFromSpikes = {global=true}
   self.canDashShoot = {global=false}
-  self.canDashJump = {global=globals.player[self.player] == "bass"}
+  self.canDashJump = {global=megautils.getPlayer(self.player) == "bass"}
   self.canDash = {global=true}
   self.canShoot = {global=true}
   self.canWallJump = {global=false}
@@ -259,12 +261,12 @@ function megaMan.properties(self, g, gf, c)
   self.canStopJump = {global=true}
   self.canStep = {global=true}
   self.canIgnoreKnockback = {global=false}
-  self.canProtoShield = {global=globals.player[self.player] == "proto"}
+  self.canProtoShield = {global=megautils.getPlayer(self.player) == "proto"}
   self.canControl = {global=(c == nil) or c}
 end
 
 function megaMan:initChargingColors()
-  if globals.player[self.player] == "roll" then
+  if megautils.getPlayer(self.player) == "roll" then
     self.chargeColorOutlines = {}
     self.chargeColorOutlines.rollBuster = {}
     self.chargeColorOutlines.rollBuster[0] = {}
@@ -298,7 +300,7 @@ function megaMan:initChargingColors()
     self.chargeColorTwos.rollBuster[2][1] = {0, 168, 0}
     self.chargeColorTwos.rollBuster[2][2] = {0, 0, 0}
     self.chargeColorTwos.rollBuster[2][3] = {248, 56, 0}
-  elseif globals.player[self.player] == "proto" then
+  elseif megautils.getPlayer(self.player) == "proto" then
     self.chargeColorOutlines = {}
     self.chargeColorOutlines.protoBuster = {}
     self.chargeColorOutlines.protoBuster[0] = {}
@@ -373,22 +375,22 @@ function megaMan:new(x, y, side, drop, p, g, gf, c)
   megaMan.super.new(self)
   megautils.registerPlayer(self, p)
   megaMan.properties(self, g, gf, c)
-  if globals.player[self.player] == "mega" then
+  if megautils.getPlayer(self.player) == "mega" then
     self.texOutline = megautils.getResource("megaManOutline")
     self.texOne = megautils.getResource("megaManOne")
     self.texTwo = megautils.getResource("megaManTwo")
     self.texFace = megautils.getResource("megaManFace")
-  elseif globals.player[self.player] == "proto" then
+  elseif megautils.getPlayer(self.player) == "proto" then
     self.texOutline = megautils.getResource("protoManOutline")
     self.texOne = megautils.getResource("protoManOne")
     self.texTwo = megautils.getResource("protoManTwo")
     self.texFace = megautils.getResource("protoManFace")
-  elseif globals.player[self.player] == "bass" then
+  elseif megautils.getPlayer(self.player) == "bass" then
     self.texOutline = megautils.getResource("bassOutline")
     self.texOne = megautils.getResource("bassOne")
     self.texTwo = megautils.getResource("bassTwo")
     self.texFace = megautils.getResource("bassFace")
-  elseif globals.player[self.player] == "roll" then
+  elseif megautils.getPlayer(self.player) == "roll" then
     self.texOutline = megautils.getResource("rollOutline")
     self.texOne = megautils.getResource("rollOne")
     self.texTwo = megautils.getResource("rollTwo")
@@ -402,11 +404,11 @@ function megaMan:new(x, y, side, drop, p, g, gf, c)
   self.icoTex = megautils.getResource("weaponSelectIcon")
   self.iconQuad = love.graphics.newQuad(0, 0, 16, 16, 112, 48)
   self.icons = {}
-  if globals.player[self.player] == "proto" then
+  if megautils.getPlayer(self.player) == "proto" then
     self.icons[0] = {16, 32}
-  elseif globals.player[self.player] == "bass" then
+  elseif megautils.getPlayer(self.player) == "bass" then
     self.icons[0] = {32, 32}
-  elseif globals.player[self.player] == "roll" then
+  elseif megautils.getPlayer(self.player) == "roll" then
     self.icons[0] = {48, 32}
   else
     self.icons[0] = {0, 0}
@@ -419,18 +421,18 @@ function megaMan:new(x, y, side, drop, p, g, gf, c)
   self.icons[6] = {48, 16}
   self.icons[7] = {64, 0}
   self.icons[8] = {64, 16}
-  if globals.player[self.player] == "proto" then
+  if megautils.getPlayer(self.player) == "proto" then
     self.icons[9] = {80, 0}
-  elseif globals.player[self.player] == "roll" then
+  elseif megautils.getPlayer(self.player) == "roll" then
     self.icons[9] = {96, 0}
-  elseif globals.player[self.player] == "bass" then
+  elseif megautils.getPlayer(self.player) == "bass" then
     self.icons[9] = {64, 32}
   else
     self.icons[9] = {0, 16}
   end
-  if globals.player[self.player] == "proto" then
+  if megautils.getPlayer(self.player) == "proto" then
     self.icons[10] = {80, 16}
-  elseif globals.player[self.player] == "roll" then
+  elseif megautils.getPlayer(self.player) == "roll" then
     self.icons[10] = {96, 16}
   else
     self.icons[10] = {0, 32}
@@ -487,8 +489,8 @@ function megaMan:new(x, y, side, drop, p, g, gf, c)
   
   if camera.main and not camera.main.funcs.megaMan then
     camera.main.funcs.megaMan = function(s)
-      for i=0, #globals.allPlayers-1 do
-        local player = globals.allPlayers[i+1]
+      for i=0, #megaMan.allPlayers-1 do
+        local player = megaMan.allPlayers[i+1]
         if player then
           player.healthHandler.render = not player.drop
           megaMan.weaponHandler[player.player].render = not player.drop
@@ -514,20 +516,20 @@ function megaMan:new(x, y, side, drop, p, g, gf, c)
   self.climbTipAnimation = {regular="climbTip"}
   self.hitAnimation = {regular="hit"}
   self.wallJumpAnimation = {regular="wallJump", shoot="wallJumpShoot"}
-  self.dashAnimation = {regular=(checkFalse(self.canDashShoot) and globals.player[self.player] == "mega") and "dash" or "slide", shoot="dashShoot"}
+  self.dashAnimation = {regular=(checkFalse(self.canDashShoot) and megautils.getPlayer(self.player) == "mega") and "dash" or "slide", shoot="dashShoot"}
   self.trebleAnimation = {regular="treble", shoot="trebleShoot"}
   
   self.animations = {}
   local pp = "megaManGrid"
-  if globals.player[self.player] == "bass" then
+  if megautils.getPlayer(self.player) == "bass" then
     pp = "bassGrid"
     self.animations.trebleStart = anim8.newAnimation(megautils.getResource(pp)(4, 10, "1-4", 11, 1, 12), 1/8, "pauseAtEnd")
     self.animations.treble = anim8.newAnimation(megautils.getResource(pp)("2-3", 12), 1/12)
     self.animations.trebleShoot = anim8.newAnimation(megautils.getResource(pp)(4, 12, 1, 13), 1/12)
-  elseif globals.player[self.player] == "roll" then
+  elseif megautils.getPlayer(self.player) == "roll" then
     pp = "rollGrid"
   end
-  if globals.player[self.player] == "proto" then
+  if megautils.getPlayer(self.player) == "proto" then
     self.animations.idle = anim8.newAnimation(megautils.getResource(pp)(1, 1, 2, 1), 1/8)
   else
     self.animations.idle = anim8.newAnimation(megautils.getResource(pp)(1, 1, 2, 1), {2.5, 0.1})
@@ -608,7 +610,7 @@ function megaMan:transferState(to)
   to.slide = self.slide
   to.climb = self.climb
   to.currentLadder = self.currentLadder
-  if globals.player[self.player] == "bass" then
+  if megautils.getPlayer(self.player) == "bass" then
     self.transform.y = to.transform.y - (self.gravity >= 0 and (self.collisionShape.h - to.collisionShape.h) or 0)
   end
   if self.slideTimer ~= self.maxSlideTime then
@@ -660,11 +662,11 @@ function megaMan:regBox()
 end
 
 function megaMan:basicSlideBox()
-  self:setRectangleCollision(11, globals.player[self.player] == "bass" and 21 or 14)
+  self:setRectangleCollision(11, megautils.getPlayer(self.player) == "bass" and 21 or 14)
 end
 
 function megaMan:slideBox()
-  self:setRectangleCollision(17, globals.player[self.player] == "bass" and 21 or 14)
+  self:setRectangleCollision(17, megautils.getPlayer(self.player) == "bass" and 21 or 14)
 end
 
 function megaMan:checkRegBox(ox, oy)
@@ -1085,7 +1087,7 @@ function megaMan:gettingHurt(o, c, i)
       self.iFrame = self.maxIFrame
       megautils.freeze({self}, "dying")
       if camera.main then
-        if #globals.allPlayers == 1 then
+        if #megaMan.allPlayers == 1 then
           self.cameraTween = timer((((self.gravity >= 0 and self.transform.y < view.y+view.h) or
             (self.gravity < 0 and self.transform.y+self.collisionShape.h > view.y)) and 28 or 0))
           megautils.stopMusic()
@@ -1536,8 +1538,8 @@ function megaMan:code(dt)
   if self.stopOnShot and self.shootTimer == self.maxShootTime then
     self.stopOnShot = false
   end
-  if globals.mainPlayer and control.startPressed[self.player] and
-    checkFalse(globals.mainPlayer.canControl) and checkFalse(globals.mainPlayer.canUpdate) and checkFalse(self.canPause) then
+  if megaMan.mainPlayer and control.startPressed[self.player] and
+    checkFalse(megaMan.mainPlayer.canControl) and checkFalse(megaMan.mainPlayer.canUpdate) and checkFalse(self.canPause) then
     self.weaponSwitchTimer = 70
     mmWeaponsMenu.pause(self)
   end
@@ -1840,7 +1842,7 @@ function megaMan:die()
       self.transform.y+((self.collisionShape.h/2)-12))
   end
   
-  if #globals.allPlayers == 1 then
+  if #megaMan.allPlayers == 1 then
     healthHandler.playerTimers = {}
     for i=1, maxPlayerCount do
       healthHandler.playerTimers[i] = -2
@@ -1853,10 +1855,10 @@ function megaMan:die()
     megautils.add(timer, 160, function(t)
       megautils.add(fade, true, nil, nil, function(s)
         megautils.reloadState = true
-        if not globals.infiniteLives then
+        if not megautils.hasInfiniteLives() then
           globals.lives = globals.lives - 1
         end
-        if not globals.infiniteLives and globals.lives < 0 then
+        if not megautils.hasInfiniteLives() and globals.lives < 0 then
           megautils.gotoState("states/gameover.state.lua")
         else
           megautils.resetGameObjects = false
@@ -1944,7 +1946,7 @@ function megaMan:update(dt)
 end
 
 function megaMan:afterUpdate(dt)
-  if not self.dying and camera.main and globals.mainPlayer == self and
+  if not self.dying and camera.main and megaMan.mainPlayer == self and
     checkFalse(self.canHaveCameraFocus) and not self.drop and not self.rise
     and self.collisionShape then
     camera.main:updateCam()
@@ -1956,7 +1958,7 @@ function megaMan:draw()
   local roundx, roundy = math.round(self.transform.x), math.round(self.transform.y)
   local offsetx, offsety = 0, 0
   
-  if globals.player[self.player] == "bass" then
+  if megautils.getPlayer(self.player) == "bass" then
     offsety, offsetx = -10, -18
     if table.contains(self.climbAnimation, self.curAnim) or 
       table.contains(self.jumpAnimation, self.curAnim) or 
@@ -1969,7 +1971,7 @@ function megaMan:draw()
     elseif table.contains(self.dashAnimation, self.curAnim) then
       offsety = -10
     end
-  elseif globals.player[self.player] == "roll" then
+  elseif megautils.getPlayer(self.player) == "roll" then
     offsety, offsetx = self.gravity >= 0 and -10 or -3, -18
     if table.contains(self.climbAnimation, self.curAnim) or 
       table.contains(self.jumpAnimation, self.curAnim) or 
@@ -1997,7 +1999,7 @@ function megaMan:draw()
     end
   end
   offsety = offsety + self.teleportOffY
-  if globals.player[self.player] == "bass" or globals.player[self.player] == "roll" then
+  if megautils.getPlayer(self.player) == "bass" or megautils.getPlayer(self.player) == "roll" then
     if self.curAnim == "climbShoot" or self.curAnim == "climbShootDM" or self.curAnim == "climbShootUM"
       or self.curAnim == "climbShootU" or self.curAnim == "climbThrow" then
       offsetx = self.side == -1 and -17 or -18

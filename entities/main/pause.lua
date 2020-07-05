@@ -325,27 +325,27 @@ function mmWeaponsMenu:draw()
   love.graphics.setFont(mmFont)
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.draw(self.bg, view.x, view.y)
-  love.graphics.print((globals.infiniteLives and "inf" or tostring(globals.lives)), view.x+(24*8), view.y+(23*8))
+  love.graphics.print((megautils.hasInfiniteLives() and "inf" or tostring(globals.lives)), view.x+(24*8), view.y+(23*8))
   love.graphics.print(tostring(globals.eTanks), view.x+(8*8), view.y+(23*8))
   love.graphics.print(tostring(globals.wTanks), view.x+(12*8), view.y+(23*8))
   
   local ox, oy = 0, 0
   local tx, ty = view.x+(8*21), view.y+(22*8)
 
-  if globals.player[self.player] == "proto" then
+  if megautils.getPlayer(self.player) == "proto" then
     oy = 1
-  elseif globals.player[self.player] == "bass" then
+  elseif megautils.getPlayer(self.player) == "bass" then
     ox = -1
     oy = 1
   end
   love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.draw(self.tex, self.heads[globals.player[self.player]], tx+ox, ty+oy)
+  love.graphics.draw(self.tex, self.heads[megautils.getPlayer(self.player)], tx+ox, ty+oy)
   love.graphics.setColor(megaMan.colorTwo[self.player][1]/255, megaMan.colorTwo[self.player][2]/255, megaMan.colorTwo[self.player][3]/255, 1)
-  love.graphics.draw(self.texTwo, self.heads[globals.player[self.player]], tx+ox, ty+oy)
+  love.graphics.draw(self.texTwo, self.heads[megautils.getPlayer(self.player)], tx+ox, ty+oy)
   love.graphics.setColor(megaMan.colorOutline[self.player][1]/255, megaMan.colorOutline[self.player][2]/255, megaMan.colorOutline[self.player][3]/255, 1)
-  love.graphics.draw(self.texOutline, self.heads[globals.player[self.player]], tx+ox, ty+oy)
+  love.graphics.draw(self.texOutline, self.heads[megautils.getPlayer(self.player)], tx+ox, ty+oy)
   love.graphics.setColor(megaMan.colorOne[self.player][1]/255, megaMan.colorOne[self.player][2]/255, megaMan.colorOne[self.player][3]/255, 1)
-  love.graphics.draw(self.texOne, self.heads[globals.player[self.player]], tx+ox, ty+oy)
+  love.graphics.draw(self.texOne, self.heads[megautils.getPlayer(self.player)], tx+ox, ty+oy)
   
   if self.section == 0 then
     local tx, ty, tx2 = view.x+(8*6), view.y+(22*8), view.x+(8*10)

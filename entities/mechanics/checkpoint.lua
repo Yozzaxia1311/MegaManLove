@@ -42,7 +42,7 @@ function collisionCheckpoint:new(x, y, w, h, c, s)
 end
 
 function collisionCheckpoint:update(dt)
-  if globals.checkpoint ~= self.name and globals.mainPlayer and self:collision(globals.mainPlayer) then
+  if globals.checkpoint ~= self.name and megaMan.mainPlayer and self:collision(megaMan.mainPlayer) then
     globals.checkpoint = self.name
     globals.deathState = self.s or states.current
   end

@@ -62,7 +62,7 @@ function healthHandler:update(dt)
       end
     end
   end
-  if self.player and self.player == globals.mainPlayer and
+  if self.player and self.player == megaMan.mainPlayer and
     checkFalse(self.player.canControl) and checkFalse(self.player.canUpdate) then
     for i=1, globals.playerCount do
       if healthHandler.playerTimers[i] > -1 then
@@ -79,7 +79,7 @@ function healthHandler:update(dt)
           if camera.main then
             camera.main:updateFuncs()
           end
-          if not globals.infiniteLives then
+          if not megautils.hasInfiniteLives() then
             globals.lives = globals.lives - 1
           end
           self.t2 = nil
@@ -98,11 +98,11 @@ function healthHandler:removed()
 end
 
 function healthHandler:draw()
-  if globals.mainPlayer then
-    self.mp = globals.mainPlayer
+  if megaMan.mainPlayer then
+    self.mp = megaMan.mainPlayer
   end
   if self.player and self.player == self.mp then
-    if not globals.infiniteLives then
+    if not megautils.hasInfiniteLives() then
       love.graphics.setColor(0, 0, 0, 1)
       love.graphics.rectangle("fill", self.transform.x, self.transform.y, 8, 8)
       love.graphics.setColor(1, 1, 1, 1)

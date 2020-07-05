@@ -313,29 +313,8 @@ function collision.checkGround(self, noSlope)
         self.ground = true
         self.transform.y = math.round(self.transform.y+cgrav) + (i - cgrav)
         local dec = 0
-        while true do
-          local tmp = self:collisionTable(solid)
-          if #tmp ~= 0 then
-            dec = (cgrav >= 0) and 0 or 1
-            for k, v in ipairs(tmp) do
-              local nd = v.transform.y - math.floor(v.transform.y)
-              if cgrav >= 0 and nd > dec then
-                dec = nd
-              elseif cgrav < 0 and nd < dec then
-                dec = nd
-              end
-            end
-            self.transform.y = self.transform.y - cgrav
-          else
-            break
-          end
-        end
-        if dec ~= 0 then
-          if cgrav >= 0 then
-            self.transform.y = self.transform.y + dec
-          elseif cgrav < 0 then
-            self.transform.y = self.transform.y - (1 - dec)
-          end
+        while self:collisionNumber(solid) ~= 0 do
+          self.transform.y = self.transform.y - cgrav
         end
         break
       end
@@ -364,7 +343,7 @@ function collision.generalCollision(self, noSlope)
     if v ~= self and v.collisionShape and (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
       (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) then
       if v.isSolid == 1 then
-        if not v:collision(self, math.sign(self.velocity.velx), math.sign(self.velocity.vely)) and not table.contains(solid, v) then
+        if not v:collision(self) and not table.contains(solid, v) then
           solid[#solid+1] = v
         end
       elseif v.isSolid == 3 then
