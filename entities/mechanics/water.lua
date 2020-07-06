@@ -5,10 +5,6 @@ splash = basicEntity:extend()
 
 function splash:new(offx, offy, follow, side)
   splash.super.new(self)
-  self.added = function(self)
-    self:addToGroup("removeOnTransition")
-    self:addToGroup("freezable")
-  end
   self.offx = offx
   self.offy = offy
   self.side = side
@@ -34,6 +30,11 @@ function splash:recycle(offx, offy, follow, side)
   end
   self.rot = math.rad(side==-1 and 0 or 180)
   self.anim:gotoFrame(1)
+end
+
+function splash:added()
+  self:addToGroup("removeOnTransition")
+  self:addToGroup("freezable")
 end
 
 function splash:update(dt)
@@ -65,11 +66,12 @@ function water:new(x, y, w, h, grav)
   self:setRectangleCollision(w, h)
   self.current = false
   self.grav = grav or 0.4
-  self.added = function(self)
-    self:addToGroup("despawnable")
-    self:addToGroup("water")
-    self:addToGroup("freezable")
-  end
+end
+
+function water:added()
+  self:addToGroup("despawnable")
+  self:addToGroup("water")
+  self:addToGroup("freezable")
 end
 
 function water:removed()
@@ -136,11 +138,12 @@ function space:new(x, y, w, h, grav)
   self.transform.y = y
   self:setRectangleCollision(w, h)
   self.grav = grav or 0.4
-  self.added = function(self)
-    self:addToGroup("despawnable")
-    self:addToGroup("space")
-    self:addToGroup("freezable")
-  end
+end
+
+function space:added()
+  self:addToGroup("despawnable")
+  self:addToGroup("space")
+  self:addToGroup("freezable")
 end
 
 function space:removed()

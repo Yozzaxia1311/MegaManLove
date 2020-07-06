@@ -10,10 +10,11 @@ function solid:new(x, y, w, h)
   self.transform.x = x
   self:setRectangleCollision(w, h)
   self.isSolid = 1
-  self.added = function(self)
-    self:addToGroup("despawnable")
-    self:makeStatic()
-  end
+end
+
+function solid:added()
+  self:addToGroup("despawnable")
+  self:makeStatic()
 end
 
 sinkIn = basicEntity:extend()
@@ -29,10 +30,11 @@ function sinkIn:new(x, y, w, h, s)
   self:setRectangleCollision(w, h)
   self.sink = s or 0.125
   self.isSolid = 3
-  self.added = function(self)
-    self:addToGroup("despawnable")
-    self:addToGroup("freezable")
-  end
+end
+
+function sinkIn:added()
+  self:addToGroup("despawnable")
+  self:addToGroup("freezable")
 end
 
 function sinkIn:update(dt)
@@ -56,10 +58,11 @@ function slope:new(x, y, mask)
   self.transform.y = y
   self:setImageCollision(mask)
   self.isSolid = 1
-  self.added = function(self)
-    self:addToGroup("despawnable")
-    self:makeStatic()
-  end
+end
+
+function slope:added()
+  self:addToGroup("despawnable")
+  self:makeStatic()
 end
 
 addobjects.register("oneway", function(v)

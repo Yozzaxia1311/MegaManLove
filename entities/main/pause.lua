@@ -100,9 +100,10 @@ function mmWeaponsMenu:new(w, h, p)
   megaMan.colorOne[self.player.player] = self.w.colorOne[self.list[self.y][self.x]]
   megaMan.colorTwo[self.player.player] = self.w.colorTwo[self.list[self.y][self.x]]
   self:setLayer(10)
-  self.added = function(self)
-    self:addToGroup("freezable")
-  end
+end
+
+function mmWeaponsMenu:added()
+  self:addToGroup("freezable")
 end
 
 function mmWeaponsMenu:removed()

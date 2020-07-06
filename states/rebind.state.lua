@@ -14,9 +14,6 @@ rebinder = entity:extend()
 
 function rebinder:new()
   rebinder.super.new(self)
-  self.added = function(self)
-    self:addToGroup("freezable")
-  end
   self.transform.x = 32
   self.transform.y = 112
   self.keysToSet = {3, 4, 1, 2, 7, 8, 11, 9, 10, 5, 6}
@@ -28,6 +25,10 @@ function rebinder:new()
   self.data = save.load("main.sav") or {}
   self.data.controls = {}
   inputHandler.refreshGamepads()
+end
+
+function rebinder:added()
+  self:addToGroup("freezable")
 end
 
 function rebinder:update(dt)

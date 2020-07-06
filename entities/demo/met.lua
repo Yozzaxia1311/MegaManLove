@@ -52,7 +52,7 @@ function met:gettingHurt(o, c, i)
   if c < 0 and not checkTrue(self.canBeInvincible) and not o:is(megaChargedBuster) then
     megautils.removeq(o)
   end
-  if self.maxIFrame ~= self.iFrame then return end
+  if self.iFrames ~= 0 then return end
   
   if o:is(megaBuster) then
     self.changeHealth = -1
@@ -75,8 +75,7 @@ function met:gettingHurt(o, c, i)
   end
   
   self.health = self.health + self.changeHealth
-  self.maxIFrame = i
-  self.iFrame = 0
+  self.iFrames = i
   if self.health <= 0 then
     megautils.add(smallBlast, self.transform.x-4, self.transform.y-4)
     megautils.dropItem(self.transform.x, self.transform.y+(self.gravity >= 0 and -4 or 4))
@@ -159,11 +158,6 @@ metBullet = basicEntity:extend()
 
 function metBullet:new(x, y, vx, vy)
   metBullet.super.new(self)
-  self.added = function(self)
-    self:addToGroup("freezable")
-    self:addToGroup("removeOnTransition")
-    self:addToGroup("enemyWeapon")
-  end
   self.transform.x = x
   self.transform.y = y
   self:setRectangleCollision(6, 6)
@@ -181,6 +175,12 @@ function metBullet:recycle(x, y, vx, vy)
   self.velocity.vely = vy
   self.dinked = nil
   self.reflectedBack = nil
+end
+
+function metBullet:added()
+  self:addToGroup("freezable")
+  self:addToGroup("removeOnTransition")
+  self:addToGroup("enemyWeapon")
 end
 
 function metBullet:dink(e)

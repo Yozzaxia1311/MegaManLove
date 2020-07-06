@@ -9,11 +9,12 @@ function checkpoint:new(x, y, w, h, c, s)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(w, h)
-  self.added = function(self)
-    self:addToGroup("despawnable")
-  end
   self.name = c
   self.stage = s
+end
+
+function checkpoint:added()
+  self:addToGroup("despawnable")
 end
 
 function checkpoint:update(dt)
@@ -34,11 +35,12 @@ function collisionCheckpoint:new(x, y, w, h, c, s)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(w, h)
-  self.added = function(self)
-    self:addToGroup("despawnable")
-  end
   self.name = c
   self.stage = s
+end
+
+function collisionCheckpoint:added()
+  self:addToGroup("despawnable")
 end
 
 function collisionCheckpoint:update(dt)

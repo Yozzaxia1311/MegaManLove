@@ -7,9 +7,6 @@ end
 
 function healthHandler:new(colorOne, colorTwo, colorOutline, side, r, segments, player)
   healthHandler.super.new(self)
-  self.added = function(self)
-    self:addToGroup("freezable")
-  end
   self.barOne = megautils.getResource("barOne")
   self.barTwo = megautils.getResource("barTwo")
   self.barOutline = megautils.getResource("barOutline")
@@ -29,6 +26,10 @@ function healthHandler:new(colorOne, colorTwo, colorOutline, side, r, segments, 
   self.riseTimer = 4
   self.rot = r or "y"
   self.player = player
+end
+
+function healthHandler:added()
+  self:addToGroup("freezable")
 end
 
 function healthHandler:updateThis(newHealth)
@@ -172,9 +173,6 @@ weaponHandler.id = 0
 
 function weaponHandler:new(side, r, slots)
   weaponHandler.super.new(self)
-  self.added = function(self)
-    self:addToGroup("freezable")
-  end
   self.current = "megaBuster"
   self.slotSize = slots
   self.currentSlot = 0
@@ -203,6 +201,10 @@ function weaponHandler:new(side, r, slots)
   self.rot = r or "y"
   self.id = tostring(weaponHandler.id)
   weaponHandler.id = weaponHandler.id + 1
+end
+
+function weaponHandler:added()
+  self:addToGroup("freezable")
 end
 
 function weaponHandler:reinit()

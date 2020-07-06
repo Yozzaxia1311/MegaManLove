@@ -248,7 +248,6 @@ function megaMan.properties(self, g, gf, c)
   self.canDashJump = {global=self.playerName == "bass"}
   self.canDash = {global=true}
   self.canShoot = {global=true}
-  self.canWallJump = {global=false}
   self.canChargeBuster = {global=true}
   self.canWalk = {global=true}
   self.canJump = {global=true}
@@ -456,7 +455,6 @@ function megaMan:new(x, y, side, drop, p, g, gf, c)
   self.slide = false
   self.drop = drop==nil and true or drop
   self.rise = false
-  self.idleMoving = false
   self.stepTime = 0
   self.shootTimer = self.maxShootTime
   self.stopOnShot = false
@@ -472,28 +470,27 @@ function megaMan:new(x, y, side, drop, p, g, gf, c)
   self.treble = false
   self.trebleSine = 0
   self.trebleForce = velocity()
-  self.alwaysMove = false
   self.protoShielding = false
   self.doSplashing = not self.drop
 
   self.healthHandler = megautils.add(healthHandler, {252, 224, 168}, {255, 255, 255}, {0, 0, 0},
     nil, nil, globals.lifeSegments, self)
-  self.healthHandler.render = false
+  self.healthHandler.canDraw.global = false
   
   megautils.adde(megaMan.weaponHandler[self.player])
   megaMan.colorOutline[self.player] = megaMan.weaponHandler[self.player].colorOutline[0]
   megaMan.colorOne[self.player] = megaMan.weaponHandler[self.player].colorOne[0]
   megaMan.colorTwo[self.player] = megaMan.weaponHandler[self.player].colorTwo[0]
   megaMan.weaponHandler[self.player]:reinit()
-  megaMan.weaponHandler[self.player].render = false
+  megaMan.weaponHandler[self.player].canDraw.global = false
   
   if camera.main and not camera.main.funcs.megaMan then
     camera.main.funcs.megaMan = function(s)
       for i=0, #megaMan.allPlayers-1 do
         local player = megaMan.allPlayers[i+1]
         if player then
-          player.healthHandler.render = not player.drop
-          megaMan.weaponHandler[player.player].render = not player.drop
+          player.healthHandler.canDraw.global = not player.drop
+          megaMan.weaponHandler[player.player].canDraw.global = not player.drop
           player.healthHandler.transform.x = view.x+24 + (i*32)
           player.healthHandler.transform.y = view.y+80
           megaMan.weaponHandler[player.player].transform.x = view.x+32 + (i*32)
@@ -570,15 +567,16 @@ function megaMan:new(x, y, side, drop, p, g, gf, c)
   self.animations.spawnLand = anim8.newAnimation(megautils.getResource(pp)("1-2", 6, 1, 6), 1/20)
   
   self:face(self.side)
-  self.added = function(self)
-    self:addToGroup("freezable")
-    self:addToGroup("submergable")
-    self:addToGroup("carry")
-  end
-  self.render = not self.drop
+  self.canDraw.global = not self.drop
   for k, v in pairs(megautils.playerCreatedFuncs) do
     v(self)
   end
+end
+
+function megaMan:added()
+  self:addToGroup("freezable")
+  self:addToGroup("submergable")
+  self:addToGroup("carry")
 end
 
 function megaMan:face(n)
@@ -630,7 +628,8 @@ function megaMan:resetStates()
   self.stepTime = 0
   self.climb = false
   self.currentLadder = nil
-  self.iFrame = self.maxIFrame
+  self.iFrames = 0
+  self.canDraw.flash = true
   self.wallJumping = false
   self.dashJump = false
   self.treble = false
@@ -1073,10 +1072,9 @@ function megaMan:gettingHurt(o, c, i)
     o:dink(self)
     return
   end
-  self:addHealth((c < 0 and (checkTrue(self.canBeInvincible) or self.maxIFrame ~= self.iFrame)) and 0 or c)
-  if self.changeHealth > 0 or (self.changeHealth < 0 and self.iFrame == self.maxIFrame) then
-    self.maxIFrame = i
-    self.iFrame = 0
+  self:addHealth((c < 0 and (checkTrue(self.canBeInvincible) or self.iFrames ~= 0)) and 0 or c)
+  if self.changeHealth > 0 or (self.changeHealth < 0 and self.iFrames == 0) then
+    self.iFrames = i
   end
   for k, v in pairs(megautils.playerHealthChangedFuncs) do
     v(self)
@@ -1084,7 +1082,6 @@ function megaMan:gettingHurt(o, c, i)
   if self.changeHealth < 0 then
     if self.healthHandler.health <= 0 and not self.dying then
       self.dying = true
-      self.iFrame = self.maxIFrame
       megautils.freeze({self}, "dying")
       if camera.main then
         if #megaMan.allPlayers == 1 then
@@ -1137,7 +1134,7 @@ function megaMan:crushed(other)
     for k, v in pairs(self.canBeInvincible) do
       self.canBeInvincible[k2] = false
     end
-    self.iFrame = self.maxIFrame
+    self.iFrames = 0
     self:hurt({v}, -99999)
   end
 end
@@ -1219,10 +1216,8 @@ function megaMan:code(dt)
     elseif control.rightDown[self.player] then
       self.side = 1
     end
-    if not self.alwaysMove then
-      self.velocity.velx = 0
-      self.velocity.vely = 0
-    end
+    self.velocity.velx = 0
+    self.velocity.vely = 0
     self.transform.x = self.currentLadder.transform.x+(self.currentLadder.collisionShape.w/2)-
       ((self.collisionShape.w)/2)
     local downDown, upDown
@@ -1376,7 +1371,7 @@ function megaMan:code(dt)
       elseif self.runCheck then
         self.side = control.leftDown[self.player] and -1 or 1
         self.velocity.velx = self.velocity.velx + (self.side == -1 and self.leftSpeed or self.rightSpeed)
-      elseif not self.alwaysMove then
+      else
         self.velocity:slowX(self.side == -1 and self.leftDecel or self.rightDecel)
         self.stepTime = 0
         self.step = false
@@ -1441,28 +1436,7 @@ function megaMan:code(dt)
   else
     collision.doGrav(self)
     self.protoShielding = checkFalse(self.canProtoShield)
-    self.wallJumping = false
-    local ns = control.leftDown[self.player] and -1 or (control.rightDown[self.player] and 1 or 0)
-    if self.wallJumpTimer ~= 0 then
-      self.wallJumpTimer = math.max(self.wallJumpTimer-1, 0)
-      self.velocity.velx = self.wallKickSpeed * self.side
-      if (self.side == 1 and control.rightDown[self.player]) or 
-        (self.side == -1 and control.leftDown[self.player]) then
-        self.wallJumpTimer = 0
-      end
-    elseif checkFalse(self.canWallJump) and self.velocity.vely > 0 and collision.checkSolid(self, ns, 0) then
-      self.side = -ns
-      self.velocity.velx = -self.side
-      self.wallJumping = true
-      self.velocity.vely = self.wallSlideSpeed * (self.gravity >= 0 and 1 or -1)
-      if control.jumpPressed[self.player] then
-        self.wallJumpTimer = self.maxWallJumpTime
-        self.velocity.vely = self.wallJumpSpeed * (self.gravity >= 0 and 1 or -1)
-        self.dashJump = true
-        megautils.add(kickParticle, self.transform.x+(self.side==1 and -4 or self.collisionShape.w-4),
-          self.transform.y+(self.gravity > 0 and self.collisionShape.h-10 or 0), -self.side)
-      end
-    elseif self.runCheck then
+    if self.runCheck then
       self.side = control.leftDown[self.player] and -1 or 1
       self.velocity.velx = self.velocity.velx + (self.side == -1 and 
         (self.dashJump and self.slideLeftSpeed*self.dashJumpMultiplier or self.leftAirSpeed) or 
@@ -1475,7 +1449,7 @@ function megaMan:code(dt)
       end
       self.stepTime = 0
       self.step = true
-    elseif not self.alwaysMove then
+    else
       self.velocity:slowX(self.side == -1 and self.leftAirDecel or self.rightAirDecel)
       self.velocity.velx = math.clamp(self.velocity.velx, self.maxLeftAirSpeed, self.maxRightAirSpeed)
       self.stepTime = 0
@@ -1527,7 +1501,7 @@ function megaMan:code(dt)
   self.shootTimer = math.min(self.shootTimer+1, self.maxShootTime)
   if ((self.gravity >= 0 and self.transform.y >= view.y+view.h) or (self.gravity < 0 and self.transform.y+self.collisionShape.h <= view.y)) or 
     (self.blockCollision and checkTrue(self.canGetCrushed) and collision.checkSolid(self)) then
-    self.iFrame = self.maxIFrame
+    self.iFrames = 0
     for k, v in pairs(self.canBeInvincible) do
       self.canBeInvincible[k] = false
     end
@@ -1757,7 +1731,7 @@ function megaMan:animate()
         else
           self.curAnim = self.climbTipAnimation.regular
         end
-      elseif not self.alwaysMove and not (control.downDown[self.player] or
+      elseif not (control.downDown[self.player] or
         control.upDown[self.player]) and 
         self.animations[self.climbAnimation.regular].status == "playing" then
         self.animations[self.climbAnimation.regular]:pause()
@@ -1785,8 +1759,7 @@ function megaMan:animate()
         else
           self.curAnim = self.nudgeAnimation[shoot]
         end
-      elseif (checkFalse(self.canWalk) and ((not self.idleMoving and self.alwaysMove and self.velocity.velx ~= 0) or
-        self.runCheck)) and
+      elseif checkFalse(self.canWalk) and self.runCheck and
         not (self.stopOnShot and self.shootTimer ~= self.maxShootTime) then
         self.curAnim = self.runAnimation[shoot]
       else
@@ -1876,7 +1849,7 @@ function megaMan:die()
     megautils.removeq(megaMan.weaponHandler[self.player])
     megautils.removeq(self.healthHandler)
   end
-  self.render = false
+  self.canDraw.global = false
   self.canControl.global = false
   self.died = true
   megautils.unregisterPlayer(self)
@@ -1917,10 +1890,10 @@ function megaMan:update(dt)
         self.teleportOffY = self.teleportOffY+self.riseSpeed
       end
     elseif self.drop then
-      if not self.render then
+      if not self.canDraw.global then
         self.teleportOffY = view.y-self.transform.y
       end
-      self.render = true
+      self.canDraw.global = true
       self.teleportOffY = math.min(self.teleportOffY+self.dropSpeed, 0)
       if self.teleportOffY == 0 then
         self.dropLanded = true

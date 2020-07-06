@@ -16,9 +16,6 @@ disclaimer = entity:extend()
 
 function disclaimer:new()
   disclaimer.super.new(self)
-  self.added = function(self)
-    self:addToGroup("freezable")
-  end
   self.transform.x = 0
   self.transform.y = 0
   self.t = megautils.getResource("face")
@@ -35,6 +32,10 @@ function disclaimer:new()
   self.bottomText = "Press start to continue" .. (isWeb and "" or "\nPress Alt+Enter for fullscreen") ..
     "\nPress 1-9 to set the scale" ..
     "\nPress " .. (isWeb and "1" or "Escape") .. " here to rebind"
+end
+
+function disclaimer:added()
+  self:addToGroup("freezable")
 end
 
 function disclaimer:update()

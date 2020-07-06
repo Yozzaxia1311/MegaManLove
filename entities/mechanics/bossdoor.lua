@@ -11,10 +11,6 @@ end)
 
 function bossDoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt, n)
   bossDoor.super.new(self)
-  self.added = function(self)
-    self:addToGroup("bossDoor")
-    self:addToGroup("despawnable")
-  end
   self.transform.y = y
   self.transform.x = x
   self:setLayer(0)
@@ -35,6 +31,11 @@ function bossDoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt, n)
   self.spawnEarlyDuringTransition = true
   self.useMapTiles = megautils.getMapLayer(umt) and umt
   self.name = n
+end
+
+function bossDoor:added()
+  self:addToGroup("bossDoor")
+  self:addToGroup("despawnable")
 end
 
 function bossDoor:setDirection(dir)

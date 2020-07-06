@@ -271,7 +271,7 @@ function entitySystem:draw()
   for i=1, #self.entities do
     for k=1, #self.entities[i].data do
       local v = self.entities[i].data[k]
-      if v.render and (v.flashRender == nil and true or v.flashRender) and not v.isRemoved and v.draw then
+      if checkFalse(v.canDraw) and not v.isRemoved and v.draw then
         v:draw()
         love.graphics.setColor(1, 1, 1, 1)
         if entitySystem.drawCollision then
@@ -287,7 +287,7 @@ function entitySystem:drawQuality()
   for i=1, #self.entities do
     for k=1, #self.entities[i].data do
       local v = self.entities[i].data[k]
-      if v.render and (v.flashRender == nil and true or v.flashRender) and not v.isRemoved and v.drawQuality then
+      if checkFalse(v.canDraw) and not v.isRemoved and v.drawQuality then
         v:drawQuality()
       end
     end
@@ -391,22 +391,21 @@ function basicEntity:new()
   self.layer = 1
   self.isRemoved = true
   self.isAdded = false
-  self.render = true
-  self.maxIFrame = 80
-  self.iFrame = self.maxIFrame
+  self.iFrames = 0
   self.changeHealth = 0
   self.canUpdate = {global=true}
+  self.canDraw = {global=true}
 end
 
 function basicEntity:baseRecycle()
   self.transform.x = 0
   self.transform.y = 0
-  self.render = true
   self.isRemoved = true
   self.isAdded = false
   self.changeHealth = 0
-  self.iFrame = self.maxIFrame
+  self.iFrames = 0
   self.canUpdate = {global=true}
+  self.canDraw = {global=true}
 end
 
 function basicEntity:hurt(t, h, f, single)
@@ -420,7 +419,7 @@ function basicEntity:hurt(t, h, f, single)
 end
 
 function basicEntity:updateIFrame()
-  self.iFrame = math.min(self.iFrame+1, self.maxIFrame)
+  self.iFrames = math.max(self.iFrames-1, 0)
 end
 
 function basicEntity:gettingHurt(other, c, i) end
@@ -587,7 +586,7 @@ entity = basicEntity:extend()
 
 function entity:new()
   entity.super.new(self)
-  self.flashRender = true
+  self.canDraw.flash = true
   self.isSolid = 0
   self.velocity = velocity()
   self.normalGravity = 0.25
@@ -612,7 +611,7 @@ end
 
 function entity:baseRecycle()
   entity.super.baseRecycle(self)
-  self.flashRender = true
+  self.canDraw.flash = true
   self.velocity.velx = 0
   self.velocity.vely = 0
   self.normalGravity = 0.25
@@ -685,9 +684,9 @@ function entity:setShake(x, y, t)
 end
 
 function entity:updateFlash(length, range)
-  if self.iFrame == self.maxIFrame then
-    self.flashRender = true
+  if self.iFrames == 0 then
+    self.canDraw.flash = true
   else
-    self.flashRender = math.wrap(self.iFrame, 0, length or 8) > (range or 4)
+    self.canDraw.flash = math.wrap(self.iFrames, 0, length or 8) > (range or 4)
   end
 end

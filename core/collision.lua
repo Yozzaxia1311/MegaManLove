@@ -220,9 +220,6 @@ function collision.entityPlatform(self)
                     if v.crushed then
                       v:crushed(self)
                     end
-                    v.crushed = self
-                    v.iFrame = v.maxIFrame
-                    v:hurt({v}, -999)
                   end
                 end
                 

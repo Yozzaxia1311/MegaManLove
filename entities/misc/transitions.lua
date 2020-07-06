@@ -15,9 +15,10 @@ function right:new(x, y, h, scrollx, scrolly, spd, p, n)
   self.spd = spd
   self.platform = p
   self.name = n
-  self.added = function(self)
-    self:addToGroup("despawnable")
-  end
+end
+
+function right:added()
+  self:addToGroup("despawnable")
 end
 
 function right:update(dt)
@@ -58,9 +59,10 @@ function left:new(x, y, h, scrollx, scrolly, spd, p, n)
   self.spd = spd
   self.platform = p
   self.name = n
-  self.added = function(self)
-    self:addToGroup("despawnable")
-  end
+end
+
+function left:added()
+  self:addToGroup("despawnable")
 end
 
 function left:update(dt)
@@ -101,9 +103,10 @@ function down:new(x, y, w, scrollx, scrolly, spd, p, n)
   self.spd = spd
   self.platform = p
   self.name = n
-  self.added = function(self)
-    self:addToGroup("despawnable")
-  end
+end
+
+function down:added()
+  self:addToGroup("despawnable")
 end
 
 function down:update(dt)
@@ -144,9 +147,10 @@ function up:new(x, y, w, scrollx, scrolly, spd, p, n)
   self.spd = spd
   self.platform = p
   self.name = n
-  self.added = function(self)
-    self:addToGroup("despawnable")
-  end
+end
+
+function up:added()
+  self:addToGroup("despawnable")
 end
 
 function up:update(dt)
@@ -187,20 +191,17 @@ function upLadder:new(x, y, w, scrollx, scrolly, spd, p, n)
   self.spd = spd
   self.platform = p
   self.name = n
-  self.added = function(self)
-    self:addToGroup("despawnable")
-    self.ladder = self:collisionTable(megautils.groups().ladder)[1]
-  end
+end
+
+function upLadder:added()
+  self:addToGroup("despawnable")
 end
 
 function upLadder:update(dt)
-  if not self.ladder then
-    self.ladder = self:collisionTable(megautils.groups().ladder)[1]
-  end
   for i=1, #megaMan.allPlayers do
     local player = megaMan.allPlayers[i]
     if camera.main and not camera.main.transition and
-      (self.ladder or (not self.platform or (self.platform and player.onMovingFloor))) and
+      (not self.platform or (self.platform and player.onMovingFloor)) and
       checkFalse(player.canControl) and (player.climb or player.treble == 2) and self:collision(player, 0, -2) then
       camera.main.transitionDirection = "up"
       camera.main.transition = true
@@ -230,9 +231,10 @@ function sectionPrioritySetter:new(x, y, w, h, name)
   self.transform.y = y
   self.transform.x = x
   self.name = name
-  self.added = function(self)
-    self:addToGroup("despawnable")
-  end
+end
+
+function sectionPrioritySetter:added()
+  self:addToGroup("despawnable")
 end
 
 function sectionPrioritySetter:check()
@@ -269,9 +271,10 @@ function sectionPrioritySetterXBorder:new(x, y, h, lname, rname)
   self.transform.x = x
   self.lname = lname
   self.rname = rname
-  self.added = function(self)
-    self:addToGroup("despawnable")
-  end
+end
+
+function sectionPrioritySetterXBorder:added()
+  self:addToGroup("despawnable")
 end
 
 function sectionPrioritySetterXBorder:getSide()
@@ -310,9 +313,10 @@ function sectionPrioritySetterYBorder:new(x, y, w, uname, dname)
   self.transform.x = x
   self.uname = uname
   self.dname = dname
-  self.added = function(self)
-    self:addToGroup("despawnable")
-  end
+end
+
+function sectionPrioritySetterYBorder:added()
+  self:addToGroup("despawnable")
 end
 
 function sectionPrioritySetterYBorder:getSide()
@@ -351,9 +355,10 @@ function sectionPrioritySetterArea:new(x, y, w, h, name, name2)
   self.transform.x = x
   self.inName = name
   self.outName = name2
-  self.added = function(self)
-    self:addToGroup("despawnable")
-  end
+end
+
+function sectionPrioritySetterArea:added()
+  self:addToGroup("despawnable")
 end
 
 function sectionPrioritySetterArea:check()

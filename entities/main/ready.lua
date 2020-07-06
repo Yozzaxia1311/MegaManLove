@@ -3,18 +3,12 @@ ready = basicEntity:extend()
 function ready:new(text, proto, music)
   ready.super.new(self)
   self.proto = proto
-  self.added = function(self)
-    self:addToGroup("ready")
-    if self.proto then
-      megautils.playSoundFromFile("assets/sfx/protoReady.ogg")
-    end
-  end
   if self.proto then
     self.music = music
   end
   self:setLayer(9)
   self.once = false
-  self.render = false
+  self.canDraw.global = false
   self.blinkTimer = 0
   self.maxBlinkTime = 6
   self.blinkCount = 0
@@ -24,13 +18,20 @@ function ready:new(text, proto, music)
   megautils.freeze()
 end
 
+function ready:added()
+  self:addToGroup("ready")
+  if self.proto then
+    megautils.playSoundFromFile("assets/sfx/protoReady.ogg")
+  end
+end
+
 function ready:update(dt)
   megautils.freeze()
   self.blinkTimer = math.min(self.blinkTimer+1, self.maxBlinkTime)
   if self.blinkTimer == self.maxBlinkTime then
     self.blinkTimer = 0
     self.blinkCount = self.blinkCount + 1
-    self.render = not self.render
+    self.canDraw.global = not self.canDraw.global
     if self.blinkCount == self.blinks then
       megautils.unfreeze()
       if self.proto and self.music then

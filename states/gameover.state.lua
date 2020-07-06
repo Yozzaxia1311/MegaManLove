@@ -22,14 +22,15 @@ contPanels = entity:extend()
 
 function contPanels:new()
   contPanels.super.new(self)
-  self.added = function(self)
-    self:addToGroup("freezable")
-  end
   self.tex = megautils.getResource("cont")
   self.quadOne = love.graphics.newQuad(0, 0, 176, 48, 176, 104)
   self.quadTwo = love.graphics.newQuad(0, 48, 160, 56, 176, 104)
   self.state = 0
   self.timer = 0
+end
+
+function contPanels:added()
+  self:addToGroup("freezable")
 end
 
 function contPanels:update(dt)
@@ -74,12 +75,12 @@ function contSelect:update(dt)
   if (control.jumpPressed[1] or control.startPressed[1]) and not self.picked then
     if self.pick == 1 then
       self.picked = true
-      self.render = false
+      self.canDraw.global = false
       megautils.stopMusic()
       megautils.transitionToState(globals.gameOverContinueState)
     elseif self.pick == 0 then
       self.picked = true
-      self.render = false
+      self.canDraw.global = false
       megautils.transitionToState("states/menu.state.lua")
     end
   end

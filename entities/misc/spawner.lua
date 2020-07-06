@@ -6,12 +6,13 @@ function spawner:new(x, y, w, h, func)
   self.transform.x = x
   self:setRectangleCollision(w, h)
   self.func = func
-  self.added = function(self)
-    self:addToGroup("despawnable")
-    self:addToGroup("freezable")
-    self.wasOutside = true
-    self.canSpawn = true
-  end
+end
+
+function spawner:added()
+  self:addToGroup("despawnable")
+  self:addToGroup("freezable")
+  self.wasOutside = true
+  self.canSpawn = true
 end
 
 function spawner:update(dt)
@@ -33,12 +34,13 @@ function intervalSpawner:new(x, y, w, h, time, func)
   self.transform.x = x
   self:setRectangleCollision(w, h)
   self.func = func
-  self.added = function(self)
-    self:addToGroup("despawnable")
-    self:addToGroup("freezable")
-  end
   self.time = time
   self.timer = 0
+end
+
+function intervalSpawner:added()
+  self:addToGroup("despawnable")
+  self:addToGroup("freezable")
 end
 
 function intervalSpawner:update(dt)

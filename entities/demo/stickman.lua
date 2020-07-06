@@ -11,12 +11,6 @@ end)
 
 function stickMan:new(x, y, s)
   stickMan.super.new(self)
-  self.added = function(self)
-    self:addToGroup("freezable")
-    self:addToGroup("hurtable")
-    self.canBeInvincible.global = true
-    megautils.stopMusic()
-  end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(12, 24)
@@ -24,7 +18,7 @@ function stickMan:new(x, y, s)
   self.side = -1
   self.s = 0
   self.spawner = s
-  self.render = false
+  self.canDraw.global = false
   self.ss = 1
   self.hBar = healthHandler({128, 128, 128}, {255, 255, 255}, {0, 0, 0}, nil, nil, 7)
   self.hBar:instantUpdate(0)
@@ -37,6 +31,13 @@ function stickMan:new(x, y, s)
   self.blockCollision = true
 end
 
+function stickMan:added(self)
+  self:addToGroup("freezable")
+  self:addToGroup("hurtable")
+  self.canBeInvincible.global = true
+  megautils.stopMusic()
+end
+
 function stickMan:gettingHurt(o, c, i)
   if o:is(megaSemiBuster) or checkTrue(self.canBeInvincible) or (o.dinked and not o.reflectedBack) then --Semi charged shots get reflected
     if o.dink and not o.dinked then
@@ -47,7 +48,7 @@ function stickMan:gettingHurt(o, c, i)
   if c < 0 and not o:is(megaChargedBuster) then --Remove shots
     megautils.removeq(o)
   end
-  if self.maxIFrame ~= self.iFrame then return end
+  if self.iFrames ~= 0 then return end
   if o:is(stickWeapon) then --The weakness
     self.changeHealth = -8
   elseif o:is(megaChargedBuster) then --Semi-weakness
@@ -56,8 +57,7 @@ function stickMan:gettingHurt(o, c, i)
     self.changeHealth = -1
   end
   self.hBar:updateThis(self.hBar.health + self.changeHealth)
-  self.maxIFrame = 60
-  self.iFrame = 0
+  self.iFrames = 60
   if self.hBar.health <= 0 then
     if megautils.groups().removeOnDefeat then
       for k, v in ipairs(megautils.groups().removeOnDefeat) do
@@ -121,7 +121,7 @@ function stickMan:update(dt)
           else
             megautils.playMusic("assets/sfx/music/boss.wav", true, 162898, 444759)
           end
-          self.render = true
+          self.canDraw.global = true
         end
       end
     end

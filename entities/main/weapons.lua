@@ -28,13 +28,6 @@ protoSemiBuster = basicEntity:extend()
 
 function protoSemiBuster:new(x, y, dir, wpn, skin, grav)
   protoSemiBuster.super.new(self)
-  self.added = function(self)
-    self:addToGroup("megaBuster")
-    self:addToGroup("megaBuster" .. wpn.id)
-    self:addToGroup("freezable")
-    self:addToGroup("removeOnTransition")
-    self:addToGroup("weapon")
-  end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(10, 10)
@@ -46,6 +39,14 @@ function protoSemiBuster:new(x, y, dir, wpn, skin, grav)
   self.wpn = wpn
   self.grav = grav
   megautils.playSound("semiCharged")
+end
+
+function protoSemiBuster:added()
+  self:addToGroup("megaBuster")
+  self:addToGroup("megaBuster" .. self.wpn.id)
+  self:addToGroup("freezable")
+  self:addToGroup("removeOnTransition")
+  self:addToGroup("weapon")
 end
 
 function protoSemiBuster:dink(e)
@@ -75,12 +76,6 @@ protoChargedBuster = basicEntity:extend()
 
 function protoChargedBuster:new(x, y, dir, wpn, skin, grav)
   protoChargedBuster.super.new(self)
-  self.added = function(self)
-    self:addToGroup("protoChargedBuster")
-    self:addToGroup("protoChargedBuster" .. wpn.id)
-    self:addToGroup("freezable")
-    self:addToGroup("removeOnTransition")
-  end
   self.tex = megautils.getResource(skin)
   self.anim = anim8.newAnimation(megautils.getResource("protoBusterGrid")("1-2", 1), 1/20)
   self.transform.y = y
@@ -92,8 +87,15 @@ function protoChargedBuster:new(x, y, dir, wpn, skin, grav)
   self.side = dir
   self.wpn = wpn
   self.grav = grav
-  megautils.playSound("protoCharged")
   self:face(-self.side)
+  megautils.playSound("protoCharged")
+end
+
+function protoChargedBuster:added()
+  self:addToGroup("protoChargedBuster")
+  self:addToGroup("protoChargedBuster" .. self.wpn.id)
+  self:addToGroup("freezable")
+  self:addToGroup("removeOnTransition")
 end
 
 function protoChargedBuster:face(n)
@@ -136,16 +138,6 @@ weapons.resources.bassBuster = function()
 
 function bassBuster:new(x, y, dir, wpn, t, grav)
   bassBuster.super.new(self)
-  self.added = function(self)
-    self:addToGroup("bassBuster")
-    self:addToGroup("bassBuster" .. wpn.id)
-    self:addToGroup("freezable")
-    self:addToGroup("removeOnTransition")
-    self:addToGroup("weapon")
-    if not self.treble then
-      megautils.playSound("buster")
-    end
-  end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(6, 6)
@@ -169,6 +161,17 @@ function bassBuster:recycle(x, y, dir, wpn, t, grav)
   self.transform.y = y
   self.treble = t
   self:setGravityMultiplier("global", grav)
+end
+
+function bassBuster:added()
+  self:addToGroup("bassBuster")
+  self:addToGroup("bassBuster" .. self.wpn.id)
+  self:addToGroup("freezable")
+  self:addToGroup("removeOnTransition")
+  self:addToGroup("weapon")
+  if not self.treble then
+    megautils.playSound("buster")
+  end
 end
 
 function bassBuster:dink(e)
@@ -212,14 +215,6 @@ weapons.resources.megaBuster = function()
 
 function megaBuster:new(x, y, dir, wpn, grav)
   megaBuster.super.new(self)
-  self.added = function(self)
-    self:addToGroup("megaBuster")
-    self:addToGroup("megaBuster" .. wpn.id)
-    self:addToGroup("freezable")
-    self:addToGroup("removeOnTransition")
-    self:addToGroup("weapon")
-    megautils.playSound("buster")
-  end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(8, 6)
@@ -241,6 +236,15 @@ function megaBuster:recycle(x, y, dir, wpn, grav)
   self.transform.x = x
   self.transform.y = y
   self.grav = grav
+end
+
+function megaBuster:added()
+  self:addToGroup("megaBuster")
+  self:addToGroup("megaBuster" .. self.wpn.id)
+  self:addToGroup("freezable")
+  self:addToGroup("removeOnTransition")
+  self:addToGroup("weapon")
+  megautils.playSound("buster")
 end
 
 function megaBuster:dink(e)
@@ -270,13 +274,6 @@ megaSemiBuster = basicEntity:extend()
 
 function megaSemiBuster:new(x, y, dir, wpn, grav)
   megaSemiBuster.super.new(self)
-  self.added = function(self)
-    self:addToGroup("megaBuster")
-    self:addToGroup("megaBuster" .. wpn.id)
-    self:addToGroup("freezable")
-    self:addToGroup("removeOnTransition")
-    self:addToGroup("weapon")
-  end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(16, 10)
@@ -289,6 +286,14 @@ function megaSemiBuster:new(x, y, dir, wpn, grav)
   self.grav = grav
   megautils.playSound("semiCharged")
   self:face(-self.side)
+end
+
+function megaSemiBuster:added()
+  self:addToGroup("megaBuster")
+  self:addToGroup("megaBuster" .. self.wpn.id)
+  self:addToGroup("freezable")
+  self:addToGroup("removeOnTransition")
+  self:addToGroup("weapon")
 end
 
 function megaSemiBuster:face(n)
@@ -323,13 +328,6 @@ megaChargedBuster = basicEntity:extend()
 
 function megaChargedBuster:new(x, y, dir, wpn, grav)
   megaChargedBuster.super.new(self)
-  self.added = function(self)
-    self:addToGroup("megaChargedBuster")
-    self:addToGroup("megaChargedBuster" .. wpn.id)
-    self:addToGroup("freezable")
-    self:addToGroup("removeOnTransition")
-    self:addToGroup("weapon")
-  end
   self.tex = megautils.getResource("busterTex")
   self.anim = anim8.newAnimation(megautils.getResource("chargeGrid")("1-4", 1), 1/20)
   self.transform.y = y
@@ -343,6 +341,14 @@ function megaChargedBuster:new(x, y, dir, wpn, grav)
   self.grav = grav
   megautils.playSound("charged")
   self:face(-self.side)
+end
+
+function megaChargedBuster:added()
+  self:addToGroup("megaChargedBuster")
+  self:addToGroup("megaChargedBuster" .. self.wpn.id)
+  self:addToGroup("freezable")
+  self:addToGroup("removeOnTransition")
+  self:addToGroup("weapon")
 end
 
 function megaChargedBuster:face(n)
@@ -389,13 +395,6 @@ weapons.resources.trebleBoost = function()
 
 function trebleBoost:new(x, y, side, player, wpn)
   trebleBoost.super.new(self)
-  self.added = function(self)
-    self:addToGroup("trebleBoost")
-    self:addToGroup("trebleBoost" .. wpn.id)
-    self:addToGroup("freezable")
-    self:addToGroup("removeOnTransition")
-    self:addToGroup("submergable")
-  end
   self.transform.x = x
   self.transform.y = view.y-8
   self.toY = y
@@ -416,6 +415,14 @@ function trebleBoost:new(x, y, side, player, wpn)
   self.blockCollision = true
   self.timer = 0
   self:setGravityMultiplier("global", self.player.gravity >= 0 and 1 or -1)
+end
+
+function trebleBoost:added()
+  self:addToGroup("trebleBoost")
+  self:addToGroup("trebleBoost" .. self.wpn.id)
+  self:addToGroup("freezable")
+  self:addToGroup("removeOnTransition")
+  self:addToGroup("submergable")
 end
 
 function trebleBoost:grav()
@@ -527,13 +534,6 @@ weapons.resources.tangoJet = function()
 
 function rushJet:new(x, y, side, player, wpn, skin)
   rushJet.super.new(self)
-  self.added = function(self)
-    self:addToGroup("rushJet")
-    self:addToGroup("rushJet" .. wpn.id)
-    self:addToGroup("freezable")
-    self:addToGroup("removeOnTransition")
-    self:addToGroup("submergable")
-  end
   self.transform.x = x
   self.transform.y = view.y-8
   self.toY = y
@@ -554,6 +554,14 @@ function rushJet:new(x, y, side, player, wpn, skin)
   self.player = player
   self.playerOn = false
   self.exclusivelySolidFor = {self.player}
+end
+
+function rushJet:added()
+  self:addToGroup("rushJet")
+  self:addToGroup("rushJet" .. self.wpn.id)
+  self:addToGroup("freezable")
+  self:addToGroup("removeOnTransition")
+  self:addToGroup("submergable")
 end
 
 function rushJet:face(n)
@@ -692,13 +700,6 @@ weapons.resources.tangoCoil = function()
 function rushCoil:new(x, y, side, player, w, skin)
   rushCoil.super.new(self)
   self.proto = proto
-  self.added = function(self)
-    self:addToGroup("rushCoil")
-    self:addToGroup("rushCoil" .. w.id)
-    self:addToGroup("freezable")
-    self:addToGroup("removeOnTransition")
-    self:addToGroup("submergable")
-  end
   self.transform.x = x
   self.transform.y = view.y-16
   self.toY = y
@@ -719,6 +720,14 @@ function rushCoil:new(x, y, side, player, w, skin)
   self.blockCollision = true
   self.player = player
   self:setGravityMultiplier("global", self.player.gravity >= 0 and 1 or -1)
+end
+
+function rushCoil:added()
+  self:addToGroup("rushCoil")
+  self:addToGroup("rushCoil" .. w.id)
+  self:addToGroup("freezable")
+  self:addToGroup("removeOnTransition")
+  self:addToGroup("submergable")
 end
 
 function rushCoil:grav()
@@ -824,11 +833,6 @@ weapons.resources.stickWeapon = function()
 
 function stickWeapon:new(x, y, dir, wpn, grav)
   stickWeapon.super.new(self)
-  self.added = function(self)
-    self:addToGroup("stickWeapon")
-    self:addToGroup("freezable")
-    self:addToGroup("removeOnTransition")
-  end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(8, 6)
@@ -839,6 +843,12 @@ function stickWeapon:new(x, y, dir, wpn, grav)
   self.wpn = wpn
   self.grav = grav
   megautils.playSound("buster")
+end
+
+function stickWeapon:added()
+  self:addToGroup("stickWeapon")
+  self:addToGroup("freezable")
+  self:addToGroup("removeOnTransition")
 end
 
 function stickWeapon:dink(e)

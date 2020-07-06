@@ -7,10 +7,6 @@ slideParticle = basicEntity:extend()
 
 function slideParticle:new(x, y, side, g)
   slideParticle.super.new(self)
-  self.added = function(self)
-    self:addToGroup("freezable")
-    self:addToGroup("removeOnTransition")
-  end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(8, 8)
@@ -26,6 +22,11 @@ function slideParticle:recycle(x, y, side, g)
   self.transform.x = x
   self.anim:gotoFrame(1)
   self.anim.flippedV = g < 0
+end
+
+function slideParticle:added()
+  self:addToGroup("freezable")
+  self:addToGroup("removeOnTransition")
 end
 
 function slideParticle:face(n)
@@ -51,10 +52,6 @@ damageSteam = basicEntity:extend()
 
 function damageSteam:new(x, y, g)
   damageSteam.super.new(self)
-  self.added = function(self)
-    self:addToGroup("freezable")
-    self:addToGroup("removeOnTransition")
-  end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(5, 8)
@@ -68,6 +65,11 @@ function damageSteam:recycle(x, y, g)
   self.transform.x = x
   self.anim:gotoFrame(1)
   self.anim.flippedV = g < 0
+end
+
+function damageSteam:added()
+  self:addToGroup("freezable")
+  self:addToGroup("removeOnTransition")
 end
 
 function damageSteam:update(dt)
@@ -88,10 +90,6 @@ airBubble = entity:extend()
 
 function airBubble:new(x, y)
   airBubble.super.new(self)
-  self.added = function(self)
-    self:addToGroup("freezable")
-    self:addToGroup("removeOnTransition")
-  end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(2, 8)
@@ -99,7 +97,6 @@ function airBubble:new(x, y)
   self.quad = love.graphics.newQuad(104, 28, 4, 4, 128, 98)
   self.off = 0
   self.timer = 0
-  self.render = false
 end
 
 function airBubble:recycle(x, y)
@@ -107,7 +104,11 @@ function airBubble:recycle(x, y)
   self.transform.x = x
   self.timer = 0
   self.off = 0
-  self.render = false
+end
+
+function airBubble:added()
+  self:addToGroup("freezable")
+  self:addToGroup("removeOnTransition")
 end
 
 function airBubble:check(x, y)
@@ -116,7 +117,6 @@ function airBubble:check(x, y)
 end
 
 function airBubble:update(dt)
-  self.render = true
   self.timer = math.min(self.timer+1, 8)
   if self.timer == 8 then
     self.timer = 0
@@ -133,70 +133,10 @@ function airBubble:draw()
   love.graphics.draw(self.tex, self.quad, math.round(self.transform.x)-self.off, math.round(self.transform.y))
 end
 
-kickParticle = entity:extend()
-
-function kickParticle:new(x, y, side)
-  kickParticle.super.new(self)
-  self.added = function(self)
-    self:addToGroup("freezable")
-    self:addToGroup("removeOnTransition")
-  end
-  self.transform.y = y
-  self.transform.x = x
-  self:setRectangleCollision(8, 8)
-  self.tex = megautils.getResource("particles")
-  self.anim = anim8.newAnimation(megautils.getResource("slideParticleGrid")("1-3",1), 1/10)
-  self.render = false
-  self.side = side
-  self.once = false
-end
-
-function kickParticle:recycle(x, y, side)
-  self.transform.y = y
-  self.transform.x = x
-  self.side = side
-  self.once = false
-  self.render = false
-  self.anim:gotoFrame(1)
-end
-
-function kickParticle:face(n)
-  self.anim.flippedH = (n == 1) and true or false
-end
-
-function kickParticle:update(dt)
-  if not self.once then
-    self.once = true
-    if not collision.checkSolid(self) then
-      megautils.removeq(self)
-      return
-    end
-    self.render = true
-  end
-  self:face(self.side)
-  self.anim:update(1/60)
-  self.transform.x = self.transform.x + (0.1 * self.side)
-  self.transform.y = self.transform.y +  0.25
-  if self.anim.looped then
-    megautils.removeq(self)
-  elseif megautils.outside(self) then
-    megautils.removeq(self)
-  end
-end
-
-function kickParticle:draw()
-  love.graphics.setColor(1, 1, 1, 1)
-  self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
-end
-
 angleParticle = entity:extend()
 
 function angleParticle:new(x, y, a)
   angleParticle.super.new(self)
-  self.added = function(self)
-    self:addToGroup("freezable")
-    self:addToGroup("removeOnTransition")
-  end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(2, 8)
@@ -217,6 +157,11 @@ function angleParticle:recycle(x, y, a)
   self.velocity.vely = megautils.calcY(a)
   self.side = self.velocity.velx>0 and -1 or 1
   self.anim:gotoFrame(1)
+end
+
+function angleParticle:added()
+  self:addToGroup("freezable")
+  self:addToGroup("removeOnTransition")
 end
 
 function angleParticle:face(n)
@@ -243,10 +188,6 @@ harm = entity:extend()
 
 function harm:new(e)
   harm.super.new(self)
-  self.added = function(self)
-    self:addToGroup("freezable")
-    self:addToGroup("removeOnTransition")
-  end
   self.follow = e
   self.transform.x = (self.follow.transform.x+self.follow.collisionShape.w/2)-24/2
   self.transform.y = (self.follow.transform.y+self.follow.collisionShape.h/2)-24/2
@@ -263,6 +204,11 @@ function harm:recycle(e)
   self.timer = 0
 end
 
+function harm:added()
+  self:addToGroup("freezable")
+  self:addToGroup("removeOnTransition")
+end
+
 function harm:afterUpdate(dt)
   if not self.follow or self.follow.isRemoved then
     megautils.removeq(self)
@@ -271,7 +217,7 @@ function harm:afterUpdate(dt)
   self.transform.x = math.round(self.follow.transform.x)+math.round(self.follow.collisionShape.w/2)-12
   self.transform.y = math.round(self.follow.transform.y)+math.round(self.follow.collisionShape.h/2)-12
   self.timer = math.min(self.timer+1, 32)
-  self.render = not self.follow.flashRender
+  self.canDraw.global = not self.follow.canDraw.flash
   if self.timer == 32 or self.follow.isRemoved then
     megautils.removeq(self)
   end
@@ -286,10 +232,6 @@ explodeParticle = entity:extend()
 
 function explodeParticle:new(x, y, angle, spd)
   explodeParticle.super.new(self)
-  self.added = function(self)
-    self:addToGroup("freezable")
-    self:addToGroup("removeOnTransition")
-  end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(24, 24)
@@ -298,6 +240,11 @@ function explodeParticle:new(x, y, angle, spd)
   self.velocity = velocity()
   self.velocity.velx = megautils.calcX(angle)*spd
   self.velocity.vely = megautils.calcY(angle)*spd
+end
+
+function explodeParticle:added()
+  self:addToGroup("freezable")
+  self:addToGroup("removeOnTransition")
 end
 
 function explodeParticle:update(dt)
@@ -324,11 +271,7 @@ end
 absorbParticle = entity:extend()
 
 function absorbParticle:new(x, y, towards, spd)
-  explodeParticle.super.new(self)
-  self.added = function(self)
-    self:addToGroup("freezable")
-    self:addToGroup("removeOnTransition")
-  end
+  absorbParticle.super.new(self)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(24, 24)
@@ -339,6 +282,11 @@ function absorbParticle:new(x, y, towards, spd)
   self.startY = y
   self.pos = 0
   self.spd = spd
+end
+
+function absorbParticle:added()
+  self:addToGroup("freezable")
+  self:addToGroup("removeOnTransition")
 end
 
 function absorbParticle:update(dt)
@@ -371,15 +319,16 @@ absorb = entity:extend()
 
 function absorb:new(towards, times, spd)
   absorb.super.new(self)
-  self.added = function(self)
-    self:addToGroup("freezable")
-    self:addToGroup("removeOnTransition")
-  end
   self.timer = 60
   self.times = 0
   self.maxTimes = times or 3
   self.spd = spd
   self.towards = towards
+end
+
+function absorb:added()
+  self:addToGroup("freezable")
+  self:addToGroup("removeOnTransition")
 end
 
 function absorb:update(dt)
@@ -399,10 +348,6 @@ smallBlast = entity:extend()
 
 function smallBlast:new(x, y, spd)
   smallBlast.super.new(self)
-  self.added = function(self)
-    self:addToGroup("freezable")
-    self:addToGroup("removeOnTransition")
-  end
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(24, 24)
@@ -421,6 +366,11 @@ function smallBlast:recycle(x, y, spd)
   self.anim:gotoFrame(1)
 end
 
+function smallBlast:added()
+  self:addToGroup("freezable")
+  self:addToGroup("removeOnTransition")
+end
+
 function smallBlast:update(dt)
   self.anim:update(1/60)
   if megautils.outside(self) or self.anim.looped then
@@ -437,11 +387,6 @@ blast = entity:extend()
 
 function blast:new(x, y, times)
   blast.super.new(self)
-  self.added = function(self)
-    self:addToGroup("freezable")
-    self:addToGroup("removeOnTransition")
-    megautils.add(smallBlast, self.transform.x, self.transform.y)
-  end
   self.transform.y = y
   self.transform.x = x
   self.deg = 0
@@ -457,6 +402,12 @@ function blast:recycle(x, y, times)
   self.timer = 0
   self.times = 0
   self.max = times == nil and 4 or times
+end
+
+function blast:added()
+  self:addToGroup("freezable")
+  self:addToGroup("removeOnTransition")
+  megautils.add(smallBlast, self.transform.x, self.transform.y)
 end
 
 function blast:update(dt)

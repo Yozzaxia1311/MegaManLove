@@ -10,10 +10,6 @@ moveAcrossPlatform = entity:extend()
 
 function moveAcrossPlatform:new(x, y, toX, toY, s)
   moveAcrossPlatform.super.new(self)
-  self.added = function(self)
-    self:addToGroup("freezable")
-    self:addToGroup("removeOnTransition")
-  end
   self.isSolid = 1
   self.transform.x = x
   self.transform.y = y
@@ -24,6 +20,11 @@ function moveAcrossPlatform:new(x, y, toX, toY, s)
   self.velocity = velocity()
   self.tween = tween.new(1, self.transform, {x=toX, y=toY}, "inOutBack")
   self.state = 0
+end
+
+function moveAcrossPlatform:added()
+  self:addToGroup("freezable")
+  self:addToGroup("removeOnTransition")
 end
 
 function moveAcrossPlatform:removed()

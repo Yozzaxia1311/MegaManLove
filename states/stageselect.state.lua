@@ -27,9 +27,6 @@ megautils.loadResource("protoGrid", 32, 32, 288, 176, 0, 96)
 
 function stageSelect:new()
   stageSelect.super.new(self)
-  self.added = function(self)
-    self:addToGroup("freezable")
-  end
   self.transform.y = 8
   self.transform.x = 24
   self.blinkQuad = love.graphics.newQuad(0, 128, 48, 48, 288, 176)
@@ -53,6 +50,10 @@ function stageSelect:new()
   self.stop = false
   self.selected = false
   self.selectBlink = 0
+end
+
+function stageSelect:added()
+  self:addToGroup("freezable")
 end
 
 function stageSelect:update(dt)

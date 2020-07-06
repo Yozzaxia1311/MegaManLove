@@ -13,10 +13,10 @@ function gravFlip:new(x, y, w, h, dir)
   self:setRectangleCollision(w, h)
   self.dir = dir or 1
   self.doEffect = false
-  
-  self.added = function(self)
-      self:addToGroup("despawnable")
-    end
+end
+
+function gravFlip:added()
+  self:addToGroup("despawnable")
 end
 
 function gravFlip:update(dt)

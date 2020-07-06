@@ -29,19 +29,22 @@ function smallHealth:new(x, y, despwn, id, spawner)
   self.t = megautils.getResource("particles")
   self.tOutline = megautils.getResource("particlesOutline")
   self.despawn = despwn == nil and self.id == nil or despwn
-  self.added = function()
-    self:addToGroup("removeOnTransition")
-    self:addToGroup("freezable")
-    if not self.despawn then
+  self.velocity = velocity()
+  self.timer = 0
+  self.blockCollision = true
+  self:setGravityMultiplier("flipWithPlayer", 1)
+end
+
+function smallHealth:added()
+  self:addToGroup("removeOnTransition")
+  self:addToGroup("freezable")
+  if not self.despawn then
+    if table.contains(smallHealth.banIds, self.id) then
+      megautils.removeq(self)
+    else
       self:addToGroup("despawnable")
     end
   end
-  self.velocity = velocity()
-  self.timer = 0
-  self.render = false
-  self.once = false
-  self.blockCollision = true
-  self:setGravityMultiplier("flipWithPlayer", 1)
 end
 
 function smallHealth:grav()
@@ -52,13 +55,6 @@ end
 function smallHealth:update(dt)
   if megaMan.mainPlayer then
     self:setGravityMultiplier("flipWithPlayer", megaMan.mainPlayer.gravityMultipliers.gravityFlip or 1)
-  end
-  if not self.despawn and table.contains(smallHealth.banIds, self.id) then
-    megautils.removeq(self)
-    return
-  elseif not self.once then
-    self.once = true
-    self.render = true
   end
   collision.doGrav(self)
   collision.doCollision(self)
@@ -78,7 +74,7 @@ function smallHealth:update(dt)
   if self.despawn then
     self.timer = math.min(self.timer+1, 400)
     if self.timer > 400-120 then
-      self.render = math.wrap(self.timer, 0, 8) > 4
+      self.canDraw.global = math.wrap(self.timer, 0, 8) > 4
     end
     if self.timer == 400 then
       section.removeEntity(self.spawner)
@@ -133,19 +129,22 @@ function health:new(x, y, despwn, id, spawner)
   self.t = megautils.getResource("particles")
   self.tOutline = megautils.getResource("particlesOutline")
   self.despawn = despwn == nil and self.id == nil or despwn
-  self.added = function()
-    self:addToGroup("removeOnTransition")
-    self:addToGroup("freezable")
-    if not self.despawn then
+  self.velocity = velocity()
+  self.timer = 0
+  self.blockCollision = true
+  self:setGravityMultiplier("flipWithPlayer", 1)
+end
+
+function health:added()
+  self:addToGroup("removeOnTransition")
+  self:addToGroup("freezable")
+  if not self.despawn then
+    if table.contains(health.banIds, self.id) then
+      megautils.removeq(self)
+    else
       self:addToGroup("despawnable")
     end
   end
-  self.velocity = velocity()
-  self.timer = 0
-  self.render = false
-  self.once = false
-  self.blockCollision = true
-  self:setGravityMultiplier("flipWithPlayer", 1)
 end
 
 function health:grav()
@@ -156,13 +155,6 @@ end
 function health:update(dt)
   if megaMan.mainPlayer then
     self:setGravityMultiplier("flipWithPlayer", megaMan.mainPlayer.gravityMultipliers.gravityFlip or 1)
-  end
-  if not self.despawn and table.contains(health.banIds, self.id) then
-    megautils.removeq(self)
-    return
-  elseif not self.once then
-    self.once = true
-    self.render = true
   end
   collision.doGrav(self)
   collision.doCollision(self)
@@ -182,7 +174,7 @@ function health:update(dt)
   if self.despawn then
     self.timer = math.min(self.timer+1, 400)
     if self.timer > 400-120 then
-      self.render = math.wrap(self.timer, 0, 8) > 4
+      self.canDraw.global = math.wrap(self.timer, 0, 8) > 4
     end
     if self.timer == 400 then
       section.removeEntity(self.spawner)
@@ -238,19 +230,22 @@ function smallEnergy:new(x, y, despwn, id, spawner)
   self.texOne = megautils.getResource("particlesOne")
   self.texTwo = megautils.getResource("particlesTwo")
   self.despawn = despwn == nil and self.id == nil or despwn
-  self.added = function()
-    self:addToGroup("removeOnTransition")
-    self:addToGroup("freezable")
-    if not self.despawn then
+  self.velocity = velocity()
+  self.timer = 0
+  self.blockCollision = true
+  self:setGravityMultiplier("flipWithPlayer", 1)
+end
+
+function smallEnergy:added()
+  self:addToGroup("removeOnTransition")
+  self:addToGroup("freezable")
+  if not self.despawn then
+    if table.contains(smallEnergy.banIds, self.id) then
+      megautils.removeq(self)
+    else
       self:addToGroup("despawnable")
     end
   end
-  self.velocity = velocity()
-  self.timer = 0
-  self.render = false
-  self.once = false
-  self.blockCollision = true
-  self:setGravityMultiplier("flipWithPlayer", 1)
 end
 
 function smallEnergy:grav()
@@ -261,13 +256,6 @@ end
 function smallEnergy:update(dt)
   if megaMan.mainPlayer then
     self:setGravityMultiplier("flipWithPlayer", megaMan.mainPlayer.gravityMultipliers.gravityFlip or 1)
-  end
-  if not self.despawn and table.contains(smallEnergy.banIds, self.id) then
-    megautils.removeq(self)
-    return
-  elseif not self.once then
-    self.once = true
-    self.render = true
   end
   collision.doGrav(self)
   collision.doCollision(self)
@@ -287,7 +275,7 @@ function smallEnergy:update(dt)
   if self.despawn then
     self.timer = math.min(self.timer+1, 400)
     if self.timer > 400-120 then
-      self.render = math.wrap(self.timer, 0, 8) > 4
+      self.canDraw.global = math.wrap(self.timer, 0, 8) > 4
     end
     if self.timer == 400 then
       section.removeEntity(self.spawner)
@@ -351,19 +339,22 @@ function energy:new(x, y, despwn, id, spawner)
   self.texOne = megautils.getResource("particlesOne")
   self.texTwo = megautils.getResource("particlesTwo")
   self.despawn = despwn == nil and self.id == nil or despwn
-  self.added = function()
-    self:addToGroup("removeOnTransition")
-    self:addToGroup("freezable")
-    if not self.despawn then
+  self.velocity = velocity()
+  self.timer = 0
+  self.blockCollision = true
+  self:setGravityMultiplier("flipWithPlayer", 1)
+end
+
+function energy:added()
+  self:addToGroup("removeOnTransition")
+  self:addToGroup("freezable")
+  if not self.despawn then
+    if table.contains(energy.banIds, self.id) then
+      megautils.removeq(self)
+    else
       self:addToGroup("despawnable")
     end
   end
-  self.velocity = velocity()
-  self.timer = 0
-  self.render = false
-  self.once = false
-  self.blockCollision = true
-  self:setGravityMultiplier("flipWithPlayer", 1)
 end
 
 function energy:grav()
@@ -374,13 +365,6 @@ end
 function energy:update(dt)
   if megaMan.mainPlayer then
     self:setGravityMultiplier("flipWithPlayer", megaMan.mainPlayer.gravityMultipliers.gravityFlip or 1)
-  end
-  if not self.despawn and table.contains(energy.banIds, self.id) then
-    megautils.removeq(self)
-    return
-  elseif not self.once then
-    self.once = true
-    self.render = true
   end
   collision.doGrav(self)
   collision.doCollision(self)
@@ -400,7 +384,7 @@ function energy:update(dt)
   if self.despawn then
     self.timer = math.min(self.timer+1, 400)
     if self.timer > 400-120 then
-      self.render = math.wrap(self.timer, 0, 8) > 4
+      self.canDraw.global = math.wrap(self.timer, 0, 8) > 4
     end
     if self.timer == 400 then
       section.removeEntity(self.spawner)
@@ -465,13 +449,6 @@ function life:new(x, y, despwn, id, spawner)
   self.texOutline = megautils.getResource("particlesOutline")
   self.texOne = megautils.getResource("particlesOne")
   self.despawn = despwn == nil and self.id == nil or despwn
-  self.added = function()
-    self:addToGroup("removeOnTransition")
-    self:addToGroup("freezable")
-    if not self.despawn then
-      self:addToGroup("despawnable")
-    end
-  end
   self.quad = {}
   self.quad.mega = love.graphics.newQuad(104, 12, 16, 16, 128, 98)
   self.quad.proto = love.graphics.newQuad(56, 31, 16, 15, 128, 98)
@@ -479,10 +456,20 @@ function life:new(x, y, despwn, id, spawner)
   self.quad.roll = love.graphics.newQuad(38, 16, 16, 16, 128, 98)
   self.velocity = velocity()
   self.timer = 0
-  self.render = false
-  self.once = false
   self.blockCollision = true
   self:setGravityMultiplier("flipWithPlayer", 1)
+end
+
+function life:added()
+  self:addToGroup("removeOnTransition")
+  self:addToGroup("freezable")
+  if not self.despawn then
+    if table.contains(life.banIds, self.id) then
+      megautils.removeq(self)
+    else
+      self:addToGroup("despawnable")
+    end
+  end
 end
 
 function life:grav()
@@ -493,13 +480,6 @@ end
 function life:update(dt)
   if megaMan.mainPlayer then
     self:setGravityMultiplier("flipWithPlayer", megaMan.mainPlayer.gravityMultipliers.gravityFlip or 1)
-  end
-  if not self.despawn and table.contains(life.banIds, self.id) then
-    megautils.removeq(self)
-    return
-  elseif not self.once then
-    self.once = true
-    self.render = true
   end
   collision.doGrav(self)
   collision.doCollision(self)
@@ -530,7 +510,7 @@ function life:update(dt)
   if self.despawn then
     self.timer = math.min(self.timer+1, 400)
     if self.timer > 400-120 then
-      self.render = math.wrap(self.timer, 0, 8) > 4
+      self.canDraw.global = math.wrap(self.timer, 0, 8) > 4
     end
     if self.timer == 400 then
       section.removeEntity(self.spawner)
@@ -625,19 +605,22 @@ function eTank:new(x, y, despwn, id, spawner)
   self.texOne = megautils.getResource("particlesOne")
   self.texTwo = megautils.getResource("particlesTwo")
   self.despawn = despwn == nil and self.id == nil or despwn
-  self.added = function()
-    self:addToGroup("removeOnTransition")
-    self:addToGroup("freezable")
-    if not self.despawn then
+  self.velocity = velocity()
+  self.timer = 0
+  self.blockCollision = true
+  self:setGravityMultiplier("flipWithPlayer", 1)
+end
+
+function eTank:added()
+  self:addToGroup("removeOnTransition")
+  self:addToGroup("freezable")
+  if not self.despawn then
+    if table.contains(eTank.banIds, self.id) then
+      megautils.removeq(self)
+    else
       self:addToGroup("despawnable")
     end
   end
-  self.velocity = velocity()
-  self.timer = 0
-  self.render = false
-  self.once = false
-  self.blockCollision = true
-  self:setGravityMultiplier("flipWithPlayer", 1)
 end
 
 function eTank:grav()
@@ -648,13 +631,6 @@ end
 function eTank:update(dt)
   if megaMan.mainPlayer then
     self:setGravityMultiplier("flipWithPlayer", megaMan.mainPlayer.gravityMultipliers.gravityFlip or 1)
-  end
-  if not self.despawn and table.contains(eTank.banIds, self.id) then
-    megautils.removeq(self)
-    return
-  elseif not self.once then
-    self.once = true
-    self.render = true
   end
   collision.doGrav(self)
   collision.doCollision(self)
@@ -675,7 +651,7 @@ function eTank:update(dt)
   if self.despawn then
     self.timer = math.min(self.timer+1, 400)
     if self.timer > 400-120 then
-      self.render = math.wrap(self.timer, 0, 8) > 4
+      self.canDraw.global = math.wrap(self.timer, 0, 8) > 4
     end
     if self.timer == 400 then
       section.removeEntity(self.spawner)
@@ -735,19 +711,22 @@ function wTank:new(x, y, despwn, id, spawner)
   self.texOne = megautils.getResource("particlesOne")
   self.texTwo = megautils.getResource("particlesTwo")
   self.despawn = despwn == nil and self.id == nil or despwn
-  self.added = function()
-    self:addToGroup("removeOnTransition")
-    self:addToGroup("freezable")
-    if not self.despawn then
+  self.velocity = velocity()
+  self.timer = 0
+  self.blockCollision = true
+  self:setGravityMultiplier("flipWithPlayer", 1)
+end
+
+function wTank:added()
+  self:addToGroup("removeOnTransition")
+  self:addToGroup("freezable")
+  if not self.despawn then
+    if table.contains(wTank.banIds, self.id) then
+      megautils.removeq(self)
+    else
       self:addToGroup("despawnable")
     end
   end
-  self.velocity = velocity()
-  self.timer = 0
-  self.render = false
-  self.once = false
-  self.blockCollision = true
-  self:setGravityMultiplier("flipWithPlayer", 1)
 end
 
 function wTank:grav()
@@ -758,13 +737,6 @@ end
 function wTank:update(dt)
   if megaMan.mainPlayer then
     self:setGravityMultiplier("flipWithPlayer", megaMan.mainPlayer.gravityMultipliers.gravityFlip or 1)
-  end
-  if not self.despawn and table.contains(wTank.banIds, self.id) then
-    megautils.removeq(self)
-    return
-  elseif not self.once then
-    self.once = true
-    self.render = true
   end
   collision.doGrav(self)
   collision.doCollision(self)
@@ -785,7 +757,7 @@ function wTank:update(dt)
   if self.despawn then
     self.timer = math.min(self.timer+1, 400)
     if self.timer > 400-120 then
-      self.render = math.wrap(self.timer, 0, 8) > 4
+      self.canDraw.global = math.wrap(self.timer, 0, 8) > 4
     end
     if self.timer == 400 then
       section.removeEntity(self.spawner)

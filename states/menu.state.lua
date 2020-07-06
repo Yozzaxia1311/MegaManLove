@@ -20,9 +20,6 @@ megautils.loadResource("assets/sfx/cursorMove.ogg", "cursorMove")
 
 function menuSelect:new()
   menuSelect.super.new(self)
-  self.added = function(self)
-    self:addToGroup("freezable")
-  end
   self.transform.y = 9*8
   self.transform.x = 88
   self.tex = megautils.getResource("menuSelect")
@@ -31,6 +28,10 @@ function menuSelect:new()
   self.picked = false
   self.section = 0
   self.timer = 20
+end
+
+function menuSelect:added()
+  self:addToGroup("freezable")
 end
 
 function menuSelect:update(dt)

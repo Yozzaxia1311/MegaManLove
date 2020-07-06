@@ -12,10 +12,11 @@ function death:new(x, y, w, h, harm)
   self.harm = harm or megautils.diffValue(-999999, {easy=-14})
   self.harm = -math.abs(self.harm)
   self.isSolid = 1
-  self.added = function(self)
-    self:addToGroup("despawnable")
-    self:addToGroup("death")
-  end
+end
+
+function death:added()
+  self:addToGroup("despawnable")
+  self:addToGroup("death")
 end
 
 megautils.cleanFuncs.death = function()
