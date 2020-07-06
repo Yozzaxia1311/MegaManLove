@@ -60,24 +60,22 @@ megaMan.resources.roll = function()
     megautils.loadResource("rollGrid", 45, 34, 180, 374)
   end
 
-megautils.resetGameObjectsPreFuncs.megaMan = function()
-    megaMan.colorOutline = {}
-    megaMan.colorOne = {}
-    megaMan.colorTwo = {}
-    megaMan.weaponHandler = {}
-    megaMan.mainPlayer = nil
-    megaMan.allPlayers = {}
-    globals.lives = (globals.lives > globals.startingLives) and globals.lives or globals.startingLives
-    
-    globals.checkpoint = globals.overrideCheckpoint or "start"
-    globals.gameOverContinueState = globals.overrideGOCS or states.current
-    globals.deathState = globals.overrideDeathState or states.current
-    globals.overrideCheckpoint = nil
-    globals.overrideGOCS = nil
-    globals.overrideDeathState = nil
-  end
-
 megautils.resetGameObjectsFuncs.megaMan = function()
+  megaMan.colorOutline = {}
+  megaMan.colorOne = {}
+  megaMan.colorTwo = {}
+  megaMan.weaponHandler = {}
+  megaMan.mainPlayer = nil
+  megaMan.allPlayers = {}
+  globals.lives = (globals.lives > globals.startingLives) and globals.lives or globals.startingLives
+  
+  globals.checkpoint = globals.overrideCheckpoint or "start"
+  globals.gameOverContinueState = globals.overrideGOCS or states.current
+  globals.deathState = globals.overrideDeathState or states.current
+  globals.overrideCheckpoint = nil
+  globals.overrideGOCS = nil
+  globals.overrideDeathState = nil
+  
   megautils.loadResource("assets/misc/weapons/weaponSelectIcon.png", "weaponSelectIcon")
   mmWeaponsMenu.resources()
   
@@ -1844,14 +1842,14 @@ function megaMan:die()
       self.transform.y+((self.collisionShape.h/2)-12))
   end
   
+  if self.healthHandler.health ~= 0 then
+    self.healthHandler:updateThis(0)
+  end
+  
   if #megaMan.allPlayers == 1 then
     healthHandler.playerTimers = {}
     for i=1, maxPlayerCount do
       healthHandler.playerTimers[i] = -2
-    end
-    
-    if self.healthHandler.health ~= 0 then
-      self.healthHandler:updateThis(0)
     end
     
     megautils.add(timer, 160, function(t)
@@ -1861,8 +1859,11 @@ function megaMan:die()
           globals.lives = globals.lives - 1
         end
         if not megautils.hasInfiniteLives() and globals.lives < 0 then
+          megautils.reloadState = true
+          megautils.resetGameObjects = true
           megautils.gotoState("states/gameover.state.lua")
         else
+          megautils.reloadState = true
           megautils.resetGameObjects = false
           megautils.gotoState(globals.deathState)
         end
@@ -1871,9 +1872,6 @@ function megaMan:die()
       megautils.removeq(t)
     end)
   else
-    if self.healthHandler.health ~= 0 then
-      self.healthHandler:updateThis(0)
-    end
     healthHandler.playerTimers[self.player] = 180
     megautils.removeq(megaMan.weaponHandler[self.player])
     megautils.removeq(self.healthHandler)

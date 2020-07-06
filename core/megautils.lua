@@ -382,16 +382,6 @@ function megautils.loadMap(self, path)
   tmp.map = map
 end
 
-function megautils.loadStage(self, path)
-  if megautils.reloadState and megautils.resetGameObjects then
-    for k, v in pairs(megautils.resetGameObjectsFuncs) do
-      v()
-    end
-  end
-  
-  megautils.loadMap(self, path)
-end
-
 function megautils.map()
   return states.currentState.currentMap
 end

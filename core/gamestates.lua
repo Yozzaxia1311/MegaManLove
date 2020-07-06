@@ -65,8 +65,8 @@ function states.set(n, s, before, after)
   states.currentState.system = states.currentState.system or entitySystem()
   states.switched = true
   if after then after() end
-  if megautils.reloadState and megautils.resetGameObjects then
-    for k, v in pairs(megautils.resetGameObjectsPreFuncs) do
+  if nick:sub(-10) == ".stage.lua" and megautils.reloadState and megautils.resetGameObjects then
+    for k, v in pairs(megautils.resetGameObjectsFuncs) do
       v()
     end
   end

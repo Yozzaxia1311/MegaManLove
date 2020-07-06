@@ -38,7 +38,7 @@ function stickMan:new(x, y, s)
 end
 
 function stickMan:gettingHurt(o, c, i)
-  if o:is(megaSemiBuster) or checkTrue(self.canBeInvincible) then --Semi charged shots get reflected
+  if o:is(megaSemiBuster) or checkTrue(self.canBeInvincible) or (o.dinked and not o.reflectedBack) then --Semi charged shots get reflected
     if o.dink and not o.dinked then
       o:dink(self)
     end
@@ -68,11 +68,13 @@ function stickMan:gettingHurt(o, c, i)
       self.transform.y+((self.collisionShape.h/2)-24/2))
     megautils.stopMusic()
     timer.absorbCutscene(function()
-      globals.defeats.stickMan = true
-      globals.weaponGet = "stick"
-      globals.skin = megaMan.mainPlayer.playerName
-      megautils.gotoState("states/weaponget.state.lua")
-    end)
+        globals.defeats.stickMan = true
+        globals.weaponGet = "stick"
+        globals.skin = megaMan.mainPlayer.playerName
+        megautils.reloadState = true
+        megautils.resetGameObjects = true
+        megautils.gotoState("states/weaponget.state.lua")
+      end)
     megautils.removeq(self)
     megautils.playSoundFromFile("assets/sfx/dieExplode.ogg")
   elseif self.changeHealth < 0 then
@@ -88,8 +90,10 @@ function stickMan:update(dt)
   if self.s == 0 then
     if globals.defeats.stickMan then
       timer.winCutscene(function()
-        megautils.gotoState("states/menu.state.lua")
-      end)
+          megautils.reloadState = true
+          megautils.resetGameObjects = true
+          megautils.gotoState("states/menu.state.lua")
+        end)
       megautils.removeq(self)
     elseif megaMan.mainPlayer then
       self.s = 1
@@ -200,7 +204,7 @@ function stickManIntro:update(dt)
     self.timer = math.min(self.timer+1, 300)
     if self.timer == 300 then
       megautils.stopMusic()
-      megautils.transitionToState("states/demo.state.lua")
+      megautils.transitionToState("states/demo.stage.lua")
       self.s = 5
     end
   end
