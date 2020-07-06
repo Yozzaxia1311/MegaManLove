@@ -6,7 +6,7 @@ If you make a contribution towards this engine, add your name to the list below.
 
 [Mega Engine](http://sprites-inc.co.uk/showthread.php?tid=1648) (reference)
 
-[Megamix Engine](https://github.com/MegamixEngine/MegamixEngine) (collision system reference)
+[Megamix Engine](https://github.com/MegamixEngine/MegamixEngine) (collision system reference and `arcXVel` reference)
 
 ## Programming
 Yozzaxia1311
