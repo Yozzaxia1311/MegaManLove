@@ -206,7 +206,6 @@ function love.update(dt)
   end
   control.update()
   if useConsole then console.update(dt) end
-  states.switched = false
   states.update(dt)
   control.flush()
   if love.joystick then
@@ -234,13 +233,15 @@ function love.update(dt)
       end
     end
   end
+  states.checkQueue()
 end
 
-function love.draw(screen)
+function love.draw()
   love.graphics.push()
   states.draw()
   love.graphics.pop()
   if useConsole then console.draw() end
+  states.checkQueue()
 end
 
 if isWeb then

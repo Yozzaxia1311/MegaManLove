@@ -373,6 +373,9 @@ function control.update()
       control.updateDemoFunc = nil
       control.drawDemoFunc = nil
       globals = control.oldGlobals
+      convar = control.oldConvars
+      megautils.reloadState = true
+      megautils.resetGameObjects = true
       if control.returning then
         control.returning()
         control.returning = nil
@@ -391,6 +394,7 @@ function control.finishRecord()
   local result = control.record
   result.last = control.recPos
   result.globals = control.record.globals
+  result.convars = control.record.convars
   result.seed = control.record.seed
   if love.filesystem.getInfo(control.recordName .. ".rd") then
     love.filesystem.remove(control.recordName .. ".rd")
@@ -398,7 +402,6 @@ function control.finishRecord()
   save.save(control.recordName .. ".rd", result)
   control.record = {}
   control.recPos = 1
-  control.globals = nil
 end
 
 function control.playRecord()

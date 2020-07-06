@@ -29,7 +29,7 @@ convar["showcollision"] = {
   helptext = "draw hitboxes",
   flags = {"client"},
   value = 0,
-  fun = function(arg) local n = numberSanitize(arg) entitysystem.drawCollision = n == 1 end
+  fun = function(arg) local n = numberSanitize(arg) entitySystem.drawCollision = n == 1 end
 }
 
 convar["showfps"] = {
@@ -78,12 +78,11 @@ convar["scale"] = {
 
 for i=1, maxPlayerCount do
   convar["player" .. tostring(i)] = {
-    helptext = "set player " .. tostring(i) .. " (mega, proto, bass, roll,-- or maybe something custom, if you've programmed it in)",
+    helptext = "set player " .. tostring(i) .. " (mega, proto, bass, roll)",
     flags = {"cheat"},
     value = ((i == 1) and "mega" or ((i == 2) and "proto" or ((i == 3) and "bass" or ((i == 4) and "roll" or "mega"))))
   }
 end
-
 
 concmd["help"] = {
   helptext = "get info about commands",
@@ -135,7 +134,7 @@ concmd["recsave"] = {
   flags = {},
   fun = function(cmd)
       if not cmd[2] then return end
-      if not control.recordInput and #control.record > 0 then
+      if not control.recordInput and table.length(control.record) > 0 then
         control.recordName = cmd[2]
         control.finishRecord()
         console.print("Recording saved")
@@ -167,12 +166,13 @@ concmd["recopen"] = {
       if love.filesystem.getInfo(cmd[2] .. ".rd") then
         states.openRecord = cmd[2] .. ".rd"
         megautils.add(fade, true, nil, nil, function(s)
-              megautils.stopMusic()
-              love.audio.stop()
-              control.updateDemoFunc = function()
-                  return console.state == 1
-                end
-              megautils.gotoState()
+              megautils.gotoState(nil, nil, function()
+                  megautils.stopMusic()
+                  love.audio.stop()
+                  control.updateDemoFunc = function()
+                      return console.state == 1
+                    end
+                end)
             end)
         console.close()
         console.y = -112*2

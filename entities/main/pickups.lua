@@ -552,12 +552,12 @@ function life:draw()
     oy = 15
   end
   if megaMan.mainPlayer then
-    if megautils.getPlayer(megaMan.mainPlayer.player) == "proto" then
+    if megaMan.mainPlayer.playerName == "proto" then
       oy = 1
       if self.gravity < 0 then
         oy = 14
       end
-    elseif megautils.getPlayer(megaMan.mainPlayer.player) == "bass" then
+    elseif megaMan.mainPlayer.playerName == "bass" then
       ox = -1
       oy = 1
       if self.gravity < 0 then
@@ -565,19 +565,19 @@ function life:draw()
       end
     end
     love.graphics.setColor(1, 1, 1, 1)
-    love.graphics.draw(self.tex, self.quad[megautils.getPlayer(megaMan.mainPlayer.player)],
+    love.graphics.draw(self.tex, self.quad[megaMan.mainPlayer.playerName],
       math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, math.sign(self.gravity))
     love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255, megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
       megaMan.colorTwo[megaMan.mainPlayer.player][3]/255, 1)
-    love.graphics.draw(self.texTwo, self.quad[megautils.getPlayer(megaMan.mainPlayer.player)],
+    love.graphics.draw(self.texTwo, self.quad[megaMan.mainPlayer.playerName],
       math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, math.sign(self.gravity))
     love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
-    love.graphics.draw(self.texOutline, self.quad[megautils.getPlayer(megaMan.mainPlayer.player)],
+    love.graphics.draw(self.texOutline, self.quad[megaMan.mainPlayer.playerName],
       math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, math.sign(self.gravity))
     love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255, megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOne[megaMan.mainPlayer.player][3]/255, 1)
-    love.graphics.draw(self.texOne, self.quad[megautils.getPlayer(megaMan.mainPlayer.player)],
+    love.graphics.draw(self.texOne, self.quad[megaMan.mainPlayer.playerName],
       math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, math.sign(self.gravity))
   else
     if megautils.getPlayer(1) == "proto" then

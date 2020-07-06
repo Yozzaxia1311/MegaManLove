@@ -1,12 +1,12 @@
-entitysystem = class:extend()
+entitySystem = class:extend()
 
-entitysystem.drawCollision = false
-entitysystem.doBeforeUpdate = true
-entitysystem.doAfterUpdate = true
-entitysystem.doDrawQuality = false
-entitysystem.doDrawFlicker = true
+entitySystem.drawCollision = false
+entitySystem.doBeforeUpdate = true
+entitySystem.doAfterUpdate = true
+entitySystem.doDrawQuality = false
+entitySystem.doDrawFlicker = true
 
-function entitysystem:new()
+function entitySystem:new()
   self.entities = {}
   self.updates = {}
   self.groups = {}
@@ -18,7 +18,7 @@ function entitysystem:new()
   self.doSort = false
 end
 
-function entitysystem:sortLayers()
+function entitySystem:sortLayers()
   local keys = {}
   local vals = {}
   for k, v in pairs(self.entities) do
@@ -32,7 +32,7 @@ function entitysystem:sortLayers()
   end
 end
 
-function entitysystem:emptyRecycling(c, num)
+function entitySystem:emptyRecycling(c, num)
   if not num or num < 1 then
     self.recycling[c] = {}
   elseif num < self.recycling[c] then
@@ -42,7 +42,7 @@ function entitysystem:emptyRecycling(c, num)
   end
 end
 
-function entitysystem:getRecycled(c, ...)
+function entitySystem:getRecycled(c, ...)
   local e
   local vr = self.recycle[c]
   if vr and #vr > 0 then
@@ -55,7 +55,7 @@ function entitysystem:getRecycled(c, ...)
   return e
 end
 
-function entitysystem:add(c, ...)
+function entitySystem:add(c, ...)
   if not c then return end
   local e = self:getRecycled(c, ...)
   if not e.static then
@@ -88,7 +88,7 @@ function entitysystem:add(c, ...)
   return e
 end
 
-function entitysystem:adde(e)
+function entitySystem:adde(e)
   if not e or not e.isRemoved or e.isAdded then return end
   if not e.static then
     local done = false
@@ -120,32 +120,32 @@ function entitysystem:adde(e)
   return e
 end
 
-function entitysystem:addq(c, ...)
+function entitySystem:addq(c, ...)
   if not c then return end
   self.addQueue[#self.addQueue+1] = self:getRecycled(c, ...)
   return self.addQueue[#self.addQueue]
 end
 
-function entitysystem:addeq(e)
+function entitySystem:addeq(e)
   if not e or not e.isRemoved or e.isAdded or table.contains(self.addQueue, e) then return end
   self.addQueue[#self.addQueue+1] = e
   return self.addQueue[#self.addQueue]
 end
 
-function entitysystem:removeFromGroup(e, g)
+function entitySystem:removeFromGroup(e, g)
   table.quickremovevaluearray(self.groups[g], e)
   if #self.groups[g] == 0 then
     self.groups[g] = nil
   end
 end
 
-function entitysystem:removeFromAllGroups(e)
+function entitySystem:removeFromAllGroups(e)
   for k, v in pairs(self.groups) do
     self:removeFromGroup(e, k)
   end
 end
 
-function entitysystem:makeStatic(e)
+function entitySystem:makeStatic(e)
   table.quickremovevaluearray(self.updates, e)
   table.quickremovevaluearray(e.actualLayer.data, e)
   if #e.actualLayer.data == 0 then
@@ -156,7 +156,7 @@ function entitysystem:makeStatic(e)
   e:staticToggled()
 end
 
-function entitysystem:revertFromStatic(e)
+function entitySystem:revertFromStatic(e)
   if e.static then
     table.quickremovevaluearray(self.static, e)
     local done = false
@@ -181,7 +181,7 @@ function entitysystem:revertFromStatic(e)
   end
 end
 
-function entitysystem:setLayer(e, l)
+function entitySystem:setLayer(e, l)
   if l and e.layer ~= l then
     table.quickremovevaluearray(e.actualLayer.data, e)
     if #e.actualLayer.data == 0 then
@@ -207,7 +207,7 @@ function entitysystem:setLayer(e, l)
   end
 end
 
-function entitysystem:setLayerFlicker(l, b)
+function entitySystem:setLayerFlicker(l, b)
   for i=1, #self.entities do
     if self.entities[i].layer == l then
       self.entities[i].flicker = b
@@ -216,7 +216,7 @@ function entitysystem:setLayerFlicker(l, b)
   end
 end
 
-function entitysystem:remove(e)
+function entitySystem:remove(e)
   if not e or e.isRemoved then return end
   e.isRemoved = true
   e:removed()
@@ -243,12 +243,12 @@ function entitysystem:remove(e)
   end
 end
 
-function entitysystem:removeq(e)
+function entitySystem:removeq(e)
   if not e or e.isRemoved or table.contains(self.removeQueue, e) then return end
   self.removeQueue[#self.removeQueue+1] = e
 end
 
-function entitysystem:clear()
+function entitySystem:clear()
   for i=1, #self.all do
     self.all[i].isRemoved = true
     self.all[i]:removed()
@@ -267,17 +267,14 @@ function entitysystem:clear()
   self.doSort = false
 end
 
-function entitysystem:draw()
+function entitySystem:draw()
   for i=1, #self.entities do
     for k=1, #self.entities[i].data do
       local v = self.entities[i].data[k]
       if v.render and (v.flashRender == nil and true or v.flashRender) and not v.isRemoved and v.draw then
-        if states.switched then
-          return
-        end
         v:draw()
         love.graphics.setColor(1, 1, 1, 1)
-        if entitysystem.drawCollision then
+        if entitySystem.drawCollision then
           v:drawCollision()
         end
       end
@@ -285,23 +282,20 @@ function entitysystem:draw()
   end
 end
 
-function entitysystem:drawQuality()
-  if not entitysystem.doDrawQuality then return end
+function entitySystem:drawQuality()
+  if not entitySystem.doDrawQuality then return end
   for i=1, #self.entities do
     for k=1, #self.entities[i].data do
       local v = self.entities[i].data[k]
       if v.render and (v.flashRender == nil and true or v.flashRender) and not v.isRemoved and v.drawQuality then
-        if states.switched then
-          return
-        end
         v:drawQuality()
       end
     end
   end
 end
 
-function entitysystem:update(dt)
-  if entitysystem.doBeforeUpdate then
+function entitySystem:update(dt)
+  if entitySystem.doBeforeUpdate then
     for i=1, #self.updates do
       local t = self.updates[i]
       t.previousX = t.transform.x
@@ -310,9 +304,6 @@ function entitysystem:update(dt)
       t.epY = t.previousY
       if not t.isRemoved and t.beforeUpdate and checkFalse(t.canUpdate) then
         t:beforeUpdate(dt)
-        if states.switched then
-          return
-        end
       end
     end
   end
@@ -324,12 +315,9 @@ function entitysystem:update(dt)
     t.epY = t.previousY
     if not t.isRemoved and t.update and checkFalse(t.canUpdate) then
       t:update(dt)
-      if states.switched then
-        return
-      end
     end
   end
-  if entitysystem.doAfterUpdate then
+  if entitySystem.doAfterUpdate then
     for i=1, #self.updates do
       local t = self.updates[i]
       t.previousX = t.transform.x
@@ -338,9 +326,6 @@ function entitysystem:update(dt)
       t.epY = t.previousY
       if not t.isRemoved and t.afterUpdate and checkFalse(t.canUpdate) then
         t:afterUpdate(dt)
-        if states.switched then
-          return
-        end
       end
     end
   end
@@ -359,7 +344,7 @@ function entitysystem:update(dt)
     self.doSort = false
     self:sortLayers()
   end
-  if entitysystem.doDrawFlicker then
+  if entitySystem.doDrawFlicker then
     for i=1, #self.entities do
       if self.entities[i].flicker and #self.entities[i].data > 1 then
         table.shuffle(self.entities[i].data)
@@ -461,7 +446,7 @@ function basicEntity:removeFromGroup(g)
 end
 
 function basicEntity:inGroup(g)
-  return table.contains(states.currentstate.system.groups[g], self)
+  return table.contains(states.currentState.system.groups[g], self)
 end
 
 function basicEntity:removeFromAllGroups()
@@ -469,11 +454,11 @@ function basicEntity:removeFromAllGroups()
 end
 
 function basicEntity:addToGroup(g)
-  if states.currentstate.system.groups[g] == nil then
-    states.currentstate.system.groups[g] = {}
+  if states.currentState.system.groups[g] == nil then
+    states.currentState.system.groups[g] = {}
   end
-  if not table.contains(states.currentstate.system.groups[g], self) then
-    table.insert(states.currentstate.system.groups[g], self)
+  if not table.contains(states.currentState.system.groups[g], self) then
+    table.insert(states.currentState.system.groups[g], self)
   end
 end
 

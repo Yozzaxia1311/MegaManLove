@@ -90,7 +90,7 @@ function megautils.setPlayer(p, what)
 end
 
 function megautils.getPlayer(p)
-  return convar.getString("infinitelives")
+  return convar.getString("player" .. tostring(p))
 end
 
 function megautils.getAllPlayers()
@@ -393,7 +393,7 @@ function megautils.loadStage(self, path)
 end
 
 function megautils.map()
-  return states.currentstate.currentMap
+  return states.currentState.currentMap
 end
 
 function megautils.getMapLayer(name)
@@ -436,77 +436,75 @@ function megautils.setMapLayerIDTile(name, x, y, gid, ts)
   l:setTileAtGridPosition(x, y, gid, ts)
 end
 
-function megautils.transitionToState(s, before, after, chunk)
+function megautils.transitionToState(s, before, after, from)
   local tmp = megautils.add(fade, true, nil, nil, function(se)
-        if before then before() end
         megautils.remove(se)
-        megautils.gotoState(s, chunk)
-        if after then after() end
+        megautils.gotoState(s, from, before, after)
       end)
 end
 
-function megautils.gotoState(s, chunk)
-  states.set(s, chunk)
+function megautils.gotoState(s, from, before, after)
+  states.setq(s, from, before, after)
 end
 
 function megautils.setLayerFlicker(l, b)
-  states.currentstate.system:setLayerFlicker(l, b)
+  states.currentState.system:setLayerFlicker(l, b)
 end
 
 function megautils.remove(o)
-  states.currentstate.system:remove(o)
+  states.currentState.system:remove(o)
 end
 
 function megautils.removeq(o)
-  states.currentstate.system:removeq(o)
+  states.currentState.system:removeq(o)
 end
 
 function megautils.inAddQueue(o)
-  return table.contains(states.currentstate.system.addQueue, o)
+  return table.contains(states.currentState.system.addQueue, o)
 end
 
 function megautils.inRemoveQueue(o)
-  return table.contains(states.currentstate.system.removeQueue, o)
+  return table.contains(states.currentState.system.removeQueue, o)
 end
 
 function megautils.stopAddQueue(o)
-  table.quickremovevaluearray(states.currentstate.system.addQueue, o)
+  table.quickremovevaluearray(states.currentState.system.addQueue, o)
 end
 
 function megautils.stopRemoveQueue(o)
-  table.quickremovevaluearray(states.currentstate.system.removeQueue, o)
+  table.quickremovevaluearray(states.currentState.system.removeQueue, o)
 end
 
 function megautils.state()
-  return states.currentstate
+  return states.currentState
 end
 
 function megautils.add(o, ...)
-  return states.currentstate.system:add(o, ...)
+  return states.currentState.system:add(o, ...)
 end
 
 function megautils.adde(o)
-  return states.currentstate.system:adde(o)
+  return states.currentState.system:adde(o)
 end
 
 function megautils.addq(o, ...)
-  return states.currentstate.system:addq(o, ...)
+  return states.currentState.system:addq(o, ...)
 end
 
 function megautils.addeq(o)
-  return states.currentstate.system:addeq(o)
+  return states.currentState.system:addeq(o)
 end
 
 function megautils.getRecycled(o, ...)
-  return states.currentstate.system:getRecycled(o, ...)
+  return states.currentState.system:getRecycled(o, ...)
 end
 
 function megautils.emptyRecycling(c, num)
-  states.currentstate.system:emptyRecycling(c, num)
+  states.currentState.system:emptyRecycling(c, num)
 end
 
 function megautils.groups()
-  return states.currentstate.system.groups
+  return states.currentState.system.groups
 end
 
 function megautils.calcX(angle)
@@ -540,7 +538,6 @@ function megautils.registerPlayer(e, p)
     megaMan.mainPlayer = e
   end
   megaMan.allPlayers[#megaMan.allPlayers+1] = e
-  e.player = p
   
   if #megaMan.allPlayers > 1 then
     local keys = {}

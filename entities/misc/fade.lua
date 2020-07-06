@@ -23,12 +23,12 @@ end
 
 function fade:update(dt)
   self.timer = math.min(self.timer+1, self.gap)
-  if ((self.alpha == 255 and self.fadeToColor) or (self.alpha == 0 and not self.fadeToColor)) and self.timer == self.gap then
-    if not self.once2 then
+  if ((self.alpha == 255 and self.fadeToColor) or (self.alpha == 0 and not self.fadeToColor)) then
+    if self.timer == self.gap and not self.once2 then
       self.once2 = true
       megautils.unfreeze()
+      self.after(self)
     end
-    self.after(self)
   else
     megautils.freeze()
   end

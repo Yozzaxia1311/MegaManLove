@@ -11,7 +11,7 @@ end
 
 function view.draw(sys)
   love.graphics.setCanvas(view.canvas)
-  love.graphics.clear()
+  love.graphics.clear(love.graphics.getBackgroundColor())
   love.graphics.push()
   love.graphics.scale(view.scale)
   love.graphics.translate(-view.x, -view.y)

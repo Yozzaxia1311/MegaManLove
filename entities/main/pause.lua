@@ -11,7 +11,7 @@ end
 function mmWeaponsMenu.pause(self)
   megautils.freeze(nil, "pause")
   megautils.add(fade, true, nil, nil, function(s)
-      megautils.add(mmWeaponsMenu, megaMan.weaponHandler[self.player], self.healthHandler, self.player)
+      megautils.add(mmWeaponsMenu, megaMan.weaponHandler[self.player], self.healthHandler, self)
       local ff = megautils.add(fade, false, nil, nil, fade.remove)
       megautils.removeq(s)
     end)
@@ -96,9 +96,9 @@ function mmWeaponsMenu:new(w, h, p)
   end)
   trig.fills = self.fills
   trig:removeFromGroup("freezable")
-  megaMan.colorOutline[self.player] = self.w.colorOutline[self.list[self.y][self.x]]
-  megaMan.colorOne[self.player] = self.w.colorOne[self.list[self.y][self.x]]
-  megaMan.colorTwo[self.player] = self.w.colorTwo[self.list[self.y][self.x]]
+  megaMan.colorOutline[self.player.player] = self.w.colorOutline[self.list[self.y][self.x]]
+  megaMan.colorOne[self.player.player] = self.w.colorOne[self.list[self.y][self.x]]
+  megaMan.colorTwo[self.player.player] = self.w.colorTwo[self.list[self.y][self.x]]
   self:setLayer(10)
   self.added = function(self)
     self:addToGroup("freezable")
@@ -144,11 +144,11 @@ function mmWeaponsMenu:update(dt)
     end
     self.fills[self.y][self.x].colorOne = self.w.colorOne[self.list[self.y][self.x]]
     self.fills[self.y][self.x].colorTwo = self.w.colorTwo[self.list[self.y][self.x]]
-    if control.startPressed[self.player] then
+    if control.startPressed[self.player.player] then
       self.w:switch(self.list[self.y][self.x])
-      megaMan.colorOutline[self.player] = self.w.colorOutline[self.list[self.y][self.x]]
-      megaMan.colorOne[self.player] = self.w.colorOne[self.list[self.y][self.x]]
-      megaMan.colorTwo[self.player] = self.w.colorTwo[self.list[self.y][self.x]]
+      megaMan.colorOutline[self.player.player] = self.w.colorOutline[self.list[self.y][self.x]]
+      megaMan.colorOne[self.player.player] = self.w.colorOne[self.list[self.y][self.x]]
+      megaMan.colorTwo[self.player.player] = self.w.colorTwo[self.list[self.y][self.x]]
       for k, v in pairs(self.fills) do
         for i, j in pairs(v) do
           if j.id ~= 0 then
@@ -165,7 +165,7 @@ function mmWeaponsMenu:update(dt)
         end)
       megautils.playSound("selected")
       return
-    elseif control.rightPressed[self.player] then
+    elseif control.rightPressed[self.player.player] then
       self.x = math.clamp(self.x+1, 1, 2)
       local ly = self.y
       while true do
@@ -200,7 +200,7 @@ function mmWeaponsMenu:update(dt)
           break
         end
       end
-    elseif control.leftPressed[self.player] then
+    elseif control.leftPressed[self.player.player] then
       self.x = math.clamp(self.x-1, 1, 2)
       local ly = self.y
       while true do
@@ -235,7 +235,7 @@ function mmWeaponsMenu:update(dt)
           break
         end
       end
-    elseif control.upPressed[self.player] then
+    elseif control.upPressed[self.player.player] then
       while true do
         if (not self.fills[self.y] or not self.fills[self.y][self.x]) and self.y == 1 and self.x == 2 then
           self.x = 1
@@ -246,15 +246,15 @@ function mmWeaponsMenu:update(dt)
           break
         end
       end
-    elseif control.downPressed[self.player] then
+    elseif control.downPressed[self.player.player] then
       while true do
         if self.y >= 6 then
           self.section = 1
           self.x = 1
           self.y = 1
-          megaMan.colorOutline[self.player] = self.w.colorOutline[self.cur]
-          megaMan.colorOne[self.player] = self.w.colorOne[self.cur]
-          megaMan.colorTwo[self.player] = self.w.colorTwo[self.cur]
+          megaMan.colorOutline[self.player.player] = self.w.colorOutline[self.cur]
+          megaMan.colorOne[self.player.player] = self.w.colorOne[self.cur]
+          megaMan.colorTwo[self.player.player] = self.w.colorTwo[self.cur]
           megautils.playSound("cursorMove")
          return
         end
@@ -265,14 +265,14 @@ function mmWeaponsMenu:update(dt)
       end
     end
     if olx ~= self.x or oly ~= self.y then
-      megaMan.colorOutline[self.player] = self.w.colorOutline[self.list[self.y][self.x]]
-      megaMan.colorOne[self.player] = self.w.colorOne[self.list[self.y][self.x]]
-      megaMan.colorTwo[self.player] = self.w.colorTwo[self.list[self.y][self.x]]
+      megaMan.colorOutline[self.player.player] = self.w.colorOutline[self.list[self.y][self.x]]
+      megaMan.colorOne[self.player.player] = self.w.colorOne[self.list[self.y][self.x]]
+      megaMan.colorTwo[self.player.player] = self.w.colorTwo[self.list[self.y][self.x]]
       megautils.playSound("cursorMove")
     end
   elseif self.section == 1 then
     local olx, oly = self.x, self.y
-    if control.startPressed[self.player] then
+    if control.startPressed[self.player.player] then
       if self.x == 1 and globals.eTanks > 0 then
         self.fills[1][1]:updateThis(self.h.segments * 4)
         self.changing = "health"
@@ -289,7 +289,7 @@ function mmWeaponsMenu:update(dt)
         self.changing = "weapons"
         globals.wTanks = math.clamp(globals.wTanks-1, 0, 9)
       end
-    elseif control.upPressed[self.player] then
+    elseif control.upPressed[self.player.player] then
       self.section = 0
       self.x = 1
       self.y = #self.list
@@ -299,14 +299,14 @@ function mmWeaponsMenu:update(dt)
         end
         self.y = self.y-1
       end
-      megaMan.colorOutline[self.player] = self.w.colorOutline[self.list[self.y][self.x]]
-      megaMan.colorOne[self.player] = self.w.colorOne[self.list[self.y][self.x]]
-      megaMan.colorTwo[self.player] = self.w.colorTwo[self.list[self.y][self.x]]
+      megaMan.colorOutline[self.player.player] = self.w.colorOutline[self.list[self.y][self.x]]
+      megaMan.colorOne[self.player.player] = self.w.colorOne[self.list[self.y][self.x]]
+      megaMan.colorTwo[self.player.player] = self.w.colorTwo[self.list[self.y][self.x]]
       olx = -69
     end
-    if self.x == 1 and control.rightPressed[self.player] then
+    if self.x == 1 and control.rightPressed[self.player.player] then
       self.x = 2
-    elseif self.x == 2 and control.leftPressed[self.player] then
+    elseif self.x == 2 and control.leftPressed[self.player.player] then
       self.x = 1
     end
     if olx ~= self.x or oly ~= self.y then
@@ -332,20 +332,23 @@ function mmWeaponsMenu:draw()
   local ox, oy = 0, 0
   local tx, ty = view.x+(8*21), view.y+(22*8)
 
-  if megautils.getPlayer(self.player) == "proto" then
+  if self.player.playerName == "proto" then
     oy = 1
-  elseif megautils.getPlayer(self.player) == "bass" then
+  elseif self.player.playerName == "bass" then
     ox = -1
     oy = 1
   end
   love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.draw(self.tex, self.heads[megautils.getPlayer(self.player)], tx+ox, ty+oy)
-  love.graphics.setColor(megaMan.colorTwo[self.player][1]/255, megaMan.colorTwo[self.player][2]/255, megaMan.colorTwo[self.player][3]/255, 1)
-  love.graphics.draw(self.texTwo, self.heads[megautils.getPlayer(self.player)], tx+ox, ty+oy)
-  love.graphics.setColor(megaMan.colorOutline[self.player][1]/255, megaMan.colorOutline[self.player][2]/255, megaMan.colorOutline[self.player][3]/255, 1)
-  love.graphics.draw(self.texOutline, self.heads[megautils.getPlayer(self.player)], tx+ox, ty+oy)
-  love.graphics.setColor(megaMan.colorOne[self.player][1]/255, megaMan.colorOne[self.player][2]/255, megaMan.colorOne[self.player][3]/255, 1)
-  love.graphics.draw(self.texOne, self.heads[megautils.getPlayer(self.player)], tx+ox, ty+oy)
+  love.graphics.draw(self.tex, self.heads[self.player.playerName], tx+ox, ty+oy)
+  love.graphics.setColor(megaMan.colorTwo[self.player.player][1]/255, megaMan.colorTwo[self.player.player][2]/255,
+    megaMan.colorTwo[self.player.player][3]/255, 1)
+  love.graphics.draw(self.texTwo, self.heads[self.player.playerName], tx+ox, ty+oy)
+  love.graphics.setColor(megaMan.colorOutline[self.player.player][1]/255, megaMan.colorOutline[self.player.player][2]/255,
+    megaMan.colorOutline[self.player.player][3]/255, 1)
+  love.graphics.draw(self.texOutline, self.heads[self.player.playerName], tx+ox, ty+oy)
+  love.graphics.setColor(megaMan.colorOne[self.player.player][1]/255, megaMan.colorOne[self.player.player][2]/255,
+    megaMan.colorOne[self.player.player][3]/255, 1)
+  love.graphics.draw(self.texOne, self.heads[self.player.playerName], tx+ox, ty+oy)
   
   if self.section == 0 then
     local tx, ty, tx2 = view.x+(8*6), view.y+(22*8), view.x+(8*10)

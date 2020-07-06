@@ -70,6 +70,7 @@ function stickMan:gettingHurt(o, c, i)
     timer.absorbCutscene(function()
       globals.defeats.stickMan = true
       globals.weaponGet = "stick"
+      globals.skin = megaMan.mainPlayer.playerName
       megautils.gotoState("states/weaponget.state.lua")
     end)
     megautils.removeq(self)
@@ -218,25 +219,25 @@ function megamanStick:new()
   megamanStick.super.new(self)
   self.transform.y = -60
   self.transform.x = 100
-  if megautils.getPlayer(1) == "mega" then
+  if globals.skin == "mega" then
     self.texOutline = megautils.loadResource("assets/players/megaman/megaManOutline.png", "megaManOutline")
     self.texOne = megautils.loadResource("assets/players/megaman/megaManOne.png", "megaManOne")
     self.texTwo = megautils.loadResource("assets/players/megaman/megaManTwo.png", "megaManTwo")
     self.texFace = megautils.loadResource("assets/players/megaman/megaManFace.png", "megaManFace")
     self.grid = megautils.loadResource("megaManGrid", 41, 30, 164, 330)
-  elseif megautils.getPlayer(1) == "proto" then
+  elseif globals.skin == "proto" then
     self.texOutline = megautils.loadResource("assets/players/proto/protoManOutline.png", "protoManOutline")
     self.texOne = megautils.loadResource("assets/players/proto/protoManOne.png", "protoManOne")
     self.texTwo = megautils.loadResource("assets/players/proto/protoManTwo.png", "protoManTwo")
     self.texFace = megautils.loadResource("assets/players/proto/protoManFace.png", "protoManFace")
     self.grid = megautils.loadResource("megaManGrid", 41, 30, 164, 330)
-  elseif megautils.getPlayer(1) == "bass" then
+  elseif globals.skin == "bass" then
     self.texOutline = megautils.loadResource("assets/players/bass/bassOutline.png", "bassOutline")
     self.texOne = megautils.loadResource("assets/players/bass/bassOne.png", "bassOne")
     self.texTwo = megautils.loadResource("assets/players/bass/bassTwo.png", "bassTwo")
     self.texFace = megautils.loadResource("assets/players/bass/bassFace.png", "bassFace")
     self.grid = megautils.loadResource("bassGrid", 45, 41, 180, 533)
-  elseif megautils.getPlayer(1) == "roll" then
+  elseif globals.skin == "roll" then
     self.texOutline = megautils.loadResource("assets/players/roll/rollOutline.png", "rollOutline")
     self.texOne = megautils.loadResource("assets/players/roll/rollOne.png", "rollOne")
     self.texTwo = megautils.loadResource("assets/players/roll/rollTwo.png", "rollTwo")

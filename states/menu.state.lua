@@ -1,8 +1,6 @@
 local menuState = states.state:extend()
 
 function menuState:begin()
-  megautils.loadResource("assets/misc/menuSelect.png", "menuSelect")
-  megautils.loadResource("assets/sfx/cursorMove.ogg", "cursorMove")
   megautils.loadMap(self, "assets/maps/menu.tmx")
   megautils.add(menuSelect)
   megautils.add(fade, false, nil, nil, fade.remove)
@@ -16,6 +14,9 @@ megautils.cleanFuncs.menu = function()
 end
 
 menuSelect = entity:extend()
+
+megautils.loadResource("assets/misc/menuSelect.png", "menuSelect")
+megautils.loadResource("assets/sfx/cursorMove.ogg", "cursorMove")
 
 function menuSelect:new()
   menuSelect.super.new(self)

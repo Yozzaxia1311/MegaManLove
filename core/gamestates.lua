@@ -1,10 +1,11 @@
 states = {}
 
-states.currentstate = nil
+states.currentState = nil
 states.current = nil
 states.switched = false
 states.recordOnSwitch = false
 states.openRecord = nil
+states.queue = nil
 
 states.baseState = class:extend()
 
@@ -26,10 +27,11 @@ function states.state:stop()
   megautils.unload()
 end
 
-function states.set(n, s, after)
+function states.set(n, s, before, after)
+  if before then before() end
   local nick = n
-  if states.currentstate then
-    states.currentstate:stop()
+  if states.currentState then
+    states.currentState:stop()
   end
   if states.openRecord then
     control.resetRec()
@@ -38,9 +40,11 @@ function states.set(n, s, after)
     states.openRecord = nil
     control.oldGlobals = globals
     globals = control.record.globals
+    control.oldConvars = convar
+    convar = control.record.convars
     love.math.setRandomSeed(control.record.seed)
     control.demo = true
-    megautils.gotoState(nick)
+    states.set(nick)
     return
   end
   if states.recordOnSwitch then
@@ -49,6 +53,7 @@ function states.set(n, s, after)
     control.resetRec()
     control.recordInput = true
     control.record.globals = table.clone(globals)
+    control.record.convars = table.clone(convar)
     control.record.state = nick
     control.record.seed = love.math.getRandomSeed()
   end
@@ -56,8 +61,8 @@ function states.set(n, s, after)
     states.currentChunk = love.filesystem.load(nick)
   end
   states.current = nick
-  states.currentstate = s or states.currentChunk()
-  states.currentstate.system = states.currentstate.system or entitysystem()
+  states.currentState = s or states.currentChunk()
+  states.currentState.system = states.currentState.system or entitySystem()
   states.switched = true
   if after then after() end
   if megautils.reloadState and megautils.resetGameObjects then
@@ -65,15 +70,27 @@ function states.set(n, s, after)
       v()
     end
   end
-  states.currentstate:begin()
+  states.currentState:begin()
+end
+
+function states.setq(n, s, after)
+  states.queue = {n, s, after}
+end
+
+function states.checkQueue()
+  if states.queue then
+    states.set(unpack(states.queue))
+    states.queue = nil
+  end
+  states.switched = false
 end
 
 function states.update(dt)
-  if states.currentstate == nil then return end
-  states.currentstate:update(dt)
+  if not states.currentState then return end
+  states.currentState:update(dt)
 end
 
 function states.draw()
-  if states.currentstate == nil then return end
-  states.currentstate:draw()
+  if not states.currentState then return end
+  states.currentState:draw()
 end
