@@ -35,7 +35,7 @@ end
 
 function slideParticle:update(dt)
   self:face(self.side)
-  self.anim:update(1/60)
+  self.anim:update(defaultFramerate)
   if self.anim.looped then
     megautils.removeq(self)
   elseif megautils.outside(self) then
@@ -73,7 +73,7 @@ function damageSteam:added()
 end
 
 function damageSteam:update(dt)
-  self.anim:update(1/60)
+  self.anim:update(defaultFramerate)
   if self.anim.looped then
     megautils.removeq(self)
   elseif megautils.outside(self) then
@@ -170,7 +170,7 @@ end
 
 function angleParticle:update(dt)
   self:face(self.side)
-  self.anim:update(1/60)
+  self.anim:update(defaultFramerate)
   self:moveBy(self.velocity.velx, self.velocity.vely)
   if self.anim.looped then
     megautils.removeq(self)
@@ -252,7 +252,7 @@ function explodeParticle:update(dt)
   if megautils.outside(self) then
     megautils.removeq(self)
   end
-  self.anim:update(1/60)
+  self.anim:update(defaultFramerate)
 end
 
 function explodeParticle:draw()
@@ -298,7 +298,7 @@ function absorbParticle:update(dt)
   if not self.towards or self.pos == 1 or self.towards.isRemoved then
     megautils.removeq(self)
   end
-  self.anim:update(1/60)
+  self.anim:update(defaultFramerate)
 end
 
 function absorbParticle:draw()
@@ -372,7 +372,7 @@ function smallBlast:added()
 end
 
 function smallBlast:update(dt)
-  self.anim:update(1/60)
+  self.anim:update(defaultFramerate)
   if megautils.outside(self) or self.anim.looped then
     megautils.removeq(self)
   end

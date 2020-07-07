@@ -82,7 +82,7 @@ function smallHealth:update(dt)
       megautils.removeq(self)
     end
   end
-  self.anim:update(1/60)
+  self.anim:update(defaultFramerate)
 end
 
 function smallHealth:removed()
@@ -182,7 +182,7 @@ function health:update(dt)
       megautils.removeq(self)
     end
   end
-  self.anim:update(1/60)
+  self.anim:update(defaultFramerate)
 end
 
 function health:removed()
@@ -283,7 +283,7 @@ function smallEnergy:update(dt)
       megautils.removeq(self)
     end
   end
-  self.anim:update(1/60)
+  self.anim:update(defaultFramerate)
 end
 
 function smallEnergy:removed()
@@ -392,7 +392,7 @@ function energy:update(dt)
       megautils.removeq(self)
     end
   end
-  self.anim:update(1/60)
+  self.anim:update(defaultFramerate)
 end
 
 function energy:removed()
@@ -659,7 +659,7 @@ function eTank:update(dt)
       megautils.removeq(self)
     end
   end
-  self.anim:update(1/60)
+  self.anim:update(defaultFramerate)
 end
 
 function eTank:removed()
@@ -765,7 +765,7 @@ function wTank:update(dt)
       megautils.removeq(self)
     end
   end
-  self.anim:update(1/60)
+  self.anim:update(defaultFramerate)
 end
 
 function wTank:removed()

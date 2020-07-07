@@ -60,124 +60,128 @@ megaMan.resources.roll = function()
     megautils.loadResource("rollGrid", 45, 34, 180, 374)
   end
 
+megautils.reloadStateFuncs.megaMan = function()
+    megaMan.once = nil
+  end
+
 megautils.resetGameObjectsFuncs.megaMan = function()
-  megaMan.colorOutline = {}
-  megaMan.colorOne = {}
-  megaMan.colorTwo = {}
-  megaMan.weaponHandler = {}
-  megaMan.mainPlayer = nil
-  megaMan.allPlayers = {}
-  globals.lives = (globals.lives > globals.startingLives) and globals.lives or globals.startingLives
-  
-  globals.checkpoint = globals.overrideCheckpoint or "start"
-  globals.gameOverContinueState = globals.overrideGOCS or states.current
-  globals.deathState = globals.overrideDeathState or states.current
-  globals.overrideCheckpoint = nil
-  globals.overrideGOCS = nil
-  globals.overrideDeathState = nil
-  
-  megautils.loadResource("assets/misc/weapons/weaponSelectIcon.png", "weaponSelectIcon")
-  mmWeaponsMenu.resources()
-  
-  for i=1, globals.playerCount do
-    megaMan.weaponHandler[i] = weaponHandler(nil, nil, 10)
+    megaMan.colorOutline = {}
+    megaMan.colorOne = {}
+    megaMan.colorTwo = {}
+    megaMan.weaponHandler = {}
+    megaMan.mainPlayer = nil
+    megaMan.allPlayers = {}
+    megaMan.once = nil
+    globals.lives = (globals.lives > globals.startingLives) and globals.lives or globals.startingLives
     
-    if megautils.getPlayer(i) == "proto" then
-      megaMan.resources.protoMan()
-      
-      megaMan.weaponHandler[i]:register(0, "protoBuster", {"P.BUSTER", {48, 32, 16, 16}, {64, 32, 16, 16}},
-        {216, 40, 0}, {184, 184, 184}, {0, 0, 0})
-      
-      megaMan.weaponHandler[i]:register(9, "rushCoil", {"PROTO C.", {176, 0, 16, 16}, {192, 0, 16, 16}},
-        {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
-      
-      megaMan.weaponHandler[i]:register(10, "rushJet", {"PROTO JET", {176, 16, 16, 16}, {192, 16, 16, 16}},
-        {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
-      
-    elseif megautils.getPlayer(i) == "bass" then
-      megaMan.resources.bass()
-      
-      megaMan.weaponHandler[i]:register(0, "bassBuster", {"B.BUSTER", {144, 32, 16, 16}, {160, 32, 16, 16}},
-        {112, 112, 112}, {248, 152, 56}, {0, 0, 0})
-      
-      megaMan.weaponHandler[i]:register(9, "trebleBoost", {"T. BOOST", {144, 16, 16, 16}, {160, 16, 16, 16}},
-        {112, 112, 112}, {128, 0, 240}, {0, 0, 0})
-      
-    elseif megautils.getPlayer(i) == "roll" then
-      megaMan.resources.roll()
-      
-      megaMan.weaponHandler[i]:register(0, "rollBuster", {"R.BUSTER", {80, 32, 16, 16}, {96, 32, 16, 16}},
-        {248, 56, 0}, {0, 168, 0}, {0, 0, 0})
-      
-      megaMan.weaponHandler[i]:register(9, "rushCoil", {"TANGO C.", {208, 0, 16, 16}, {224, 0, 16, 16}},
-        {0, 168, 0}, {255, 255, 255}, {0, 0, 0})
-      
-      megaMan.weaponHandler[i]:register(10, "rushJet", {"TANGO JET", {208, 16, 16, 16}, {224, 16, 16, 16}},
-        {0, 168, 0}, {255, 255, 255}, {0, 0, 0})
-      
-    else
-      megaMan.resources.megaMan()
-      
-      megaMan.weaponHandler[i]:register(0, "megaBuster", {"M.BUSTER", {16, 32, 16, 16}, {32, 32, 16, 16}},
-        {0, 120, 248}, {0, 232, 216}, {0, 0, 0})
-      
-      megaMan.weaponHandler[i]:register(9, "rushCoil", {"RUSH C.", {144, 0, 16, 16}, {160, 0, 16, 16}},
-        {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
-      
-      megaMan.weaponHandler[i]:register(10, "rushJet", {"RUSH JET", {112, 32, 16, 16}, {128, 32, 16, 16}},
-        {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
-      
-    end
+    globals.checkpoint = globals.overrideCheckpoint or "start"
+    globals.overrideCheckpoint = nil
     
-    if globals.defeats.stickMan then
+    megautils.loadResource("assets/misc/weapons/weaponSelectIcon.png", "weaponSelectIcon")
+    mmWeaponsMenu.resources()
+    
+    for i=1, globals.playerCount do
+      megaMan.weaponHandler[i] = weaponHandler(nil, nil, 10)
       
-      megaMan.weaponHandler[i]:register(1, "stickWeapon", {"STICK W.", {16, 0, 16, 16}, {32, 0, 16, 16}},
-        {188, 188, 188}, {124, 124, 124}, {0, 0, 0})
-      
-    end
-  end
-  
-  megaMan.individualLanded = {}
-end
-
-addobjects.register("player", function(v)
-  if v.properties.checkpoint == globals.checkpoint and not camera.once then
-    camera.once = true
-    megautils.add(camera, v.x, v.y, v.properties.doScrollX, v.properties.doScrollY)
-  end
-end, -1)
-
-addobjects.register("player", function(v)
-  if v.properties.checkpoint == globals.checkpoint and camera.main and camera.once then
-    camera.main:setRectangleCollision(8, 8)
-    if v.properties.name then
-      camera.main.curBoundName = v.properties.name
-    end
-    camera.main:updateBounds()
-    camera.main:setRectangleCollision(view.w, view.h)
-    camera.main:doView(999, 999)
-    camera.once = nil
-  end
-end, 3)
-
-addobjects.register("player", function(v)
-  if v.properties.checkpoint == globals.checkpoint then
-    if v.properties.individual then
-      if v.properties.individual <= globals.playerCount then
-        megaMan.individualLanded[#megaMan.individualLanded+1] = v.properties.individual
-        megautils.add(megaMan, v.x, v.y+((v.properties.grav == nil or v.properties.grav >= 0) and -5 or 0),
-          v.properties.side, v.properties.draw, v.properties.individual, v.properties.grav, v.properties.gravFlip, v.properties.control)
+      if megautils.getPlayer(i) == "proto" then
+        megaMan.resources.protoMan()
+        
+        megaMan.weaponHandler[i]:register(0, "protoBuster", {"P.BUSTER", {48, 32, 16, 16}, {64, 32, 16, 16}},
+          {216, 40, 0}, {184, 184, 184}, {0, 0, 0})
+        
+        megaMan.weaponHandler[i]:register(9, "rushCoil", {"PROTO C.", {176, 0, 16, 16}, {192, 0, 16, 16}},
+          {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+        
+        megaMan.weaponHandler[i]:register(10, "rushJet", {"PROTO JET", {176, 16, 16, 16}, {192, 16, 16, 16}},
+          {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+        
+      elseif megautils.getPlayer(i) == "bass" then
+        megaMan.resources.bass()
+        
+        megaMan.weaponHandler[i]:register(0, "bassBuster", {"B.BUSTER", {144, 32, 16, 16}, {160, 32, 16, 16}},
+          {112, 112, 112}, {248, 152, 56}, {0, 0, 0})
+        
+        megaMan.weaponHandler[i]:register(9, "trebleBoost", {"T. BOOST", {144, 16, 16, 16}, {160, 16, 16, 16}},
+          {112, 112, 112}, {128, 0, 240}, {0, 0, 0})
+        
+      elseif megautils.getPlayer(i) == "roll" then
+        megaMan.resources.roll()
+        
+        megaMan.weaponHandler[i]:register(0, "rollBuster", {"R.BUSTER", {80, 32, 16, 16}, {96, 32, 16, 16}},
+          {248, 56, 0}, {0, 168, 0}, {0, 0, 0})
+        
+        megaMan.weaponHandler[i]:register(9, "rushCoil", {"TANGO C.", {208, 0, 16, 16}, {224, 0, 16, 16}},
+          {0, 168, 0}, {255, 255, 255}, {0, 0, 0})
+        
+        megaMan.weaponHandler[i]:register(10, "rushJet", {"TANGO JET", {208, 16, 16, 16}, {224, 16, 16, 16}},
+          {0, 168, 0}, {255, 255, 255}, {0, 0, 0})
+        
+      else
+        megaMan.resources.megaMan()
+        
+        megaMan.weaponHandler[i]:register(0, "megaBuster", {"M.BUSTER", {16, 32, 16, 16}, {32, 32, 16, 16}},
+          {0, 120, 248}, {0, 232, 216}, {0, 0, 0})
+        
+        megaMan.weaponHandler[i]:register(9, "rushCoil", {"RUSH C.", {144, 0, 16, 16}, {160, 0, 16, 16}},
+          {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+        
+        megaMan.weaponHandler[i]:register(10, "rushJet", {"RUSH JET", {112, 32, 16, 16}, {128, 32, 16, 16}},
+          {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+        
       end
-    else
-      for i=1, globals.playerCount do
-        if not table.contains(v.properties.individual, i) then
+      
+      if globals.defeats.stickMan then
+        
+        megaMan.weaponHandler[i]:register(1, "stickWeapon", {"STICK W.", {16, 0, 16, 16}, {32, 0, 16, 16}},
+          {188, 188, 188}, {124, 124, 124}, {0, 0, 0})
+        
+      end
+    end
+    
+    megaMan.individualLanded = {}
+  end
+
+addobjects.register("player", function(v)
+    if megaMan.once then return end
+    if v.properties.checkpoint == globals.checkpoint and not camera.once then
+      camera.once = true
+      megautils.add(camera, v.x, v.y, v.properties.doScrollX, v.properties.doScrollY)
+    end
+  end, -1)
+
+addobjects.register("player", function(v)
+    if megaMan.once then return end
+    if v.properties.checkpoint == globals.checkpoint and camera.main and camera.once then
+      camera.main:setRectangleCollision(8, 8)
+      if v.properties.name then
+        camera.main.curBoundName = v.properties.name
+      end
+      camera.main:updateBounds()
+      camera.main:setRectangleCollision(view.w, view.h)
+      camera.main:doView(999, 999)
+      camera.once = nil
+    end
+  end, 3)
+
+addobjects.register("player", function(v)
+    if megaMan.once then return end
+    if v.properties.checkpoint == globals.checkpoint then
+      if v.properties.individual then
+        if v.properties.individual <= globals.playerCount then
+          megaMan.individualLanded[#megaMan.individualLanded+1] = v.properties.individual
           megautils.add(megaMan, v.x, v.y+((v.properties.grav == nil or v.properties.grav >= 0) and -5 or 0),
-            v.properties.side, v.properties.drop, i, v.properties.grav, v.properties.gravFlip, v.properties.control)
+            v.properties.side, v.properties.draw, v.properties.individual, v.properties.grav, v.properties.gravFlip, v.properties.control)
+        end
+      else
+        for i=1, globals.playerCount do
+          if not table.contains(v.properties.individual, i) then
+            megautils.add(megaMan, v.x, v.y+((v.properties.grav == nil or v.properties.grav >= 0) and -5 or 0),
+              v.properties.side, v.properties.drop, i, v.properties.grav, v.properties.gravFlip, v.properties.control)
+          end
         end
       end
     end
-  end
-end)
+  end)
 
 function megaMan.properties(self, g, gf, c)
   self.gravityType = 0
@@ -1270,6 +1274,7 @@ function megaMan:code(dt)
     end
   elseif self.slide then
     self.ground = true
+    self.velocity.vely = 0
     collision.checkGround(self)
     local lastSide = self.side
     if control.leftDown[self.player] then
@@ -1806,7 +1811,7 @@ function megaMan:animate()
   else
     self:face(-1)
   end
-  self.animations[self.curAnim]:update(1/60)
+  self.animations[self.curAnim]:update(defaultFramerate)
 end
 
 function megaMan:die()
@@ -1834,11 +1839,12 @@ function megaMan:die()
         if not megautils.hasInfiniteLives() and globals.lives < 0 then
           megautils.reloadState = true
           megautils.resetGameObjects = true
+          globals.gameOverContinueState = states.current
           megautils.gotoState("states/gameover.state.lua")
         else
           megautils.reloadState = true
           megautils.resetGameObjects = false
-          megautils.gotoState(globals.deathState)
+          megautils.gotoState(states.current)
         end
         megautils.removeq(s)
       end)
@@ -1858,6 +1864,9 @@ function megaMan:die()
 end
 
 function megaMan:update(dt)
+  if not megaMan.once then
+    megaMan.once = true
+  end
   if self.blockCollision and megautils.groups().bossDoor then
     for k, v in ipairs(megautils.groups().bossDoor) do
       v.lastSolid = v.isSolid
@@ -1868,7 +1877,7 @@ function megaMan:update(dt)
     for k, v in pairs(megautils.playerDeathFuncs) do
       v(self)
     end
-    if self.cameraTween:update(1/60) then
+    if self.cameraTween:update(defaultFramerate) then
       self:die()
       megautils.unfreeze(nil, "dying")
       return

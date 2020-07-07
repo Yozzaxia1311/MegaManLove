@@ -592,6 +592,7 @@ function Map:_init(path)
   self.quadCache = {}
   self.tilesetCache = {}
   self.tileCache = {}
+  self.path = path
   if self.backgroundcolor then
     self.backgroundcolor[1] = self.backgroundcolor[1] / 255
     self.backgroundcolor[2] = self.backgroundcolor[2] / 255
@@ -1194,15 +1195,20 @@ local function finalXML2LuaTable(str, f)
   return result
 end
 
+cartographer.cache = {}
+
 -- Loads a Tiled map from a tmx file.
 function cartographer.load(path)
   if not path then error('No map path provided', 2) end
   local map
-  if path:sub(path:len()-3, path:len()) == ".tmx" then
-    map = setmetatable(finalXML2LuaTable(love.filesystem.read(path), path), Map)
-  else
-    map = setmetatable(love.filesystem.load(path)(), Map)
+  if not cartographer.cache[path] then
+    if path:sub(path:len()-3, path:len()) == ".tmx" then
+      cartographer.cache[path] = finalXML2LuaTable(love.filesystem.read(path), path)
+    else
+      cartographer.cache[path] = love.filesystem.read(path)()
+    end
   end
+  map = setmetatable(cartographer.cache[path], Map)
   map:_init(path)
   return map
 end

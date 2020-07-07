@@ -37,7 +37,7 @@ function demoStage:begin()
     local musicTableOld = {ol, oi, ov}
     
     -- Load stage from `.tmx`...
-    megautils.loadMap(self, "assets/maps/demo.tmx")
+    megautils.addMap("assets/maps/demo.tmx")
     -- READY
     megautils.add(ready, nil, (megaMan.mainPlayer.playerName == "proto") and (isWeb and "old" or "new"), isWeb and musicTableOld or musicTable)
     -- Fade in from black

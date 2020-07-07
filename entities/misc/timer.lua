@@ -81,7 +81,7 @@ function timer.absorbCutscene(func, music)
             megaMan.mainPlayer.curAnim = "jump"
           end
           megaMan.mainPlayer:face(megaMan.mainPlayer.side)
-          megaMan.mainPlayer.animations[megaMan.mainPlayer.curAnim]:update(1/60)
+          megaMan.mainPlayer.animations[megaMan.mainPlayer.curAnim]:update(defaultFramerate)
         end
       elseif s.state == 0 then
         if megaMan.mainPlayer then
@@ -124,7 +124,7 @@ function timer.absorbCutscene(func, music)
         else
           megaMan.mainPlayer.curAnim = "idle"
         end
-        megaMan.mainPlayer.animations[megaMan.mainPlayer.curAnim]:update(1/60)
+        megaMan.mainPlayer.animations[megaMan.mainPlayer.curAnim]:update(defaultFramerate)
         collision.doGrav(megaMan.mainPlayer)
         megaMan.mainPlayer:phys()
         if not megaMan.mainPlayer.ground then

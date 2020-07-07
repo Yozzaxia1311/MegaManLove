@@ -110,7 +110,7 @@ function protoChargedBuster:dink(e)
 end
 
 function protoChargedBuster:update(dt)
-  self.anim:update(1/60)
+  self.anim:update(defaultFramerate)
   if not self.dinked then
     self:hurt(self:collisionTable(megautils.groups().hurtable), -2, 2)
   end
@@ -308,7 +308,7 @@ function megaSemiBuster:dink(e)
 end
 
 function megaSemiBuster:update(dt)
-  self.anim:update(1/60)
+  self.anim:update(defaultFramerate)
   if not self.dinked then
     self:hurt(self:collisionTable(megautils.groups().hurtable), -1, 2)
   end
@@ -363,7 +363,7 @@ function megaChargedBuster:dink(e)
 end
 
 function megaChargedBuster:update(dt)
-  self.anim:update(1/60)
+  self.anim:update(defaultFramerate)
   if not self.dinked then
     self:hurt(self:collisionTable(megautils.groups().hurtable), -2, 2)
   end
@@ -436,7 +436,7 @@ function trebleBoost:face(n)
 end
 
 function trebleBoost:update(dt)
-  self.anims[self.c]:update(1/60)
+  self.anims[self.c]:update(defaultFramerate)
   if self.s == -1 then
     self:moveBy(0, 8)
   elseif self.s == 0 then
@@ -569,7 +569,7 @@ function rushJet:face(n)
 end
 
 function rushJet:update(dt)
-  self.anims[self.c]:update(1/60)
+  self.anims[self.c]:update(defaultFramerate)
   if self.s == -1 then
     self:moveBy(0, 8)
   elseif self.s == 0 then
@@ -724,7 +724,7 @@ end
 
 function rushCoil:added()
   self:addToGroup("rushCoil")
-  self:addToGroup("rushCoil" .. w.id)
+  self:addToGroup("rushCoil" .. self.wpn.id)
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
   self:addToGroup("submergable")
@@ -741,7 +741,7 @@ function rushCoil:face(n)
 end
 
 function rushCoil:update(dt)
-  self.anims[self.c]:update(1/60)
+  self.anims[self.c]:update(defaultFramerate)
   if self.s == -1 then
     self:moveBy(0, 8)
   elseif self.s == 0 then

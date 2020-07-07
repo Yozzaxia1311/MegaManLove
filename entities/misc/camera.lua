@@ -181,9 +181,9 @@ function camera:updateCam(spdx, spdy)
       self.once = true
       megautils.state().system.cameraUpdate = function(s)
         for i=1, #megaMan.allPlayers do
-          camera.main.tween2[i]:update(1/60)
+          camera.main.tween2[i]:update(defaultFramerate)
         end
-        if camera.main.tween:update(1/60) then
+        if camera.main.tween:update(defaultFramerate) then
           camera.main.tweenFinished = true
           if not camera.main.dontUpdateSections then
             camera.main:updateBounds()

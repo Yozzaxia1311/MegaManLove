@@ -29,7 +29,7 @@ function bossDoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt, n)
   self.canWalkThrough = false
   self.isLocked = {global=false}
   self.spawnEarlyDuringTransition = true
-  self.useMapTiles = megautils.getMapLayer(umt) and umt
+  self.useMapTiles = umt
   self.name = n
 end
 
@@ -141,11 +141,18 @@ function bossDoor:update(dt)
           end
           if self.useMapTiles then
             self.tileList = {}
-            for x=1, (self.dir=="right" or self.dir=="left") and 2 or self.maxSegments do
-              self.tileList[x] = {}
-              for y=1, (self.dir=="right" or self.dir=="left") and self.maxSegments or 2 do
-                self.tileList[x][y] = megautils.getMapLayer(self.useMapTiles)
-                  :getTileAtPixelPosition(self.transform.x+(x*16)-16, self.transform.y+(y*16)-16)
+            if megautils.groups().map then
+              for k, v in ipairs(megautils.groups().map) do
+                local layer = v:getLayerByName(self.useMapTiles)
+                if layer then
+                  self.tileList[v] = {}
+                  for x=1, (self.dir=="right" or self.dir=="left") and 2 or self.maxSegments do
+                    self.tileList[v][x] = {}
+                    for y=1, (self.dir=="right" or self.dir=="left") and self.maxSegments or 2 do
+                      self.tileList[v][x][y] = layer:getTileAtPixelPosition(self.transform.x+(x*16)-16, self.transform.y+(y*16)-16)
+                    end
+                  end
+                end
               end
             end
           end
@@ -158,12 +165,17 @@ function bossDoor:update(dt)
       self.timer = 0
       self.segments = math.max(self.segments-1, 0)
       if self.useMapTiles then
-        megautils.getMapLayer(self.useMapTiles)
-        :setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and self.transform.x or self.transform.x+(self.segments*16),
-          (self.dir=="right" or self.dir=="left") and self.transform.y+((self.segments)*16) or self.transform.y, -1)
-        megautils.getMapLayer(self.useMapTiles)
-        :setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and self.transform.x+16 or self.transform.x+(self.segments*16),
-          (self.dir=="right" or self.dir=="left") and self.transform.y+((self.segments)*16) or self.transform.y+16, -1)
+        if megautils.groups().map then
+          for k, v in ipairs(megautils.groups().map) do
+            local layer = v:getLayerByName(self.useMapTiles)
+            if layer then
+              layer:setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and self.transform.x or self.transform.x+(self.segments*16),
+                (self.dir=="right" or self.dir=="left") and self.transform.y+((self.segments)*16) or self.transform.y, -1)
+              layer:setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and self.transform.x+16 or self.transform.x+(self.segments*16),
+                (self.dir=="right" or self.dir=="left") and self.transform.y+((self.segments)*16) or self.transform.y+16, -1)
+            end
+          end
+        end
       end
       megautils.playSound("bossDoorSfx")
     end
@@ -192,19 +204,27 @@ function bossDoor:update(dt)
       self.timer = 0
       self.segments = math.min(self.segments+1, self.maxSegments)
       if self.useMapTiles then
-        megautils.getMapLayer(self.useMapTiles)
-          :setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and self.transform.x or self.transform.x+(self.segments*16)-16,
-          (self.dir=="right" or self.dir=="left") and self.transform.y+(self.segments*16)-16 or self.transform.y,
-          self.tileList[(self.dir=="right" or self.dir=="left") and 1 or self.segments][(self.dir=="right" or self.dir=="left") and self.segments or 1])
-        megautils.getMapLayer(self.useMapTiles)
-          :setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and self.transform.x+16 or self.transform.x+(self.segments*16)-16,
-          (self.dir=="right" or self.dir=="left") and self.transform.y+(self.segments*16)-16 or self.transform.y+16,
-          self.tileList[(self.dir=="right" or self.dir=="left") and 2 or self.segments][(self.dir=="right" or self.dir=="left") and self.segments or 2])
+        if megautils.groups().map then
+          for k, v in ipairs(megautils.groups().map) do
+            local layer = v:getLayerByName(self.useMapTiles)
+            if layer and self.tileList[v] then
+              layer
+                :setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and self.transform.x or self.transform.x+(self.segments*16)-16,
+                (self.dir=="right" or self.dir=="left") and self.transform.y+(self.segments*16)-16 or self.transform.y,
+                self.tileList[v][(self.dir=="right" or self.dir=="left") and 1 or self.segments][(self.dir=="right" or self.dir=="left") and self.segments or 1])
+              layer
+                :setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and self.transform.x+16 or self.transform.x+(self.segments*16)-16,
+                (self.dir=="right" or self.dir=="left") and self.transform.y+(self.segments*16)-16 or self.transform.y+16,
+                self.tileList[v][(self.dir=="right" or self.dir=="left") and 2 or self.segments][(self.dir=="right" or self.dir=="left") and self.segments or 2])
+            end
+          end
+        end
       end
       megautils.playSound("bossDoorSfx")
     end
     if self.segments >= self.maxSegments then
       self.timer = 0
+      self.tileList = {}
       camera.main.freeze = true
       camera.main.dontUpdateSections = false
       megautils.state().system.cameraUpdate = function()

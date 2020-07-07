@@ -62,6 +62,8 @@ function love.load()
   scaleOnce = false
   deadZone = 0.8
   maxPlayerCount = 4
+  defaultFPS = 60
+  defaultFramerate = 1/defaultFPS
   useConsole = love.keyboard
   nesShader = not isWeb and not isMobile and love.graphics.getSupported().glsl3 and love.graphics.newShader("assets/nesLUT.glsl")
   if nesShader then nesShader:send("pal", love.graphics.newImage("assets/nesLUT.png")) end
@@ -233,6 +235,7 @@ function love.update(dt)
       end
     end
   end
+  megautils.checkQueue()
   states.checkQueue()
 end
 
@@ -241,6 +244,7 @@ function love.draw()
   states.draw()
   love.graphics.pop()
   if useConsole then console.draw() end
+  megautils.checkQueue()
   states.checkQueue()
 end
 

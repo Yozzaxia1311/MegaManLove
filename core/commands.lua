@@ -17,7 +17,7 @@ convar["fullscreen"] = {
 convar["fps"] = {
   helptext = "fps",
   flags = {"client"},
-  value = 60,
+  value = defaultFPS,
 }
 convar["volume"] = {
   helptext = "game volume",
@@ -250,7 +250,7 @@ concmd["state"] = {
       elseif love.filesystem.getInfo(cmd[2] .. ".stage.lua") then
         map = cmd[2] .. ".stage.lua"
       end
-      if map == nil then console.print("No such state \""..cmd[2].."\"") return end
+      if not map then console.print("No such state \""..cmd[2].."\"") return end
       love.audio.stop()
       megautils.stopMusic()
       megautils.resetGameObjects = true

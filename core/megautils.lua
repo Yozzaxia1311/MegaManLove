@@ -23,6 +23,8 @@ megautils.cleanFuncs = {}
 megautils.resetGameObjectsFuncs = {}
 megautils.resetGameObjectsPreFuncs = {}
 megautils.initEngineFuncs = {}
+megautils.addMapFuncs = {}
+megautils.removeMapFuncs = {}
 
 --Player callback functions. These apply to all active players.
 megautils.playerCreatedFuncs = {}       --megautils.playerCreatedFuncs.exampleFunc = function(player) end
@@ -36,6 +38,21 @@ megautils.playerTrebleFuncs = {}        --megautils.playerTrebleFuncs.exampleFun
 megautils.playerHealthChangedFuncs = {} --megautils.playerHealthChangedFuncs.exampleFunc = function(player) end
 megautils.playerDeathFuncs = {}         --megautils.playerDeathFuncs.exampleFunc = function(player) end
 megautils.playerAttemptWeaponFuncs = {} --megautils.playerAttemptWeaponFuncs.exampleFunc = function(player, shotsInTable) end
+
+megautils._q = {}
+
+function megautils.queue(func, ...)
+  if func then
+    megautils._q[#megautils._q+1] = {func, ...}
+  end
+end
+
+function megautils.checkQueue()
+  for i=#megautils._q, 1, -1 do
+    megautils._q[i][1](megautils._q[i][2])
+    megautils._q[i] = nil
+  end
+end
 
 function megautils.setFullscreen(what)
   convar.setValue("fullscreen", what and 1 or 0, true)
@@ -350,91 +367,51 @@ function megautils.unload()
         v()
       end
       megautils.unloadAllResources()
+      cartographer.cache = {}
     end
     megautils.frozen = {}
   end
 end
 
-function megautils.loadMap(self, path)
-  self.currentMap = cartographer.load(path)
-  local map = self.currentMap
-  local function recursiveLayerChecking(tab, otab)
-    for k, v in pairs(tab.layers) do
-      if v.type == "objectgroup" then
-        for i, j in pairs(v.objects) do
-          otab[#otab+1] = j
-        end
-      elseif v.type == "group" then
-        recursiveLayerChecking(v, otab)
-      end
-    end
-    return otab
+function megautils.addMap(path, noobjs)
+  local map = cartographer.load(path)
+  for k, v in pairs(megautils.addMapFuncs) do
+    v(path)
   end
-  local objs = recursiveLayerChecking(map, {})
-  addobjects.add(objs)
-  local tmp = megautils.add(trigger, function(s, dt)
-    s.map:update(1/60)
-  end, function(s)
-    s.map:setDrawRange(view.x, view.y, view.w, view.h)
-    s.map:draw()
-  end)
-  tmp:setLayer(-5)
-  tmp.map = map
+  local e = megautils.add(mapEntity, map)
+  if not noobjs then
+    e:addObjects()
+  end
 end
 
-function megautils.map()
-  return states.currentState.currentMap
-end
-
-function megautils.getMapLayer(name)
-  local function recursiveCheck(tab, n)
-    if tab and tab.layers then
-      for k, v in pairs(tab.layers) do
-        if v.name == n then
-          return v
-        elseif v.type == "group" then
-          recursiveCheck(v, n)
+function megautils.removeMap(p, s, si)
+  megautils.queue(function(path, skip, single)
+      local rm = false
+      if megautils.groups().map then
+        for k, v in ipairs(megautils.groups().map) do
+          if v.path == path and ((single and v ~= skip) or (not single and not table.contains(skip, v))) then
+            megautils.remove(v)
+            rm = true
+          end
         end
       end
-    end
-  end
-  return recursiveCheck(megautils.map(), name)
-end
-
-function megautils.getMapLayerByID(name)
-  local function recursiveCheck(tab, n)
-    if tab and tab.layers then
-      for k, v in pairs(tab.layers) do
-        if v.id == n then
-          return v
-        elseif v.type == "group" then
-          recursiveCheck(v, n)
+      if rm then
+        for k, v in pairs(megautils.removeMapFuncs) do
+          v(path)
         end
       end
-    end
-  end
-  return recursiveCheck(megautils.map(), name)
-end
-
-function megautils.setMapLayerTile(name, x, y, gid, ts)
-  local l = megautils.getMapLayer(name)
-  l:setTileAtGridPosition(x, y, gid, ts)
-end
-
-function megautils.setMapLayerIDTile(name, x, y, gid, ts)
-  local l = megautils.getMapLayerByID(name)
-  l:setTileAtGridPosition(x, y, gid, ts)
+    end, p, s, si)
 end
 
 function megautils.transitionToState(s, before, after, from)
   local tmp = megautils.add(fade, true, nil, nil, function(se)
-        megautils.remove(se)
-        megautils.gotoState(s, from, before, after)
-      end)
+      megautils.remove(se)
+      megautils.gotoState(s, from, before, after)
+    end)
 end
 
-function megautils.gotoState(s, from, before, after)
-  states.setq(s, from, before, after)
+function megautils.gotoState(st, from, before, after)
+  states.setq(st, from, before, after)
 end
 
 function megautils.setLayerFlicker(l, b)
@@ -627,9 +604,14 @@ megautils.shakeY = 0
 megautils.shakeSide = false
 megautils.shakeTimer = 0
 megautils.maxShakeTime = 5
+megautils.shakeLength = 0
 
 function megautils.updateShake()
   if megautils.shake then
+    megautils.shakeLength = math.max(megautils.shakeLength-1, 0)
+    if megautils.shakeLength == 0 then
+      megautils.shake = false
+    end
     megautils.shakeTimer = math.min(megautils.shakeTimer+1, megautils.maxShakeTime)
     if megautils.shakeTimer == megautils.maxShakeTime then
       megautils.shakeTimer = 0
@@ -640,14 +622,16 @@ function megautils.updateShake()
   else
     megautils.shakeSide = false
     megautils.shakeTimer = 0
+    megautils.shakeLength = 0
   end
 end
 
-function megautils.setShake(x, y, t)
+function megautils.setShake(x, y, gap, time)
   megautils.shakeX = x
   megautils.shakeY = y
-  megautils.maxShakeTime = t or megautils.maxShakeTime
+  megautils.maxShakeTime = gap or megautils.maxShakeTime
   megautils.shake = x ~= 0 or y ~= 0
+  megautils.shakeLength = time or 60
 end
 
 function megautils.dropItem(x, y)

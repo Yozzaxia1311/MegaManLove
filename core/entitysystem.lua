@@ -690,3 +690,69 @@ function entity:updateFlash(length, range)
     self.canDraw.flash = math.wrap(self.iFrames, 0, length or 8) > (range or 4)
   end
 end
+
+mapEntity = basicEntity:extend()
+
+function mapEntity:new(map, x, y)
+  mapEntity.super.new(self)
+  self.transform.x = x or 0
+  self.transform.y = y or 0
+  self.map = map
+  self.path = self.map.path
+  self:setLayer(-5)
+end
+
+function mapEntity:added()
+  self:addToGroup("freezable")
+  self:addToGroup("map")
+end
+
+function mapEntity:recursiveChecker(tab, index, name)
+  if tab and tab.layers then
+    for k, v in pairs(tab.layers) do
+      if v[index] == name then
+        return v
+      elseif v.type == "group" then
+        return self:recursiveChecker(v, index, name)
+      end
+    end
+  end
+end
+
+function mapEntity:recursiveObjectFinder(tab, otab)
+  for k, v in pairs(tab.layers) do
+    if v.type == "objectgroup" then
+      for i, j in pairs(v.objects) do
+        otab[#otab+1] = j
+      end
+    elseif v.type == "group" then
+      self:recursiveObjectFinder(v, otab)
+    end
+  end
+  return otab
+end
+
+function mapEntity:getLayerByName(name)
+  return self:recursiveChecker(self.map, "name", name)
+end
+
+function mapEntity:getLayerByID(id)
+  return self:recursiveChecker(self.map, "id", name)
+end
+
+function mapEntity:addObjects()
+  addobjects.add(self:recursiveObjectFinder(self.map, {}))
+end
+
+function mapEntity:update(dt)
+  self.map:update(defaultFramerate)
+end
+
+function mapEntity:draw()
+  love.graphics.push()
+  love.graphics.setColor(1, 1, 1, 1)
+  love.graphics.translate(self.transform.x, self.transform.y)
+  self.map:setDrawRange(view.x, view.y, view.w, view.h)
+  self.map:draw()
+  love.graphics.pop()
+end

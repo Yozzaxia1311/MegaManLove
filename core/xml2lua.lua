@@ -175,9 +175,8 @@ end
 --@return a XML String representation of the tag attributes
 local function attrToXml(attrTable)
   local s = ""
-  local attrTable = attrTable or {}
   
-  for k, v in pairs(attrTable) do
+  for k, v in pairs(attrTable or {}) do
       s = s .. " " .. k .. "=" .. '"' .. v .. '"'
   end
   return s
@@ -202,8 +201,8 @@ end
 --@param level Only used internally, when the function is called recursively to print indentation
 --
 --@return a String representing the table content in XML
-function xml2lua.toXml(tb, tableName, level)
-  local level = level or 0
+function xml2lua.toXml(tb, tableName, lvl)
+  local level = lvl or 0
   local firstLevel = level
   local spaces = string.rep(' ', level*2)
   local xmltb = level == 0 and {'<'..tableName..'>'} or {}

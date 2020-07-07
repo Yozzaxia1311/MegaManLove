@@ -2,7 +2,7 @@ local stageSelectState = states.state:extend()
 
 function stageSelectState:begin()
   megautils.loadResource("assets/misc/select.png", "mugshots")
-  megautils.loadMap(self, "assets/maps/stageSelect.tmx")
+  megautils.addMap("assets/maps/stageSelect.tmx")
   megautils.add(stageSelect)
   megautils.add(fade, false, nil, nil, fade.remove)
   view.x, view.y = 0, 0
@@ -57,7 +57,7 @@ function stageSelect:added()
 end
 
 function stageSelect:update(dt)
-  self.protoAnim:update(1/60)
+  self.protoAnim:update(defaultFramerate)
   
   local oldx, oldy = self.x, self.y
   

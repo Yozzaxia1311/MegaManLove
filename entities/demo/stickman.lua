@@ -277,7 +277,7 @@ function megamanStick:face(n)
 end
 
 function megamanStick:update(dt)
-  self.animations[self.curAnim]:update(1/60)
+  self.animations[self.curAnim]:update(defaultFramerate)
   if self.s == 0 then
     self.transform.y = math.min(self.transform.y+10, 104)
     if self.transform.y == 104 then

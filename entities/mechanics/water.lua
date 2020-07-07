@@ -38,7 +38,7 @@ function splash:added()
 end
 
 function splash:update(dt)
-  self.anim:update(1/60)
+  self.anim:update(defaultFramerate)
   if self.follow then
     self.transform.x = self.follow.transform.x + self.offx
     self.transform.y = self.follow.transform.y + self.offy
