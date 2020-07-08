@@ -373,34 +373,12 @@ function megautils.unload()
   end
 end
 
-function megautils.addMap(path, noobjs)
-  local map = cartographer.load(path)
-  for k, v in pairs(megautils.addMapFuncs) do
-    v(path)
-  end
-  local e = megautils.add(mapEntity, map)
-  if not noobjs then
-    e:addObjects()
-  end
+function megautils.addMapEntity(path)
+  return megautils.add(mapEntity, cartographer.load(path))
 end
 
-function megautils.removeMap(p, s, si)
-  megautils.queue(function(path, skip, single)
-      local rm = false
-      if megautils.groups().map then
-        for k, v in ipairs(megautils.groups().map) do
-          if v.path == path and ((single and v ~= skip) or (not single and not table.contains(skip, v))) then
-            megautils.remove(v)
-            rm = true
-          end
-        end
-      end
-      if rm then
-        for k, v in pairs(megautils.removeMapFuncs) do
-          v(path)
-        end
-      end
-    end, p, s, si)
+function megautils.createMapEntity(path)
+  return mapEntity(cartographer.load(path))
 end
 
 function megautils.transitionToState(s, before, after, from)

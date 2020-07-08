@@ -1201,14 +1201,25 @@ cartographer.cache = {}
 function cartographer.load(path)
   if not path then error('No map path provided', 2) end
   local map
-  if not cartographer.cache[path] then
-    if path:sub(path:len()-3, path:len()) == ".tmx" then
-      cartographer.cache[path] = finalXML2LuaTable(love.filesystem.read(path), path)
-    else
-      cartographer.cache[path] = love.filesystem.read(path)()
+  local i
+  for k, v in ipairs(cartographer.cache) do
+    if v[2] == path then
+      i = k
+      break
     end
   end
-  map = setmetatable(cartographer.cache[path], Map)
+  if not i then
+    if #cartographer.cache == mapCacheSize then
+      table.remove(cartographer.cache, 1)
+    end
+    if path:sub(path:len()-3, path:len()) == ".tmx" then
+      cartographer.cache[#cartographer.cache+1] = {finalXML2LuaTable(love.filesystem.read(path), path), path}
+    else
+      cartographer.cache[#cartographer.cache+1] = {love.filesystem.read(path)(), path}
+    end
+    i = #cartographer.cache
+  end
+  map = setmetatable(cartographer.cache[i], Map)
   map:_init(path)
   return map
 end

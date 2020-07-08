@@ -31,7 +31,7 @@ function stickMan:new(x, y, s)
   self.blockCollision = true
 end
 
-function stickMan:added(self)
+function stickMan:added()
   self:addToGroup("freezable")
   self:addToGroup("hurtable")
   self.canBeInvincible.global = true

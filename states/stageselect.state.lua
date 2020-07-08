@@ -2,7 +2,7 @@ local stageSelectState = states.state:extend()
 
 function stageSelectState:begin()
   megautils.loadResource("assets/misc/select.png", "mugshots")
-  megautils.addMap("assets/maps/stageSelect.tmx")
+  megautils.addMapEntity("assets/maps/stageSelect.tmx")
   megautils.add(stageSelect)
   megautils.add(fade, false, nil, nil, fade.remove)
   view.x, view.y = 0, 0
@@ -143,7 +143,6 @@ function stageSelect:update(dt)
       self.timer = 0
       megautils.stopMusic()
       megautils.playSound("selected")
-      print(1)
     end
   elseif control.selectPressed[1] and not self.stop then
     self.stop = true

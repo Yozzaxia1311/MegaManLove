@@ -64,6 +64,7 @@ function love.load()
   maxPlayerCount = 4
   defaultFPS = 60
   defaultFramerate = 1/defaultFPS
+  mapCacheSize = 3
   useConsole = love.keyboard
   nesShader = not isWeb and not isMobile and love.graphics.getSupported().glsl3 and love.graphics.newShader("assets/nesLUT.glsl")
   if nesShader then nesShader:send("pal", love.graphics.newImage("assets/nesLUT.png")) end

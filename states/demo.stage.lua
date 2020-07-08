@@ -36,8 +36,8 @@ function demoStage:begin()
     local ol, oi, ov = "assets/sfx/music/cutLoop.ogg", "assets/sfx/music/cutIntro.ogg", 0.8
     local musicTableOld = {ol, oi, ov}
     
-    -- Load stage from `.tmx`...
-    megautils.addMap("assets/maps/demo.tmx")
+    -- Load stage from `.tmx` and add it and it's objects...
+    megautils.addMapEntity("assets/maps/demo.tmx"):addObjects()
     -- READY
     megautils.add(ready, nil, (megaMan.mainPlayer.playerName == "proto") and (isWeb and "old" or "new"), isWeb and musicTableOld or musicTable)
     -- Fade in from black

@@ -705,6 +705,15 @@ end
 function mapEntity:added()
   self:addToGroup("freezable")
   self:addToGroup("map")
+  for k, v in pairs(megautils.addMapFuncs) do
+    v(self)
+  end
+end
+
+function mapEntity:removed()
+  for k, v in pairs(megautils.removeMapFuncs) do
+    v(self)
+  end
 end
 
 function mapEntity:recursiveChecker(tab, index, name)
@@ -751,7 +760,7 @@ end
 function mapEntity:draw()
   love.graphics.push()
   love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.translate(self.transform.x, self.transform.y)
+  love.graphics.translate(-self.transform.x, -self.transform.y)
   self.map:setDrawRange(view.x, view.y, view.w, view.h)
   self.map:draw()
   love.graphics.pop()
