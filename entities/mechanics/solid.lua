@@ -9,11 +9,12 @@ function solid:new(x, y, w, h)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(w, h)
-  self.isSolid = 1
+  self.solidType = collision.SOLID
 end
 
 function solid:added()
   self:addToGroup("despawnable")
+  self:addToGroup("solid")
   self:makeStatic()
 end
 
@@ -29,12 +30,13 @@ function sinkIn:new(x, y, w, h, s)
   self.transform.x = x
   self:setRectangleCollision(w, h)
   self.sink = s or 0.125
-  self.isSolid = 3
+  self.solidType = collision.STANDIN
 end
 
 function sinkIn:added()
   self:addToGroup("despawnable")
   self:addToGroup("freezable")
+  self:addToGroup("solid")
 end
 
 function sinkIn:update(dt)
@@ -57,16 +59,17 @@ function slope:new(x, y, mask)
   self.transform.x = x
   self.transform.y = y
   self:setImageCollision(mask)
-  self.isSolid = 1
+  self.solidType = collision.SOLID
 end
 
 function slope:added()
   self:addToGroup("despawnable")
+  self:addToGroup("solid")
   self:makeStatic()
 end
 
 addobjects.register("oneway", function(v)
-  megautils.add(solid, v.x, v.y, v.width, v.height).isSolid = 2
+  megautils.add(solid, v.x, v.y, v.width, v.height).solidType = collision.ONEWAY
 end)
 
 megautils.cleanFuncs.solid = function()

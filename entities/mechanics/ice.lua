@@ -9,12 +9,13 @@ function ice:new(x, y, w, h)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(w, h)
-  self.isSolid = 1
+  self.solidType = collision.SOLID
 end
 
 function ice:added()
   self:addToGroup("despawnable")
   self:addToGroup("ice")
+  self:addToGroup("solid")
 end
 
 function ice.elseFunc(s)

@@ -10,7 +10,7 @@ moveAcrossPlatform = entity:extend()
 
 function moveAcrossPlatform:new(x, y, toX, toY, s)
   moveAcrossPlatform.super.new(self)
-  self.isSolid = 1
+  self.solidType = collision.SOLID
   self.transform.x = x
   self.transform.y = y
   self:setRectangleCollision(32, 16)
@@ -25,6 +25,7 @@ end
 function moveAcrossPlatform:added()
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
+  self:addToGroup("solid")
 end
 
 function moveAcrossPlatform:removed()

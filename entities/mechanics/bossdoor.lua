@@ -25,7 +25,7 @@ function bossDoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt, n)
   self.state = 0
   self.player = nil
   self:setDirection(dir)
-  self.isSolid = 1
+  self.solidType = collision.SOLID
   self.canWalkThrough = false
   self.isLocked = {global=false}
   self.spawnEarlyDuringTransition = true
@@ -36,6 +36,7 @@ end
 function bossDoor:added()
   self:addToGroup("bossDoor")
   self:addToGroup("despawnable")
+  self:addToGroup("solid")
 end
 
 function bossDoor:setDirection(dir)

@@ -82,7 +82,6 @@ function states.checkQueue()
     states.set(unpack(states.queue))
     states.queue = nil
   end
-  states.switched = false
 end
 
 function states.update(dt)

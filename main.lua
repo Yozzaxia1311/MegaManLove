@@ -207,10 +207,19 @@ function love.update(dt)
       return
     end
   end
-  control.update()
-  if useConsole then console.update(dt) end
-  states.update(dt)
-  control.flush()
+  
+  local doAgain = true
+  
+  while doAgain do
+    states.switched = false
+    control.update()
+    if useConsole then console.update(dt) end
+    states.update(dt)
+    states.checkQueue()
+    control.flush()
+    doAgain = states.switched
+  end
+  
   if love.joystick then
     if globals.axisTmp then
       if globals.axisTmp.x and (not globals.axisTmp.y or
@@ -236,8 +245,6 @@ function love.update(dt)
       end
     end
   end
-  megautils.checkQueue()
-  states.checkQueue()
 end
 
 function love.draw()

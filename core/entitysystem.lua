@@ -132,6 +132,15 @@ function entitySystem:addeq(e)
   return self.addQueue[#self.addQueue]
 end
 
+function entitySystem:addToGroup(e, g)
+  if not self.groups[g] then
+    self.groups[g] = {}
+  end
+  if not table.contains(self.groups[g], e) then
+    self.groups[g][#self.groups[g]+1] = e
+  end
+end
+
 function entitySystem:removeFromGroup(e, g)
   table.quickremovevaluearray(self.groups[g], e)
   if #self.groups[g] == 0 then
@@ -453,12 +462,7 @@ function basicEntity:removeFromAllGroups()
 end
 
 function basicEntity:addToGroup(g)
-  if states.currentState.system.groups[g] == nil then
-    states.currentState.system.groups[g] = {}
-  end
-  if not table.contains(states.currentState.system.groups[g], self) then
-    table.insert(states.currentState.system.groups[g], self)
-  end
+  megautils.state().system:addToGroup(self, g)
 end
 
 function basicEntity:setRectangleCollision(w, h)
@@ -587,16 +591,15 @@ entity = basicEntity:extend()
 function entity:new()
   entity.super.new(self)
   self.canDraw.flash = true
-  self.isSolid = 0
+  self.solidType = collision.NONE
   self.velocity = velocity()
   self.normalGravity = 0.25
   self.gravityMultipliers = {global=1}
   self:calcGrav()
   self.blockCollision = false
   self.ground = false
-  self.xcoll = 0
-  self.ycoll = 0
-  self.health = 28
+  self.xColl = 0
+  self.yColl = 0
   self.shakeX = 0
   self.shakeY = 0
   self.shakeTime = 0
@@ -618,9 +621,8 @@ function entity:baseRecycle()
   self.gravityMultipliers = {global=1}
   self:calcGrav()
   self.ground = false
-  self.xcoll = 0
-  self.ycoll = 0
-  self.health = 28
+  self.xColl = 0
+  self.yColl = 0
   self.shakeX = 0
   self.shakeY = 0
   self.shakeTime = 0

@@ -580,7 +580,6 @@ end
 function megaMan:added()
   self:addToGroup("freezable")
   self:addToGroup("submergable")
-  self:addToGroup("carry")
 end
 
 function megaMan:face(n)
@@ -1249,7 +1248,7 @@ function megaMan:code(dt)
         local hit = false
         while self:collision(self.currentLadder) do
           collision.shiftObject(self, 0, self.gravity >= 0 and -1 or 1, true)
-          if self.ycoll ~= 0 then
+          if self.yColl ~= 0 then
             hit = true
             break
           end
@@ -1273,9 +1272,7 @@ function megaMan:code(dt)
       self.climbTip = self.transform.y + self.collisionShape.h * 0.6 > self.currentLadder.transform.y+self.currentLadder.collisionShape.h
     end
   elseif self.slide then
-    self.ground = true
-    self.velocity.vely = 0
-    collision.checkGround(self)
+    collision.checkGround(self, true)
     local lastSide = self.side
     if control.leftDown[self.player] then
       self.side = -1
@@ -1315,7 +1312,7 @@ function megaMan:code(dt)
       if self.slideTimer == self.maxSlideTime and not rb and (self.ground or sb) then
         self.slide = false
         self:slideToReg()
-      elseif not rb and self.xcoll ~= 0 then
+      elseif not rb and self.xColl ~= 0 then
         self.slide = false
         self.slideTimer = self.maxSlideTime
         self:slideToReg()
@@ -1580,6 +1577,7 @@ function megaMan:charge(animOnly)
 end
 
 function megaMan:grav()
+  if self.ground then return end
   if self.gravityType == 0 then
     self.velocity.vely = self.velocity.vely+self.gravity
   elseif self.gravityType == 1 then
@@ -1591,20 +1589,20 @@ function megaMan:phys()
   self.velocity.vely = self.gravity >= 0 and math.min(self.maxAirSpeed, self.velocity.vely) or math.max(-self.maxAirSpeed, self.velocity.vely)
   collision.doCollision(self)
   if self.blockCollision and checkFalse(self.canDieFromSpikes) and
-    (self.xcoll ~= 0 or self.ycoll ~= 0 or (self.ground and self.gravity ~= 0)) then
-    local t = self:collisionTable(megautils.groups().death, self.xcoll, self.ycoll+math.sign(self.gravity))
+    (self.xColl ~= 0 or self.yColl ~= 0 or (self.ground and self.gravity ~= 0)) then
+    local t = self:collisionTable(megautils.groups().death, self.xColl, self.yColl+math.sign(self.gravity))
     if #t ~= 0 then
       local lx, ly = self.transform.x, self.transform.y
       local lg = self.ground
-      local lcx, lcy = self.xcoll, self.ycoll
+      local lcx, lcy = self.xColl, self.yColl
       local lss = self.inStandSolid
       local lmf = self.onMovingFloor
       for i=1, #t do
-        t[i].isSolid = 0
+        t[i].solidType = collision.NONE
       end
-      collision.shiftObject(self, self.xcoll, self.ycoll+math.sign(self.gravity), true, false)
+      collision.shiftObject(self, self.xColl, self.yColl+math.sign(self.gravity), true, false)
       for i=1, #t do
-        t[i].isSolid = 1
+        t[i].solidType = collision.SOLID
       end
       if collision.checkSolid(self) then
         local dv = self:collisionTable(megautils.groups().death)
@@ -1615,15 +1613,15 @@ function megaMan:phys()
           self.ground = false
         else
           self.ground = lg
-          self.xcoll = lcx
-          self.ycoll = lcy
+          self.xColl = lcx
+          self.yColl = lcy
           self.inStandSolid = lss
           self.onMovingFloor = lmf
         end
       else
         self.ground = lg
-        self.xcoll = lcx
-        self.ycoll = lcy
+        self.xColl = lcx
+        self.yColl = lcy
         self.inStandSolid = lss
         self.onMovingFloor = lmf
       end
@@ -1752,6 +1750,8 @@ function megaMan:animate()
         end
       end
     elseif self.slide then
+      self.animations[self.runAnimation.regular]:gotoFrame(1)
+      self.animations[self.runAnimation.shoot]:gotoFrame(1)
       self.curAnim = self.dashAnimation[checkFalse(self.canDashShoot) and shoot or "regular"]
     elseif self.ground then
       if checkFalse(self.canWalk) and not self.step and self.runCheck then
@@ -1869,8 +1869,8 @@ function megaMan:update(dt)
   end
   if self.blockCollision and megautils.groups().bossDoor then
     for k, v in ipairs(megautils.groups().bossDoor) do
-      v.lastSolid = v.isSolid
-      v.isSolid = v.canWalkThrough and 0 or 1
+      v.lastSolid = v.solidType
+      v.solidType = v.canWalkThrough and 0 or 1
     end
   end
   if self.dying then
@@ -1922,7 +1922,7 @@ function megaMan:update(dt)
   end
   if megautils.groups().bossDoor then
     for k, v in ipairs(megautils.groups().bossDoor) do
-      v.isSolid = v.lastSolid
+      v.solidType = v.lastSolid
     end
   end
 end

@@ -562,6 +562,7 @@ function rushJet:added()
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
   self:addToGroup("submergable")
+  self:addToGroup("solid")
 end
 
 function rushJet:face(n)
@@ -586,7 +587,7 @@ function rushJet:update(dt)
     if self.anims.spawnLand.looped then
       self.c = "jet"
       self.s = 2
-      self.isSolid = 2
+      self.solidType = collision.ONEWAY
       megautils.playSound("start")
     end
   elseif self.s == 2 then
@@ -624,13 +625,13 @@ function rushJet:update(dt)
       self.player.canWalk.rj = true
       self.playerOn = false
     end
-    if self.xcoll ~= 0 or
+    if self.xColl ~= 0 or
       (self.playerOn and collision.checkSolid(self.player, 0, self.player.gravity >= 0 and -4 or 4)) then
       if self.playerOn then self.player.canWalk.rj = true end
       self.c = "spawnLand"
       self.anims.spawnLand:gotoFrame(1)
       self.s = 4
-      self.isSolid = 0
+      self.solidType = collision.NONE
       megautils.playSound("ascend")
     end
     self.timer = math.min(self.timer+1, 60)
