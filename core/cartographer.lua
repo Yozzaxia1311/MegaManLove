@@ -1163,7 +1163,6 @@ local function finalXML2LuaTable(str, f)
           
           layerGroupParenting(v)
         end
-        
         v.properties = v.properties or {}
         local ref = v.properties
         v.properties = {}

@@ -1,6 +1,6 @@
-local menuState = states.state:extend()
+local state = states.state:extend()
 
-function menuState:begin()
+function state:begin()
   megautils.addMapEntity("assets/maps/menu.tmx")
   megautils.add(menuSelect)
   megautils.add(fade, false, nil, nil, fade.remove)
@@ -131,4 +131,4 @@ function menuSelect:draw()
   end
 end
 
-return menuState
+return state

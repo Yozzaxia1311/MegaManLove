@@ -17,7 +17,7 @@ megautils = {}
     end
 ]]--
 megautils.reloadState = true
-megautils.resetGameObjects = true
+megautils.resetGameObjects = false
 megautils.reloadStateFuncs = {}
 megautils.cleanFuncs = {}
 megautils.resetGameObjectsFuncs = {}
@@ -25,6 +25,7 @@ megautils.resetGameObjectsPreFuncs = {}
 megautils.initEngineFuncs = {}
 megautils.addMapFuncs = {}
 megautils.removeMapFuncs = {}
+megautils.sectionChangeFuncs = {}
 
 --Player callback functions. These apply to all active players.
 megautils.playerCreatedFuncs = {}       --megautils.playerCreatedFuncs.exampleFunc = function(player) end
@@ -256,6 +257,19 @@ end
 
 megautils._curM = nil
 megautils._lockM = false
+megautils.musicQueue = nil
+megautils.oldMusicQueue = nil
+
+function megautils.checkMusicQueue()
+  if megautils.musicQueue then
+    megautils._playMusic(unpack(megautils.musicQueue))
+    megautils.musicQueue = nil
+  end
+  if megautils.oldMusicQueue then
+    megautils._playMusicWithSeperateIntroFile(unpack(megautils.oldMusicQueue))
+    megautils.oldMusicQueue = nil
+  end
+end
 
 function megautils.setMusicLock(w)
   megautils._lockM = w
@@ -265,7 +279,11 @@ function megautils.getCurrentMusic()
   return megautils._curM
 end
 
-function megautils.playMusic(path, loop, lp, lep, vol)
+function megautils.playMusic(...)
+  megautils.musicQueue = {...}
+end
+
+function megautils._playMusic(path, loop, lp, lep, vol)
   if megautils._lockM or (megautils._curM and megautils._curM.id == path and not megautils._curM:stopped()) then return end
   megautils.stopMusic()
   
@@ -275,7 +293,11 @@ function megautils.playMusic(path, loop, lp, lep, vol)
   megautils._curM:play(loop, lp, lep, vol)
 end
 
-function megautils.playMusicWithSeperateIntroFile(lPath, iPath, vol)
+function megautils.playMusicWithSeperateIntroFile(...)
+  megautils.oldMusicQueue = {...}
+end
+
+function megautils._playMusicWithSeperateIntroFile(lPath, iPath, vol)
   if megautils._lockM or (megautils._curM and megautils._curM.id == (lPath .. ", " .. iPath) and not megautils._curM:stopped()) then return end
   megautils.stopMusic()
   
@@ -381,15 +403,15 @@ function megautils.createMapEntity(path)
   return mapEntity(cartographer.load(path))
 end
 
-function megautils.transitionToState(s, before, after, from)
+function megautils.transitionToState(s, before, after)
   local tmp = megautils.add(fade, true, nil, nil, function(se)
       megautils.remove(se)
-      megautils.gotoState(s, from, before, after)
+      megautils.gotoState(s, before, after)
     end)
 end
 
-function megautils.gotoState(st, from, before, after)
-  states.setq(st, from, before, after)
+function megautils.gotoState(st, before, after)
+  states.setq(st, before, after)
 end
 
 function megautils.setLayerFlicker(l, b)

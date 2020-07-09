@@ -71,14 +71,19 @@ function addObjects.add(ol)
     addObjects.sort()
     addObjects.doSort = false
   end
-  for k, v in ipairs(ol) do
-    if v.properties.run and not table.contains(addObjects.ranFiles, v.properties.load) then
-      megautils.runFile(v.properties.run)
-      addObjects.ranFiles[#addObjects.ranFiles+1] = v.properties.run
+  for i=1, #addObjects.registered do
+    local layer = addObjects.registered[i]
+    for k, v in ipairs(ol) do
+      if v.properties.run and not table.contains(addObjects.ranFiles, v.properties.load) then
+        megautils.runFile(v.properties.run)
+        addObjects.ranFiles[#addObjects.ranFiles+1] = v.properties.run
+      end
+      for j=1, #layer.data do
+        if layer.data[j].name == v.name then
+          layer.data[j].func(v)
+        end
+      end
     end
-    addObjects.iter(function(r)
-        r.func(v)
-      end)
   end
 end
 

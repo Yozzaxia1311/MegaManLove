@@ -204,7 +204,7 @@ function stickManIntro:update(dt)
     self.timer = math.min(self.timer+1, 300)
     if self.timer == 300 then
       megautils.stopMusic()
-      megautils.transitionToState("states/demo.stage.lua")
+      megautils.transitionToState("states/demo.state.lua")
       self.s = 5
     end
   end

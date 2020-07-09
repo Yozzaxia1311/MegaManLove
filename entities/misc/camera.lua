@@ -319,6 +319,9 @@ function camera:updateBounds(noBounds)
           self.bounds:deactivate(bounds.group)
         end
         bounds:activate(self.bounds and self.bounds.group)
+        for k, v in pairs(megautils.sectionChangeFuncs) do
+          v()
+        end
       end
       self.bounds = bounds
     end
@@ -337,8 +340,7 @@ end
 section = basicEntity:extend()
 
 addObjects.register("section", function(v)
-  section.addSection(section(v.x, v.y, v.width, v.height, v.properties.lockLeft, v.properties.lockRight,
-    v.properties.lockUp, v.properties.lockDown, v.properties.name))
+  section.addSection(section(v.x, v.y, v.width, v.height, v.properties.name))
 end, 1, true)
 
 addObjects.register("section", function(v)
@@ -350,16 +352,12 @@ addObjects.register("section", function(v)
   end
 end, 2, true)
 
-function section:new(x, y, w, h, lx, ly, lw, lh, n)
+function section:new(x, y, w, h, n)
   section.super.new(self)
   self.transform.x = x
   self.transform.y = y
   self:setRectangleCollision(w, h)
-  self.lockLeft = (lx==nil) or lx
-  self.lockUp = (ly==nil) or ly
-  self.lockRight = (lw==nil) or lw
-  self.lockDown = (lh==nil) or lh
-  if n then
+  if n and n ~= "" then
     self.name = n
     section.names[self.name] = self
   end

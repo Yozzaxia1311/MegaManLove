@@ -128,7 +128,7 @@ function stageSelect:update(dt)
         self.selected = false
         if self.x == 2 and self.y == 1 then
           if globals.defeats.stickMan then
-            megautils.transitionToState("states/demo.stage.lua")
+            megautils.transitionToState("states/demo.state.lua")
           else
             globals.bossIntroBoss = "stick"
             megautils.transitionToState("states/bossintro.state.lua")

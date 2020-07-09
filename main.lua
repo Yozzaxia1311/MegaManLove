@@ -246,6 +246,7 @@ function love.draw()
   if useConsole then console.draw() end
   megautils.checkQueue()
   states.checkQueue()
+  megautils.checkMusicQueue()
 end
 
 if isWeb then
@@ -313,6 +314,7 @@ end
 
 if not isWeb then
   function love.run()
+    
     if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
     if love.timer then love.timer.step() end
     local dt = 0

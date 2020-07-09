@@ -1,14 +1,10 @@
-local demoStage = states.state:extend()
+local demoStage = states.stageState:extend()
 
 function demoStage:begin()
   -- Reload stage at all?
   if megautils.reloadState then
     -- Do stage resources need to be loaded?
     if megautils.resetGameObjects then      
-      megautils.runFile("entities/mechanics/water.lua")
-      megautils.runFile("entities/mechanics/ice.lua")
-      megautils.runFile("entities/mechanics/gravflip.lua")
-      
       megautils.runFile("entities/demo/met.lua")
       megautils.runFile("entities/demo/moveacrossplatform.lua")
       megautils.runFile("entities/demo/stickman.lua")

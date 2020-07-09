@@ -247,8 +247,10 @@ concmd["state"] = {
       local map
       if love.filesystem.getInfo(cmd[2] .. ".state.lua") then
         map = cmd[2] .. ".state.lua"
-      elseif love.filesystem.getInfo(cmd[2] .. ".stage.lua") then
-        map = cmd[2] .. ".stage.lua"
+      elseif love.filesystem.getInfo(cmd[2] .. ".tmx") then
+        map = cmd[2] .. ".tmx"
+      elseif love.filesystem.getInfo(cmd[2] .. ".lua") and megautils.runFile(cmd[2] .. ".lua").tiledversion then
+        map = cmd[2] .. ".lua"
       end
       if not map then console.print("No such state \""..cmd[2].."\"") return end
       love.audio.stop()
@@ -270,7 +272,11 @@ concmd["states"] = {
         if not love.filesystem.getInfo(check) then console.print("No such directory \""..cmd[2].."\"") return end
       end
       local result = iterateDirs(function(f)
-          return f:sub(-10) == ".state.lua" or f:sub(-10) == ".stage.lua"
+          local result = f:sub(-10) == ".state.lua" or f:sub(-4) == ".tmx"
+          if not result and f:sub(-4) == ".lua" then
+            result = megautils.runFile(f).tiledversion ~= nil
+          end
+          return result
         end, check)
       if #result == 0 then
         if check then

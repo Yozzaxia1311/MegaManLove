@@ -141,6 +141,15 @@ megautils.resetGameObjectsFuncs.megaMan = function()
     megaMan.individualLanded = {}
   end
 
+megautils.sectionChangeFuncs.megaMan = function()
+    for i=1, #megaMan.allPlayers do
+      local p = megaMan.allPlayers[i]
+      if p.climb and megautils.groups().ladder then
+        p.currentLadder = p:collisionTable(megautils.groups().ladder)[1]
+      end
+    end
+  end
+
 addObjects.register("player", function(v)
     if megaMan.once then return end
     if v.properties.checkpoint == globals.checkpoint and not camera.once then
