@@ -392,7 +392,7 @@ concmd["give"] = {
   flags = {"cheat"},
   fun = function(cmd)
       if megaMan.mainPlayer and cmd[2] then
-        addobjects.add({{name=cmd[2], x=megaMan.mainPlayer.transform.x+numberSanitize(cmd[3]),
+        addObjects.add({{name=cmd[2], x=megaMan.mainPlayer.transform.x+numberSanitize(cmd[3]),
           y=megaMan.mainPlayer.transform.y+numberSanitize(cmd[4])}})
       end
     end

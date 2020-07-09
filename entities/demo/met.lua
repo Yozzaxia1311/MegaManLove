@@ -6,7 +6,7 @@ megautils.loadResource("assets/sfx/reflect.ogg", "dink")
 
 met = entity:extend()
 
-addobjects.register("met", function(v)
+addObjects.register("met", function(v)
   megautils.add(spawner, v.x, v.y+2, 14, 14, function(s)
       megautils.add(met, s.transform.x, s.transform.y, s)
     end)
@@ -214,6 +214,5 @@ end
 megautils.cleanFuncs.met = function()
   met = nil
   metBullet = nil
-  addobjects.unregister("met")
   megautils.cleanFuncs.met = nil
 end

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template>
+ <object name="down" width="16" height="16">
+  <properties>
+   <property name="checkLadder" type="bool" value="false"/>
+   <property name="doScrollX" type="bool" value="true"/>
+   <property name="doScrollY" type="bool" value="true"/>
+   <property name="platform" type="bool" value="false"/>
+   <property name="toSection" value=""/>
+   <property name="speed" type="float" value="0.8"/>
+  </properties>
+ </object>
+</template>

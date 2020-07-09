@@ -5,23 +5,6 @@ function demoStage:begin()
   if megautils.reloadState then
     -- Do stage resources need to be loaded?
     if megautils.resetGameObjects then      
-      megautils.loadResource("assets/misc/slopes/slopeLeft.png", "slopeLeft", true, false)
-      megautils.loadResource("assets/misc/slopes/slopeRight.png", "slopeRight", true, false)
-      megautils.loadResource("assets/misc/slopes/slopeLeftLong.png", "slopeLeftLong", true, false)
-      megautils.loadResource("assets/misc/slopes/slopeRightLong.png", "slopeRightLong", true, false)
-      megautils.loadResource("assets/misc/slopes/slopeLeftInvert.png", "slopeLeftInvert", true, false)
-      megautils.loadResource("assets/misc/slopes/slopeRightInvert.png", "slopeRightInvert", true, false)
-      megautils.loadResource("assets/misc/slopes/slopeLeftLongInvert.png", "slopeLeftLongInvert", true, false)
-      megautils.loadResource("assets/misc/slopes/slopeRightLongInvert.png", "slopeRightLongInvert", true, false)
-      megautils.loadResource("assets/misc/slopes/slopeLeftHalf.png", "slopeLeftHalf", true, false)
-      megautils.loadResource("assets/misc/slopes/slopeRightHalf.png", "slopeRightHalf", true, false)
-      megautils.loadResource("assets/misc/slopes/slopeLeftHalfInvert.png", "slopeLeftHalfInvert", true, false)
-      megautils.loadResource("assets/misc/slopes/slopeRightHalfInvert.png", "slopeRightHalfInvert", true, false)
-      megautils.loadResource("assets/misc/slopes/slopeLeftHalfUpper.png", "slopeLeftHalfUpper", true, false)
-      megautils.loadResource("assets/misc/slopes/slopeRightHalfUpper.png", "slopeRightHalfUpper", true, false)
-      megautils.loadResource("assets/misc/slopes/slopeLeftHalfUpperInvert.png", "slopeLeftHalfUpperInvert", true, false)
-      megautils.loadResource("assets/misc/slopes/slopeRightHalfUpperInvert.png", "slopeRightHalfUpperInvert", true, false)
-      
       megautils.runFile("entities/mechanics/water.lua")
       megautils.runFile("entities/mechanics/ice.lua")
       megautils.runFile("entities/mechanics/gravflip.lua")

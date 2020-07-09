@@ -1,8 +1,8 @@
 solid = basicEntity:extend()
 
-addobjects.register("solid", function(v)
+addObjects.register("solid", function(v)
   megautils.add(solid, v.x, v.y, v.width, v.height)
-end)
+end, 0, true)
 
 function solid:new(x, y, w, h)
   solid.super.new(self)
@@ -18,41 +18,28 @@ function solid:added()
   self:makeStatic()
 end
 
-sinkIn = basicEntity:extend()
-
-addobjects.register("sinkIn", function(v)
-  megautils.add(sinkIn, v.x, v.y, v.width, v.height, v.properties.speed)
-end)
-
-function sinkIn:new(x, y, w, h, s)
-  sinkIn.super.new(self)
-  self.transform.y = y
-  self.transform.x = x
-  self:setRectangleCollision(w, h)
-  self.sink = s or 0.125
-  self.solidType = collision.STANDIN
-end
-
-function sinkIn:added()
-  self:addToGroup("despawnable")
-  self:addToGroup("freezable")
-  self:addToGroup("solid")
-end
-
-function sinkIn:update(dt)
-  for i=1, #megaMan.allPlayers do
-    local p = megaMan.allPlayers[i]
-    if p:collision(self, 0, (p.gravity >= 0 and 1 or -1)) or p:collision(self) then
-      collision.shiftObject(p, 0, self.sink * (p.gravity >= 0 and 1 or -1), true)
-    end
-  end
-end
+megautils.loadResource("assets/misc/slopes/slopeLeft.png", "slopeLeft", true, true)
+megautils.loadResource("assets/misc/slopes/slopeRight.png", "slopeRight", true, true)
+megautils.loadResource("assets/misc/slopes/slopeLeftLong.png", "slopeLeftLong", true, true)
+megautils.loadResource("assets/misc/slopes/slopeRightLong.png", "slopeRightLong", true, true)
+megautils.loadResource("assets/misc/slopes/slopeLeftInvert.png", "slopeLeftInvert", true, true)
+megautils.loadResource("assets/misc/slopes/slopeRightInvert.png", "slopeRightInvert", true, true)
+megautils.loadResource("assets/misc/slopes/slopeLeftLongInvert.png", "slopeLeftLongInvert", true, true)
+megautils.loadResource("assets/misc/slopes/slopeRightLongInvert.png", "slopeRightLongInvert", true, true)
+megautils.loadResource("assets/misc/slopes/slopeLeftHalf.png", "slopeLeftHalf", true, true)
+megautils.loadResource("assets/misc/slopes/slopeRightHalf.png", "slopeRightHalf", true, true)
+megautils.loadResource("assets/misc/slopes/slopeLeftHalfInvert.png", "slopeLeftHalfInvert", true, true)
+megautils.loadResource("assets/misc/slopes/slopeRightHalfInvert.png", "slopeRightHalfInvert", true, true)
+megautils.loadResource("assets/misc/slopes/slopeLeftHalfUpper.png", "slopeLeftHalfUpper", true, true)
+megautils.loadResource("assets/misc/slopes/slopeRightHalfUpper.png", "slopeRightHalfUpper", true, true)
+megautils.loadResource("assets/misc/slopes/slopeLeftHalfUpperInvert.png", "slopeLeftHalfUpperInvert", true, true)
+megautils.loadResource("assets/misc/slopes/slopeRightHalfUpperInvert.png", "slopeRightHalfUpperInvert", true, true)
 
 slope = basicEntity:extend()
 
-addobjects.register("slope", function(v)
+addObjects.register("slope", function(v)
   megautils.add(slope, v.x, v.y, megautils.getResourceTable(v.properties.mask))
-end)
+end, 0, true)
 
 function slope:new(x, y, mask)
   slope.super.new(self)
@@ -68,17 +55,6 @@ function slope:added()
   self:makeStatic()
 end
 
-addobjects.register("oneway", function(v)
+addObjects.register("oneway", function(v)
   megautils.add(solid, v.x, v.y, v.width, v.height).solidType = collision.ONEWAY
-end)
-
-megautils.cleanFuncs.solid = function()
-    solid = nil
-    sinkIn = nil
-    slope = nil
-    addobjects.unregister("solid")
-    addobjects.unregister("sinkIn")
-    addobjects.unregister("slope")
-    addobjects.unregister("oneway")
-    megautils.cleanFuncs.solid = nil
-  end
+end, 0, true)

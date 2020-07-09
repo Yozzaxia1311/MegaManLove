@@ -10,11 +10,11 @@ megautils.loadResource("tankGrid", 16, 16, 128, 98, 72, 12, true)
 
 smallHealth = entity:extend()
 
-addobjects.register("smallHealth", function(v)
+addObjects.register("smallHealth", function(v)
   megautils.add(spawner, v.x, v.y+10, 8, 6, function(s)
     megautils.add(smallHealth, s.transform.x, s.transform.y, false, v.id, s)
   end)
-end)
+end, 0, true)
 
 smallHealth.banIds = {}
 
@@ -110,11 +110,11 @@ end
 
 health = entity:extend()
 
-addobjects.register("health", function(v)
+addObjects.register("health", function(v)
   megautils.add(spawner, v.x, v.y, 16, 15, function(s)
     megautils.add(health, s.transform.x, s.transform.y, false, v.id, s)
   end)
-end)
+end, 0, true)
 
 health.banIds = {}
 
@@ -210,11 +210,11 @@ end
 
 smallEnergy = entity:extend()
 
-addobjects.register("smallEnergy", function(v)
+addObjects.register("smallEnergy", function(v)
   megautils.add(spawner, v.x, v.y+10, 8, 6, function(s)
     megautils.add(smallEnergy, s.transform.x, s.transform.y, false, v.id, s)
   end)
-end)
+end, 0, true)
 
 smallEnergy.banIds = {}
 
@@ -319,11 +319,11 @@ end
 
 energy = entity:extend()
 
-addobjects.register("energy", function(v)
+addObjects.register("energy", function(v)
   megautils.add(spawner, v.x, v.y, 16, 10, function(s)
     megautils.add(energy, s.transform.x, s.transform.y, false, v.id, s)
   end)
-end)
+end, 0, true)
 
 energy.banIds = {}
 
@@ -428,11 +428,11 @@ end
 
 life = entity:extend()
 
-addobjects.register("life", function(v)
+addObjects.register("life", function(v)
   megautils.add(spawner, v.x, v.y, 16, 15, function(s)
     megautils.add(life, s.transform.x, s.transform.y, false, v.id, s)
   end)
-end)
+end, 0, true)
 
 life.banIds = {}
 
@@ -585,11 +585,11 @@ end
 
 eTank = entity:extend()
 
-addobjects.register("eTank", function(v)
+addObjects.register("eTank", function(v)
   megautils.add(spawner, v.x, v.y, 16, 15, function(s)
     megautils.add(eTank, s.transform.x, s.transform.y, false, v.id, s)
   end)
-end)
+end, 0, true)
 
 eTank.banIds = {}
 
@@ -691,11 +691,11 @@ end
 
 wTank = entity:extend()
 
-addobjects.register("wTank", function(v)
+addObjects.register("wTank", function(v)
   megautils.add(spawner, v.x, v.y, 16, 15, function(s)
     megautils.add(wTank, s.transform.x, s.transform.y, false, v.id, s)
   end)
-end)
+end, 0, true)
 
 wTank.banIds = {}
 

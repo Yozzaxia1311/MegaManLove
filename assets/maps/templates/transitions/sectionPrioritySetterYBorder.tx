@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template>
+ <object name="sectionPrioritySetterYBorder" width="32" height="16">
+  <properties>
+   <property name="dname" value="sectionNameOrBlank"/>
+   <property name="uname" value="sectionNameOrBlank"/>
+  </properties>
+ </object>
+</template>

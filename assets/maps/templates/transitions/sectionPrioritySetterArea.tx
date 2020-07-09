@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template>
+ <object name="sectionPrioritySetterArea" width="16" height="16">
+  <properties>
+   <property name="inname" value="sectionNameOrBlank"/>
+   <property name="outname" value="sectionNameOrBlank"/>
+  </properties>
+ </object>
+</template>

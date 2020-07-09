@@ -1,8 +1,8 @@
 checkpoint = basicEntity:extend()
 
-addobjects.register("checkpoint", function(v)
+addObjects.register("checkpoint", function(v)
   megautils.add(checkpoint, v.x, v.y, v.width, v.height, v.properties.name)
-end)
+end, 0, true)
 
 function checkpoint:new(x, y, w, h, c)
   checkpoint.super.new(self)
@@ -24,7 +24,7 @@ end
 
 collisionCheckpoint = basicEntity:extend()
 
-addobjects.register("collisionCheckpoint", function(v)
+addObjects.register("collisionCheckpoint", function(v)
   megautils.add(collisionCheckpoint, v.x, v.y, v.width, v.height, v.properties.name)
 end)
 
@@ -45,11 +45,3 @@ function collisionCheckpoint:update(dt)
     globals.checkpoint = self.name
   end
 end
-
-megautils.cleanFuncs.checkpoint = function()
-    checkpoint = nil
-    collisionCheckpoint = nil
-    addobjects.unregister("checkpoint")
-    addobjects.unregister("collisionCheckpoint")
-    megautils.cleanFuncs.checkpoint = nil
-  end

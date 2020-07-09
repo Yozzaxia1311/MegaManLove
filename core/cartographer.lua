@@ -1219,7 +1219,7 @@ function cartographer.load(path)
     end
     i = #cartographer.cache
   end
-  map = setmetatable(cartographer.cache[i][1], Map)
+  map = setmetatable(table.clone(cartographer.cache[i][1]), Map)
   map:_init(path)
   return map
 end

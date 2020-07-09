@@ -1,8 +1,8 @@
 ladder = basicEntity:extend()
 
-addobjects.register("ladder", function(v)
+addObjects.register("ladder", function(v)
   megautils.add(ladder, v.x, v.y, v.width, v.height)
-end)
+end, 0, true)
 
 function ladder:new(x, y, w, h)
   ladder.super.new(self)
@@ -18,9 +18,3 @@ function ladder:added()
   self:addToGroup("despawnable")
   self:addToGroup("solid")
 end
-
-megautils.cleanFuncs.ladder = function()
-    ladder = nil
-    addobjects.unregister("ladder")
-    megautils.cleanFuncs.ladder = nil
-  end

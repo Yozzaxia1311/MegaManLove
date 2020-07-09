@@ -2,7 +2,7 @@ megautils.loadResource("assets/sfx/gravityFlip.ogg", "gravityFlip")
 
 gravFlip = basicEntity:extend()
 
-addobjects.register("gravFlip", function(v)
+addObjects.register("gravFlip", function(v)
     megautils.add(gravFlip, v.x, v.y, v.width, v.height, v.properties.dir)
   end)
 
@@ -38,6 +38,5 @@ end
 
 megautils.cleanFuncs.gravFlip = function()
     gravFlip = nil
-    addobjects.unregister("gravFlip")
     megautils.cleanFuncs.gravFlip = nil
   end

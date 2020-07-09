@@ -3,7 +3,7 @@ megautils.loadResource("assets/sfx/enemyHit.ogg", "enemyHit")
 
 stickMan = entity:extend()
 
-addobjects.register("stickMan", function(v)
+addObjects.register("stickMan", function(v)
   megautils.add(spawner, v.x, v.y, 12, 28, function(s)
     megautils.add(stickMan, v.x, v.y, s)
   end)
@@ -384,6 +384,5 @@ megautils.cleanFuncs.stickMan = function()
   stickMan = nil
   stickManIntro = nil
   megamanStick = nil
-  addobjects.unregister("stickMan")
   megautils.cleanFuncs.stickMan = nil
 end

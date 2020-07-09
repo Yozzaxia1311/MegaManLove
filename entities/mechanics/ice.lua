@@ -1,6 +1,6 @@
 ice = basicEntity:extend()
 
-addobjects.register("ice", function(v)
+addObjects.register("ice", function(v)
   megautils.add(ice, v.x, v.y, v.width, v.height)
 end)
 
@@ -67,11 +67,11 @@ megautils.resetGameObjectsFuncs.ice = function()
 
 megautils.cleanFuncs.ice = function()
     ice = nil
-    addobjects.unregister("ice")
     megautils.playerGroundFuncs.ice = nil
     megautils.playerKnockbackFuncs.ice = nil
     megautils.playerAirFuncs.ice = nil
     megautils.playerClimbFuncs.ice = nil
     megautils.playerTrebleFuncs.ice = nil
+    megautils.resetGameObjectsFuncs.ice = nil
     megautils.cleanFuncs.ice = nil
   end

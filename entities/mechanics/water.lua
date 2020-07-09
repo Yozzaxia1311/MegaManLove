@@ -55,7 +55,7 @@ end
 
 water = basicEntity:extend()
 
-addobjects.register("water", function(v)
+addObjects.register("water", function(v)
   megautils.add(water, v.x, v.y, v.width, v.height, v.properties.grav)
 end)
 
@@ -128,7 +128,7 @@ end
 
 space = entity:extend()
 
-addobjects.register("space", function(v)
+addObjects.register("space", function(v)
   megautils.add(space, v.x, v.y, v.width, v.height, v.properties.grav)
 end)
 
@@ -173,7 +173,5 @@ megautils.cleanFuncs.water = function()
     splash = nil
     water = nil
     space = nil
-    addobjects.unregister("water")
-    addobjects.unregister("space")
     megautils.cleanFuncs.water = nil
   end

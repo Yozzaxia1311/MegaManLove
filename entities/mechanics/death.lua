@@ -1,8 +1,8 @@
 death = basicEntity:extend()
 
-addobjects.register("death", function(v)
+addObjects.register("death", function(v)
   megautils.add(death, v.x, v.y, v.width, v.height, v.properties.harm)
-end)
+end, 0, true)
 
 function death:new(x, y, w, h, harm)
   death.super.new(self, true)
@@ -19,9 +19,3 @@ function death:added()
   self:addToGroup("death")
   self:addToGroup("solid")
 end
-
-megautils.cleanFuncs.death = function()
-    death = nil
-    addobjects.unregister("death")
-    megautils.cleanFuncs.death = nil
-  end

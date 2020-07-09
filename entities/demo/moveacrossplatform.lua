@@ -1,6 +1,6 @@
 megautils.loadResource("assets/global/entities/moveAcrossPlatform.png", "moveArossPlatform")
 
-addobjects.register("moveAcrossPlatform", function(v)
+addObjects.register("moveAcrossPlatform", function(v)
   megautils.add(spawner, v.x-4, v.y-4, 32+8, 16+8, function(s)
     megautils.add(moveAcrossPlatform, s.transform.x+4, s.transform.y+4, v.properties.toX, v.properties.toY, s)
   end)
@@ -60,6 +60,5 @@ end
 
 megautils.cleanFuncs.moveAcrossPlatform = function()
   moveAcrossPlatform = nil
-  addobjects.unregister("moveAcrossPlatform")
   megautils.cleanFuncs.moveAcrossPlatform = nil
 end

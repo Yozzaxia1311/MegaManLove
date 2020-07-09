@@ -1,9 +1,9 @@
 right = basicEntity:extend()
 
-addobjects.register("right", function(v)
+addObjects.register("right", function(v)
   megautils.add(right, v.x, v.y, v.height,
-    v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.platform, v.properties.name)
-end)
+    v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.platform, v.properties.toSection)
+end, 0, true)
 
 function right:new(x, y, h, scrollx, scrolly, spd, p, n)
   right.super.new(self)
@@ -15,6 +15,9 @@ function right:new(x, y, h, scrollx, scrolly, spd, p, n)
   self.spd = spd
   self.platform = p
   self.name = n
+  if self.name == "" then
+    self.name = nil
+  end
 end
 
 function right:added()
@@ -44,10 +47,10 @@ end
 
 left = basicEntity:extend()
 
-addobjects.register("left", function(v)
+addObjects.register("left", function(v)
   megautils.add(left, v.x, v.y, v.height,
-    v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.platform, v.properties.name)
-end)
+    v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.platform, v.properties.toSection)
+end, 0, true)
 
 function left:new(x, y, h, scrollx, scrolly, spd, p, n)
   left.super.new(self)
@@ -59,6 +62,9 @@ function left:new(x, y, h, scrollx, scrolly, spd, p, n)
   self.spd = spd
   self.platform = p
   self.name = n
+  if self.name == "" then
+    self.name = nil
+  end
 end
 
 function left:added()
@@ -88,12 +94,13 @@ end
 
 down = basicEntity:extend()
 
-addobjects.register("down", function(v)
+addObjects.register("down", function(v)
   megautils.add(down, v.x, v.y, v.width,
-    v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.platform, v.properties.name)
-end)
+    v.properties.doScrollX, v.properties.doScrollY, v.properties.speed,
+    v.properties.platform, v.properties.toSection, v.properties.checkLadder)
+end, 0, true)
 
-function down:new(x, y, w, scrollx, scrolly, spd, p, n)
+function down:new(x, y, w, scrollx, scrolly, spd, p, n, cl)
   down.super.new(self)
   self:setRectangleCollision(w, 2)
   self.transform.y = y + 14
@@ -103,6 +110,10 @@ function down:new(x, y, w, scrollx, scrolly, spd, p, n)
   self.spd = spd
   self.platform = p
   self.name = n
+  if self.name == "" then
+    self.name = nil
+  end
+  self.checkLadder = cl
 end
 
 function down:added()
@@ -113,7 +124,8 @@ function down:update(dt)
   for i=1, #megaMan.allPlayers do
     local player = megaMan.allPlayers[i]
     if camera.main and checkFalse(player.canControl) and not camera.main.transition
-      and self:collision(player, 0, 2) and (not self.platform or (self.platform and player.onMovingFloor)) then
+      and self:collision(player, 0, 2) and (not self.platform or (self.platform and player.onMovingFloor)) and
+      (not self.checkLadder or (self.checkLadder and (player.climb or player.gravity >= 0))) then
       camera.main.transitionDirection = "down"
       camera.main.transition = true
       camera.main.doScrollY = (self.scrolly~=nil) and self.scrolly or camera.main.doScrollY
@@ -132,12 +144,13 @@ end
 
 up = basicEntity:extend()
 
-addobjects.register("up", function(v)
+addObjects.register("up", function(v)
   megautils.add(up, v.x, v.y, v.width,
-    v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.platform, v.properties.name)
-end)
+    v.properties.doScrollX, v.properties.doScrollY, v.properties.speed,
+    v.properties.platform, v.properties.toSection, v.properties.checkLadder)
+end, 0, true)
 
-function up:new(x, y, w, scrollx, scrolly, spd, p, n)
+function up:new(x, y, w, scrollx, scrolly, spd, p, n, cl)
   up.super.new(self)
   self:setRectangleCollision(w, 2)
   self.transform.y = y
@@ -147,6 +160,10 @@ function up:new(x, y, w, scrollx, scrolly, spd, p, n)
   self.spd = spd
   self.platform = p
   self.name = n
+  if self.name == "" then
+    self.name = nil
+  end
+  self.checkLadder = cl
 end
 
 function up:added()
@@ -157,52 +174,8 @@ function up:update(dt)
   for i=1, #megaMan.allPlayers do
     local player = megaMan.allPlayers[i]
     if camera.main and checkFalse(player.canControl) and not camera.main.transition
-      and self:collision(player, 0, -2) and (not self.platform or (self.platform and player.onMovingFloor)) then
-      camera.main.transitionDirection = "up"
-      camera.main.transition = true
-      camera.main.doScrollY = (self.scrolly~=nil) and self.scrolly or camera.main.doScrollY
-      camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
-      camera.main.player = player
-      camera.main.speed = self.spd or 0.8
-      local s = self:collisionTable(section.getSections(self.transform.x, self.transform.y-2, self.collisionShape.w, 2), 0, -2)[1]
-      camera.main.toSection = s
-      camera.main.transform.y = self.transform.y
-      camera.main.transY = camera.main.transform.y-camera.main.player.collisionShape.h-8
-      camera.main.curBoundName = self.name
-      break
-    end
-  end
-end
-
-upLadder = basicEntity:extend()
-
-addobjects.register("upLadder", function(v)
-  megautils.add(upLadder, v.x, v.y, v.width,
-    v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.platform, v.properties.name)
-end)
-
-function upLadder:new(x, y, w, scrollx, scrolly, spd, p, n)
-  upLadder.super.new(self)
-  self:setRectangleCollision(w, 2)
-  self.transform.y = y
-  self.transform.x = x
-  self.scrollx = scrollx ~= nil
-  self.scrolly = scrolly
-  self.spd = spd
-  self.platform = p
-  self.name = n
-end
-
-function upLadder:added()
-  self:addToGroup("despawnable")
-end
-
-function upLadder:update(dt)
-  for i=1, #megaMan.allPlayers do
-    local player = megaMan.allPlayers[i]
-    if camera.main and not camera.main.transition and
-      (not self.platform or (self.platform and player.onMovingFloor)) and
-      checkFalse(player.canControl) and (player.climb or player.treble == 2) and self:collision(player, 0, -2) then
+      and self:collision(player, 0, -2) and (not self.platform or (self.platform and player.onMovingFloor)) and
+      (not self.checkLadder or (self.checkLadder and (player.climb or player.gravity < 0))) then
       camera.main.transitionDirection = "up"
       camera.main.transition = true
       camera.main.doScrollY = (self.scrolly~=nil) and self.scrolly or camera.main.doScrollY
@@ -221,9 +194,9 @@ end
 
 sectionPrioritySetter = basicEntity:extend()
 
-addobjects.register("sectionPrioritySetter", function(v)
-  megautils.add(sectionPrioritySetter, v.x, v.y, v.width, v.height, v.properties.name)
-end)
+addObjects.register("sectionPrioritySetter", function(v)
+  megautils.add(sectionPrioritySetter, v.x, v.y, v.width, v.height, v.properties.toSection)
+end, 0, true)
 
 function sectionPrioritySetter:new(x, y, w, h, name)
   sectionPrioritySetter.super.new(self)
@@ -254,15 +227,15 @@ end
 
 function sectionPrioritySetter:update(dt)
   if camera.main and not camera.main.transition and self.name ~= camera.main.curBoundName and self:check() == #megaMan.allPlayers then
-    camera.main.curBoundName = self.name
+    camera.main.curBoundName = self.name == "" and nil or self.name
   end
 end
 
 sectionPrioritySetterXBorder = basicEntity:extend()
 
-addobjects.register("sectionPrioritySetterXBorder", function(v)
+addObjects.register("sectionPrioritySetterXBorder", function(v)
   megautils.add(sectionPrioritySetterXBorder, v.x, v.y, v.height, v.properties.lname, v.properties.rname)
-end)
+end, 0, true)
 
 function sectionPrioritySetterXBorder:new(x, y, h, lname, rname)
   sectionPrioritySetterXBorder.super.new(self)
@@ -302,9 +275,9 @@ end
 
 sectionPrioritySetterYBorder = basicEntity:extend()
 
-addobjects.register("sectionPrioritySetterYBorder", function(v)
+addObjects.register("sectionPrioritySetterYBorder", function(v)
   megautils.add(sectionPrioritySetterYBorder, v.x, v.y, v.width, v.properties.uname, v.properties.dname)
-end)
+end, 0, true)
 
 function sectionPrioritySetterYBorder:new(x, y, w, uname, dname)
   sectionPrioritySetterYBorder.super.new(self)
@@ -344,9 +317,9 @@ end
 
 sectionPrioritySetterArea = basicEntity:extend()
 
-addobjects.register("sectionPrioritySetterArea", function(v)
+addObjects.register("sectionPrioritySetterArea", function(v)
   megautils.add(sectionPrioritySetterArea, v.x, v.y, v.width, v.height, v.properties.inname, v.properties.outname)
-end)
+end, 0, true)
 
 function sectionPrioritySetterArea:new(x, y, w, h, name, name2)
   sectionPrioritySetterArea.super.new(self)

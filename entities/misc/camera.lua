@@ -336,19 +336,19 @@ end
 
 section = basicEntity:extend()
 
-addobjects.register("section", function(v)
+addObjects.register("section", function(v)
   section.addSection(section(v.x, v.y, v.width, v.height, v.properties.lockLeft, v.properties.lockRight,
     v.properties.lockUp, v.properties.lockDown, v.properties.name))
-end, 1)
+end, 1, true)
 
-addobjects.register("section", function(v)
+addObjects.register("section", function(v)
   if #section.init ~= 0 then
     for k, v in ipairs(section.init) do
       v:initSection()
     end
     section.init = {}
   end
-end, 2)
+end, 2, true)
 
 function section:new(x, y, w, h, lx, ly, lw, lh, n)
   section.super.new(self)

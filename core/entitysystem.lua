@@ -731,6 +731,9 @@ function mapEntity:recursiveChecker(tab, index, name)
 end
 
 function mapEntity:recursiveObjectFinder(tab, otab)
+  if not otab then
+    otab = {}
+  end
   for k, v in pairs(tab.layers) do
     if v.type == "objectgroup" then
       for i, j in pairs(v.objects) do
@@ -752,7 +755,7 @@ function mapEntity:getLayerByID(id)
 end
 
 function mapEntity:addObjects()
-  addobjects.add(self:recursiveObjectFinder(self.map, {}))
+  addObjects.add(self:recursiveObjectFinder(self.map))
 end
 
 function mapEntity:update(dt)

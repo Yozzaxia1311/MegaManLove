@@ -141,15 +141,15 @@ megautils.resetGameObjectsFuncs.megaMan = function()
     megaMan.individualLanded = {}
   end
 
-addobjects.register("player", function(v)
+addObjects.register("player", function(v)
     if megaMan.once then return end
     if v.properties.checkpoint == globals.checkpoint and not camera.once then
       camera.once = true
       megautils.add(camera, v.x, v.y, v.properties.doScrollX, v.properties.doScrollY)
     end
-  end, -1)
+  end, -1, true)
 
-addobjects.register("player", function(v)
+addObjects.register("player", function(v)
     if megaMan.once then return end
     if v.properties.checkpoint == globals.checkpoint and camera.main and camera.once then
       camera.main:setRectangleCollision(8, 8)
@@ -161,9 +161,9 @@ addobjects.register("player", function(v)
       camera.main:doView(999, 999)
       camera.once = nil
     end
-  end, 3)
+  end, 3, true)
 
-addobjects.register("player", function(v)
+addObjects.register("player", function(v)
     if megaMan.once then return end
     if v.properties.checkpoint == globals.checkpoint then
       if v.properties.individual then
@@ -181,7 +181,7 @@ addobjects.register("player", function(v)
         end
       end
     end
-  end)
+  end, 0, true)
 
 function megaMan.properties(self, g, gf, c)
   self.gravityType = 0
@@ -376,7 +376,7 @@ function megaMan:new(x, y, side, drop, p, g, gf, c)
   megaMan.super.new(self)
   self.player = p
   self.playerName = megautils.getPlayer(self.player)
-  megautils.registerPlayer(self, self.player)
+  megautils.registerPlayer(self)
   megaMan.properties(self, g, gf, c)
   if self.playerName == "mega" then
     self.texOutline = megautils.getResource("megaManOutline")

@@ -34,14 +34,6 @@ function initEngine()
   globals.defeats = {}
   globals.defeats.stickMan = false
   
-  megautils.resetGameObjectsFuncs.loadForEveryStage = function()
-      megautils.runFile("entities/mechanics/bossdoor.lua")
-      megautils.runFile("entities/mechanics/death.lua")
-      megautils.runFile("entities/mechanics/ladder.lua")
-      megautils.runFile("entities/mechanics/checkpoint.lua")
-      megautils.runFile("entities/mechanics/solid.lua")
-    end
-  
   globals.keyboardCheck = {}
   globals.gamepadCheck = {}
   

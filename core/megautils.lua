@@ -478,7 +478,7 @@ function megautils.revivePlayer(p)
   megaMan.colorTwo[p] = megaMan.weaponHandler[p].colorTwo[0]
 end
 
-function megautils.registerPlayer(e, p)
+function megautils.registerPlayer(e)
   if not megaMan.mainPlayer then
     megaMan.mainPlayer = e
   end

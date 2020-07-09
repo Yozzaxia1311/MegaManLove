@@ -2,12 +2,12 @@ megautils.loadResource("assets/global/bossDoor.png", "bossDoor")
 
 bossDoor = entity:extend()
 
-addobjects.register("bossDoor", function(v)
+addObjects.register("bossDoor", function(v)
   local seg = (v.properties.dir=="up" or v.properties.dir=="down") and 
     math.round(v.width/16) or math.round(v.height/16)
   megautils.add(bossDoor, v.x, v.y, seg, v.properties.dir,
-  v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.useTileLayer, v.properties.name)
-end)
+  v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.tileLayer, v.properties.toSection)
+end, 0, true)
 
 function bossDoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt, n)
   bossDoor.super.new(self)
@@ -30,7 +30,13 @@ function bossDoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt, n)
   self.isLocked = {global=false}
   self.spawnEarlyDuringTransition = true
   self.useMapTiles = umt
+  if self.useMapTiles == "" then
+    self.useMapTiles = nil
+  end
   self.name = n
+  if self.name == "" then
+    self.name = nil
+  end
 end
 
 function bossDoor:added()
@@ -258,9 +264,3 @@ function bossDoor:draw()
     end
   end
 end
-
-megautils.cleanFuncs.bossDoor = function()
-    bossDoor = nil
-    addobjects.unregister("bossDoor")
-    megautils.cleanFuncs.bossDoor = nil
-  end
