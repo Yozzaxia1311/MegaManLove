@@ -54,6 +54,11 @@ convar["diff"] = {
   helptext = "difficulty (easy, normal, hard, etc.)",
   flags = {"cheat"},
   value = "normal",
+  fun = function(arg)
+      for k, v in pairs(megautils.difficultyChangeFuncs) do
+        v(arg, convar.getValue("diff"))
+      end
+    end
 }
 
 convar["scale"] = {
@@ -76,13 +81,31 @@ convar["scale"] = {
     end
 }
 
-for i=1, maxPlayerCount do
-  convar["player" .. tostring(i)] = {
-    helptext = "set player " .. tostring(i) .. " (mega, proto, bass, roll)",
-    flags = {"cheat"},
-    value = ((i == 1) and "mega" or ((i == 2) and "proto" or ((i == 3) and "bass" or ((i == 4) and "roll" or "mega"))))
-  }
-end
+convar["players"] = {
+  helptext = "set players from csv (no spaces, \"old\" leaves old value in)",
+  flags = {"cheat"},
+  value = "mega,proto,bass,roll",
+  fun = function(arg)
+      local t = convar.getValue("players"):split(",")
+      local new = arg:split(",")
+      local res = ""
+      
+      for i = 1, #new do
+        if new[i] ~= "old" then
+          t[i] = new[i]
+        end
+      end
+      
+      for i = 1, #t do
+        res = res .. t[i]
+        if i ~= #t then
+          res = res .. ","
+        end
+      end
+      
+      convar.setValue("players", res, false)
+    end
+}
 
 concmd["help"] = {
   helptext = "get info about commands",
@@ -247,10 +270,12 @@ concmd["state"] = {
       local map
       if love.filesystem.getInfo(cmd[2] .. ".state.lua") then
         map = cmd[2] .. ".state.lua"
-      elseif love.filesystem.getInfo(cmd[2] .. ".tmx") then
-        map = cmd[2] .. ".tmx"
-      elseif love.filesystem.getInfo(cmd[2] .. ".lua") and megautils.runFile(cmd[2] .. ".lua").tiledversion then
-        map = cmd[2] .. ".lua"
+      elseif love.filesystem.getInfo(cmd[2] .. ".state.tmx") then
+        map = cmd[2] .. ".state.tmx"
+      elseif love.filesystem.getInfo(cmd[2] .. ".stage.lua") then
+        map = cmd[2] .. ".stage.lua"
+      elseif love.filesystem.getInfo(cmd[2] .. ".stage.tmx") then
+        map = cmd[2] .. ".stage.tmx"
       end
       if not map then console.print("No such state \""..cmd[2].."\"") return end
       love.audio.stop()
@@ -272,11 +297,7 @@ concmd["states"] = {
         if not love.filesystem.getInfo(check) then console.print("No such directory \""..cmd[2].."\"") return end
       end
       local result = iterateDirs(function(f)
-          local result = f:sub(-10) == ".state.lua" or f:sub(-4) == ".tmx"
-          if not result and f:sub(-4) == ".lua" then
-            result = megautils.runFile(f).tiledversion ~= nil
-          end
-          return result
+          return f:sub(-10) == ".state.lua" or f:sub(-4) == ".state.tmx" or f:sub(-10) == ".stage.lua" or f:sub(-4) == ".stage.tmx"
         end, check)
       if #result == 0 then
         if check then

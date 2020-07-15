@@ -736,9 +736,9 @@ local function finalXML2LuaTable(str, f)
   
   local result = xml2lua:parse(str).map
   
-  local tmp = string.split(f, "/")
+  local tmp = f:split("/")
   tmp = tmp[#tmp]:len()
-  local path = f:sub(0, -tmp-1)
+  local path = f:sub(0, -tmp-2)
   
   result.compressionLevel = nil
   result.height = tonumber(result.height)
@@ -755,6 +755,26 @@ local function finalXML2LuaTable(str, f)
     result.backgroundcolor = {tonumber("0x"..result.backgroundcolor:sub(1,2)),
       tonumber("0x"..result.backgroundcolor:sub(3,4)), tonumber("0x"..result.backgroundcolor:sub(5,6))}
   end
+  
+  result.properties = result.properties or {}
+  local ref = result.properties
+  result.properties = {}
+  
+  if ref.property then
+    if not (type(ref.property[1]) == "table" and type(ref.property[2]) == "table") then
+      ref.property = {ref.property}
+    end
+    
+    for o, p in pairs(ref.property) do
+      if p.type == "int" or p.type == "float" then
+        result.properties[p.name] = tonumber(p.value)
+      elseif p.type == "bool" then
+        result.properties[p.name] = p.value == "true"
+      else
+        result.properties[p.name] = p.value
+      end
+    end
+  end
 
   if result.tileset then
     if not (type(result.tileset[1]) == "table" and type(result.tileset[2]) == "table") then
@@ -767,11 +787,37 @@ local function finalXML2LuaTable(str, f)
       v.firstgid = tonumber(v.firstgid)
       local ts
       if v.source then
-        if not love.filesystem.getInfo(path .. v.source) then
+        local base = path:split("/")
+        local test = v.source:split("/")
+        local newPath = ""
+        local tr = 0
+        
+        for i=1, #test do
+          if test[i] == ".." then
+            table.remove(test, i)
+            tr = tr + 1
+          end
+        end
+        if tr ~= 0 then
+          for i=1, tr do
+            base[#base] = nil
+          end
+        end
+        for i=1, #base do
+          newPath = newPath .. base[i] .. "/"
+        end
+        for i=1, #test do
+          newPath = newPath .. test[i]
+          if i ~= #test then
+            newPath = newPath .. "/"
+          end
+        end
+        
+        if not love.filesystem.getInfo(newPath) then
           error("No such tileset '" .. v.source .. "'")
         end
         
-        ts = xml2lua:parse(love.filesystem.read(path .. v.source)).tileset
+        ts = xml2lua:parse(love.filesystem.read(newPath)).tileset
       else
         ts = v
       end
@@ -1033,10 +1079,36 @@ local function finalXML2LuaTable(str, f)
               
               if j.template then
                 if not fcache[path .. j.template] then
-                  if not love.filesystem.getInfo(path .. j.template) then
+                  local base = path:split("/")
+                  local test = j.template:split("/")
+                  local newPath = ""
+                  local tr = 0
+                  
+                  for i=1, #test do
+                    if test[i] == ".." then
+                      table.remove(test, i)
+                      tr = tr + 1
+                    end
+                  end
+                  if tr ~= 0 then
+                    for i=1, tr do
+                      base[#base] = nil
+                    end
+                  end
+                  for i=1, #base do
+                    newPath = newPath .. base[i] .. "/"
+                  end
+                  for i=1, #test do
+                    newPath = newPath .. test[i]
+                    if i ~= #test then
+                      newPath = newPath .. "/"
+                    end
+                  end
+                  
+                  if not love.filesystem.getInfo(newPath) then
                     error("No such template file '" .. j.template .. "'")
                   end
-                  fcache[path .. j.template] = xml2lua:parse(love.filesystem.read(path .. j.template)).template.object
+                  fcache[path .. j.template] = xml2lua:parse(love.filesystem.read(newPath)).template.object
                 end
                 tf = templateParenting(table.clone(fcache[path .. j.template]), fcache)
               end

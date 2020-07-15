@@ -15,7 +15,7 @@ function gravFlip:new(x, y, w, h, dir)
   self.doEffect = false
 end
 
-function gravFlip:added()
+function gravFlip:begin()
   self:addToGroup("despawnable")
 end
 

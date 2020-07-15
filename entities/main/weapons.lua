@@ -41,7 +41,7 @@ function protoSemiBuster:new(x, y, dir, wpn, skin, grav)
   megautils.playSound("semiCharged")
 end
 
-function protoSemiBuster:added()
+function protoSemiBuster:begin()
   self:addToGroup("megaBuster")
   self:addToGroup("megaBuster" .. self.wpn.id)
   self:addToGroup("freezable")
@@ -91,7 +91,7 @@ function protoChargedBuster:new(x, y, dir, wpn, skin, grav)
   megautils.playSound("protoCharged")
 end
 
-function protoChargedBuster:added()
+function protoChargedBuster:begin()
   self:addToGroup("protoChargedBuster")
   self:addToGroup("protoChargedBuster" .. self.wpn.id)
   self:addToGroup("freezable")
@@ -163,7 +163,7 @@ function bassBuster:recycle(x, y, dir, wpn, t, grav)
   self:setGravityMultiplier("global", grav)
 end
 
-function bassBuster:added()
+function bassBuster:begin()
   self:addToGroup("bassBuster")
   self:addToGroup("bassBuster" .. self.wpn.id)
   self:addToGroup("freezable")
@@ -238,7 +238,7 @@ function megaBuster:recycle(x, y, dir, wpn, grav)
   self.grav = grav
 end
 
-function megaBuster:added()
+function megaBuster:begin()
   self:addToGroup("megaBuster")
   self:addToGroup("megaBuster" .. self.wpn.id)
   self:addToGroup("freezable")
@@ -288,7 +288,7 @@ function megaSemiBuster:new(x, y, dir, wpn, grav)
   self:face(-self.side)
 end
 
-function megaSemiBuster:added()
+function megaSemiBuster:begin()
   self:addToGroup("megaBuster")
   self:addToGroup("megaBuster" .. self.wpn.id)
   self:addToGroup("freezable")
@@ -343,7 +343,7 @@ function megaChargedBuster:new(x, y, dir, wpn, grav)
   self:face(-self.side)
 end
 
-function megaChargedBuster:added()
+function megaChargedBuster:begin()
   self:addToGroup("megaChargedBuster")
   self:addToGroup("megaChargedBuster" .. self.wpn.id)
   self:addToGroup("freezable")
@@ -417,7 +417,7 @@ function trebleBoost:new(x, y, side, player, wpn)
   self:setGravityMultiplier("global", self.player.gravity >= 0 and 1 or -1)
 end
 
-function trebleBoost:added()
+function trebleBoost:begin()
   self:addToGroup("trebleBoost")
   self:addToGroup("trebleBoost" .. self.wpn.id)
   self:addToGroup("freezable")
@@ -556,7 +556,7 @@ function rushJet:new(x, y, side, player, wpn, skin)
   self.exclusivelySolidFor = {self.player}
 end
 
-function rushJet:added()
+function rushJet:begin()
   self:addToGroup("rushJet")
   self:addToGroup("rushJet" .. self.wpn.id)
   self:addToGroup("freezable")
@@ -723,7 +723,7 @@ function rushCoil:new(x, y, side, player, w, skin)
   self:setGravityMultiplier("global", self.player.gravity >= 0 and 1 or -1)
 end
 
-function rushCoil:added()
+function rushCoil:begin()
   self:addToGroup("rushCoil")
   self:addToGroup("rushCoil" .. self.wpn.id)
   self:addToGroup("freezable")
@@ -846,7 +846,7 @@ function stickWeapon:new(x, y, dir, wpn, grav)
   megautils.playSound("buster")
 end
 
-function stickWeapon:added()
+function stickWeapon:begin()
   self:addToGroup("stickWeapon")
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")

@@ -6,7 +6,7 @@ function trigger:new(call, drawCall)
   self.drawCall = drawCall
 end
 
-function trigger:added()
+function trigger:begin()
   self:addToGroup("freezable")
 end
 

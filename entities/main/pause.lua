@@ -2,7 +2,6 @@ mmWeaponsMenu = basicEntity:extend()
 
 function mmWeaponsMenu.resources()
   megautils.loadResource("assets/misc/weaponSelect.png", "weaponSelectBG")
-  megautils.loadResource("assets/misc/weapons/weaponSelect.png", "weaponSelect")
   megautils.loadResource("assets/sfx/pause.ogg", "pause")
   megautils.loadResource("assets/sfx/selected.ogg", "selected")
   megautils.loadResource("assets/sfx/cursorMove.ogg", "cursorMove")
@@ -20,7 +19,6 @@ end
 
 function mmWeaponsMenu:new(w, h, p)
   mmWeaponsMenu.super.new(self)
-  self.t = megautils.getResource("weaponSelect")
   self.bg = megautils.getResource("weaponSelectBG")
   self.tex = megautils.getResource("particles")
   self.texOutline = megautils.getResource("particlesOutline")
@@ -37,9 +35,6 @@ function mmWeaponsMenu:new(w, h, p)
   self.h = h
   self.player = p
   self.section = 0
-  self.active = {}
-  self.inactive = {}
-  self.text = {}
   self.fills = {{}}
   self.list = {{0, -1},
 			{1, 6},
@@ -80,7 +75,6 @@ function mmWeaponsMenu:new(w, h, p)
           self.fills[y] = {}
         end
         self.fills[y][x] = h
-        self:addIcon(self.list[y][x])
       end
     end
   end
@@ -102,20 +96,12 @@ function mmWeaponsMenu:new(w, h, p)
   self:setLayer(10)
 end
 
-function mmWeaponsMenu:added()
+function mmWeaponsMenu:begin()
   self:addToGroup("freezable")
 end
 
 function mmWeaponsMenu:removed()
   megautils.unfreeze(nil, "pause")
-end
-
-function mmWeaponsMenu:addIcon(id)
-  self.active[id] = love.graphics.newQuad(self.w.pauseConf[id][2][1], self.w.pauseConf[id][2][2],
-    self.w.pauseConf[id][2][3], self.w.pauseConf[id][2][4], 240, 48)
-  self.inactive[id] = love.graphics.newQuad(self.w.pauseConf[id][3][1], self.w.pauseConf[id][3][2],
-    self.w.pauseConf[id][3][3], self.w.pauseConf[id][3][4], 240, 48)
-  self.text[id] = self.w.pauseConf[id][1]
 end
 
 function mmWeaponsMenu:update(dt)
@@ -372,11 +358,11 @@ function mmWeaponsMenu:draw()
         j:draw()
         love.graphics.setColor(1, 1, 1, 1)
         if self.x == j.gridX and self.y == j.gridY then
-          love.graphics.draw(self.t, self.active[j.id], view.x+(j.icoX), view.y+(j.icoY))
+          self.w:drawIcon(j.id, true, view.x+(j.icoX), view.y+(j.icoY))
         else
-          love.graphics.draw(self.t, self.inactive[j.id], view.x+(j.icoX), view.y+(j.icoY))
+          self.w:drawIcon(j.id, false, view.x+(j.icoX), view.y+(j.icoY))
         end
-        love.graphics.print(self.text[j.id], view.x+(j.icoX+16), view.y+(j.icoY))
+        love.graphics.print(self.w.pauseNames[j.id], view.x+(j.icoX+16), view.y+(j.icoY))
       end
     end
   else
@@ -384,8 +370,8 @@ function mmWeaponsMenu:draw()
       for i, j in pairs(v) do
         j:draw()
         love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.draw(self.t, self.inactive[j.id], view.x+(j.icoX), view.y+(j.icoY))
-        love.graphics.print(self.text[j.id], view.x+(j.icoX+16), view.y+(j.icoY))
+        self.w:drawIcon(j.id, false, view.x+(j.icoX), view.y+(j.icoY))
+        love.graphics.print(self.w.pauseNames[j.id], view.x+(j.icoX+16), view.y+(j.icoY))
       end
     end
     love.graphics.setColor(1, 1, 1, 1)

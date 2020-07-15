@@ -8,7 +8,7 @@ function spawner:new(x, y, w, h, func)
   self.func = func
 end
 
-function spawner:added()
+function spawner:begin()
   self:addToGroup("despawnable")
   self:addToGroup("freezable")
   self.wasOutside = true
@@ -38,7 +38,7 @@ function intervalSpawner:new(x, y, w, h, time, func)
   self.timer = 0
 end
 
-function intervalSpawner:added()
+function intervalSpawner:begin()
   self:addToGroup("despawnable")
   self:addToGroup("freezable")
 end

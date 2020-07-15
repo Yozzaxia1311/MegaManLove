@@ -14,6 +14,7 @@ function entitySystem:new()
   self.all = {}
   self.addQueue = {}
   self.removeQueue = {}
+  self.beginQueue = {}
   self.recycle = {}
   self.doSort = false
 end
@@ -80,7 +81,11 @@ function entitySystem:add(c, ...)
   self.all[#self.all+1] = e
   e.isRemoved = false
   e.isAdded = true
-  e:added()
+  if self.doBeginQueue then
+    self.beginQueue[#self.beginQueue+1] = e
+  else
+    e:begin()
+  end
   e.previousX = e.transform.x
   e.previousY = e.transform.y
   e.epX = e.previousX
@@ -89,7 +94,7 @@ function entitySystem:add(c, ...)
 end
 
 function entitySystem:adde(e)
-  if not e or not e.isRemoved or e.isAdded then return end
+  if not e or not e.isRemoved or e.isAdded or table.contains(self.updates, e) then return end
   if not e.static then
     local done = false
     for i=1, #self.entities do
@@ -112,7 +117,11 @@ function entitySystem:adde(e)
   self.all[#self.all+1] = e
   e.isRemoved = false
   e.isAdded = true
-  e:added()
+  if self.doBeginQueue then
+    self.beginQueue[#self.beginQueue+1] = e
+  else
+    e:begin()
+  end
   e.previousX = e.transform.x
   e.previousY = e.transform.y
   e.epX = e.previousX
@@ -242,6 +251,7 @@ function entitySystem:remove(e)
     table.removevaluearray(self.entities, e.actualLayer)
   end
   table.quickremovevaluearray(self.all, e)
+  table.quickremovevaluearray(self.beginQueue, e)
   e.isAdded = false
   if e.recycle then
     if not self.recycle[e.__index] then
@@ -304,6 +314,13 @@ function entitySystem:drawQuality()
 end
 
 function entitySystem:update(dt)
+  if self.doBeginQueue then
+    for i=#self.beginQueue, 1, -1 do
+      self.beginQueue[i]:begin()
+      self.beginQueue[i] = nil
+    end
+    self.doBeginQueue = false
+  end
   if entitySystem.doBeforeUpdate then
     for i=1, #self.updates do
       local t = self.updates[i]
@@ -583,7 +600,7 @@ function basicEntity:afterUpdate(dt) end
 function basicEntity:draw() end
 function basicEntity:drawQuality() end
 function basicEntity:removed() end
-function basicEntity:added() end
+function basicEntity:begin() end
 function basicEntity:staticToggled() end
 
 entity = basicEntity:extend()
@@ -704,7 +721,7 @@ function mapEntity:new(map, x, y)
   self:setLayer(-5)
 end
 
-function mapEntity:added()
+function mapEntity:begin()
   self:addToGroup("freezable")
   self:addToGroup("map")
   for k, v in pairs(megautils.addMapFuncs) do

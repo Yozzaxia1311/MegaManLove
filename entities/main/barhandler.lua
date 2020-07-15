@@ -28,7 +28,7 @@ function healthHandler:new(colorOne, colorTwo, colorOutline, side, r, segments, 
   self.player = player
 end
 
-function healthHandler:added()
+function healthHandler:begin()
   self:addToGroup("freezable")
 end
 
@@ -167,6 +167,8 @@ function healthHandler:draw()
   end
 end
 
+megautils.loadResource("assets/misc/weapons/weaponSelect.png", "weaponSelect", false, true)
+
 weaponHandler = basicEntity:extend()
 
 weaponHandler.id = 0
@@ -179,6 +181,7 @@ function weaponHandler:new(side, r, slots)
   self.weapons = {}
   self.energy = {}
   self.slots = {}
+  self.iconTex = megautils.getResource("weaponSelect")
   self.barOne = megautils.getResource("barOne")
   self.barTwo = megautils.getResource("barTwo")
   self.barOutline = megautils.getResource("barOutline")
@@ -195,7 +198,9 @@ function weaponHandler:new(side, r, slots)
   self.colorOutline = {}
   self.currentColorOne = {}
   self.currentColorTwo = {}
-  self.pauseConf = {}
+  self.pauseNames = {}
+  self.activeIcons = {}
+  self.inactiveIcons = {}
   self.riseTimer = 4
   self.side = side or 1
   self.rot = r or "y"
@@ -203,7 +208,15 @@ function weaponHandler:new(side, r, slots)
   weaponHandler.id = weaponHandler.id + 1
 end
 
-function weaponHandler:added()
+function weaponHandler:drawIcon(i, on, x, y)
+  if on == nil or on then
+    love.graphics.draw(self.iconTex, self.activeIcons[i], x, y)
+  else
+    love.graphics.draw(self.iconTex, self.inactiveIcons[i], x, y)
+  end
+end
+
+function weaponHandler:begin()
   self:addToGroup("freezable")
 end
 
@@ -223,10 +236,30 @@ function weaponHandler:register(slot, name, pn, colorone, colortwo, coloroutline
   self.colorOne[slot] = colorone
   self.colorTwo[slot] = colortwo
   self.colorOutline[slot] = coloroutline
-  self.pauseConf[slot] = pn
+  self.pauseNames[slot] = pn[1]
+  self.activeIcons[slot] = love.graphics.newQuad(pn[2][1], pn[2][2], pn[2][3], pn[2][4], self.iconTex:getDimensions())
+  self.inactiveIcons[slot] = love.graphics.newQuad(pn[3][1], pn[3][2], pn[3][3], pn[3][4], self.iconTex:getDimensions())
   
   if weapons.resources[name] then
     weapons.resources[name]()
+  end
+end
+
+function weaponHandler:unregister(slot)
+  self.weapons[slot] = nil
+  self.segments[slot] = nil
+  self.energy[slot] = nil
+  self.renderedWE[slot] = nil
+  self.slots[self.weapons[slot]] = nil
+  self.colorOne[slot] = nil
+  self.colorTwo[slot] = nil
+  self.colorOutline[slot] = nil
+  self.pauseNames[slot] = nil
+  self.activeIcons[slot] = nil
+  self.inactiveIcons[slot] = nil
+  
+  if slot == self.currentSlot then
+    self:switch(0)
   end
 end
 

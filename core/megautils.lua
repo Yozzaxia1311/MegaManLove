@@ -26,6 +26,7 @@ megautils.initEngineFuncs = {}
 megautils.addMapFuncs = {}
 megautils.removeMapFuncs = {}
 megautils.sectionChangeFuncs = {}
+megautils.difficultyChangeFuncs = {}
 
 --Player callback functions. These apply to all active players.
 megautils.playerCreatedFuncs = {}       --megautils.playerCreatedFuncs.exampleFunc = function(player) end
@@ -104,11 +105,22 @@ function megautils.hasInfiniteLives()
 end
 
 function megautils.setPlayer(p, what)
-  convar.setValue("player" .. tostring(p), what, false)
+  local old = convar.getString("players"):split(",")
+  local back = ""
+  old[p] = what
+  
+  for i=1, #old do
+    back = back .. old[i]
+    if i == #old then
+      back = back .. ","
+    end
+  end
+  
+  convar.setValue("players", back, true)
 end
 
 function megautils.getPlayer(p)
-  return convar.getString("player" .. tostring(p))
+  return convar.getString("players"):split(",")[p]
 end
 
 function megautils.getAllPlayers()
@@ -147,7 +159,7 @@ function megautils.resetGame(s, saveSfx, saveMusic)
   megautils.resetGameObjects = true
   megautils.unload()
   initEngine()
-  states.set(s or "states/disclaimer.state.lua")
+  states.set(s or "assets/states/menus/disclaimer.state.lua")
 end
 
 function megautils.getResource(nick)
@@ -257,17 +269,12 @@ end
 
 megautils._curM = nil
 megautils._lockM = false
-megautils.musicQueue = nil
-megautils.oldMusicQueue = nil
+megautils._musicQueue = nil
 
 function megautils.checkMusicQueue()
-  if megautils.musicQueue then
-    megautils._playMusic(unpack(megautils.musicQueue))
-    megautils.musicQueue = nil
-  end
-  if megautils.oldMusicQueue then
-    megautils._playMusicWithSeperateIntroFile(unpack(megautils.oldMusicQueue))
-    megautils.oldMusicQueue = nil
+  if megautils._musicQueue then
+    megautils._playMusic(unpack(megautils._musicQueue))
+    megautils._musicQueue = nil
   end
 end
 
@@ -280,38 +287,29 @@ function megautils.getCurrentMusic()
 end
 
 function megautils.playMusic(...)
-  megautils.musicQueue = {...}
+  megautils._musicQueue = {...}
 end
 
 function megautils._playMusic(path, loop, lp, lep, vol)
   if megautils._lockM or (megautils._curM and megautils._curM.id == path and not megautils._curM:stopped()) then return end
+  
   megautils.stopMusic()
   
-  megautils._curM = mmMusic(love.audio.newSource(path, isWeb and "static" or "stream"))
+  megautils._curM = mmMusic(love.audio.newSource(path, "stream"))
   megautils._curM.id = path
   megautils._curM.playedVol = vol
   megautils._curM:play(loop, lp, lep, vol)
 end
 
-function megautils.playMusicWithSeperateIntroFile(...)
-  megautils.oldMusicQueue = {...}
-end
-
-function megautils._playMusicWithSeperateIntroFile(lPath, iPath, vol)
-  if megautils._lockM or (megautils._curM and megautils._curM.id == (lPath .. ", " .. iPath) and not megautils._curM:stopped()) then return end
-  megautils.stopMusic()
-  
-  local t = isWeb and "static" or "stream"
-  megautils._curM = mmMusicOld(love.audio.newSource(lPath, t), love.audio.newSource(iPath, t))
-  megautils._curM.id = lPath .. ", " .. iPath
-  megautils._curM.playedVol = vol
-  megautils._curM:play(loop, lp, vol)
-end
-
 function megautils.stopMusic()
-  if not megautils._lockM and megautils._curM then
-    megautils._curM:pause()
-    megautils._curM = nil
+  if not megautils._lockM then
+    if megautils._musicQueue then
+      megautils._musicQueue = nil
+    end
+    if megautils._curM then
+      megautils._curM:pause()
+      megautils._curM = nil
+    end
   end
 end
 

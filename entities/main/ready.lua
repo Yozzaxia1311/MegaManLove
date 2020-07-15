@@ -1,46 +1,30 @@
 ready = basicEntity:extend()
 
-function ready:new(text, proto, music)
+function ready:new(text, blinks)
   ready.super.new(self)
-  self.proto = proto
-  if self.proto then
-    self.music = music
-  end
   self:setLayer(9)
   self.once = false
   self.canDraw.global = false
   self.blinkTimer = 0
   self.maxBlinkTime = 6
   self.blinkCount = 0
-  self.blinks = self.proto and 32 or 12
+  self.blinks = blinks or 12
   self.text = text or "READY"
   self.width = self.text:len() * 8
-  megautils.freeze()
 end
 
-function ready:added()
-  self:addToGroup("ready")
-  if self.proto then
-    megautils.playSoundFromFile("assets/sfx/protoReady.ogg")
-  end
+function ready:begin()
+  megautils.freeze(megaMan.allPlayers, "ready")
 end
 
 function ready:update(dt)
-  megautils.freeze()
   self.blinkTimer = math.min(self.blinkTimer+1, self.maxBlinkTime)
   if self.blinkTimer == self.maxBlinkTime then
     self.blinkTimer = 0
     self.blinkCount = self.blinkCount + 1
     self.canDraw.global = not self.canDraw.global
     if self.blinkCount == self.blinks then
-      megautils.unfreeze()
-      if self.proto and self.music then
-        if self.proto == "old" then
-          megautils.playMusicWithSeperateIntroFile(unpack(self.music))
-        else
-          megautils.playMusic(unpack(self.music))
-        end
-      end
+      megautils.unfreeze(megaMan.allPlayers, "ready")
       megautils.removeq(self)
     end
   end

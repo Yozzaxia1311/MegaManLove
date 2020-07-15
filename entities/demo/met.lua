@@ -30,7 +30,7 @@ function met:new(x, y, s)
   self:setGravityMultiplier("flipWithPlayer", 1)
 end
 
-function met:added()
+function met:begin()
   self:addToGroup("hurtable")
   self:addToGroup("removeOnTransition")
   self:addToGroup("freezable")
@@ -177,7 +177,7 @@ function metBullet:recycle(x, y, vx, vy)
   self.reflectedBack = nil
 end
 
-function metBullet:added()
+function metBullet:begin()
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
   self:addToGroup("enemyWeapon")

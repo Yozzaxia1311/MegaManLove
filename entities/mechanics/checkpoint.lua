@@ -12,7 +12,7 @@ function checkpoint:new(x, y, w, h, c)
   self.name = c
 end
 
-function checkpoint:added()
+function checkpoint:begin()
   self:addToGroup("despawnable")
 end
 
@@ -26,7 +26,7 @@ collisionCheckpoint = basicEntity:extend()
 
 addObjects.register("collisionCheckpoint", function(v)
   megautils.add(collisionCheckpoint, v.x, v.y, v.width, v.height, v.properties.name)
-end)
+end, 0, true)
 
 function collisionCheckpoint:new(x, y, w, h, c)
   collisionCheckpoint.super.new(self)
@@ -36,7 +36,7 @@ function collisionCheckpoint:new(x, y, w, h, c)
   self.name = c
 end
 
-function collisionCheckpoint:added()
+function collisionCheckpoint:begin()
   self:addToGroup("despawnable")
 end
 

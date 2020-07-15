@@ -12,7 +12,7 @@ function solid:new(x, y, w, h)
   self.solidType = collision.SOLID
 end
 
-function solid:added()
+function solid:begin()
   self:addToGroup("despawnable")
   self:addToGroup("solid")
   self:makeStatic()
@@ -49,7 +49,7 @@ function slope:new(x, y, mask)
   self.solidType = collision.SOLID
 end
 
-function slope:added()
+function slope:begin()
   self:addToGroup("despawnable")
   self:addToGroup("solid")
   self:makeStatic()

@@ -1,0 +1,1 @@
+return states.state:extend()

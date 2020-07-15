@@ -83,52 +83,7 @@ megautils.resetGameObjectsFuncs.megaMan = function()
     for i=1, globals.playerCount do
       megaMan.weaponHandler[i] = weaponHandler(nil, nil, 10)
       
-      if megautils.getPlayer(i) == "proto" then
-        megaMan.resources.protoMan()
-        
-        megaMan.weaponHandler[i]:register(0, "protoBuster", {"P.BUSTER", {48, 32, 16, 16}, {64, 32, 16, 16}},
-          {216, 40, 0}, {184, 184, 184}, {0, 0, 0})
-        
-        megaMan.weaponHandler[i]:register(9, "rushCoil", {"PROTO C.", {176, 0, 16, 16}, {192, 0, 16, 16}},
-          {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
-        
-        megaMan.weaponHandler[i]:register(10, "rushJet", {"PROTO JET", {176, 16, 16, 16}, {192, 16, 16, 16}},
-          {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
-        
-      elseif megautils.getPlayer(i) == "bass" then
-        megaMan.resources.bass()
-        
-        megaMan.weaponHandler[i]:register(0, "bassBuster", {"B.BUSTER", {144, 32, 16, 16}, {160, 32, 16, 16}},
-          {112, 112, 112}, {248, 152, 56}, {0, 0, 0})
-        
-        megaMan.weaponHandler[i]:register(9, "trebleBoost", {"T. BOOST", {144, 16, 16, 16}, {160, 16, 16, 16}},
-          {112, 112, 112}, {128, 0, 240}, {0, 0, 0})
-        
-      elseif megautils.getPlayer(i) == "roll" then
-        megaMan.resources.roll()
-        
-        megaMan.weaponHandler[i]:register(0, "rollBuster", {"R.BUSTER", {80, 32, 16, 16}, {96, 32, 16, 16}},
-          {248, 56, 0}, {0, 168, 0}, {0, 0, 0})
-        
-        megaMan.weaponHandler[i]:register(9, "rushCoil", {"TANGO C.", {208, 0, 16, 16}, {224, 0, 16, 16}},
-          {0, 168, 0}, {255, 255, 255}, {0, 0, 0})
-        
-        megaMan.weaponHandler[i]:register(10, "rushJet", {"TANGO JET", {208, 16, 16, 16}, {224, 16, 16, 16}},
-          {0, 168, 0}, {255, 255, 255}, {0, 0, 0})
-        
-      else
-        megaMan.resources.megaMan()
-        
-        megaMan.weaponHandler[i]:register(0, "megaBuster", {"M.BUSTER", {16, 32, 16, 16}, {32, 32, 16, 16}},
-          {0, 120, 248}, {0, 232, 216}, {0, 0, 0})
-        
-        megaMan.weaponHandler[i]:register(9, "rushCoil", {"RUSH C.", {144, 0, 16, 16}, {160, 0, 16, 16}},
-          {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
-        
-        megaMan.weaponHandler[i]:register(10, "rushJet", {"RUSH JET", {112, 32, 16, 16}, {128, 32, 16, 16}},
-          {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
-        
-      end
+      megaMan.setPlayer(i)
       
       if globals.defeats.stickMan then
         
@@ -141,12 +96,15 @@ megautils.resetGameObjectsFuncs.megaMan = function()
     megaMan.individualLanded = {}
   end
 
-megautils.sectionChangeFuncs.megaMan = function()
-    for i=1, #megaMan.allPlayers do
-      local p = megaMan.allPlayers[i]
-      if p.climb and megautils.groups().ladder then
-        p.currentLadder = p:collisionTable(megautils.groups().ladder)[1]
-      end
+megautils.difficultyChangeFuncs.megaMan = function(d)
+    if d == "easy" then
+      self.jumpAnimation.ps = "jumpProtoShield2"
+      self.protoShieldLeftCollision = {x=-7, y=0, w=8, h=20, goy=2}
+      self.protoShieldRightCollision = {x=10, y=0, w=8, h=20, goy=2}
+    else
+      self.jumpAnimation.ps = "jumpProtoShield"
+      self.protoShieldLeftCollision = {x=-7, y=0, w=8, h=14, goy=8}
+      self.protoShieldRightCollision = {x=10, y=0, w=8, h=14, goy=8}
     end
   end
 
@@ -175,17 +133,18 @@ addObjects.register("player", function(v)
 addObjects.register("player", function(v)
     if megaMan.once then return end
     if v.properties.checkpoint == globals.checkpoint then
-      if v.properties.individual then
+      local g = v.properties.gravMult * v.properties.gravFlip
+      if v.properties.individual and v.properties.individual > 0 then
         if v.properties.individual <= globals.playerCount then
           megaMan.individualLanded[#megaMan.individualLanded+1] = v.properties.individual
-          megautils.add(megaMan, v.x, v.y+((v.properties.grav == nil or v.properties.grav >= 0) and -5 or 0),
-            v.properties.side, v.properties.draw, v.properties.individual, v.properties.grav, v.properties.gravFlip, v.properties.control)
+          megautils.add(megaMan, v.x, v.y+((g >= 0) and -5 or 0),
+            v.properties.side, v.properties.draw, v.properties.individual, v.properties.gravMult, v.properties.gravFlip, v.properties.control)
         end
       else
         for i=1, globals.playerCount do
           if not table.contains(v.properties.individual, i) then
-            megautils.add(megaMan, v.x, v.y+((v.properties.grav == nil or v.properties.grav >= 0) and -5 or 0),
-              v.properties.side, v.properties.drop, i, v.properties.grav, v.properties.gravFlip, v.properties.control)
+            megautils.add(megaMan, v.x, v.y+((g >= 0) and -5 or 0),
+              v.properties.side, v.properties.drop, i, v.properties.gravMult, v.properties.gravFlip, v.properties.control)
           end
         end
       end
@@ -240,7 +199,7 @@ function megaMan.properties(self, g, gf, c)
   self.maxBubbleTime = 120
   self.blockCollision = true
   self.maxStandSolidJumpTime = 4
-  self.maxExtraJumps = self.playerName == "bass" and 1 or 0
+  self.maxExtraJumps = 0
   self.maxRapidShotTime = 5
   self.maxTrebleSpeed = 2
   self.trebleDecel = 0.1
@@ -258,7 +217,7 @@ function megaMan.properties(self, g, gf, c)
   self.canPause = {global=true}
   self.canDieFromSpikes = {global=true}
   self.canDashShoot = {global=false}
-  self.canDashJump = {global=self.playerName == "bass"}
+  self.canDashJump = {global=false}
   self.canDash = {global=true}
   self.canShoot = {global=true}
   self.canChargeBuster = {global=true}
@@ -271,184 +230,277 @@ function megaMan.properties(self, g, gf, c)
   self.canStopJump = {global=true}
   self.canStep = {global=true}
   self.canIgnoreKnockback = {global=false}
-  self.canProtoShield = {global=self.playerName == "proto"}
+  self.canProtoShield = {global=false}
   self.canControl = {global=(c == nil) or c}
 end
 
-function megaMan:initChargingColors()
-  if self.playerName == "roll" then
-    self.chargeColorOutlines = {}
-    self.chargeColorOutlines.rollBuster = {}
-    self.chargeColorOutlines.rollBuster[0] = {}
-    self.chargeColorOutlines.rollBuster[1] = {}
-    self.chargeColorOutlines.rollBuster[2] = {}
-    self.chargeColorOutlines.rollBuster[0][1] = {0, 0, 0}
-    self.chargeColorOutlines.rollBuster[1][1] = {248, 56, 0}
-    self.chargeColorOutlines.rollBuster[1][2] = {0, 0, 0}
-    self.chargeColorOutlines.rollBuster[2][1] = {0, 168, 0}
-    self.chargeColorOutlines.rollBuster[2][2] = {248, 56, 0}
-    self.chargeColorOutlines.rollBuster[2][3] = {0, 0, 0}
-    self.chargeColorOnes = {}
-    self.chargeColorOnes.rollBuster = {}
-    self.chargeColorOnes.rollBuster[0] = {}
-    self.chargeColorOnes.rollBuster[1] = {}
-    self.chargeColorOnes.rollBuster[2] = {}
-    self.chargeColorOnes.rollBuster[0][1] = {248, 56, 0}
-    self.chargeColorOnes.rollBuster[1][1] = {248, 56, 0}
-    self.chargeColorOnes.rollBuster[1][2] = {248, 56, 0}
-    self.chargeColorOnes.rollBuster[2][1] = {0, 0, 0}
-    self.chargeColorOnes.rollBuster[2][2] = {0, 168, 0}
-    self.chargeColorOnes.rollBuster[2][3] = {248, 56, 0}
-    self.chargeColorTwos = {}
-    self.chargeColorTwos.rollBuster = {}
-    self.chargeColorTwos.rollBuster[0] = {}
-    self.chargeColorTwos.rollBuster[1] = {}
-    self.chargeColorTwos.rollBuster[2] = {}
-    self.chargeColorTwos.rollBuster[0][1] = {0, 168, 0}
-    self.chargeColorTwos.rollBuster[1][1] = {0, 168, 0}
-    self.chargeColorTwos.rollBuster[1][2] = {0, 168, 0}
-    self.chargeColorTwos.rollBuster[2][1] = {0, 168, 0}
-    self.chargeColorTwos.rollBuster[2][2] = {0, 0, 0}
-    self.chargeColorTwos.rollBuster[2][3] = {248, 56, 0}
-  elseif self.playerName == "proto" then
-    self.chargeColorOutlines = {}
-    self.chargeColorOutlines.protoBuster = {}
-    self.chargeColorOutlines.protoBuster[0] = {}
-    self.chargeColorOutlines.protoBuster[1] = {}
-    self.chargeColorOutlines.protoBuster[2] = {}
-    self.chargeColorOutlines.protoBuster[0][1] = {0, 0, 0}
-    self.chargeColorOutlines.protoBuster[1][1] = {216, 40, 0}
-    self.chargeColorOutlines.protoBuster[1][2] = {0, 0, 0}
-    self.chargeColorOutlines.protoBuster[2][1] = {184, 184, 184}
-    self.chargeColorOutlines.protoBuster[2][2] = {216, 40, 0}
-    self.chargeColorOutlines.protoBuster[2][3] = {0, 0, 0}
-    self.chargeColorOnes = {}
-    self.chargeColorOnes.protoBuster = {}
-    self.chargeColorOnes.protoBuster[0] = {}
-    self.chargeColorOnes.protoBuster[1] = {}
-    self.chargeColorOnes.protoBuster[2] = {}
-    self.chargeColorOnes.protoBuster[0][1] = {216, 40, 0}
-    self.chargeColorOnes.protoBuster[1][1] = {216, 40, 0}
-    self.chargeColorOnes.protoBuster[1][2] = {216, 40, 0}
-    self.chargeColorOnes.protoBuster[2][1] = {0, 0, 0}
-    self.chargeColorOnes.protoBuster[2][2] = {184, 184, 184}
-    self.chargeColorOnes.protoBuster[2][3] = {216, 40, 0}
-    self.chargeColorTwos = {}
-    self.chargeColorTwos.protoBuster = {}
-    self.chargeColorTwos.protoBuster[0] = {}
-    self.chargeColorTwos.protoBuster[1] = {}
-    self.chargeColorTwos.protoBuster[2] = {}
-    self.chargeColorTwos.protoBuster[0][1] = {184, 184, 184}
-    self.chargeColorTwos.protoBuster[1][1] = {184, 184, 184}
-    self.chargeColorTwos.protoBuster[1][2] = {184, 184, 184}
-    self.chargeColorTwos.protoBuster[2][1] = {184, 184, 184}
-    self.chargeColorTwos.protoBuster[2][2] = {0, 0, 0}
-    self.chargeColorTwos.protoBuster[2][3] = {216, 40, 0}
+function megaMan:setPlayer(name)
+  local i = (type(self) == "number") and self or self.player
+  local n = name or megautils.getPlayer(i)
+  
+  if n == "proto" then
+    megaMan.resources.protoMan()
+        
+    megaMan.weaponHandler[i]:register(0, "protoBuster", {"P.BUSTER", {48, 32, 16, 16}, {64, 32, 16, 16}},
+      {216, 40, 0}, {184, 184, 184}, {0, 0, 0})
+    
+    megaMan.weaponHandler[i]:register(9, "rushCoil", {"PROTO C.", {176, 0, 16, 16}, {192, 0, 16, 16}},
+      {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+    
+    megaMan.weaponHandler[i]:register(10, "rushJet", {"PROTO JET", {176, 16, 16, 16}, {192, 16, 16, 16}},
+      {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+    
+  elseif n == "bass" then
+    megaMan.resources.bass()
+    
+    megaMan.weaponHandler[i]:register(0, "bassBuster", {"B.BUSTER", {144, 32, 16, 16}, {160, 32, 16, 16}},
+      {112, 112, 112}, {248, 152, 56}, {0, 0, 0})
+    
+    megaMan.weaponHandler[i]:register(10, "trebleBoost", {"T. BOOST", {144, 16, 16, 16}, {160, 16, 16, 16}},
+      {112, 112, 112}, {128, 0, 240}, {0, 0, 0})
+    
+  elseif n == "roll" then
+    megaMan.resources.roll()
+    
+    megaMan.weaponHandler[i]:register(0, "rollBuster", {"R.BUSTER", {80, 32, 16, 16}, {96, 32, 16, 16}},
+      {248, 56, 0}, {0, 168, 0}, {0, 0, 0})
+    
+    megaMan.weaponHandler[i]:register(9, "rushCoil", {"TANGO C.", {208, 0, 16, 16}, {224, 0, 16, 16}},
+      {0, 168, 0}, {255, 255, 255}, {0, 0, 0})
+    
+    megaMan.weaponHandler[i]:register(10, "rushJet", {"TANGO JET", {208, 16, 16, 16}, {224, 16, 16, 16}},
+      {0, 168, 0}, {255, 255, 255}, {0, 0, 0})
+    
   else
-    self.chargeColorOutlines = {}
-    self.chargeColorOutlines.megaBuster = {}
-    self.chargeColorOutlines.megaBuster[0] = {}
-    self.chargeColorOutlines.megaBuster[1] = {}
-    self.chargeColorOutlines.megaBuster[2] = {}
-    self.chargeColorOutlines.megaBuster[0][1] = {0, 0, 0}
-    self.chargeColorOutlines.megaBuster[1][1] = {0, 232, 216}
-    self.chargeColorOutlines.megaBuster[1][2] = {0, 0, 0}
-    self.chargeColorOutlines.megaBuster[2][1] = {0, 120, 248}
-    self.chargeColorOutlines.megaBuster[2][2] = {0, 0, 0}
-    self.chargeColorOutlines.megaBuster[2][3] = {0, 232, 216}
-    self.chargeColorOnes = {}
-    self.chargeColorOnes.megaBuster = {}
-    self.chargeColorOnes.megaBuster[0] = {}
-    self.chargeColorOnes.megaBuster[1] = {}
-    self.chargeColorOnes.megaBuster[2] = {}
-    self.chargeColorOnes.megaBuster[0][1] = {0, 120, 248}
-    self.chargeColorOnes.megaBuster[1][1] = {0, 120, 248}
-    self.chargeColorOnes.megaBuster[1][2] = {0, 120, 248}
-    self.chargeColorOnes.megaBuster[2][1] = {0, 232, 216}
-    self.chargeColorOnes.megaBuster[2][2] = {0, 120, 248}
-    self.chargeColorOnes.megaBuster[2][3] = {0, 0, 0}
-    self.chargeColorTwos = {}
-    self.chargeColorTwos.megaBuster = {}
-    self.chargeColorTwos.megaBuster[0] = {}
-    self.chargeColorTwos.megaBuster[1] = {}
-    self.chargeColorTwos.megaBuster[2] = {}
-    self.chargeColorTwos.megaBuster[0][1] = {0, 232, 216}
-    self.chargeColorTwos.megaBuster[1][1] = {0, 232, 216}
-    self.chargeColorTwos.megaBuster[1][2] = {0, 232, 216}
-    self.chargeColorTwos.megaBuster[2][1] = {0, 0, 0}
-    self.chargeColorTwos.megaBuster[2][2] = {0, 232, 216}
-    self.chargeColorTwos.megaBuster[2][3] = {0, 120, 248}
+    megaMan.resources.megaMan()
+    
+    megaMan.weaponHandler[i]:register(0, "megaBuster", {"M.BUSTER", {16, 32, 16, 16}, {32, 32, 16, 16}},
+      {0, 120, 248}, {0, 232, 216}, {0, 0, 0})
+    
+    megaMan.weaponHandler[i]:register(9, "rushCoil", {"RUSH C.", {144, 0, 16, 16}, {160, 0, 16, 16}},
+      {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+    
+    megaMan.weaponHandler[i]:register(10, "rushJet", {"RUSH JET", {112, 32, 16, 16}, {128, 32, 16, 16}},
+      {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+    
   end
+  
+  self.playerName = n
+  self.player = i
 end
 
-function megaMan:new(x, y, side, drop, p, g, gf, c)
-  megaMan.super.new(self)
-  self.player = p
-  self.playerName = megautils.getPlayer(self.player)
-  megautils.registerPlayer(self)
-  megaMan.properties(self, g, gf, c)
-  if self.playerName == "mega" then
-    self.texOutline = megautils.getResource("megaManOutline")
-    self.texOne = megautils.getResource("megaManOne")
-    self.texTwo = megautils.getResource("megaManTwo")
-    self.texFace = megautils.getResource("megaManFace")
-  elseif self.playerName == "proto" then
+function megaMan:switchCharacter(n)
+  if self.playerName ~= n then
+    self.playerName = n
+    self:setPlayer(self.playerName)
+  end
+  
+  local pp = "megaManGrid"
+  
+  if self.playerName == "proto" then
     self.texOutline = megautils.getResource("protoManOutline")
     self.texOne = megautils.getResource("protoManOne")
     self.texTwo = megautils.getResource("protoManTwo")
     self.texFace = megautils.getResource("protoManFace")
+    self.maxExtraJumps = 0
+    self.canProtoShield.global = true
+    self.canDashJump.global = false
   elseif self.playerName == "bass" then
     self.texOutline = megautils.getResource("bassOutline")
     self.texOne = megautils.getResource("bassOne")
     self.texTwo = megautils.getResource("bassTwo")
     self.texFace = megautils.getResource("bassFace")
+    self.maxExtraJumps = 1
+    self.canProtoShield.global = false
+    self.canDashJump.global = true
+    megaMan.weaponHandler[self.player]:unregister(9)
+    pp = "bassGrid"
   elseif self.playerName == "roll" then
     self.texOutline = megautils.getResource("rollOutline")
     self.texOne = megautils.getResource("rollOne")
     self.texTwo = megautils.getResource("rollTwo")
     self.texFace = megautils.getResource("rollFace")
+    self.maxExtraJumps = 0
+    self.canProtoShield.global = false
+    self.canDashJump.global = false
+    pp = "rollGrid"
+  else
+    self.texOutline = megautils.getResource("megaManOutline")
+    self.texOne = megautils.getResource("megaManOne")
+    self.texTwo = megautils.getResource("megaManTwo")
+    self.texFace = megautils.getResource("megaManFace")
+    self.maxExtraJumps = 0
+    self.canProtoShield.global = false
+    self.canDashJump.global = false
   end
-  self.teleportOffY = 0
-  self.side = side or 1
-  self.transform.y = y
+  
+  self.dropAnimation = {regular="spawn"}
+  self.dropLandAnimation = {regular="spawnLand"}
+  self.idleAnimation = {regular="idle", shoot="idleShoot", s_dm="idleShootDM", s_um="idleShootUM", s_u="idleShootU"}
+  self.nudgeAnimation = {regular="nudge", shoot="idleShoot", s_dm="idleShootDM", s_um="idleShootUM", s_u="idleShootU"}
+  self.jumpAnimation = {regular="jump", shoot="jumpShoot", s_dm="jumpShootDM", s_um="jumpShootUM", s_u="jumpShootU",
+    ps=megautils.diff("easy") and "jumpProtoShield2" or "jumpProtoShield"}
+  self.runAnimation = {regular="run", shoot="runShoot"}
+  self.climbAnimation = {regular="climb", shoot="climbShoot", s_dm="climbShootDM", s_um="climbShootUM", s_u="climbShootU"}
+  self.climbTipAnimation = {regular="climbTip"}
+  self.hitAnimation = {regular="hit"}
+  self.wallJumpAnimation = {regular="wallJump", shoot="wallJumpShoot"}
+  self.dashAnimation = {regular="dash", shoot="dashShoot"}
+  self.trebleAnimation = {regular="treble", shoot="trebleShoot"}
+  
+  self.animations = {}
+  if self.playerName == "proto" then
+    self.animations.idle = anim8.newAnimation(megautils.getResource(pp)(1, 1, 2, 1), 1/8)
+  elseif self.playerName == "bass" then
+    self.animations.trebleStart = anim8.newAnimation(megautils.getResource(pp)(4, 10, "1-4", 11, 1, 12), 1/8, "pauseAtEnd")
+    self.animations.treble = anim8.newAnimation(megautils.getResource(pp)("2-3", 12), 1/12)
+    self.animations.trebleShoot = anim8.newAnimation(megautils.getResource(pp)(4, 12, 1, 13), 1/12)
+  else
+    self.animations.idle = anim8.newAnimation(megautils.getResource(pp)(1, 1, 2, 1), {2.5, 0.1})
+  end
+  self.animations.idleShoot = anim8.newAnimation(megautils.getResource(pp)(1, 4), 1)
+  self.animations.idleShootDM = anim8.newAnimation(megautils.getResource(pp)(3, 6), 1)
+  self.animations.idleShootUM = anim8.newAnimation(megautils.getResource(pp)(4, 6), 1)
+  self.animations.idleShootU = anim8.newAnimation(megautils.getResource(pp)(1, 7), 1)
+  self.animations.idleThrow = anim8.newAnimation(megautils.getResource(pp)(4, 7), 1)
+  self.animations.nudge = anim8.newAnimation(megautils.getResource(pp)(3, 1), 1)
+  self.animations.jump = anim8.newAnimation(megautils.getResource(pp)(4, 2), 1)
+  self.animations.jumpShoot = anim8.newAnimation(megautils.getResource(pp)(1, 5), 1)
+  self.animations.jumpShootDM = anim8.newAnimation(megautils.getResource(pp)(1, 10), 1)
+  self.animations.jumpShootUM = anim8.newAnimation(megautils.getResource(pp)(2, 10), 1)
+  self.animations.jumpShootU = anim8.newAnimation(megautils.getResource(pp)(3, 10), 1)
+  self.animations.jumpThrow = anim8.newAnimation(megautils.getResource(pp)(1, 8), 1)
+  self.animations.jumpProtoShield = anim8.newAnimation(megautils.getResource(pp)(3, 6), 1)
+  self.animations.jumpProtoShield2 = anim8.newAnimation(megautils.getResource(pp)(4, 6), 1)
+  self.animations.run = anim8.newAnimation(megautils.getResource(pp)(4, 1, "1-2", 2, 1, 2), 1/8)
+  self.animations.runShoot = anim8.newAnimation(megautils.getResource(pp)("2-4", 4, 3, 4), 1/8)
+  self.animations.runThrow = anim8.newAnimation(megautils.getResource(pp)("2-4", 8, 3, 8), 1/8)
+  self.animations.climb = anim8.newAnimation(megautils.getResource(pp)("1-2", 3), 1/8)
+  self.animations.climbShoot = anim8.newAnimation(megautils.getResource(pp)(2, 5), 1)
+  self.animations.climbShootDM = anim8.newAnimation(megautils.getResource(pp)(2, 9), 1)
+  self.animations.climbShootUM = anim8.newAnimation(megautils.getResource(pp)(3, 9), 1)
+  self.animations.climbShootU = anim8.newAnimation(megautils.getResource(pp)(4, 9), 1)
+  self.animations.climbThrow = anim8.newAnimation(megautils.getResource(pp)(1, 9), 1)
+  self.animations.climbTip = anim8.newAnimation(megautils.getResource(pp)(3, 3), 1)
+  self.animations.hit = anim8.newAnimation(megautils.getResource(pp)(4, 3), 1)
+  self.animations.wallJump = anim8.newAnimation(megautils.getResource(pp)(2, 9), 1)
+  self.animations.wallJumpShoot = anim8.newAnimation(megautils.getResource(pp)(3, 9), 1)
+  self.animations.wallJumpThrow = anim8.newAnimation(megautils.getResource(pp)(4, 9), 1)
+  self.animations.dash = anim8.newAnimation(megautils.getResource(pp)(3, 2), 1/14, "pauseAtEnd")
+  self.animations.dashShoot = anim8.newAnimation(megautils.getResource(pp)(4, 10), 1)
+  self.animations.dashThrow = anim8.newAnimation(megautils.getResource(pp)(1, 11), 1)
+  self.animations.spawn = anim8.newAnimation(megautils.getResource(pp)(4, 5), 1)
+  self.animations.spawnLand = anim8.newAnimation(megautils.getResource(pp)("1-2", 6, 1, 6), 1/20)
+end
+
+function megaMan:initChargingColors()
+  self.chargeColorOutlines = {}
+  self.chargeColorOnes = {}
+  self.chargeColorTwos = {}
+  
+  self.chargeColorOutlines.megaBuster = {}
+  self.chargeColorOutlines.megaBuster[0] = {}
+  self.chargeColorOutlines.megaBuster[1] = {}
+  self.chargeColorOutlines.megaBuster[2] = {}
+  self.chargeColorOutlines.megaBuster[0][1] = {0, 0, 0}
+  self.chargeColorOutlines.megaBuster[1][1] = {0, 232, 216}
+  self.chargeColorOutlines.megaBuster[1][2] = {0, 0, 0}
+  self.chargeColorOutlines.megaBuster[2][1] = {0, 120, 248}
+  self.chargeColorOutlines.megaBuster[2][2] = {0, 0, 0}
+  self.chargeColorOutlines.megaBuster[2][3] = {0, 232, 216}
+  self.chargeColorOnes.megaBuster = {}
+  self.chargeColorOnes.megaBuster[0] = {}
+  self.chargeColorOnes.megaBuster[1] = {}
+  self.chargeColorOnes.megaBuster[2] = {}
+  self.chargeColorOnes.megaBuster[0][1] = {0, 120, 248}
+  self.chargeColorOnes.megaBuster[1][1] = {0, 120, 248}
+  self.chargeColorOnes.megaBuster[1][2] = {0, 120, 248}
+  self.chargeColorOnes.megaBuster[2][1] = {0, 232, 216}
+  self.chargeColorOnes.megaBuster[2][2] = {0, 120, 248}
+  self.chargeColorOnes.megaBuster[2][3] = {0, 0, 0}
+  self.chargeColorTwos.megaBuster = {}
+  self.chargeColorTwos.megaBuster[0] = {}
+  self.chargeColorTwos.megaBuster[1] = {}
+  self.chargeColorTwos.megaBuster[2] = {}
+  self.chargeColorTwos.megaBuster[0][1] = {0, 232, 216}
+  self.chargeColorTwos.megaBuster[1][1] = {0, 232, 216}
+  self.chargeColorTwos.megaBuster[1][2] = {0, 232, 216}
+  self.chargeColorTwos.megaBuster[2][1] = {0, 0, 0}
+  self.chargeColorTwos.megaBuster[2][2] = {0, 232, 216}
+  self.chargeColorTwos.megaBuster[2][3] = {0, 120, 248}
+  
+  self.chargeColorOutlines.protoBuster = {}
+  self.chargeColorOutlines.protoBuster[0] = {}
+  self.chargeColorOutlines.protoBuster[1] = {}
+  self.chargeColorOutlines.protoBuster[2] = {}
+  self.chargeColorOutlines.protoBuster[0][1] = {0, 0, 0}
+  self.chargeColorOutlines.protoBuster[1][1] = {216, 40, 0}
+  self.chargeColorOutlines.protoBuster[1][2] = {0, 0, 0}
+  self.chargeColorOutlines.protoBuster[2][1] = {184, 184, 184}
+  self.chargeColorOutlines.protoBuster[2][2] = {216, 40, 0}
+  self.chargeColorOutlines.protoBuster[2][3] = {0, 0, 0}
+  self.chargeColorOnes.protoBuster = {}
+  self.chargeColorOnes.protoBuster[0] = {}
+  self.chargeColorOnes.protoBuster[1] = {}
+  self.chargeColorOnes.protoBuster[2] = {}
+  self.chargeColorOnes.protoBuster[0][1] = {216, 40, 0}
+  self.chargeColorOnes.protoBuster[1][1] = {216, 40, 0}
+  self.chargeColorOnes.protoBuster[1][2] = {216, 40, 0}
+  self.chargeColorOnes.protoBuster[2][1] = {0, 0, 0}
+  self.chargeColorOnes.protoBuster[2][2] = {184, 184, 184}
+  self.chargeColorOnes.protoBuster[2][3] = {216, 40, 0}
+  self.chargeColorTwos.protoBuster = {}
+  self.chargeColorTwos.protoBuster[0] = {}
+  self.chargeColorTwos.protoBuster[1] = {}
+  self.chargeColorTwos.protoBuster[2] = {}
+  self.chargeColorTwos.protoBuster[0][1] = {184, 184, 184}
+  self.chargeColorTwos.protoBuster[1][1] = {184, 184, 184}
+  self.chargeColorTwos.protoBuster[1][2] = {184, 184, 184}
+  self.chargeColorTwos.protoBuster[2][1] = {184, 184, 184}
+  self.chargeColorTwos.protoBuster[2][2] = {0, 0, 0}
+  self.chargeColorTwos.protoBuster[2][3] = {216, 40, 0}
+  
+  self.chargeColorOutlines.rollBuster = {}
+  self.chargeColorOutlines.rollBuster[0] = {}
+  self.chargeColorOutlines.rollBuster[1] = {}
+  self.chargeColorOutlines.rollBuster[2] = {}
+  self.chargeColorOutlines.rollBuster[0][1] = {0, 0, 0}
+  self.chargeColorOutlines.rollBuster[1][1] = {248, 56, 0}
+  self.chargeColorOutlines.rollBuster[1][2] = {0, 0, 0}
+  self.chargeColorOutlines.rollBuster[2][1] = {0, 168, 0}
+  self.chargeColorOutlines.rollBuster[2][2] = {248, 56, 0}
+  self.chargeColorOutlines.rollBuster[2][3] = {0, 0, 0}
+  self.chargeColorOnes.rollBuster = {}
+  self.chargeColorOnes.rollBuster[0] = {}
+  self.chargeColorOnes.rollBuster[1] = {}
+  self.chargeColorOnes.rollBuster[2] = {}
+  self.chargeColorOnes.rollBuster[0][1] = {248, 56, 0}
+  self.chargeColorOnes.rollBuster[1][1] = {248, 56, 0}
+  self.chargeColorOnes.rollBuster[1][2] = {248, 56, 0}
+  self.chargeColorOnes.rollBuster[2][1] = {0, 0, 0}
+  self.chargeColorOnes.rollBuster[2][2] = {0, 168, 0}
+  self.chargeColorOnes.rollBuster[2][3] = {248, 56, 0}
+  self.chargeColorTwos.rollBuster = {}
+  self.chargeColorTwos.rollBuster[0] = {}
+  self.chargeColorTwos.rollBuster[1] = {}
+  self.chargeColorTwos.rollBuster[2] = {}
+  self.chargeColorTwos.rollBuster[0][1] = {0, 168, 0}
+  self.chargeColorTwos.rollBuster[1][1] = {0, 168, 0}
+  self.chargeColorTwos.rollBuster[1][2] = {0, 168, 0}
+  self.chargeColorTwos.rollBuster[2][1] = {0, 168, 0}
+  self.chargeColorTwos.rollBuster[2][2] = {0, 0, 0}
+  self.chargeColorTwos.rollBuster[2][3] = {248, 56, 0}
+end
+
+function megaMan:new(x, y, side, drop, p, g, gf, c, dr)
+  megaMan.super.new(self)
   self.transform.x = x
-  self.class = megaMan
-  self.icoTex = megautils.getResource("weaponSelectIcon")
-  self.iconQuad = love.graphics.newQuad(0, 0, 16, 16, 112, 48)
-  self.icons = {}
-  if self.playerName == "proto" then
-    self.icons[0] = {16, 32}
-  elseif self.playerName == "bass" then
-    self.icons[0] = {32, 32}
-  elseif self.playerName == "roll" then
-    self.icons[0] = {48, 32}
-  else
-    self.icons[0] = {0, 0}
-  end
-  self.icons[1] = {16, 0}
-  self.icons[2] = {16, 16}
-  self.icons[3] = {32, 0}
-  self.icons[4] = {32, 16}
-  self.icons[5] = {48, 0}
-  self.icons[6] = {48, 16}
-  self.icons[7] = {64, 0}
-  self.icons[8] = {64, 16}
-  if self.playerName == "proto" then
-    self.icons[9] = {80, 0}
-  elseif self.playerName == "roll" then
-    self.icons[9] = {96, 0}
-  elseif self.playerName == "bass" then
-    self.icons[9] = {64, 32}
-  else
-    self.icons[9] = {0, 16}
-  end
-  if self.playerName == "proto" then
-    self.icons[10] = {80, 16}
-  elseif self.playerName == "roll" then
-    self.icons[10] = {96, 16}
-  else
-    self.icons[10] = {0, 32}
-  end
+  self.transform.y = y
+  self.player = p
+  self.playerName = megautils.getPlayer(self.player)
+  self:switchCharacter(self.playerName)
+  megautils.registerPlayer(self)
+  megaMan.properties(self, g, gf, c)
   self.nextWeapon = 0
   self.prevWeapon = 0
   self.weaponSwitchTimer = 70
@@ -485,6 +537,18 @@ function megaMan:new(x, y, side, drop, p, g, gf, c)
   self.trebleForce = velocity()
   self.protoShielding = false
   self.doSplashing = not self.drop
+  if (dr == nil or dr) and megaMan.mainPlayer == self then
+    if self.playerName == "proto" and megautils._musicQueue then
+      self.mq = megautils._musicQueue
+      megautils.stopMusic()
+      self.ready = megautils.add(ready, 32)
+      megautils.playSoundFromFile("assets/sfx/protoReady.ogg")
+    else
+      self.ready = megautils.add(ready, 12)
+    end
+  end
+  self.teleportOffY = self.drop and (view.y-self.transform.y) or 0
+  self.side = side or 1
 
   self.healthHandler = megautils.add(healthHandler, {252, 224, 168}, {255, 255, 255}, {0, 0, 0},
     nil, nil, globals.lifeSegments, self)
@@ -514,79 +578,14 @@ function megaMan:new(x, y, side, drop, p, g, gf, c)
   end
   
   self.curAnim = self.drop and "spawn" or "idle"
-  
-  self.dropAnimation = {regular="spawn"}
-  self.dropLandAnimation = {regular="spawnLand"}
-  self.idleAnimation = {regular="idle", shoot="idleShoot", s_dm="idleShootDM", s_um="idleShootUM", s_u="idleShootU"}
-  self.nudgeAnimation = {regular="nudge", shoot="idleShoot", s_dm="idleShootDM", s_um="idleShootUM", s_u="idleShootU"}
-  self.jumpAnimation = {regular="jump", shoot="jumpShoot", s_dm="jumpShootDM", s_um="jumpShootUM", s_u="jumpShootU",
-    ps=megautils.diff("easy") and "jumpProtoShield2" or "jumpProtoShield"}
-  self.runAnimation = {regular="run", shoot="runShoot"}
-  self.climbAnimation = {regular="climb", shoot="climbShoot", s_dm="climbShootDM", s_um="climbShootUM", s_u="climbShootU"}
-  self.climbTipAnimation = {regular="climbTip"}
-  self.hitAnimation = {regular="hit"}
-  self.wallJumpAnimation = {regular="wallJump", shoot="wallJumpShoot"}
-  self.dashAnimation = {regular=(checkFalse(self.canDashShoot) and self.playerName == "mega") and "dash" or "slide", shoot="dashShoot"}
-  self.trebleAnimation = {regular="treble", shoot="trebleShoot"}
-  
-  self.animations = {}
-  local pp = "megaManGrid"
-  if self.playerName == "bass" then
-    pp = "bassGrid"
-    self.animations.trebleStart = anim8.newAnimation(megautils.getResource(pp)(4, 10, "1-4", 11, 1, 12), 1/8, "pauseAtEnd")
-    self.animations.treble = anim8.newAnimation(megautils.getResource(pp)("2-3", 12), 1/12)
-    self.animations.trebleShoot = anim8.newAnimation(megautils.getResource(pp)(4, 12, 1, 13), 1/12)
-  elseif self.playerName == "roll" then
-    pp = "rollGrid"
-  end
-  if self.playerName == "proto" then
-    self.animations.idle = anim8.newAnimation(megautils.getResource(pp)(1, 1, 2, 1), 1/8)
-  else
-    self.animations.idle = anim8.newAnimation(megautils.getResource(pp)(1, 1, 2, 1), {2.5, 0.1})
-  end
-  self.animations.idleShoot = anim8.newAnimation(megautils.getResource(pp)(1, 4), 1)
-  self.animations.idleShootDM = anim8.newAnimation(megautils.getResource(pp)(3, 6), 1)
-  self.animations.idleShootUM = anim8.newAnimation(megautils.getResource(pp)(4, 6), 1)
-  self.animations.idleShootU = anim8.newAnimation(megautils.getResource(pp)(1, 7), 1)
-  self.animations.idleThrow = anim8.newAnimation(megautils.getResource(pp)(4, 7), 1)
-  self.animations.nudge = anim8.newAnimation(megautils.getResource(pp)(3, 1), 1)
-  self.animations.jump = anim8.newAnimation(megautils.getResource(pp)(4, 2), 1)
-  self.animations.jumpShoot = anim8.newAnimation(megautils.getResource(pp)(1, 5), 1)
-  self.animations.jumpShootDM = anim8.newAnimation(megautils.getResource(pp)(1, 10), 1)
-  self.animations.jumpShootUM = anim8.newAnimation(megautils.getResource(pp)(2, 10), 1)
-  self.animations.jumpShootU = anim8.newAnimation(megautils.getResource(pp)(3, 10), 1)
-  self.animations.jumpThrow = anim8.newAnimation(megautils.getResource(pp)(1, 8), 1)
-  self.animations.jumpProtoShield = anim8.newAnimation(megautils.getResource(pp)(3, 6), 1)
-  self.animations.jumpProtoShield2 = anim8.newAnimation(megautils.getResource(pp)(4, 6), 1)
-  self.animations.run = anim8.newAnimation(megautils.getResource(pp)(4, 1, "1-2", 2, 1, 2), 1/8)
-  self.animations.runShoot = anim8.newAnimation(megautils.getResource(pp)("2-4", 4, 3, 4), 1/8)
-  self.animations.runThrow = anim8.newAnimation(megautils.getResource(pp)("2-4", 8, 3, 8), 1/8)
-  self.animations.climb = anim8.newAnimation(megautils.getResource(pp)("1-2", 3), 1/8)
-  self.animations.climbShoot = anim8.newAnimation(megautils.getResource(pp)(2, 5), 1)
-  self.animations.climbShootDM = anim8.newAnimation(megautils.getResource(pp)(2, 9), 1)
-  self.animations.climbShootUM = anim8.newAnimation(megautils.getResource(pp)(3, 9), 1)
-  self.animations.climbShootU = anim8.newAnimation(megautils.getResource(pp)(4, 9), 1)
-  self.animations.climbThrow = anim8.newAnimation(megautils.getResource(pp)(1, 9), 1)
-  self.animations.climbTip = anim8.newAnimation(megautils.getResource(pp)(3, 3), 1)
-  self.animations.hit = anim8.newAnimation(megautils.getResource(pp)(4, 3), 1)
-  self.animations.wallJump = anim8.newAnimation(megautils.getResource(pp)(2, 9), 1)
-  self.animations.wallJumpShoot = anim8.newAnimation(megautils.getResource(pp)(3, 9), 1)
-  self.animations.wallJumpThrow = anim8.newAnimation(megautils.getResource(pp)(4, 9), 1)
-  self.animations.slide = anim8.newAnimation(megautils.getResource(pp)(3, 2), 1/14, "pauseAtEnd")
-  self.animations.dash = anim8.newAnimation(megautils.getResource(pp)("1-2", 10), 1/8, "pauseAtEnd")
-  self.animations.dashShoot = anim8.newAnimation(megautils.getResource(pp)(4, 10), 1)
-  self.animations.dashThrow = anim8.newAnimation(megautils.getResource(pp)(1, 11), 1)
-  self.animations.spawn = anim8.newAnimation(megautils.getResource(pp)(4, 5), 1)
-  self.animations.spawnLand = anim8.newAnimation(megautils.getResource(pp)("1-2", 6, 1, 6), 1/20)
-  
   self:face(self.side)
-  self.canDraw.global = not self.drop
+  
   for k, v in pairs(megautils.playerCreatedFuncs) do
     v(self)
   end
 end
 
-function megaMan:added()
+function megaMan:begin()
   self:addToGroup("freezable")
   self:addToGroup("submergable")
 end
@@ -722,6 +721,16 @@ function megaMan:slideToReg()
   local w, h = self.collisionShape.w, self.collisionShape.h
   self:regBox()
   self.transform.y = self.transform.y + (self.gravity < 0 and 0 or h-self.collisionShape.h)
+end
+
+function megaMan:checkLadder(x, y, tip)
+  local w, h, ox = self.collisionShape.w, self.collisionShape.h, self.transform.x
+  self:setRectangleCollision(1, tip and 1 or h)
+  self.transform.x = self.transform.x + (w/2)
+  local result = self:collisionTable(megautils.groups().ladder, x, y)[1]
+  self:setRectangleCollision(w, h)
+  self.transform.x = ox
+  return result
 end
 
 function megaMan:attemptWeaponUsage()
@@ -999,7 +1008,7 @@ function megaMan:attemptClimb()
   if not control.downDown[self.player] and not control.upDown[self.player] then
     return
   end
-  local lads = self:collisionTable(megautils.groups().ladder, 0, self.gravity >= 0 and 1 or -1)
+  local lad = self:checkLadder(0, self.gravity >= 0 and 1 or -1)
   local downDown, upDown
   if self.gravity >= 0 then
     downDown = control.downDown[self.player]
@@ -1008,13 +1017,10 @@ function megaMan:attemptClimb()
     downDown = control.upDown[self.player]
     upDown = control.downDown[self.player]
   end
-  if #lads ~= 0 then
-    self.currentLadder = lads[1]
-    local betwn = math.between(self.transform.x+self.collisionShape.w/2,
-      self.currentLadder.transform.x, self.currentLadder.transform.x+self.currentLadder.collisionShape.w)
+  if lad then
+    self.currentLadder = lad
     if (downDown and self.ground and self:collision(self.currentLadder)) or
-      (upDown and self.ground and not self:collision(self.currentLadder)) or
-      (not betwn) then
+      (upDown and self.ground and not self:collision(self.currentLadder)) then
       self.currentLadder = nil
       return
     end
@@ -1152,6 +1158,13 @@ function megaMan:crushed(other)
 end
 
 function megaMan:code(dt)
+  if self.blockCollision and megautils.groups().bossDoor then
+    for k, v in ipairs(megautils.groups().bossDoor) do
+      v.lastSolid = v.solidType
+      v.solidType = v.canWalkThrough and 0 or 1
+    end
+  end
+  
   self.canIgnoreKnockback.global = false
   self.protoShielding = false
   self.runCheck = ((control.leftDown[self.player] and not control.rightDown[self.player]) or (control.rightDown[self.player] and not control.leftDown[self.player]))
@@ -1223,15 +1236,15 @@ function megaMan:code(dt)
       self.trebleForce.vely = 0
     end
   elseif self.climb then
-    if control.leftDown[self.player] then
-      self.side = -1
-    elseif control.rightDown[self.player] then
-      self.side = 1
+    self.currentLadder = self:checkLadder(0, 0, true)
+    local tipc = self.currentLadder ~= nil
+    if not self.currentLadder then
+      self.currentLadder = self:checkLadder()
     end
+    
     self.velocity.velx = 0
     self.velocity.vely = 0
-    self.transform.x = self.currentLadder.transform.x+(self.currentLadder.collisionShape.w/2)-
-      ((self.collisionShape.w)/2)
+    
     local downDown, upDown
     if self.gravity >= 0 then
       downDown = control.downDown[self.player]
@@ -1240,18 +1253,15 @@ function megaMan:code(dt)
       downDown = control.upDown[self.player]
       upDown = control.downDown[self.player]
     end
-    if control.upDown[self.player] and self.shootTimer == self.maxShootTime then
-      self.velocity.vely = self.climbUpSpeed
-    elseif control.downDown[self.player] and self.shootTimer == self.maxShootTime then
-      self.velocity.vely = self.climbDownSpeed
-    end
-    if not self:collision(self.currentLadder) or self.ground or
+    
+    if not self.currentLadder or self.ground or
       (control.jumpPressed[self.player] and not (downDown or upDown)) or
       self.transform.x <= view.x-(self.collisionShape.w/2)+2 or
       self.transform.x >= (view.x+view.w)-(self.collisionShape.w/2)-2 then
       self.climb = false
     elseif upDown and ((self.gravity >= 0 and self.transform.y+(self.collisionShape.h*0.8) < self.currentLadder.transform.y) or 
-      (self.gravity < 0 and self.transform.y+(self.collisionShape.h*0.2) > self.currentLadder.transform.y+self.currentLadder.collisionShape.h)) then
+      (self.gravity < 0 and self.transform.y+(self.collisionShape.h*0.2) > self.currentLadder.transform.y+self.currentLadder.collisionShape.h)) and
+      not tipc then
         self.velocity.vely = 0
         self.transform.y = math.round(self.transform.y)
         local hit = false
@@ -1266,6 +1276,19 @@ function megaMan:code(dt)
           collision.shiftObject(self, 0, self.gravity >= 0 and 1 or -1, true)
         end
         self.climb = false
+    else
+      if control.leftDown[self.player] then
+        self.side = -1
+      elseif control.rightDown[self.player] then
+        self.side = 1
+      end
+      self.transform.x = self.currentLadder.transform.x+(self.currentLadder.collisionShape.w/2)-(self.collisionShape.w/2)
+      if control.upDown[self.player] and self.shootTimer == self.maxShootTime then
+        self.velocity.vely = self.climbUpSpeed
+      elseif control.downDown[self.player] and self.shootTimer == self.maxShootTime then
+        self.velocity.vely = self.climbDownSpeed
+      end
+      self.velocity.vely = self.velocity.vely + self.currentLadder.velocity.vely
     end
     for k, v in pairs(megautils.playerClimbFuncs) do
       v(self)
@@ -1275,10 +1298,12 @@ function megaMan:code(dt)
     if self.shootTimer ~= self.maxShootTime then
       self.velocity.vely = 0      
     end
-    if self.gravity >= 0 then
-      self.climbTip = self.transform.y + self.collisionShape.h * 0.4 < self.currentLadder.transform.y
-    else
-      self.climbTip = self.transform.y + self.collisionShape.h * 0.6 > self.currentLadder.transform.y+self.currentLadder.collisionShape.h
+    if self.currentLadder then
+      if self.gravity >= 0 then
+        self.climbTip = self.transform.y + self.collisionShape.h * 0.4 < self.currentLadder.transform.y
+      else
+        self.climbTip = self.transform.y + self.collisionShape.h * 0.6 > self.currentLadder.transform.y+self.currentLadder.collisionShape.h
+      end
     end
   elseif self.slide then
     collision.checkGround(self, true)
@@ -1527,6 +1552,12 @@ function megaMan:code(dt)
     checkFalse(megaMan.mainPlayer.canControl) and checkFalse(megaMan.mainPlayer.canUpdate) and checkFalse(self.canPause) then
     self.weaponSwitchTimer = 70
     mmWeaponsMenu.pause(self)
+  end
+  
+  if megautils.groups().bossDoor then
+    for k, v in ipairs(megautils.groups().bossDoor) do
+      v.solidType = v.lastSolid
+    end
   end
 end
 
@@ -1849,7 +1880,7 @@ function megaMan:die()
           megautils.reloadState = true
           megautils.resetGameObjects = true
           globals.gameOverContinueState = states.current
-          megautils.gotoState("states/gameover.state.lua")
+          megautils.gotoState("assets/states/menus/gameover.state.lua")
         else
           megautils.reloadState = true
           megautils.resetGameObjects = false
@@ -1876,13 +1907,15 @@ function megaMan:update(dt)
   if not megaMan.once then
     megaMan.once = true
   end
-  if self.blockCollision and megautils.groups().bossDoor then
-    for k, v in ipairs(megautils.groups().bossDoor) do
-      v.lastSolid = v.solidType
-      v.solidType = v.canWalkThrough and 0 or 1
+  if self.ready then
+    if self.ready.isRemoved then
+      self.ready = nil
+      if self.mq then
+        megautils.playMusic(unpack(self.mq))
+        self.mq = nil
+      end
     end
-  end
-  if self.dying then
+  elseif self.dying then
     for k, v in pairs(megautils.playerDeathFuncs) do
       v(self)
     end
@@ -1908,10 +1941,6 @@ function megaMan:update(dt)
         self.teleportOffY = self.teleportOffY+self.riseSpeed
       end
     elseif self.drop then
-      if not self.canDraw.global then
-        self.teleportOffY = view.y-self.transform.y
-      end
-      self.canDraw.global = true
       self.teleportOffY = math.min(self.teleportOffY+self.dropSpeed, 0)
       if self.teleportOffY == 0 then
         self.dropLanded = true
@@ -1928,11 +1957,6 @@ function megaMan:update(dt)
     if self.doAnimation then self:animate(dt) end
     if checkFalse(self.canSwitchWeapons) and not self.drop and not self.rise then self:attemptWeaponSwitch() end
     self.weaponSwitchTimer = math.min(self.weaponSwitchTimer+1, 70)
-  end
-  if megautils.groups().bossDoor then
-    for k, v in ipairs(megautils.groups().bossDoor) do
-      v.solidType = v.lastSolid
-    end
   end
 end
 
@@ -2020,25 +2044,16 @@ function megaMan:draw()
   self.animations[self.curAnim]:draw(self.texTwo, roundx+offsetx,
     roundy+offsety)
   love.graphics.setColor(1, 1, 1, 1)
-  self.animations[self.curAnim]:draw(self.texFace, roundx+offsetx,
-    roundy+offsety)
+  self.animations[self.curAnim]:draw(self.texFace, roundx+offsetx, roundy+offsety)
   
   if self.weaponSwitchTimer ~= 70 then
     love.graphics.setColor(1, 1, 1, 1)
     if checkFalse(self.canHaveThreeWeaponIcons) then
-      self.iconQuad:setViewport(self.icons[self.nextWeapon][1],
-        self.icons[self.nextWeapon][2], 16, 16)
-      love.graphics.draw(self.icoTex, self.iconQuad, roundx+math.round(math.round(self.collisionShape.w/2))+8,
-        roundy-18, 0, 1, 1)
-      self.iconQuad:setViewport(self.icons[self.prevWeapon][1],
-        self.icons[self.prevWeapon][2], 16, 16)
-      love.graphics.draw(self.icoTex, self.iconQuad, roundx+math.round(math.round(self.collisionShape.w/2))-24,
-        roundy-18, 0, 1, 1)
+      megaMan.weaponHandler[self.player]:drawIcon(self.nextWeapon, true, roundx+math.round(math.round(self.collisionShape.w/2))+8, roundy-18)
+      megaMan.weaponHandler[self.player]:drawIcon(self.prevWeapon, true, roundx+math.round(math.round(self.collisionShape.w/2))-24, roundy-18)
     end
-    self.iconQuad:setViewport(self.icons[megaMan.weaponHandler[self.player].currentSlot][1],
-      self.icons[megaMan.weaponHandler[self.player].currentSlot][2], 16, 16)
-    love.graphics.draw(self.icoTex, self.iconQuad, roundx+math.round(math.round(self.collisionShape.w/2))-8,
-      roundy-20)
+    megaMan.weaponHandler[self.player]:drawIcon(megaMan.weaponHandler[self.player].currentSlot,
+      true, roundx+math.round(math.round(self.collisionShape.w/2))-8, roundy-20)
   end
   --self:drawCollision()
 end

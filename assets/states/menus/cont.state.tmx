@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.2" tiledversion="1.3.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="32" height="28" tilewidth="8" tileheight="8" infinite="0" nextlayerid="4" nextobjectid="21">
+ <properties>
+  <property name="musicLoop" type="bool" value="false"/>
+  <property name="musicPath" value="assets/sfx/music/gameOver.ogg"/>
+ </properties>
+ <tileset firstgid="1" source="../tilesets/menuTiled.tsx"/>
+ <layer id="1" name="bg" width="32" height="28">
+  <data encoding="base64" compression="zlib">
+   eAHt0jENAAAMw7Ac5Y95PCYfIRB51eQBAwwwwAADDDDAAAMMMPDewAEvvg4B
+  </data>
+ </layer>
+ <layer id="2" name="bg2" width="32" height="28">
+  <data encoding="base64" compression="zlib">
+   eAHtljsKwDAMQz2m7QX6uUA/979fFYpAQ9bKiwNatAjkh+MWERM0QwvUX4Nc3oqsDdqhA+rP6Z3Iu6AbeqD+nF5G5zrrjM511hmd66ydrGvvzHWyrr0z18m69s7c4t+/c3QO5HDEpsMjhyM2HR451E6cXvFf/Nf94705da/V/eO79bV3/ju1/7/9xz5GHf3pvbm4RZ8=
+  </data>
+ </layer>
+ <layer id="3" name="graphics" width="32" height="28">
+  <data encoding="base64" compression="zlib">
+   eAHt0IEAAAAAw6D5Ux/khVBhwIABAwYMGDBgwIABAw8DAw4AAAE=
+  </data>
+ </layer>
+</map>

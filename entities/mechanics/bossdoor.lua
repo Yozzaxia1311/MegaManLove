@@ -4,12 +4,14 @@ bossDoor = entity:extend()
 
 addObjects.register("bossDoor", function(v)
   local seg = (v.properties.dir=="up" or v.properties.dir=="down") and 
-    math.round(v.width/16) or math.round(v.height/16)
+    math.round(v.width/v.properties.tileWidth) or math.round(v.height/v.properties.tileHeight)
   megautils.add(bossDoor, v.x, v.y, seg, v.properties.dir,
-  v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.tileLayer, v.properties.toSection)
+    v.properties.doScrollX, v.properties.doScrollY, v.properties.speed,
+    v.properties.tileLayer, v.properties.toSection, v.properties.tileWidth, v.properties.tileHeight,
+    v.properties.tileSpeed)
 end, 0, true)
 
-function bossDoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt, n)
+function bossDoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt, n, tw, th, ts)
   bossDoor.super.new(self)
   self.transform.y = y
   self.transform.x = x
@@ -29,6 +31,9 @@ function bossDoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt, n)
   self.canWalkThrough = false
   self.isLocked = {global=false}
   self.spawnEarlyDuringTransition = true
+  self.tileWidth = tw or 16
+  self.tileHeight = th or 16
+  self.tileSpeed = ts or 1
   self.useMapTiles = umt
   if self.useMapTiles == "" then
     self.useMapTiles = nil
@@ -39,15 +44,15 @@ function bossDoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt, n)
   end
 end
 
-function bossDoor:added()
+function bossDoor:begin()
   self:addToGroup("bossDoor")
   self:addToGroup("despawnable")
   self:addToGroup("solid")
 end
 
 function bossDoor:setDirection(dir)
-  self:setRectangleCollision((dir=="up" or dir=="down") and self.maxSegments*16 or 32,
-    (dir=="up" or dir=="down") and 32 or self.maxSegments*16)
+  self:setRectangleCollision((dir=="up" or dir=="down") and (self.maxSegments*self.tileWidth) or (2*self.tileWidth),
+    (dir=="up" or dir=="down") and (2*self.tileHeight) or (self.maxSegments*self.tileHeight))
   self.dir = dir or "right"
 end
 
@@ -58,9 +63,10 @@ function bossDoor:left()
   camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
   camera.main.player = self.player
   camera.main.speed = self.spd or 1
-  local s = self:collisionTable(section.getSections(self.transform.x-16, self.transform.y, self.collisionShape.w, self.collisionShape.h), -16, 0)[1]
+  local s = self:collisionTable(section.getSections(self.transform.x-self.tileWidth, self.transform.y,
+    self.collisionShape.w, self.collisionShape.h), -self.tileWidth, 0)[1]
   camera.main.toSection = s
-  camera.main.transform.x = self.transform.x+16
+  camera.main.transform.x = self.transform.x+self.tileWidth
   camera.main.transX = camera.main.transform.x-camera.main.player.collisionShape.w-28
   camera.main.curBoundName = self.name
   camera.main.dontUpdateSections = true
@@ -74,9 +80,10 @@ function bossDoor:right()
   camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
   camera.main.player = self.player
   camera.main.speed = self.spd or 1
-  local s = self:collisionTable(section.getSections(self.transform.x+16, self.transform.y, self.collisionShape.w, self.collisionShape.h), 16, 0)[1]
+  local s = self:collisionTable(section.getSections(self.transform.x+self.tileWidth, self.transform.y,
+    self.collisionShape.w, self.collisionShape.h), self.tileWidth, 0)[1]
   camera.main.toSection = s
-  camera.main.transform.x = self.transform.x+16-camera.main.collisionShape.w
+  camera.main.transform.x = self.transform.x+self.tileWidth-camera.main.collisionShape.w
   camera.main.transX = camera.main.transform.x+camera.main.collisionShape.w+28
   camera.main.curBoundName = self.name
   camera.main.dontUpdateSections = true
@@ -90,9 +97,10 @@ function bossDoor:up()
   camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
   camera.main.player = self.player
   camera.main.speed = self.spd or 1
-  local s = self:collisionTable(section.getSections(self.transform.x, self.transform.y-16, self.collisionShape.w, self.collisionShape.h), 0, -16)[1]
+  local s = self:collisionTable(section.getSections(self.transform.x, self.transform.y-self.tileHeight,
+    self.collisionShape.w, self.collisionShape.h), 0, -self.tileHeight)[1]
   camera.main.toSection = s
-  camera.main.transform.y = self.transform.y+16
+  camera.main.transform.y = self.transform.y+self.tileHeight
   camera.main.transY = camera.main.transform.y-camera.main.player.collisionShape.h-28
   camera.main.curBoundName = self.name
   camera.main.dontUpdateSections = true
@@ -106,9 +114,10 @@ function bossDoor:down()
   camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
   camera.main.player = self.player
   camera.main.speed = self.spd or 1
-  local s = self:collisionTable(section.getSections(self.transform.x, self.transform.y+16, self.collisionShape.w, self.collisionShape.h), 0, 16)[1]
+  local s = self:collisionTable(section.getSections(self.transform.x, self.transform.y+self.tileHeight,
+    self.collisionShape.w, self.collisionShape.h), 0, self.tileHeight)[1]
   camera.main.toSection = s
-  camera.main.transform.y = self.transform.y+16-camera.main.collisionShape.h
+  camera.main.transform.y = self.transform.y+self.tileHeight-camera.main.collisionShape.h
   camera.main.transY = camera.main.transform.y+camera.main.collisionShape.h+28
   camera.main.curBoundName = self.name
   camera.main.dontUpdateSections = true
@@ -152,11 +161,19 @@ function bossDoor:update(dt)
               for k, v in ipairs(megautils.groups().map) do
                 local layer = v:getLayerByName(self.useMapTiles)
                 if layer then
+                  local oldx
+                  local oldy
                   self.tileList[v] = {}
-                  for x=1, (self.dir=="right" or self.dir=="left") and 2 or self.maxSegments do
+                  for x=1, (self.dir=="right" or self.dir=="left") and (2*self.tileWidth) or (self.maxSegments*self.tileHeight) do
                     self.tileList[v][x] = {}
-                    for y=1, (self.dir=="right" or self.dir=="left") and self.maxSegments or 2 do
-                      self.tileList[v][x][y] = layer:getTileAtPixelPosition(self.transform.x+(x*16)-16, self.transform.y+(y*16)-16)
+                    for y=1, (self.dir=="right" or self.dir=="left") and (self.maxSegments*self.tileWidth) or (2*self.tileHeight) do
+                      local gid = layer:getTileAtPixelPosition(self.transform.x+(x*16)-16, self.transform.y+(y*16)-16)
+                      if gid >= 0 and (oldx ~= math.floor((x/self.tileWidth)*self.tileWidth) or
+                        oldy ~= math.floor((y/self.tileHeight)*self.tileHeight)) then
+                        oldx = math.floor((x/self.tileWidth)*self.tileWidth)
+                        oldy = math.floor((y/self.tileHeight)*self.tileHeight)
+                        self.tileList[v][x][y] = gid
+                      end
                     end
                   end
                 end
@@ -170,16 +187,25 @@ function bossDoor:update(dt)
     self.timer = math.min(self.timer+1, 8)
     if self.timer == 8 then
       self.timer = 0
-      self.segments = math.max(self.segments-1, 0)
-      if self.useMapTiles then
-        if megautils.groups().map then
-          for k, v in ipairs(megautils.groups().map) do
-            local layer = v:getLayerByName(self.useMapTiles)
-            if layer then
-              layer:setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and self.transform.x or self.transform.x+(self.segments*16),
-                (self.dir=="right" or self.dir=="left") and self.transform.y+((self.segments)*16) or self.transform.y, -1)
-              layer:setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and self.transform.x+16 or self.transform.x+(self.segments*16),
-                (self.dir=="right" or self.dir=="left") and self.transform.y+((self.segments)*16) or self.transform.y+16, -1)
+      for i=1, self.tileSpeed do
+        if self.segments == 0 then
+          break
+        end
+        self.segments = math.max(self.segments-1, 0)
+        if self.useMapTiles then
+          if megautils.groups().map then
+            for k, v in ipairs(megautils.groups().map) do
+              local layer = v:getLayerByName(self.useMapTiles)
+              if layer then
+                layer:setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and
+                  self.transform.x or (self.transform.x+(self.segments*self.tileWidth)),
+                  (self.dir=="right" or self.dir=="left") and
+                  (self.transform.y+((self.segments)*self.tileHeight)) or self.transform.y, -1)
+                layer:setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and
+                  self.transform.x+self.tileWidth or self.transform.x+(self.segments*self.tileWidth),
+                  (self.dir=="right" or self.dir=="left") and
+                  self.transform.y+((self.segments)*self.tileHeight) or self.transform.y+self.tileHeight, -1)
+              end
             end
           end
         end
@@ -209,20 +235,33 @@ function bossDoor:update(dt)
     self.timer = math.min(self.timer+1, 8)
     if self.timer == 8 and self.segments < self.maxSegments then
       self.timer = 0
-      self.segments = math.min(self.segments+1, self.maxSegments)
-      if self.useMapTiles then
-        if megautils.groups().map then
-          for k, v in ipairs(megautils.groups().map) do
-            local layer = v:getLayerByName(self.useMapTiles)
-            if layer and self.tileList[v] then
-              layer
-                :setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and self.transform.x or self.transform.x+(self.segments*16)-16,
-                (self.dir=="right" or self.dir=="left") and self.transform.y+(self.segments*16)-16 or self.transform.y,
-                self.tileList[v][(self.dir=="right" or self.dir=="left") and 1 or self.segments][(self.dir=="right" or self.dir=="left") and self.segments or 1])
-              layer
-                :setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and self.transform.x+16 or self.transform.x+(self.segments*16)-16,
-                (self.dir=="right" or self.dir=="left") and self.transform.y+(self.segments*16)-16 or self.transform.y+16,
-                self.tileList[v][(self.dir=="right" or self.dir=="left") and 2 or self.segments][(self.dir=="right" or self.dir=="left") and self.segments or 2])
+      for i=1, self.tileSpeed do
+        if self.segments == self.maxSegments then
+          break
+        end
+        self.segments = math.min(self.segments+1, self.maxSegments)
+        if self.useMapTiles then
+          if megautils.groups().map then
+            for k, v in ipairs(megautils.groups().map) do
+              local layer = v:getLayerByName(self.useMapTiles)
+              if layer and self.tileList[v] then
+                layer
+                  :setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and
+                    self.transform.x or self.transform.x+(self.segments*self.tileWidth)-self.tileWidth,
+                    (self.dir=="right" or self.dir=="left") and
+                    self.transform.y+(self.segments*self.tileHeight)-self.tileHeight or self.transform.y,
+                    self.tileList[v]
+                    [(self.dir=="right" or self.dir=="left") and 1 or self.segments]
+                    [(self.dir=="right" or self.dir=="left") and self.segments or 1])
+                layer
+                  :setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and
+                    self.transform.x+16 or self.transform.x+(self.segments*self.tileWidth)-self.tileWidth,
+                    (self.dir=="right" or self.dir=="left") and
+                    self.transform.y+(self.segments*self.tileHeight)-self.tileHeight or self.transform.y+self.tileHeight,
+                    self.tileList[v]
+                    [(self.dir=="right" or self.dir=="left") and 2 or self.segments]
+                    [(self.dir=="right" or self.dir=="left") and self.segments or 2])
+              end
             end
           end
         end

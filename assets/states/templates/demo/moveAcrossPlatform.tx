@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template>
+ <object name="moveAcrossPlatform" width="32" height="16">
+  <properties>
+   <property name="run" value="entities/demo/moveacrossplatform.lua"/>
+   <property name="toX" type="int" value="0"/>
+   <property name="toY" type="int" value="0"/>
+  </properties>
+ </object>
+</template>

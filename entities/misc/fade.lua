@@ -11,7 +11,7 @@ function fade:new(fadeToColor, gap, color, after)
   self:setLayer(11)
 end
 
-function fade:added()
+function fade:begin()
   megautils.freeze()
   fade.main = self
 end
@@ -45,9 +45,4 @@ end
 
 function fade.remove(s)
   megautils.removeq(s)
-end
-
-function fade.ready(s)
-  megautils.removeq(s)
-  megautils.freeze()
 end

@@ -9,10 +9,6 @@ states.queue = nil
 
 states.baseState = class:extend()
 
-function states.baseState:new()
-  self.system = entitySystem()
-end
-
 function states.baseState:begin() end
 function states.baseState:update(dt) end
 function states.baseState:draw() end
@@ -36,28 +32,34 @@ function states.set(n, before, after)
   if before then before() end
   
   local nick = n
-  
-  local map
+  local map = nick:sub(-10) == ".stage.lua" or nick:sub(-10) == ".stage.tmx"
   local mapArgs = {}
-  local sp
-  if nick:sub(-4) == ".tmx" or (nick:sub(-10) ~= ".state.lua" and nick:sub(-4) == ".lua") then
+  local sp = "assets/states/blank.lua"
+    
+  if nick:sub(-10) == ".state.tmx" or nick:sub(-10) == ".stage.tmx" or
+    ((nick:sub(-10) == ".state.lua" or nick:sub(-10) == ".stage.lua") and
+    love.filesystem.getInfo(nick) and megautils.runFile(nick).tiledversion) then
     map = megautils.createMapEntity(nick)
-    local p = states._map.map.properties
+    local p = map.map.properties
     
     if p then
+      local otherp = nick:sub(0, -11)
       if p.state and p.state ~= "" then
         sp = p.state
-      else
-        sp = "states/map.state.lua"
-        mapArgs.musicPath = p.musicPath and p.musicPath ~= "" and p.musicPath
-        mapArgs.musicLoopPoint = p.musicLoopPoint
-        mapArgs.musicLoopEndPoint = p.musicLoopEndPoint
-        mapArgs.loopMusic = p.loopMusic
-        mapArgs.musicVolume = p.musicVolume or 1
+      elseif love.filesystem.getInfo(otherp .. ".lua") then
+        sp = otherp .. ".lua"
       end
+      
+      mapArgs.mPath = p.musicPath and p.musicPath ~= "" and p.musicPath
+      mapArgs.mLoopPoint = (p.musicLoopPoint and p.musicLoopPoint ~= 0) and p.musicLoopPoint
+      mapArgs.mLoopEndPoint = (p.musicLoopEndPoint and p.musicLoopEndPoint ~= 0) and p.musicLoopEndPoint
+      mapArgs.mLoop = p.musicLoop == nil or p.musicLoop
+      mapArgs.mVolume = p.musicVolume or 1
+      
+      mapArgs.fadeIn = p.fadeIn == nil or p.fadeIn
+      
+      view.x, view.y = 0, 0
     end
-    
-    map = true
   else
     sp = nick
   end
@@ -98,25 +100,29 @@ function states.set(n, before, after)
   if not states.currentChunk or states.current ~= sp then
     states.currentChunk = love.filesystem.load(sp)
   end
-  states.currentState = states.currentState()
+  states.currentState = states.currentChunk()
+  states.currentState.system = entitySystem()
   states.switched = true
   
   if after then after() end
   
   if map then
     states.currentState.system:adde(map)
-    states.currentState.musicPath = mapArgs.musicPath
-    states.currentState.loopMusic = mapArgs.loopMusic
-    states.currentState.musicLoopPoint = mapArgs.musicLoopPoint
-    states.currentState.musicLoopEndPoint = mapArgs.musicLoopEndPoint
-    states.currentState.musicVolume = mapArgs.musicVolume
-  end
-  
-  if map and megautils.reloadState and megautils.resetGameObjects then
-    for k, v in pairs(megautils.resetGameObjectsFuncs) do
-      v()
+    
+    if mapArgs.fadeIn then
+      states.currentState.system:add(fade, false):setAfter(fade.remove)
     end
-    states.currentState:init()
+    
+    if mapArgs.mPath then
+      megautils.playMusic(mapArgs.mPath, mapArgs.mLoop, mapArgs.mLoopPoint, mapArgs.mLoopEndPoint, mapArgs.mVolume)
+    end
+    
+    if megautils.reloadState and megautils.resetGameObjects then
+      for k, v in pairs(megautils.resetGameObjectsFuncs) do
+        v()
+      end
+      states.currentState:init()
+    end
   end
   
   states.currentState:begin()

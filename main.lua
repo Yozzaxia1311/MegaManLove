@@ -2,7 +2,6 @@ io.stdout:setvbuf("no")
 collectgarbage("setpause", 100)
 
 isMobile = love.system.getOS() == "Android" or love.system.getOS() == "iOS"
-isWeb = love.system.getOS() == "Web"
 
 -- Initializes the whole game to its base state.
 function initEngine()
@@ -58,7 +57,7 @@ function love.load()
   defaultFramerate = 1/defaultFPS
   mapCacheSize = 3
   useConsole = love.keyboard
-  nesShader = not isWeb and not isMobile and love.graphics.getSupported().glsl3 and love.graphics.newShader("assets/nesLUT.glsl")
+  nesShader = not isMobile and love.graphics.getSupported().glsl3 and love.graphics.newShader("assets/nesLUT.glsl")
   if nesShader then nesShader:send("pal", love.graphics.newImage("assets/nesLUT.png")) end
   
   love.filesystem.load("requirelibs.lua")()
@@ -74,7 +73,7 @@ function love.load()
     megautils.setScale(data.scale)
   end
   
-  megautils.gotoState("states/disclaimer.state.lua")
+  megautils.gotoState("assets/states/menus/disclaimer.state.lua")
   console.parse("exec autoexec")
 end
 
@@ -249,106 +248,61 @@ function love.draw()
   megautils.checkMusicQueue()
 end
 
-if isWeb then
+-- Love2D doesn't fire the resize event for several functions, so here's some hacks.
+local lf = love.window.setFullscreen
+local lsm = love.window.setMode
+local lum = love.window.updateMode
 
-  -- `love.filesystem.getInfo` doesn't exist in the current love.js, so here's an implementation.
-  function love.filesystem.getInfo(str, arg1, arg2)
-    if love.filesystem.exists(str) then
-      local t = "other"
-      if love.filesystem.isFile(str) then
-        t = "file"
-      elseif love.filesystem.isDirectory(str) then
-        t = "directory"
-      elseif love.filesystem.isSymlink(str) then
-        t = "symlink"
-      end
-      
-      local fCheck = true
-      local result = (type(arg1) == "table") and arg1
-      
-      if type(arg1) == "string" then
-        fCheck = arg1 == t
-      elseif type(arg1) == "table" and type(arg2) == "string" then
-        fCheck = arg2 == t
-      end
-      
-      if fCheck then
-        if not result then
-          result = {}
-        end
-        result.type = t
-        result.size = love.filesystem.getSize(str)
-        result.modtime = love.filesystem.getLastModified(str)
-      end
-      
-      return result
-    end
-  end
-  
-  -- Fullscreening is broken.
-  function love.window.setFullscreen() end
-
-else
-
-  -- Love2D doesn't fire the resize event for several functions, so here's some hacks.
-  local lf = love.window.setFullscreen
-  local lsm = love.window.setMode
-  local lum = love.window.updateMode
-
-  function love.window.setFullscreen(s)
-    lf(s)
-    love.resize(love.graphics.getDimensions())
-  end
-  
-  function love.window.setMode(w, h, f)
-    lsm(w, h, f)
-    love.resize(love.graphics.getDimensions())
-  end
-  
-  function love.window.updateMode(w, h, f)
-    lum(w, h, f)
-    love.resize(love.graphics.getDimensions())
-  end
-
+function love.window.setFullscreen(s)
+  lf(s)
+  love.resize(love.graphics.getDimensions())
 end
 
-if not isWeb then
-  function love.run()
-    
-    if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
-    if love.timer then love.timer.step() end
-    local dt = 0
-    local bu = 0
-    return function()
-        if love.timer then
-          bu = love.timer.getTime()
-        end
-        if love.event then
-          love.event.pump()
-          for name, a,b,c,d,e,f in love.event.poll() do
-            if name == "quit" then
-              if not love.quit or not love.quit() then
-                return a or 0
-              end
-            end
-            love.handlers[name](a,b,c,d,e,f)
-          end
-        end
-        if love.timer then
-          dt = love.timer.step()
-        end
-        if love.update then love.update(dt) end
-        if love.graphics and love.graphics.isActive() then
-          love.graphics.origin()
-          love.graphics.clear(love.graphics.getBackgroundColor())
-          if love.draw then love.draw() end
-          love.graphics.present()
-        end
-        if love.timer then
-          local delta, fps = love.timer.getTime() - bu, 1/megautils.getFPS()
-          if delta < fps then love.timer.sleep(fps - delta) end
-        end
-        resized = false
+function love.window.setMode(w, h, f)
+  lsm(w, h, f)
+  love.resize(love.graphics.getDimensions())
+end
+
+function love.window.updateMode(w, h, f)
+  lum(w, h, f)
+  love.resize(love.graphics.getDimensions())
+end
+
+function love.run()
+  
+  if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
+  if love.timer then love.timer.step() end
+  local dt = 0
+  local bu = 0
+  return function()
+      if love.timer then
+        bu = love.timer.getTime()
       end
-  end
+      if love.event then
+        love.event.pump()
+        for name, a,b,c,d,e,f in love.event.poll() do
+          if name == "quit" then
+            if not love.quit or not love.quit() then
+              return a or 0
+            end
+          end
+          love.handlers[name](a,b,c,d,e,f)
+        end
+      end
+      if love.timer then
+        dt = love.timer.step()
+      end
+      if love.update then love.update(dt) end
+      if love.graphics and love.graphics.isActive() then
+        love.graphics.origin()
+        love.graphics.clear(love.graphics.getBackgroundColor())
+        if love.draw then love.draw() end
+        love.graphics.present()
+      end
+      if love.timer then
+        local delta, fps = love.timer.getTime() - bu, 1/megautils.getFPS()
+        if delta < fps then love.timer.sleep(fps - delta) end
+      end
+      resized = false
+    end
 end

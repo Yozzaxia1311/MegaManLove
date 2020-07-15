@@ -22,7 +22,7 @@ function moveAcrossPlatform:new(x, y, toX, toY, s)
   self.state = 0
 end
 
-function moveAcrossPlatform:added()
+function moveAcrossPlatform:begin()
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
   self:addToGroup("solid")

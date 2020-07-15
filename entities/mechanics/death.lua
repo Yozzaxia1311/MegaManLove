@@ -14,7 +14,7 @@ function death:new(x, y, w, h, harm)
   self.solidType = collision.SOLID
 end
 
-function death:added()
+function death:begin()
   self:addToGroup("despawnable")
   self:addToGroup("death")
   self:addToGroup("solid")

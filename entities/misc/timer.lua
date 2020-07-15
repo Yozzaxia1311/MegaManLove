@@ -7,7 +7,7 @@ function timer:new(time, func)
   self.func = func
 end
 
-function timer:added()
+function timer:begin()
   self:addToGroup("freezable")
 end
 

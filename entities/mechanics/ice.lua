@@ -12,7 +12,7 @@ function ice:new(x, y, w, h)
   self.solidType = collision.SOLID
 end
 
-function ice:added()
+function ice:begin()
   self:addToGroup("despawnable")
   self:addToGroup("ice")
   self:addToGroup("solid")

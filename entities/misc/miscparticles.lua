@@ -24,7 +24,7 @@ function slideParticle:recycle(x, y, side, g)
   self.anim.flippedV = g < 0
 end
 
-function slideParticle:added()
+function slideParticle:begin()
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
 end
@@ -67,7 +67,7 @@ function damageSteam:recycle(x, y, g)
   self.anim.flippedV = g < 0
 end
 
-function damageSteam:added()
+function damageSteam:begin()
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
 end
@@ -106,7 +106,7 @@ function airBubble:recycle(x, y)
   self.off = 0
 end
 
-function airBubble:added()
+function airBubble:begin()
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
 end
@@ -159,7 +159,7 @@ function angleParticle:recycle(x, y, a)
   self.anim:gotoFrame(1)
 end
 
-function angleParticle:added()
+function angleParticle:begin()
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
 end
@@ -204,7 +204,7 @@ function harm:recycle(e)
   self.timer = 0
 end
 
-function harm:added()
+function harm:begin()
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
 end
@@ -242,7 +242,7 @@ function explodeParticle:new(x, y, angle, spd)
   self.velocity.vely = megautils.calcY(angle)*spd
 end
 
-function explodeParticle:added()
+function explodeParticle:begin()
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
 end
@@ -284,7 +284,7 @@ function absorbParticle:new(x, y, towards, spd)
   self.spd = spd
 end
 
-function absorbParticle:added()
+function absorbParticle:begin()
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
 end
@@ -326,7 +326,7 @@ function absorb:new(towards, times, spd)
   self.towards = towards
 end
 
-function absorb:added()
+function absorb:begin()
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
 end
@@ -366,7 +366,7 @@ function smallBlast:recycle(x, y, spd)
   self.anim:gotoFrame(1)
 end
 
-function smallBlast:added()
+function smallBlast:begin()
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
 end
@@ -404,7 +404,7 @@ function blast:recycle(x, y, times)
   self.max = times == nil and 4 or times
 end
 
-function blast:added()
+function blast:begin()
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
   megautils.add(smallBlast, self.transform.x, self.transform.y)

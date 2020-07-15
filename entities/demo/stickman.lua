@@ -31,7 +31,7 @@ function stickMan:new(x, y, s)
   self.blockCollision = true
 end
 
-function stickMan:added()
+function stickMan:begin()
   self:addToGroup("freezable")
   self:addToGroup("hurtable")
   self.canBeInvincible.global = true
@@ -73,7 +73,7 @@ function stickMan:gettingHurt(o, c, i)
         globals.skin = megaMan.mainPlayer.playerName
         megautils.reloadState = true
         megautils.resetGameObjects = true
-        megautils.gotoState("states/weaponget.state.lua")
+        megautils.gotoState("assets/states/menus/weaponget.state.lua")
       end)
     megautils.removeq(self)
     megautils.playSoundFromFile("assets/sfx/dieExplode.ogg")
@@ -92,7 +92,7 @@ function stickMan:update(dt)
       timer.winCutscene(function()
           megautils.reloadState = true
           megautils.resetGameObjects = true
-          megautils.gotoState("states/menu.state.lua")
+          megautils.gotoState("assets/states/menus/menu.state.lua")
         end)
       megautils.removeq(self)
     elseif megaMan.mainPlayer then
@@ -116,11 +116,7 @@ function stickMan:update(dt)
           self.ss = 0
           megaMan.mainPlayer.curAnim = "idle"
           self.s = 2
-          if isWeb then
-            megautils.playMusic("assets/sfx/music/bossLoop.ogg", "assets/sfx/music/bossIntro.ogg")
-          else
-            megautils.playMusic("assets/sfx/music/boss.wav", true, 162898, 444759)
-          end
+          megautils.playMusic("assets/sfx/music/boss.wav", true, 162898, 444759)
           self.canDraw.global = true
         end
       end
@@ -204,7 +200,7 @@ function stickManIntro:update(dt)
     self.timer = math.min(self.timer+1, 300)
     if self.timer == 300 then
       megautils.stopMusic()
-      megautils.transitionToState("states/demo.state.lua")
+      megautils.transitionToState("assets/states/stages/demo.stage.tmx")
       self.s = 5
     end
   end
@@ -346,7 +342,7 @@ function megamanStick:update(dt)
   elseif self.s == 6 then
     self.timer = math.min(self.timer+1, 60)
     if self.timer == 60 then
-      megautils.transitionToState("states/menu.state.lua")
+      megautils.transitionToState("assets/states/menus/menu.state.lua")
       megautils.removeq(self)
     end
   end

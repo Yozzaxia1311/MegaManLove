@@ -35,7 +35,7 @@ function smallHealth:new(x, y, despwn, id, spawner)
   self:setGravityMultiplier("flipWithPlayer", 1)
 end
 
-function smallHealth:added()
+function smallHealth:begin()
   self:addToGroup("removeOnTransition")
   self:addToGroup("freezable")
   if not self.despawn then
@@ -135,7 +135,7 @@ function health:new(x, y, despwn, id, spawner)
   self:setGravityMultiplier("flipWithPlayer", 1)
 end
 
-function health:added()
+function health:begin()
   self:addToGroup("removeOnTransition")
   self:addToGroup("freezable")
   if not self.despawn then
@@ -236,7 +236,7 @@ function smallEnergy:new(x, y, despwn, id, spawner)
   self:setGravityMultiplier("flipWithPlayer", 1)
 end
 
-function smallEnergy:added()
+function smallEnergy:begin()
   self:addToGroup("removeOnTransition")
   self:addToGroup("freezable")
   if not self.despawn then
@@ -345,7 +345,7 @@ function energy:new(x, y, despwn, id, spawner)
   self:setGravityMultiplier("flipWithPlayer", 1)
 end
 
-function energy:added()
+function energy:begin()
   self:addToGroup("removeOnTransition")
   self:addToGroup("freezable")
   if not self.despawn then
@@ -460,7 +460,7 @@ function life:new(x, y, despwn, id, spawner)
   self:setGravityMultiplier("flipWithPlayer", 1)
 end
 
-function life:added()
+function life:begin()
   self:addToGroup("removeOnTransition")
   self:addToGroup("freezable")
   if not self.despawn then
@@ -611,7 +611,7 @@ function eTank:new(x, y, despwn, id, spawner)
   self:setGravityMultiplier("flipWithPlayer", 1)
 end
 
-function eTank:added()
+function eTank:begin()
   self:addToGroup("removeOnTransition")
   self:addToGroup("freezable")
   if not self.despawn then
@@ -717,7 +717,7 @@ function wTank:new(x, y, despwn, id, spawner)
   self:setGravityMultiplier("flipWithPlayer", 1)
 end
 
-function wTank:added()
+function wTank:begin()
   self:addToGroup("removeOnTransition")
   self:addToGroup("freezable")
   if not self.despawn then

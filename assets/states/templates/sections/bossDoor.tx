@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template>
+ <object name="bossDoor" width="32" height="32">
+  <properties>
+   <property name="dir" value="right"/>
+   <property name="doScrollX" type="bool" value="false"/>
+   <property name="doScrollY" type="bool" value="false"/>
+   <property name="toSection" value=""/>
+   <property name="tileLayer" value=""/>
+   <property name="tileWidth" type="int" value="16"/>
+   <property name="tileHeight" type="int" value="16"/>
+   <property name="tileSpeed" type="int" value="1"/>
+  </properties>
+ </object>
+</template>

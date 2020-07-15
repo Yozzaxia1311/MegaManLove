@@ -20,7 +20,7 @@ function right:new(x, y, h, scrollx, scrolly, spd, p, n)
   end
 end
 
-function right:added()
+function right:begin()
   self:addToGroup("despawnable")
 end
 
@@ -67,7 +67,7 @@ function left:new(x, y, h, scrollx, scrolly, spd, p, n)
   end
 end
 
-function left:added()
+function left:begin()
   self:addToGroup("despawnable")
 end
 
@@ -116,7 +116,7 @@ function down:new(x, y, w, scrollx, scrolly, spd, p, n, cl)
   self.checkLadder = cl
 end
 
-function down:added()
+function down:begin()
   self:addToGroup("despawnable")
 end
 
@@ -166,7 +166,7 @@ function up:new(x, y, w, scrollx, scrolly, spd, p, n, cl)
   self.checkLadder = cl
 end
 
-function up:added()
+function up:begin()
   self:addToGroup("despawnable")
 end
 
@@ -206,7 +206,7 @@ function sectionPrioritySetter:new(x, y, w, h, name)
   self.name = name
 end
 
-function sectionPrioritySetter:added()
+function sectionPrioritySetter:begin()
   self:addToGroup("despawnable")
 end
 
@@ -246,7 +246,7 @@ function sectionPrioritySetterXBorder:new(x, y, h, lname, rname)
   self.rname = rname
 end
 
-function sectionPrioritySetterXBorder:added()
+function sectionPrioritySetterXBorder:begin()
   self:addToGroup("despawnable")
 end
 
@@ -288,7 +288,7 @@ function sectionPrioritySetterYBorder:new(x, y, w, uname, dname)
   self.dname = dname
 end
 
-function sectionPrioritySetterYBorder:added()
+function sectionPrioritySetterYBorder:begin()
   self:addToGroup("despawnable")
 end
 
@@ -330,7 +330,7 @@ function sectionPrioritySetterArea:new(x, y, w, h, name, name2)
   self.outName = name2
 end
 
-function sectionPrioritySetterArea:added()
+function sectionPrioritySetterArea:begin()
   self:addToGroup("despawnable")
 end
 
