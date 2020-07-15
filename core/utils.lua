@@ -57,7 +57,11 @@ function iterateDirs(func, path)
   return results
 end
 
-function string.split(self, inSplitPattern, outResults)
+function string:trimmed()
+  return self:match("^%s*(.-)%s*$")
+end
+
+function string:split(inSplitPattern, outResults)
   if not outResults then
     outResults = {}
   end

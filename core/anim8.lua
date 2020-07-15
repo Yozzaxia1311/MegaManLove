@@ -45,8 +45,8 @@ local function createFrame(self, x, y)
     self.top  + (y-1) * fh + y * self.border,
     fw,
     fh,
-    self.imageWidth,
-    self.imageHeight
+    1,
+    1
   )
 end
 
@@ -55,9 +55,6 @@ local function getGridKey(...)
 end
 
 local function getOrCreateFrame(self, x, y)
-  if x < 1 or x > self.width or y < 1 or y > self.height then
-    error(("There is no frame for x=%d, y=%d"):format(x, y))
-  end
   local key = self._key
   _frames[key]       = _frames[key]       or {}
   _frames[key][x]    = _frames[key][x]    or {}
@@ -97,28 +94,22 @@ local Gridmt = {
   __call  = Grid.getFrames
 }
 
-local function newGrid(frameWidth, frameHeight, imageWidth, imageHeight, left, top, border)
+local function newGrid(frameWidth, frameHeight, left, top, border)
   assertPositiveInteger(frameWidth,  "frameWidth")
   assertPositiveInteger(frameHeight, "frameHeight")
-  assertPositiveInteger(imageWidth,  "imageWidth")
-  assertPositiveInteger(imageHeight, "imageHeight")
 
   left   = left   or 0
   top    = top    or 0
   border = border or 0
 
-  local key  = getGridKey(frameWidth, frameHeight, imageWidth, imageHeight, left, top, border)
+  local key  = getGridKey(frameWidth, frameHeight, left, top, border)
 
   local grid = setmetatable(
     { frameWidth  = frameWidth,
       frameHeight = frameHeight,
-      imageWidth  = imageWidth,
-      imageHeight = imageHeight,
       left        = left,
       top         = top,
       border      = border,
-      width       = math.floor(imageWidth/frameWidth),
-      height      = math.floor(imageHeight/frameHeight),
       _key        = key
     },
     Gridmt
@@ -186,8 +177,8 @@ local function newAnimation(frames, durations, onLoop)
       position       = 1,
       status         = "playing",
       looped         = false,
-      flippedH       = false,
-      flippedV       = false
+      flipX       = false,
+      flipY       = false
     },
     Animationmt
   )
@@ -212,17 +203,17 @@ end
 
 function Animation:clone()
   local newAnim = newAnimation(self.frames, self.durations, self.onLoop)
-  newAnim.flippedH, newAnim.flippedV = self.flippedH, self.flippedV
+  newAnim.flipX, newAnim.flipY = self.flipX, self.flipY
   return newAnim
 end
 
 function Animation:flipH()
-  self.flippedH = not self.flippedH
+  self.flipX = not self.flipX
   return self
 end
 
 function Animation:flipV()
-  self.flippedV = not self.flippedV
+  self.flipY = not self.flipY
   return self
 end
 
@@ -263,7 +254,7 @@ end
 
 function Animation:gotoFrame(position)
   self.looped = false
-  self.position = position
+  self.position = math.clamp(position, 0, #self.frames)
   self.timer = self.intervals[self.position]
 end
 
@@ -284,23 +275,25 @@ function Animation:resume()
 end
 
 function Animation:draw(image, x, y, r, sx, sy, ox, oy, kx, ky)
+  local vx, vy, vw, vh = self.frames[self.position]:getViewport()
+  self.frames[self.position]:setViewport(vx, vy, vw, vh, image:getDimensions())
   love.graphics.draw(image, self:getFrameInfo(x, y, r, sx, sy, ox, oy, kx, ky))
 end
 
 function Animation:getFrameInfo(x, y, r, sx, sy, ox, oy, kx, ky)
   local frame = self.frames[self.position]
-  if self.flippedH or self.flippedV then
+  if self.flipX or self.flipY then
     r,sx,sy,ox,oy,kx,ky = r or 0, sx or 1, sy or 1, ox or 0, oy or 0, kx or 0, ky or 0
     local _,_,w,h = frame:getViewport()
 
-    if self.flippedH then
+    if self.flipX then
       sx = sx * -1
       ox = w - ox
       kx = kx * -1
       ky = ky * -1
     end
 
-    if self.flippedV then
+    if self.flipY then
       sy = sy * -1
       oy = h - oy
       kx = kx * -1

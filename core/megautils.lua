@@ -223,21 +223,26 @@ function megautils.loadResource(...)
   local locked = false
   local path = args[1]
   local nick = args[2]
-  local t = path:split("%.")
-  t = t[#t]
+  local t = ""
+  if type(path) == "string" then
+    t = path:split("%.")
+    t = t[#t]
+  end
   
-  if type(args[2]) == "number" and type(args[3]) == "number" then
+  if type(args[1]) == "number" and type(args[2]) == "number" then
+    local grid
     t = "grid"
     path = nil
-    nick = args[1]
-    if not args[4] or not args[5] then
-      error("Missing arguments for grid")
+    if type(args[3]) == "number" and type(args[4]) == "number" then
+      nick = args[5]
+      locked = args[6]
+      grid = {args[3], args[4], args[1], args[2]}
+    else
+      nick = args[3]
+      locked = args[4]
+      grid = {args[1], args[2]}
     end
-    if type(args[#args]) == "boolean" then
-      locked = args[#args]
-    end
-    loader.load(nil, nick, t, {args[2], args[3], args[4], args[5],
-      (type(args[6]) ~= "boolean") and args[6], (type(args[7]) ~= "boolean") and args[7]}, locked)
+    loader.load(nil, nick, t, grid, locked)
     return loader.get(nick)
   elseif checkExt(t, {"png", "jpeg", "jpg", "bmp", "tga", "hdr", "pic", "exr"}) then
     local ext = t
@@ -263,8 +268,12 @@ function megautils.loadResource(...)
     loader.load(path, nick, t, nil, locked)
     return loader.get(nick)
   else
-    error("Could not detect resource type of \"" .. path .. "\" based on file extension")
+    error("Could not detect resource type of \"" .. nick .. "\" based on given info.")
   end
+end
+
+function megautils.newAnimation(gnick, a, t, eFunc)
+  return anim8.newAnimation(megautils.getResource(gnick)(unpack(a)), t or 1, eFunc)
 end
 
 megautils._curM = nil
@@ -379,9 +388,6 @@ end
 
 function megautils.unload()
   if megautils.reloadState then
-    for k, v in pairs(megautils.reloadStateFuncs) do
-      v()
-    end
     if megautils.resetGameObjects then
       for k, v in pairs(megautils.cleanFuncs) do
         v()
@@ -399,6 +405,10 @@ end
 
 function megautils.createMapEntity(path)
   return mapEntity(cartographer.load(path))
+end
+
+function megautils.getCurrentState()
+  return states.current
 end
 
 function megautils.transitionToState(s, before, after)

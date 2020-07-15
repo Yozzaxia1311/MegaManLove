@@ -513,8 +513,8 @@ function basicEntity:setImageCollision(data)
   end
 end
 
-function basicEntity:collision(e, x, y)
-  if not e or not self.collisionShape or not e.collisionShape then return false end
+function basicEntity:collision(e, x, y, notme)
+  if not e or (notme and e == self) or not self.collisionShape or not e.collisionShape then return false end
   if self.collisionShape.type == 0 then
     if e.collisionShape.type == 0 then
       return rectOverlapsRect(math.round(self.transform.x) + (x or 0), math.round(self.transform.y) + (y or 0),
@@ -570,24 +570,24 @@ function basicEntity:drawCollision()
   love.graphics.setColor(1, 1, 1, 0.8)
 end
 
-function basicEntity:collisionTable(t, x, y, func)
+function basicEntity:collisionTable(t, x, y, notme, func)
   local result = {}
   if not t then return result end
   for k=1, #t do
     local v = t[k]
-    if self:collision(v, x, y) and (func == nil and true or func(v)) then
+    if self:collision(v, x, y, notme) and (func == nil and true or func(v)) then
       result[#result+1] = v
     end
   end
   return result
 end
 
-function basicEntity:collisionNumber(t, x, y, func)
+function basicEntity:collisionNumber(t, x, y, notme, func)
   local result = 0
   if not t then return result end
   for k=1, #t do
     local v = t[k]
-    if self:collision(v, x, y) and (func == nil and true or func(v)) then
+    if self:collision(v, x, y, notme) and (func == nil and true or func(v)) then
       result = result + 1
     end
   end

@@ -11,7 +11,7 @@ weapons.resources.protoBuster = function()
     megautils.loadResource("assets/sfx/protoCharge.ogg", "protoCharge")
     megautils.loadResource("assets/sfx/protoCharged.ogg", "protoCharged")
     megautils.loadResource("assets/sfx/reflect.ogg", "dink")
-    megautils.loadResource("protoBusterGrid", 29, 10, 68, 10, 10, 0)
+    megautils.loadResource(10, 0, 29, 10, "protoBusterGrid")
   end
 
 weapons.resources.rollBuster = function()
@@ -21,7 +21,7 @@ weapons.resources.rollBuster = function()
     megautils.loadResource("assets/sfx/protoCharge.ogg", "protoCharge")
     megautils.loadResource("assets/sfx/protoCharged.ogg", "protoCharged")
     megautils.loadResource("assets/sfx/reflect.ogg", "dink")
-    megautils.loadResource("protoBusterGrid", 29, 10, 68, 10, 10, 0)
+    megautils.loadResource(10, 0, 29, 10, "protoBusterGrid")
   end
 
 protoSemiBuster = basicEntity:extend()
@@ -77,7 +77,7 @@ protoChargedBuster = basicEntity:extend()
 function protoChargedBuster:new(x, y, dir, wpn, skin, grav)
   protoChargedBuster.super.new(self)
   self.tex = megautils.getResource(skin)
-  self.anim = anim8.newAnimation(megautils.getResource("protoBusterGrid")("1-2", 1), 1/20)
+  self.anim = megautils.newAnimation("protoBusterGrid", {"1-2", 1}, 1/20)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(29, 8)
@@ -87,7 +87,7 @@ function protoChargedBuster:new(x, y, dir, wpn, skin, grav)
   self.side = dir
   self.wpn = wpn
   self.grav = grav
-  self:face(-self.side)
+  self.anim.flipX = self.side ~= 1
   megautils.playSound("protoCharged")
 end
 
@@ -96,10 +96,6 @@ function protoChargedBuster:begin()
   self:addToGroup("protoChargedBuster" .. self.wpn.id)
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
-end
-
-function protoChargedBuster:face(n)
-  self.anim.flippedH = (n == 1) and true or false
 end
 
 function protoChargedBuster:dink(e)
@@ -209,8 +205,8 @@ weapons.resources.megaBuster = function()
     megautils.loadResource("assets/sfx/semi.ogg", "semiCharged")
     megautils.loadResource("assets/sfx/charged.ogg", "charged")
     megautils.loadResource("assets/sfx/reflect.ogg", "dink")
-    megautils.loadResource("chargeGrid", 33, 30, 133, 47)
-    megautils.loadResource("smallChargeGrid", 17, 16, 133, 47, 8, 31)
+    megautils.loadResource(33, 30, "chargeGrid")
+    megautils.loadResource(8, 31, 17, 16, "smallChargeGrid")
   end
 
 function megaBuster:new(x, y, dir, wpn, grav)
@@ -278,14 +274,14 @@ function megaSemiBuster:new(x, y, dir, wpn, grav)
   self.transform.x = x
   self:setRectangleCollision(16, 10)
   self.tex = megautils.getResource("busterTex")
-  self.anim = anim8.newAnimation(megautils.getResource("smallChargeGrid")("1-2", 1), 1/12)
+  self.anim = megautils.newAnimation("smallChargeGrid", {"1-2", 1}, 1/12)
   self.velocity = velocity()
   self.velocity.velx = dir * 5
   self.side = dir
   self.wpn = wpn
   self.grav = grav
   megautils.playSound("semiCharged")
-  self:face(-self.side)
+  self.anim.flipX = self.side ~= 1
 end
 
 function megaSemiBuster:begin()
@@ -294,10 +290,6 @@ function megaSemiBuster:begin()
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
   self:addToGroup("weapon")
-end
-
-function megaSemiBuster:face(n)
-  self.anim.flippedH = (n == 1) and true or false
 end
 
 function megaSemiBuster:dink(e)
@@ -329,7 +321,7 @@ megaChargedBuster = basicEntity:extend()
 function megaChargedBuster:new(x, y, dir, wpn, grav)
   megaChargedBuster.super.new(self)
   self.tex = megautils.getResource("busterTex")
-  self.anim = anim8.newAnimation(megautils.getResource("chargeGrid")("1-4", 1), 1/20)
+  self.anim = megautils.newAnimation("chargeGrid", {"1-4", 1}, 1/20)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(24, 24)
@@ -340,7 +332,7 @@ function megaChargedBuster:new(x, y, dir, wpn, grav)
   self.wpn = wpn
   self.grav = grav
   megautils.playSound("charged")
-  self:face(-self.side)
+  self.anim.flipX = self.side ~= 1
 end
 
 function megaChargedBuster:begin()
@@ -349,10 +341,6 @@ function megaChargedBuster:begin()
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
   self:addToGroup("weapon")
-end
-
-function megaChargedBuster:face(n)
-  self.anim.flippedH = (n == 1) and true or false
 end
 
 function megaChargedBuster:dink(e)
@@ -388,7 +376,7 @@ weapons.resources.trebleBoost = function()
     megautils.loadResource("assets/sfx/treble.ogg", "treble")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource("trebleGrid", 33, 32, 264, 32)
+    megautils.loadResource(33, 32, "trebleGrid")
     
     weapons.resources.bassBuster() -- Just incase it isn't already loaded.
   end
@@ -401,13 +389,11 @@ function trebleBoost:new(x, y, side, player, wpn)
   self:setRectangleCollision(20, 19)
   self.skin = "assets/misc/weapons/treble.png"
   self.tex = megautils.getResource(self.skin) or megautils.loadResource(self.skin, self.skin)
-  self.c = "spawn"
-  self.anims = {}
-  self.anims.spawn = anim8.newAnimation(megautils.getResource("trebleGrid")(1, 1), 1)
-  self.anims.spawnLand = anim8.newAnimation(megautils.getResource("trebleGrid")("2-3", 1, 2, 1), 1/20)
-  self.anims.idle = anim8.newAnimation(megautils.getResource("trebleGrid")(4, 1), 1)
-  self.anims.start = anim8.newAnimation(megautils.getResource("trebleGrid")("5-6", 1, "5-6", 1, "5-6", 1, "5-6", 1, "7-8", 1),
-    1/16, "pauseAtEnd")
+  self.anims = animationSet()
+  self.anims:add("spawn", megautils.newAnimation("trebleGrid", {1, 1}))
+  self.anims:add("spawnLand", megautils.newAnimation("trebleGrid", {"2-3", 1, 2, 1}, 1/20))
+  self.anims:add("idle", megautils.newAnimation("trebleGrid", {4, 1}))
+  self.anims:add("start", megautils.newAnimation("trebleGrid", {"5-6", 1, "5-6", 1, "5-6", 1, "5-6", 1, "7-8", 1}, 1/16, "pauseAtEnd"))
   self.side = side
   self.s = 0
   self.wpn = wpn
@@ -431,12 +417,8 @@ function trebleBoost:grav()
   self.velocity:clampY(7)
 end
 
-function trebleBoost:face(n)
-  self.anims[self.c].flippedH = (n ~= 1) and true or false
-end
-
 function trebleBoost:update(dt)
-  self.anims[self.c]:update(defaultFramerate)
+  self.anims:update(defaultFramerate)
   if self.s == -1 then
     self:moveBy(0, 8)
   elseif self.s == 0 then
@@ -453,12 +435,12 @@ function trebleBoost:update(dt)
     collision.doGrav(self)
     collision.doCollision(self)
     if self.ground then
-      self.c = "spawnLand"
+      self.anims:set("spawnLand")
       self.s = 2
     end
   elseif self.s == 2 then
-    if self.anims.spawnLand.looped then
-      self.c = "idle"
+    if self.anims:looped() then
+      self.anims:set("idle")
       self.s = 3
       megautils.playSound("start")
     end
@@ -469,18 +451,13 @@ function trebleBoost:update(dt)
       self.player:resetStates()
       self.player.canBeInvincible.treble = true
       self.player.treble = 1
-      self.player.animations.trebleStart:gotoFrame(1)
-      self.player.animations.trebleStart:resume()
-      self.player.curAnim = "idle"
       self.player.velocity.velx = 0
       self.s = 4
-      self.c = "start"
+      self.anims:set("start")
     end
   elseif self.s == 4 then
-    if self.anims.start.looped then
+    if self.anims:looped() then
       self.s = 5
-      self.player.curAnim = "trebleStart"
-      self.player:face(self.player.side)
     end
   elseif self.s == 5 then
     self.timer = self.timer + 1
@@ -488,9 +465,10 @@ function trebleBoost:update(dt)
       megautils.removeq(self)
     end
   end
-  self:face(self.side)
+  
   self:setGravityMultiplier("global", self.player.gravity >= 0 and 1 or -1)
-  self.anims[self.c].flippedV = self.gravity < 0
+  self.anims.flipX = self.side ~= 1
+  self.anims.flipY = self.gravity < 0
   if megautils.outside(self) then
     megautils.removeq(self)
   end
@@ -498,7 +476,7 @@ end
 
 function trebleBoost:draw()
   love.graphics.setColor(1, 1, 1, 1)
-  self.anims[self.c]:draw(self.tex, math.round(self.transform.x-6), math.round(self.transform.y-12+(self.gravity >= 0 and 0 or 11)))
+  self.anims:draw(self.tex, math.round(self.transform.x-6), math.round(self.transform.y-12+(self.gravity >= 0 and 0 or 11)))
 end
 
 rushJet = entity:extend()
@@ -509,7 +487,7 @@ weapons.resources.rushJet = function()
     megautils.loadResource("assets/misc/weapons/rush.png", "rush")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource("rushGrid", 32, 32, 128, 64)
+    megautils.loadResource(32, 32, "rushGrid")
     
     weapons.resources.megaBuster() -- So it's possible to use the Mega Buster shots even if the weapon wasn't already loaded in for some reason...
   end
@@ -518,7 +496,7 @@ weapons.resources.protoRushJet = function()
     megautils.loadResource("assets/misc/weapons/protoRush.png", "protoRush")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource("rushGrid", 32, 32, 128, 64)
+    megautils.loadResource(32, 32, "rushGrid")
     
     weapons.resources.megaBuster()
   end
@@ -527,7 +505,7 @@ weapons.resources.tangoJet = function()
     megautils.loadResource("assets/misc/weapons/tango.png", "tango")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource("rushGrid", 32, 32, 128, 64)
+    megautils.loadResource(32, 32, "rushGrid")
     
     weapons.resources.megaBuster()
   end
@@ -541,10 +519,10 @@ function rushJet:new(x, y, side, player, wpn, skin)
   self.tex = megautils.getResource(skin) or megautils.loadResource(skin, skin)
   self.skin = skin
   self.c = "spawn"
-  self.anims = {}
-  self.anims.spawn = anim8.newAnimation(megautils.getResource("rushGrid")(1, 1), 1)
-  self.anims.spawnLand = anim8.newAnimation(megautils.getResource("rushGrid")("2-3", 1, 2, 1), 1/20)
-  self.anims.jet = anim8.newAnimation(megautils.getResource("rushGrid")("2-3", 2), 1/8)
+  self.anims = animationSet()
+  self.anims:add("spawn", megautils.newAnimation("rushGrid", {1, 1}))
+  self.anims:add("spawnLand", megautils.newAnimation("rushGrid", {"2-3", 1, 2, 1}, 1/20))
+  self.anims:add("jet", megautils.newAnimation("rushGrid", {"2-3", 2}, 1/8))
   self.side = side
   self.s = 0
   self.velocity = velocity()
@@ -565,27 +543,23 @@ function rushJet:begin()
   self:addToGroup("solid")
 end
 
-function rushJet:face(n)
-  self.anims[self.c].flippedH = (n ~= 1) and true or false
-end
-
 function rushJet:update(dt)
-  self.anims[self.c]:update(defaultFramerate)
+  self.anims:update(defaultFramerate)
   if self.s == -1 then
     self:moveBy(0, 8)
   elseif self.s == 0 then
     self.transform.y = math.min(self.transform.y+8, self.toY)
     if self.transform.y == self.toY then
       if not collision.checkSolid(self) then
-        self.c = "spawnLand"
+        self.anims:set("spawnLand")
         self.s = 1
       else
         self.s = -1
       end
     end
   elseif self.s == 1 then
-    if self.anims.spawnLand.looped then
-      self.c = "jet"
+    if self.anims:looped() then
+      self.anims:set("jet")
       self.s = 2
       self.solidType = collision.ONEWAY
       megautils.playSound("start")
@@ -628,8 +602,7 @@ function rushJet:update(dt)
     if self.xColl ~= 0 or
       (self.playerOn and collision.checkSolid(self.player, 0, self.player.gravity >= 0 and -4 or 4)) then
       if self.playerOn then self.player.canWalk.rj = true end
-      self.c = "spawnLand"
-      self.anims.spawnLand:gotoFrame(1)
+      self.anims:set("spawnLand")
       self.s = 4
       self.solidType = collision.NONE
       megautils.playSound("ascend")
@@ -640,15 +613,15 @@ function rushJet:update(dt)
       self.wpn:updateCurrent(self.wpn:currentWE() - 1)
     end
   elseif self.s == 4 then
-    if self.anims.spawnLand.looped then
+    if self.anims:looped() then
       self.s = 5
-      self.c = "spawn"
+      self.anims:set("spawn")
     end
   elseif self.s == 5 then
     self:moveBy(0, -8)
   end
-  self:face(self.side)
-  self.anims[self.c].flippedV = self.player.gravity < 0
+  self.anims.flipX = self.side ~= 1
+  self.anims.flipY = self.player.gravity < 0
   if megautils.outside(self) then
     megautils.removeq(self)
   end
@@ -660,10 +633,10 @@ end
 
 function rushJet:draw()
   love.graphics.setColor(1, 1, 1, 1)
-  if self.c == "spawn" or self.c == "spawnLand" then
-    self.anims[self.c]:draw(self.tex, math.round(self.transform.x-4), math.round(self.transform.y+(self.player.gravity >= 0 and -16 or -6)))
+  if self.anims.current == "spawn" or self.anims.current == "spawnLand" then
+    self.anims:draw(self.tex, math.round(self.transform.x-4), math.round(self.transform.y+(self.player.gravity >= 0 and -16 or -6)))
   else
-    self.anims[self.c]:draw(self.tex, math.round(self.transform.x-4), math.round(self.transform.y-12))
+    self.anims:draw(self.tex, math.round(self.transform.x-4), math.round(self.transform.y-12))
   end
 end
 
@@ -675,7 +648,7 @@ weapons.resources.rushCoil = function()
     megautils.loadResource("assets/misc/weapons/rush.png", "rush")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource("rushGrid", 32, 32, 128, 64)
+    megautils.loadResource(32, 32, "rushGrid")
     
     weapons.resources.megaBuster() -- So it's possible to use the Mega Buster shots even if the weapon wasn't already loaded in for some reason...
   end
@@ -684,7 +657,7 @@ weapons.resources.protoRushCoil = function()
     megautils.loadResource("assets/misc/weapons/protoRush.png", "protoRush")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource("rushGrid", 32, 32, 128, 64)
+    megautils.loadResource(32, 32, "rushGrid")
     
     weapons.resources.megaBuster()
   end
@@ -693,7 +666,7 @@ weapons.resources.tangoCoil = function()
     megautils.loadResource("assets/misc/weapons/tango.png", "tango")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource("rushGrid", 32, 32, 128, 64)
+    megautils.loadResource(32, 32, "rushGrid")
     
     weapons.resources.megaBuster()
   end
@@ -707,12 +680,11 @@ function rushCoil:new(x, y, side, player, w, skin)
   self:setRectangleCollision(20, 19)
   self.tex = megautils.getResource(skin)
   self.skin = skin
-  self.c = "spawn"
-  self.anims = {}
-  self.anims.spawn = anim8.newAnimation(megautils.getResource("rushGrid")(1, 1), 1)
-  self.anims.spawnLand = anim8.newAnimation(megautils.getResource("rushGrid")("2-3", 1, 2, 1), 1/20)
-  self.anims.idle = anim8.newAnimation(megautils.getResource("rushGrid")(4, 1, 1, 2), 1/8)
-  self.anims.coil = anim8.newAnimation(megautils.getResource("rushGrid")(4, 2), 1)
+  self.anims = animationSet()
+  self.anims:add("spawn", anim8.newAnimation("rushGrid", {1, 1}))
+  self.anims:add("spawnLand", anim8.newAnimation("rushGrid", {"2-3", 1, 2, 1}, 1/20))
+  self.anims:add("idle", anim8.newAnimation("rushGrid", {4, 1, 1, 2}, 1/8))
+  self.anims:add("coil", megautils.newAnimation("rushGrid", {4, 2}))
   self.side = side
   self.s = 0
   self.timer = 0
@@ -737,12 +709,8 @@ function rushCoil:grav()
   self.velocity:clampY(7)
 end
 
-function rushCoil:face(n)
-  self.anims[self.c].flippedH = (n ~= 1) and true or false
-end
-
 function rushCoil:update(dt)
-  self.anims[self.c]:update(defaultFramerate)
+  self.anims:update(defaultFramerate)
   if self.s == -1 then
     self:moveBy(0, 8)
   elseif self.s == 0 then
@@ -759,11 +727,11 @@ function rushCoil:update(dt)
     collision.doGrav(self)
     collision.doCollision(self)
     if self.ground then
-      self.c = "spawnLand"
+      self.anims:set("spawnLand")
       self.s = 2
     end
   elseif self.s == 2 then
-    if self.anims.spawnLand.looped then
+    if self.anims:looped() then
       self.c = "idle"
       self.s = 3
       megautils.playSound("start")
@@ -788,7 +756,7 @@ function rushCoil:update(dt)
         self.player.slide = false
       end
       self.s = 4
-      self.c = "coil"
+      self.anims:set("coil")
       self.wpn:updateCurrent(self.wpn:currentWE() - 7)
     end
   elseif self.s == 4 then
@@ -797,21 +765,20 @@ function rushCoil:update(dt)
     self.timer = math.min(self.timer+1, 40)
     if self.timer == 40 then
       self.s = 5
-      self.c = "spawnLand"
-      self.anims.spawnLand:gotoFrame(1)
+      self.anims:set("spawnLand")
       megautils.playSound("ascend")
     end
   elseif self.s == 5 then
-    if self.anims.spawnLand.looped then
+    if self.anims:looped() then
       self.s = 6
-      self.c = "spawn"
+      self.anims:set("spawn")
     end
   elseif self.s == 6 then
     self:moveBy(0, -8)
   end
-  self:face(self.side)
   self:setGravityMultiplier("global", self.player.gravity >= 0 and 1 or -1)
-  self.anims[self.c].flippedV = self.gravity < 0
+  self.anims.flipX = self.side ~= 1
+  self.anims.flipY = self.gravity < 0
   if megautils.outside(self) then
     megautils.removeq(self)
   end
@@ -819,7 +786,7 @@ end
 
 function rushCoil:draw()
   love.graphics.setColor(1, 1, 1, 1)
-  self.anims[self.c]:draw(self.tex, math.round(self.transform.x-8), math.round(self.transform.y-12+(self.gravity >= 0 and 0 or 11)))
+  self.anims:draw(self.tex, math.round(self.transform.x-8), math.round(self.transform.y-12+(self.gravity >= 0 and 0 or 11)))
 end
 
 stickWeapon = entity:extend()

@@ -6,7 +6,7 @@ collision.ONEWAY = 2
 collision.STANDIN = 3
 
 collision.noSlope = false
-collision.maxSlope = 2
+collision.maxSlope = 1
 
 function collision.doGrav(self, noSlope)
   noSlope = noSlope or collision.noSlope
@@ -45,7 +45,8 @@ function collision.getTable(self, dx, dy, noSlope)
         (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) and
         (v.solidType == collision.SOLID or v.solidType == collision.ONEWAY) and
         (v.solidType ~= collision.ONEWAY or ((ys == 0 and 1 or math.sign(ys)) == cgrav and
-        not v:collision(self, 0, cgrav) and v:collision(self, 0, -ys))) then
+        not v:collision(self, 0, cgrav) and v:collision(self, 0, -ys)) and
+        (not v.ladder or v:collisionNumber(megautils.groups().ladder, 0, -cgrav, true) == 0)) then
         solid[#solid+1] = v
       end
     end
@@ -85,7 +86,8 @@ function collision.checkSolid(self, dx, dy, noSlope)
         (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) and
         (v.solidType == collision.SOLID or v.solidType == collision.ONEWAY) and
         (v.solidType ~= collision.ONEWAY or ((ys == 0 and 1 or math.sign(ys)) == cgrav and
-          not v:collision(self, 0, cgrav) and v:collision(self, 0, -ys))) then
+        not v:collision(self, 0, cgrav) and v:collision(self, 0, -ys)) and
+        (not v.ladder or v:collisionNumber(megautils.groups().ladder, 0, -cgrav, true) == 0)) then
         solid[#solid+1] = v
       end
     end
@@ -139,7 +141,8 @@ function collision.entityPlatform(self)
                 v.transform.y = v.transform.y + myyspeed
               end
               
-              if resolid == collision.SOLID or (resolid == collision.ONEWAY and (epDir*(v.gravity >= 0 and 1 or -1))>0) then
+              if resolid == collision.SOLID or (resolid == collision.ONEWAY and (epDir*(v.gravity >= 0 and 1 or -1))>0 and
+                (not self.ladder or self:collisionNumber(megautils.groups().ladder, 0, v.gravity < 0 and 1 or -1, true) == 0)) then
                 if v:collision(self) then
                   v.transform.y = math.round(v.transform.y)
                   v.transform.y = v.transform.y - epDir
@@ -307,8 +310,9 @@ function collision.checkGround(self, checkAnyway, noSlope)
     if v ~= self and v.collisionShape and
       (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
       (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) then
-      if v.solidType == collision.SOLID or v.solidType == collision.ONEWAY and
-        not v:collision(self, 0, cgrav) and (v.solidType ~= collision.ONEWAY or v:collision(self, 0, -cgrav * slp)) then
+      if (v.solidType == collision.SOLID or v.solidType == collision.ONEWAY) and
+        not v:collision(self, 0, cgrav) and (v.solidType ~= collision.ONEWAY or (v:collision(self, 0, -cgrav * slp) and
+        (not v.ladder or v:collisionNumber(megautils.groups().ladder, 0, -cgrav, true) == 0))) then
         solid[#solid+1] = v
       elseif v.solidType == collision.STANDIN then
         solid[#solid+1] = v
@@ -381,7 +385,8 @@ function collision.generalCollision(self, noSlope)
             (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) and
             not table.contains(solid, v) and v.solidType == collision.ONEWAY and
             v:collision(self, -self.velocity.velx, 0) and
-              not v:collision(self, -self.velocity.velx, slp) and not v:collision(self) then
+            not v:collision(self, -self.velocity.velx, slp) and not v:collision(self) and
+            (not v.ladder or v:collisionNumber(megautils.groups().ladder, 0, -cgrav) == 0) then
             solid[#solid+1] = v
           end
         end
@@ -437,8 +442,8 @@ function collision.generalCollision(self, noSlope)
           local v = all[i]
           if v ~= self and v.collisionShape and
           (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
-          (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) and
-            v.solidType == collision.ONEWAY then
+          (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) and v.solidType == collision.ONEWAY and
+          (not v.ladder or v:collisionNumber(megautils.groups().ladder, 0, -cgrav, true) == 0) then
             table.removevaluearray(solid, v)
             if not v:collision(self) then
               solid[#solid+1] = v

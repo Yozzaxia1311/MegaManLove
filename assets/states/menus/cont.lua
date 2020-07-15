@@ -76,7 +76,7 @@ function contSelect:update(dt)
     elseif self.pick == 0 then
       self.picked = true
       self.canDraw.global = false
-      megautils.transitionToState("assets/states/menus/menu.state.lua")
+      megautils.transitionToState("assets/states/menus/menu.state.tmx")
     end
   end
   self.transform.y = self.offY + self.pick*16

@@ -15,7 +15,7 @@ megaMan.resources.megaMan = function()
     megautils.loadResource("assets/sfx/mmHeal.ogg", "heal")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
     megautils.loadResource("assets/sfx/switch.ogg", "switch")
-    megautils.loadResource("megaManGrid", 41, 30, 164, 330)
+    megautils.loadResource(41, 30, "megaManGrid")
   end
 
 megaMan.resources.protoMan = function()
@@ -29,7 +29,7 @@ megaMan.resources.protoMan = function()
     megautils.loadResource("assets/sfx/mmHeal.ogg", "heal")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
     megautils.loadResource("assets/sfx/switch.ogg", "switch")
-    megautils.loadResource("megaManGrid", 41, 30, 164, 330)
+    megautils.loadResource(41, 30, "megaManGrid")
   end
 
 megaMan.resources.bass = function()
@@ -43,7 +43,7 @@ megaMan.resources.bass = function()
     megautils.loadResource("assets/sfx/mmHeal.ogg", "heal")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
     megautils.loadResource("assets/sfx/switch.ogg", "switch")
-    megautils.loadResource("bassGrid", 45, 41, 180, 533)
+    megautils.loadResource(45, 41, "bassGrid")
   end
 
 megaMan.resources.roll = function()
@@ -57,7 +57,7 @@ megaMan.resources.roll = function()
     megautils.loadResource("assets/sfx/mmHeal.ogg", "heal")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
     megautils.loadResource("assets/sfx/switch.ogg", "switch")
-    megautils.loadResource("rollGrid", 45, 34, 180, 374)
+    megautils.loadResource(45, 34, "rollGrid")
   end
 
 megautils.reloadStateFuncs.megaMan = function()
@@ -82,8 +82,7 @@ megautils.resetGameObjectsFuncs.megaMan = function()
     
     for i=1, globals.playerCount do
       megaMan.weaponHandler[i] = weaponHandler(nil, nil, 10)
-      
-      megaMan.setPlayer(i)
+      megaMan.loadPlayer(i)
       
       if globals.defeats.stickMan then
         
@@ -234,7 +233,7 @@ function megaMan.properties(self, g, gf, c)
   self.canControl = {global=(c == nil) or c}
 end
 
-function megaMan:setPlayer(name)
+function megaMan:loadPlayer(name)
   local i = (type(self) == "number") and self or self.player
   local n = name or megautils.getPlayer(i)
   
@@ -284,15 +283,12 @@ function megaMan:setPlayer(name)
       {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
     
   end
-  
-  self.playerName = n
-  self.player = i
 end
 
 function megaMan:switchCharacter(n)
   if self.playerName ~= n then
     self.playerName = n
-    self:setPlayer(self.playerName)
+    self:loadPlayer(self.playerName)
   end
   
   local pp = "megaManGrid"
@@ -346,51 +342,52 @@ function megaMan:switchCharacter(n)
   self.hitAnimation = {regular="hit"}
   self.wallJumpAnimation = {regular="wallJump", shoot="wallJumpShoot"}
   self.dashAnimation = {regular="dash", shoot="dashShoot"}
-  self.trebleAnimation = {regular="treble", shoot="trebleShoot"}
+  self.trebleAnimation = {regular="treble", shoot="trebleShoot", start="trebleStart"}
   
-  self.animations = {}
-  if self.playerName == "proto" then
-    self.animations.idle = anim8.newAnimation(megautils.getResource(pp)(1, 1, 2, 1), 1/8)
-  elseif self.playerName == "bass" then
-    self.animations.trebleStart = anim8.newAnimation(megautils.getResource(pp)(4, 10, "1-4", 11, 1, 12), 1/8, "pauseAtEnd")
-    self.animations.treble = anim8.newAnimation(megautils.getResource(pp)("2-3", 12), 1/12)
-    self.animations.trebleShoot = anim8.newAnimation(megautils.getResource(pp)(4, 12, 1, 13), 1/12)
-  else
-    self.animations.idle = anim8.newAnimation(megautils.getResource(pp)(1, 1, 2, 1), {2.5, 0.1})
+  self.anims = animationSet()
+  if self.playerName == "bass" then
+    self.anims:add("trebleStart", megautils.newAnimation(pp, {4, 10, "1-4", 11, 1, 12}, 1/8, "pauseAtEnd"))
+    self.anims:add("treble", megautils.newAnimation(pp, {"2-3", 12}, 1/12))
+    self.anims:add("trebleShoot", megautils.newAnimation(pp, {4, 12, 1, 13}, 1/12))
   end
-  self.animations.idleShoot = anim8.newAnimation(megautils.getResource(pp)(1, 4), 1)
-  self.animations.idleShootDM = anim8.newAnimation(megautils.getResource(pp)(3, 6), 1)
-  self.animations.idleShootUM = anim8.newAnimation(megautils.getResource(pp)(4, 6), 1)
-  self.animations.idleShootU = anim8.newAnimation(megautils.getResource(pp)(1, 7), 1)
-  self.animations.idleThrow = anim8.newAnimation(megautils.getResource(pp)(4, 7), 1)
-  self.animations.nudge = anim8.newAnimation(megautils.getResource(pp)(3, 1), 1)
-  self.animations.jump = anim8.newAnimation(megautils.getResource(pp)(4, 2), 1)
-  self.animations.jumpShoot = anim8.newAnimation(megautils.getResource(pp)(1, 5), 1)
-  self.animations.jumpShootDM = anim8.newAnimation(megautils.getResource(pp)(1, 10), 1)
-  self.animations.jumpShootUM = anim8.newAnimation(megautils.getResource(pp)(2, 10), 1)
-  self.animations.jumpShootU = anim8.newAnimation(megautils.getResource(pp)(3, 10), 1)
-  self.animations.jumpThrow = anim8.newAnimation(megautils.getResource(pp)(1, 8), 1)
-  self.animations.jumpProtoShield = anim8.newAnimation(megautils.getResource(pp)(3, 6), 1)
-  self.animations.jumpProtoShield2 = anim8.newAnimation(megautils.getResource(pp)(4, 6), 1)
-  self.animations.run = anim8.newAnimation(megautils.getResource(pp)(4, 1, "1-2", 2, 1, 2), 1/8)
-  self.animations.runShoot = anim8.newAnimation(megautils.getResource(pp)("2-4", 4, 3, 4), 1/8)
-  self.animations.runThrow = anim8.newAnimation(megautils.getResource(pp)("2-4", 8, 3, 8), 1/8)
-  self.animations.climb = anim8.newAnimation(megautils.getResource(pp)("1-2", 3), 1/8)
-  self.animations.climbShoot = anim8.newAnimation(megautils.getResource(pp)(2, 5), 1)
-  self.animations.climbShootDM = anim8.newAnimation(megautils.getResource(pp)(2, 9), 1)
-  self.animations.climbShootUM = anim8.newAnimation(megautils.getResource(pp)(3, 9), 1)
-  self.animations.climbShootU = anim8.newAnimation(megautils.getResource(pp)(4, 9), 1)
-  self.animations.climbThrow = anim8.newAnimation(megautils.getResource(pp)(1, 9), 1)
-  self.animations.climbTip = anim8.newAnimation(megautils.getResource(pp)(3, 3), 1)
-  self.animations.hit = anim8.newAnimation(megautils.getResource(pp)(4, 3), 1)
-  self.animations.wallJump = anim8.newAnimation(megautils.getResource(pp)(2, 9), 1)
-  self.animations.wallJumpShoot = anim8.newAnimation(megautils.getResource(pp)(3, 9), 1)
-  self.animations.wallJumpThrow = anim8.newAnimation(megautils.getResource(pp)(4, 9), 1)
-  self.animations.dash = anim8.newAnimation(megautils.getResource(pp)(3, 2), 1/14, "pauseAtEnd")
-  self.animations.dashShoot = anim8.newAnimation(megautils.getResource(pp)(4, 10), 1)
-  self.animations.dashThrow = anim8.newAnimation(megautils.getResource(pp)(1, 11), 1)
-  self.animations.spawn = anim8.newAnimation(megautils.getResource(pp)(4, 5), 1)
-  self.animations.spawnLand = anim8.newAnimation(megautils.getResource(pp)("1-2", 6, 1, 6), 1/20)
+  if self.playerName == "proto" then
+    self.anims:add("idle", megautils.newAnimation(pp, {1, 1, 2, 1}, 1/8))
+  else
+    self.anims:add("idle", megautils.newAnimation(pp, {1, 1, 2, 1}, {2.5, 0.1}))
+  end
+  self.anims:add("idleShoot", megautils.newAnimation(pp, {1, 4}))
+  self.anims:add("idleShootDM", megautils.newAnimation(pp, {3, 6}))
+  self.anims:add("idleShootUM", megautils.newAnimation(pp, {4, 6}))
+  self.anims:add("idleShootU", megautils.newAnimation(pp, {1, 7}))
+  self.anims:add("idleThrow", megautils.newAnimation(pp, {4, 7}))
+  self.anims:add("nudge", megautils.newAnimation(pp, {3, 1}))
+  self.anims:add("jump", megautils.newAnimation(pp, {4, 2}))
+  self.anims:add("jumpShoot", megautils.newAnimation(pp, {1, 5}))
+  self.anims:add("jumpShootDM", megautils.newAnimation(pp, {1, 10}))
+  self.anims:add("jumpShootUM", megautils.newAnimation(pp, {2, 10}))
+  self.anims:add("jumpShootU", megautils.newAnimation(pp, {3, 10}))
+  self.anims:add("jumpThrow", megautils.newAnimation(pp, {1, 8}))
+  self.anims:add("jumpProtoShield", megautils.newAnimation(pp, {3, 6}))
+  self.anims:add("jumpProtoShield2", megautils.newAnimation(pp, {4, 6}))
+  self.anims:add("run", megautils.newAnimation(pp, {4, 1, "1-2", 2, 1, 2}, 1/8))
+  self.anims:add("runShoot", megautils.newAnimation(pp, {"2-4", 4, 3, 4}, 1/8))
+  self.anims:add("runThrow", megautils.newAnimation(pp, {"2-4", 8, 3, 8}, 1/8))
+  self.anims:add("climb", megautils.newAnimation(pp, {"1-2", 3}, 1/8))
+  self.anims:add("climbShoot", megautils.newAnimation(pp, {2, 5}))
+  self.anims:add("climbShootDM", megautils.newAnimation(pp, {2, 9}))
+  self.anims:add("climbShootUM", megautils.newAnimation(pp, {3, 9}))
+  self.anims:add("climbShootU", megautils.newAnimation(pp, {4, 9}))
+  self.anims:add("climbThrow", megautils.newAnimation(pp, {1, 9}))
+  self.anims:add("climbTip", megautils.newAnimation(pp, {3, 3}))
+  self.anims:add("hit", megautils.newAnimation(pp, {4, 3}))
+  self.anims:add("wallJump", megautils.newAnimation(pp, {2, 9}))
+  self.anims:add("wallJumpShoot", megautils.newAnimation(pp, {3, 9}))
+  self.anims:add("wallJumpThrow", megautils.newAnimation(pp, {4, 9}))
+  self.anims:add("dash", megautils.newAnimation(pp, {3, 2}, 1/14, "pauseAtEnd"))
+  self.anims:add("dashShoot", megautils.newAnimation(pp, {4, 10}))
+  self.anims:add("dashThrow", megautils.newAnimation(pp, {1, 11}))
+  self.anims:add("spawn", megautils.newAnimation(pp, {4, 5}))
+  self.anims:add("spawnLand", megautils.newAnimation(pp, {"1-2", 6, 1, 6}, 1/20))
 end
 
 function megaMan:initChargingColors()
@@ -497,10 +494,9 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr)
   self.transform.x = x
   self.transform.y = y
   self.player = p
-  self.playerName = megautils.getPlayer(self.player)
-  self:switchCharacter(self.playerName)
   megautils.registerPlayer(self)
   megaMan.properties(self, g, gf, c)
+  self:switchCharacter(megautils.getPlayer(self.player))
   self.nextWeapon = 0
   self.prevWeapon = 0
   self.weaponSwitchTimer = 70
@@ -538,16 +534,17 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr)
   self.protoShielding = false
   self.doSplashing = not self.drop
   if (dr == nil or dr) and megaMan.mainPlayer == self then
-    if self.playerName == "proto" and megautils._musicQueue then
-      self.mq = megautils._musicQueue
-      megautils.stopMusic()
-      self.ready = megautils.add(ready, 32)
+    if self.playerName == "proto" then
+      self.ready = megautils.add(ready, nil, 32)
+      if megautils._musicQueue then
+        self.mq = megautils._musicQueue
+        megautils.stopMusic()
+      end
       megautils.playSoundFromFile("assets/sfx/protoReady.ogg")
     else
-      self.ready = megautils.add(ready, 12)
+      self.ready = megautils.add(ready)
     end
   end
-  self.teleportOffY = self.drop and (view.y-self.transform.y) or 0
   self.side = side or 1
 
   self.healthHandler = megautils.add(healthHandler, {252, 224, 168}, {255, 255, 255}, {0, 0, 0},
@@ -577,8 +574,8 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr)
     end
   end
   
-  self.curAnim = self.drop and "spawn" or "idle"
-  self:face(self.side)
+  self.anims.flipX = self.side == 1
+  self.anims:set(self.drop and "spawn" or "idle")
   
   for k, v in pairs(megautils.playerCreatedFuncs) do
     v(self)
@@ -588,10 +585,6 @@ end
 function megaMan:begin()
   self:addToGroup("freezable")
   self:addToGroup("submergable")
-end
-
-function megaMan:face(n)
-  self.animations[self.curAnim].flippedH = (n == 1) and true or false
 end
 
 function megaMan:useShootAnimation()
@@ -727,10 +720,18 @@ function megaMan:checkLadder(x, y, tip)
   local w, h, ox = self.collisionShape.w, self.collisionShape.h, self.transform.x
   self:setRectangleCollision(1, tip and 1 or h)
   self.transform.x = self.transform.x + (w/2)
-  local result = self:collisionTable(megautils.groups().ladder, x, y)[1]
+  local result = self:collisionTable(megautils.groups().ladder, x, y)
+  local highest = result[1]
+  if highest then
+    for k, v in ipairs(result) do
+      if self.gravity >= 0 and (v.transform.y > highest.transform.y) or (v.transform.y < highest.transform.y) then
+        highest = v
+      end
+    end
+  end
   self:setRectangleCollision(w, h)
   self.transform.x = ox
-  return result
+  return highest
 end
 
 function megaMan:attemptWeaponUsage()
@@ -1027,7 +1028,7 @@ function megaMan:attemptClimb()
     if self.slide then
       self:slideToReg()
     end
-    if downDown and betwn and self.ground and not self:collision(self.currentLadder) then
+    if downDown and self.ground and not self:collision(self.currentLadder) then
       self.transform.y = self.transform.y + (self.gravity >= 0 and (math.round(self.collisionShape.h*0.3)) or (-math.round(self.collisionShape.h*0.3)))
     end
     self.velocity.vely = 0
@@ -1040,12 +1041,9 @@ function megaMan:attemptClimb()
     self.slide = false
     self.extraJumps = 0
     self.slideTimer = self.maxSlideTime
-    self.animations.climb:gotoFrame(1)
-    if self.gravity >= 0 then
-      self.climbTip = self.transform.y < self.currentLadder.transform.y
-    else
-      self.climbTip = self.transform.y+self.collisionShape.h > self.currentLadder.transform.y+self.currentLadder.collisionShape.h
-    end
+    self.climbTip = self.currentLadder and
+      not self:checkLadder(0, (self.gravity >= 0) and (self.collisionShape.h * 0.4) or (self.collisionShape.h * 0.6), true)
+      and not self:checkLadder(0, self.gravity >= 0 and -1 or self.collisionShape.h, true)
     self.transform.x = self.currentLadder.transform.x+(self.currentLadder.collisionShape.w/2)-
       ((self.collisionShape.w)/2)
   end
@@ -1181,7 +1179,19 @@ function megaMan:code(dt)
       self:charge(true)
     end
   elseif self.treble then
-    if self.treble == 2 then
+    if self.treble == 1 then
+      self.canBeInvincible.treble = true
+    elseif self.treble == 2 then
+      if self.anims:frame() == 4 and self.trebleTimer == 0 then
+        self.trebleTimer = 1
+        megautils.playSound("trebleStart")
+      end
+      if self.anims:looped() then
+        self.treble = 3
+        self.trebleTimer = 0
+        self.canBeInvincible.treble = false
+      end
+    elseif self.treble == 3 then
       if self.runCheck then
         self.side = control.leftDown[self.player] and -1 or 1
         self.trebleForce.velx = math.clamp(self.trebleForce.velx + (self.side == 1 and 0.1 or -0.1),
@@ -1208,23 +1218,13 @@ function megaMan:code(dt)
         local w = megaMan.weaponHandler[self.player]
         w:updateCurrent(w:currentWE() - 1)
       end
+      
+      self:attemptWeaponUsage()
     end
     for k, v in pairs(megautils.playerTrebleFuncs) do
       v(self)
     end
     self:phys()
-    if self.treble == 1 then
-      if self.animations.trebleStart.looped then
-        self.treble = 2
-        self.trebleTimer = 0
-        self.canBeInvincible.treble = false
-      elseif self.animations.trebleStart.position == 4 and self.trebleTimer == 0 then
-        self.trebleTimer = 1
-        megautils.playSound("trebleStart")
-      end
-    elseif self.treble == 2 then
-      self:attemptWeaponUsage()
-    end
     if megaMan.weaponHandler[self.player].current ~= "trebleBoost" or
       (megaMan.weaponHandler[self.player].current == "trebleBoost" and
       megaMan.weaponHandler[self.player].energy[megaMan.weaponHandler[self.player].currentSlot] <= 0) then
@@ -1236,7 +1236,7 @@ function megaMan:code(dt)
       self.trebleForce.vely = 0
     end
   elseif self.climb then
-    self.currentLadder = self:checkLadder(0, 0, true)
+    self.currentLadder = self:checkLadder(0, (self.gravity >= 0) and (self.collisionShape.h * 0.4) or (self.collisionShape.h * 0.6), true)
     local tipc = self.currentLadder ~= nil
     if not self.currentLadder then
       self.currentLadder = self:checkLadder()
@@ -1293,18 +1293,17 @@ function megaMan:code(dt)
     for k, v in pairs(megautils.playerClimbFuncs) do
       v(self)
     end
-    self:phys()
     self:attemptWeaponUsage()
     if self.shootTimer ~= self.maxShootTime then
       self.velocity.vely = 0      
     end
-    if self.currentLadder then
-      if self.gravity >= 0 then
-        self.climbTip = self.transform.y + self.collisionShape.h * 0.4 < self.currentLadder.transform.y
-      else
-        self.climbTip = self.transform.y + self.collisionShape.h * 0.6 > self.currentLadder.transform.y+self.currentLadder.collisionShape.h
-      end
+    self:phys()
+    self.currentLadder = self:checkLadder()
+    if not self.currentLadder then
+      self.climb = false
+      self.velocity.vely = 0 
     end
+    self.climbTip = self.currentLadder and not tipc and not self:checkLadder(0, self.gravity >= 0 and -1 or self.collisionShape.h, true)
   elseif self.slide then
     collision.checkGround(self, true)
     local lastSide = self.side
@@ -1423,14 +1422,6 @@ function megaMan:code(dt)
     if checkFalse(self.canDash) and (control.dashPressed[self.player] or
       (control[self.gravity >= 0 and "downDown" or "upDown"][self.player] and control.jumpPressed[self.player])) and
       not self:checkBasicSlideBox(self.side, 0) then
-      if self.shootTimer ~= self.maxShootTime then
-        self.animations[self.dashAnimation.regular]:gotoFrame(
-          table.length(self.animations[self.dashAnimation.regular].frames))
-        self.animations[self.dashAnimation.regular]:pause()
-      else
-        self.animations[self.dashAnimation.regular]:gotoFrame(1)
-        self.animations[self.dashAnimation.regular]:resume()
-      end
       self.slide = true
       self:regToSlide()
       self.slideTimer = 0
@@ -1753,46 +1744,54 @@ end
 
 function megaMan:animate()
   if self.drop or self.rise then
-    self.curAnim = self.dropLanded and self.dropLandAnimation.regular or self.dropAnimation.regular
+    self.anims:set(self.dropLanded and self.dropLandAnimation.regular or self.dropAnimation.regular)
   elseif checkFalse(self.canControl) then
     local shoot = "regular"
     if self.shootTimer ~= self.maxShootTime then
       shoot = "shoot"
     end
     if self.treble then
-      if self.treble == 2 then
-        self.curAnim = self.trebleAnimation[shoot]
+      if self.treble == 1 then
+        self.anims:set(self.idleAnimation.regular)
+      elseif self.treble == 2 then
+        self.anims:set(self.trebleAnimation.start)
+      elseif self.treble == 3 then
+        if table.contains(self.trebleAnimation, self.anims.current) and
+          self.anims.current ~= self.trebleAnimation.start and
+          self.anims.current ~= self.trebleAnimation[shoot] then
+          self.anims:set(self.trebleAnimation[shoot], self.anims:frame(), self.anims:time())
+        else
+          self.anims:set(self.trebleAnimation[shoot])
+        end
       end
     elseif self.hitTimer ~= self.maxHitTime then
-      self.curAnim = self.hitAnimation.regular
+      self.anims:set(self.hitAnimation.regular)
     elseif self.climb then
       shoot = self:bassBusterAnim(shoot)
-      self.curAnim = self.climbAnimation[shoot]
+      self.anims:set(self.climbAnimation[shoot])
       if self.climbTip then
         if self.shootTimer ~= self.maxShootTime then
-          self.curAnim = self.climbAnimation[shoot]
+          self.anims:set(self.climbAnimation[shoot])
         else
-          self.curAnim = self.climbTipAnimation.regular
+          self.anims:set(self.climbTipAnimation.regular)
         end
-      elseif not (control.downDown[self.player] or
-        control.upDown[self.player]) and 
-        self.animations[self.climbAnimation.regular].status == "playing" then
-        self.animations[self.climbAnimation.regular]:pause()
-      elseif control.downDown[self.player] or control.upDown[self.player] and 
-        self.animations[self.climbAnimation.regular].status == "paused" then
-        self.animations[self.climbAnimation.regular]:resume()
-      end
-      if shoot == "shoot" or shoot == "throw" then
-        if self.side == -1 then
-          self.animations[self.climbAnimation.regular]:gotoFrame(2)
-        else
-          self.animations[self.climbAnimation.regular]:gotoFrame(1)
+      elseif not (control.downDown[self.player] or control.upDown[self.player]) and not self.anims:isPaused() then
+        self.anims:pause()
+        if shoot ~= "regular" then
+          if self.side == -1 then
+            self.anims:gotoFrame(2)
+          else
+            self.anims:gotoFrame(1)
+          end
         end
+      elseif control.downDown[self.player] or control.upDown[self.player] and self.anims:isPaused() then
+        self.anims:resume()
       end
     elseif self.slide then
-      self.animations[self.runAnimation.regular]:gotoFrame(1)
-      self.animations[self.runAnimation.shoot]:gotoFrame(1)
-      self.curAnim = self.dashAnimation[checkFalse(self.canDashShoot) and shoot or "regular"]
+      self.anims:set(self.dashAnimation[checkFalse(self.canDashShoot) and shoot or "regular"])
+      if checkFalse(self.canDashShoot) and self.shootTimer ~= self.maxShootTime then
+        self.anims:gotoFrame(self.anims:length())
+      end
     elseif self.ground then
       if checkFalse(self.canWalk) and not self.step and self.runCheck then
         shoot = self:bassBusterAnim(shoot)
@@ -1800,58 +1799,42 @@ function megaMan:animate()
           if self.protoShielding and shoot == "regular" then
             shoot = "ps"
           end
-          self.curAnim = self.jumpAnimation[shoot]
+          self.anims:set(self.jumpAnimation[shoot])
         else
-          self.curAnim = self.nudgeAnimation[shoot]
+          self.anims:set(self.nudgeAnimation[shoot])
         end
       elseif checkFalse(self.canWalk) and self.runCheck and
         not (self.stopOnShot and self.shootTimer ~= self.maxShootTime) then
-        self.curAnim = self.runAnimation[shoot]
+        if table.contains(self.runAnimation, self.anims.current) and self.anims.current ~= self.runAnimation[shoot] then
+          self.anims:set(self.runAnimation[shoot], self.anims:frame(), self.anims:time())
+        else
+          self.anims:set(self.runAnimation[shoot])
+        end
       else
         shoot = self:bassBusterAnim(shoot)
-        self.animations[self.runAnimation.regular]:gotoFrame(1)
-        self.animations[self.runAnimation.shoot]:gotoFrame(1)
         if self.standSolidJumpTimer > 0 then
           if self.protoShielding and shoot == "regular" then
             shoot = "ps"
           end
-          self.curAnim = self.jumpAnimation[shoot]
+          self.anims:set(self.jumpAnimation[shoot])
         else
-          self.curAnim = self.idleAnimation[shoot]
+          self.anims:set(self.idleAnimation[shoot])
         end
       end
     else
-      if self.wallJumping then
-        self.curAnim = self.wallJumpAnimation[shoot]
-      else
-        shoot = self:bassBusterAnim(shoot)
-        if self.protoShielding and shoot == "regular" then
-          shoot = "ps"
-        end
-        self.curAnim = self.jumpAnimation[shoot]
+      shoot = self:bassBusterAnim(shoot)
+      if self.protoShielding and shoot == "regular" then
+        shoot = "ps"
       end
-    end
-    local time = self.animations[self.curAnim].timer
-    if self.curAnim == self.runAnimation.regular then
-      self.animations[self.runAnimation.shoot]:gotoFrame(self.animations[self.runAnimation.regular].position)
-      self.animations[self.runAnimation.shoot].timer = time
-    elseif self.curAnim == self.runAnimation.shoot then
-      self.animations[self.runAnimation.regular]:gotoFrame(self.animations[self.runAnimation.shoot].position)
-      self.animations[self.runAnimation.regular].timer = time
-    elseif self.curAnim == self.trebleAnimation.regular then
-      self.animations[self.trebleAnimation.shoot]:gotoFrame(self.animations[self.trebleAnimation.regular].position)
-      self.animations[self.trebleAnimation.shoot].timer = time
-    elseif self.curAnim == self.trebleAnimation.shoot then
-      self.animations[self.trebleAnimation.regular]:gotoFrame(self.animations[self.trebleAnimation.shoot].position)
-      self.animations[self.trebleAnimation.regular].timer = time
+      self.anims:set(self.jumpAnimation[shoot])
     end
   end
-  if self.curAnim ~= self.climbAnimation.regular and self.curAnim ~= self.climbTipAnimation.regular then
-    self:face(self.side)
+  if self.anims.current ~= self.climbAnimation.regular and self.anims.current ~= self.climbTipAnimation.regular then
+    self.anims.flipX = self.side == 1
   else
-    self:face(-1)
+    self.anims.flipX = false
   end
-  self.animations[self.curAnim]:update(defaultFramerate)
+  self.anims:update(defaultFramerate)
 end
 
 function megaMan:die()
@@ -1879,12 +1862,12 @@ function megaMan:die()
         if not megautils.hasInfiniteLives() and globals.lives < 0 then
           megautils.reloadState = true
           megautils.resetGameObjects = true
-          globals.gameOverContinueState = states.current
+          globals.gameOverContinueState = megautils.getCurrentState()
           megautils.gotoState("assets/states/menus/gameover.state.lua")
         else
           megautils.reloadState = true
           megautils.resetGameObjects = false
-          megautils.gotoState(states.current)
+          megautils.gotoState(megautils.getCurrentState())
         end
         megautils.removeq(s)
       end)
@@ -1910,6 +1893,7 @@ function megaMan:update(dt)
   if self.ready then
     if self.ready.isRemoved then
       self.ready = nil
+      self.teleportOffY = self.drop and (view.y-self.transform.y) or 0
       if self.mq then
         megautils.playMusic(unpack(self.mq))
         self.mq = nil
@@ -1932,7 +1916,7 @@ function megaMan:update(dt)
     self.runCheck = false
     if self.rise then
       if self.dropLanded then
-        self.dropLanded = not self.animations[self.dropLandAnimation.regular].looped
+        self.dropLanded = not self.anims:looped()
         if not self.dropLanded then
           self.doSplashing = false
           megautils.playSound("ascend")
@@ -1944,10 +1928,9 @@ function megaMan:update(dt)
       self.teleportOffY = math.min(self.teleportOffY+self.dropSpeed, 0)
       if self.teleportOffY == 0 then
         self.dropLanded = true
-        if self.animations[self.dropLandAnimation.regular].looped then
+        if self.anims:looped() then
           self.drop = false
           self.doSplashing = true
-          self.animations[self.dropLandAnimation.regular]:gotoFrame(1)
           megautils.playSound("start")
         end
       end
@@ -1969,82 +1952,81 @@ function megaMan:afterUpdate(dt)
 end
 
 function megaMan:draw()
-  self.animations[self.curAnim].flippedV = self.gravity < 0
+  if megaMan.mainPlayer and megaMan.mainPlayer.ready then return end
+  self.anims.flipY = self.gravity < 0
   local roundx, roundy = math.round(self.transform.x), math.round(self.transform.y)
   local offsetx, offsety = 0, 0
+  local c = self.anims.current
   
   if self.playerName == "bass" then
     offsety, offsetx = -10, -18
-    if table.contains(self.climbAnimation, self.curAnim) or 
-      table.contains(self.jumpAnimation, self.curAnim) or 
-      table.contains(self.wallJumpAnimation, self.curAnim) then
+    if table.contains(self.climbAnimation, c) or 
+      table.contains(self.jumpAnimation, c) or 
+      table.contains(self.wallJumpAnimation, c) then
       offsety = self.gravity >= 0 and -8 or -12
-    elseif table.contains(self.climbTipAnimation, self.curAnim) then
+    elseif table.contains(self.climbTipAnimation, c) then
       offsety = self.gravity >= 0 and -2 or -18
-    elseif table.contains(self.hitAnimation, self.curAnim) then
+    elseif table.contains(self.hitAnimation, c) then
       offsety = self.gravity >= 0 and -6 or -14
-    elseif table.contains(self.dashAnimation, self.curAnim) then
+    elseif table.contains(self.dashAnimation, c) then
       offsety = -10
     end
   elseif self.playerName == "roll" then
     offsety, offsetx = self.gravity >= 0 and -10 or -3, -18
-    if table.contains(self.climbAnimation, self.curAnim) or 
-      table.contains(self.jumpAnimation, self.curAnim) or 
-      table.contains(self.wallJumpAnimation, self.curAnim) then
+    if table.contains(self.climbAnimation, c) or 
+      table.contains(self.jumpAnimation, c) or 
+      table.contains(self.wallJumpAnimation, c) then
       offsety = self.gravity >= 0 and -8 or -7
-    elseif table.contains(self.climbTipAnimation, self.curAnim) then
+    elseif table.contains(self.climbTipAnimation, c) then
       offsety = self.gravity >= 0 and -4 or -11
-    elseif table.contains(self.hitAnimation, self.curAnim) then
+    elseif table.contains(self.hitAnimation, c) then
       offsety = self.gravity >= 0 and -6 or -14
-    elseif table.contains(self.dashAnimation, self.curAnim) then
+    elseif table.contains(self.dashAnimation, c) then
       offsety = self.gravity >= 0 and -17 or -3
     end
   else
     offsety, offsetx = self.gravity >= 0 and -8 or -1, -15
-    if table.contains(self.climbAnimation, self.curAnim) or 
-      table.contains(self.jumpAnimation, self.curAnim) or 
-      table.contains(self.wallJumpAnimation, self.curAnim) then
+    if table.contains(self.climbAnimation, c) or 
+      table.contains(self.jumpAnimation, c) or 
+      table.contains(self.wallJumpAnimation, c) then
       offsety = self.gravity >= 0 and -2 or -6
-    elseif table.contains(self.climbTipAnimation, self.curAnim) then
+    elseif table.contains(self.climbTipAnimation, c) then
       offsety = self.gravity >= 0 and 5 or -12
-    elseif table.contains(self.hitAnimation, self.curAnim) then
+    elseif table.contains(self.hitAnimation, c) then
       offsety = self.gravity >= 0 and -4 or -5
-    elseif table.contains(self.dashAnimation, self.curAnim) then
+    elseif table.contains(self.dashAnimation, c) then
       offsety = self.gravity >= 0 and -13 or -3
     end
   end
   offsety = offsety + self.teleportOffY
   if self.playerName == "bass" or self.playerName == "roll" then
-    if self.curAnim == "climbShoot" or self.curAnim == "climbShootDM" or self.curAnim == "climbShootUM"
-      or self.curAnim == "climbShootU" or self.curAnim == "climbThrow" then
+    if c == "climbShoot" or c == "climbShootDM" or c == "climbShootUM"
+      or c == "climbShootU" or c == "climbThrow" then
       offsetx = self.side == -1 and -17 or -18
-    elseif self.curAnim == "climb" or self.curAnim == "climbTip" then
-      offsetx = self.animations.climb.position==1 and -18 or -17
-    elseif self.curAnim == "slide" then
+    elseif c == "climb" or c == "climbTip" then
+      offsetx = self.anims:frame() == 1 and -18 or -17
+    elseif c == "slide" then
       offsetx = self.side==1 and -14 or -20
     end
   else
-    if self.curAnim == "climbShoot" or self.curAnim == "climbShootDM" or self.curAnim == "climbShootUM"
-      or self.curAnim == "climbShootU" or self.curAnim == "climbThrow" then
+    if c == "climbShoot" or c == "climbShootDM" or c == "climbShootUM"
+      or c == "climbShootU" or c == "climbThrow" then
       offsetx = self.side == -1 and -15 or -16
-    elseif self.curAnim == "climb" or self.curAnim == "climbTip" then
-      offsetx = self.animations.climb.position==1 and -16 or -15
-    elseif self.curAnim == "slide" then
+    elseif c == "climb" or c == "climbTip" then
+      offsetx = self.anims:frame() == 1 and -16 or -15
+    elseif c == "slide" then
       offsetx = self.side==1 and -12 or -18
     end
   end
   
   love.graphics.setColor(megaMan.colorOutline[self.player][1]/255, megaMan.colorOutline[self.player][2]/255, megaMan.colorOutline[self.player][3]/255, 1)
-  self.animations[self.curAnim]:draw(self.texOutline, roundx+offsetx,
-    roundy+offsety)
+  self.anims:draw(self.texOutline, roundx+offsetx, roundy+offsety)
   love.graphics.setColor(megaMan.colorOne[self.player][1]/255, megaMan.colorOne[self.player][2]/255, megaMan.colorOne[self.player][3]/255, 1)
-  self.animations[self.curAnim]:draw(self.texOne, roundx+offsetx,
-    roundy+offsety)
+  self.anims:draw(self.texOne, roundx+offsetx, roundy+offsety)
   love.graphics.setColor(megaMan.colorTwo[self.player][1]/255, megaMan.colorTwo[self.player][2]/255, megaMan.colorTwo[self.player][3]/255, 1)
-  self.animations[self.curAnim]:draw(self.texTwo, roundx+offsetx,
-    roundy+offsety)
+  self.anims:draw(self.texTwo, roundx+offsetx, roundy+offsety)
   love.graphics.setColor(1, 1, 1, 1)
-  self.animations[self.curAnim]:draw(self.texFace, roundx+offsetx, roundy+offsety)
+  self.anims:draw(self.texFace, roundx+offsetx, roundy+offsety)
   
   if self.weaponSwitchTimer ~= 70 then
     love.graphics.setColor(1, 1, 1, 1)

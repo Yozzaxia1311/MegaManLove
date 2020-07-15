@@ -15,7 +15,7 @@ stageSelect = entity:extend()
 
 megautils.loadResource("assets/sfx/ascend.ogg", "selected")
 megautils.loadResource("assets/sfx/cursorMove.ogg", "cursorMove")
-megautils.loadResource("protoGrid", 32, 32, 288, 176, 0, 96)
+megautils.loadResource(0, 96, 32, 32, "protoGrid")
 
 function stageSelect:new()
   stageSelect.super.new(self)
@@ -23,7 +23,7 @@ function stageSelect:new()
   self.transform.x = 24
   self.blinkQuad = love.graphics.newQuad(0, 128, 48, 48, 288, 176)
   self.megaQuad = love.graphics.newQuad(32, 32, 32, 32, 288, 176)
-  self.protoAnim = anim8.newAnimation(megautils.getResource("protoGrid")("1-4", 1), 1/28, "pauseAtStart")
+  self.protoAnim = megautils.newAnimation("protoGrid", {"1-4", 1}, 1/28, "pauseAtStart")
   self.protoAnim:pause()
   self.bassQuad = love.graphics.newQuad(128, 32, 32, 32, 288, 176)
   self.rollQuad = love.graphics.newQuad(224, 32, 32, 32, 288, 176)
@@ -138,7 +138,7 @@ function stageSelect:update(dt)
     end
   elseif control.selectPressed[1] and not self.stop then
     self.stop = true
-    megautils.transitionToState("assets/states/menus/menu.state.lua")
+    megautils.transitionToState("assets/states/menus/menu.state.tmx")
     megautils.stopMusic()
   else
     self.timer = math.wrap(self.timer+1, 0, 14)

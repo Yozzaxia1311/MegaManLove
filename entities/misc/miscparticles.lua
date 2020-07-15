@@ -1,7 +1,7 @@
 megautils.loadResource("assets/misc/particles.png", "particles", true)
-megautils.loadResource("slideParticleGrid", 8, 8, 128, 98, true)
-megautils.loadResource("explodeParticleGrid", 24, 24, 128, 98, 0, 46, true)
-megautils.loadResource("damageSteamGrid", 5, 8, 128, 98, 108, 28, true)
+megautils.loadResource(8, 8, "slideParticleGrid", true)
+megautils.loadResource(0, 46, 24, 24, "explodeParticleGrid", true)
+megautils.loadResource(108, 28, 5, 8, "damageSteamGrid", true)
 
 slideParticle = basicEntity:extend()
 
@@ -11,7 +11,7 @@ function slideParticle:new(x, y, side, g)
   self.transform.x = x
   self:setRectangleCollision(8, 8)
   self.tex = megautils.getResource("particles")
-  self.anim = anim8.newAnimation(megautils.getResource("slideParticleGrid")("1-3",1), 1/10)
+  self.anim = megautils.newAnimation("slideParticleGrid", {"1-3", 1}, 1/10)
   self.side = side
   self.anim.flippedV = g < 0
 end
@@ -29,12 +29,8 @@ function slideParticle:begin()
   self:addToGroup("removeOnTransition")
 end
 
-function slideParticle:face(n)
-  self.anim.flippedH = (n == 1) and true or false
-end
-
 function slideParticle:update(dt)
-  self:face(self.side)
+  self.anim.flipX = self.side == 1
   self.anim:update(defaultFramerate)
   if self.anim.looped then
     megautils.removeq(self)
@@ -56,7 +52,7 @@ function damageSteam:new(x, y, g)
   self.transform.x = x
   self:setRectangleCollision(5, 8)
   self.tex = megautils.getResource("particles")
-  self.anim = anim8.newAnimation(megautils.getResource("damageSteamGrid")("1-3",1), 1/8)
+  self.anim = megautils.newAnimation("damageSteamGrid", {"1-3", 1}, 1/8)
   self.anim.flippedV = g < 0
 end
 
@@ -141,7 +137,7 @@ function angleParticle:new(x, y, a)
   self.transform.x = x
   self:setRectangleCollision(2, 8)
   self.tex = megautils.getResource("particles")
-  self.anim = anim8.newAnimation(megautils.getResource("slideParticleGrid")("1-3",1), 1/10)
+  self.anim = megautils.newAnimation("slideParticleGrid", {"1-3", 1}, 1/10)
   self.once = false
   self.velocity = velocity()
   self.velocity.velx = megautils.calcX(a)
@@ -164,12 +160,8 @@ function angleParticle:begin()
   self:addToGroup("removeOnTransition")
 end
 
-function angleParticle:face(n)
-  self.anim.flippedH = (n == 1) and true or false
-end
-
 function angleParticle:update(dt)
-  self:face(self.side)
+  self.anim.flipX = self.side == 1
   self.anim:update(defaultFramerate)
   self:moveBy(self.velocity.velx, self.velocity.vely)
   if self.anim.looped then
@@ -236,7 +228,7 @@ function explodeParticle:new(x, y, angle, spd)
   self.transform.x = x
   self:setRectangleCollision(24, 24)
   self.tex = megautils.getResource("particles")
-  self.anim = anim8.newAnimation(megautils.getResource("explodeParticleGrid")("1-5", 1), 1/10)
+  self.anim = megautils.newAnimation("explodeParticleGrid", {"1-5", 1}, 1/10)
   self.velocity = velocity()
   self.velocity.velx = megautils.calcX(angle)*spd
   self.velocity.vely = megautils.calcY(angle)*spd
@@ -276,7 +268,7 @@ function absorbParticle:new(x, y, towards, spd)
   self.transform.x = x
   self:setRectangleCollision(24, 24)
   self.tex = megautils.getResource("particles")
-  self.anim = anim8.newAnimation(megautils.getResource("explodeParticleGrid")("1-5", 1), 1/10)
+  self.anim = megautils.newAnimation("explodeParticleGrid", {"1-5", 1}, 1/10)
   self.towards = towards
   self.startX = x
   self.startY = y
@@ -353,7 +345,7 @@ function smallBlast:new(x, y, spd)
   self:setRectangleCollision(24, 24)
   self.tex = megautils.getResource("particles")
   self.spd = spd or 0.065
-  self.anim = anim8.newAnimation(megautils.getResource("explodeParticleGrid")("1-5", 1), self.spd)
+  self.anim = megautils.newAnimation("explodeParticleGrid", {"1-5", 1}, self.spd)
 end
 
 function smallBlast:recycle(x, y, spd)

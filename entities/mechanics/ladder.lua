@@ -11,10 +11,15 @@ function ladder:new(x, y, w, h)
   self:setRectangleCollision(w, h)
   self.dspwn = dspwn
   self.solidType = collision.ONEWAY
+  self.ladder = true
 end
 
 function ladder:begin()
   self:addToGroup("ladder")
   self:addToGroup("despawnable")
   self:addToGroup("solid")
+end
+
+function ladder:update(dt)
+  collision.doCollision(self)
 end

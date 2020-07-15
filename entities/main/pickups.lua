@@ -2,11 +2,11 @@ megautils.loadResource("assets/misc/particles.png", "particles", true)
 megautils.loadResource("assets/misc/particlesOutline.png", "particlesOutline", true)
 megautils.loadResource("assets/misc/particlesOne.png", "particlesOne", true)
 megautils.loadResource("assets/misc/particlesTwo.png", "particlesTwo", true)
-megautils.loadResource("smallHealthGrid", 8, 8, 128, 98, 24, 0, true)
-megautils.loadResource("healthGrid", 16, 16, 128, 98, 40, 0, true)
-megautils.loadResource("smallEnergyGrid", 8, 8, 128, 98, 72, 0, true)
-megautils.loadResource("energyGrid", 16, 12, 128, 98, 88, 0, true)
-megautils.loadResource("tankGrid", 16, 16, 128, 98, 72, 12, true)
+megautils.loadResource(24, 0, 8, 8, "smallHealthGrid", true)
+megautils.loadResource(40, 0, 16, 16, "healthGrid", true)
+megautils.loadResource(72, 0, 8, 8, "smallEnergyGrid", true)
+megautils.loadResource(88, 0, 16, 12, "energyGrid", true)
+megautils.loadResource(72, 12, 16, 16, "tankGrid", true)
 
 smallHealth = entity:extend()
 
@@ -23,7 +23,7 @@ function smallHealth:new(x, y, despwn, id, spawner)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(8, 6)
-  self.anim = anim8.newAnimation(megautils.getResource("smallHealthGrid")("1-2", 1), 1/8)
+  self.anim = megautils.newAnimation("smallHealthGrid", {"1-2", 1}, 1/8)
   self.id = id
   self.spawner = spawner
   self.t = megautils.getResource("particles")
@@ -123,7 +123,7 @@ function health:new(x, y, despwn, id, spawner)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(16, 14)
-  self.anim = anim8.newAnimation(megautils.getResource("healthGrid")("1-2", 1), 1/8)
+  self.anim = megautils.newAnimation("healthGrid", {"1-2", 1}, 1/8)
   self.id = id
   self.spawner = spawner
   self.t = megautils.getResource("particles")
@@ -223,7 +223,7 @@ function smallEnergy:new(x, y, despwn, id, spawner)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(8, 6)
-  self.anim = anim8.newAnimation(megautils.getResource("smallEnergyGrid")("1-2", 1), 1/8)
+  self.anim = megautils.newAnimation("smallEnergyGrid", {"1-2", 1}, 1/8)
   self.id = id
   self.spawner = spawner
   self.texOutline = megautils.getResource("particlesOutline")
@@ -332,7 +332,7 @@ function energy:new(x, y, despwn, id, spawner)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(16, 10)
-  self.anim = anim8.newAnimation(megautils.getResource("energyGrid")("1-2", 1), 1/8)
+  self.anim = anim8.newAnimation("energyGrid", {"1-2", 1}, 1/8)
   self.id = id
   self.spawner = spawner
   self.texOutline = megautils.getResource("particlesOutline")
@@ -598,7 +598,7 @@ function eTank:new(x, y, despwn, id, spawner)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(16, 15)
-  self.anim = anim8.newAnimation(megautils.getResource("tankGrid")(1, 1, 2, 2), 1/8)
+  self.anim = megautils.newAnimation("tankGrid", {1, 1, 2, 2}, 1/8)
   self.id = id
   self.spawner = spawner
   self.texOutline = megautils.getResource("particlesOutline")
@@ -704,7 +704,7 @@ function wTank:new(x, y, despwn, id, spawner)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(16, 15)
-  self.anim = anim8.newAnimation(megautils.getResource("tankGrid")(2, 2, 2, 1), 1/8)
+  self.anim = megautils.newAnimation("tankGrid", {2, 2, 2, 1}, 1/8)
   self.id = id
   self.spawner = spawner
   self.texOutline = megautils.getResource("particlesOutline")

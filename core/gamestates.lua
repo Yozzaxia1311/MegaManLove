@@ -97,17 +97,31 @@ function states.set(n, before, after)
     control.record.seed = love.math.getRandomSeed()
   end
   
+  if megautils.reloadState then
+    for k, v in pairs(megautils.reloadStateFuncs) do
+      v()
+    end
+  end
+  
   if not states.currentChunk or states.current ~= sp then
     states.currentChunk = love.filesystem.load(sp)
   end
   states.currentState = states.currentChunk()
   states.currentState.system = entitySystem()
+  states.current = nick
   states.switched = true
   
   if after then after() end
   
   if map then
-    states.currentState.system:adde(map)
+    if megautils.reloadState and megautils.resetGameObjects then
+      for k, v in pairs(megautils.resetGameObjectsFuncs) do
+        v()
+      end
+      states.currentState:init()
+    end
+    
+    states.currentState.system:adde(map):addObjects()
     
     if mapArgs.fadeIn then
       states.currentState.system:add(fade, false):setAfter(fade.remove)
@@ -115,13 +129,6 @@ function states.set(n, before, after)
     
     if mapArgs.mPath then
       megautils.playMusic(mapArgs.mPath, mapArgs.mLoop, mapArgs.mLoopPoint, mapArgs.mLoopEndPoint, mapArgs.mVolume)
-    end
-    
-    if megautils.reloadState and megautils.resetGameObjects then
-      for k, v in pairs(megautils.resetGameObjectsFuncs) do
-        v()
-      end
-      states.currentState:init()
     end
   end
   

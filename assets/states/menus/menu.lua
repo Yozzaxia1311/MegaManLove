@@ -55,7 +55,7 @@ function menuSelect:update(dt)
       elseif self.pick == 2 then
         self.picked = true
         self.section = -1
-        globals.lastStateName = states.current
+        globals.lastStateName = megautils.getCurrentState()
         megautils.transitionToState("assets/states/menus/rebind.state.lua")
       elseif self.pick == 3 then
         megautils.playSound("selected")

@@ -1,5 +1,5 @@
 megautils.loadResource("assets/sfx/splash.ogg", "splash")
-megautils.loadResource("splashGrid", 32, 28, 128, 98, 0, 70)
+megautils.loadResource(0, 70, 32, 28, "splashGrid")
 
 splash = basicEntity:extend()
 
@@ -10,7 +10,7 @@ function splash:new(offx, offy, follow, side)
   self.side = side
   self:setRectangleCollision(32, 28)
   self.tex = megautils.getResource("particles")
-  self.anim = anim8.newAnimation(megautils.getResource("splashGrid")("1-4", 1), 1/8)
+  self.anim = megautils.newAnimation("splashGrid", {"1-4", 1}, 1/8)
   self.rot = math.rad(side==-1 and 0 or 180)
   self.follow = follow
   if self.follow then

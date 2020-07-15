@@ -250,7 +250,9 @@ function weaponHandler:unregister(slot)
   self.segments[slot] = nil
   self.energy[slot] = nil
   self.renderedWE[slot] = nil
-  self.slots[self.weapons[slot]] = nil
+  if self.weapons[slot] then
+    self.slots[self.weapons[slot]] = nil
+  end
   self.colorOne[slot] = nil
   self.colorTwo[slot] = nil
   self.colorOutline[slot] = nil

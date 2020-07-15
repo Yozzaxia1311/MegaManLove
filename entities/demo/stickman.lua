@@ -101,21 +101,20 @@ function stickMan:update(dt)
       megaMan.mainPlayer.velocity.velx = 0
       megaMan.mainPlayer:resetStates()
       if not megaMan.mainPlayer.ground then
-        megaMan.mainPlayer.curAnim = "jump"
+        megaMan.mainPlayer.anims:set("jump")
       end
       megaMan.mainPlayer.side = self.transform.x>megaMan.mainPlayer.transform.x and 1 or -1
-      megaMan.mainPlayer:face(megaMan.mainPlayer.side)
+      megaMan.mainPlayer.anims.flipX = megaMan.mainPlayer.side == 1
     end
   elseif self.s == 1 then
     if self.ss == 1 then
       if megaMan.mainPlayer then
         collision.doGrav(megaMan.mainPlayer)
         megaMan.mainPlayer:phys()
-        megaMan.mainPlayer.curAnim = "jump"
         if megaMan.mainPlayer.ground then
           self.ss = 0
-          megaMan.mainPlayer.curAnim = "idle"
           self.s = 2
+          megaMan.mainPlayer.anims:set("idle")
           megautils.playMusic("assets/sfx/music/boss.wav", true, 162898, 444759)
           self.canDraw.global = true
         end
@@ -219,37 +218,41 @@ function megamanStick:new()
   megamanStick.super.new(self)
   self.transform.y = -60
   self.transform.x = 100
+  local grid
   if globals.skin == "mega" then
     self.texOutline = megautils.loadResource("assets/players/megaman/megaManOutline.png", "megaManOutline")
     self.texOne = megautils.loadResource("assets/players/megaman/megaManOne.png", "megaManOne")
     self.texTwo = megautils.loadResource("assets/players/megaman/megaManTwo.png", "megaManTwo")
     self.texFace = megautils.loadResource("assets/players/megaman/megaManFace.png", "megaManFace")
-    self.grid = megautils.loadResource("megaManGrid", 41, 30, 164, 330)
+    megautils.loadResource(41, 30, "megaManGrid")
+    grid = "megaManGrid"
   elseif globals.skin == "proto" then
     self.texOutline = megautils.loadResource("assets/players/proto/protoManOutline.png", "protoManOutline")
     self.texOne = megautils.loadResource("assets/players/proto/protoManOne.png", "protoManOne")
     self.texTwo = megautils.loadResource("assets/players/proto/protoManTwo.png", "protoManTwo")
     self.texFace = megautils.loadResource("assets/players/proto/protoManFace.png", "protoManFace")
-    self.grid = megautils.loadResource("megaManGrid", 41, 30, 164, 330)
+    megautils.loadResource(41, 30, "megaManGrid")
+    grid = "megaManGrid"
   elseif globals.skin == "bass" then
     self.texOutline = megautils.loadResource("assets/players/bass/bassOutline.png", "bassOutline")
     self.texOne = megautils.loadResource("assets/players/bass/bassOne.png", "bassOne")
     self.texTwo = megautils.loadResource("assets/players/bass/bassTwo.png", "bassTwo")
     self.texFace = megautils.loadResource("assets/players/bass/bassFace.png", "bassFace")
-    self.grid = megautils.loadResource("bassGrid", 45, 41, 180, 533)
+    megautils.loadResource(45, 41, "bassGrid")
+    grid = "bassGrid"
   elseif globals.skin == "roll" then
     self.texOutline = megautils.loadResource("assets/players/roll/rollOutline.png", "rollOutline")
     self.texOne = megautils.loadResource("assets/players/roll/rollOne.png", "rollOne")
     self.texTwo = megautils.loadResource("assets/players/roll/rollTwo.png", "rollTwo")
     self.texFace = megautils.loadResource("assets/players/roll/rollFace.png", "rollFace")
-    self.grid = megautils.loadResource("rollGrid", 45, 34, 180, 374)
+    megautils.loadResource(45, 34, "rollGrid")
+    grid = "rollGrid"
   end
   weapons.resources.stickWeapon()
   self.curAnim = pose and "pose" or "idle"
-  self.animations = {}
-  self.animations.idle = anim8.newAnimation(self.grid(1, 1, 2, 1), {2.5, 0.1})
-  self.animations.idleShoot = anim8.newAnimation(self.grid(1, 4), 1)
-  self:face(1)
+  self.anims = animationSet()
+  self.anims:add("idle", megautils.newAnimation(grid, {1, 1, 2, 1}, globals.skin == "proto" and (1/8) or {2.5, 0.1}))
+  self.anims:add("idleShoot", megautils.newAnimation(grid, {1, 4}))
   self.text = "WEAPON GET... STICK WEAPON!"
   self.pos = 0
   self.textTimer = 0
@@ -268,12 +271,8 @@ function megamanStick:new()
   self.wh.currentSlot = 1
 end
 
-function megamanStick:face(n)
-  self.animations[self.curAnim].flippedH = (n == 1) and true or false
-end
-
 function megamanStick:update(dt)
-  self.animations[self.curAnim]:update(defaultFramerate)
+  self.anims:update(defaultFramerate)
   if self.s == 0 then
     self.transform.y = math.min(self.transform.y+10, 104)
     if self.transform.y == 104 then
@@ -348,11 +347,10 @@ function megamanStick:update(dt)
   end
   self.shootTimer = math.min(self.shootTimer+1, 14)
   if self.shootTimer == 14 then
-    self.curAnim = "idle"
+    self.anims:set("idle")
   else
-    self.curAnim = "idleShoot"
+    self.anims:set("idleShoot")
   end
-  self:face(1)
 end
 
 function megamanStick:draw()
