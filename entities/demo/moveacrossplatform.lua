@@ -1,14 +1,13 @@
 megautils.loadResource("assets/global/entities/moveAcrossPlatform.png", "moveArossPlatform")
 
 addObjects.register("moveAcrossPlatform", function(v)
-  megautils.add(spawner, v.x-4, v.y-4, 32+8, 16+8, function(s)
-    megautils.add(moveAcrossPlatform, s.transform.x+4, s.transform.y+4, v.properties.toX, v.properties.toY, s)
-  end)
+  megautils.add(spawner, v.x-4, v.y-4, 40, 24, nil,
+    moveAcrossPlatform, v.x, v.y, v.properties.toX, v.properties.toY)
 end)
 
 moveAcrossPlatform = entity:extend()
 
-function moveAcrossPlatform:new(x, y, toX, toY, s)
+function moveAcrossPlatform:new(x, y, toX, toY)
   moveAcrossPlatform.super.new(self)
   self.solidType = collision.SOLID
   self.transform.x = x
@@ -16,7 +15,6 @@ function moveAcrossPlatform:new(x, y, toX, toY, s)
   self:setRectangleCollision(32, 16)
   self.tex = megautils.getResource("moveArossPlatform")
   self.quad = quad(0, 0, 32, 16)
-  self.spawner = s
   self.velocity = velocity()
   self.tween = tween.new(1, self.transform, {x=toX, y=toY}, "inOutBack")
   self.state = 0
@@ -26,12 +24,6 @@ function moveAcrossPlatform:begin()
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
   self:addToGroup("solid")
-end
-
-function moveAcrossPlatform:removed()
-  if self.spawner then
-    self.spawner.canSpawn = true
-  end
 end
 
 function moveAcrossPlatform:draw()

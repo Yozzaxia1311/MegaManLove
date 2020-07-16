@@ -415,12 +415,19 @@ concmd["lockcheats"] = {
 }
 
 concmd["give"] = {
-  helptext = "spawn registered entity",
+  helptext = "spawn entity",
   flags = {"cheat"},
   fun = function(cmd)
       if megaMan.mainPlayer and cmd[2] then
-        addObjects.add({{name=cmd[2], x=megaMan.mainPlayer.transform.x+numberSanitize(cmd[3]),
-          y=megaMan.mainPlayer.transform.y+numberSanitize(cmd[4])}})
+        if _G[cmd[2]] then
+          local args = {_G[cmd[2]]}
+          for i=3, #cmd do
+            args[#arg+1] = tonumber(cmd[i]) or toboolean(cmd[i]) or cmd[i]
+          end
+          megautils.add(unpack(args))
+        else
+          console.print("Entity \"" .. cmd[2] .. "\" does not exist in global context.")
+        end
       end
     end
 }

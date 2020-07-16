@@ -14,7 +14,6 @@ function entitySystem:new()
   self.all = {}
   self.addQueue = {}
   self.removeQueue = {}
-  self.beginQueue = {}
   self.recycle = {}
   self.doSort = false
 end
@@ -81,11 +80,7 @@ function entitySystem:add(c, ...)
   self.all[#self.all+1] = e
   e.isRemoved = false
   e.isAdded = true
-  if self.doBeginQueue then
-    self.beginQueue[#self.beginQueue+1] = e
-  else
-    e:begin()
-  end
+  e:begin()
   e.previousX = e.transform.x
   e.previousY = e.transform.y
   e.epX = e.previousX
@@ -117,11 +112,7 @@ function entitySystem:adde(e)
   self.all[#self.all+1] = e
   e.isRemoved = false
   e.isAdded = true
-  if self.doBeginQueue then
-    self.beginQueue[#self.beginQueue+1] = e
-  else
-    e:begin()
-  end
+  e:begin()
   e.previousX = e.transform.x
   e.previousY = e.transform.y
   e.epX = e.previousX
@@ -251,7 +242,6 @@ function entitySystem:remove(e)
     table.removevaluearray(self.entities, e.actualLayer)
   end
   table.quickremovevaluearray(self.all, e)
-  table.quickremovevaluearray(self.beginQueue, e)
   e.isAdded = false
   if e.recycle then
     if not self.recycle[e.__index] then
@@ -314,13 +304,6 @@ function entitySystem:drawQuality()
 end
 
 function entitySystem:update(dt)
-  if self.doBeginQueue then
-    for i=#self.beginQueue, 1, -1 do
-      self.beginQueue[i]:begin()
-      self.beginQueue[i] = nil
-    end
-    self.doBeginQueue = false
-  end
   if entitySystem.doBeforeUpdate then
     for i=1, #self.updates do
       local t = self.updates[i]
@@ -773,6 +756,9 @@ end
 
 function mapEntity:addObjects()
   addObjects.add(self:recursiveObjectFinder(self.map))
+  for k, v in pairs(megautils.postAddObjectsFuncs) do
+    v(self)
+  end
 end
 
 function mapEntity:update(dt)

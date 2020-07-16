@@ -4,12 +4,10 @@ megautils.loadResource("assets/sfx/enemyHit.ogg", "enemyHit")
 stickMan = entity:extend()
 
 addObjects.register("stickMan", function(v)
-  megautils.add(spawner, v.x, v.y, 12, 28, function(s)
-    megautils.add(stickMan, v.x, v.y, s)
-  end)
+  megautils.add(spawner, v.x, v.y, 12, 24, nil, stickMan, v.x, v.y)
 end)
 
-function stickMan:new(x, y, s)
+function stickMan:new(x, y)
   stickMan.super.new(self)
   self.transform.y = y
   self.transform.x = x
@@ -17,7 +15,6 @@ function stickMan:new(x, y, s)
   self.t = megautils.getResource("stickMan")
   self.side = -1
   self.s = 0
-  self.spawner = s
   self.canDraw.global = false
   self.ss = 1
   self.hBar = healthHandler({128, 128, 128}, {255, 255, 255}, {0, 0, 0}, nil, nil, 7)
@@ -136,12 +133,6 @@ function stickMan:update(dt)
   self:hurt(self:collisionTable(megaMan.allPlayers), -4, 80)
   self:updateIFrame()
   self:updateFlash()
-end
-
-function stickMan:removed()
-  if self.spawner then
-    self.spawner.canSpawn = true
-  end
 end
 
 function stickMan:draw()

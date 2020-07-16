@@ -95,6 +95,12 @@ megautils.resetGameObjectsFuncs.megaMan = function()
     megaMan.individualLanded = {}
   end
 
+megautils.postAddObjectsFuncs.megaMan = function()
+    if megaMan.mainPlayer and megaMan.mainPlayer.ready then
+      megautils.freeze(nil, "ready")
+    end
+  end
+
 megautils.difficultyChangeFuncs.megaMan = function(d)
     if d == "easy" then
       self.jumpAnimation.ps = "jumpProtoShield2"

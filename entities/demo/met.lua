@@ -7,18 +7,15 @@ megautils.loadResource("assets/sfx/reflect.ogg", "dink")
 met = entity:extend()
 
 addObjects.register("met", function(v)
-  megautils.add(spawner, v.x, v.y+2, 14, 14, function(s)
-      megautils.add(met, s.transform.x, s.transform.y, s)
-    end)
+  megautils.add(spawner, v.x, v.y+2, 14, 14, nil, met, v.x, v.y+2)
 end)
 
-function met:new(x, y, s)
+function met:new(x, y)
   met.super.new(self)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(14, 14)
   self.t = megautils.getResource("met")
-  self.spawner = s
   self.c = "safe"
   self.quads = {safe=quad(0, 0, 18, 15), up=quad(18, 0, 18, 15)}
   self.side = -1
@@ -141,12 +138,6 @@ end
 function met:draw()
   love.graphics.setColor(1, 1, 1, 1)
   self.quad[self.c]:draw(self.t, math.round(self.transform.x), math.round(self.transform.y))
-end
-
-function met:removed()
-  if self.spawner then
-    self.spawner.canSpawn = true
-  end
 end
 
 metBullet = basicEntity:extend()

@@ -13,10 +13,6 @@ function ready:new(text, blinks)
   self.width = self.text:len() * 8
 end
 
-function ready:begin()
-  megautils.freeze(megaMan.allPlayers, "ready")
-end
-
 function ready:update(dt)
   self.blinkTimer = math.min(self.blinkTimer+1, self.maxBlinkTime)
   if self.blinkTimer == self.maxBlinkTime then
@@ -24,7 +20,7 @@ function ready:update(dt)
     self.blinkCount = self.blinkCount + 1
     self.canDraw.global = not self.canDraw.global
     if self.blinkCount == self.blinks then
-      megautils.unfreeze(megaMan.allPlayers, "ready")
+      megautils.unfreeze(nil, "ready")
       megautils.removeq(self)
     end
   end

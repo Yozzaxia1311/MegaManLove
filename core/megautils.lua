@@ -27,6 +27,7 @@ megautils.addMapFuncs = {}
 megautils.removeMapFuncs = {}
 megautils.sectionChangeFuncs = {}
 megautils.difficultyChangeFuncs = {}
+megautils.postAddObjectsFuncs = {}
 
 --Player callback functions. These apply to all active players.
 megautils.playerCreatedFuncs = {}       --megautils.playerCreatedFuncs.exampleFunc = function(player) end

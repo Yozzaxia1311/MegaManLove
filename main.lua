@@ -17,17 +17,16 @@ function initEngine()
   -- Game globals.
   mmFont = love.graphics.newFont("assets/misc/mm.ttf", 8)
   globals.checkpoint = "start"
-  -- `globals.lifeSegements` is how big the player's healthbar is.
   globals.lifeSegments = 7
-  globals.maxLifeSegments = 7
-  globals.eTanks = 1
-  globals.maxETanks = 10
-  globals.wTanks = 1
-  globals.maxWTanks = 10
+  globals.eTanks = 0
+  globals.wTanks = 0
   globals.lives = 2
-  globals.maxLives = 10
   globals.startingLives = 2
   globals.playerCount = 1
+  
+  megautils.difficultyChangeFuncs.startingLives = function(d)
+      globals.startingLives = (d == "easy") and 3 or 2
+    end
   
   -- `globals.defeats` tells who you've defeated. Add to this to track what bosses you've defeated.
   globals.defeats = {}
@@ -52,13 +51,17 @@ function love.load()
   altEnterOnce = false
   scaleOnce = false
   deadZone = 0.8
-  maxPlayerCount = 4
   defaultFPS = 60
   defaultFramerate = 1/defaultFPS
   mapCacheSize = 3
   useConsole = love.keyboard
   nesShader = not isMobile and love.graphics.getSupported().glsl3 and love.graphics.newShader("assets/nesLUT.glsl")
   if nesShader then nesShader:send("pal", love.graphics.newImage("assets/nesLUT.png")) end
+  
+  maxPlayerCount = 4
+  maxLives = 10
+  maxETanks = 10
+  maxWTanks = 10
   
   love.filesystem.load("requirelibs.lua")()
   
