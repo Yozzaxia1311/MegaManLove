@@ -387,16 +387,12 @@ function megautils.draw(self)
 end
 
 function megautils.unload()
-  if megautils.reloadState then
-    if megautils.resetGameObjects then
-      for k, v in pairs(megautils.cleanFuncs) do
-        v()
-      end
-      megautils.unloadAllResources()
-      cartographer.cache = {}
-    end
-    megautils.frozen = {}
+  for k, v in pairs(megautils.cleanFuncs) do
+    v()
   end
+  megautils.unloadAllResources()
+  cartographer.cache = {}
+  megautils.frozen = {}
 end
 
 function megautils.addMapEntity(path)
