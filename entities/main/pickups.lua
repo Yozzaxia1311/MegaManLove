@@ -441,7 +441,6 @@ function life:new(x, y, despwn, id, spawner)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(16, 15)
-  self.quad = love.graphics.newQuad(104, 12, 16, 16, 128, 98)
   self.id = id
   self.spawner = spawner
   self.tex = megautils.getResource("particles")
@@ -450,10 +449,10 @@ function life:new(x, y, despwn, id, spawner)
   self.texOne = megautils.getResource("particlesOne")
   self.despawn = despwn == nil and self.id == nil or despwn
   self.quad = {}
-  self.quad.mega = love.graphics.newQuad(104, 12, 16, 16, 128, 98)
-  self.quad.proto = love.graphics.newQuad(56, 31, 16, 15, 128, 98)
-  self.quad.bass = love.graphics.newQuad(54, 16, 18, 15, 128, 98)
-  self.quad.roll = love.graphics.newQuad(38, 16, 16, 16, 128, 98)
+  self.quad.mega = quad(104, 12, 16, 16, 128, 98)
+  self.quad.proto = quad(56, 31, 16, 15, 128, 98)
+  self.quad.bass = quad(54, 16, 18, 15, 128, 98)
+  self.quad.roll = quad(38, 16, 16, 16, 128, 98)
   self.velocity = velocity()
   self.timer = 0
   self.blockCollision = true
@@ -545,19 +544,19 @@ function life:draw()
       end
     end
     love.graphics.setColor(1, 1, 1, 1)
-    love.graphics.draw(self.tex, self.quad[megaMan.mainPlayer.playerName],
+    self.quad[megaMan.mainPlayer.playerName]:draw(self.tex,
       math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, math.sign(self.gravity))
     love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255, megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
       megaMan.colorTwo[megaMan.mainPlayer.player][3]/255, 1)
-    love.graphics.draw(self.texTwo, self.quad[megaMan.mainPlayer.playerName],
+    self.quad[megaMan.mainPlayer.playerName]:draw(self.texTwo,
       math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, math.sign(self.gravity))
     love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
-    love.graphics.draw(self.texOutline, self.quad[megaMan.mainPlayer.playerName],
+    self.quad[megaMan.mainPlayer.playerName]:draw(self.texOutline,
       math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, math.sign(self.gravity))
     love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255, megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOne[megaMan.mainPlayer.player][3]/255, 1)
-    love.graphics.draw(self.texOne, self.quad[megaMan.mainPlayer.playerName],
+    self.quad[megaMan.mainPlayer.playerName]:draw(self.texOne,
       math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, math.sign(self.gravity))
   else
     if megautils.getPlayer(1) == "proto" then
@@ -573,13 +572,13 @@ function life:draw()
       end
     end
     love.graphics.setColor(1, 1, 1, 1)
-    love.graphics.draw(self.tex, self.quad[megautils.getPlayer(1)], math.round(self.transform.x), math.round(self.transform.y)+oy, 0, 1, math.sign(self.gravity))
+    self.quad[megautils.getPlayer(1)]:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y)+oy, 0, 1, math.sign(self.gravity))
     love.graphics.setColor(0, 232/255, 216/255, 1)
-    love.graphics.draw(self.texTwo, self.quad[megautils.getPlayer(1)], math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, math.sign(self.gravity))
+    self.quad[megautils.getPlayer(1)]:draw(self.texTwo, math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, math.sign(self.gravity))
     love.graphics.setColor(0, 0, 0, 1)
-    love.graphics.draw(self.texOutline, self.quad[megautils.getPlayer(1)], math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, math.sign(self.gravity))
+    self.quad[megautils.getPlayer(1)]:draw(self.texOutline, math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, math.sign(self.gravity))
     love.graphics.setColor(0, 120/255, 248/255, 1)
-    love.graphics.draw(self.texOne, self.quad[megautils.getPlayer(1)], math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, math.sign(self.gravity))
+    self.quad[megautils.getPlayer(1)]:draw(self.texOne, math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, math.sign(self.gravity))
   end
 end
 

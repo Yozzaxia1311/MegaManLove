@@ -21,12 +21,12 @@ function stageSelect:new()
   stageSelect.super.new(self)
   self.transform.y = 8
   self.transform.x = 24
-  self.blinkQuad = love.graphics.newQuad(0, 128, 48, 48, 288, 176)
-  self.megaQuad = love.graphics.newQuad(32, 32, 32, 32, 288, 176)
+  self.blinkQuad = quad(0, 128, 48, 48)
+  self.megaQuad = quad(32, 32, 32, 32)
   self.protoAnim = megautils.newAnimation("protoGrid", {"1-4", 1}, 1/28, "pauseAtStart")
   self.protoAnim:pause()
-  self.bassQuad = love.graphics.newQuad(128, 32, 32, 32, 288, 176)
-  self.rollQuad = love.graphics.newQuad(224, 32, 32, 32, 288, 176)
+  self.bassQuad = quad(128, 32, 32, 32)
+  self.rollQuad = quad(224, 32, 32, 32)
   --self.stickQuad = love.graphics.newQuad(32*2, 0, 32, 32, 288, 176)
   self.tex = megautils.getResource("mugshots")
   self.timer = 0
@@ -162,11 +162,11 @@ function stageSelect:draw()
     if megautils.getPlayer(1) == "proto" then
       self.protoAnim:draw(self.tex, 112, 88)
     elseif megautils.getPlayer(1) == "bass" then
-      love.graphics.draw(self.tex, self.bassQuad, 112, 88)
+      self.bassQuad:draw(self.tex, 112, 88)
     elseif megautils.getPlayer(1) == "roll" then
-      love.graphics.draw(self.tex, self.rollQuad, 112, 88)
+      self.rollQuad:draw(self.tex, 112, 88)
     else
-      love.graphics.draw(self.tex, self.megaQuad, 112, 88)
+      self.megaQuad:draw(self.tex, 112, 88)
     end
     
     if not globals.defeats.stickMan then
@@ -176,7 +176,7 @@ function stageSelect:draw()
     --Draw Dr. Wily icon here
   --end
   if (self.blink and not self.stop) or self.selected then
-    love.graphics.draw(self.tex, self.blinkQuad, self.transform.x, self.transform.y)
+    self.blinkQuad:draw(self.tex, self.transform.x, self.transform.y)
   end
 end
 

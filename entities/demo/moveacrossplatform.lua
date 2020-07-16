@@ -15,7 +15,7 @@ function moveAcrossPlatform:new(x, y, toX, toY, s)
   self.transform.y = y
   self:setRectangleCollision(32, 16)
   self.tex = megautils.getResource("moveArossPlatform")
-  self.quad = love.graphics.newQuad(0, 0, 32, 16, 32, 16)
+  self.quad = quad(0, 0, 32, 16)
   self.spawner = s
   self.velocity = velocity()
   self.tween = tween.new(1, self.transform, {x=toX, y=toY}, "inOutBack")
@@ -36,7 +36,7 @@ end
 
 function moveAcrossPlatform:draw()
   love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.draw(self.tex, self.quad, math.round(self.transform.x), math.round(self.transform.y))
+  self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
 end
 
 function moveAcrossPlatform:update(dt)

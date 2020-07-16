@@ -14,11 +14,11 @@ function healthHandler:new(colorOne, colorTwo, colorOutline, side, r, segments, 
   self.colorTwo = colorTwo
   self.colorOutline = colorOutline
   self.quads = {}
-  self.quads[0] = love.graphics.newQuad(0, 48, 8, 8, 232, 56)
-  self.quads[1] = love.graphics.newQuad(8, 48, 8, 8, 232, 56)
-  self.quads[2] = love.graphics.newQuad(8*2, 48, 8, 8, 232, 56)
-  self.quads[3] = love.graphics.newQuad(8*3, 48, 8, 8, 232, 56)
-  self.quads[4] = love.graphics.newQuad(8*4, 48, 8, 8, 232, 56)
+  self.quads[0] = quad(0, 48, 8, 8)
+  self.quads[1] = quad(8, 48, 8, 8)
+  self.quads[2] = quad(8*2, 48, 8, 8)
+  self.quads[3] = quad(8*3, 48, 8, 8)
+  self.quads[4] = quad(8*4, 48, 8, 8)
   self.segments = segments or 1
   self.side = side or 1
   self.health = self.segments*4
@@ -148,15 +148,15 @@ function healthHandler:draw()
     love.graphics.setColor(self.colorOutline[1]/255, 
       self.colorOutline[2]/255,
       self.colorOutline[3]/255, 1)
-    love.graphics.draw(self.barOutline, self.quads[bit], tx, ty, tr)
+    self.quads[bit]:draw(self.barOutline, tx, ty, tr)
     love.graphics.setColor(self.colorOne[1]/255, 
       self.colorOne[2]/255,
       self.colorOne[3]/255, 1)
-    love.graphics.draw(self.barOne, self.quads[bit], tx, ty, tr)
+    self.quads[bit]:draw(self.barOne, tx, ty, tr)
     love.graphics.setColor(self.colorTwo[1]/255, 
       self.colorTwo[2]/255,
       self.colorTwo[3]/255, 1)
-    love.graphics.draw(self.barTwo, self.quads[bit], tx, ty, tr)
+    self.quads[bit]:draw(self.barTwo, tx, ty, tr)
   end
   if self.player and globals.playerCount > 1 then
     love.graphics.setColor(0, 0, 0, 1)
@@ -186,11 +186,11 @@ function weaponHandler:new(side, r, slots)
   self.barTwo = megautils.getResource("barTwo")
   self.barOutline = megautils.getResource("barOutline")
   self.quads = {}
-  self.quads[0] = love.graphics.newQuad(0, 48, 8, 8, 232, 56)
-  self.quads[1] = love.graphics.newQuad(8, 48, 8, 8, 232, 56)
-  self.quads[2] = love.graphics.newQuad(8*2, 48, 8, 8, 232, 56)
-  self.quads[3] = love.graphics.newQuad(8*3, 48, 8, 8, 232, 56)
-  self.quads[4] = love.graphics.newQuad(8*4, 48, 8, 8, 232, 56)
+  self.quads[0] = quad(0, 48, 8, 8)
+  self.quads[1] = quad(8, 48, 8, 8)
+  self.quads[2] = quad(8*2, 48, 8, 8)
+  self.quads[3] = quad(8*3, 48, 8, 8)
+  self.quads[4] = quad(8*4, 48, 8, 8)
   self.segments = {}
   self.renderedWE = {}
   self.colorOne = {}
@@ -210,9 +210,9 @@ end
 
 function weaponHandler:drawIcon(i, on, x, y)
   if on == nil or on then
-    love.graphics.draw(self.iconTex, self.activeIcons[i], x, y)
+    self.activeIcons[i]:draw(self.iconTex, x, y)
   else
-    love.graphics.draw(self.iconTex, self.inactiveIcons[i], x, y)
+    self.inactiveIcons[i]:draw(self.iconTex, x, y)
   end
 end
 
@@ -237,8 +237,8 @@ function weaponHandler:register(slot, name, pn, colorone, colortwo, coloroutline
   self.colorTwo[slot] = colortwo
   self.colorOutline[slot] = coloroutline
   self.pauseNames[slot] = pn[1]
-  self.activeIcons[slot] = love.graphics.newQuad(pn[2][1], pn[2][2], pn[2][3], pn[2][4], self.iconTex:getDimensions())
-  self.inactiveIcons[slot] = love.graphics.newQuad(pn[3][1], pn[3][2], pn[3][3], pn[3][4], self.iconTex:getDimensions())
+  self.activeIcons[slot] = quad(pn[2][1], pn[2][2], pn[2][3], pn[2][4])
+  self.inactiveIcons[slot] = quad(pn[3][1], pn[3][2], pn[3][3], pn[3][4])
   
   if weapons.resources[name] then
     weapons.resources[name]()
@@ -360,11 +360,11 @@ function weaponHandler:draw(x, y)
     love.graphics.setColor(0, 0, 0, 1)
     local tx, ty, tr = self.transform.x-(self.rot=="x" and (8*i)*self.side or 0), 
       self.transform.y-(self.rot=="y" and (8*i)*self.side or 0), math.rad(self.rot=="x" and 90 or 0)
-    love.graphics.draw(self.barOutline, self.quads[bit], tx, ty, tr)
+    self.quads[bit]:draw(self.barOutline, tx, ty, tr)
     love.graphics.setColor(self.currentColorOne[1]/255, self.currentColorOne[2]/255, self.currentColorOne[3]/255, 1)
-    love.graphics.draw(self.barOne, self.quads[bit], tx, ty, tr)
+    self.quads[bit]:draw(self.barOne, tx, ty, tr)
     love.graphics.setColor(self.currentColorTwo[1]/255, self.currentColorTwo[2]/255, self.currentColorTwo[3]/255, 1)
-    love.graphics.draw(self.barTwo, self.quads[bit], tx, ty, tr)
+    self.quads[bit]:draw(self.barTwo, tx, ty, tr)
   end
 end
 

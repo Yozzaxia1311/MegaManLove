@@ -13,7 +13,7 @@ function banner:new()
   self.transform.x = 0
   self.tTwo = megautils.getResource("starField")
   self.tOne = megautils.getResource("starFieldOne")
-  self.quad = love.graphics.newQuad(0, 0, 256, 103, 256, 187)
+  self.quad = quad(0, 0, 256, 103)
   self:setLayer(0)
 end
 
@@ -23,19 +23,19 @@ end
 
 function banner:draw()
   love.graphics.setColor(banner.colorOne[1]/255, banner.colorOne[2]/255, banner.colorOne[3]/255, 1)
-  love.graphics.draw(self.tOne, self.quad, self.transform.x, self.transform.y)
+  self.quad:draw(self.tOne, self.transform.x, self.transform.y)
   love.graphics.setColor(banner.colorTwo[1]/255, banner.colorTwo[2]/255, banner.colorTwo[3]/255, 1)
-  love.graphics.draw(self.tTwo, self.quad, self.transform.x, self.transform.y)
+  self.quad:draw(self.tTwo, self.transform.x, self.transform.y)
 end
 
-smallStar = entity:extend()
+smallStar = basicEntity:extend()
 
 function smallStar:new(x, y, angle, spd)
   smallStar.super.new(self)
   self.transform.y = y
   self.transform.x = x
   self.t = megautils.getResource("starField")
-  self.quad = love.graphics.newQuad(25, 120, 3, 3, 256, 187)
+  self.quad = quad(25, 120, 3, 3)
   self.velocity = velocity()
   self.velocity.velx = megautils.calcX(angle) * spd
   self.velocity.vely = megautils.calcY(angle) * spd
@@ -49,17 +49,17 @@ end
 
 function smallStar:draw()
   love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.draw(self.t, self.quad, self.transform.x, self.transform.y)
+  self.quad:draw(self.t, self.transform.x, self.transform.y)
 end
 
-star = entity:extend()
+star = basicEntity:extend()
 
 function star:new(x, y, angle, spd)
   star.super.new(self)
   self.transform.y = y
   self.transform.x = x
   self.t = megautils.getResource("starField")
-  self.quad = love.graphics.newQuad(0, 120, 10, 6, 256, 187)
+  self.quad = quad(0, 120, 10, 6)
   self.velocity = velocity()
   self.velocity.velx = megautils.calcX(angle) * spd
   self.velocity.vely = megautils.calcY(angle) * spd
@@ -73,17 +73,17 @@ end
 
 function star:draw()
   love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.draw(self.t, self.quad, self.transform.x, self.transform.y)
+  self.quad:draw(self.t, self.transform.x, self.transform.y)
 end
 
-largeStar = entity:extend()
+largeStar = basicEntity:extend()
 
 function largeStar:new(x, y, angle, spd)
   largeStar.super.new(self)
   self.transform.y = y
   self.transform.x = x
   self.t = megautils.getResource("starField")
-  self.quad = love.graphics.newQuad(10, 120, 15, 11, 256, 187)
+  self.quad = quad(10, 120, 15, 11)
   self.velocity = velocity()
   self.velocity.velx = megautils.calcX(angle) * spd
   self.velocity.vely = megautils.calcY(angle) * spd
@@ -97,7 +97,7 @@ end
 
 function largeStar:draw()
   love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.draw(self.t, self.quad, math.round(self.transform.x), math.round(self.transform.y))
+  self.quad:draw(self.t, math.round(self.transform.x), math.round(self.transform.y))
 end
 
 megautils.cleanFuncs.starfield = function()

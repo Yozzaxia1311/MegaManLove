@@ -20,7 +20,7 @@ function met:new(x, y, s)
   self.t = megautils.getResource("met")
   self.spawner = s
   self.c = "safe"
-  self.quads = {safe=love.graphics.newQuad(0, 0, 18, 15, 42, 15), up=love.graphics.newQuad(18, 0, 18, 15, 42, 15)}
+  self.quads = {safe=quad(0, 0, 18, 15), up=quad(18, 0, 18, 15)}
   self.side = -1
   self.s = 0
   self.health = 2
@@ -131,6 +131,8 @@ function met:update(dt)
   self:hurt(self:collisionTable(megaMan.allPlayers), megautils.diffValue(-2, {easy=-1, normal=-2, hard=-3}), 80)
   self:updateIFrame()
   self:updateFlash()
+  self.quads[self.c].flipX = self.side == 1
+  self.quads[self.c].flipY = self.gravity < 0
   if megautils.outside(self) then
     megautils.removeq(self)
   end
@@ -138,14 +140,7 @@ end
 
 function met:draw()
   love.graphics.setColor(1, 1, 1, 1)
-  local offx, offy = -2, 0
-  if self.side == 1 then
-    offx = 16
-  end
-  if self.gravity < 0 then
-    offy = 15
-  end
-  love.graphics.draw(self.t, self.quads[self.c], self.transform.x+offx, self.transform.y+offy, 0, -self.side, math.sign(self.gravity))
+  self.quad[self.c]:draw(self.t, math.round(self.transform.x), math.round(self.transform.y))
 end
 
 function met:removed()
@@ -162,7 +157,7 @@ function metBullet:new(x, y, vx, vy)
   self.transform.y = y
   self:setRectangleCollision(6, 6)
   self.tex = megautils.getResource("met")
-  self.quad = love.graphics.newQuad(36, 0, 6, 6, 42, 15)
+  self.quad = quad(36, 0, 6, 6)
   self.velocity = velocity()
   self.velocity.velx = vx
   self.velocity.vely = vy
@@ -208,7 +203,7 @@ end
 
 function metBullet:draw()
   love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.draw(self.tex, self.quad, math.round(self.transform.x), math.round(self.transform.y))
+  self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
 end
 
 megautils.cleanFuncs.met = function()

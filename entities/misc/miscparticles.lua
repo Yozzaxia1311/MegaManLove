@@ -90,7 +90,7 @@ function airBubble:new(x, y)
   self.transform.x = x
   self:setRectangleCollision(2, 8)
   self.tex = megautils.getResource("particles")
-  self.quad = love.graphics.newQuad(104, 28, 4, 4, 128, 98)
+  self.quad = quad(104, 28, 4, 4)
   self.off = 0
   self.timer = 0
 end
@@ -126,7 +126,7 @@ end
 
 function airBubble:draw()
   love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.draw(self.tex, self.quad, math.round(self.transform.x)-self.off, math.round(self.transform.y))
+  self.quad:draw(self.tex, math.round(self.transform.x)-self.off, math.round(self.transform.y))
 end
 
 angleParticle = entity:extend()
@@ -185,7 +185,7 @@ function harm:new(e)
   self.transform.y = (self.follow.transform.y+self.follow.collisionShape.h/2)-24/2
   self:setRectangleCollision(24, 24)
   self.tex = megautils.getResource("particles")
-  self.quad = love.graphics.newQuad(0, 22, 24, 24, 128, 98)
+  self.quad = quad(0, 22, 24, 24)
   self.timer = 0
 end
 
@@ -217,7 +217,7 @@ end
 
 function harm:draw()
   love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.draw(self.tex, self.quad, self.transform.x, self.transform.y)
+  self.quad:draw(self.tex, self.transform.x, self.transform.y)
 end
 
 explodeParticle = entity:extend()

@@ -32,7 +32,7 @@ function protoSemiBuster:new(x, y, dir, wpn, skin, grav)
   self.transform.x = x
   self:setRectangleCollision(10, 10)
   self.tex = megautils.getResource(skin)
-  self.quad = love.graphics.newQuad(0, 0, 10, 10, 68, 10)
+  self.quad = quad(0, 0, 10, 10)
   self.velocity = velocity()
   self.velocity.velx = dir * 5
   self.side = dir
@@ -69,7 +69,7 @@ end
 
 function protoSemiBuster:draw()
   love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.draw(self.tex, self.quad, math.round(self.transform.x), math.round(self.transform.y)-3)
+  self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y)-3)
 end
 
 protoChargedBuster = basicEntity:extend()
@@ -215,7 +215,7 @@ function megaBuster:new(x, y, dir, wpn, grav)
   self.transform.x = x
   self:setRectangleCollision(8, 6)
   self.tex = megautils.getResource("busterTex")
-  self.quad = love.graphics.newQuad(0, 31, 8, 6, 133, 47)
+  self.quad = quad(0, 31, 8, 6)
   self.velocity = velocity()
   self.velocity.velx = dir * 5
   self.side = dir
@@ -263,7 +263,7 @@ end
 
 function megaBuster:draw()
   love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.draw(self.tex, self.quad, math.round(self.transform.x), math.round(self.transform.y))
+  self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
 end
 
 megaSemiBuster = basicEntity:extend()

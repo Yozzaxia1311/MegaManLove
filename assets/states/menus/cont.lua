@@ -18,8 +18,8 @@ contPanels = entity:extend()
 function contPanels:new()
   contPanels.super.new(self)
   self.tex = megautils.getResource("cont")
-  self.quadOne = love.graphics.newQuad(0, 0, 176, 48, 176, 104)
-  self.quadTwo = love.graphics.newQuad(0, 48, 160, 56, 176, 104)
+  self.quadOne = quad(0, 0, 176, 48)
+  self.quadTwo = quad(0, 48, 160, 56)
   self.state = 0
   self.timer = 0
 end
@@ -39,9 +39,9 @@ end
 
 function contPanels:draw()
   if self.state == 1 then
-    love.graphics.draw(self.tex, self.quadTwo, 48, 128)
+    self.quadTwo:draw(self.tex, 48, 128)
   end
-  love.graphics.draw(self.tex, self.quadOne, 40, 56)
+  self.quadOne:draw(self.tex, 40, 56)
 end
 
 contSelect = entity:extend()

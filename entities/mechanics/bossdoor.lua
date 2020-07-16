@@ -19,7 +19,7 @@ function bossDoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt, n, tw, th, ts)
   self.tex = megautils.getResource("bossDoor")
   self.scrollx = scrollx
   self.scrolly = scrolly
-  self.quad = love.graphics.newQuad(0, 0, 32, 16, 32, 16)
+  self.quad = quad(0, 0, 32, 16)
   self.timer = 0
   self.segments = seg
   self.maxSegments = seg
@@ -297,9 +297,9 @@ function bossDoor:draw()
   love.graphics.setColor(1, 1, 1, 1)
   for i=1, self.segments do
     if self.dir == "left" or self.dir == "right" then
-      love.graphics.draw(self.tex, self.quad, self.transform.x, self.transform.y + (i*16) - 16)
+      self.quad:draw(self.tex, self.transform.x, self.transform.y + (i*16) - 16)
     else
-      love.graphics.draw(self.tex, self.quad, self.transform.x + (i*16), self.transform.y, math.rad(90))
+      self.quad:draw(self.tex, self.transform.x + (i*16), self.transform.y, math.rad(90))
     end
   end
 end

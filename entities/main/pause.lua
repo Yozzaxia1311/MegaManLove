@@ -24,13 +24,13 @@ function mmWeaponsMenu:new(w, h, p)
   self.texOutline = megautils.getResource("particlesOutline")
   self.texOne = megautils.getResource("particlesOne")
   self.texTwo = megautils.getResource("particlesTwo")
-  self.quadE = love.graphics.newQuad(72, 12, 16, 16, 128, 98)
-  self.quadW = love.graphics.newQuad(88, 12, 16, 16, 128, 98)
+  self.quadE = quad(72, 12, 16, 16, 128, 98)
+  self.quadW = quad(88, 12, 16, 16, 128, 98)
   self.heads = {}
-  self.heads.mega = love.graphics.newQuad(104, 12, 16, 16, 128, 98)
-  self.heads.proto = love.graphics.newQuad(56, 31, 16, 15, 128, 98)
-  self.heads.bass = love.graphics.newQuad(54, 16, 18, 15, 128, 98)
-  self.heads.roll = love.graphics.newQuad(38, 16, 16, 16, 128, 98)
+  self.heads.mega = quad(104, 12, 16, 16, 128, 98)
+  self.heads.proto = quad(56, 31, 16, 15, 128, 98)
+  self.heads.bass = quad(54, 16, 18, 15, 128, 98)
+  self.heads.roll = quad(38, 16, 16, 16, 128, 98)
   self.w = w
   self.h = h
   self.player = p
@@ -326,32 +326,32 @@ function mmWeaponsMenu:draw()
     oy = 1
   end
   love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.draw(self.tex, self.heads[self.player.playerName], tx+ox, ty+oy)
+  self.heads[self.player.playerName]:draw(self.tex, tx+ox, ty+oy)
   love.graphics.setColor(megaMan.colorTwo[self.player.player][1]/255, megaMan.colorTwo[self.player.player][2]/255,
     megaMan.colorTwo[self.player.player][3]/255, 1)
-  love.graphics.draw(self.texTwo, self.heads[self.player.playerName], tx+ox, ty+oy)
+  self.heads[self.player.playerName]:draw(self.texTwo, tx+ox, ty+oy)
   love.graphics.setColor(megaMan.colorOutline[self.player.player][1]/255, megaMan.colorOutline[self.player.player][2]/255,
     megaMan.colorOutline[self.player.player][3]/255, 1)
-  love.graphics.draw(self.texOutline, self.heads[self.player.playerName], tx+ox, ty+oy)
+  self.heads[self.player.playerName]:draw(self.texOutline, tx+ox, ty+oy)
   love.graphics.setColor(megaMan.colorOne[self.player.player][1]/255, megaMan.colorOne[self.player.player][2]/255,
     megaMan.colorOne[self.player.player][3]/255, 1)
-  love.graphics.draw(self.texOne, self.heads[self.player.playerName], tx+ox, ty+oy)
+  self.heads[self.player.playerName]:draw(self.texOne, tx+ox, ty+oy)
   
   if self.section == 0 then
     local tx, ty, tx2 = view.x+(8*6), view.y+(22*8), view.x+(8*10)
     love.graphics.setColor(self.inactiveTankColor[2][1]/255, self.inactiveTankColor[2][2]/255, self.inactiveTankColor[2][3]/255, 1)
-    love.graphics.draw(self.texTwo, self.quadE, tx, ty)
+    self.quadE:draw(self.texTwo, tx, ty)
     love.graphics.setColor(self.inactiveTankColor[3][1]/255, self.inactiveTankColor[3][2]/255, self.inactiveTankColor[3][3]/255, 1)
-    love.graphics.draw(self.texOutline, self.quadE, tx, ty)
+    self.quadE:draw(self.texOutline, tx, ty)
     love.graphics.setColor(self.inactiveTankColor[1][1]/255, self.inactiveTankColor[1][2]/255, self.inactiveTankColor[1][3]/255, 1)
-    love.graphics.draw(self.texOne, self.quadE, tx, ty)
+    self.quadE:draw(self.texOne, tx, ty)
     
     love.graphics.setColor(self.inactiveTankColor[2][1]/255, self.inactiveTankColor[2][2]/255, self.inactiveTankColor[2][3]/255, 1)
-    love.graphics.draw(self.texTwo, self.quadW, tx2, ty)
+    self.quadW:draw(self.texTwo, tx2, ty)
     love.graphics.setColor(self.inactiveTankColor[3][1]/255, self.inactiveTankColor[3][2]/255, self.inactiveTankColor[3][3]/255, 1)
-    love.graphics.draw(self.texOutline, self.quadW, tx2, ty)
+    self.quadW:draw(self.texOutline, tx2, ty)
     love.graphics.setColor(self.inactiveTankColor[1][1]/255, self.inactiveTankColor[1][2]/255, self.inactiveTankColor[1][3]/255, 1)
-    love.graphics.draw(self.texOne, self.quadW, tx2, ty)
+    self.quadW:draw(self.texOne, tx2, ty)
     
     for k, v in pairs(self.fills) do
       for i, j in pairs(v) do
@@ -378,33 +378,33 @@ function mmWeaponsMenu:draw()
     if self.x == 1 then
       local tx, ty, tx2 = view.x+(8*6), view.y+(22*8), view.x+(8*10)
       love.graphics.setColor(self.activeTankColor[2][1]/255, self.activeTankColor[2][2]/255, self.activeTankColor[2][3]/255, 1)
-      love.graphics.draw(self.texTwo, self.quadE, tx, ty)
+      self.quadE:draw(self.texTwo, tx, ty)
       love.graphics.setColor(self.activeTankColor[3][1]/255, self.activeTankColor[3][2]/255, self.activeTankColor[3][3]/255, 1)
-      love.graphics.draw(self.texOutline, self.quadE, tx, ty)
+      self.quadE:draw(self.texOutline, tx, ty)
       love.graphics.setColor(self.activeTankColor[1][1]/255, self.activeTankColor[1][2]/255, self.activeTankColor[1][3]/255, 1)
-      love.graphics.draw(self.texOne, self.quadE, tx, ty)
+      self.quadE:draw(self.texOne, tx, ty)
       
       love.graphics.setColor(self.inactiveTankColor[2][1]/255, self.inactiveTankColor[2][2]/255, self.inactiveTankColor[2][3]/255, 1)
-      love.graphics.draw(self.texTwo, self.quadW, tx2, ty)
+      self.quadW:draw(self.texTwo, tx2, ty)
       love.graphics.setColor(self.inactiveTankColor[3][1]/255, self.inactiveTankColor[3][2]/255, self.inactiveTankColor[3][3]/255, 1)
-      love.graphics.draw(self.texOutline, self.quadW, tx2, ty)
+      self.quadW:draw(self.texOutline, tx2, ty)
       love.graphics.setColor(self.inactiveTankColor[1][1]/255, self.inactiveTankColor[1][2]/255, self.inactiveTankColor[1][3]/255, 1)
-      love.graphics.draw(self.texOne, self.quadW, tx2, ty)
+      self.quadW:draw(self.texOne, tx2, ty)
     elseif self.x == 2 then
       local tx, ty, tx2 = view.x+(8*6), view.y+(22*8), view.x+(8*10)
       love.graphics.setColor(self.inactiveTankColor[2][1]/255, self.inactiveTankColor[2][2]/255, self.inactiveTankColor[2][3]/255, 1)
-      love.graphics.draw(self.texTwo, self.quadE, tx, ty)
+      self.quadE:draw(self.texTwo, tx, ty)
       love.graphics.setColor(self.inactiveTankColor[3][1]/255, self.inactiveTankColor[3][2]/255, self.inactiveTankColor[3][3]/255, 1)
-      love.graphics.draw(self.texOutline, self.quadE, tx, ty)
+      self.quadE:draw(self.texOutline, tx, ty)
       love.graphics.setColor(self.inactiveTankColor[1][1]/255, self.inactiveTankColor[1][2]/255, self.inactiveTankColor[1][3]/255, 1)
-      love.graphics.draw(self.texOne, self.quadE, tx, ty)
+      self.quadE:draw(self.texOne, tx, ty)
       
       love.graphics.setColor(self.activeTankColor[2][1]/255, self.activeTankColor[2][2]/255, self.activeTankColor[2][3]/255, 1)
-      love.graphics.draw(self.texTwo, self.quadW, tx2, ty)
+      self.quadW:draw(self.texTwo, tx2, ty)
       love.graphics.setColor(self.activeTankColor[3][1]/255, self.activeTankColor[3][2]/255, self.activeTankColor[3][3]/255, 1)
-      love.graphics.draw(self.texOutline, self.quadW, tx2, ty)
+      self.quadW:draw(self.texOutline, tx2, ty)
       love.graphics.setColor(self.activeTankColor[1][1]/255, self.activeTankColor[1][2]/255, self.activeTankColor[1][3]/255, 1)
-      love.graphics.draw(self.texOne, self.quadW, tx2, ty)
+      self.quadW:draw(self.texOne, tx2, ty)
     end
   end
 end
