@@ -8,16 +8,16 @@ megautils.loadResource(72, 0, 8, 8, "smallEnergyGrid", true)
 megautils.loadResource(88, 0, 16, 12, "energyGrid", true)
 megautils.loadResource(72, 12, 16, 16, "tankGrid", true)
 
-pickup = entity:extend()
+pickupEntity = entity:extend()
 
-pickup.banIDs = {}
+pickupEntity.banIDs = {}
 
-function pickup.isBanned(i, id)
-  return pickup.banIDs[i] and table.contains(pickup.banIDs[i], id)
+function pickupEntity.isBanned(i, id)
+  return pickupEntity.banIDs[i] and table.contains(pickupEntity.banIDs[i], id)
 end
 
-function pickup:new(despawn, gd, fwp, id)
-  pickup.super.new(self)
+function pickupEntity:new(despawn, gd, fwp, id)
+  pickupEntity.super.new(self)
   self:setRectangleCollision(16, 16)
   self.despawn = despawn == nil and self.id == nil or despawn
   self.timer = 0
@@ -32,20 +32,20 @@ function pickup:new(despawn, gd, fwp, id)
   if gd or self.fwp then
     self:setGravityMultiplier("flipWithPlayer",  megaMan.mainPlayer and megaMan.mainPlayer.gravityMultipliers.gravityFlip or self.gravDir)
   end
-  if not pickup.banIDs[self.__index] then
-    pickup.banIDs[self.__index] = {}
+  if not pickupEntity.banIDs[self.__index] then
+    pickupEntity.banIDs[self.__index] = {}
   end
 end
 
-function pickup:grav()
+function pickupEntity:grav()
   if self.ground then return end
   self.velocity:clampY(7)
   self.velocity.vely = self.velocity.vely + self.gravity
 end
 
-function pickup:taken(p) end
+function pickupEntity:taken(p) end
 
-function pickup:update(dt)
+function pickupEntity:update(dt)
   self:setGravityMultiplier("flipWithPlayer", megaMan.mainPlayer and megaMan.mainPlayer.gravityMultipliers.gravityFlip or self.gravDir)
   collision.doGrav(self)
   collision.doCollision(self)
@@ -53,8 +53,8 @@ function pickup:update(dt)
     local p = megaMan.allPlayers[i]
     if self:collision(p) then
       self:taken(p)
-      if not self.despawn and self.id and not table.contains(pickup.banIDs[self.__index], self.id) then
-        pickup.banIDs[self.__index][#pickup.banIDs[self.__index]+1] = self.id
+      if not self.despawn and self.id and not table.contains(pickupEntity.banIDs[self.__index], self.id) then
+        pickupEntity.banIDs[self.__index][#pickupEntity.banIDs[self.__index]+1] = self.id
       end
       megautils.removeq(self)
       return
@@ -71,11 +71,11 @@ function pickup:update(dt)
   end
 end
 
-smallHealth = pickup:extend()
+smallHealth = pickupEntity:extend()
 
 addObjects.register("smallHealth", function(v)
   megautils.add(spawner, v.x, v.y, 8, 6, function()
-      return not pickup.isBanned(smallHealth, v.id)
+      return not pickupEntity.isBanned(smallHealth, v.id)
     end, smallHealth, v.x+10, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id)
 end, 0, true)
 
@@ -115,11 +115,11 @@ function smallHealth:draw()
   end
 end
 
-health = pickup:extend()
+health = pickupEntity:extend()
 
 addObjects.register("health", function(v)
   megautils.add(spawner, v.x, v.y, 16, 14, function()
-      return not pickup.isBanned(health, v.id)
+      return not pickupEntity.isBanned(health, v.id)
     end, health, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id)
 end, 0, true)
 
@@ -159,11 +159,11 @@ function health:draw()
   end
 end
 
-smallEnergy = pickup:extend()
+smallEnergy = pickupEntity:extend()
 
 addObjects.register("smallEnergy", function(v)
   megautils.add(spawner, v.x, v.y, 8, 6, function()
-      return not pickup.isBanned(smallEnergy, v.id)
+      return not pickupEntity.isBanned(smallEnergy, v.id)
     end, smallEnergy, v.x, v.y+10, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id)
 end, 0, true)
 
@@ -212,11 +212,11 @@ function smallEnergy:draw()
   end
 end
 
-energy = pickup:extend()
+energy = pickupEntity:extend()
 
 addObjects.register("energy", function(v)
   megautils.add(spawner, v.x, v.y, 16, 10, function()
-      return not pickup.isBanned(energy, v.id)
+      return not pickupEntity.isBanned(energy, v.id)
     end, energy, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id)
 end, 0, true)
 
@@ -265,11 +265,11 @@ function energy:draw()
   end
 end
 
-life = pickup:extend()
+life = pickupEntity:extend()
 
 addObjects.register("life", function(v)
   megautils.add(spawner, v.x, v.y, 16, 15, function()
-      return not pickup.isBanned(life, v.id)
+      return not pickupEntity.isBanned(life, v.id)
     end, life, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id)
 end, 0, true)
 
@@ -291,7 +291,7 @@ end
 
 function life:taken(p)
   if megautils.hasInfiniteLives() then
-    p:addHealth(9999)
+    p:interact(9999)
   else
     globals.lives = math.min(globals.lives+1, maxLives)
     megautils.playSoundFromFile("assets/sfx/life.ogg")
@@ -357,11 +357,11 @@ function life:draw()
   end
 end
 
-eTank = pickup:extend()
+eTank = pickupEntity:extend()
 
 addObjects.register("eTank", function(v)
   megautils.add(spawner, v.x, v.y, 16, 15, function()
-      return not pickup.isBanned(eTank, v.id)
+      return not pickupEntity.isBanned(eTank, v.id)
     end, eTank, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id)
 end, 0, true)
 
@@ -413,11 +413,11 @@ function eTank:draw()
   end
 end
 
-wTank = pickup:extend()
+wTank = pickupEntity:extend()
 
 addObjects.register("wTank", function(v)
   megautils.add(spawner, v.x, v.y, 16, 15, function()
-      return not pickup.isBanned(wTank, v.id)
+      return not pickupEntity.isBanned(wTank, v.id)
     end, wTank, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id)
 end, 0, true)
 
@@ -468,5 +468,5 @@ function wTank:draw()
 end
 
 megautils.resetGameObjectsFuncs.pickups = function()
-  pickup.banIDs = {}
+  pickupEntity.banIDs = {}
 end

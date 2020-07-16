@@ -69,7 +69,7 @@ function water:new(x, y, w, h, grav)
 end
 
 function water:begin()
-  self:addToGroup("despawnable")
+  self:addToGroup("handledBySections")
   self:addToGroup("water")
   self:addToGroup("freezable")
 end
@@ -141,7 +141,7 @@ function space:new(x, y, w, h, grav)
 end
 
 function space:begin()
-  self:addToGroup("despawnable")
+  self:addToGroup("handledBySections")
   self:addToGroup("space")
   self:addToGroup("freezable")
 end

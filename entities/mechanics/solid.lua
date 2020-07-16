@@ -13,7 +13,7 @@ function solid:new(x, y, w, h)
 end
 
 function solid:begin()
-  self:addToGroup("despawnable")
+  self:addToGroup("handledBySections")
   self:addToGroup("solid")
   self:makeStatic()
 end
@@ -50,7 +50,7 @@ function slope:new(x, y, mask)
 end
 
 function slope:begin()
-  self:addToGroup("despawnable")
+  self:addToGroup("handledBySections")
   self:addToGroup("solid")
   self:makeStatic()
 end

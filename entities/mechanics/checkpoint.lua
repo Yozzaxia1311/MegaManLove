@@ -13,7 +13,7 @@ function checkpoint:new(x, y, w, h, c)
 end
 
 function checkpoint:begin()
-  self:addToGroup("despawnable")
+  self:addToGroup("handledBySections")
 end
 
 function checkpoint:update(dt)
@@ -37,7 +37,7 @@ function collisionCheckpoint:new(x, y, w, h, c)
 end
 
 function collisionCheckpoint:begin()
-  self:addToGroup("despawnable")
+  self:addToGroup("handledBySections")
 end
 
 function collisionCheckpoint:update(dt)

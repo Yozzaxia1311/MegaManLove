@@ -4,7 +4,7 @@ megautils.loadResource("assets/sfx/enemyExplode.ogg", "enemyExplode")
 megautils.loadResource("assets/sfx/buster.ogg", "buster")
 megautils.loadResource("assets/sfx/reflect.ogg", "dink")
 
-met = entity:extend()
+met = enemyEntity:extend()
 
 addObjects.register("met", function(v)
   megautils.add(spawner, v.x, v.y+2, 14, 14, nil, met, v.x, v.y+2)
@@ -27,30 +27,7 @@ function met:new(x, y)
   self:setGravityMultiplier("flipWithPlayer", 1)
 end
 
-function met:begin()
-  self:addToGroup("hurtable")
-  self:addToGroup("removeOnTransition")
-  self:addToGroup("freezable")
-end
-
-function met:grav()
-  if self.ground then return end
-  self.velocity.vely = self.velocity.vely+self.gravity
-  self.velocity:clampY(7)
-end
-
-function met:gettingHurt(o, c, i)
-  if checkTrue(self.canBeInvincible) or (o.dinked and not o.reflectedBack) then
-    if o.dink and not o.dinked then
-      o:dink(self)
-    end
-    return
-  end
-  if c < 0 and not checkTrue(self.canBeInvincible) and not o:is(megaChargedBuster) then
-    megautils.removeq(o)
-  end
-  if self.iFrames ~= 0 then return end
-  
+function met:hit(o)
   if o:is(megaBuster) then
     self.changeHealth = -1
   elseif o:is(megaSemiBuster) then
@@ -67,22 +44,6 @@ function met:gettingHurt(o, c, i)
     else
       self.changeHealth = megautils.diffValue(-0.5, {easy=-1})
     end
-  else
-    self.changeHealth = c
-  end
-  
-  self.health = self.health + self.changeHealth
-  self.iFrames = i
-  if self.health <= 0 then
-    megautils.add(smallBlast, self.transform.x-4, self.transform.y-4)
-    megautils.dropItem(self.transform.x, self.transform.y+(self.gravity >= 0 and -4 or 4))
-    megautils.removeq(self)
-    megautils.playSound("enemyExplode")
-  elseif self.changeHealth < 0 then
-    if o:is(megaChargedBuster) then
-      megautils.removeq(o)
-    end
-    megautils.playSound("enemyHit")
   end
 end
 
@@ -125,11 +86,10 @@ function met:update(dt)
     end
   end
   collision.doCollision(self)
-  self:hurt(self:collisionTable(megaMan.allPlayers), megautils.diffValue(-2, {easy=-1, normal=-2, hard=-3}), 80)
-  self:updateIFrame()
-  self:updateFlash()
+  self:interact(self:collisionTable(megaMan.allPlayers), megautils.diffValue(-2, {easy=-1, normal=-2, hard=-3}), 80)
   self.quads[self.c].flipX = self.side == 1
   self.quads[self.c].flipY = self.gravity < 0
+  met.super.update(self)
   if megautils.outside(self) then
     megautils.removeq(self)
   end
@@ -137,7 +97,7 @@ end
 
 function met:draw()
   love.graphics.setColor(1, 1, 1, 1)
-  self.quad[self.c]:draw(self.t, math.round(self.transform.x), math.round(self.transform.y))
+  self.quads[self.c]:draw(self.t, math.round(self.transform.x), math.round(self.transform.y))
 end
 
 metBullet = basicEntity:extend()
@@ -183,9 +143,9 @@ function metBullet:update(dt)
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
   if self.dinked then
-    self:hurt(self:collisionTable(megautils.groups().hurtable), -2, 2)
+    self:interact(self:collisionTable(megautils.groups().hurtable), -2, 2)
   else
-    self:hurt(self:collisionTable(megaMan.allPlayers), megautils.diffValue(-2, {easy=-1, normal=-2, hard=-3}), 80)
+    self:interact(self:collisionTable(megaMan.allPlayers), megautils.diffValue(-2, {easy=-1, normal=-2, hard=-3}), 80)
   end
   if megautils.outside(self) then
     megautils.removeq(self)

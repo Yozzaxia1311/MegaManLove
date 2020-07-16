@@ -362,7 +362,7 @@ function section:new(x, y, w, h, n)
     section.names[self.name] = self
   end
   self.cells = {}
-  self.group = self:collisionTable(megautils.groups().despawnable)
+  self.group = self:collisionTable(megautils.groups().handledBySections)
   section.init[#section.init+1] = self
 end
 

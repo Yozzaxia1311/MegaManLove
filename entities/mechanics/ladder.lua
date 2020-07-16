@@ -16,7 +16,7 @@ end
 
 function ladder:begin()
   self:addToGroup("ladder")
-  self:addToGroup("despawnable")
+  self:addToGroup("handledBySections")
   self:addToGroup("solid")
 end
 

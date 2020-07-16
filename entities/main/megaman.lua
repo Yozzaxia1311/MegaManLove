@@ -1081,26 +1081,26 @@ function megaMan:checkProtoShield(e, side)
   return result
 end
 
-function megaMan:addHealth(c)
-  self.changeHealth = c
-  if self.changeHealth ~= 0 then
-    self.healthHandler:updateThis(self.healthHandler.health + self.changeHealth)
-  end
-end
-
-function megaMan:gettingHurt(o, c, i)
+function megaMan:interactedWith(o, c, i)
   if not checkFalse(self.canControl) or o.reflectedBack then return end
   if self.protoShielding and o.dink and self:checkProtoShield(o, self.side) then
     o:dink(self)
     return
   end
-  self:addHealth((c < 0 and (checkTrue(self.canBeInvincible) or self.iFrames ~= 0)) and 0 or c)
-  if self.changeHealth > 0 or (self.changeHealth < 0 and self.iFrames == 0) then
-    self.iFrames = i
+  if c < 0 and checkTrue(self.canBeInvincible) then
+    self.changeHealth = 0
+  else
+    self.changeHealth = c
+    if self.changeHealth < 0 and self.iFrames <= 0 then
+      self.iFrames = i
+    else
+      return
+    end
   end
-  for k, v in pairs(megautils.playerHealthChangedFuncs) do
+  for k, v in pairs(megautils.playerInteractedWithFuncs) do
     v(self)
   end
+  self.healthHandler:updateThis(self.healthHandler.health + self.changeHealth)
   if self.changeHealth < 0 then
     if self.healthHandler.health <= 0 and not self.dying then
       self.dying = true
@@ -1157,7 +1157,7 @@ function megaMan:crushed(other)
       self.canBeInvincible[k2] = false
     end
     self.iFrames = 0
-    self:hurt({v}, -99999)
+    self:interact(self, -99999, nil, true)
   end
 end
 
@@ -1538,7 +1538,7 @@ function megaMan:code(dt)
     for k, v in pairs(self.canBeInvincible) do
       self.canBeInvincible[k] = false
     end
-    self:hurt({self}, -999, 1)
+    self:interact(self, -999, nil, true)
   end
   self:updateIFrame()
   self:updateFlash()
@@ -1644,7 +1644,7 @@ function megaMan:phys()
       if collision.checkSolid(self) then
         local dv = self:collisionTable(megautils.groups().death)
         if dv[1] and dv[1].harm > 0 then
-          dv[1]:hurt(self, dv[1].harm, 80, true)
+          dv[1]:interact(self, dv[1].harm, 80, true)
         end
         if self.healthHandler.health <= 0 then
           self.ground = false

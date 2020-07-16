@@ -21,7 +21,7 @@ function right:new(x, y, h, scrollx, scrolly, spd, p, n)
 end
 
 function right:begin()
-  self:addToGroup("despawnable")
+  self:addToGroup("handledBySections")
 end
 
 function right:update(dt)
@@ -68,7 +68,7 @@ function left:new(x, y, h, scrollx, scrolly, spd, p, n)
 end
 
 function left:begin()
-  self:addToGroup("despawnable")
+  self:addToGroup("handledBySections")
 end
 
 function left:update(dt)
@@ -117,7 +117,7 @@ function down:new(x, y, w, scrollx, scrolly, spd, p, n, cl)
 end
 
 function down:begin()
-  self:addToGroup("despawnable")
+  self:addToGroup("handledBySections")
 end
 
 function down:update(dt)
@@ -167,7 +167,7 @@ function up:new(x, y, w, scrollx, scrolly, spd, p, n, cl)
 end
 
 function up:begin()
-  self:addToGroup("despawnable")
+  self:addToGroup("handledBySections")
 end
 
 function up:update(dt)
@@ -207,7 +207,7 @@ function sectionPrioritySetter:new(x, y, w, h, name)
 end
 
 function sectionPrioritySetter:begin()
-  self:addToGroup("despawnable")
+  self:addToGroup("handledBySections")
 end
 
 function sectionPrioritySetter:check()
@@ -247,7 +247,7 @@ function sectionPrioritySetterXBorder:new(x, y, h, lname, rname)
 end
 
 function sectionPrioritySetterXBorder:begin()
-  self:addToGroup("despawnable")
+  self:addToGroup("handledBySections")
 end
 
 function sectionPrioritySetterXBorder:getSide()
@@ -289,7 +289,7 @@ function sectionPrioritySetterYBorder:new(x, y, w, uname, dname)
 end
 
 function sectionPrioritySetterYBorder:begin()
-  self:addToGroup("despawnable")
+  self:addToGroup("handledBySections")
 end
 
 function sectionPrioritySetterYBorder:getSide()
@@ -331,7 +331,7 @@ function sectionPrioritySetterArea:new(x, y, w, h, name, name2)
 end
 
 function sectionPrioritySetterArea:begin()
-  self:addToGroup("despawnable")
+  self:addToGroup("handledBySections")
 end
 
 function sectionPrioritySetterArea:check()

@@ -345,7 +345,7 @@ concmd["hurt"] = {
       if not cmd[2] then return end
       for i=1, #megaMan.allPlayers do
         megaMan.allPlayers[i].iFrames = 0
-        megaMan.allPlayers[i]:hurt({megaMan.allPlayers[i]}, -numberSanitize(cmd[2]))
+        megaMan.allPlayers[i]:interact({megaMan.allPlayers[i]}, -numberSanitize(cmd[2]))
       end
     end
 }
@@ -380,7 +380,7 @@ concmd["kill"] = {
   fun = function(cmd)
       for i=1, #megaMan.allPlayers do
         megaMan.allPlayers[i].iFrames = 0
-        megaMan.allPlayers[i]:hurt({megaMan.allPlayers[i]}, -9999)
+        megaMan.allPlayers[i]:interact({megaMan.allPlayers[i]}, -9999)
       end
     end
 }

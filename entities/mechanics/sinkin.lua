@@ -14,7 +14,7 @@ function sinkIn:new(x, y, w, h, s)
 end
 
 function sinkIn:begin()
-  self:addToGroup("despawnable")
+  self:addToGroup("handledBySections")
   self:addToGroup("freezable")
   self:addToGroup("solid")
 end

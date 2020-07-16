@@ -38,7 +38,7 @@ megautils.playerSlideFuncs = {}         --megautils.playerSlideFuncs.exampleFunc
 megautils.playerClimbFuncs = {}         --megautils.playerClimbFuncs.exampleFunc = function(player) end
 megautils.playerKnockbackFuncs = {}     --megautils.playerKnockbackFuncs.exampleFunc = function(player) end
 megautils.playerTrebleFuncs = {}        --megautils.playerTrebleFuncs.exampleFunc = function(player) end
-megautils.playerHealthChangedFuncs = {} --megautils.playerHealthChangedFuncs.exampleFunc = function(player) end
+megautils.playerInteractedWithFuncs = {} --megautils.playerInteractedWithFuncs.exampleFunc = function(player) end
 megautils.playerDeathFuncs = {}         --megautils.playerDeathFuncs.exampleFunc = function(player) end
 megautils.playerAttemptWeaponFuncs = {} --megautils.playerAttemptWeaponFuncs.exampleFunc = function(player, shotsInTable) end
 
@@ -644,23 +644,23 @@ function megautils.dropItem(x, y)
   if math.between(rnd, 0, 39) then
     local rnd2 = love.math.random(0, 2)
     if rnd2 == 0 then
-      megautils.add(life, x, y, true)
+      return megautils.add(life, x, y, true)
     elseif rnd2 == 1 then
-      megautils.add(eTank, x, y, true)
+      return megautils.add(eTank, x, y, true)
     else
-      megautils.add(wTank, x, y, true)
+      return megautils.add(wTank, x, y, true)
     end
   elseif math.between(rnd, 50, 362) then
     if math.randomboolean() then
-      megautils.add(health, x, y, true)
+      return megautils.add(health, x, y, true)
     else
-      megautils.add(energy, x, y, true)
+      return megautils.add(energy, x, y, true)
     end
   elseif math.between(rnd, 370, 995) then
     if math.randomboolean() then
-      megautils.add(smallHealth, x, y, true)
+      return megautils.add(smallHealth, x, y, true)
     else
-      megautils.add(smallEnergy, x, y, true)
+      return megautils.add(smallEnergy, x, y, true)
     end
   end
 end

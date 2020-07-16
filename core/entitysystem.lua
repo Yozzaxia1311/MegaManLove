@@ -417,12 +417,12 @@ function basicEntity:baseRecycle()
   self.canDraw = {global=true}
 end
 
-function basicEntity:hurt(t, h, f, single)
+function basicEntity:interact(t, h, f, single)
   if single then
-    t:gettingHurt(self, h, f or 80)
+    t:interactedWith(self, h, f or 80)
   else
     for i=1, #t do
-      t[i]:gettingHurt(self, h, f or 80)
+      t[i]:interactedWith(self, h, f or 80)
     end
   end
 end
@@ -431,7 +431,7 @@ function basicEntity:updateIFrame()
   self.iFrames = math.max(self.iFrames-1, 0)
 end
 
-function basicEntity:gettingHurt(other, c, i) end
+function basicEntity:interactedWith(other, c, i) end
 
 function basicEntity:setLayer(l)
   if not self.isAdded or self.static then
@@ -631,7 +631,7 @@ function entity:baseRecycle()
   self.doShake = false
   self.moveByMoveX = 0
   self.moveByMoveY = 0
-  self.canBeInvincible = {global=true}
+  self.canBeInvincible = {global=false}
   self.canStandSolid = {global=true}
 end
 
@@ -772,4 +772,104 @@ function mapEntity:draw()
   self.map:setDrawRange(view.x, view.y, view.w, view.h)
   self.map:draw()
   love.graphics.pop()
+end
+
+enemyEntity = entity:extend()
+
+enemyEntity.SMALL = 1
+enemyEntity.BIG = 1
+
+function enemyEntity:new()
+  enemyEntity.super.new(self)
+  self:setRectangleCollision(16, 16)
+  self.explosionType = enemyEntity.SMALL
+  self.dead = false
+  self.removeOnDeath = true
+  self.dropItem = true
+  self.health = 1
+  self.soundOnHit = "enemyHit"
+  self.soundOnDeath = "enemyExplode"
+end
+
+function enemyEntity:begin()
+  self:addToGroup("hurtable")
+  self:addToGroup("removeOnTransition")
+  self:addToGroup("freezable")
+end
+
+function enemyEntity:grav()
+  if self.ground then return end
+  self.velocity.vely = self.velocity.vely+self.gravity
+  self.velocity:clampY(7)
+end
+
+function enemyEntity:preHit(o) end
+function enemyEntity:hit(o) end
+function enemyEntity:die(o) end
+
+function enemyEntity:update()
+  self:updateFlash()
+  self:updateIFrame()
+  self:updateShake()
+end
+
+function enemyEntity:interactedWith(o, c, i)
+  if checkTrue(self.canBeInvincible) or (o.dinked and not o.reflectedBack) then
+    if o.dink and not o.dinked then
+      o:dink(self)
+    end
+    return
+  end
+  
+  self.changeHealth = c
+  if self.changeHealth < 0 then
+    if self.health + self.changeHealth > 0 and not o.pierceIfKilling then
+      megautils.removeq(o)
+    end
+    if self.iFrames <= 0 then
+      self.iFrames = i
+    else
+      return
+    end
+  end
+  
+  if self.health + self.changeHealth <= 0 then
+    self.dead = true
+    self.health = math.max(self.health + self.changeHealth, 0)
+    self:die(o)
+    if self.explosionType == enemyEntity.SMALL then
+      megautils.add(smallBlast, self.transform.x+(self.collisionShape.w/2)-12, self.transform.y+(self.collisionShape.h/2)-12)
+    elseif self.explosionType == enemyEntity.BIG then
+      megautils.add(blast, self.transform.x+(self.collisionShape.w/2)-12, self.transform.y+(self.collisionShape.h/2)-12)
+    end
+    if self.dropItem then
+      local item
+      if self.dropItem == true then
+        item = megautils.dropItem(self.transform.x, self.transform.y)
+      else
+        item = megautils.adde(self.dropItem)
+      end
+      if item then
+        item.transform.x = self.transform.x+(self.collisionShape.w/2)-(item.collisionShape.w/2)
+        item.transform.y = self.transform.y+(self.collisionShape.h/2)-(item.collisionShape.h/2) - 8
+      end
+    end
+    if self.removeOnDeath then
+      megautils.removeq(self)
+    end
+    if self.soundOnDeath then
+      megautils.playSound(self.soundOnDeath)
+    end
+  elseif self.changeHealth < 0 then
+    self.health = math.max(self.health + self.changeHealth, 0)
+    self:hit(o)
+    if o.pierceIfKilling then
+      megautils.removeq(o)
+    end
+    if self.soundOnHit then
+      megautils.playSound(self.soundOnHit)
+    end
+  else
+    self.health = math.max(self.health + self.changeHealth, 0)
+  end
 end

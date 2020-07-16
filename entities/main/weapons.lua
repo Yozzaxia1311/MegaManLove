@@ -38,7 +38,6 @@ function protoSemiBuster:new(x, y, dir, wpn, skin, grav)
   self.side = dir
   self.wpn = wpn
   self.grav = grav
-  megautils.playSound("semiCharged")
 end
 
 function protoSemiBuster:begin()
@@ -47,6 +46,7 @@ function protoSemiBuster:begin()
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
   self:addToGroup("weapon")
+  megautils.playSound("semiCharged")
 end
 
 function protoSemiBuster:dink(e)
@@ -58,7 +58,7 @@ end
 
 function protoSemiBuster:update(dt)
   if not self.dinked then
-    self:hurt(self:collisionTable(megautils.groups().hurtable), -1, 2)
+    self:interact(self:collisionTable(megautils.groups().hurtable), -1, 2)
   end
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
@@ -88,7 +88,7 @@ function protoChargedBuster:new(x, y, dir, wpn, skin, grav)
   self.wpn = wpn
   self.grav = grav
   self.anim.flipX = self.side ~= 1
-  megautils.playSound("protoCharged")
+  self.pierceIfKilling = true
 end
 
 function protoChargedBuster:begin()
@@ -96,6 +96,7 @@ function protoChargedBuster:begin()
   self:addToGroup("protoChargedBuster" .. self.wpn.id)
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
+  megautils.playSound("protoCharged")
 end
 
 function protoChargedBuster:dink(e)
@@ -108,7 +109,7 @@ end
 function protoChargedBuster:update(dt)
   self.anim:update(defaultFramerate)
   if not self.dinked then
-    self:hurt(self:collisionTable(megautils.groups().hurtable), -2, 2)
+    self:interact(self:collisionTable(megautils.groups().hurtable), -2, 2)
   end
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
@@ -179,7 +180,7 @@ end
 
 function bassBuster:update(dt)
   if not self.dinked then
-    self:hurt(self:collisionTable(megautils.groups().hurtable), self.treble and -1 or -0.5, 2)
+    self:interact(self:collisionTable(megautils.groups().hurtable), self.treble and -1 or -0.5, 2)
   end
   local col = collision.checkSolid(self, self.velocity.velx, self.velocity.vely)
   self.transform.x = self.transform.x + self.velocity.velx
@@ -252,7 +253,7 @@ end
 
 function megaBuster:update(dt)
   if not self.dinked then
-    self:hurt(self:collisionTable(megautils.groups().hurtable), -1, 2)
+    self:interact(self:collisionTable(megautils.groups().hurtable), -1, 2)
   end
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
@@ -280,7 +281,6 @@ function megaSemiBuster:new(x, y, dir, wpn, grav)
   self.side = dir
   self.wpn = wpn
   self.grav = grav
-  megautils.playSound("semiCharged")
   self.anim.flipX = self.side ~= 1
 end
 
@@ -290,6 +290,7 @@ function megaSemiBuster:begin()
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
   self:addToGroup("weapon")
+  megautils.playSound("semiCharged")
 end
 
 function megaSemiBuster:dink(e)
@@ -302,7 +303,7 @@ end
 function megaSemiBuster:update(dt)
   self.anim:update(defaultFramerate)
   if not self.dinked then
-    self:hurt(self:collisionTable(megautils.groups().hurtable), -1, 2)
+    self:interact(self:collisionTable(megautils.groups().hurtable), -1, 2)
   end
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
@@ -331,8 +332,8 @@ function megaChargedBuster:new(x, y, dir, wpn, grav)
   self.side = dir
   self.wpn = wpn
   self.grav = grav
-  megautils.playSound("charged")
   self.anim.flipX = self.side ~= 1
+  self.pierceIfKilling = true
 end
 
 function megaChargedBuster:begin()
@@ -341,6 +342,7 @@ function megaChargedBuster:begin()
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
   self:addToGroup("weapon")
+  megautils.playSound("charged")
 end
 
 function megaChargedBuster:dink(e)
@@ -353,7 +355,7 @@ end
 function megaChargedBuster:update(dt)
   self.anim:update(defaultFramerate)
   if not self.dinked then
-    self:hurt(self:collisionTable(megautils.groups().hurtable), -2, 2)
+    self:interact(self:collisionTable(megautils.groups().hurtable), -2, 2)
   end
   self.transform.x = self.transform.x + self.velocity.velx
   self.transform.y = self.transform.y + self.velocity.vely
@@ -828,7 +830,7 @@ end
 
 function stickWeapon:update(dt)
   if not self.dinked then
-    self:hurt(self:collisionTable(megautils.groups().hurtable), -8, 1)
+    self:interact(self:collisionTable(megautils.groups().hurtable), -8, 1)
   end
   self:moveBy(self.velocity.velx, self.velocity.vely)
   if megautils.outside(self) then

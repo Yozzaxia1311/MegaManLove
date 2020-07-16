@@ -15,7 +15,7 @@ function death:new(x, y, w, h, harm)
 end
 
 function death:begin()
-  self:addToGroup("despawnable")
+  self:addToGroup("handledBySections")
   self:addToGroup("death")
   self:addToGroup("solid")
 end

@@ -13,7 +13,7 @@ function ice:new(x, y, w, h)
 end
 
 function ice:begin()
-  self:addToGroup("despawnable")
+  self:addToGroup("handledBySections")
   self:addToGroup("ice")
   self:addToGroup("solid")
 end

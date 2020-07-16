@@ -46,7 +46,7 @@ end
 
 function bossDoor:begin()
   self:addToGroup("bossDoor")
-  self:addToGroup("despawnable")
+  self:addToGroup("handledBySections")
   self:addToGroup("solid")
 end
 

@@ -16,7 +16,7 @@ function gravFlip:new(x, y, w, h, dir)
 end
 
 function gravFlip:begin()
-  self:addToGroup("despawnable")
+  self:addToGroup("handledBySections")
 end
 
 function gravFlip:update(dt)

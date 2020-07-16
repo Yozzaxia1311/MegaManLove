@@ -35,7 +35,7 @@ function stickMan:begin()
   megautils.stopMusic()
 end
 
-function stickMan:gettingHurt(o, c, i)
+function stickMan:interactedWith(o, c, i)
   if o:is(megaSemiBuster) or checkTrue(self.canBeInvincible) or (o.dinked and not o.reflectedBack) then --Semi charged shots get reflected
     if o.dink and not o.dinked then
       o:dink(self)
@@ -130,7 +130,7 @@ function stickMan:update(dt)
     megaMan.mainPlayer.canControl.global = true
     self.s = 4
   end
-  self:hurt(self:collisionTable(megaMan.allPlayers), -4, 80)
+  self:interact(self:collisionTable(megaMan.allPlayers), -4, 80)
   self:updateIFrame()
   self:updateFlash()
 end
