@@ -1059,7 +1059,7 @@ function bossEntity:act() end
 
 function bossEntity:start()
   if self._subState == 0 then
-    if self.skipBoss then
+    if self.skipBoss == nil and (self.defeatSlot and globals.defeats[self.defeatSlot]) or self.skipBoss then
       self:skip()
     elseif megaMan.allPlayers then
       megautils.autoFace(self, megaMan.allPlayers)
