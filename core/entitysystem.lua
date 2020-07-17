@@ -263,6 +263,7 @@ function entitySystem:clear()
     self.all[i]:removed()
     self.all[i].isAdded = false
   end
+  self.all = {}
   section.sections = {}
   section.current = nil
   self.entities = {}
@@ -279,6 +280,9 @@ end
 function entitySystem:draw()
   for i=1, #self.entities do
     for k=1, #self.entities[i].data do
+      if states.switched then
+        return
+      end
       local v = self.entities[i].data[k]
       if checkFalse(v.canDraw) and not v.isRemoved and v.draw then
         v:draw()
@@ -295,6 +299,9 @@ function entitySystem:drawQuality()
   if not entitySystem.doDrawQuality then return end
   for i=1, #self.entities do
     for k=1, #self.entities[i].data do
+      if states.switched then
+        return
+      end
       local v = self.entities[i].data[k]
       if checkFalse(v.canDraw) and not v.isRemoved and v.drawQuality then
         v:drawQuality()
@@ -304,8 +311,12 @@ function entitySystem:drawQuality()
 end
 
 function entitySystem:update(dt)
+  fuckyou = true
   if entitySystem.doBeforeUpdate then
     for i=1, #self.updates do
+      if states.switched then
+        return
+      end
       local t = self.updates[i]
       t.previousX = t.transform.x
       t.previousY = t.transform.y
@@ -317,6 +328,9 @@ function entitySystem:update(dt)
     end
   end
   for i=1, #self.updates do
+    if states.switched then
+      return
+    end
     local t = self.updates[i]
     t.previousX = t.transform.x
     t.previousY = t.transform.y
@@ -328,6 +342,9 @@ function entitySystem:update(dt)
   end
   if entitySystem.doAfterUpdate then
     for i=1, #self.updates do
+      if states.switched then
+        return
+      end
       local t = self.updates[i]
       t.previousX = t.transform.x
       t.previousY = t.transform.y
@@ -338,6 +355,7 @@ function entitySystem:update(dt)
       end
     end
   end
+  fuckyou = false
   if self.cameraUpdate then
     self.cameraUpdate(self)
   end
@@ -689,7 +707,7 @@ function entity:updateFlash(length, range)
   if self.iFrames == 0 then
     self.canDraw.flash = true
   else
-    self.canDraw.flash = math.wrap(self.iFrames, 0, length or 8) > (range or 4)
+    self.canDraw.flash = math.wrap(self.iFrames, 0, length or 4) > (range or 2)
   end
 end
 
@@ -777,7 +795,8 @@ end
 enemyEntity = entity:extend()
 
 enemyEntity.SMALL = 1
-enemyEntity.BIG = 1
+enemyEntity.BIG = 2
+enemyEntity.BIGGEST = 3
 
 function enemyEntity:new()
   enemyEntity.super.new(self)
@@ -789,6 +808,37 @@ function enemyEntity:new()
   self.health = 1
   self.soundOnHit = "enemyHit"
   self.soundOnDeath = "enemyExplode"
+  self.autoHitPlayer = true
+  self.damage = -1
+  self.playerIFramesOnDamage = 80
+  self.defeatSlot = nil
+end
+
+function enemyEntity:useHealthBar(oneColor, twoColor, outlineColor, x, y, relative, add)
+  if add then
+    self.healthHandler = megautils.add(healthHandler, oneColor or {128, 128, 128}, twoColor or {255, 255, 255}, outlineColor or {0, 0, 0},
+      nil, nil, math.ceil(self.health/4))
+  else
+    self.healthHandler = healthHandler(oneColor or {128, 128, 128}, twoColor or {255, 255, 255}, outlineColor or {0, 0, 0},
+      nil, nil, math.ceil(self.health/4))
+  end
+  self.healthHandler:instantUpdate(self.health)
+  self.health = nil
+  self.barRelativeToView = relative
+  self.barOffsetX = x or (view.w - 24)
+  self.barOffsetY = y or 80
+  if camera.main then
+    camera.main.funcs[self.__index] = function(s)
+        self.healthHandler.transform.x = (self.barRelativeToView and view.x or 0) + self.barOffsetX
+        self.healthHandler.transform.y = (self.barRelativeToView and view.y or 0) + self.barOffsetY
+      end
+  end
+end
+
+function enemyEntity:removed()
+  if camera.main then
+    camera.main.funcs[self.__index] = nil
+  end
 end
 
 function enemyEntity:begin()
@@ -803,27 +853,41 @@ function enemyEntity:grav()
   self.velocity:clampY(7)
 end
 
-function enemyEntity:preHit(o) end
+function enemyEntity:getHealth()
+  return self.healthHandler and self.healthHandler.health or self.health
+end
+
 function enemyEntity:hit(o) end
 function enemyEntity:die(o) end
+function enemyEntity:determineDink(o) end
+function enemyEntity:weaponTable(o) end
 
 function enemyEntity:update()
   self:updateFlash()
   self:updateIFrame()
   self:updateShake()
+  if self.autoHitPlayer then
+    self:interact(self:collisionTable(megaMan.allPlayers), self.damage, self.playerIFramesOnDamage)
+  end
 end
 
 function enemyEntity:interactedWith(o, c, i)
-  if checkTrue(self.canBeInvincible) or (o.dinked and not o.reflectedBack) then
-    if o.dink and not o.dinked then
+  local doDink = self:determineDink(o)
+  
+  if checkTrue(self.canBeInvincible) or doDink or (o.dinked and not o.reflectedBack) then
+    if doDink and o.dink and not o.dinked then
       o:dink(self)
     end
     return
   end
   
+  local health = self.healthHandler and self.healthHandler.health or self.health
+  
   self.changeHealth = c
+  self.changeHealth = self:weaponTable(o) or self.changeHealth
+  
   if self.changeHealth < 0 then
-    if self.health + self.changeHealth > 0 and not o.pierceIfKilling then
+    if not (o.pierceIfKilling and health + self.changeHealth < 0) then
       megautils.removeq(o)
     end
     if self.iFrames <= 0 then
@@ -833,14 +897,24 @@ function enemyEntity:interactedWith(o, c, i)
     end
   end
   
-  if self.health + self.changeHealth <= 0 then
+  if health + self.changeHealth <= 0 then
     self.dead = true
-    self.health = math.max(self.health + self.changeHealth, 0)
+    if self.healthHandler then
+      self.healthHandler:updateThis(self.healthHandler.health + self.changeHealth)
+    else
+      self.health = math.max(self.health + self.changeHealth, 0)
+    end
     self:die(o)
+    if self.defeatSlot then
+      globals.defeats[self.defeatSlot] = true
+    end
     if self.explosionType == enemyEntity.SMALL then
       megautils.add(smallBlast, self.transform.x+(self.collisionShape.w/2)-12, self.transform.y+(self.collisionShape.h/2)-12)
     elseif self.explosionType == enemyEntity.BIG then
       megautils.add(blast, self.transform.x+(self.collisionShape.w/2)-12, self.transform.y+(self.collisionShape.h/2)-12)
+    elseif self.explosionType == enemyEntity.BIGGEST then
+      explodeParticle.createExplosion(self.transform.x+((self.collisionShape.w/2)-12),
+        self.transform.y+((self.collisionShape.h/2)-12))
     end
     if self.dropItem then
       local item
@@ -858,10 +932,18 @@ function enemyEntity:interactedWith(o, c, i)
       megautils.removeq(self)
     end
     if self.soundOnDeath then
-      megautils.playSound(self.soundOnDeath)
+      if megautils.getResource(self.soundOnDeath) then
+        megautils.playSound(self.soundOnDeath)
+      else
+        megautils.playSoundFromFile(self.soundOnDeath)
+      end
     end
   elseif self.changeHealth < 0 then
-    self.health = math.max(self.health + self.changeHealth, 0)
+    if self.healthHandler then
+      self.healthHandler:updateThis(self.healthHandler.health + self.changeHealth)
+    else
+      self.health = math.max(self.health + self.changeHealth, 0)
+    end
     self:hit(o)
     if o.pierceIfKilling then
       megautils.removeq(o)
@@ -870,6 +952,247 @@ function enemyEntity:interactedWith(o, c, i)
       megautils.playSound(self.soundOnHit)
     end
   else
-    self.health = math.max(self.health + self.changeHealth, 0)
+    if self.healthHandler then
+      self.healthHandler:updateThis(self.healthHandler.health + self.changeHealth)
+    else
+      self.health = math.max(self.health + self.changeHealth, 0)
+    end
+  end
+end
+
+bossEntity = enemyEntity:extend()
+
+function bossEntity:new()
+  bossEntity.super.new(self)
+  self.soundOnDeath = "assets/sfx/dieExplode.ogg"
+  self.dropItem = false
+  self.state = 0
+  self._subState = 0
+  self.canDraw.global = false
+  self.canBeInvincible.intro = true
+  self.skipBoss = false
+  self.skipBossState = "assets/states/menus/menu.state.lua"
+  self.doIntro = true
+  self.strikePose = true
+  self.continueAfterDeath = false
+  self.afterDeathState = "assets/states/menus/weaponget.state.lua"
+  self.defeatSlot = nil
+  self.doBossIntro = megautils.getCurrentState() == "assets/states/menus/bossintro.state.lua"
+  self.bossIntroText = nil
+  self.weaponGetText = "WEAPON GET... (WEAPON NAME HERE)"
+  self.stageState = nil
+  self.bossIntroWaitTime = 400
+  self.weaponGetBehaviour = function(m)
+      return true
+    end
+  self.explosionType = enemyEntity.BIGGEST
+  self.soundOnDeath = "assets/sfx/dieExplode.ogg"
+  self:setMusic("assets/sfx/music/boss.wav", true, 162898, 444759)
+  self:setBossIntroMusic("assets/sfx/music/stageStart.ogg")
+end
+
+function bossEntity:setMusic(p, l, lp, lep, v)
+  self.musicPath = p
+  self.musicLoop = l == nil or l
+  self.musicLoopPoint = lp
+  self.musicLoopEndPoint = lep
+  self.musicVolume = v or 1
+end
+
+function bossEntity:setBossIntroMusic(p, v)
+  self.musicBIPath = p
+  self.musicBIVolume = v or 1
+end
+
+function bossEntity:begin()
+  bossEntity.super.begin(self)
+end
+
+function bossEntity:intro()
+  if not self.ds then
+    self.screen = megautils.add(trigger, nil, function(s)
+      love.graphics.setColor(0, 0, 0, s.o)
+      love.graphics.rectangle("fill", view.x-1, view.y-1, view.w+2, view.h+2)
+    end)
+    self.screen.o = 0
+    self.screen:setLayer(0)
+    self.ds = 1
+    self.dOff = view.y-self.transform.y
+    self.oldY = self.transform.y
+  elseif self.ds == 1 then
+    self.canDraw.global = true
+    self.screen.o = math.min(self.screen.o+0.05, 0.4)
+    self.dOff = math.min(self.dOff+1, 0)
+    self.transform.y = self.oldY + self.dOff
+    if self.transform.y == self.oldY then
+      self.ds = 2
+    end
+  elseif self.ds == 2 then
+    self.screen.o = math.max(self.screen.o-0.05, 0)
+    if self.screen.o == 0 then
+      megautils.removeq(self.screen)
+      self.screen = nil
+      self.dOff = nil
+      self.oldY = nil
+      self.ds = nil
+      return true
+    end
+  end
+end
+
+function bossEntity:pose()
+  return true
+end
+
+function bossEntity:skip()
+  timer.winCutscene(function()
+      megautils.reloadState = true
+      megautils.resetGameObjects = true
+      megautils.gotoState(self.skipBossState)
+    end)
+  megautils.removeq(self)
+  megautils.stopMusic()
+  return true
+end
+
+function bossEntity:act() end
+
+function bossEntity:start()
+  if self._subState == 0 then
+    if self.skipBoss then
+      self:skip()
+    elseif megaMan.allPlayers then
+      megautils.autoFace(self, megaMan.allPlayers)
+      for k, v in ipairs(megaMan.allPlayers) do
+        v.canControl.boss = false
+        v.canBeInvincible.intro = true
+        v.velocity.velx = 0
+        v:resetStates()
+        megautils.autoFace(v, self, true)
+      end
+      self._subState = 1
+    end
+  elseif self._subState == 1 then
+    local result = {}
+    for k, v in ipairs(megaMan.allPlayers) do
+      if not v.drop and not v.rise then
+        v:phys()
+        if v.ground then
+          result[k] = true
+          v.anims:set("idle")
+        else
+          result[k] = false
+        end
+      else
+        result[k] = false
+      end
+    end
+    if not table.contains(result, false) then
+      self._subState = 2
+      if self.musicPath then
+        megautils.playMusic(self.musicPath, self.musicLoop, self.musicLoopPoint, self.musicLoopEndPoint, self.musicVolume)
+      end
+    end
+  elseif self._subState == 2 then
+    if not self.doIntro or self:intro() then
+      self._subState = 3
+    end
+  elseif self._subState == 3 then
+    if not self.strikePose or self:pose() then
+      self._subState = nil
+      if megaMan.allPlayers then
+        for k, v in ipairs(megaMan.allPlayers) do
+          v.canControl.boss = nil
+          v.canBeInvincible.intro = nil
+        end
+        self.canBeInvincible.intro = nil
+      end
+      return true
+    end
+  end
+end
+
+function bossEntity:die(o)
+  if not self.continueAfterDeath then
+    timer.absorbCutscene(function()
+        globals.weaponGetText = self.weaponGetText
+        globals.weaponGetBehaviour = self.weaponGetBehaviour
+        globals.skin = megaMan.mainPlayer.playerName
+        megautils.reloadState = true
+        megautils.resetGameObjects = true
+        megautils.gotoState(self.afterDeathState)
+      end)
+    megautils.stopMusic()
+  end
+end
+
+function bossEntity:hit(o)
+  megautils.add(harm, self, 50)
+  self.iFrames = 50
+end
+
+function bossEntity:bossIntro()
+  if self._subState == 0 then
+    self.transform.x = (view.w/2)-(self.collisionShape.w/2)
+    self.transform.y = -self.collisionShape.h
+    self.canDraw.global = true
+    self._timer = 0
+    self._textPos = 0
+    self._textTimer = 0
+    self._subState = 1
+    self._textObj = love.graphics.newText(mmFont, self.bossIntroText)
+    self._halfWidth = self._textObj:getWidth()/2
+    self._textObj:set("")
+    if self.musicBIPath then
+      megautils.playMusic(self.musicBIPath, false, nil, nil, self.musicBIVolume)
+    end
+  elseif self._subState == 1 then
+    self.transform.y = math.min(self.transform.y+10, math.floor(view.h/2)-(self.collisionShape.h/2))
+    if self.transform.y == math.floor(view.h/2)-(self.collisionShape.h/2) then
+      self._subState = 2
+    end
+  elseif self._subState == 2 then
+    if self:pose() then
+      self._subState = 3
+    end
+  elseif self._subState == 3 then
+    self._timer = self._timer + 1
+    if self._timer < self.bossIntroWaitTime then
+      if self.bossIntroText then
+        self._textTimer = math.min(self._textTimer+1, 8)
+        if self._textTimer == 8 then
+          self._textTimer = 0
+          self._textPos = math.min(self._textPos+1, self.bossIntroText:len())
+        end
+      end
+    else
+      megautils.transitionToState(self.stageState)
+    end
+  end
+end
+
+function bossEntity:update()
+  if self.doBossIntro then
+    self:bossIntro()
+  else
+    if not self.didIntro and self:start() then
+      self._subState = nil
+      self.didIntro = true
+      local h = self.healthHandler.health
+      self.healthHandler:instantUpdate(0)
+      self.healthHandler:updateThis(h)
+      megautils.adde(self.healthHandler)
+    else
+      self:act()
+    end
+  end
+  bossEntity.super.update(self)
+end
+
+function bossEntity:draw()
+  if self.doBossIntro and self.bossIntroText and self._textObj then
+    love.graphics.setFont(mmFont)
+    self._textObj:set(self.bossIntroText:sub(0, self._textPos or 0))
+    love.graphics.draw(self._textObj, (view.w/2)-self._halfWidth, 142)
   end
 end

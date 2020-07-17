@@ -11,7 +11,7 @@ addObjects.register("met", function(v)
 end)
 
 function met:new(x, y)
-  met.super.new(self)
+  met.super.new(self, 2)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(14, 14)
@@ -20,31 +20,35 @@ function met:new(x, y)
   self.quads = {safe=quad(0, 0, 18, 15), up=quad(18, 0, 18, 15)}
   self.side = -1
   self.s = 0
-  self.health = 2
   self.canBeInvincible.global = true
   self.timer = 0
   self.blockCollision = true
   self:setGravityMultiplier("flipWithPlayer", 1)
+  self.damage = megautils.diffValue(-2, {easy=-1, normal=-2, hard=-3})
 end
 
-function met:hit(o)
+function met:weaponTable(o)
   if o:is(megaBuster) then
-    self.changeHealth = -1
+    return -1
   elseif o:is(megaSemiBuster) then
-    self.changeHealth = megautils.diffValue(-1, {easy=-2})
+    return megautils.diffValue(-1, {easy=-2})
   elseif o:is(megaChargedBuster) then
-    self.changeHealth = megautils.diffValue(-2, {easy=-3})
+    return megautils.diffValue(-2, {easy=-3})
   elseif o:is(protoSemiBuster) then
-    self.changeHealth = megautils.diffValue(-1, {easy=-2})
+    return megautils.diffValue(-1, {easy=-2})
   elseif o:is(protoChargedBuster) then
-    self.changeHealth = megautils.diffValue(-2, {easy=-3})
+    return megautils.diffValue(-2, {easy=-3})
   elseif o:is(bassBuster) then
     if o.treble then
-      self.changeHealth = megautils.diffValue(-1, {easy=-2})
+      return megautils.diffValue(-1, {easy=-2})
     else
-      self.changeHealth = megautils.diffValue(-0.5, {easy=-1})
+      return megautils.diffValue(-0.5, {easy=-1})
     end
   end
+end
+
+function met:determineDink(o)
+  return checkTrue(self.canBeInvincible)
 end
 
 function met:update(dt)
@@ -86,7 +90,6 @@ function met:update(dt)
     end
   end
   collision.doCollision(self)
-  self:interact(self:collisionTable(megaMan.allPlayers), megautils.diffValue(-2, {easy=-1, normal=-2, hard=-3}), 80)
   self.quads[self.c].flipX = self.side == 1
   self.quads[self.c].flipY = self.gravity < 0
   met.super.update(self)

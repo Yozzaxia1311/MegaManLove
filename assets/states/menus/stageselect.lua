@@ -122,7 +122,7 @@ function stageSelect:update(dt)
           if globals.defeats.stickMan then
             megautils.transitionToState("assets/states/stages/demo.stage.tmx")
           else
-            globals.bossIntroBoss = "stick"
+            globals.bossIntroBoss = "entities/demo/stickman.lua"
             megautils.transitionToState("assets/states/menus/bossintro.state.lua")
           end
         end

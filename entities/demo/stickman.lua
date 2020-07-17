@@ -1,143 +1,45 @@
 megautils.loadResource("assets/global/bosses/stickMan.png", "stickMan")
 megautils.loadResource("assets/sfx/enemyHit.ogg", "enemyHit")
 
-stickMan = entity:extend()
+stickMan = bossEntity:extend()
 
 addObjects.register("stickMan", function(v)
-  megautils.add(spawner, v.x, v.y, 12, 24, nil, stickMan, v.x, v.y)
-end)
+    megautils.add(spawner, v.x, v.y-8, 12, 24, nil, stickMan, v.x, v.y-8)
+  end)
 
 function stickMan:new(x, y)
   stickMan.super.new(self)
-  self.transform.y = y
-  self.transform.x = x
+  self.transform.y = y or 0
+  self.transform.x = x or 0
   self:setRectangleCollision(12, 24)
   self.t = megautils.getResource("stickMan")
-  self.side = -1
-  self.s = 0
   self.canDraw.global = false
-  self.ss = 1
-  self.hBar = healthHandler({128, 128, 128}, {255, 255, 255}, {0, 0, 0}, nil, nil, 7)
-  self.hBar:instantUpdate(0)
-  camera.main.funcs.stick = function(s)
-    self.hBar.transform.x = view.x + view.w - 24
-    self.hBar.transform.y = view.y + 80
-  end
-  self.velocity = velocity()
-  self.velocity.vely = 8
-  self.blockCollision = true
+  self.defeatSlot = "stickMan"
+  self.bossIntroText = "STICK MAN"
+  self.stageState = "assets/states/templates/templateStage.stage.tmx"
+  self.gravity = 0
+  self.health = 1
+  self:useHealthBar({128, 128, 128}, {255, 255, 255})
 end
 
-function stickMan:begin()
-  self:addToGroup("freezable")
-  self:addToGroup("hurtable")
-  self.canBeInvincible.global = true
-  megautils.stopMusic()
-end
-
-function stickMan:interactedWith(o, c, i)
-  if o:is(megaSemiBuster) or checkTrue(self.canBeInvincible) or (o.dinked and not o.reflectedBack) then --Semi charged shots get reflected
-    if o.dink and not o.dinked then
-      o:dink(self)
-    end
-    return
-  end
-  if c < 0 and not o:is(megaChargedBuster) then --Remove shots
-    megautils.removeq(o)
-  end
-  if self.iFrames ~= 0 then return end
-  if o:is(stickWeapon) then --The weakness
-    self.changeHealth = -8
-  elseif o:is(megaChargedBuster) then --Semi-weakness
-    self.changeHealth = -3
-  else
-    self.changeHealth = -1
-  end
-  self.hBar:updateThis(self.hBar.health + self.changeHealth)
-  self.iFrames = 60
-  if self.hBar.health <= 0 then
-    if megautils.groups().removeOnDefeat then
-      for k, v in ipairs(megautils.groups().removeOnDefeat) do
-        megautils.removeq(v)
-      end
-    end
-    explodeParticle.createExplosion(self.transform.x+((self.collisionShape.w/2)-24/2),
-      self.transform.y+((self.collisionShape.h/2)-24/2))
-    megautils.stopMusic()
-    timer.absorbCutscene(function()
-        globals.defeats.stickMan = true
-        globals.weaponGet = "stick"
-        globals.skin = megaMan.mainPlayer.playerName
-        megautils.reloadState = true
-        megautils.resetGameObjects = true
-        megautils.gotoState("assets/states/menus/weaponget.state.lua")
-      end)
-    megautils.removeq(self)
-    megautils.playSoundFromFile("assets/sfx/dieExplode.ogg")
+function stickMan:weaponTable(o)
+  if o:is(stickWeapon) then -- The weakness
+    return -8
+  elseif o:is(megaChargedBuster) then -- Semi-weakness
+    return -3
   elseif self.changeHealth < 0 then
-    megautils.add(harm, self)
-    if o:is(megaChargedBuster) then
-      megautils.removeq(o)
-    end
-    megautils.playSound("enemyHit")
+    return -1
   end
 end
 
-function stickMan:update(dt)
-  if self.s == 0 then
-    if globals.defeats.stickMan then
-      timer.winCutscene(function()
-          megautils.reloadState = true
-          megautils.resetGameObjects = true
-          megautils.gotoState("assets/states/menus/menu.state.lua")
-        end)
-      megautils.removeq(self)
-    elseif megaMan.mainPlayer then
-      self.s = 1
-      megaMan.mainPlayer.canControl.global = false
-      megaMan.mainPlayer.velocity.velx = 0
-      megaMan.mainPlayer:resetStates()
-      if not megaMan.mainPlayer.ground then
-        megaMan.mainPlayer.anims:set("jump")
-      end
-      megaMan.mainPlayer.side = self.transform.x>megaMan.mainPlayer.transform.x and 1 or -1
-      megaMan.mainPlayer.anims.flipX = megaMan.mainPlayer.side == 1
-    end
-  elseif self.s == 1 then
-    if self.ss == 1 then
-      if megaMan.mainPlayer then
-        collision.doGrav(megaMan.mainPlayer)
-        megaMan.mainPlayer:phys()
-        if megaMan.mainPlayer.ground then
-          self.ss = 0
-          self.s = 2
-          megaMan.mainPlayer.anims:set("idle")
-          megautils.playMusic("assets/sfx/music/boss.wav", true, 162898, 444759)
-          self.canDraw.global = true
-        end
-      end
-    end
-  elseif self.s == 2 then
-    collision.doCollision(self)
-    if self.ground then
-      self.canBeInvincible.global = false
-      self.hBar:updateThis(28)
-      megautils.adde(self.hBar)
-      megaMan.mainPlayer.canUpdate.hb = true
-      self.s = 3
-    end
-  elseif self.s == 3 then
-    megaMan.mainPlayer.canControl.global = true
-    self.s = 4
-  end
-  self:interact(self:collisionTable(megaMan.allPlayers), -4, 80)
-  self:updateIFrame()
-  self:updateFlash()
+function stickMan:determineDink(o)
+  return o:is(megaSemiBuster)
 end
 
 function stickMan:draw()
+  stickMan.super.draw(self)
   love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.draw(self.t, self.transform.x-4, self.transform.y-8)
+  love.graphics.draw(self.t, math.round(self.transform.x)-4, math.round(self.transform.y)-8)
   --self:drawCollision()
 end
 
@@ -371,3 +273,5 @@ megautils.cleanFuncs.stickMan = function()
   megamanStick = nil
   megautils.cleanFuncs.stickMan = nil
 end
+
+return stickMan

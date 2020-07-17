@@ -17,7 +17,7 @@ megautils = {}
     end
 ]]--
 megautils.reloadState = true
-megautils.resetGameObjects = false
+megautils.resetGameObjects = true
 megautils.reloadStateFuncs = {}
 megautils.cleanFuncs = {}
 megautils.resetGameObjectsFuncs = {}
@@ -410,7 +410,6 @@ end
 
 function megautils.transitionToState(s, before, after)
   local tmp = megautils.add(fade, true, nil, nil, function(se)
-      megautils.remove(se)
       megautils.gotoState(s, before, after)
     end)
 end

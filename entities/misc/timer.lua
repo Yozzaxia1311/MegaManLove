@@ -24,7 +24,7 @@ function timer.winCutscene(func)
     if not s.state then
       if megaMan.mainPlayer then
         s.timer = 0
-        s.state = 0
+        s.state = 1
         megautils.stopMusic()
         megaMan.mainPlayer:resetStates()
         megaMan.mainPlayer.velocity.velx = 0
@@ -38,7 +38,7 @@ function timer.winCutscene(func)
         end
         megaMan.mainPlayer.anims.flipX = megaMan.mainPlayer.side == 1
       end
-    elseif s.state == 0 then
+    elseif s.state == 1 then
       collision.doGrav(megaMan.mainPlayer)
       megaMan.mainPlayer:phys()
       if megaMan.mainPlayer.ground then
@@ -48,12 +48,12 @@ function timer.winCutscene(func)
       end
       s.timer = math.min(s.timer+1, 60)
       if s.timer == 60 then
-        s.state = 1
+        s.state = 2
         s.timer = 0
         megaMan.mainPlayer.rise = true
         megaMan.mainPlayer.doAnimation = true
       end
-    elseif s.state == 1 then
+    elseif s.state == 2 then
       s.timer = math.min(s.timer+1, 80)
       if s.timer == 80 then
         s.state = -1
@@ -70,7 +70,7 @@ function timer.absorbCutscene(func, music)
       if not s.state then
         megautils.playMusic(music or "assets/sfx/music/win.ogg")
         if megaMan.mainPlayer then
-          s.state = 0
+          s.state = 1
           s.timer = 0
           s.to = (view.x+view.w/2)-megaMan.mainPlayer.collisionShape.w/2
           megaMan.mainPlayer:resetStates()
@@ -82,12 +82,8 @@ function timer.absorbCutscene(func, music)
           else
             megaMan.mainPlayer.anims:set("jump")
           end
-          megaMan.mainPlayer.anims.flipX = megaMan.mainPlayer.side == 1
-          megaMan.mainPlayer.animations[megaMan.mainPlayer.curAnim]:update(defaultFramerate)
-        end
-      elseif s.state == 0 then
-        if megaMan.mainPlayer then
-          s.state = 1
+          megaMan.mainPlayer.side = (megaMan.mainPlayer.transform.x > s.to and -1 or 1)
+          megaMan.mainPlayer.anims:update(defaultFramerate)
           megaMan.mainPlayer.velocity.velx = 0
           s.timer = 0
         end
@@ -96,7 +92,7 @@ function timer.absorbCutscene(func, music)
         if s.timer == 300 then
           if not s.once then
             s.once = true
-            megaMan.mainPlayer.side = (megaMan.mainPlayer.transform.x > s.to and -1 or 1)
+            megaMan.mainPlayer.anims.flipX = megaMan.mainPlayer.side == 1
           end
           megaMan.mainPlayer.velocity.velx = 1.3 * megaMan.mainPlayer.side
           if megaMan.mainPlayer.ground then
@@ -111,12 +107,13 @@ function timer.absorbCutscene(func, music)
             megaMan.mainPlayer.velocity.velx = 0
             megaMan.mainPlayer.velocity.vely = megaMan.mainPlayer.jumpSpeed * (megaMan.mainPlayer.gravity >= 0 and 1 or -1)
             megaMan.mainPlayer.ground = false
+            megaMan.mainPlayer.anims:set("jump")
             return
           end
         else
           megaMan.mainPlayer.anims:set("idle")
         end
-        megaMan.mainPlayer.animations[megaMan.mainPlayer.curAnim]:update(defaultFramerate)
+        megaMan.mainPlayer.anims:update(defaultFramerate)
         collision.doGrav(megaMan.mainPlayer)
         megaMan.mainPlayer:phys()
         if not megaMan.mainPlayer.ground then

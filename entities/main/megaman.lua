@@ -64,6 +64,11 @@ megautils.reloadStateFuncs.megaMan = function()
     megaMan.once = nil
   end
 
+megautils.cleanFuncs.megaMan = function()
+    megaMan.mainPlayer = nil
+    megaMan.allPlayers = {}
+  end
+
 megautils.resetGameObjectsFuncs.megaMan = function()
     megaMan.colorOutline = {}
     megaMan.colorOne = {}
@@ -497,8 +502,9 @@ end
 
 function megaMan:new(x, y, side, drop, p, g, gf, c, dr)
   megaMan.super.new(self)
-  self.transform.x = x
-  self.transform.y = y
+  self.doWeaponGet = megautils.getCurrentState() == "assets/states/menus/weaponget.state.lua"
+  self.transform.x = x or 0
+  self.transform.y = y or 0
   self.player = p
   megautils.registerPlayer(self)
   megaMan.properties(self, g, gf, c)
@@ -520,7 +526,7 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr)
   self.ground = true
   self.climb = false
   self.slide = false
-  self.drop = drop==nil and true or drop
+  self.drop = drop==nil or drop
   self.rise = false
   self.stepTime = 0
   self.shootTimer = self.maxShootTime
@@ -539,7 +545,15 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr)
   self.trebleForce = velocity()
   self.protoShielding = false
   self.doSplashing = not self.drop
-  if (dr == nil or dr) and megaMan.mainPlayer == self then
+  if self.doWeaponGet then
+    self.wgText = globals.weaponGetText
+    globals.weaponGetText = nil
+    self.textPos = 0
+    self.textTimer = 0
+    self.t = 0
+    self.canControl.global = false
+    self.drop = false
+  elseif not self.doWeaponGet and (dr == nil or dr) and megaMan.mainPlayer == self then
     if self.playerName == "proto" then
       self.ready = megautils.add(ready, nil, 32)
       if megautils._musicQueue then
@@ -552,34 +566,35 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr)
     end
   end
   self.side = side or 1
-
-  self.healthHandler = megautils.add(healthHandler, {252, 224, 168}, {255, 255, 255}, {0, 0, 0},
-    nil, nil, globals.lifeSegments, self)
-  self.healthHandler.canDraw.global = false
   
-  megautils.adde(megaMan.weaponHandler[self.player])
-  megaMan.colorOutline[self.player] = megaMan.weaponHandler[self.player].colorOutline[0]
-  megaMan.colorOne[self.player] = megaMan.weaponHandler[self.player].colorOne[0]
-  megaMan.colorTwo[self.player] = megaMan.weaponHandler[self.player].colorTwo[0]
-  megaMan.weaponHandler[self.player]:reinit()
-  megaMan.weaponHandler[self.player].canDraw.global = false
-  
-  if camera.main and not camera.main.funcs.megaMan then
-    camera.main.funcs.megaMan = function(s)
-      for i=0, #megaMan.allPlayers-1 do
-        local player = megaMan.allPlayers[i+1]
-        if player then
-          player.healthHandler.canDraw.global = not player.drop
-          megaMan.weaponHandler[player.player].canDraw.global = not player.drop
-          player.healthHandler.transform.x = view.x+24 + (i*32)
-          player.healthHandler.transform.y = view.y+80
-          megaMan.weaponHandler[player.player].transform.x = view.x+32 + (i*32)
-          megaMan.weaponHandler[player.player].transform.y = view.y+80
+  if not self.doWeaponGet then
+    self.healthHandler = megautils.add(healthHandler, {252, 224, 168}, {255, 255, 255}, {0, 0, 0},
+      nil, nil, globals.lifeSegments, self)
+    self.healthHandler.canDraw.global = false
+    
+    megautils.adde(megaMan.weaponHandler[self.player])
+    megaMan.colorOutline[self.player] = megaMan.weaponHandler[self.player].colorOutline[0]
+    megaMan.colorOne[self.player] = megaMan.weaponHandler[self.player].colorOne[0]
+    megaMan.colorTwo[self.player] = megaMan.weaponHandler[self.player].colorTwo[0]
+    megaMan.weaponHandler[self.player]:reinit()
+    megaMan.weaponHandler[self.player].canDraw.global = false
+    
+    if camera.main and not camera.main.funcs.megaMan then
+      camera.main.funcs.megaMan = function(s)
+        for i=0, #megaMan.allPlayers-1 do
+          local player = megaMan.allPlayers[i+1]
+          if player then
+            player.healthHandler.canDraw.global = not player.drop
+            megaMan.weaponHandler[player.player].canDraw.global = not player.drop
+            player.healthHandler.transform.x = view.x+24 + (i*32)
+            player.healthHandler.transform.y = view.y+80
+            megaMan.weaponHandler[player.player].transform.x = view.x+32 + (i*32)
+            megaMan.weaponHandler[player.player].transform.y = view.y+80
+          end
         end
       end
     end
   end
-  
   self.anims.flipX = self.side == 1
   self.anims:set(self.drop and "spawn" or "idle")
   
@@ -1893,59 +1908,70 @@ function megaMan:die()
 end
 
 function megaMan:update(dt)
-  if not megaMan.once then
-    megaMan.once = true
-  end
-  if self.ready then
-    if self.ready.isRemoved then
-      self.ready = nil
-      self.teleportOffY = self.drop and (view.y-self.transform.y) or 0
-      if self.mq then
-        megautils.playMusic(unpack(self.mq))
-        self.mq = nil
-      end
+  if self.doWeaponGet then
+    if not self.gwState then
+      self.gwState = 0
+      self.transform.y = -self.collisionShape.h
+      self.transform.x = (view.w/2)-(self.collisionShape.w/2)
+    elseif self.gwState == 0 then
+      
     end
-  elseif self.dying then
-    for k, v in pairs(megautils.playerDeathFuncs) do
-      v(self)
-    end
-    if self.cameraTween:update(defaultFramerate) then
-      self:die()
-      megautils.unfreeze(nil, "dying")
-      return
-    end
-    if camera.main then
-      view.x, view.y = math.round(camera.main.transform.x), math.round(camera.main.transform.y)
-      camera.main:updateFuncs()
-    end
+    self.anims:update(defaultFramerate)
   else
-    self.runCheck = false
-    if self.rise then
-      if self.dropLanded then
-        self.dropLanded = not self.anims:looped()
-        if not self.dropLanded then
-          self.doSplashing = false
-          megautils.playSound("ascend")
-        end
-      else
-        self.teleportOffY = self.teleportOffY+self.riseSpeed
-      end
-    elseif self.drop then
-      self.teleportOffY = math.min(self.teleportOffY+self.dropSpeed, 0)
-      if self.teleportOffY == 0 then
-        self.dropLanded = true
-        if self.anims:looped() then
-          self.drop = false
-          self.doSplashing = true
-          megautils.playSound("start")
-        end
-      end
-    elseif checkFalse(self.canControl) then
-      self:code(dt)
+    if not megaMan.once then
+      megaMan.once = true
     end
-    if self.doAnimation then self:animate(dt) end
-    if checkFalse(self.canSwitchWeapons) and not self.drop and not self.rise then self:attemptWeaponSwitch() end
-    self.weaponSwitchTimer = math.min(self.weaponSwitchTimer+1, 70)
+    if self.ready then
+      if self.ready.isRemoved then
+        self.ready = nil
+        self.teleportOffY = self.drop and (view.y-self.transform.y) or 0
+        if self.mq then
+          megautils.playMusic(unpack(self.mq))
+          self.mq = nil
+        end
+      end
+    elseif self.dying then
+      for k, v in pairs(megautils.playerDeathFuncs) do
+        v(self)
+      end
+      if self.cameraTween:update(defaultFramerate) then
+        self:die()
+        megautils.unfreeze(nil, "dying")
+        return
+      end
+      if camera.main then
+        view.x, view.y = math.round(camera.main.transform.x), math.round(camera.main.transform.y)
+        camera.main:updateFuncs()
+      end
+    else
+      self.runCheck = false
+      if self.rise then
+        if self.dropLanded then
+          self.dropLanded = not self.anims:looped()
+          if not self.dropLanded then
+            self.doSplashing = false
+            megautils.playSound("ascend")
+          end
+        else
+          self.teleportOffY = self.teleportOffY+self.riseSpeed
+        end
+      elseif self.drop then
+        self.teleportOffY = math.min(self.teleportOffY+self.dropSpeed, 0)
+        if self.teleportOffY == 0 then
+          self.dropLanded = true
+          if self.anims:looped() then
+            self.drop = false
+            self.doSplashing = true
+            megautils.playSound("start")
+          end
+        end
+      elseif checkFalse(self.canControl) then
+        self:code(dt)
+      end
+      if self.doAnimation then self:animate(dt) end
+      if checkFalse(self.canSwitchWeapons) and not self.drop and not self.rise then self:attemptWeaponSwitch() end
+      self.weaponSwitchTimer = math.min(self.weaponSwitchTimer+1, 70)
+    end
   end
 end
 

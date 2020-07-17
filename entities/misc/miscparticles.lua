@@ -178,7 +178,7 @@ end
 
 harm = entity:extend()
 
-function harm:new(e)
+function harm:new(e, time)
   harm.super.new(self)
   self.follow = e
   self.transform.x = (self.follow.transform.x+self.follow.collisionShape.w/2)-24/2
@@ -187,13 +187,15 @@ function harm:new(e)
   self.tex = megautils.getResource("particles")
   self.quad = quad(0, 22, 24, 24)
   self.timer = 0
+  self.maxTime = time or 32
 end
 
-function harm:recycle(e)
+function harm:recycle(e, time)
   self.follow = e
   self.transform.x = (self.follow.transform.x+self.follow.collisionShape.w/2)-24/2
   self.transform.y = (self.follow.transform.y+self.follow.collisionShape.h/2)-24/2
   self.timer = 0
+  self.maxTime = time or 32
 end
 
 function harm:begin()
@@ -208,9 +210,9 @@ function harm:afterUpdate(dt)
   end
   self.transform.x = math.round(self.follow.transform.x)+math.round(self.follow.collisionShape.w/2)-12
   self.transform.y = math.round(self.follow.transform.y)+math.round(self.follow.collisionShape.h/2)-12
-  self.timer = math.min(self.timer+1, 32)
+  self.timer = math.min(self.timer+1, self.maxTime)
   self.canDraw.global = not self.follow.canDraw.flash
-  if self.timer == 32 or self.follow.isRemoved then
+  if self.timer == self.maxTime or self.follow.isRemoved then
     megautils.removeq(self)
   end
 end

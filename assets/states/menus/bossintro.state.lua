@@ -14,12 +14,8 @@ function bossIntroState:begin()
   megautils.add(star, 140, 32, 180, 4)
   megautils.add(largeStar, 0, 32, 180, 6)
   megautils.add(largeStar, 90, 220, 180, 6)
-  if globals.bossIntroBoss == "stick" then
-    megautils.runFile("entities/demo/stickman.lua")
-    megautils.add(stickManIntro)
-  end
+  megautils.add(megautils.runFile(globals.bossIntroBoss))
   megautils.add(fade, false, nil, nil, fade.remove)
-  megautils.playMusic("assets/sfx/music/stageStart.ogg")
 end
 
 megautils.cleanFuncs.bossIntro = function()

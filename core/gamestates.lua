@@ -32,13 +32,12 @@ function states.set(n, before, after)
   if before then before() end
   
   local nick = n
-  local map = nick:sub(-10) == ".stage.lua" or nick:sub(-10) == ".stage.tmx"
+  local isStage = nick:sub(-10) == ".stage.lua" or nick:sub(-10) == ".stage.tmx"
+  local map
   local mapArgs = {}
   local sp = "assets/states/blank.lua"
     
-  if nick:sub(-10) == ".state.tmx" or nick:sub(-10) == ".stage.tmx" or
-    ((nick:sub(-10) == ".state.lua" or nick:sub(-10) == ".stage.lua") and
-    love.filesystem.getInfo(nick) and megautils.runFile(nick).tiledversion) then
+  if nick:sub(-10) == ".state.tmx" or nick:sub(-10) == ".stage.tmx" then
     map = megautils.createMapEntity(nick)
     local p = map.map.properties
     
@@ -106,21 +105,21 @@ function states.set(n, before, after)
   if not states.currentChunk or states.current ~= sp then
     states.currentChunk = love.filesystem.load(sp)
   end
+  states.current = nick
   states.currentState = states.currentChunk()
   states.currentState.system = entitySystem()
-  states.current = nick
   states.switched = true
   
   if after then after() end
   
-  if map then
-    if megautils.reloadState and megautils.resetGameObjects then
-      for k, v in pairs(megautils.resetGameObjectsFuncs) do
-        v()
-      end
-      states.currentState:init()
+  if isStage and megautils.reloadState and megautils.resetGameObjects then
+    for k, v in pairs(megautils.resetGameObjectsFuncs) do
+      v()
     end
-    
+    states.currentState:init()
+  end
+  
+  if map then
     states.currentState.system:adde(map):addObjects()
     
     if mapArgs.fadeIn then

@@ -9,6 +9,7 @@ function addObjects.register(n, f, l, lock)
     if addObjects.registered[i].layer == (l or 0) then
       addObjects.registered[i].data[#addObjects.registered[i].data+1] = {func=f, name=n, locked=lock}
       done = true
+      break
     end
   end
   if not done then
@@ -74,7 +75,7 @@ function addObjects.add(ol)
   for i=1, #addObjects.registered do
     local layer = addObjects.registered[i]
     for k, v in ipairs(ol) do
-      if v.properties.run and not table.contains(addObjects.ranFiles, v.properties.load) then
+      if v.properties.run and not table.contains(addObjects.ranFiles, v.properties.run) then
         megautils.runFile(v.properties.run)
         addObjects.ranFiles[#addObjects.ranFiles+1] = v.properties.run
       end
