@@ -1951,7 +1951,7 @@ function megaMan:update(dt)
         end
       end
       
-      if self._wgb() and (not self._text or self._textPos == self._text:len()) then
+      if self._wgb(self) and (not self._text or self._textPos == self._text:len()) then
         self._subState = 3
       end
     elseif self._subState == 3 then
