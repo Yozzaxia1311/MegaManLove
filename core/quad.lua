@@ -1,5 +1,11 @@
 quad = class:extend()
 
+binser.register(quad, "quad", function(d)
+    return {d.quad:getViewport()}
+  end, function(d)
+    return quad(unpack(d))
+  end)
+
 function quad:new(x, y, w, h)
   self.quad = love.graphics.newQuad(x, y, w, h, 1, 1)
   self.flipX = false

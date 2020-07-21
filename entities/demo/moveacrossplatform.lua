@@ -20,10 +20,10 @@ function moveAcrossPlatform:new(x, y, toX, toY)
   self.state = 0
 end
 
-function moveAcrossPlatform:begin()
+function moveAcrossPlatform:added()
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
-  self:addToGroup("solid")
+  self:addToGroup("collision")
 end
 
 function moveAcrossPlatform:draw()

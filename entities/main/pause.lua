@@ -96,7 +96,7 @@ function mmWeaponsMenu:new(w, h, p)
   self:setLayer(10)
 end
 
-function mmWeaponsMenu:begin()
+function mmWeaponsMenu:added()
   self:addToGroup("freezable")
 end
 
@@ -132,10 +132,7 @@ function mmWeaponsMenu:update(dt)
     self.fills[self.y][self.x].colorOne = self.w.colorOne[self.list[self.y][self.x]]
     self.fills[self.y][self.x].colorTwo = self.w.colorTwo[self.list[self.y][self.x]]
     if control.startPressed[self.player.player] then
-      self.w:switch(self.list[self.y][self.x])
-      megaMan.colorOutline[self.player.player] = self.w.colorOutline[self.list[self.y][self.x]]
-      megaMan.colorOne[self.player.player] = self.w.colorOne[self.list[self.y][self.x]]
-      megaMan.colorTwo[self.player.player] = self.w.colorTwo[self.list[self.y][self.x]]
+      self.player:switchWeaponSlot(self.list[self.y][self.x])
       for k, v in pairs(self.fills) do
         for i, j in pairs(v) do
           if j.id ~= 0 then
@@ -362,7 +359,7 @@ function mmWeaponsMenu:draw()
         else
           self.w:drawIcon(j.id, false, view.x+(j.icoX), view.y+(j.icoY))
         end
-        love.graphics.print(self.w.pauseNames[j.id], view.x+(j.icoX+16), view.y+(j.icoY))
+        love.graphics.print(self.w.weapons[j.id], view.x+(j.icoX+16), view.y+(j.icoY))
       end
     end
   else
@@ -371,7 +368,7 @@ function mmWeaponsMenu:draw()
         j:draw()
         love.graphics.setColor(1, 1, 1, 1)
         self.w:drawIcon(j.id, false, view.x+(j.icoX), view.y+(j.icoY))
-        love.graphics.print(self.w.pauseNames[j.id], view.x+(j.icoX+16), view.y+(j.icoY))
+        love.graphics.print(self.w.weapons[j.id], view.x+(j.icoX+16), view.y+(j.icoY))
       end
     end
     love.graphics.setColor(1, 1, 1, 1)

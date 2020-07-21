@@ -2,6 +2,10 @@ local menuState = states.state:extend()
 
 function menuState:begin()
   megautils.add(menuSelect)
+  if globals.wgsToMenu then
+    globals.wgsToMenu = nil
+    megautils._musicQueue = nil
+  end
 end
 
 megautils.cleanFuncs.menu = function()
@@ -13,6 +17,7 @@ menuSelect = basicEntity:extend()
 
 megautils.loadResource("assets/misc/menuSelect.png", "menuSelect")
 megautils.loadResource("assets/sfx/cursorMove.ogg", "cursorMove")
+megautils.loadResource("assets/sfx/selected.ogg", "selected")
 
 function menuSelect:new()
   menuSelect.super.new(self)

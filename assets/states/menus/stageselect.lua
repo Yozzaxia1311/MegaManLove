@@ -27,7 +27,19 @@ function stageSelect:new()
   self.protoAnim:pause()
   self.bassQuad = quad(128, 32, 32, 32)
   self.rollQuad = quad(224, 32, 32, 32)
-  --self.stickQuad = love.graphics.newQuad(32*2, 0, 32, 32, 288, 176)
+  self.wilyQuad = quad(320, 32, 32, 32)
+  
+  self.quad11 = quad(288, 0, 32, 32)
+  self.quad21 = quad(320, 0, 32, 32)
+  self.quad31 = quad(352, 0, 32, 32)
+  
+  self.quad12 = quad(288, 32, 32, 32)
+  self.quad32 = quad(352, 32, 32, 32)
+  
+  self.quad13 = quad(288, 64, 32, 32)
+  self.quad23 = quad(320, 64, 32, 32)
+  self.quad33 = quad(352, 64, 32, 32)
+  
   self.tex = megautils.getResource("mugshots")
   self.timer = 0
   self.oldX = self.transform.x
@@ -125,6 +137,8 @@ function stageSelect:update(dt)
             globals.bossIntroBoss = "entities/demo/stickman.lua"
             megautils.transitionToState("assets/states/menus/bossintro.state.lua")
           end
+        else
+          error("Slot " .. tostring(self.x) .. ", " .. tostring(self.y) .. " doesn't lead anywhere.")
         end
       end
     end
@@ -148,17 +162,8 @@ function stageSelect:update(dt)
   end
 end
 
-function stageSelect:allDefeated()
-  for k, v in pairs(globals.defeats) do
-    if not v then
-      return false
-    end
-  end
-  return true
-end
-
 function stageSelect:draw()
-  if not self:allDefeated() then
+  if not checkFalse(globals.defeats) then
     if megautils.getPlayer(1) == "proto" then
       self.protoAnim:draw(self.tex, 112, 88)
     elseif megautils.getPlayer(1) == "bass" then
@@ -169,12 +174,33 @@ function stageSelect:draw()
       self.megaQuad:draw(self.tex, 112, 88)
     end
     
-    if not globals.defeats.stickMan then
-      --love.graphics.draw(self.tex, self.stickQuad, 192, 88)
+    if false then -- For select slot 1, 1
+      self.quad11:draw(self.tex, self.oldX+(1*56), self.oldY+(1*40))
     end
-  end --else
-    --Draw Dr. Wily icon here
-  --end
+    if false then -- For select slot 2, 1
+      self.quad21:draw(self.tex, self.oldX+(2*56), self.oldY+(1*40))
+    end
+    if false then -- For select slot 3, 1
+      self.quad31:draw(self.tex, self.oldX+(3*56), self.oldY+(1*40))
+    end
+    if false then -- For select slot 1, 2
+      self.quad12:draw(self.tex, self.oldX+(1*56), self.oldY+(2*40))
+    end
+    if not globals.defeats.stickMan then -- For select slot 3, 2
+      self.quad32:draw(self.tex, self.oldX+(3*56), self.oldY+(2*40))
+    end
+    if false then -- For select slot 1, 3
+      self.quad13:draw(self.tex, self.oldX+(1*56), self.oldY+(3*40))
+    end
+    if false then -- For select slot 2, 3
+      self.quad23:draw(self.tex, self.oldX+(2*56), self.oldY+(3*40))
+    end
+    if false then -- For select slot 3, 3
+      self.quad33:draw(self.tex, self.oldX+(3*56), self.oldY+(3*40))
+    end
+  else
+    self.wilyQuad:draw(self.tex, 112, 88)
+  end
   if (self.blink and not self.stop) or self.selected then
     self.blinkQuad:draw(self.tex, self.transform.x, self.transform.y)
   end

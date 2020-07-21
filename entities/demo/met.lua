@@ -126,7 +126,7 @@ function metBullet:recycle(x, y, vx, vy)
   self.reflectedBack = nil
 end
 
-function metBullet:begin()
+function metBullet:added()
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
   self:addToGroup("enemyWeapon")

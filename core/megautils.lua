@@ -97,7 +97,7 @@ function megautils.isShowingEntityCount()
   return convar.getNumber("showentitycount") == 1
 end
 
-function megautils.infiniteLifes(what)
+function megautils.infiniteLives(what)
   convar.setValue("infinitelives", what == 1, false)
 end
 
@@ -331,6 +331,8 @@ function megautils.playSound(p, l, v, stack)
     megautils.getResource(p):setLooping(l or false)
     megautils.getResource(p):setVolume(v or 1)
     megautils.getResource(p):play()
+  else
+    error("Sound \"" .. p .. "\" doesn't exist.")
   end
 end
 
@@ -772,4 +774,25 @@ function megautils.diffValue(def, t)
     end
   end
   return def
+end
+
+function megautils.removeEnemyShots()
+  if megautils.groups().enemyShot then
+    for k, v in ipairs(megautils.groups().enemyShot) do
+      megautils.removeq(v)
+    end
+  end
+end
+
+function megautils.removePlayerShots()
+  if megaMan.allPlayers and megaMan.weaponHandler then
+    for k, v in ipairs(megaMan.allPlayers) do
+      megaMan.weaponHandler[v.player]:removeWeaponShots()
+    end
+  end
+end
+
+function megautils.removeAllShots()
+  megautils.removeEnemyShots()
+  megautils.removePlayerShots()
 end

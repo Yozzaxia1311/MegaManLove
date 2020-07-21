@@ -11,7 +11,7 @@ function spawner:new(x, y, w, h, cond, ...)
   self.cond = cond
 end
 
-function spawner:begin()
+function spawner:added()
   self:addToGroup("handledBySections")
   self:addToGroup("freezable")
   self.instance = nil
@@ -41,7 +41,7 @@ function intervalSpawner:new(x, y, w, h, time, cond, ...)
   self.timer = 0
 end
 
-function intervalSpawner:begin()
+function intervalSpawner:added()
   self:addToGroup("handledBySections")
   self:addToGroup("freezable")
 end

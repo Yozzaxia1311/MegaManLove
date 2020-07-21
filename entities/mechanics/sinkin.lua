@@ -13,10 +13,10 @@ function sinkIn:new(x, y, w, h, s)
   self.solidType = collision.STANDIN
 end
 
-function sinkIn:begin()
+function sinkIn:added()
   self:addToGroup("handledBySections")
   self:addToGroup("freezable")
-  self:addToGroup("solid")
+  self:addToGroup("collision")
 end
 
 function sinkIn:update(dt)

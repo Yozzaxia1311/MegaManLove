@@ -23,6 +23,8 @@ function initEngine()
   globals.lives = 2
   globals.startingLives = 2
   globals.playerCount = 1
+  globals.bossIntroState = "assets/states/menus/bossintro.state.lua"
+  globals.weaponGetState = "assets/states/menus/weaponget.state.lua"
   
   megautils.difficultyChangeFuncs.startingLives = function(d)
       globals.startingLives = (d == "easy") and 3 or 2

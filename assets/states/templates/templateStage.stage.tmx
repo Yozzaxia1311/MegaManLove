@@ -26,7 +26,6 @@
   </objectgroup>
   <objectgroup id="5" name="entities">
    <object id="5" template="player/player.tx" x="120" y="144"/>
-   <object id="21" template="demo/stickMan.tx" x="160" y="144"/>
   </objectgroup>
  </group>
 </map>

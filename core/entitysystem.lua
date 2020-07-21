@@ -16,6 +16,8 @@ function entitySystem:new()
   self.removeQueue = {}
   self.recycle = {}
   self.doSort = false
+  self.beginQueue = {}
+  self.inLoop = false
 end
 
 function entitySystem:sortLayers()
@@ -43,6 +45,7 @@ function entitySystem:emptyRecycling(c, num)
 end
 
 function entitySystem:getRecycled(c, ...)
+  if not c then error("Class does not exist.") end
   local e
   local vr = self.recycle[c]
   if vr and #vr > 0 then
@@ -80,7 +83,12 @@ function entitySystem:add(c, ...)
   self.all[#self.all+1] = e
   e.isRemoved = false
   e.isAdded = true
-  e:begin()
+  e:added()
+  if self.inLoop then
+    e:begin()
+  else
+    self.beginQueue[#self.beginQueue+1] = e
+  end
   e.previousX = e.transform.x
   e.previousY = e.transform.y
   e.epX = e.previousX
@@ -112,7 +120,12 @@ function entitySystem:adde(e)
   self.all[#self.all+1] = e
   e.isRemoved = false
   e.isAdded = true
-  e:begin()
+  e:added()
+  if self.inLoop then
+    e:begin()
+  else
+    self.beginQueue[#self.beginQueue+1] = e
+  end
   e.previousX = e.transform.x
   e.previousY = e.transform.y
   e.epX = e.previousX
@@ -242,6 +255,7 @@ function entitySystem:remove(e)
     table.removevaluearray(self.entities, e.actualLayer)
   end
   table.quickremovevaluearray(self.all, e)
+  table.quickremovevaluearray(self.beginQueue, e)
   e.isAdded = false
   if e.recycle then
     if not self.recycle[e.__index] then
@@ -275,6 +289,7 @@ function entitySystem:clear()
   self.recycle = {}
   self.cameraUpdate = nil
   self.doSort = false
+  self.beginQueue = {}
 end
 
 function entitySystem:draw()
@@ -311,7 +326,11 @@ function entitySystem:drawQuality()
 end
 
 function entitySystem:update(dt)
-  fuckyou = true
+  for i=#self.beginQueue, 1, -1 do
+    self.beginQueue[i]:begin()
+    self.beginQueue[i] = nil
+  end
+  self.inLoop = true
   if entitySystem.doBeforeUpdate then
     for i=1, #self.updates do
       if states.switched then
@@ -355,7 +374,7 @@ function entitySystem:update(dt)
       end
     end
   end
-  fuckyou = false
+  self.inLoop = false
   if self.cameraUpdate then
     self.cameraUpdate(self)
   end
@@ -601,6 +620,7 @@ function basicEntity:afterUpdate(dt) end
 function basicEntity:draw() end
 function basicEntity:drawQuality() end
 function basicEntity:removed() end
+function basicEntity:added() end
 function basicEntity:begin() end
 function basicEntity:staticToggled() end
 
@@ -812,10 +832,22 @@ function enemyEntity:new()
   self.damage = -1
   self.playerIFramesOnDamage = 80
   self.defeatSlot = nil
+  self.defeatSlotValue = nil
+  self.removeHealthBarWithSelf = true
+  self.barRelativeToView = true
+  self.barOffsetX = x or (view.w - 24)
+  self.barOffsetY = y or 80
 end
 
-function enemyEntity:useHealthBar(oneColor, twoColor, outlineColor, x, y, relative, add)
-  if add then
+function enemyEntity:added()
+  self:addToGroup("freezable")
+  self:addToGroup("removeOnTransition")
+  self:addToGroup("collision")
+  self:addToGroup("handledBySection")
+end
+
+function enemyEntity:useHealthBar(oneColor, twoColor, outlineColor, add)
+  if (add == nil) or add then
     self.healthHandler = megautils.add(healthHandler, oneColor or {128, 128, 128}, twoColor or {255, 255, 255}, outlineColor or {0, 0, 0},
       nil, nil, math.ceil(self.health/4))
   else
@@ -824,9 +856,6 @@ function enemyEntity:useHealthBar(oneColor, twoColor, outlineColor, x, y, relati
   end
   self.healthHandler:instantUpdate(self.health)
   self.health = nil
-  self.barRelativeToView = relative
-  self.barOffsetX = x or (view.w - 24)
-  self.barOffsetY = y or 80
   if camera.main then
     camera.main.funcs[self.__index] = function(s)
         self.healthHandler.transform.x = (self.barRelativeToView and view.x or 0) + self.barOffsetX
@@ -836,8 +865,11 @@ function enemyEntity:useHealthBar(oneColor, twoColor, outlineColor, x, y, relati
 end
 
 function enemyEntity:removed()
-  if camera.main then
-    camera.main.funcs[self.__index] = nil
+  if self.removeHealthBarWithSelf and self.healthHandler and not self.healthHandler.isRemoved then
+    if camera.main then
+      camera.main.funcs[self.__index] = nil
+    end
+    megautils.removeq(self.healthHandler)
   end
 end
 
@@ -906,7 +938,7 @@ function enemyEntity:interactedWith(o, c, i)
     end
     self:die(o)
     if self.defeatSlot then
-      globals.defeats[self.defeatSlot] = true
+      globals.defeats[self.defeatSlot] = self.defeatSlotValue or true
     end
     if self.explosionType == enemyEntity.SMALL then
       megautils.add(smallBlast, self.transform.x+(self.collisionShape.w/2)-12, self.transform.y+(self.collisionShape.h/2)-12)
@@ -971,17 +1003,19 @@ function bossEntity:new()
   self.canDraw.global = false
   self.canBeInvincible.intro = true
   self.skipBoss = false
-  self.skipBossState = "assets/states/menus/menu.state.lua"
+  self.skipBossState = "assets/states/menus/menu.state.tmx"
   self.doIntro = true
   self.strikePose = true
   self.continueAfterDeath = false
-  self.afterDeathState = "assets/states/menus/weaponget.state.lua"
+  self.afterDeathState = weaponGetState
+  self.weaponGetMenuState = "assets/states/menus/menu.state.tmx"
   self.defeatSlot = nil
-  self.doBossIntro = megautils.getCurrentState() == "assets/states/menus/bossintro.state.lua"
+  self.doBossIntro = megautils.getCurrentState() == globals.bossIntroState
   self.bossIntroText = nil
-  self.weaponGetText = "WEAPON GET... (WEAPON NAME HERE)"
+  self.weaponGetText = "WEAPON GET... (NAME HERE)"
   self.stageState = nil
   self.bossIntroWaitTime = 400
+  self.removeHealthBarWithSelf = false
   self.weaponGetBehaviour = function(m)
       return true
     end
@@ -989,6 +1023,10 @@ function bossEntity:new()
   self.soundOnDeath = "assets/sfx/dieExplode.ogg"
   self:setMusic("assets/sfx/music/boss.wav", true, 162898, 444759)
   self:setBossIntroMusic("assets/sfx/music/stageStart.ogg")
+end
+
+function bossEntity:useHealthBar(oneColor, twoColor, outlineColor, add)
+  bossEntity.super.useHealthBar(self, oneColor, twoColor, outlineColor, add or add ~= nil)
 end
 
 function bossEntity:setMusic(p, l, lp, lep, v)
@@ -1113,11 +1151,15 @@ function bossEntity:start()
 end
 
 function bossEntity:die(o)
+  megautils.removeEnemyShots()
   if not self.continueAfterDeath then
     timer.absorbCutscene(function()
-        globals.weaponGetText = self.weaponGetText
-        globals.weaponGetBehaviour = self.weaponGetBehaviour
-        globals.skin = megaMan.mainPlayer.playerName
+        if self.afterDeathState == globals.weaponGetState then
+          globals.weaponGetText = self.weaponGetText
+          globals.weaponGetBehaviour = self.weaponGetBehaviour
+          globals.wgMenuState = self.weaponGetMenuState
+          globals.wgValue = self.defeatSlotValue
+        end
         megautils.reloadState = true
         megautils.resetGameObjects = true
         megautils.gotoState(self.afterDeathState)
@@ -1133,7 +1175,7 @@ end
 
 function bossEntity:bossIntro()
   if self._subState == 0 then
-    self.transform.x = (view.w/2)-(self.collisionShape.w/2)
+    self.transform.x = math.floor(view.w/2)-(self.collisionShape.w/2)
     self.transform.y = -self.collisionShape.h
     self.canDraw.global = true
     self._timer = 0
@@ -1181,7 +1223,9 @@ function bossEntity:update()
       local h = self.healthHandler.health
       self.healthHandler:instantUpdate(0)
       self.healthHandler:updateThis(h)
-      megautils.adde(self.healthHandler)
+      if not self.healthHandler.isAdded then
+        megautils.adde(self.healthHandler)
+      end
     else
       self:act()
     end

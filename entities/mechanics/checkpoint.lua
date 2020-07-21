@@ -12,7 +12,7 @@ function checkpoint:new(x, y, w, h, c)
   self.name = c
 end
 
-function checkpoint:begin()
+function checkpoint:added()
   self:addToGroup("handledBySections")
 end
 
@@ -36,7 +36,7 @@ function collisionCheckpoint:new(x, y, w, h, c)
   self.name = c
 end
 
-function collisionCheckpoint:begin()
+function collisionCheckpoint:added()
   self:addToGroup("handledBySections")
 end
 

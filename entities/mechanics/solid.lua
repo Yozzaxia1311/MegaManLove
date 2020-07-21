@@ -12,9 +12,9 @@ function solid:new(x, y, w, h)
   self.solidType = collision.SOLID
 end
 
-function solid:begin()
+function solid:added()
   self:addToGroup("handledBySections")
-  self:addToGroup("solid")
+  self:addToGroup("collision")
   self:makeStatic()
 end
 
@@ -49,9 +49,9 @@ function slope:new(x, y, mask)
   self.solidType = collision.SOLID
 end
 
-function slope:begin()
+function slope:added()
   self:addToGroup("handledBySections")
-  self:addToGroup("solid")
+  self:addToGroup("collision")
   self:makeStatic()
 end
 

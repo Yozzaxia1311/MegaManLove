@@ -28,7 +28,7 @@ function healthHandler:new(colorOne, colorTwo, colorOutline, side, r, segments, 
   self.player = player
 end
 
-function healthHandler:begin()
+function healthHandler:added()
   self:addToGroup("freezable")
 end
 
@@ -216,7 +216,7 @@ function weaponHandler:drawIcon(i, on, x, y)
   end
 end
 
-function weaponHandler:begin()
+function weaponHandler:added()
   self:addToGroup("freezable")
 end
 
@@ -236,9 +236,8 @@ function weaponHandler:register(slot, name, pn, colorone, colortwo, coloroutline
   self.colorOne[slot] = colorone
   self.colorTwo[slot] = colortwo
   self.colorOutline[slot] = coloroutline
-  self.pauseNames[slot] = pn[1]
-  self.activeIcons[slot] = quad(pn[2][1], pn[2][2], pn[2][3], pn[2][4])
-  self.inactiveIcons[slot] = quad(pn[3][1], pn[3][2], pn[3][3], pn[3][4])
+  self.activeIcons[slot] = pn[1]
+  self.inactiveIcons[slot] = pn[2]
   
   if weapons.resources[name] then
     weapons.resources[name]()
@@ -256,7 +255,6 @@ function weaponHandler:unregister(slot)
   self.colorOne[slot] = nil
   self.colorTwo[slot] = nil
   self.colorOutline[slot] = nil
-  self.pauseNames[slot] = nil
   self.activeIcons[slot] = nil
   self.inactiveIcons[slot] = nil
   
@@ -281,24 +279,18 @@ function weaponHandler:switch(slot)
   if self.currentSlot ~= slot then
     self:removeWeaponShots()
   end
-  self.renderedWE[self.currentSlot] = self.energy[self.currentSlot]
   self.current = self.weapons[slot]
   self.currentSlot = self.slots[self.current]
   self.currentColorOne = self.colorOne[self.currentSlot]
   self.currentColorTwo = self.colorTwo[self.currentSlot]
   self.renderedWE[self.currentSlot] = self.energy[self.currentSlot]
+  if func then
+    func(self)
+  end
 end
 
 function weaponHandler:switchName(name)
-  if self.current ~= name then
-    self:removeWeaponShots()
-  end
-  self.renderedWE[self.currentSlot] = self.energy[self.currentSlot]
-  self.current = name
-  self.currentSlot = self.slots[self.current]
-  self.currentColorOne = self.colorOne[self.currentSlot]
-  self.currentColorTwo = self.colorTwo[self.currentSlot]
-  self.renderedWE[self.currentSlot] = self.energy[self.currentSlot]
+  self:switch(self.slots[name])
 end
 
 function weaponHandler:currentWE()

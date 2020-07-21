@@ -15,7 +15,7 @@ function gravFlip:new(x, y, w, h, dir)
   self.doEffect = false
 end
 
-function gravFlip:begin()
+function gravFlip:added()
   self:addToGroup("handledBySections")
 end
 

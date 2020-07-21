@@ -14,10 +14,10 @@ function ladder:new(x, y, w, h)
   self.ladder = true
 end
 
-function ladder:begin()
+function ladder:added()
   self:addToGroup("ladder")
   self:addToGroup("handledBySections")
-  self:addToGroup("solid")
+  self:addToGroup("collision")
 end
 
 function ladder:update(dt)

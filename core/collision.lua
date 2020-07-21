@@ -27,7 +27,7 @@ function collision.doCollision(self, noSlope)
 end
 
 function collision.getTable(self, dx, dy, noSlope)
-  if self.collisionShape and megautils.groups().solid then
+  if self.collisionShape and megautils.groups().collision then
     noSlope = noSlope or collision.noSlope
     
     local xs = dx or 0
@@ -36,7 +36,7 @@ function collision.getTable(self, dx, dy, noSlope)
     
     local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
     
-    local all = megautils.groups().solid
+    local all = megautils.groups().collision
     
     for i=1, #all do
       local v = all[i]
@@ -68,7 +68,7 @@ function collision.getTable(self, dx, dy, noSlope)
 end
 
 function collision.checkSolid(self, dx, dy, noSlope)
-  if self.collisionShape and megautils.groups().solid then
+  if self.collisionShape and megautils.groups().collision then
     noSlope = noSlope or collision.noSlope
     
     local xs = dx or 0
@@ -77,7 +77,7 @@ function collision.checkSolid(self, dx, dy, noSlope)
     
     local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
     
-    local all = megautils.groups().solid
+    local all = megautils.groups().collision
     
     for i=1, #all do
       local v = all[i]
@@ -113,8 +113,8 @@ function collision.entityPlatform(self)
     local epCanCrush = true
     local myyspeed = self.transform.y - self.epY
     local myxspeed = self.transform.x - self.epX
-    local all = megautils.state().system.all
-    local possible = resolid ~= 0 and self.collisionShape and all
+    local all = megautils.groups().collision
+    local possible = resolid ~= 0 and self.collisionShape and all ~= nil
     
     self.solidType = collision.NONE
     self.transform.x = self.epX
@@ -286,7 +286,7 @@ function collision.shiftObject(self, dx, dy, checkforcol, ep, noSlope)
 end
 
 function collision.checkGround(self, checkAnyway, noSlope)
-  if not self.blockCollision or not self.collisionShape or not megautils.groups().solid then
+  if not self.blockCollision or not self.collisionShape or not megautils.groups().collision then
     self.ground = false
   end
   
@@ -303,7 +303,7 @@ function collision.checkGround(self, checkAnyway, noSlope)
   local solid = {}
   local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
   local slp = math.ceil(math.abs(self.velocity.velx)) + 1
-  local all = megautils.groups().solid
+  local all = megautils.groups().collision
   
   for i=1, #all do
     local v = all[i]
@@ -354,9 +354,9 @@ function collision.generalCollision(self, noSlope)
   local solid = {}
   local stand = {}
   local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
-  local all = megautils.groups().solid
-  local possible = self.collisionShape and all
-  
+  local all = megautils.groups().collision
+  local possible = self.collisionShape and self.blockCollision and all ~= nil
+    
   if possible then
     for i=1, #all do
       local v = all[i]

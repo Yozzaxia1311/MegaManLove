@@ -37,6 +37,15 @@ function pickupEntity:new(despawn, gd, fwp, id)
   end
 end
 
+function pickupEntity:added()
+  self:addToGroup("freezable")
+  self:addToGroup("removeOnTransition")
+  self:addToGroup("collision")
+  if self.despawn then
+    self:addToGroup("handledBySections")
+  end
+end
+
 function pickupEntity:grav()
   if self.ground then return end
   self.velocity:clampY(7)

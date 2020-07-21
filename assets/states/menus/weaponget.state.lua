@@ -13,14 +13,9 @@ function weaponGetState:begin()
   megautils.add(star, 140, 32, 180, 4)
   megautils.add(largeStar, 0, 32, 180, 6)
   megautils.add(largeStar, 90, 220, 180, 6)
-  megautils.add(megaman)
+  megautils.add(megaMan)
   megautils.add(fade, false, nil, nil, fade.remove)
   megautils.playMusic("assets/sfx/music/get.ogg", true)
-end
-
-megautils.cleanFuncs.weaponGet = function()
-  globals.weaponGet = nil
-  megautils.cleanFuncs.weaponGet = nil
 end
 
 return weaponGetState

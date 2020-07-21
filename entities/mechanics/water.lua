@@ -32,7 +32,7 @@ function splash:recycle(offx, offy, follow, side)
   self.anim:gotoFrame(1)
 end
 
-function splash:begin()
+function splash:added()
   self:addToGroup("removeOnTransition")
   self:addToGroup("freezable")
 end
@@ -68,7 +68,7 @@ function water:new(x, y, w, h, grav)
   self.grav = grav or 0.4
 end
 
-function water:begin()
+function water:added()
   self:addToGroup("handledBySections")
   self:addToGroup("water")
   self:addToGroup("freezable")
@@ -140,7 +140,7 @@ function space:new(x, y, w, h, grav)
   self.grav = grav or 0.4
 end
 
-function space:begin()
+function space:added()
   self:addToGroup("handledBySections")
   self:addToGroup("space")
   self:addToGroup("freezable")

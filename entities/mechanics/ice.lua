@@ -12,10 +12,10 @@ function ice:new(x, y, w, h)
   self.solidType = collision.SOLID
 end
 
-function ice:begin()
+function ice:added()
   self:addToGroup("handledBySections")
   self:addToGroup("ice")
-  self:addToGroup("solid")
+  self:addToGroup("collision")
 end
 
 function ice.elseFunc(s)
