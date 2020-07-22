@@ -12,11 +12,11 @@ pickupEntity = entity:extend()
 
 pickupEntity.banIDs = {}
 
-function pickupEntity.isBanned(i, id)
-  return pickupEntity.banIDs[i] and table.contains(pickupEntity.banIDs[i], id)
+function pickupEntity.isBanned(i, id, path)
+  return pickupEntity.banIDs[i] and table.contains(pickupEntity.banIDs[i], (path or "") .. "|" .. id)
 end
 
-function pickupEntity:new(despawn, gd, fwp, id)
+function pickupEntity:new(despawn, gd, fwp, id, path)
   pickupEntity.super.new(self)
   self:setRectangleCollision(16, 16)
   self.despawn = despawn == nil and self.id == nil or despawn
@@ -28,6 +28,7 @@ function pickupEntity:new(despawn, gd, fwp, id)
   if self.id == -1 then
     self.id = nil
   end
+  self.path = path or ""
   self.removeWhenOutside = self.despawn
   if gd or self.fwp then
     self:setGravityMultiplier("flipWithPlayer",  megaMan.mainPlayer and megaMan.mainPlayer.gravityMultipliers.gravityFlip or self.gravDir)
@@ -62,8 +63,9 @@ function pickupEntity:update(dt)
     local p = megaMan.allPlayers[i]
     if self:collision(p) then
       self:taken(p)
-      if not self.despawn and self.id and not table.contains(pickupEntity.banIDs[self.__index], self.id) then
-        pickupEntity.banIDs[self.__index][#pickupEntity.banIDs[self.__index]+1] = self.id
+      if not self.despawn and self.id and
+        not table.contains(pickupEntity.banIDs[self.__index], self.path .. "|" .. self.id) then
+        pickupEntity.banIDs[self.__index][#pickupEntity.banIDs[self.__index]+1] = self.path .. "|" .. self.id
       end
       megautils.removeq(self)
       return
@@ -82,14 +84,14 @@ end
 
 smallHealth = pickupEntity:extend()
 
-addObjects.register("smallHealth", function(v)
+addObjects.register("smallHealth", function(v, map)
   megautils.add(spawner, v.x, v.y, 8, 6, function()
-      return not pickupEntity.isBanned(smallHealth, v.id)
-    end, smallHealth, v.x+10, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id)
+      return not pickupEntity.isBanned(smallHealth, v.id, map.path)
+    end, smallHealth, v.x+10, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
 
-function smallHealth:new(x, y, despawn, gd, fwp, id)
-  smallHealth.super.new(self, despawn, gd, fwp, id)
+function smallHealth:new(x, y, despawn, gd, fwp, id, path)
+  smallHealth.super.new(self, despawn, gd, fwp, id, path)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(8, 6)
@@ -126,14 +128,14 @@ end
 
 health = pickupEntity:extend()
 
-addObjects.register("health", function(v)
+addObjects.register("health", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 14, function()
-      return not pickupEntity.isBanned(health, v.id)
-    end, health, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id)
+      return not pickupEntity.isBanned(health, v.id, map.path)
+    end, health, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
 
-function health:new(x, y, despawn, gd, fwp, id)
-  health.super.new(self, despawn, gd, fwp, id)
+function health:new(x, y, despawn, gd, fwp, id, path)
+  health.super.new(self, despawn, gd, fwp, id, path)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(16, 14)
@@ -170,14 +172,14 @@ end
 
 smallEnergy = pickupEntity:extend()
 
-addObjects.register("smallEnergy", function(v)
+addObjects.register("smallEnergy", function(v, map)
   megautils.add(spawner, v.x, v.y, 8, 6, function()
-      return not pickupEntity.isBanned(smallEnergy, v.id)
-    end, smallEnergy, v.x, v.y+10, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id)
+      return not pickupEntity.isBanned(smallEnergy, v.id, map.path)
+    end, smallEnergy, v.x, v.y+10, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
 
-function smallEnergy:new(x, y, despawn, gd, fwp, id)
-  smallEnergy.super.new(self, despawn, gd, fwp, id)
+function smallEnergy:new(x, y, despawn, gd, fwp, id, path)
+  smallEnergy.super.new(self, despawn, gd, fwp, id, path)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(8, 6)
@@ -223,14 +225,14 @@ end
 
 energy = pickupEntity:extend()
 
-addObjects.register("energy", function(v)
+addObjects.register("energy", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 10, function()
-      return not pickupEntity.isBanned(energy, v.id)
-    end, energy, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id)
+      return not pickupEntity.isBanned(energy, v.id, map.path)
+    end, energy, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
 
-function energy:new(x, y, despawn, gd, fwp, id)
-  energy.super.new(self, despawn, gd, fwp, id)
+function energy:new(x, y, despawn, gd, fwp, id, path)
+  energy.super.new(self, despawn, gd, fwp, id, path)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(16, 10)
@@ -276,14 +278,14 @@ end
 
 life = pickupEntity:extend()
 
-addObjects.register("life", function(v)
+addObjects.register("life", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 15, function()
-      return not pickupEntity.isBanned(life, v.id)
-    end, life, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id)
+      return not pickupEntity.isBanned(life, v.id, map.path)
+    end, life, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
 
-function life:new(x, y, despawn, gd, fwp, id)
-  life.super.new(self, despawn, gd, fwp, id)
+function life:new(x, y, despawn, gd, fwp, id, path)
+  life.super.new(self, despawn, gd, fwp, id, path)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(16, 15)
@@ -368,16 +370,16 @@ end
 
 eTank = pickupEntity:extend()
 
-addObjects.register("eTank", function(v)
+addObjects.register("eTank", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 15, function()
-      return not pickupEntity.isBanned(eTank, v.id)
-    end, eTank, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id)
+      return not pickupEntity.isBanned(eTank, v.id, map.path)
+    end, eTank, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
 
 eTank.banIds = {}
 
-function eTank:new(x, y, despawn, gd, fwp, id)
-  eTank.super.new(self, despawn, gd, fwp, id)
+function eTank:new(x, y, despawn, gd, fwp, id, path)
+  eTank.super.new(self, despawn, gd, fwp, id, path)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(16, 15)
@@ -424,14 +426,14 @@ end
 
 wTank = pickupEntity:extend()
 
-addObjects.register("wTank", function(v)
+addObjects.register("wTank", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 15, function()
-      return not pickupEntity.isBanned(wTank, v.id)
-    end, wTank, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id)
+      return not pickupEntity.isBanned(wTank, v.id, map.path)
+    end, wTank, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
 
-function wTank:new(x, y, despawn, gd, fwp, id)
-  wTank.super.new(self, despawn, gd, fwp, id)
+function wTank:new(x, y, despawn, gd, fwp, id, path)
+  wTank.super.new(self, despawn, gd, fwp, id, path)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(16, 15)

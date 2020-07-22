@@ -67,7 +67,7 @@ function addObjects.unregister(name)
     end)
 end
 
-function addObjects.add(ol)
+function addObjects.add(ol, map)
   if addObjects.doSort then
     addObjects.sort()
     addObjects.doSort = false
@@ -81,7 +81,7 @@ function addObjects.add(ol)
       end
       for j=1, #layer.data do
         if layer.data[j].name == v.name then
-          layer.data[j].func(v)
+          layer.data[j].func(v, map)
         end
       end
     end

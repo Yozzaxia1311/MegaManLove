@@ -52,7 +52,7 @@ end
 function protoSemiBuster:dink(e)
   self.velocity.vely = -4 * self.grav
   self.velocity.velx = 4*-self.side
-  self.dinked = 1
+  self.dinked = true
   megautils.playSound("dink")
 end
 
@@ -102,7 +102,7 @@ end
 function protoChargedBuster:dink(e)
   self.velocity.vely = -4*self.grav
   self.velocity.velx = 4*-self.side
-  self.dinked = 1
+  self.dinked = true
   megautils.playSound("dink")
 end
 
@@ -174,7 +174,7 @@ end
 function bassBuster:dink(e)
   self.velocity.vely = -4 * (self.gravity >= 0 and 1 or -1)
   self.velocity.velx = 4*-self.side
-  self.dinked = 1
+  self.dinked = true
   megautils.playSound("dink")
 end
 
@@ -247,7 +247,7 @@ end
 function megaBuster:dink(e)
   self.velocity.vely = -4*self.grav
   self.velocity.velx = 4*-self.side
-  self.dinked = 1
+  self.dinked = true
   megautils.playSound("dink")
 end
 
@@ -296,7 +296,7 @@ end
 function megaSemiBuster:dink(e)
   self.velocity.vely = -4*self.grav
   self.velocity.velx = 4*-self.side
-  self.dinked = 1
+  self.dinked = true
   megautils.playSound("dink")
 end
 
@@ -348,7 +348,7 @@ end
 function megaChargedBuster:dink(e)
   self.velocity.vely = -4*self.grav
   self.velocity.velx = 4*-self.side
-  self.dinked = 1
+  self.dinked = true
   megautils.playSound("dink")
 end
 
@@ -827,7 +827,7 @@ end
 function stickWeapon:dink(e)
   self.velocity.vely = -4*self.grav
   self.velocity.velx = 4*-self.side
-  self.dinked = 1
+  self.dinked = true
   megautils.playSound("dink")
 end
 

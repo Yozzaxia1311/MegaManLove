@@ -793,7 +793,7 @@ function mapEntity:getLayerByID(id)
 end
 
 function mapEntity:addObjects()
-  addObjects.add(self:recursiveObjectFinder(self.map))
+  addObjects.add(self:recursiveObjectFinder(self.map), self.map)
   for k, v in pairs(megautils.postAddObjectsFuncs) do
     v(self)
   end
