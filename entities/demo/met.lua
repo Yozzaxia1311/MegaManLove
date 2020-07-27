@@ -90,11 +90,16 @@ metBullet = weapon:extend()
 
 function metBullet:new(x, y, p, vx, vy)
   metBullet.super.new(self, p, true)
+  
+  if not self.recycling then
+    self:setRectangleCollision(6, 6)
+    self.tex = megautils.getResource("met")
+    self.quad = quad(36, 0, 6, 6)
+    self.recycle = true
+  end
+  
   self.transform.x = x or 0
   self.transform.y = y or 0
-  self:setRectangleCollision(6, 6)
-  self.tex = megautils.getResource("met")
-  self.quad = quad(36, 0, 6, 6)
   self.velocity.velx = vx
   self.velocity.vely = vy
   self.damage = megautils.diffValue(-2, {easy=-1, normal=-2, hard=-3})
