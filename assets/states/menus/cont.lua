@@ -28,7 +28,7 @@ function contPanels:begin()
   self:addToGroup("freezable")
 end
 
-function contPanels:update(dt)
+function contPanels:update()
   self.timer = math.min(self.timer+1, 199)
   if self.timer == 198 then
     self.state = 1
@@ -57,7 +57,7 @@ function contSelect:new()
   self:setLayer(2)
 end
 
-function contSelect:update(dt)
+function contSelect:update()
   local old = self.pick
   if control.upPressed[1] then
     self.pick = math.wrap(self.pick-1, 0, 1)

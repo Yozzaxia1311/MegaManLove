@@ -16,14 +16,6 @@ function slideParticle:new(x, y, side, g)
   self.anim.flippedV = g < 0
 end
 
-function slideParticle:recycle(x, y, side, g)
-  self.side = side
-  self.transform.y = y
-  self.transform.x = x
-  self.anim:gotoFrame(1)
-  self.anim.flippedV = g < 0
-end
-
 function slideParticle:added()
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
@@ -53,13 +45,6 @@ function damageSteam:new(x, y, g)
   self:setRectangleCollision(5, 8)
   self.tex = megautils.getResource("particles")
   self.anim = megautils.newAnimation("damageSteamGrid", {"1-3", 1}, 1/8)
-  self.anim.flippedV = g < 0
-end
-
-function damageSteam:recycle(x, y, g)
-  self.transform.y = y
-  self.transform.x = x
-  self.anim:gotoFrame(1)
   self.anim.flippedV = g < 0
 end
 
@@ -93,13 +78,6 @@ function airBubble:new(x, y)
   self.quad = quad(104, 28, 4, 4)
   self.off = 0
   self.timer = 0
-end
-
-function airBubble:recycle(x, y)
-  self.transform.y = y
-  self.transform.x = x
-  self.timer = 0
-  self.off = 0
 end
 
 function airBubble:added()
@@ -145,16 +123,6 @@ function angleParticle:new(x, y, a)
   self.side = self.velocity.velx>0 and -1 or 1
 end
 
-function angleParticle:recycle(x, y, a)
-  self.transform.y = y
-  self.transform.x = x
-  self.once = false
-  self.velocity.velx = megautils.calcX(a)
-  self.velocity.vely = megautils.calcY(a)
-  self.side = self.velocity.velx>0 and -1 or 1
-  self.anim:gotoFrame(1)
-end
-
 function angleParticle:added()
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
@@ -186,14 +154,6 @@ function harm:new(e, time)
   self:setRectangleCollision(24, 24)
   self.tex = megautils.getResource("particles")
   self.quad = quad(0, 22, 24, 24)
-  self.timer = 0
-  self.maxTime = time or 32
-end
-
-function harm:recycle(e, time)
-  self.follow = e
-  self.transform.x = (self.follow.transform.x+self.follow.collisionShape.w/2)-24/2
-  self.transform.y = (self.follow.transform.y+self.follow.collisionShape.h/2)-24/2
   self.timer = 0
   self.maxTime = time or 32
 end
@@ -350,16 +310,6 @@ function smallBlast:new(x, y, spd)
   self.anim = megautils.newAnimation("explodeParticleGrid", {"1-5", 1}, self.spd)
 end
 
-function smallBlast:recycle(x, y, spd)
-  self.transform.y = y
-  self.transform.x = x
-  if spd ~= self.spd then
-    self.spd = spd or 0.065
-    self.anim:setDurations(self.spd)
-  end
-  self.anim:gotoFrame(1)
-end
-
 function smallBlast:added()
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
@@ -381,15 +331,6 @@ blast = entity:extend()
 
 function blast:new(x, y, times)
   blast.super.new(self)
-  self.transform.y = y
-  self.transform.x = x
-  self.deg = 0
-  self.timer = 0
-  self.times = 0
-  self.max = times == nil and 4 or times
-end
-
-function blast:recycle(x, y, times)
   self.transform.y = y
   self.transform.x = x
   self.deg = 0

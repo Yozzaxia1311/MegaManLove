@@ -19,19 +19,6 @@ function splash:new(offx, offy, follow, side)
   end
 end
 
-function splash:recycle(offx, offy, follow, side)
-  self.offx = offx
-  self.offy = offy
-  self.side = side
-  self.follow = follow
-  if self.follow then
-    self.transform.x = self.follow.transform.x + self.offx
-    self.transform.y = self.follow.transform.y + self.offy
-  end
-  self.rot = math.rad(side==-1 and 0 or 180)
-  self.anim:gotoFrame(1)
-end
-
 function splash:added()
   self:addToGroup("removeOnTransition")
   self:addToGroup("freezable")

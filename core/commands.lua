@@ -50,6 +50,18 @@ convar["infinitelives"] = {
   value = 0
 }
 
+convar["inv"] = {
+  helptext = "invicibility",
+  flags = {"cheat"},
+  value = 0
+}
+
+convar["noclip"] = {
+  helptext = "pass through everything",
+  flags = {"cheat"},
+  value = 0
+}
+
 convar["diff"] = {
   helptext = "difficulty (easy, normal, hard, etc.)",
   flags = {"cheat"},
@@ -97,6 +109,13 @@ convar["players"] = {
       end
       
       for i = 1, #t do
+        if megaMan.allPlayers then
+          for k, v in ipairs(megaMan.allPlayers) do
+            if v.player == i then
+              v:switchCharacter(t[i])
+            end
+          end
+        end
         res = res .. t[i]
         if i ~= #t then
           res = res .. ","
@@ -368,7 +387,11 @@ concmd["flip"] = {
       for i=1, #megaMan.allPlayers do
         megaMan.allPlayers[i]:setGravityMultiplier("gravityFlip", -megaMan.allPlayers[i].gravityMultipliers.gravityFlip)
         if i == 1 then
-          megautils.playSound("gravityFlip")
+          if megautils.getResource("gravityFlip") then
+            megautils.playSound("gravityFlip")
+          else
+            megautils.playSoundFromFile("assets/sfx/gravityFlip.ogg")
+          end
         end
       end
     end
@@ -422,8 +445,17 @@ concmd["give"] = {
         if _G[cmd[2]] then
           local args = {_G[cmd[2]]}
           for i=3, #cmd do
-            args[#arg+1] = tonumber(cmd[i]) or toboolean(cmd[i]) or cmd[i]
+            if cmd[i] == "playerx" then
+              local v = cmd[i]:split(",")
+              args[#args+1] = megaMan.mainPlayer.transform.x+(numberSanitize(v[2]))
+            elseif cmd[i] == "playery" then
+              local v = cmd[i]:split(",")
+              args[#args+1] = megaMan.mainPlayer.transform.y+(numberSanitize(v[2]))
+            else
+              args[#arg+1] = tonumber(cmd[i]) or toboolean(cmd[i]) or cmd[i]
+            end
           end
+          print(inspect(args))
           megautils.add(unpack(args))
         else
           console.print("Entity \"" .. cmd[2] .. "\" does not exist in global context.")

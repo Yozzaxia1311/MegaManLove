@@ -1,8 +1,4 @@
 megautils.loadResource("assets/global/entities/met.png", "met")
-megautils.loadResource("assets/sfx/enemyHit.ogg", "enemyHit")
-megautils.loadResource("assets/sfx/enemyExplode.ogg", "enemyExplode")
-megautils.loadResource("assets/sfx/buster.ogg", "buster")
-megautils.loadResource("assets/sfx/reflect.ogg", "dink")
 
 met = enemyEntity:extend()
 
@@ -11,20 +7,18 @@ addObjects.register("met", function(v)
 end)
 
 function met:new(x, y)
-  met.super.new(self, 2)
+  met.super.new(self)
   self.transform.y = y
   self.transform.x = x
   self:setRectangleCollision(14, 14)
   self.t = megautils.getResource("met")
   self.c = "safe"
   self.quads = {safe=quad(0, 0, 18, 15), up=quad(18, 0, 18, 15)}
-  self.side = -1
   self.s = 0
   self.canBeInvincible.global = true
   self.timer = 0
-  self.blockCollision = true
-  self:setGravityMultiplier("flipWithPlayer", 1)
   self.damage = megautils.diffValue(-2, {easy=-1, normal=-2, hard=-3})
+  self.health = 2
 end
 
 function met:weaponTable(o)
@@ -52,13 +46,8 @@ function met:determineDink(o)
 end
 
 function met:update(dt)
-  if megaMan.mainPlayer then
-    self:setGravityMultiplier("flipWithPlayer", megaMan.mainPlayer.gravityMultipliers.gravityFlip or 1)
-  end
-  collision.doGrav(self)
-  local near = megautils.autoFace(self, megaMan.allPlayers)
   if self.s == 0 then
-    if near and math.between(near.transform.x, 
+    if self.closest and math.between(self.closest.transform.x, 
       self.transform.x - 120, self.transform.x + 120) then
       self.timer = math.min(self.timer+1, 80)
     else
@@ -89,13 +78,8 @@ function met:update(dt)
       self.s = 0
     end
   end
-  collision.doCollision(self)
   self.quads[self.c].flipX = self.side == 1
   self.quads[self.c].flipY = self.gravity < 0
-  met.super.update(self)
-  if megautils.outside(self) then
-    megautils.removeq(self)
-  end
 end
 
 function met:draw()
@@ -107,23 +91,14 @@ metBullet = basicEntity:extend()
 
 function metBullet:new(x, y, vx, vy)
   metBullet.super.new(self)
-  self.transform.x = x
-  self.transform.y = y
+  self.transform.x = x or 0
+  self.transform.y = y or 0
   self:setRectangleCollision(6, 6)
   self.tex = megautils.getResource("met")
   self.quad = quad(36, 0, 6, 6)
   self.velocity = velocity()
   self.velocity.velx = vx
   self.velocity.vely = vy
-end
-
-function metBullet:recycle(x, y, vx, vy)
-  self.transform.x = x
-  self.transform.y = y
-  self.velocity.velx = vx
-  self.velocity.vely = vy
-  self.dinked = nil
-  self.reflectedBack = nil
 end
 
 function metBullet:added()

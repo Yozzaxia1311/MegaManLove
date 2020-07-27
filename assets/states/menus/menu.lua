@@ -35,7 +35,7 @@ function menuSelect:begin()
   self:addToGroup("freezable")
 end
 
-function menuSelect:update(dt)
+function menuSelect:update()
   if self.section == 0 then
     local old = self.pick
     if control.upPressed[1] then

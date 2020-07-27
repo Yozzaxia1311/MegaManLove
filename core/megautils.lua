@@ -105,6 +105,22 @@ function megautils.hasInfiniteLives()
   return convar.getNumber("infinitelives") == 1
 end
 
+function megautils.invincible(what)
+  convar.setValue("inv", what == 1, false)
+end
+
+function megautils.isInvincible()
+  return convar.getNumber("inv") == 1
+end
+
+function megautils.noClip(what)
+  convar.setValue("noclip", what == 1, false)
+end
+
+function megautils.isNoClip()
+  return convar.getNumber("noclip") == 1
+end
+
 function megautils.setPlayer(p, what)
   local old = convar.getString("players"):split(",")
   local back = ""
@@ -696,18 +712,19 @@ function megautils.closest(e, group, single)
   return result
 end
 
-function megautils.autoFace(e, to, single)
+function megautils.side(e, to, single)
   local closest = megautils.closest(e, to, single)
+  local side
   if closest then
     if closest.transform.x+closest.collisionShape.w/2 >
       e.transform.x+e.collisionShape.w/2 then
-      e.side = 1
+      side = 1
     elseif closest.transform.x+closest.collisionShape.w/2 <
       e.transform.x+e.collisionShape.w/2 then
-      e.side = -1
+      side = -1
     end
   end
-  return closest
+  return side, closest
 end
 
 function megautils.pointVelAt(e, to)

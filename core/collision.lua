@@ -16,7 +16,7 @@ end
 
 function collision.doCollision(self, noSlope)
   noSlope = noSlope or collision.noSlope
-  if self.blockCollision then
+  if checkFalse(self.blockCollision) then
     collision.generalCollision(self, noSlope)
   else
     self.transform.x = self.transform.x + self.velocity.velx
@@ -123,7 +123,7 @@ function collision.entityPlatform(self)
     if possible and myyspeed ~= 0 then
       for i=1, #all do
         local v = all[i]
-        if v ~= self and v.blockCollision and v.collisionShape and
+        if v ~= self and checkFalse(v.blockCollision) and v.collisionShape and
           (not self.exclusivelySolidFor or table.contains(self.exclusivelySolidFor, v)) and
           (not self.excludeSolidFor or not table.contains(self.excludeSolidFor, v)) then
           local epDir = math.sign(self.transform.y + (self.collisionShape.h/2) -
@@ -190,7 +190,7 @@ function collision.entityPlatform(self)
       for i=1, #all do
         local v = all[i]
         local continue = false
-        if v ~= self and v.blockCollision and v.collisionShape and
+        if v ~= self and checkFalse(v.blockCollision) and v.collisionShape and
           (not self.exclusivelySolidFor or table.contains(self.exclusivelySolidFor, v)) and
           (not self.excludeSolidFor or not table.contains(self.excludeSolidFor, v)) then
           if not v:collision(self) then
@@ -286,7 +286,7 @@ function collision.shiftObject(self, dx, dy, checkforcol, ep, noSlope)
 end
 
 function collision.checkGround(self, checkAnyway, noSlope)
-  if not self.blockCollision or not self.collisionShape or not megautils.groups().collision then
+  if not checkFalse(self.blockCollision) or not self.collisionShape or not megautils.groups().collision then
     self.ground = false
   end
   
@@ -355,7 +355,7 @@ function collision.generalCollision(self, noSlope)
   local stand = {}
   local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
   local all = megautils.groups().collision
-  local possible = self.collisionShape and self.blockCollision and all ~= nil
+  local possible = self.collisionShape and checkFalse(self.blockCollision) and all ~= nil
     
   if possible then
     for i=1, #all do

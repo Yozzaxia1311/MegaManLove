@@ -31,7 +31,7 @@ function rebinder:begin()
   self:addToGroup("freezable")
 end
 
-function rebinder:update(dt)
+function rebinder:update()
   if globals.lastKeyPressed and globals.lastKeyPressed[2] == "escape" and not self.done then
     globals.lastKeyPressed = nil
     megautils.add(fade, true, nil, nil, function(s)

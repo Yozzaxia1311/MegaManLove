@@ -175,7 +175,7 @@ weaponHandler.id = 0
 
 function weaponHandler:new(side, r, slots)
   weaponHandler.super.new(self)
-  self.current = "megaBuster"
+  self.current = "M.BUSTER"
   self.slotSize = slots
   self.currentSlot = 0
   self.weapons = {}
@@ -239,9 +239,10 @@ function weaponHandler:register(slot, name, pn, colorone, colortwo, coloroutline
   self.activeIcons[slot] = pn[1]
   self.inactiveIcons[slot] = pn[2]
   
-  if weapons.resources[name] then
-    weapons.resources[name]()
+  if playerWeapon.resources[name] then
+    playerWeapon.resources[name]()
   end
+  print(name)
 end
 
 function weaponHandler:unregister(slot)
@@ -264,8 +265,8 @@ function weaponHandler:unregister(slot)
 end
 
 function weaponHandler:removeWeaponShots()
-  if weapons.removeGroups[self.current] then
-    for _, i in ipairs(weapons.removeGroups[self.current]) do
+  if playerWeapon.removeGroups[self.current] then
+    for _, i in ipairs(playerWeapon.removeGroups[self.current]) do
       if megautils.groups()[i .. self.id] then
         for _, v in ipairs(megautils.groups()[i .. self.id]) do
           megautils.removeq(v)

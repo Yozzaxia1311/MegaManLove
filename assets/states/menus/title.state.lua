@@ -28,7 +28,7 @@ function title:new()
   self:addToGroup("freezable")
 end
 
-function title:update(dt)
+function title:update()
   self.transform.y = math.max(self.transform.y-8, 32)
   if self.transform.y == 32 and not self.once then
     self.once = true

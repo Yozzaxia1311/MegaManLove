@@ -11,15 +11,21 @@ function booleanToString(v)
 end
 
 function checkTrue(w)
-  for k, v in pairs(w) do
-    if v then return true end
+  if w then
+    for k, v in pairs(w) do
+      if v then return true end
+    end
   end
   return false
 end
 
 function checkFalse(w)
-  for k, v in pairs(w) do
-    if not v then return false end
+  if w then
+    for k, v in pairs(w) do
+      if not v then return false end
+    end
+  else
+    return false
   end
   return true
 end

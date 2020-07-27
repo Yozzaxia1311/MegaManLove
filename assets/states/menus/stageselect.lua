@@ -60,7 +60,7 @@ function stageSelect:begin()
   self:addToGroup("freezable")
 end
 
-function stageSelect:update(dt)
+function stageSelect:update()
   self.protoAnim:update(defaultFramerate)
   
   local oldx, oldy = self.x, self.y

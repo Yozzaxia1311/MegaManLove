@@ -14,7 +14,6 @@ function entitySystem:new()
   self.all = {}
   self.addQueue = {}
   self.removeQueue = {}
-  self.recycle = {}
   self.doSort = false
   self.beginQueue = {}
   self.inLoop = false
@@ -34,33 +33,9 @@ function entitySystem:sortLayers()
   end
 end
 
-function entitySystem:emptyRecycling(c, num)
-  if not num or num < 1 then
-    self.recycling[c] = {}
-  elseif num < self.recycling[c] then
-    for i=num, #self.recycling[c] do
-      self.recycling[c][i] = nil
-    end
-  end
-end
-
-function entitySystem:getRecycled(c, ...)
-  if not c then error("Class does not exist.") end
-  local e
-  local vr = self.recycle[c]
-  if vr and #vr > 0 then
-    e = vr[#vr]
-    e:baseRecycle()
-    e:recycle(...)
-    vr[#vr] = nil
-  end
-  if not e then e = c(...) end
-  return e
-end
-
 function entitySystem:add(c, ...)
   if not c then return end
-  local e = self:getRecycled(c, ...)
+  local e = c(...)
   if not e.static then
     local done = false
     for i=1, #self.entities do
@@ -93,6 +68,9 @@ function entitySystem:add(c, ...)
   e.previousY = e.transform.y
   e.epX = e.previousX
   e.epY = e.previousY
+  if e.calcGrav then
+    e:calcGrav()
+  end
   return e
 end
 
@@ -130,6 +108,9 @@ function entitySystem:adde(e)
   e.previousY = e.transform.y
   e.epX = e.previousX
   e.epY = e.previousY
+  if e.calcGrav then
+    e:calcGrav()
+  end
   return e
 end
 
@@ -257,13 +238,6 @@ function entitySystem:remove(e)
   table.quickremovevaluearray(self.all, e)
   table.quickremovevaluearray(self.beginQueue, e)
   e.isAdded = false
-  if e.recycle then
-    if not self.recycle[e.__index] then
-      self.recycle[e.__index] = {e}
-    elseif not table.contains(self.recycle[e.__index], e) then
-      self.recycle[e.__index][#self.recycle[e.__index]+1] = e
-    end
-  end
 end
 
 function entitySystem:removeq(e)
@@ -286,7 +260,6 @@ function entitySystem:clear()
   self.static = {}
   self.addQueue = {}
   self.removeQueue = {}
-  self.recycle = {}
   self.cameraUpdate = nil
   self.doSort = false
   self.beginQueue = {}
@@ -439,17 +412,6 @@ function basicEntity:new()
   self.isAdded = false
   self.iFrames = 0
   self.changeHealth = 0
-  self.canUpdate = {global=true}
-  self.canDraw = {global=true}
-end
-
-function basicEntity:baseRecycle()
-  self.transform.x = 0
-  self.transform.y = 0
-  self.isRemoved = true
-  self.isAdded = false
-  self.changeHealth = 0
-  self.iFrames = 0
   self.canUpdate = {global=true}
   self.canDraw = {global=true}
 end
@@ -614,9 +576,9 @@ function basicEntity:collisionNumber(t, x, y, notme, func)
   return result
 end
 
-function basicEntity:beforeUpdate(dt) end
-function basicEntity:update(dt) end
-function basicEntity:afterUpdate(dt) end
+function basicEntity:beforeUpdate() end
+function basicEntity:update() end
+function basicEntity:afterUpdate() end
 function basicEntity:draw() end
 function basicEntity:drawQuality() end
 function basicEntity:removed() end
@@ -634,30 +596,7 @@ function entity:new()
   self.normalGravity = 0.25
   self.gravityMultipliers = {global=1}
   self:calcGrav()
-  self.blockCollision = false
-  self.ground = false
-  self.xColl = 0
-  self.yColl = 0
-  self.shakeX = 0
-  self.shakeY = 0
-  self.shakeTime = 0
-  self.maxShakeTime = 5
-  self.shakeSide = 1
-  self.doShake = false
-  self.moveByMoveX = 0
-  self.moveByMoveY = 0
-  self.canBeInvincible = {global=false}
-  self.canStandSolid = {global=true}
-end
-
-function entity:baseRecycle()
-  entity.super.baseRecycle(self)
-  self.canDraw.flash = true
-  self.velocity.velx = 0
-  self.velocity.vely = 0
-  self.normalGravity = 0.25
-  self.gravityMultipliers = {global=1}
-  self:calcGrav()
+  self.blockCollision = {global=false}
   self.ground = false
   self.xColl = 0
   self.yColl = 0
@@ -799,7 +738,7 @@ function mapEntity:addObjects()
   end
 end
 
-function mapEntity:update(dt)
+function mapEntity:update()
   self.map:update(defaultFramerate)
 end
 
@@ -814,14 +753,18 @@ end
 
 enemyEntity = entity:extend()
 
-enemyEntity.SMALL = 1
-enemyEntity.BIG = 2
-enemyEntity.BIGGEST = 3
+enemyEntity.SMALLBLAST = 1
+enemyEntity.BIGBLAST = 2
+enemyEntity.DEATHBLAST = 3
+
+enemyEntity.NOPIERCE = 0
+enemyEntity.PIERCE = 1
+enemyEntity.PIERCEIFKILLING = 2
 
 function enemyEntity:new()
   enemyEntity.super.new(self)
   self:setRectangleCollision(16, 16)
-  self.explosionType = enemyEntity.SMALL
+  self.explosionType = enemyEntity.SMALLBLAST
   self.dead = false
   self.removeOnDeath = true
   self.dropItem = true
@@ -831,12 +774,24 @@ function enemyEntity:new()
   self.autoHitPlayer = true
   self.damage = -1
   self.playerIFramesOnDamage = 80
+  self.flipWithPlayer = true
   self.defeatSlot = nil
   self.defeatSlotValue = nil
+  self.removeWhenOutside = true
   self.removeHealthBarWithSelf = true
   self.barRelativeToView = true
   self.barOffsetX = x or (view.w - 24)
   self.barOffsetY = y or 80
+  self.autoFace = -1
+  self.side = -1
+  self.applyAutoFace = true
+  self.closest = nil
+  self.pierceType = enemyEntity.NOPIERCE
+  self.autoCollision = true
+  self.autoGravity = true
+  self.doAutoCollisionBeforeUpdate = false
+  self.blockCollision.global = true
+  self._didCol = false
 end
 
 function enemyEntity:added()
@@ -844,6 +799,7 @@ function enemyEntity:added()
   self:addToGroup("removeOnTransition")
   self:addToGroup("collision")
   self:addToGroup("handledBySection")
+  self:addToGroup("hurtable")
 end
 
 function enemyEntity:useHealthBar(oneColor, twoColor, outlineColor, add)
@@ -857,7 +813,7 @@ function enemyEntity:useHealthBar(oneColor, twoColor, outlineColor, add)
   self.healthHandler:instantUpdate(self.health)
   self.health = nil
   if camera.main then
-    camera.main.funcs[self.__index] = function(s)
+    camera.main.funcs[self] = function(s)
         self.healthHandler.transform.x = (self.barRelativeToView and view.x or 0) + self.barOffsetX
         self.healthHandler.transform.y = (self.barRelativeToView and view.y or 0) + self.barOffsetY
       end
@@ -865,11 +821,13 @@ function enemyEntity:useHealthBar(oneColor, twoColor, outlineColor, add)
 end
 
 function enemyEntity:removed()
-  if self.removeHealthBarWithSelf and self.healthHandler and not self.healthHandler.isRemoved then
+  if self.removeHealthBarWithSelf and self.healthHandler then
     if camera.main then
-      camera.main.funcs[self.__index] = nil
+      camera.main.funcs[self] = nil
     end
-    megautils.removeq(self.healthHandler)
+    if not self.healthHandler.isRemoved then
+      megautils.removeq(self.healthHandler)
+    end
   end
 end
 
@@ -894,12 +852,38 @@ function enemyEntity:die(o) end
 function enemyEntity:determineDink(o) end
 function enemyEntity:weaponTable(o) end
 
-function enemyEntity:update()
+function enemyEntity:beforeUpdate()
+  if self.flipWithPlayer and megaMan.mainPlayer then
+    self:setGravityMultiplier("flipWithPlayer", megaMan.mainPlayer.gravityMultipliers.gravityFlip or 1)
+  end
+  local s, n = megautils.side(self, megaMan.allPlayers)
+  self.autoFace = s or self.autoFace
+  if self.applyAutoFace then
+    self.side = self.autoFace
+  end
+  self.closest = n
+  if self.autoGravity then
+    collision.doGrav(self)
+  end
+  self._didCol = false
+  if self.doAutoCollisionBeforeUpdate then
+    collision.doCollision(self)
+    self._didCol = true
+  end
+end
+
+function enemyEntity:afterUpdate()
+  if self.autoCollision and not self.doAutoCollisionBeforeUpdate and not self._didCol then
+    collision.doCollision(self)
+  end
   self:updateFlash()
   self:updateIFrame()
   self:updateShake()
   if self.autoHitPlayer then
     self:interact(self:collisionTable(megaMan.allPlayers), self.damage, self.playerIFramesOnDamage)
+  end
+  if self.removeWhenOutside and megautils.outside(self) then
+    megautils.removeq(self)
   end
 end
 
@@ -919,7 +903,7 @@ function enemyEntity:interactedWith(o, c, i)
   self.changeHealth = self:weaponTable(o) or self.changeHealth
   
   if self.changeHealth < 0 then
-    if not (o.pierceIfKilling and health + self.changeHealth < 0) then
+    if o.pierceType == enemyEntity.PIERCE or (o.pierceType == enemyEntity.PIERCEIFKILLING and health + self.changeHealth > 0) then
       megautils.removeq(o)
     end
     if self.iFrames <= 0 then
@@ -940,11 +924,11 @@ function enemyEntity:interactedWith(o, c, i)
     if self.defeatSlot then
       globals.defeats[self.defeatSlot] = self.defeatSlotValue or true
     end
-    if self.explosionType == enemyEntity.SMALL then
+    if self.explosionType == enemyEntity.SMALLBLAST then
       megautils.add(smallBlast, self.transform.x+(self.collisionShape.w/2)-12, self.transform.y+(self.collisionShape.h/2)-12)
-    elseif self.explosionType == enemyEntity.BIG then
+    elseif self.explosionType == enemyEntity.BIGBLAST then
       megautils.add(blast, self.transform.x+(self.collisionShape.w/2)-12, self.transform.y+(self.collisionShape.h/2)-12)
-    elseif self.explosionType == enemyEntity.BIGGEST then
+    elseif self.explosionType == enemyEntity.DEATHBLAST then
       explodeParticle.createExplosion(self.transform.x+((self.collisionShape.w/2)-12),
         self.transform.y+((self.collisionShape.h/2)-12))
     end
@@ -981,7 +965,11 @@ function enemyEntity:interactedWith(o, c, i)
       megautils.removeq(o)
     end
     if self.soundOnHit then
-      megautils.playSound(self.soundOnHit)
+      if megautils.getResource(self.soundOnHit) then
+        megautils.playSound(self.soundOnHit)
+      else
+        megautils.playSoundFromFile(self.soundOnHit)
+      end
     end
   else
     if self.healthHandler then
@@ -1019,8 +1007,10 @@ function bossEntity:new()
   self.weaponGetBehaviour = function(m)
       return true
     end
-  self.explosionType = enemyEntity.BIGGEST
+  self.explosionType = enemyEntity.DEATHBLAST
   self.soundOnDeath = "assets/sfx/dieExplode.ogg"
+  self.flipWithPlayer = false
+  self.removeWhenOutside = false
   self:setMusic("assets/sfx/music/boss.wav", true, 162898, 444759)
   self:setBossIntroMusic("assets/sfx/music/stageStart.ogg")
 end
@@ -1040,10 +1030,6 @@ end
 function bossEntity:setBossIntroMusic(p, v)
   self.musicBIPath = p
   self.musicBIVolume = v or 1
-end
-
-function bossEntity:begin()
-  bossEntity.super.begin(self)
 end
 
 function bossEntity:intro()
@@ -1230,7 +1216,6 @@ function bossEntity:update()
       self:act()
     end
   end
-  bossEntity.super.update(self)
 end
 
 function bossEntity:draw()
