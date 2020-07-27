@@ -239,10 +239,9 @@ function weaponHandler:register(slot, name, pn, colorone, colortwo, coloroutline
   self.activeIcons[slot] = pn[1]
   self.inactiveIcons[slot] = pn[2]
   
-  if playerWeapon.resources[name] then
-    playerWeapon.resources[name]()
+  if weapon.resources[name] then
+    weapon.resources[name]()
   end
-  print(name)
 end
 
 function weaponHandler:unregister(slot)
@@ -265,8 +264,8 @@ function weaponHandler:unregister(slot)
 end
 
 function weaponHandler:removeWeaponShots()
-  if playerWeapon.removeGroups[self.current] then
-    for _, i in ipairs(playerWeapon.removeGroups[self.current]) do
+  if weapon.removeGroups[self.current] then
+    for _, i in ipairs(weapon.removeGroups[self.current]) do
       if megautils.groups()[i .. self.id] then
         for _, v in ipairs(megautils.groups()[i .. self.id]) do
           megautils.removeq(v)

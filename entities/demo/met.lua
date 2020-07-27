@@ -64,10 +64,9 @@ function met:update(dt)
     if self.timer == 20 then
       self.timer = 0
       self.s = 2
-      megautils.add(metBullet, self.transform.x+4, self.transform.y+4, self.side*megautils.calcX(45)*2, -megautils.calcY(45)*2)
-      megautils.add(metBullet, self.transform.x+4, self.transform.y+4, self.side*megautils.calcX(45)*2, megautils.calcY(45)*2)
-      megautils.add(metBullet, self.transform.x+4, self.transform.y+4, self.side*2, 0)
-      megautils.playSound("buster")
+      megautils.add(metBullet, self.transform.x+4, self.transform.y+4, self, self.side*megautils.calcX(45)*2, -megautils.calcY(45)*2)
+      megautils.add(metBullet, self.transform.x+4, self.transform.y+4, self, self.side*megautils.calcX(45)*2, megautils.calcY(45)*2)
+      megautils.add(metBullet, self.transform.x+4, self.transform.y+4, self, self.side*2, 0)
     end
   elseif self.s == 2 then
     self.timer = math.min(self.timer+1, 20)
@@ -87,47 +86,18 @@ function met:draw()
   self.quads[self.c]:draw(self.t, math.round(self.transform.x), math.round(self.transform.y))
 end
 
-metBullet = basicEntity:extend()
+metBullet = weapon:extend()
 
-function metBullet:new(x, y, vx, vy)
-  metBullet.super.new(self)
+function metBullet:new(x, y, p, vx, vy)
+  metBullet.super.new(self, p, true)
   self.transform.x = x or 0
   self.transform.y = y or 0
   self:setRectangleCollision(6, 6)
   self.tex = megautils.getResource("met")
   self.quad = quad(36, 0, 6, 6)
-  self.velocity = velocity()
   self.velocity.velx = vx
   self.velocity.vely = vy
-end
-
-function metBullet:added()
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnTransition")
-  self:addToGroup("enemyWeapon")
-end
-
-function metBullet:dink(e)
-  if e:is(megaMan) then
-    self.velocity.velx = -self.velocity.velx
-    self.velocity.vely = -self.velocity.vely
-    self.dinked = true
-    self.reflectedBack = true
-    megautils.playSound("dink")
-  end
-end
-
-function metBullet:update(dt)
-  self.transform.x = self.transform.x + self.velocity.velx
-  self.transform.y = self.transform.y + self.velocity.vely
-  if self.dinked then
-    self:interact(self:collisionTable(megautils.groups().hurtable), -2, 2)
-  else
-    self:interact(self:collisionTable(megaMan.allPlayers), megautils.diffValue(-2, {easy=-1, normal=-2, hard=-3}), 80)
-  end
-  if megautils.outside(self) then
-    megautils.removeq(self)
-  end
+  self.damage = megautils.diffValue(-2, {easy=-1, normal=-2, hard=-3})
 end
 
 function metBullet:draw()

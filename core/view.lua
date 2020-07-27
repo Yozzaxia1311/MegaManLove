@@ -36,9 +36,5 @@ function view.draw(sys)
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.setCanvas()
   cscreen.apply()
-  if nesShader then
-    love.graphics.setShader(nesShader)
-  end
   love.graphics.draw(view.canvas)
-  love.graphics.setShader()
 end

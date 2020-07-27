@@ -3,41 +3,52 @@ megautils.loadResource("assets/sfx/enemyExplode.ogg", "enemyExplode", true)
 megautils.loadResource("assets/sfx/buster.ogg", "buster", true)
 megautils.loadResource("assets/sfx/reflect.ogg", "dink", true)
 
-playerWeapon = entity:extend()
+weapon = entity:extend()
 
-playerWeapon.DAMAGENONE = 0
-playerWeapon.DAMAGEPLAYER = 1
-playerWeapon.DAMAGEENEMY = 2
-playerWeapon.DAMAGEBOTH = 3
+weapon.DAMAGENONE = 0
+weapon.DAMAGEPLAYER = 1
+weapon.DAMAGEENEMY = 2
+weapon.DAMAGEBOTH = 3
 
-playerWeapon.removeGroups = {}
-playerWeapon.resources = {}
+weapon.removeGroups = {}
+weapon.resources = {}
 
-function playerWeapon:new(p)
-  playerWeapon.super.new(self)
-  self:setRectangleCollision(8, 8)
-  self.autoHit = true
-  self.sound = "buster"
-  self.soundOnDink = "dink"
-  self.damage = -1
-  self.damageType = damType or playerWeapon.DAMAGEENEMY
-  self.iFramesOnDamage = (self.damageType == playerWeapon.DAMAGEPLAYER) and 80 or 1
-  self.dinked = false
-  self.damageTypeOnDink = playerWeapon.DAMAGENONE
-  self.user = p
-  self.flipWithUser = true
-  self.weaponGroup = nil
-  self.removeWhenOutside = true
-  self.autoCollision = true
-  self.autoGravity = false
-  self.autoFace = -1
-  self.applyAutoFace = false
-  self.doAutoCollisionBeforeUpdate = true
-  self.doDink = true
+function weapon:new(p, enWeapon)
+  weapon.super.new(self)
+  if not self.recycling then
+    self:setRectangleCollision(8, 8)
+    self.autoHit = true
+    self.sound = "buster"
+    self.soundOnDink = "dink"
+    self.damage = -1
+    self.flipWithUser = true
+    self.weaponGroup = nil
+    self.removeWhenOutside = true
+    self.autoCollision = true
+    self.autoGravity = false
+    self.autoFace = -1
+    self.applyAutoFace = false
+    self.doAutoCollisionBeforeUpdate = true
+    self.doDink = true
+    self.pierceType = pierce.NOPIERCE
+  end
+  
+  self.dinkedBy = nil
   self._didCol = false
+  self.dinked = false
+  self.user = p
+  self.damageType = weapon.DAMAGEENEMY
+  self.damageTypeOnDink = weapon.DAMAGENONE
+  self.isEnemyWeapon = false
+  if enWeapon then
+    self.isEnemyWeapon = true
+    self.damageType = weapon.DAMAGEPLAYER
+    self.damageTypeOnDink = weapon.DAMAGEENEMY
+    self.pierceType = pierce.PIERCE
+  end
 end
 
-function playerWeapon:added()
+function weapon:added()
   if self.weaponGroup then
     self:addToGroup(self.weaponGroup)
     if self.user and megaMan.weaponHandler[self.user.player] then
@@ -47,7 +58,12 @@ function playerWeapon:added()
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
   self:addToGroup("collision")
-  self:addToGroup("playerWeapon")
+  self:addToGroup("weapon")
+  if self.isEnemyWeapon then
+    self:addToGroup("enemyWeapon")
+  else
+    self:addToGroup("playerWeapon")
+  end
   if self.sound then
     if megautils.getResource(self.sound) then
       megautils.playSound(self.sound)
@@ -57,15 +73,27 @@ function playerWeapon:added()
   end
 end
 
-function playerWeapon:grav()
+function weapon:grav()
   if self.ground then return end
   self.velocity.vely = self.velocity.vely+self.gravity
   self.velocity:clampY(7)
 end
 
-function playerWeapon:dink(e)
-  self.velocity.velx = self.velocity.velx >= 0 and -4 or 4
-  self.velocity.vely = (self.gravity >= 0) and -4 or 4
+function weapon:determineIFrames(o)
+  if megaMan.allPlayers and table.contains(megaMan.allPlayers, o) then
+    return 80
+  end
+  return 2
+end
+
+function weapon:dink(e)
+  if self.isEnemyWeapon then
+    self.velocity.velx = -self.velocity.velx
+    self.velocity.vely = -self.velocity.vely
+  else
+    self.velocity.velx = self.velocity.velx >= 0 and -4 or 4
+    self.velocity.vely = (self.gravity >= 0) and -4 or 4
+  end
   self.dinked = true
   self.dinkedBy = e
   self.blockCollision.global = false
@@ -79,11 +107,11 @@ function playerWeapon:dink(e)
   end
 end
 
-function playerWeapon:dinking(e, dt) end
+function weapon:dinking(e, dt) end
 
-function playerWeapon:act(dt) end
+function weapon:act(dt) end
 
-function playerWeapon:beforeUpdate()
+function weapon:beforeUpdate()
   if self.flipWithUser and self.user then
     self:setGravityMultiplier("flipWithUser", self.user.gravityMultipliers.gravityFlip or 1)
   end
@@ -107,7 +135,7 @@ function playerWeapon:beforeUpdate()
   end
 end
 
-function playerWeapon:update(dt)
+function weapon:update(dt)
   if self.dinked and self.doDink then
     self:dinking(self.dinkedBy, dt)
   else
@@ -115,13 +143,13 @@ function playerWeapon:update(dt)
   end
 end
 
-function playerWeapon:afterUpdate()
+function weapon:afterUpdate()
   if self.autoHit then
-    if self.damageType == playerWeapon.DAMAGEENEMY or self.damageType == playerWeapon.DAMAGEBOTH then
-      self:interact(self:collisionTable(megautils.groups().hurtable), self.damage, self.iFramesOnDamage)
+    if self.damageType == weapon.DAMAGEENEMY or self.damageType == weapon.DAMAGEBOTH then
+      self:interact(self:collisionTable(megautils.groups().hurtable), self.damage)
     end
-    if self.damageType == playerWeapon.DAMAGEPLAYER or self.damageType == playerWeapon.DAMAGEBOTH then
-      self:interact(self:collisionTable(megaMan.allPlayers), self.damage, self.iFramesOnDamage)
+    if self.damageType == weapon.DAMAGEPLAYER or self.damageType == weapon.DAMAGEBOTH then
+      self:interact(self:collisionTable(megaMan.allPlayers), self.damage)
     end
   end
   if self.autoCollision and not self.doAutoCollisionBeforeUpdate and not self._didCol then
@@ -129,25 +157,25 @@ function playerWeapon:afterUpdate()
   end
 end
 
-playerWeapon.removeGroups["P.BUSTER"] = {"megaBuster", "protoChargedBuster"}
+weapon.removeGroups["P.BUSTER"] = {"megaBuster", "protoChargedBuster"}
 
-playerWeapon.resources["P.BUSTER"] = function()
+weapon.resources["P.BUSTER"] = function()
     megautils.loadResource("assets/misc/weapons/buster.png", "busterTex")
     megautils.loadResource("assets/misc/weapons/protoBuster.png", "protoBuster")
-    megautils.loadResource("assets/sfx/protoCharge.ogg", "protoCharge")
+    megautils.loadResource("assets/sfx/semi.ogg", "semiCharged")
     megautils.loadResource("assets/sfx/protoCharged.ogg", "protoCharged")
     megautils.loadResource(10, 0, 29, 10, "protoBusterGrid")
   end
 
-playerWeapon.resources["R.BUSTER"] = function()
+weapon.resources["R.BUSTER"] = function()
     megautils.loadResource("assets/misc/weapons/buster.png", "busterTex")
     megautils.loadResource("assets/misc/weapons/rollBuster.png", "rollBuster")
-    megautils.loadResource("assets/sfx/protoCharge.ogg", "protoCharge")
+    megautils.loadResource("assets/sfx/semi.ogg", "semiCharged")
     megautils.loadResource("assets/sfx/protoCharged.ogg", "protoCharged")
     megautils.loadResource(10, 0, 29, 10, "protoBusterGrid")
   end
 
-protoSemiBuster = playerWeapon:extend()
+protoSemiBuster = weapon:extend()
 
 function protoSemiBuster:new(x, y, p, dir, skin)
   protoSemiBuster.super.new(self, p)
@@ -168,7 +196,7 @@ function protoSemiBuster:draw()
   self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y)-3)
 end
 
-protoChargedBuster = playerWeapon:extend()
+protoChargedBuster = weapon:extend()
 
 function protoChargedBuster:new(x, y, p, dir, skin)
   protoChargedBuster.super.new(self, p)
@@ -180,10 +208,14 @@ function protoChargedBuster:new(x, y, p, dir, skin)
   self.side = dir
   self.velocity.velx = self.side * 6
   self.anim.flipX = self.side ~= 1
-  self.pierceType = enemyEntity.PIERCEIFKILLING
+  self.pierceType = pierce.PIERCEIFKILLING
   self.sound = "protoCharged"
   self.weaponGroup = "protoChargedBuster"
   self.damage = -2
+end
+
+function protoChargedBuster:dinking()
+  self.anim:update(defaultFramerate)
 end
 
 function protoChargedBuster:act()
@@ -195,20 +227,26 @@ function protoChargedBuster:draw()
   self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y)-1)
 end
 
-bassBuster = playerWeapon:extend()
+bassBuster = weapon:extend()
 
-playerWeapon.removeGroups["B.BUSTER"] = {"bassBuster"}
+weapon.removeGroups["B.BUSTER"] = {"bassBuster"}
 
-playerWeapon.resources["B.BUSTER"] = function()
+weapon.resources["B.BUSTER"] = function()
     megautils.loadResource("assets/misc/weapons/bassBuster.png", "bassBuster")
   end
 
 function bassBuster:new(x, y, p, dir, t)
   bassBuster.super.new(self, p)
-  self.transform.y = y
+  
+  if not self.recycling then
+    self:setRectangleCollision(6, 6)
+    self.tex = megautils.getResource("bassBuster")
+    self.weaponGroup = "bassBuster"
+    self.recycle = true
+  end
+  
   self.transform.x = x
-  self:setRectangleCollision(6, 6)
-  self.tex = megautils.getResource("bassBuster")
+  self.transform.y = y
   self.velocity.velx = megautils.calcX(dir) * 5
   self.velocity.vely = megautils.calcY(dir) * 5
   self.side = self.velocity.velx < 0 and -1 or 1
@@ -216,7 +254,6 @@ function bassBuster:new(x, y, p, dir, t)
   if not self.treble then
     self.damage = -0.5
   end
-  self.weaponGroup = "bassBuster"
 end
 
 function bassBuster:act()
@@ -231,13 +268,12 @@ function bassBuster:draw()
   love.graphics.draw(self.tex, math.round(self.transform.x)-1, math.round(self.transform.y)-1)
 end
 
-megaBuster = playerWeapon:extend()
+megaBuster = weapon:extend()
 
-playerWeapon.removeGroups["M.BUSTER"] = {"megaBuster", "megaChargedBuster"}
+weapon.removeGroups["M.BUSTER"] = {"megaBuster", "megaChargedBuster"}
 
-playerWeapon.resources["M.BUSTER"] = function()
+weapon.resources["M.BUSTER"] = function()
     megautils.loadResource("assets/misc/weapons/buster.png", "busterTex")
-    megautils.loadResource("assets/sfx/charge.ogg", "charge")
     megautils.loadResource("assets/sfx/semi.ogg", "semiCharged")
     megautils.loadResource("assets/sfx/charged.ogg", "charged")
     megautils.loadResource(33, 30, "chargeGrid")
@@ -261,7 +297,7 @@ function megaBuster:draw()
   self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
 end
 
-megaSemiBuster = playerWeapon:extend()
+megaSemiBuster = weapon:extend()
 
 function megaSemiBuster:new(x, y, p, dir)
   megaSemiBuster.super.new(self, p)
@@ -277,12 +313,20 @@ function megaSemiBuster:new(x, y, p, dir)
   self.weaponGroup = "megaBuster"
 end
 
+function megaSemiBuster:dinking()
+  self.anim:update(defaultFramerate)
+end
+
+function megaSemiBuster:act()
+  self.anim:update(defaultFramerate)
+end
+
 function megaSemiBuster:draw()
   love.graphics.setColor(1, 1, 1, 1)
   self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y)-3)
 end
 
-megaChargedBuster = playerWeapon:extend()
+megaChargedBuster = weapon:extend()
 
 function megaChargedBuster:new(x, y, p, dir)
   megaChargedBuster.super.new(self, p)
@@ -294,10 +338,14 @@ function megaChargedBuster:new(x, y, p, dir)
   self.side = dir
   self.velocity.velx = self.side * 5.5
   self.anim.flipX = self.side ~= 1
-  self.pierceType = enemyEntity.PIERCEIFKILLING
+  self.pierceType = pierce.PIERCEIFKILLING
   self.sound = "charged"
   self.weaponGroup = "megaChargedBuster"
   self.damage = -2
+end
+
+function megaChargedBuster:dinking()
+  self.anim:update(defaultFramerate)
 end
 
 function megaChargedBuster:act()
@@ -309,11 +357,11 @@ function megaChargedBuster:draw()
   self.anim:draw(self.tex, math.round(self.transform.x)-8, math.round(self.transform.y)-3)
 end
 
-trebleBoost = playerWeapon:extend()
+trebleBoost = weapon:extend()
 
-playerWeapon.removeGroups["T. BOOST"] = {"trebleBoost", "bassBuster"}
+weapon.removeGroups["T. BOOST"] = {"trebleBoost", "bassBuster"}
 
-playerWeapon.resources["T. BOOST"] = function()
+weapon.resources["T. BOOST"] = function()
     megautils.loadResource("assets/misc/weapons/bassBuster.png", "bassBuster")
     megautils.loadResource("assets/misc/weapons/treble.png", "trebleTex")
     megautils.loadResource("assets/sfx/treble.ogg", "treble")
@@ -404,39 +452,39 @@ function trebleBoost:draw()
   self.anims:draw(self.tex, math.round(self.transform.x)-6, math.round(self.transform.y)-12+(self.gravity >= 0 and 0 or 11))
 end
 
-rushJet = playerWeapon:extend()
+rushJet = weapon:extend()
 
-playerWeapon.removeGroups["RUSH JET"] = {"rushJet", "megaBuster", "bassBuster"}
+weapon.removeGroups["RUSH JET"] = {"rushJet", "megaBuster", "bassBuster"}
 
-playerWeapon.resources["RUSH JET"] = function()
+weapon.resources["RUSH JET"] = function()
     megautils.loadResource("assets/misc/weapons/rush.png", "rush")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
     megautils.loadResource(32, 32, "rushGrid")
     
-    playerWeapon.resources["M.BUSTER"]() -- So it's possible to use the Mega Buster shots even if the weapon wasn't already loaded in for some reason...
+    weapon.resources["M.BUSTER"]() -- So it's possible to use the Mega Buster shots even if the weapon wasn't already loaded in for some reason...
   end
 
-playerWeapon.removeGroups["PROTO JET"] = {"rushJet", "megaBuster", "bassBuster"}
+weapon.removeGroups["PROTO JET"] = {"rushJet", "megaBuster", "bassBuster"}
 
-playerWeapon.resources["PROTO JET"] = function()
+weapon.resources["PROTO JET"] = function()
     megautils.loadResource("assets/misc/weapons/protoRush.png", "protoRush")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
     megautils.loadResource(32, 32, "rushGrid")
     
-    playerWeapon.resources["P.BUSTER"]()
+    weapon.resources["P.BUSTER"]()
   end
 
-playerWeapon.removeGroups["TANGO JET"] = {"rushJet", "megaBuster", "bassBuster"}
+weapon.removeGroups["TANGO JET"] = {"rushJet", "megaBuster", "bassBuster"}
 
-playerWeapon.resources["TANGO JET"] = function()
+weapon.resources["TANGO JET"] = function()
     megautils.loadResource("assets/misc/weapons/tango.png", "tango")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
     megautils.loadResource(32, 32, "rushGrid")
     
-    playerWeapon.resources["R.BUSTER"]()
+    weapon.resources["R.BUSTER"]()
   end
 
 function rushJet:new(x, y, p, side, skin)
@@ -563,35 +611,35 @@ function rushJet:draw()
   end
 end
 
-rushCoil = playerWeapon:extend()
+rushCoil = weapon:extend()
 
-playerWeapon.removeGroups["RUSH C."] = {"rushCoil", "megaBuster", "bassBuster", "rollBuster"}
+weapon.removeGroups["RUSH C."] = {"rushCoil", "megaBuster", "bassBuster", "rollBuster"}
 
-playerWeapon.resources["RUSH C."] = function()
+weapon.resources["RUSH C."] = function()
     megautils.loadResource("assets/misc/weapons/rush.png", "rush")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
     megautils.loadResource(32, 32, "rushGrid")
     
-    playerWeapon.resources["M.BUSTER"]() -- So it's possible to use the Mega Buster shots even if the weapon wasn't already loaded in for some reason...
+    weapon.resources["M.BUSTER"]() -- So it's possible to use the Mega Buster shots even if the weapon wasn't already loaded in for some reason...
   end
 
-playerWeapon.resources["PROTO C."] = function()
+weapon.resources["PROTO C."] = function()
     megautils.loadResource("assets/misc/weapons/protoRush.png", "protoRush")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
     megautils.loadResource(32, 32, "rushGrid")
     
-    playerWeapon.resources["P.BUSTER"]()
+    weapon.resources["P.BUSTER"]()
   end
 
-playerWeapon.resources["TANGO C."] = function()
+weapon.resources["TANGO C."] = function()
     megautils.loadResource("assets/misc/weapons/tango.png", "tango")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
     megautils.loadResource(32, 32, "rushGrid")
     
-    playerWeapon.resources["R.BUSTER"]()
+    weapon.resources["R.BUSTER"]()
   end
 
 function rushCoil:new(x, y, p, side, skin)
@@ -686,11 +734,11 @@ function rushCoil:draw()
   self.anims:draw(self.tex, math.round(self.transform.x)-8, math.round(self.transform.y)-12+(self.gravity >= 0 and 0 or 11))
 end
 
-stickWeapon = playerWeapon:extend()
+stickWeapon = weapon:extend()
 
-playerWeapon.removeGroups["STICK W."] = {"stickWeapon"}
+weapon.removeGroups["STICK W."] = {"stickWeapon"}
 
-playerWeapon.resources["STICK W."] = function()
+weapon.resources["STICK W."] = function()
     megautils.loadResource("assets/misc/weapons/stickWeapon.png", "stickWeapon")
   end
 

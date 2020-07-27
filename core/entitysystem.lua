@@ -14,9 +14,35 @@ function entitySystem:new()
   self.all = {}
   self.addQueue = {}
   self.removeQueue = {}
-  self.doSort = false
   self.beginQueue = {}
+  self.recycle = {}
+  self.doSort = false
   self.inLoop = false
+end
+
+function entitySystem:emptyRecycling(c, num)
+  if not num or num < 1 then
+    self.recycling[c] = {}
+  elseif num < self.recycling[c] then
+    for i=num, #self.recycling[c] do
+      self.recycling[c][i] = nil
+    end
+  end
+end
+
+function entitySystem:getRecycled(c, ...)
+  if not c then error("Class does not exist.") end
+  local e
+  local vr = self.recycle[c]
+  if vr and #vr > 0 then
+    e = vr[#vr]
+    e.recycling = true
+    e:new(...)
+    e.recycling = nil
+    vr[#vr] = nil
+  end
+  if not e then e = c(...) end
+  return e
 end
 
 function entitySystem:sortLayers()
@@ -35,7 +61,7 @@ end
 
 function entitySystem:add(c, ...)
   if not c then return end
-  local e = c(...)
+  local e = self:getRecycled(c, ...)
   if not e.static then
     local done = false
     for i=1, #self.entities do
@@ -238,6 +264,13 @@ function entitySystem:remove(e)
   table.quickremovevaluearray(self.all, e)
   table.quickremovevaluearray(self.beginQueue, e)
   e.isAdded = false
+  if e.recycle then
+    if not self.recycle[e.__index] then
+      self.recycle[e.__index] = {e}
+    elseif not table.contains(self.recycle[e.__index], e) then
+      self.recycle[e.__index][#self.recycle[e.__index]+1] = e
+    end
+  end
 end
 
 function entitySystem:removeq(e)
@@ -274,8 +307,8 @@ function entitySystem:draw()
       local v = self.entities[i].data[k]
       if checkFalse(v.canDraw) and not v.isRemoved and v.draw then
         v:draw()
-        love.graphics.setColor(1, 1, 1, 1)
         if entitySystem.drawCollision then
+          love.graphics.setColor(1, 1, 1, 1)
           v:drawCollision()
         end
       end
@@ -403,25 +436,36 @@ end
 basicEntity = class:extend()
 
 function basicEntity:new()
-  self.transform = {}
+  if not self.recycling then
+    self.transform = {}
+    self.collisionShape = nil
+    self.layer = 1
+    self.isRemoved = true
+    self.isAdded = false
+    self.recycle = false
+  end
+  
   self.transform.x = 0
   self.transform.y = 0
-  self.collisionShape = nil
-  self.layer = 1
-  self.isRemoved = true
-  self.isAdded = false
   self.iFrames = 0
   self.changeHealth = 0
   self.canUpdate = {global=true}
   self.canDraw = {global=true}
 end
 
-function basicEntity:interact(t, h, f, single)
+function basicEntity:determineIFrames(o)
+  if megaMan.allPlayers and table.contains(megaMan.allPlayers, o) then
+    return 80
+  end
+  return 2
+end
+
+function basicEntity:interact(t, h, single)
   if single then
-    t:interactedWith(self, h, f or 80)
+    t:interactedWith(self, h)
   else
     for i=1, #t do
-      t[i]:interactedWith(self, h, f or 80)
+      t[i]:interactedWith(self, h)
     end
   end
 end
@@ -430,7 +474,7 @@ function basicEntity:updateIFrame()
   self.iFrames = math.max(self.iFrames-1, 0)
 end
 
-function basicEntity:interactedWith(other, c, i) end
+function basicEntity:interactedWith(other, c) end
 
 function basicEntity:setLayer(l)
   if not self.isAdded or self.static then
@@ -540,7 +584,6 @@ end
 
 function basicEntity:drawCollision()
   if not self.collisionShape then return end
-  love.graphics.setColor(1, 1, 1, 0.8)
   if self.collisionShape.type == 0 then
     love.graphics.rectangle("line", math.round(self.transform.x), math.round(self.transform.y),
       self.collisionShape.w, self.collisionShape.h)
@@ -549,7 +592,6 @@ function basicEntity:drawCollision()
   elseif self.collisionShape.type == 2 then
     love.graphics.circle("line", math.round(self.transform.x), math.round(self.transform.y), self.collisionShape.r)
   end
-  love.graphics.setColor(1, 1, 1, 0.8)
 end
 
 function basicEntity:collisionTable(t, x, y, notme, func)
@@ -590,12 +632,22 @@ entity = basicEntity:extend()
 
 function entity:new()
   entity.super.new(self)
-  self.canDraw.flash = true
-  self.solidType = collision.NONE
-  self.velocity = velocity()
-  self.normalGravity = 0.25
+  
   self.gravityMultipliers = {global=1}
-  self:calcGrav()
+  
+  if self.recycling then
+    self.velocity.velx = 0
+    self.velocity.vely = 0
+  else
+    self.solidType = collision.NONE
+    self.velocity = velocity()
+    self.normalGravity = 0.25
+    self:calcGrav()
+    self.doShake = false
+    self.maxShakeTime = 5
+  end
+  
+  self.canDraw.flash = true
   self.blockCollision = {global=false}
   self.ground = false
   self.xColl = 0
@@ -603,9 +655,7 @@ function entity:new()
   self.shakeX = 0
   self.shakeY = 0
   self.shakeTime = 0
-  self.maxShakeTime = 5
   self.shakeSide = 1
-  self.doShake = false
   self.moveByMoveX = 0
   self.moveByMoveY = 0
   self.canBeInvincible = {global=false}
@@ -751,47 +801,52 @@ function mapEntity:draw()
   love.graphics.pop()
 end
 
+pierce = {}
+
+pierce.NOPIERCE = 0
+pierce.PIERCE = 1
+pierce.PIERCEIFKILLING = 2
+
 enemyEntity = entity:extend()
 
 enemyEntity.SMALLBLAST = 1
 enemyEntity.BIGBLAST = 2
 enemyEntity.DEATHBLAST = 3
 
-enemyEntity.NOPIERCE = 0
-enemyEntity.PIERCE = 1
-enemyEntity.PIERCEIFKILLING = 2
-
 function enemyEntity:new()
   enemyEntity.super.new(self)
-  self:setRectangleCollision(16, 16)
-  self.explosionType = enemyEntity.SMALLBLAST
+  if not self.recycling then
+    self:setRectangleCollision(16, 16)
+    self.explosionType = enemyEntity.SMALLBLAST
+    self.removeOnDeath = true
+    self.dropItem = true
+    self.health = 1
+    self.soundOnHit = "enemyHit"
+    self.soundOnDeath = "enemyExplode"
+    self.autoHitPlayer = true
+    self.damage = -1
+    self.flipWithPlayer = true
+    self.defeatSlot = nil
+    self.defeatSlotValue = nil
+    self.removeWhenOutside = true
+    self.removeHealthBarWithSelf = true
+    self.barRelativeToView = true
+    self.barOffsetX = (view.w - 24)
+    self.barOffsetY = 80
+    self.applyAutoFace = true
+    self.pierceType = pierce.NOPIERCE
+    self.autoCollision = true
+    self.autoGravity = true
+    self.doAutoCollisionBeforeUpdate = false
+  end
+  
   self.dead = false
-  self.removeOnDeath = true
-  self.dropItem = true
-  self.health = 1
-  self.soundOnHit = "enemyHit"
-  self.soundOnDeath = "enemyExplode"
-  self.autoHitPlayer = true
-  self.damage = -1
-  self.playerIFramesOnDamage = 80
-  self.flipWithPlayer = true
-  self.defeatSlot = nil
-  self.defeatSlotValue = nil
-  self.removeWhenOutside = true
-  self.removeHealthBarWithSelf = true
-  self.barRelativeToView = true
-  self.barOffsetX = x or (view.w - 24)
-  self.barOffsetY = y or 80
+  self.closest = nil
+  self._didCol = false
+  self.healthHandler = nil
+  self.blockCollision.global = true
   self.autoFace = -1
   self.side = -1
-  self.applyAutoFace = true
-  self.closest = nil
-  self.pierceType = enemyEntity.NOPIERCE
-  self.autoCollision = true
-  self.autoGravity = true
-  self.doAutoCollisionBeforeUpdate = false
-  self.blockCollision.global = true
-  self._didCol = false
 end
 
 function enemyEntity:added()
@@ -880,17 +935,24 @@ function enemyEntity:afterUpdate()
   self:updateIFrame()
   self:updateShake()
   if self.autoHitPlayer then
-    self:interact(self:collisionTable(megaMan.allPlayers), self.damage, self.playerIFramesOnDamage)
+    self:interact(self:collisionTable(megaMan.allPlayers), self.damage)
   end
   if self.removeWhenOutside and megautils.outside(self) then
     megautils.removeq(self)
   end
 end
 
-function enemyEntity:interactedWith(o, c, i)
+function enemyEntity:determineIFrames(o)
+  if megaMan.allPlayers and table.contains(megaMan.allPlayers, o) then
+    return 80
+  end
+  return 2
+end
+
+function enemyEntity:interactedWith(o, c)
   local doDink = self:determineDink(o)
   
-  if checkTrue(self.canBeInvincible) or doDink or (o.dinked and not o.reflectedBack) then
+  if checkTrue(self.canBeInvincible) or doDink then
     if doDink and o.dink and not o.dinked then
       o:dink(self)
     end
@@ -903,11 +965,11 @@ function enemyEntity:interactedWith(o, c, i)
   self.changeHealth = self:weaponTable(o) or self.changeHealth
   
   if self.changeHealth < 0 then
-    if o.pierceType == enemyEntity.PIERCE or (o.pierceType == enemyEntity.PIERCEIFKILLING and health + self.changeHealth > 0) then
+    if o.pierceType == pierce.NOPIERCE or (o.pierceType == pierce.PIERCEIFKILLING and health + self.changeHealth > 0) then
       megautils.removeq(o)
     end
     if self.iFrames <= 0 then
-      self.iFrames = i
+      self.iFrames = o:determineIFrames(self)
     else
       return
     end

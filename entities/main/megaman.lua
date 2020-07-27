@@ -15,6 +15,7 @@ megaMan.resources.megaMan = function()
     megautils.loadResource("assets/sfx/mmHeal.ogg", "heal")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
     megautils.loadResource("assets/sfx/switch.ogg", "switch")
+    megautils.loadResource("assets/sfx/charge.ogg", "charge")
     megautils.loadResource(41, 30, "megaManGrid")
   end
 
@@ -29,6 +30,8 @@ megaMan.resources.protoMan = function()
     megautils.loadResource("assets/sfx/mmHeal.ogg", "heal")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
     megautils.loadResource("assets/sfx/switch.ogg", "switch")
+    megautils.loadResource("assets/sfx/charge.ogg", "charge")
+    megautils.loadResource("assets/sfx/protoCharge.ogg", "protoCharge")
     megautils.loadResource(41, 30, "megaManGrid")
   end
 
@@ -44,6 +47,7 @@ megaMan.resources.bass = function()
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
     megautils.loadResource("assets/sfx/switch.ogg", "switch")
     megautils.loadResource("assets/sfx/treble.ogg", "trebleStart")
+    megautils.loadResource("assets/sfx/charge.ogg", "charge")
     megautils.loadResource(45, 41, "bassGrid")
   end
 
@@ -58,6 +62,7 @@ megaMan.resources.roll = function()
     megautils.loadResource("assets/sfx/mmHeal.ogg", "heal")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
     megautils.loadResource("assets/sfx/switch.ogg", "switch")
+    megautils.loadResource("assets/sfx/charge.ogg", "charge")
     megautils.loadResource(45, 34, "rollGrid")
   end
 
@@ -977,7 +982,7 @@ function megaMan:attemptWeaponUsage()
         self:useShootAnimation()
       elseif self.chargeState == 2 then
         shots[#shots+1] = megautils.add(protoChargedBuster, self.transform.x+(self.side==1 and 16 or -34), 
-          self.transform.y+(self.climb and 7 or (self.gravity >= 0 and 9 or 5)), self, self.side "protoBuster")
+          self.transform.y+(self.climb and 7 or (self.gravity >= 0 and 9 or 5)), self, self.side, "protoBuster")
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
@@ -1082,11 +1087,11 @@ function megaMan:checkProtoShield(e, side)
   return result
 end
 
-function megaMan:interactedWith(o, c, i)
-  if not checkFalse(self.canControl) or (o:is(enemyWeapon) and o.reflectedBack) or
-    megautils.isInvincible() or megautils.isNoClip() then return end
-  if self.protoShielding and o.dink and self:checkProtoShield(o, self.side) then
+function megaMan:interactedWith(o, c)
+  if not checkFalse(self.canControl) or megautils.isInvincible() or megautils.isNoClip() then return end
+  if self.protoShielding and not o.dinked and o.dink and self:checkProtoShield(o, self.side) then
     o:dink(self)
+    v.pierceType = pierce.NOPIERCE
     return
   end
   if c < 0 and checkTrue(self.canBeInvincible) then
@@ -1094,7 +1099,7 @@ function megaMan:interactedWith(o, c, i)
   else
     self.changeHealth = c
     if self.changeHealth < 0 and self.iFrames <= 0 then
-      self.iFrames = i
+      self.iFrames = o:determineIFrames(self)
     else
       return
     end
@@ -1125,6 +1130,9 @@ function megaMan:interactedWith(o, c, i)
       else
         self.cameraTween = true
       end
+      if o.pierceType == pierce.NOPIERCE and o.pierceType ~= pierce.PIERCEIFKILLING then
+        megautils.removeq(o)
+      end
       return
     else
       if not checkTrue(self.canIgnoreKnockback) then
@@ -1148,6 +1156,9 @@ function megaMan:interactedWith(o, c, i)
         self.transform.y+(self.gravity >= 0 and -8 or self.collisionShape.h), self.gravity)
       megautils.add(damageSteam, self.transform.x+(self.collisionShape.w/2)-2.5+11,
         self.transform.y+(self.gravity >= 0 and -8 or self.collisionShape.h), self.gravity)
+      if o.pierceType == pierce.NOPIERCE or o.pierceType == pierce.PIERCEIFKILLING then
+        megautils.removeq(o)
+      end
       megautils.playSound("hurt")
     end
   end
@@ -1159,7 +1170,7 @@ function megaMan:crushed(other)
       self.canBeInvincible[k2] = false
     end
     self.iFrames = 0
-    self:interact(self, -99999, nil, true)
+    self:interact(self, -99999, true)
   end
 end
 
@@ -1552,6 +1563,7 @@ function megaMan:code(dt)
     for k, v in ipairs(megautils.groups().enemyWeapon) do
       if self.protoShielding and not v.dinked and v.dink and self:checkProtoShield(v, self.side) then
         v:dink(self)
+        v.pierceType = pierce.NOPIERCE
       end
     end
   end
@@ -1573,7 +1585,7 @@ function megaMan:code(dt)
     for k, v in pairs(self.canBeInvincible) do
       self.canBeInvincible[k] = false
     end
-    self:interact(self, -999, nil, true)
+    self:interact(self, -99999, true)
   end
   self:updateIFrame()
   self:updateFlash()
@@ -1627,7 +1639,7 @@ function megaMan:charge(animOnly)
       self.chargeTimer = 0
       self.chargeFrame = 1
       if self.chargeState == 0 then
-        if megaMan.weaponHandler[self.player].current == "protoBuster" then
+        if megaMan.weaponHandler[self.player].current == "P.BUSTER" then
           megautils.playSound("protoCharge")
         else
           megautils.playSound("charge")
@@ -1679,7 +1691,7 @@ function megaMan:phys()
       if collision.checkSolid(self) then
         local dv = self:collisionTable(megautils.groups().death)
         if dv[1] and dv[1].harm > 0 then
-          dv[1]:interact(self, dv[1].harm, 80, true)
+          dv[1]:interact(self, dv[1].harm, true)
         end
         if self.healthHandler.health <= 0 then
           self.ground = false

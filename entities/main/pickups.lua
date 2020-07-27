@@ -101,7 +101,7 @@ function smallHealth:new(x, y, despawn, gd, fwp, id, path)
 end
 
 function smallHealth:taken(p)
-  self:interact(p, 2, nil, true)
+  self:interact(p, 2, true)
 end
 
 function smallHealth:update()
@@ -145,7 +145,7 @@ function health:new(x, y, despawn, gd, fwp, id, path)
 end
 
 function health:taken(p)
-  p:addHealth(10)
+  self:interact(p, 10, true)
 end
 
 function health:update()
@@ -302,7 +302,7 @@ end
 
 function life:taken(p)
   if megautils.hasInfiniteLives() then
-    p:interact(9999)
+    self:interact(p, 9999, true)
   else
     globals.lives = math.min(globals.lives+1, maxLives)
     megautils.playSoundFromFile("assets/sfx/life.ogg")
