@@ -625,19 +625,10 @@ function megautils.outside(o, ex, ey)
 end
 
 function megautils.outsideSection(o, ex, ey)
-  local result = true
-  if o.collisionShape and o.actualSectionGroups then
-    local lw, lh = o.collisionShape.w, o.collisionShape.h
-    o.collisionShape.w = o.collisionShape.w + ((ex or 0)*2)
-    o.collisionShape.h = o.collisionShape.h + ((ey or 0)*2)
-    for k, v in ipairs(o.actualSectionGroups) do
-      if o:collision(v, -ex or 0, -ey or 0) then
-        result = false
-      end
-    end
-    o.collisionShape.w, o.collisionShape.h = lw, lh
-  end
-  return result
+  return camera.main and camera.main.bounds and
+    not rectOverlapsRect(camera.main.scrollx-(ex or 0), camera.main.scrolly-(ey or 0),
+      camera.main.scrollw+((ex or 0)*2), camera.main.scrollh+((ey or 0)*2),
+      o.transform.x, o.transform.y, o.collisionShape.w, o.collisionShape.h)
 end
 
 --w: Width of drawable
@@ -759,17 +750,37 @@ function megautils.side(e, to, single)
   return side, closest
 end
 
-function megautils.pointVelAt(e, to)
+function megautils.pointEntityVelAtEntity(e, to)
   local cx, cy = megautils.center(e)
   local cx2, cy2 = megautils.center(to)
   local p = megautils.calcPath(cx, cy, cx2, cy2)
   return megautils.calcX(p), megautils.calcY(p)
 end
 
-function megautils.pointAt(e, to)
+function megautils.pointEntityAtEntity(e, to)
   local cx, cy = megautils.center(e)
   local cx2, cy2 = megautils.center(to)
   return megautils.calcPath(cx, cy, cx2, cy2)
+end
+
+function megautils.pointEntityVelAtPoint(e, x, y)
+  local cx, cy = megautils.center(e)
+  local p = megautils.calcPath(cx, cy, x, y)
+  return megautils.calcX(p), megautils.calcY(p)
+end
+
+function megautils.pointEntityAtPoint(e, x, y)
+  local cx, cy = megautils.center(e)
+  return megautils.calcPath(cx, cy, x, y)
+end
+
+function megautils.createVelFromPoints(x, y, x2, y2)
+  local p = megautils.calcPath(x, y, x2, y2)
+  return megautils.calcX(p), megautils.calcY(p)
+end
+
+function megautils.createAngleFromPoints(x, y, x2, y2)
+  return megautils.calcPath(x, y, x2, y2)
 end
 
 function megautils.arcXVel(yvel, grav, x, y, tox, toy)
