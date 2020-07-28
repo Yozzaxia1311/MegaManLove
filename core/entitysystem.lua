@@ -367,6 +367,9 @@ function entitySystem:update(dt)
     end
   end
   self.inLoop = false
+  if states.switched then
+    return
+  end
   if self.cameraUpdate then
     self.cameraUpdate(self)
   end
