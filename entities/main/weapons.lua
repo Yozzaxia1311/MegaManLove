@@ -30,7 +30,6 @@ function weapon:new(p, enWeapon)
     self.applyAutoFace = false
     self.doAutoCollisionBeforeUpdate = true
     self.doDink = true
-    self.pierceType = pierce.NOPIERCE
   end
   
   self.dinkedBy = nil
@@ -39,6 +38,7 @@ function weapon:new(p, enWeapon)
   self.user = p
   self.damageType = weapon.DAMAGEENEMY
   self.damageTypeOnDink = weapon.DAMAGENONE
+  self.pierceType = pierce.NOPIERCE
   self.isEnemyWeapon = false
   if enWeapon then
     self.isEnemyWeapon = true
@@ -282,14 +282,21 @@ weapon.resources["M.BUSTER"] = function()
 
 function megaBuster:new(x, y, p, dir)
   megaBuster.super.new(self, p)
-  self.transform.y = y
+  
+  if self.recycling then
+    self.velocity.vely = 0
+  else
+    self:setRectangleCollision(8, 6)
+    self.tex = megautils.getResource("busterTex")
+    self.quad = quad(0, 31, 8, 6)
+    self.weaponGroup = "megaBuster"
+    self.recycle = true
+  end
+  
   self.transform.x = x
-  self:setRectangleCollision(8, 6)
-  self.tex = megautils.getResource("busterTex")
-  self.quad = quad(0, 31, 8, 6)
+  self.transform.y = y
   self.side = dir
   self.velocity.velx = self.side * 5
-  self.weaponGroup = "megaBuster"
 end
 
 function megaBuster:draw()
