@@ -1131,13 +1131,15 @@ function bossEntity:pose()
 end
 
 function bossEntity:skip()
-  timer.winCutscene(function()
-      megautils.reloadState = true
-      megautils.resetGameObjects = true
-      megautils.gotoState(self.skipBossState)
-    end)
+  if not self.continueAfterDeath then
+    timer.winCutscene(function()
+        megautils.reloadState = true
+        megautils.resetGameObjects = true
+        megautils.gotoState(self.skipBossState)
+      end)
+    megautils.stopMusic()
+  end
   megautils.removeq(self)
-  megautils.stopMusic()
   return true
 end
 
@@ -1145,8 +1147,10 @@ function bossEntity:act() end
 
 function bossEntity:start()
   if self._subState == 0 then
-    if self.skipBoss == nil and (self.defeatSlot and globals.defeats[self.defeatSlot]) or self.skipBoss then
-      self:skip()
+    if (self.skipBoss == nil and self.defeatSlot and globals.defeats[self.defeatSlot]) or self.skipBoss then
+      if self:skip() then
+        self._subState = -1
+      end
     elseif megaMan.allPlayers then
       megautils.autoFace(self, megaMan.allPlayers)
       for k, v in ipairs(megaMan.allPlayers) do
