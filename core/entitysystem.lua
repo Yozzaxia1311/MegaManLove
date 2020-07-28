@@ -1,8 +1,6 @@
 entitySystem = class:extend()
 
 entitySystem.drawCollision = false
-entitySystem.doBeforeUpdate = true
-entitySystem.doAfterUpdate = true
 entitySystem.doDrawQuality = false
 entitySystem.doDrawFlicker = true
 
@@ -337,21 +335,6 @@ function entitySystem:update(dt)
     self.beginQueue[i] = nil
   end
   self.inLoop = true
-  if entitySystem.doBeforeUpdate then
-    for i=1, #self.updates do
-      if states.switched then
-        return
-      end
-      local t = self.updates[i]
-      t.previousX = t.transform.x
-      t.previousY = t.transform.y
-      t.epX = t.previousX
-      t.epY = t.previousY
-      if not t.isRemoved and t.beforeUpdate and checkFalse(t.canUpdate) then
-        t:beforeUpdate(dt)
-      end
-    end
-  end
   for i=1, #self.updates do
     if states.switched then
       return
@@ -361,23 +344,26 @@ function entitySystem:update(dt)
     t.previousY = t.transform.y
     t.epX = t.previousX
     t.epY = t.previousY
+    if not t.isRemoved and t.beforeUpdate and checkFalse(t.canUpdate) then
+      t:beforeUpdate(dt)
+    end
+  end
+  for i=1, #self.updates do
+    if states.switched then
+      return
+    end
+    local t = self.updates[i]
     if not t.isRemoved and t.update and checkFalse(t.canUpdate) then
       t:update(dt)
     end
   end
-  if entitySystem.doAfterUpdate then
-    for i=1, #self.updates do
-      if states.switched then
-        return
-      end
-      local t = self.updates[i]
-      t.previousX = t.transform.x
-      t.previousY = t.transform.y
-      t.epX = t.previousX
-      t.epY = t.previousY
-      if not t.isRemoved and t.afterUpdate and checkFalse(t.canUpdate) then
-        t:afterUpdate(dt)
-      end
+  for i=1, #self.updates do
+    if states.switched then
+      return
+    end
+    local t = self.updates[i]
+    if not t.isRemoved and t.afterUpdate and checkFalse(t.canUpdate) then
+      t:afterUpdate(dt)
     end
   end
   self.inLoop = false
