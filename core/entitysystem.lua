@@ -38,7 +38,7 @@ function entitySystem:getRecycled(c, ...)
     e = vr[#vr]
     e.recycling = true
     e:new(...)
-    e.recycling = nil
+    e.recycling = false
     vr[#vr] = nil
   end
   if not e then e = c(...) end
