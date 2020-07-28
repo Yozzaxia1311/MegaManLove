@@ -1,8 +1,3 @@
-convar["cltest"] = {
-  helptext = "convar test",
-  flags = {"test"},
-  value = 1,
-}
 convar["cheats"] = {
   helptext = "enable cheats",
   flags = {},
@@ -60,6 +55,24 @@ convar["noclip"] = {
   helptext = "pass through everything",
   flags = {"cheat"},
   value = 0
+}
+
+convar["etanks"] = {
+  helptext = "e-tanks in possession",
+  flags = {"cheat"},
+  value = 0
+}
+
+convar["wtanks"] = {
+  helptext = "w-tanks in possession",
+  flags = {"cheat"},
+  value = 0
+}
+
+convar["lives"] = {
+  helptext = "number of lives",
+  flags = {"cheat"},
+  value = 2
 }
 
 convar["diff"] = {
@@ -270,7 +283,14 @@ concmd["echo"] = {
   flags = {},
   fun = function(cmd)
       if not cmd[2] then return end
-      console.print(cmd[2])
+      local result = ""
+      for i=2, #cmd do
+        result = result .. cmd[i]
+        if i ~= #cmd then
+          result = result .. " "
+        end
+      end
+      console.print(result)
     end
 }
 
@@ -303,6 +323,19 @@ concmd["state"] = {
       megautils.reloadState = true
       if cmd[3] then globals.overrideCheckpoint = cmd[3] end
       megautils.gotoState(map)
+    end
+}
+
+concmd["resetstate"] = {
+  helptext = "reset current state",
+  flags = {"cheat"},
+  fun = function(cmd)
+      love.audio.stop()
+      megautils.stopMusic()
+      megautils.resetGameObjects = true
+      megautils.reloadState = true
+      if cmd[2] then globals.overrideCheckpoint = cmd[2] end
+      megautils.gotoState(megautils.getCurrentState())
     end
 }
 
@@ -558,9 +591,15 @@ concmd["findcmd"] = {
 }
 
 concmd["wait"] = {
-  helptext = "delay console execution by 1 frame",
+  helptext = "delay console execution by n frames",
   flags = {},
-  fun = function(cmd) console.wait = console.wait + 1 end
+  fun = function(cmd)
+    if not cmd[2] then 
+      console.wait = console.wait + 1 
+    else
+      console.wait = console.wait + numberSanitize(cmd[2])
+    end
+  end
 }
 
 concmd["alias"] = {

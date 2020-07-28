@@ -131,6 +131,7 @@ end
 function console.init()
   console.print("Welcome to Mega Man Love")
   console.print("Run \"findcmd\" for a list of commands")
+  console.print("Run \"findcvar\" for a list of console variables")
 end
 
 function console.open()
@@ -335,6 +336,9 @@ function console.update(dt)
       if console.wait > 0 then break end
     end
   end
+  while #console.lines > 50 do
+    table.remove(console.lines, 1)
+  end
 end
 
 function console.getCompletion(str)
@@ -356,6 +360,10 @@ function console.getCompletion(str)
     end
   end
   return ""
+end
+
+function console.doWait()
+  if console.wait > 0 then console.wait = console.wait - 1 end
 end
 
 function console.draw()
@@ -389,8 +397,4 @@ function console.draw()
   end
 
   love.graphics.setFont(oldFont)
-
-  -- hacky to put it here, but whatever, it needs to run after all logic
-  -- if this ever gets called more than once per frame, wait will break!
-  if console.wait > 0 then console.wait = console.wait - 1 return end
 end

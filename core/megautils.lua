@@ -121,6 +121,30 @@ function megautils.isNoClip()
   return convar.getNumber("noclip") == 1
 end
 
+function megautils.setLives(what)
+  convar.setValue("lives", what, false)
+end
+
+function megautils.getLives()
+  return convar.getNumber("lives")
+end
+
+function megautils.setETanks(what)
+  convar.setValue("etanks", what, false)
+end
+
+function megautils.getETanks()
+  return convar.getNumber("etanks")
+end
+
+function megautils.setWTanks(what)
+  convar.setValue("wtanks", what, false)
+end
+
+function megautils.getWTanks()
+  return convar.getNumber("wtanks")
+end
+
 function megautils.setPlayer(p, what)
   local old = convar.getString("players"):split(",")
   local back = ""
@@ -148,6 +172,14 @@ function megautils.getAllPlayers()
   end
   
   return result
+end
+
+function megautils.getDifficulty()
+  return convar.getString("diff")
+end
+
+function megautils.setDifficulty(d)
+  convar.setValue("diff", d or convar.getString("diff"))
 end
 
 function megautils.enableConsole()
@@ -765,14 +797,6 @@ function megautils.arcXVel(yvel, grav, x, y, tox, toy)
   local result = (tox - x) / time
   
   return result
-end
-
-function megautils.getDifficulty()
-  return convar.getString("diff")
-end
-
-function megautils.setDifficulty(d)
-  convar.setValue("diff", d or convar.getString("diff"))
 end
 
 function megautils.diff(...)

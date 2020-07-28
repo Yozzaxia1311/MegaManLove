@@ -257,11 +257,11 @@ function mmWeaponsMenu:update(dt)
   elseif self.section == 1 then
     local olx, oly = self.x, self.y
     if control.startPressed[self.player.player] then
-      if self.x == 1 and globals.eTanks > 0 then
+      if self.x == 1 and megautils.getETanks() > 0 then
         self.fills[1][1]:updateThis(self.h.segments * 4)
         self.changing = "health"
-        globals.eTanks = math.clamp(globals.eTanks-1, 0, 9)
-      elseif self.x == 2 and globals.wTanks > 0 then
+        megautils.setETanks(math.max(megautils.getETanks()-1, 0))
+      elseif self.x == 2 and megautils.getWTanks() > 0 then
         local frz = false
         for k, v in pairs(self.fills) do
           for i, j in pairs(v) do
@@ -271,7 +271,7 @@ function mmWeaponsMenu:update(dt)
           end
         end
         self.changing = "weapons"
-        globals.wTanks = math.clamp(globals.wTanks-1, 0, 9)
+        megautils.setWTanks(math.max(megautils.getWTanks()-1, 0))
       end
     elseif control.upPressed[self.player.player] then
       self.section = 0
@@ -309,9 +309,9 @@ function mmWeaponsMenu:draw()
   love.graphics.setFont(mmFont)
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.draw(self.bg, view.x, view.y)
-  love.graphics.print((megautils.hasInfiniteLives() and "inf" or tostring(globals.lives)), view.x+(24*8), view.y+(23*8))
-  love.graphics.print(tostring(globals.eTanks), view.x+(8*8), view.y+(23*8))
-  love.graphics.print(tostring(globals.wTanks), view.x+(12*8), view.y+(23*8))
+  love.graphics.print((megautils.hasInfiniteLives() and "inf" or tostring(megautils.getLives())), view.x+(24*8), view.y+(23*8))
+  love.graphics.print(tostring(megautils.getETanks()), view.x+(8*8), view.y+(23*8))
+  love.graphics.print(tostring(megautils.getWTanks()), view.x+(12*8), view.y+(23*8))
   
   local ox, oy = 0, 0
   local tx, ty = view.x+(8*21), view.y+(22*8)

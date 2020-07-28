@@ -68,10 +68,10 @@ function menuSelect:update()
         if data then
           globals.defeats = data.defeats
           megautils.infiniteLives(data.infiniteLives)
-          globals.lives = data.lives
+          megautils.setLives(data.lives)
           globals.lifeSegments = data.lifeSegments
-          globals.eTanks = data.eTanks
-          globals.wTanks = data.wTanks
+          megautils.setETanks(data.eTanks)
+          megautils.setWTanks(data.wTanks)
           for k, v in ipairs(data.player) do
             megautils.setPlayer(k, v)
           end
@@ -80,10 +80,10 @@ function menuSelect:update()
         local data = save.load("save.sav") or {}
         data.defeats = globals.defeats
         data.infiniteLives = megautils.hasInfiniteLives()
-        data.lives = globals.lives
+        data.lives = megautils.getLives()
         data.lifeSegments = globals.lifeSegments
-        data.eTanks = globals.eTanks
-        data.wTanks = globals.wTanks
+        data.eTanks = megautils.getETanks()
+        data.wTanks = megautils.getWTanks()
         data.player = megautils.getAllPlayers()
         save.save("save.sav", data)
         megautils.playSound("selected")

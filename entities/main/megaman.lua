@@ -83,7 +83,7 @@ megautils.resetGameObjectsFuncs.megaMan = function()
     megaMan.mainPlayer = nil
     megaMan.allPlayers = {}
     megaMan.once = nil
-    globals.lives = (globals.lives > globals.startingLives) and globals.lives or globals.startingLives
+    megautils.setLives((megautils.getLives() > globals.startingLives) and megautils.getLives() or globals.startingLives)
     
     globals.checkpoint = globals.overrideCheckpoint or "start"
     globals.overrideCheckpoint = nil
@@ -1917,9 +1917,9 @@ function megaMan:die()
       megautils.add(fade, true, nil, nil, function(s)
         megautils.reloadState = true
         if not megautils.hasInfiniteLives() then
-          globals.lives = globals.lives - 1
+          megautils.setLives(math.max(megautils.getLives()-1, -1))
         end
-        if not megautils.hasInfiniteLives() and globals.lives < 0 then
+        if not megautils.hasInfiniteLives() and megautils.getLives() < 0 then
           megautils.reloadState = true
           megautils.resetGameObjects = true
           globals.gameOverContinueState = megautils.getCurrentState()

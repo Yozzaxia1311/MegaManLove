@@ -72,7 +72,7 @@ function healthHandler:update(dt)
           healthHandler.playerTimers[i] = -1
         end
       elseif healthHandler.playerTimers[i] == -1 and control.startPressed[i] then
-        if globals.lives > 0 then
+        if megautils.getLives() > 0 then
           healthHandler.playerTimers[i] = -2
           local p = megautils.add(megaMan, self.player.transform.x, self.player.transform.y, self.player.side, true, i)
           self.player:transferState(p)
@@ -81,7 +81,7 @@ function healthHandler:update(dt)
             camera.main:updateFuncs()
           end
           if not megautils.hasInfiniteLives() then
-            globals.lives = globals.lives - 1
+            megautils.setLives(math.max(megautils.getLives()-1, -1))
           end
           self.t2 = nil
           self.tween = nil
@@ -108,7 +108,7 @@ function healthHandler:draw()
       love.graphics.rectangle("fill", self.transform.x, self.transform.y, 8, 8)
       love.graphics.setColor(1, 1, 1, 1)
       love.graphics.setFont(mmFont)
-      love.graphics.print(tostring(globals.lives), self.transform.x, self.transform.y)
+      love.graphics.print(tostring(megautils.getLives()), self.transform.x, self.transform.y)
     end
     if self.mp == self.player then
       for i=1, globals.playerCount do
@@ -116,7 +116,7 @@ function healthHandler:draw()
           love.graphics.setColor(0, 0, 0, 1)
           love.graphics.rectangle("fill", self.transform.x, self.transform.y+(i*8), 32, 8)
           love.graphics.setColor(1, 1, 1, 1)
-          if globals.lives <= 0 then
+          if megautils.getLives() <= 0 then
             love.graphics.print("p" .. tostring(i) .. " x", self.transform.x, self.transform.y+(i*8))
           else
             love.graphics.print("p" .. tostring(i) .. " `", self.transform.x, self.transform.y+(i*8))

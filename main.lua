@@ -18,9 +18,6 @@ function initEngine()
   mmFont = love.graphics.newFont("assets/misc/mm.ttf", 8)
   globals.checkpoint = "start"
   globals.lifeSegments = 7
-  globals.eTanks = 0
-  globals.wTanks = 0
-  globals.lives = 2
   globals.startingLives = 2
   globals.playerCount = 1
   globals.bossIntroState = "assets/states/menus/bossintro.state.lua"
@@ -44,6 +41,8 @@ function initEngine()
   for k, v in pairs(megautils.initEngineFuncs) do
     v()
   end
+  
+  megautils.setDifficulty("normal")
 end
 
 function love.load()
@@ -249,6 +248,7 @@ function love.draw()
   megautils.checkQueue()
   states.checkQueue()
   megautils.checkMusicQueue()
+  console.doWait()
 end
 
 -- Love2D doesn't fire the resize event for several functions, so here's some hacks.

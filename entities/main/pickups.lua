@@ -304,7 +304,7 @@ function life:taken(p)
   if megautils.hasInfiniteLives() then
     self:interact(p, 9999, true)
   else
-    globals.lives = math.min(globals.lives+1, maxLives)
+    megautils.setLives(math.min(megautils.getLives()+1, maxLives))
     megautils.playSoundFromFile("assets/sfx/life.ogg")
   end
 end
@@ -390,7 +390,7 @@ function eTank:new(x, y, despawn, gd, fwp, id, path)
 end
 
 function eTank:taken(p)
-  globals.eTanks = math.min(globals.eTanks+1, maxETanks)
+  megautils.setETanks(math.min(megautils.getETanks()+1, maxETanks))
   megautils.playSoundFromFile("assets/sfx/life.ogg")
 end
 
@@ -444,7 +444,7 @@ function wTank:new(x, y, despawn, gd, fwp, id, path)
 end
 
 function wTank:taken(p)
-  globals.wTanks = math.min(globals.wTanks+1, maxWTanks)
+  megautils.setWTanks(math.min(megautils.getWTanks()+1, maxWTanks))
   megautils.playSoundFromFile("assets/sfx/life.ogg")
 end
 
