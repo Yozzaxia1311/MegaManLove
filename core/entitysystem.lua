@@ -796,17 +796,17 @@ pierce.NOPIERCE = 0
 pierce.PIERCE = 1
 pierce.PIERCEIFKILLING = 2
 
-enemyEntity = entity:extend()
+advancedEntity = entity:extend()
 
-enemyEntity.SMALLBLAST = 1
-enemyEntity.BIGBLAST = 2
-enemyEntity.DEATHBLAST = 3
+advancedEntity.SMALLBLAST = 1
+advancedEntity.BIGBLAST = 2
+advancedEntity.DEATHBLAST = 3
 
-function enemyEntity:new()
-  enemyEntity.super.new(self)
+function advancedEntity:new()
+  advancedEntity.super.new(self)
   if not self.recycling then
     self:setRectangleCollision(16, 16)
-    self.explosionType = enemyEntity.SMALLBLAST
+    self.explosionType = advancedEntity.SMALLBLAST
     self.removeOnDeath = true
     self.dropItem = true
     self.health = 1
@@ -814,6 +814,7 @@ function enemyEntity:new()
     self.soundOnDeath = "enemyExplode"
     self.autoHitPlayer = true
     self.damage = -1
+    self.hurtable = true
     self.flipWithPlayer = true
     self.defeatSlot = nil
     self.defeatSlotValue = nil
@@ -838,15 +839,15 @@ function enemyEntity:new()
   self.side = -1
 end
 
-function enemyEntity:added()
+function advancedEntity:added()
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
   self:addToGroup("collision")
   self:addToGroup("handledBySection")
-  self:addToGroup("hurtable")
+  self:addToGroup("interactable")
 end
 
-function enemyEntity:useHealthBar(oneColor, twoColor, outlineColor, add)
+function advancedEntity:useHealthBar(oneColor, twoColor, outlineColor, add)
   if (add == nil) or add then
     self.healthHandler = megautils.add(healthHandler, oneColor or {128, 128, 128}, twoColor or {255, 255, 255}, outlineColor or {0, 0, 0},
       nil, nil, math.ceil(self.health/4))
@@ -864,7 +865,7 @@ function enemyEntity:useHealthBar(oneColor, twoColor, outlineColor, add)
   end
 end
 
-function enemyEntity:removed()
+function advancedEntity:removed()
   if self.removeHealthBarWithSelf and self.healthHandler then
     if camera.main then
       camera.main.funcs[self] = nil
@@ -875,28 +876,22 @@ function enemyEntity:removed()
   end
 end
 
-function enemyEntity:begin()
-  self:addToGroup("hurtable")
-  self:addToGroup("removeOnTransition")
-  self:addToGroup("freezable")
-end
-
-function enemyEntity:grav()
+function advancedEntity:grav()
   if self.ground then return end
   self.velocity.vely = self.velocity.vely+self.gravity
   self.velocity:clampY(7)
 end
 
-function enemyEntity:getHealth()
+function advancedEntity:getHealth()
   return self.healthHandler and self.healthHandler.health or self.health
 end
 
-function enemyEntity:hit(o) end
-function enemyEntity:die(o) end
-function enemyEntity:determineDink(o) end
-function enemyEntity:weaponTable(o) end
+function advancedEntity:hit(o) end
+function advancedEntity:die(o) end
+function advancedEntity:determineDink(o) end
+function advancedEntity:weaponTable(o) end
 
-function enemyEntity:beforeUpdate()
+function advancedEntity:beforeUpdate()
   if self.flipWithPlayer and megaMan.mainPlayer then
     self:setGravityMultiplier("flipWithPlayer", megaMan.mainPlayer.gravityMultipliers.gravityFlip or 1)
   end
@@ -910,13 +905,13 @@ function enemyEntity:beforeUpdate()
     collision.doGrav(self)
   end
   self._didCol = false
-  if self.doAutoCollisionBeforeUpdate then
+  if self.autoCollision and self.doAutoCollisionBeforeUpdate then
     collision.doCollision(self)
     self._didCol = true
   end
 end
 
-function enemyEntity:afterUpdate()
+function advancedEntity:afterUpdate()
   if self.autoCollision and not self.doAutoCollisionBeforeUpdate and not self._didCol then
     collision.doCollision(self)
   end
@@ -931,17 +926,17 @@ function enemyEntity:afterUpdate()
   end
 end
 
-function enemyEntity:determineIFrames(o)
+function advancedEntity:determineIFrames(o)
   if megaMan.allPlayers and table.contains(megaMan.allPlayers, o) then
     return 80
   end
   return 2
 end
 
-function enemyEntity:interactedWith(o, c)
+function advancedEntity:interactedWith(o, c)
   local doDink = self:determineDink(o)
   
-  if checkTrue(self.canBeInvincible) or doDink then
+  if checkTrue(self.canBeInvincible) or doDink or not self.hurtable then
     if doDink and o.dink and not o.dinked then
       o:dink(self)
     end
@@ -975,11 +970,11 @@ function enemyEntity:interactedWith(o, c)
     if self.defeatSlot then
       globals.defeats[self.defeatSlot] = self.defeatSlotValue or true
     end
-    if self.explosionType == enemyEntity.SMALLBLAST then
+    if self.explosionType == advancedEntity.SMALLBLAST then
       megautils.add(smallBlast, self.transform.x+(self.collisionShape.w/2)-12, self.transform.y+(self.collisionShape.h/2)-12)
-    elseif self.explosionType == enemyEntity.BIGBLAST then
+    elseif self.explosionType == advancedEntity.BIGBLAST then
       megautils.add(blast, self.transform.x+(self.collisionShape.w/2)-12, self.transform.y+(self.collisionShape.h/2)-12)
-    elseif self.explosionType == enemyEntity.DEATHBLAST then
+    elseif self.explosionType == advancedEntity.DEATHBLAST then
       explodeParticle.createExplosion(self.transform.x+((self.collisionShape.w/2)-12),
         self.transform.y+((self.collisionShape.h/2)-12))
     end
@@ -1031,7 +1026,7 @@ function enemyEntity:interactedWith(o, c)
   end
 end
 
-bossEntity = enemyEntity:extend()
+bossEntity = advancedEntity:extend()
 
 function bossEntity:new()
   bossEntity.super.new(self)
@@ -1058,7 +1053,7 @@ function bossEntity:new()
   self.weaponGetBehaviour = function(m)
       return true
     end
-  self.explosionType = enemyEntity.DEATHBLAST
+  self.explosionType = advancedEntity.DEATHBLAST
   self.soundOnDeath = "assets/sfx/dieExplode.ogg"
   self.flipWithPlayer = false
   self.removeWhenOutside = false

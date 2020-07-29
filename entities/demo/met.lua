@@ -1,6 +1,6 @@
 megautils.loadResource("assets/global/entities/met.png", "met")
 
-met = enemyEntity:extend()
+met = advancedEntity:extend()
 
 addObjects.register("met", function(v)
   megautils.add(spawner, v.x, v.y+2, 14, 14, nil, met, v.x, v.y+2)

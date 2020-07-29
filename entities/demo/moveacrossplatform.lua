@@ -5,7 +5,7 @@ addObjects.register("moveAcrossPlatform", function(v)
     moveAcrossPlatform, v.x, v.y, v.properties.toX, v.properties.toY)
 end)
 
-moveAcrossPlatform = entity:extend()
+moveAcrossPlatform = advancedEntity:extend()
 
 function moveAcrossPlatform:new(x, y, toX, toY)
   moveAcrossPlatform.super.new(self)
@@ -15,20 +15,9 @@ function moveAcrossPlatform:new(x, y, toX, toY)
   self:setRectangleCollision(32, 16)
   self.tex = megautils.getResource("moveArossPlatform")
   self.quad = quad(0, 0, 32, 16)
-  self.velocity = velocity()
-  self.tween = tween.new(1, self.transform, {x=toX, y=toY}, "inOutBack")
+  self.tween = tween.new(1, self.transform, {x=toX or (self.transform.x+32), y=toY or (self.transform.y-32)}, "inOutBack")
   self.state = 0
-end
-
-function moveAcrossPlatform:added()
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnTransition")
-  self:addToGroup("collision")
-end
-
-function moveAcrossPlatform:draw()
-  love.graphics.setColor(1, 1, 1, 1)
-  self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
+  self.hurtable = false
 end
 
 function moveAcrossPlatform:update(dt)
@@ -44,10 +33,11 @@ function moveAcrossPlatform:update(dt)
     self.transform.x = math.round(self.transform.x)
     self.transform.y = math.round(self.transform.y)
   end
-  collision.doCollision(self)
-  if megautils.outside(self, 4, 4) then
-    megautils.removeq(self)
-  end
+end
+
+function moveAcrossPlatform:draw()
+  love.graphics.setColor(1, 1, 1, 1)
+  self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
 end
 
 megautils.cleanFuncs.moveAcrossPlatform = function()

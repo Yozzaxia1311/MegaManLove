@@ -26,8 +26,6 @@ function weapon:new(p, enWeapon)
     self.removeWhenOutside = true
     self.autoCollision = true
     self.autoGravity = false
-    self.autoFace = -1
-    self.applyAutoFace = false
     self.doAutoCollisionBeforeUpdate = true
     self.doDink = true
   end
@@ -119,19 +117,9 @@ function weapon:beforeUpdate()
     collision.doGrav(self)
   end
   self._didCol = false
-  if self.doAutoCollisionBeforeUpdate then
+  if self.autoCollision and self.doAutoCollisionBeforeUpdate then
     collision.doCollision(self)
     self._didCol = true
-  end
-  if self.user then
-    local s = megautils.side(self, self.user, true)
-    self.autoFace = s or self.autoFace
-    if self.applyAutoFace then
-      self.side = self.autoFace
-    end
-  end
-  if self.removeWhenOutside and megautils.outside(self) then
-    megautils.removeq(self)
   end
 end
 
@@ -146,7 +134,7 @@ end
 function weapon:afterUpdate()
   if self.autoHit then
     if self.damageType == weapon.DAMAGEENEMY or self.damageType == weapon.DAMAGEBOTH then
-      self:interact(self:collisionTable(megautils.groups().hurtable), self.damage)
+      self:interact(self:collisionTable(megautils.groups().interactable), self.damage)
     end
     if self.damageType == weapon.DAMAGEPLAYER or self.damageType == weapon.DAMAGEBOTH then
       self:interact(self:collisionTable(megaMan.allPlayers), self.damage)
@@ -154,6 +142,9 @@ function weapon:afterUpdate()
   end
   if self.autoCollision and not self.doAutoCollisionBeforeUpdate and not self._didCol then
     collision.doCollision(self)
+  end
+  if self.removeWhenOutside and megautils.outside(self) then
+    megautils.removeq(self)
   end
 end
 

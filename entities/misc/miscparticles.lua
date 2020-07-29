@@ -3,30 +3,84 @@ megautils.loadResource(8, 8, "slideParticleGrid", true)
 megautils.loadResource(0, 46, 24, 24, "explodeParticleGrid", true)
 megautils.loadResource(108, 28, 5, 8, "damageSteamGrid", true)
 
-slideParticle = basicEntity:extend()
+particle = entity:extend()
 
-function slideParticle:new(x, y, side, g)
-  slideParticle.super.new(self)
-  self.transform.y = y
-  self.transform.x = x
-  self:setRectangleCollision(8, 8)
-  self.tex = megautils.getResource("particles")
-  self.anim = megautils.newAnimation("slideParticleGrid", {"1-3", 1}, 1/10)
-  self.side = side
-  self.anim.flippedV = g < 0
+function particle:new(user)
+  particle.super.new(self)
+  
+  if not self.recycling then
+    self:setRectangleCollision(8, 8)
+    self.autoCollision = true
+    self.autoGravity = false
+    self.removeWhenOutside = true
+    self.doAutoCollisionBeforeUpdate = true
+    self.flipWithUser = true
+  end
+  
+  self.user = user
+  self._didCol = false
 end
 
-function slideParticle:added()
+function particle:added()
   self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
+  self:addToGroup("collision")
 end
 
-function slideParticle:update(dt)
-  self.anim.flipX = self.side == 1
-  self.anim:update(defaultFramerate)
-  if self.anim.looped then
+function particle:grav()
+  if self.ground then return end
+  self.velocity.vely = self.velocity.vely+self.gravity
+  self.velocity:clampY(7)
+end
+
+function particle:beforeUpdate()
+  if self.flipWithUser and self.user then
+    self:setGravityMultiplier("flipWithUser", self.user.gravityMultipliers.gravityFlip or 1)
+  end
+  if self.autoGravity then
+    collision.doGrav(self)
+  end
+  self._didCol = false
+  if self.autoCollision and self.doAutoCollisionBeforeUpdate then
+    collision.doCollision(self)
+    self._didCol = true
+  end
+end
+
+function particle:afterUpdate()
+  if self.autoCollision and not self.doAutoCollisionBeforeUpdate and not self._didCol then
+    collision.doCollision(self)
+  end
+  if self.removeWhenOutside and megautils.outside(self) then
     megautils.removeq(self)
-  elseif megautils.outside(self) then
+  end
+end
+
+slideParticle = particle:extend()
+
+function slideParticle:new(x, y, p, side, g)
+  slideParticle.super.new(self, p)
+  
+  if self.recycling then
+    self.anim:gotoFrame(1)
+  else
+    self:setRectangleCollision(8, 8)
+    self.tex = megautils.getResource("particles")
+    self.anim = megautils.newAnimation("slideParticleGrid", {"1-3", 1}, 1/10)
+    self.autoCollision = false
+    self.recycle = true
+  end
+  
+  self.transform.x = x or 0
+  self.transform.y = y or 0
+  self.side = side or 1
+  self.anim.flipX = self.side == 1
+  self.anim.flipY = (g or 1) < 0
+end
+
+function slideParticle:update()
+  self.anim:update(defaultFramerate)
+  if self.anim:looped() then
     megautils.removeq(self)
   end
 end
@@ -36,28 +90,29 @@ function slideParticle:draw()
   self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
 end
 
-damageSteam = basicEntity:extend()
+damageSteam = particle:extend()
 
-function damageSteam:new(x, y, g)
-  damageSteam.super.new(self)
-  self.transform.y = y
-  self.transform.x = x
-  self:setRectangleCollision(5, 8)
-  self.tex = megautils.getResource("particles")
-  self.anim = megautils.newAnimation("damageSteamGrid", {"1-3", 1}, 1/8)
-  self.anim.flippedV = g < 0
+function damageSteam:new(x, y, p, g)
+  damageSteam.super.new(self, p)
+  
+  if self.recycling then
+    self.anim:gotoFrame(1)
+  else
+    self:setRectangleCollision(5, 8)
+    self.tex = megautils.getResource("particles")
+    self.anim = megautils.newAnimation("damageSteamGrid", {"1-3", 1}, 1/8)
+    self.autoCollision = false
+    self.recycle = true
+  end
+  
+  self.transform.x = x or 0
+  self.transform.y = y or 0
+  self.anim.flipY = (g or 1) < 0
 end
 
-function damageSteam:added()
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnTransition")
-end
-
-function damageSteam:update(dt)
+function damageSteam:update()
   self.anim:update(defaultFramerate)
-  if self.anim.looped then
-    megautils.removeq(self)
-  elseif megautils.outside(self) then
+  if self.anim:looped() then
     megautils.removeq(self)
   end
 end
@@ -69,25 +124,26 @@ end
 
 airBubble = entity:extend()
 
-function airBubble:new(x, y)
-  airBubble.super.new(self)
-  self.transform.y = y
-  self.transform.x = x
-  self:setRectangleCollision(2, 8)
-  self.tex = megautils.getResource("particles")
-  self.quad = quad(104, 28, 4, 4)
+function airBubble:new(x, y, p)
+  airBubble.super.new(self, p)
+  
+  if not self.recycling then
+    self:setRectangleCollision(2, 8)
+    self.tex = megautils.getResource("particles")
+    self.quad = quad(104, 28, 4, 4)
+    self.velocity.velx = -1
+    self.recycle = true
+  end
+  
+  self.transform.x = x or 0
+  self.transform.y = y or 0
   self.off = 0
   self.timer = 0
 end
 
-function airBubble:added()
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnTransition")
-end
-
-function airBubble:check(x, y)
+function airBubble:check()
   return collision.checkSolid(self) or
-    self:collisionNumber(megautils.groups().water, x, y) == 0
+    self:collisionNumber(megautils.groups().water, 0, -4) == 0
 end
 
 function airBubble:update(dt)
@@ -96,8 +152,7 @@ function airBubble:update(dt)
     self.timer = 0
     self.off = math.wrap(self.off+1, 0, 2)
   end
-  self.transform.y = self.transform.y - 1
-  if megautils.outside(self) or self:check(0, -8) then
+  if self:check() then
     megautils.removeq(self)
   end
 end
@@ -107,48 +162,10 @@ function airBubble:draw()
   self.quad:draw(self.tex, math.round(self.transform.x)-self.off, math.round(self.transform.y))
 end
 
-angleParticle = entity:extend()
+harm = particle:extend()
 
-function angleParticle:new(x, y, a)
-  angleParticle.super.new(self)
-  self.transform.y = y
-  self.transform.x = x
-  self:setRectangleCollision(2, 8)
-  self.tex = megautils.getResource("particles")
-  self.anim = megautils.newAnimation("slideParticleGrid", {"1-3", 1}, 1/10)
-  self.once = false
-  self.velocity = velocity()
-  self.velocity.velx = megautils.calcX(a)
-  self.velocity.vely = megautils.calcY(a)
-  self.side = self.velocity.velx>0 and -1 or 1
-end
-
-function angleParticle:added()
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnTransition")
-end
-
-function angleParticle:update(dt)
-  self.anim.flipX = self.side == 1
-  self.anim:update(defaultFramerate)
-  self:moveBy(self.velocity.velx, self.velocity.vely)
-  if self.anim.looped then
-    megautils.removeq(self)
-  elseif megautils.outside(self) then
-    megautils.removeq(self)
-  end
-end
-
-function angleParticle:draw()
-  love.graphics.setColor(1, 1, 1, 1)
-  self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
-end
-
-harm = entity:extend()
-
-function harm:new(e, time)
-  harm.super.new(self)
-  self.follow = e
+function harm:new(p, time)
+  harm.super.new(self, p)
   self.transform.x = (self.follow.transform.x+self.follow.collisionShape.w/2)-24/2
   self.transform.y = (self.follow.transform.y+self.follow.collisionShape.h/2)-24/2
   self:setRectangleCollision(24, 24)
@@ -156,30 +173,25 @@ function harm:new(e, time)
   self.quad = quad(0, 22, 24, 24)
   self.timer = 0
   self.maxTime = time or 32
+  self.autoCollision = false
 end
 
-function harm:added()
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnTransition")
-end
-
-function harm:afterUpdate(dt)
-  if not self.follow or self.follow.isRemoved then
+function harm:afterUpdate()
+  if not self.user or self.user.isRemoved or self.timer == self.maxTime then
     megautils.removeq(self)
-    return
+  else
+    self.transform.x = math.round(self.user.transform.x)+math.round(self.user.collisionShape.w/2)-12
+    self.transform.y = math.round(self.user.transform.y)+math.round(self.user.collisionShape.h/2)-12
+    self.timer = math.min(self.timer+1, self.maxTime)
+    self.canDraw.global = not self.follow.canDraw.flash
   end
-  self.transform.x = math.round(self.follow.transform.x)+math.round(self.follow.collisionShape.w/2)-12
-  self.transform.y = math.round(self.follow.transform.y)+math.round(self.follow.collisionShape.h/2)-12
-  self.timer = math.min(self.timer+1, self.maxTime)
-  self.canDraw.global = not self.follow.canDraw.flash
-  if self.timer == self.maxTime or self.follow.isRemoved then
-    megautils.removeq(self)
-  end
+  
+  harm.super.afterUpdate(self)
 end
 
 function harm:draw()
   love.graphics.setColor(1, 1, 1, 1)
-  self.quad:draw(self.tex, self.transform.x, self.transform.y)
+  self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
 end
 
 explodeParticle = entity:extend()
