@@ -1,12 +1,15 @@
 megautils.loadResource("assets/misc/particles.png", "particles", true)
 megautils.loadResource(8, 8, "slideParticleGrid", true)
-megautils.loadResource(0, 46, 24, 24, "explodeParticleGrid", true)
+megautils.loadResource(0, 46, 24, 24, "deathExplodeParticleGrid", true)
 megautils.loadResource(108, 28, 5, 8, "damageSteamGrid", true)
 
 particle = entity:extend()
 
 function particle:new(user)
   particle.super.new(self)
+  
+  self.user = user
+  self._didCol = false
   
   if not self.recycling then
     self:setRectangleCollision(8, 8)
@@ -16,9 +19,6 @@ function particle:new(user)
     self.doAutoCollisionBeforeUpdate = true
     self.flipWithUser = true
   end
-  
-  self.user = user
-  self._didCol = false
 end
 
 function particle:added()
@@ -58,8 +58,12 @@ end
 
 slideParticle = particle:extend()
 
-function slideParticle:new(x, y, p, side, g)
+function slideParticle:new(x, y, p, side)
   slideParticle.super.new(self, p)
+  
+  self.transform.x = x or 0
+  self.transform.y = y or 0
+  self.side = side or 1
   
   if self.recycling then
     self.anim:gotoFrame(1)
@@ -71,11 +75,8 @@ function slideParticle:new(x, y, p, side, g)
     self.recycle = true
   end
   
-  self.transform.x = x or 0
-  self.transform.y = y or 0
-  self.side = side or 1
   self.anim.flipX = self.side == 1
-  self.anim.flipY = (g or 1) < 0
+  self.anim.flipY = self.gravity < 0
 end
 
 function slideParticle:update()
@@ -86,14 +87,16 @@ function slideParticle:update()
 end
 
 function slideParticle:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
 end
 
 damageSteam = particle:extend()
 
-function damageSteam:new(x, y, p, g)
+function damageSteam:new(x, y, p)
   damageSteam.super.new(self, p)
+  
+  self.transform.x = x or 0
+  self.transform.y = y or 0
   
   if self.recycling then
     self.anim:gotoFrame(1)
@@ -105,9 +108,7 @@ function damageSteam:new(x, y, p, g)
     self.recycle = true
   end
   
-  self.transform.x = x or 0
-  self.transform.y = y or 0
-  self.anim.flipY = (g or 1) < 0
+  self.anim.flipY = self.gravity < 0
 end
 
 function damageSteam:update()
@@ -118,14 +119,18 @@ function damageSteam:update()
 end
 
 function damageSteam:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
 end
 
-airBubble = entity:extend()
+airBubble = particle:extend()
 
 function airBubble:new(x, y, p)
   airBubble.super.new(self, p)
+  
+  self.transform.x = x or 0
+  self.transform.y = y or 0
+  self.off = 0
+  self.timer = 0
   
   if not self.recycling then
     self:setRectangleCollision(2, 8)
@@ -134,11 +139,6 @@ function airBubble:new(x, y, p)
     self.velocity.velx = -1
     self.recycle = true
   end
-  
-  self.transform.x = x or 0
-  self.transform.y = y or 0
-  self.off = 0
-  self.timer = 0
 end
 
 function airBubble:check()
@@ -158,7 +158,6 @@ function airBubble:update(dt)
 end
 
 function airBubble:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   self.quad:draw(self.tex, math.round(self.transform.x)-self.off, math.round(self.transform.y))
 end
 
@@ -166,8 +165,11 @@ harm = particle:extend()
 
 function harm:new(p, time)
   harm.super.new(self, p)
-  self.transform.x = (self.follow.transform.x+self.follow.collisionShape.w/2)-24/2
-  self.transform.y = (self.follow.transform.y+self.follow.collisionShape.h/2)-24/2
+  if self.user then
+    local cx, cy = megautils.center(self.user)
+    self.transform.x = cx-12
+    self.transform.y = cy-12
+  end
   self:setRectangleCollision(24, 24)
   self.tex = megautils.getResource("particles")
   self.quad = quad(0, 22, 24, 24)
@@ -176,99 +178,81 @@ function harm:new(p, time)
   self.autoCollision = false
 end
 
-function harm:afterUpdate()
+function harm:update()
   if not self.user or self.user.isRemoved or self.timer == self.maxTime then
     megautils.removeq(self)
   else
     self.transform.x = math.round(self.user.transform.x)+math.round(self.user.collisionShape.w/2)-12
     self.transform.y = math.round(self.user.transform.y)+math.round(self.user.collisionShape.h/2)-12
     self.timer = math.min(self.timer+1, self.maxTime)
-    self.canDraw.global = not self.follow.canDraw.flash
+    self.canDraw.global = not self.user.canDraw.flash
   end
-  
-  harm.super.afterUpdate(self)
 end
 
 function harm:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
 end
 
-explodeParticle = entity:extend()
+deathExplodeParticle = particle:extend()
 
-function explodeParticle:new(x, y, angle, spd)
-  explodeParticle.super.new(self)
-  self.transform.y = y
-  self.transform.x = x
+function deathExplodeParticle:new(x, y, p, angle, spd)
+  deathExplodeParticle.super.new(self, p)
+  self.transform.x = x or 0
+  self.transform.y = y or 0
   self:setRectangleCollision(24, 24)
   self.tex = megautils.getResource("particles")
-  self.anim = megautils.newAnimation("explodeParticleGrid", {"1-5", 1}, 1/10)
-  self.velocity = velocity()
+  self.anim = megautils.newAnimation("deathExplodeParticleGrid", {"1-5", 1}, 1/10)
   self.velocity.velx = megautils.calcX(angle)*spd
   self.velocity.vely = megautils.calcY(angle)*spd
 end
 
-function explodeParticle:added()
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnTransition")
-end
-
-function explodeParticle:update(dt)
-  self:moveBy(self.velocity.velx, self.velocity.vely)
-  if megautils.outside(self) then
-    megautils.removeq(self)
-  end
+function deathExplodeParticle:update(dt)
   self.anim:update(defaultFramerate)
 end
 
-function explodeParticle:draw()
-  love.graphics.setColor(1, 1, 1, 1)
+function deathExplodeParticle:draw()
   self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
 end
 
-function explodeParticle.createExplosion(x, y)
+function deathExplodeParticle.createExplosion(x, y, p)
   for j=1, 2 do
     for i=1, 8 do
-      megautils.add(explodeParticle, x, y, i*45, j*1.8)
+      megautils.add(deathExplodeParticle, x, y, p, i*45, j*1.8)
     end
   end
 end
 
-absorbParticle = entity:extend()
+absorbParticle = particle:extend()
 
-function absorbParticle:new(x, y, towards, spd)
-  absorbParticle.super.new(self)
-  self.transform.y = y
-  self.transform.x = x
+function absorbParticle:new(x, y, p, spd)
+  absorbParticle.super.new(self, p)
+  self.transform.x = x or 0
+  self.transform.y = y or 0
   self:setRectangleCollision(24, 24)
   self.tex = megautils.getResource("particles")
-  self.anim = megautils.newAnimation("explodeParticleGrid", {"1-5", 1}, 1/10)
-  self.towards = towards
+  self.anim = megautils.newAnimation("deathExplodeParticleGrid", {"1-5", 1}, 1/10)
   self.startX = x
   self.startY = y
   self.pos = 0
-  self.spd = spd
+  self.spd = spd or 0.02
+  self.autoCollision = false
+  self.removeWhenOutside = false
 end
 
-function absorbParticle:added()
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnTransition")
-end
-
-function absorbParticle:update(dt)
-  if self.towards and not self.towards.isRemoved then
-    self.transform.x = math.lerp(self.startX, self.towards.transform.x+(self.towards.collisionShape.w/2), self.pos)
-    self.transform.y = math.lerp(self.startY, self.towards.transform.y+(self.towards.collisionShape.h/2), self.pos)
+function absorbParticle:update()
+  if self.user and not self.user.isRemoved then
+    local cx, cy = megautils.center(self.user)
+    self.transform.x = math.lerp(self.startX, cx, self.pos)
+    self.transform.y = math.lerp(self.startY, cy, self.pos)
     self.pos = math.min(self.pos + self.spd, 1)
   end
-  if not self.towards or self.pos == 1 or self.towards.isRemoved then
+  if not self.user or self.pos == 1 or self.user.isRemoved then
     megautils.removeq(self)
   end
   self.anim:update(defaultFramerate)
 end
 
 function absorbParticle:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y), 0, 1, 1, 12, 12)
 end
 
@@ -281,80 +265,78 @@ function absorbParticle.createAbsorbtion(towards, spd)
   end
 end
 
-absorb = entity:extend()
+absorb = particle:extend()
 
-function absorb:new(towards, times, spd)
-  absorb.super.new(self)
+function absorb:new(p, times, spd)
+  absorb.super.new(self, p)
   self.timer = 60
   self.times = 0
   self.maxTimes = times or 3
-  self.spd = spd
-  self.towards = towards
+  self.spd = spd or 0.02
+  self.autoCollision = false
+  self.removeWhenOutside = false
 end
 
-function absorb:added()
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnTransition")
-end
-
-function absorb:update(dt)
+function absorb:update()
   self.timer = math.min(self.timer+1, 60)
   if self.timer == 60 then
     self.timer = 0
     self.times = self.times + 1
     megautils.playSoundFromFile("assets/sfx/absorb.ogg")
-    absorbParticle.createAbsorbtion(self.towards, self.spd)
-    if self.times == self.maxTimes then
-      megautils.removeq(self)
-    end
+    absorbParticle.createAbsorbtion(self.user, self.spd)
+  end
+  if self.times == self.maxTimes or not self.user or self.user.isRemoved then
+    megautils.removeq(self)
   end
 end
 
-smallBlast = entity:extend()
+smallBlast = particle:extend()
 
-function smallBlast:new(x, y, spd)
-  smallBlast.super.new(self)
-  self.transform.y = y
-  self.transform.x = x
-  self:setRectangleCollision(24, 24)
-  self.tex = megautils.getResource("particles")
+function smallBlast:new(x, y, p, spd)
+  smallBlast.super.new(self, p)
+  
+  self.transform.x = x or 0
+  self.transform.y = y or 0
   self.spd = spd or 0.065
-  self.anim = megautils.newAnimation("explodeParticleGrid", {"1-5", 1}, self.spd)
+  
+  if self.recycling then
+    self.anim:gotoFrame(1)
+  else
+    self:setRectangleCollision(24, 24)
+    self.tex = megautils.getResource("particles")
+    self.anim = megautils.newAnimation("deathExplodeParticleGrid", {"1-5", 1}, self.spd)
+    self.autoCollision = false
+    self.recycle = true
+  end
 end
 
-function smallBlast:added()
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnTransition")
-end
-
-function smallBlast:update(dt)
+function smallBlast:update()
   self.anim:update(defaultFramerate)
-  if megautils.outside(self) or self.anim.looped then
+  if self.anim:looped() then
     megautils.removeq(self)
   end
 end
 
 function smallBlast:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
 end
 
-blast = entity:extend()
+blast = particle:extend()
 
-function blast:new(x, y, times)
-  blast.super.new(self)
-  self.transform.y = y
-  self.transform.x = x
+function blast:new(x, y, p, times)
+  blast.super.new(self, p)
+  self.transform.x = x or 0
+  self.transform.y = y or 0
   self.deg = 0
   self.timer = 0
   self.times = 0
-  self.max = times == nil and 4 or times
+  self.max = times or 4
+  self.autoCollision = false
 end
 
 function blast:added()
-  self:addToGroup("freezable")
-  self:addToGroup("removeOnTransition")
-  megautils.add(smallBlast, self.transform.x, self.transform.y)
+  blast.super.added(self)
+  megautils.add(smallBlast, self.transform.x, self.transform.y, self.user)
 end
 
 function blast:update(dt)
@@ -362,9 +344,9 @@ function blast:update(dt)
   if self.timer == 5 then
     self.timer = 0
     megautils.add(smallBlast, megautils.circlePathX(self.transform.x, self.deg, 20), 
-        megautils.circlePathY(self.transform.y, self.deg, 20))
+        megautils.circlePathY(self.transform.y, self.deg, 20), self.user)
     megautils.add(smallBlast, megautils.circlePathX(self.transform.x, self.deg-180, 20), 
-        megautils.circlePathY(self.transform.y, self.deg-180, 20))
+        megautils.circlePathY(self.transform.y, self.deg-180, 20), self.user)
     self.deg = math.wrap(self.deg+360/6, 0, 360)
     self.times = self.times + 1
   end

@@ -82,7 +82,6 @@ function met:update(dt)
 end
 
 function met:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   self.quads[self.c]:draw(self.t, math.round(self.transform.x), math.round(self.transform.y))
 end
 
@@ -106,7 +105,6 @@ function metBullet:new(x, y, p, vx, vy)
 end
 
 function metBullet:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
 end
 

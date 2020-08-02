@@ -119,7 +119,6 @@ function menuSelect:update()
 end
 
 function menuSelect:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   if self.section == 0 then
     love.graphics.draw(self.tex, self.transform.x, self.transform.y)
   end

@@ -176,7 +176,7 @@ local function newAnimation(frames, durations, onLoop)
       timer          = 0,
       position       = 1,
       status         = "playing",
-      looped         = false,
+      _looped         = false,
       flipX       = false,
       flipY       = false
     },
@@ -198,7 +198,7 @@ function Animation:setDurations(durations)
     self.position = #self.frames
     self.timer = self.totalDuration
   end
-  self.looped = false
+  self._looped = false
 end
 
 function Animation:clone()
@@ -233,7 +233,7 @@ local function seekFrameIndex(intervals, timer)
 end
 
 function Animation:update(dt)
-  self.looped = false
+  self._looped = false
   if self.status ~= "playing" then return end
 
   self.timer = self.timer + dt
@@ -242,7 +242,7 @@ function Animation:update(dt)
     self.timer = self.timer - self.totalDuration * loops
     local f = type(self.onLoop) == 'function' and self.onLoop or self[self.onLoop]
     f(self, loops)
-    self.looped = true
+    self._looped = true
   end
 
   self.position = seekFrameIndex(self.intervals, self.timer)
@@ -252,8 +252,12 @@ function Animation:pause()
   self.status = "paused"
 end
 
+function Animation:looped()
+  return self._looped
+end
+
 function Animation:gotoFrame(position)
-  self.looped = false
+  self._looped = false
   self.position = math.clamp(position, 0, #self.frames)
   self.timer = self.intervals[self.position]
 end

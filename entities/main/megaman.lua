@@ -1151,11 +1151,11 @@ function megaMan:interactedWith(o, c)
       self.dashJump = false
       megautils.add(harm, self)
       megautils.add(damageSteam, self.transform.x+(self.collisionShape.w/2)-2.5-11,
-        self.transform.y+(self.gravity >= 0 and -8 or self.collisionShape.h), self.gravity)
+        self.transform.y+(self.gravity >= 0 and -8 or self.collisionShape.h), self)
       megautils.add(damageSteam, self.transform.x+(self.collisionShape.w/2)-2.5,
-        self.transform.y+(self.gravity >= 0 and -8 or self.collisionShape.h), self.gravity)
+        self.transform.y+(self.gravity >= 0 and -8 or self.collisionShape.h), self)
       megautils.add(damageSteam, self.transform.x+(self.collisionShape.w/2)-2.5+11,
-        self.transform.y+(self.gravity >= 0 and -8 or self.collisionShape.h), self.gravity)
+        self.transform.y+(self.gravity >= 0 and -8 or self.collisionShape.h), self)
       if o.pierceType == pierce.NOPIERCE or o.pierceType == pierce.PIERCEIFKILLING then
         megautils.removeq(o)
       end
@@ -1478,7 +1478,7 @@ function megaMan:code(dt)
       self:regToSlide()
       self.slideTimer = 0
       megautils.add(slideParticle, self.transform.x+(self.side==-1 and self.collisionShape.w-8 or 0),
-        self.transform.y+(self.gravity >= 0 and self.collisionShape.h-6 or -2), self.side, self.gravity)
+        self.transform.y+(self.gravity >= 0 and self.collisionShape.h-6 or -2), self, self.side)
     elseif checkFalse(self.canJump) and self.inStandSolid and control.jumpDown[self.player] and
       self.standSolidJumpTimer ~= self.maxStandSolidJumpTime and
       self.standSolidJumpTimer ~= -1 then
@@ -1571,7 +1571,7 @@ function megaMan:code(dt)
     self.bubbleTimer = math.min(self.bubbleTimer+1, self.maxBubbleTime)
     if self.bubbleTimer == self.maxBubbleTime then
       self.bubbleTimer = 0
-      megautils.add(airBubble, self.transform.x+(self.side==-1 and -4 or self.collisionShape.w), self.transform.y+4)
+      megautils.add(airBubble, self.transform.x+(self.side==-1 and -4 or self.collisionShape.w), self.transform.y+4, self)
     end
   end
   self.transform.x = math.clamp(self.transform.x, view.x+(-self.collisionShape.w/2)+2,
@@ -1899,7 +1899,7 @@ end
 
 function megaMan:die()
   if ((self.gravity >= 0 and self.transform.y < view.y+view.h) or (self.gravity < 0 and self.transform.y+self.collisionShape.h > view.y)) then
-    explodeParticle.createExplosion(self.transform.x+((self.collisionShape.w/2)-12),
+    deathExplodeParticle.createExplosion(self.transform.x+((self.collisionShape.w/2)-12),
       self.transform.y+((self.collisionShape.h/2)-12))
   end
   

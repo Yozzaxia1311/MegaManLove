@@ -44,7 +44,6 @@ function title:update()
           control.drawDemoFunc = function()
               if control.demo and math.wrap(control.recPos, 0, 40) < 20 then
                 love.graphics.setFont(mmFont)
-                love.graphics.setColor(1, 1, 1, 1)
                 love.graphics.print("DEMO", view.w - 48, view.h - 16)
               end
             end
@@ -64,7 +63,6 @@ function title:update()
 end
 
 function title:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   if self.drawText then
     love.graphics.setFont(mmFont)
     love.graphics.print(self.text, self.textPos, 208)

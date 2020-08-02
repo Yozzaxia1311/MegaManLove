@@ -48,7 +48,6 @@ function smallStar:update()
 end
 
 function smallStar:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   self.quad:draw(self.t, self.transform.x, self.transform.y)
 end
 
@@ -72,7 +71,6 @@ function star:update()
 end
 
 function star:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   self.quad:draw(self.t, self.transform.x, self.transform.y)
 end
 
@@ -96,7 +94,6 @@ function largeStar:update()
 end
 
 function largeStar:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   self.quad:draw(self.t, math.round(self.transform.x), math.round(self.transform.y))
 end
 

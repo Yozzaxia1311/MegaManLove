@@ -371,16 +371,16 @@ function console.draw()
   local lineMax = math.floor(6.67*console.scale)
 
   love.graphics.setFont(consoleFont)
-  love.graphics.setColor({1, 1, 1, 1})
-  love.graphics.setColor({0, 0, 0, 0.95})
+  love.graphics.setColor(1, 1, 1, 1)
+  love.graphics.setColor(0, 0, 0, 0.95)
   love.graphics.rectangle("fill", console.x, console.y, console.w, console.h)
-  love.graphics.setColor({1, 1, 1, 1})
+  love.graphics.setColor(1, 1, 1, 1)
   love.graphics.rectangle("fill", console.x, console.y+console.h-1, console.w, 1)
   if #console.input > 0 then
-    love.graphics.setColor({1, 1, 1, 0.33})
+    love.graphics.setColor(1, 1, 1, 0.33)
     love.graphics.print("$ "..console.getCompletion(console.input), console.x+2, console.y+console.h-16)
   end
-  love.graphics.setColor({1, 1, 1, 1})
+  love.graphics.setColor(1, 1, 1, 1)
   love.graphics.print("$ "..console.input.."_", console.x+2, console.y+console.h-16)
 
   local i = #console.lines+1

@@ -28,7 +28,7 @@ function animationSet:set(name, f, t)
 end
 
 function animationSet:looped()
-  return self.anims[self.current].looped
+  return self.anims[self.current]:looped()
 end
 
 function animationSet:pause()

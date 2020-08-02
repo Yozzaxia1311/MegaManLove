@@ -1,42 +1,36 @@
 megautils.loadResource("assets/sfx/splash.ogg", "splash")
 megautils.loadResource(0, 70, 32, 28, "splashGrid")
 
-splash = basicEntity:extend()
+splash = particle:extend()
 
-function splash:new(offx, offy, follow, side)
-  splash.super.new(self)
-  self.offx = offx
-  self.offy = offy
-  self.side = side
+function splash:new(offx, offy, p, side)
+  splash.super.new(self, p)
+  self.offx = offx or 0
+  self.offy = offy or 0
+  self.side = side or -1
   self:setRectangleCollision(32, 28)
   self.tex = megautils.getResource("particles")
   self.anim = megautils.newAnimation("splashGrid", {"1-4", 1}, 1/8)
-  self.rot = math.rad(side==-1 and 0 or 180)
-  self.follow = follow
-  if self.follow then
-    self.transform.x = self.follow.transform.x + self.offx
-    self.transform.y = self.follow.transform.y + self.offy
+  self.rot = math.rad(self.side==-1 and 0 or 180)
+  if self.user then
+    self.transform.x = self.user.transform.x + self.offx
+    self.transform.y = self.user.transform.y + self.offy
   end
+  self.autoCollision = false
 end
 
-function splash:added()
-  self:addToGroup("removeOnTransition")
-  self:addToGroup("freezable")
-end
-
-function splash:update(dt)
+function splash:update()
   self.anim:update(defaultFramerate)
-  if self.follow then
-    self.transform.x = self.follow.transform.x + self.offx
-    self.transform.y = self.follow.transform.y + self.offy
+  if self.user then
+    self.transform.x = self.user.transform.x + self.offx
+    self.transform.y = self.user.transform.y + self.offy
   end
-  if megautils.outside(self) or self.anim.looped then
+  if not self.user or self.user.isRemoved or self.anim:looped() then
     megautils.removeq(self)
   end
 end
 
 function splash:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   self.anim:draw(self.tex, math.round(self.transform.x)+16, math.round(self.transform.y), self.rot, 1, 1, 16, 8)
 end
 
@@ -73,7 +67,7 @@ function water:removed()
   end
 end
 
-function water:update(dt)
+function water:update()
   if megautils.groups().submergable then
     for k, v in ipairs(megautils.groups().submergable) do
       if v:collision(self) and not v.gravityMultipliers.water then

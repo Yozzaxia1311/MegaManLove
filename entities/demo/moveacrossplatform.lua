@@ -36,7 +36,6 @@ function moveAcrossPlatform:update(dt)
 end
 
 function moveAcrossPlatform:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
 end
 

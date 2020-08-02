@@ -336,7 +336,6 @@ function weaponHandler:removed()
 end
 
 function weaponHandler:draw(x, y)
-  love.graphics.setColor(1, 1, 1, 1)
   if (self.currentSlot == 0 and self.energy[self.currentSlot]) or not self.energy[self.currentSlot] or
     not self.segments[self.currentSlot] then return end
   local curSeg = math.ceil(self.renderedWE[self.currentSlot]/4)

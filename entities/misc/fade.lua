@@ -40,7 +40,7 @@ end
 
 function fade:draw()
   love.graphics.setColor(self.color[1]/255, self.color[2]/255, self.color[3]/255, self.alpha/255)
-  love.graphics.rectangle("fill", view.x, view.y, view.w, view.h)
+  love.graphics.rectangle("fill", view.x-1, view.y-1, view.w+2, view.h+2)
 end
 
 function fade.remove(s)

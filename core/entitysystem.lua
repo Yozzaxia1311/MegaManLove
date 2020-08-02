@@ -1,7 +1,6 @@
 entitySystem = class:extend()
 
 entitySystem.drawCollision = false
-entitySystem.doDrawQuality = false
 entitySystem.doDrawFlicker = true
 
 function entitySystem:new()
@@ -304,26 +303,11 @@ function entitySystem:draw()
       end
       local v = self.entities[i].data[k]
       if checkFalse(v.canDraw) and not v.isRemoved and v.draw then
+        love.graphics.setColor(1, 1, 1, 1)
         v:draw()
         if entitySystem.drawCollision then
-          love.graphics.setColor(1, 1, 1, 1)
           v:drawCollision()
         end
-      end
-    end
-  end
-end
-
-function entitySystem:drawQuality()
-  if not entitySystem.doDrawQuality then return end
-  for i=1, #self.entities do
-    for k=1, #self.entities[i].data do
-      if states.switched then
-        return
-      end
-      local v = self.entities[i].data[k]
-      if checkFalse(v.canDraw) and not v.isRemoved and v.drawQuality then
-        v:drawQuality()
       end
     end
   end
@@ -783,7 +767,6 @@ end
 
 function mapEntity:draw()
   love.graphics.push()
-  love.graphics.setColor(1, 1, 1, 1)
   love.graphics.translate(-self.transform.x, -self.transform.y)
   self.map:setDrawRange(view.x, view.y, view.w, view.h)
   self.map:draw()
@@ -909,15 +892,15 @@ function advancedEntity:beforeUpdate()
     collision.doCollision(self)
     self._didCol = true
   end
+  self:updateFlash()
+  self:updateIFrame()
+  self:updateShake()
 end
 
 function advancedEntity:afterUpdate()
   if self.autoCollision and not self.doAutoCollisionBeforeUpdate and not self._didCol then
     collision.doCollision(self)
   end
-  self:updateFlash()
-  self:updateIFrame()
-  self:updateShake()
   if self.autoHitPlayer then
     self:interact(self:collisionTable(megaMan.allPlayers), self.damage)
   end
@@ -971,12 +954,12 @@ function advancedEntity:interactedWith(o, c)
       globals.defeats[self.defeatSlot] = self.defeatSlotValue or true
     end
     if self.explosionType == advancedEntity.SMALLBLAST then
-      megautils.add(smallBlast, self.transform.x+(self.collisionShape.w/2)-12, self.transform.y+(self.collisionShape.h/2)-12)
+      megautils.add(smallBlast, self.transform.x+(self.collisionShape.w/2)-12, self.transform.y+(self.collisionShape.h/2)-12, self)
     elseif self.explosionType == advancedEntity.BIGBLAST then
-      megautils.add(blast, self.transform.x+(self.collisionShape.w/2)-12, self.transform.y+(self.collisionShape.h/2)-12)
+      megautils.add(blast, self.transform.x+(self.collisionShape.w/2)-12, self.transform.y+(self.collisionShape.h/2)-12, self)
     elseif self.explosionType == advancedEntity.DEATHBLAST then
-      explodeParticle.createExplosion(self.transform.x+((self.collisionShape.w/2)-12),
-        self.transform.y+((self.collisionShape.h/2)-12))
+      deathExplodeParticle.createExplosion(self.transform.x+((self.collisionShape.w/2)-12),
+        self.transform.y+((self.collisionShape.h/2)-12), self)
     end
     if self.dropItem then
       local item
@@ -1045,6 +1028,8 @@ function bossEntity:new()
   self.weaponGetMenuState = "assets/states/menus/menu.state.tmx"
   self.defeatSlot = nil
   self.doBossIntro = megautils.getCurrentState() == globals.bossIntroState
+  self.autoCollision = false
+  self.autoGravity = false
   self.bossIntroText = nil
   self.weaponGetText = "WEAPON GET... (NAME HERE)"
   self.stageState = nil
@@ -1259,6 +1244,8 @@ function bossEntity:update()
       local h = self.healthHandler.health
       self.healthHandler:instantUpdate(0)
       self.healthHandler:updateThis(h)
+      self.autoCollision = true
+      self.autoGravity = true
       if not self.healthHandler.isAdded then
         megautils.adde(self.healthHandler)
       end

@@ -68,7 +68,6 @@ function rebinder:update()
 end
 
 function rebinder:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   love.graphics.setFont(mmFont)
   love.graphics.printf("press the player " .. tostring((self.step/11)+1) .. " \n\""
     .. self.keyNames[self.currentKey] .. "\"!" ..

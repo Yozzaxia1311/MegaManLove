@@ -118,7 +118,6 @@ function smallHealth:update()
 end
 
 function smallHealth:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   local offy = 0
   if self.gravity < 0 then
     offy = -2
@@ -162,7 +161,6 @@ function health:update()
 end
 
 function health:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   local offy = 0
   if self.gravity < 0 then
     offy = -2

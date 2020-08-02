@@ -183,7 +183,6 @@ function protoSemiBuster:new(x, y, p, dir, skin)
 end
 
 function protoSemiBuster:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y)-3)
 end
 
@@ -214,7 +213,6 @@ function protoChargedBuster:act()
 end
 
 function protoChargedBuster:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y)-1)
 end
 
@@ -255,7 +253,6 @@ function bassBuster:act()
 end
 
 function bassBuster:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   love.graphics.draw(self.tex, math.round(self.transform.x)-1, math.round(self.transform.y)-1)
 end
 
@@ -291,7 +288,6 @@ function megaBuster:new(x, y, p, dir)
 end
 
 function megaBuster:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
 end
 
@@ -320,7 +316,6 @@ function megaSemiBuster:act()
 end
 
 function megaSemiBuster:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y)-3)
 end
 
@@ -351,7 +346,6 @@ function megaChargedBuster:act()
 end
 
 function megaChargedBuster:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   self.anim:draw(self.tex, math.round(self.transform.x)-8, math.round(self.transform.y)-3)
 end
 
@@ -446,7 +440,6 @@ function trebleBoost:act()
 end
 
 function trebleBoost:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   self.anims:draw(self.tex, math.round(self.transform.x)-6, math.round(self.transform.y)-12+(self.gravity >= 0 and 0 or 11))
 end
 
@@ -601,7 +594,6 @@ function rushJet:removed()
 end
 
 function rushJet:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   if (self.anims.current == "spawn" or self.anims.current == "spawnLand") and self.user then
     self.anims:draw(self.tex, math.round(self.transform.x)-4, math.round(self.transform.y)+(self.user.gravity >= 0 and -16 or -6))
   else
@@ -728,7 +720,6 @@ function rushCoil:act(dt)
 end
 
 function rushCoil:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   self.anims:draw(self.tex, math.round(self.transform.x)-8, math.round(self.transform.y)-12+(self.gravity >= 0 and 0 or 11))
 end
 
@@ -752,6 +743,5 @@ function stickWeapon:new(x, y, p, dir)
 end
 
 function stickWeapon:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   love.graphics.draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
 end

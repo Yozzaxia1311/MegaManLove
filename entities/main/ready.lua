@@ -27,7 +27,6 @@ function ready:update(dt)
 end
 
 function ready:draw()
-  love.graphics.setColor(1, 1, 1, 1)
   love.graphics.setFont(mmFont)
   love.graphics.print(self.text, view.x+(view.w/2)-(self.width/2), view.y+(view.h/2))
 end

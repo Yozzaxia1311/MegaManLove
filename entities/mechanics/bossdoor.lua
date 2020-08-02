@@ -294,7 +294,6 @@ end
 
 function bossDoor:draw()
   if self.useMapTiles or megautils.outside(self) then return end
-  love.graphics.setColor(1, 1, 1, 1)
   for i=1, self.segments do
     if self.dir == "left" or self.dir == "right" then
       self.quad:draw(self.tex, self.transform.x, self.transform.y + (i*16) - 16)
