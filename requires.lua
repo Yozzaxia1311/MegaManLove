@@ -11,6 +11,7 @@ love.filesystem.load("entities/mechanics/solid.lua")()
 love.filesystem.load("entities/mechanics/death.lua")()
 love.filesystem.load("entities/mechanics/ladder.lua")()
 love.filesystem.load("entities/mechanics/checkpoint.lua")()
+love.filesystem.load("entities/mechanics/bossdoor.lua")()
 
 love.filesystem.load("entities/misc/spawner.lua")()
 love.filesystem.load("entities/misc/camera.lua")()

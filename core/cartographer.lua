@@ -419,8 +419,7 @@ function Layer.tilelayer:getTileAtGridPosition(x, y)
   else
     gid = self.data[coordinatesToIndex(x, y, self.width)]
   end
-  gid = gid - 1
-  if gid == -1 then return false end
+  gid = gid and (gid - 1) or -1
   return gid
 end
 

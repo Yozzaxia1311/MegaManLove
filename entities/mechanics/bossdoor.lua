@@ -1,4 +1,5 @@
-megautils.loadResource("assets/global/bossDoor.png", "bossDoor")
+megautils.loadResource("assets/global/bossDoor.png", "bossDoor", true)
+megautils.loadResource("assets/sfx/bossDoor.ogg", "bossDoorSfx", true)
 
 bossDoor = entity:extend()
 
@@ -26,7 +27,6 @@ function bossDoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt, n, tw, th, ts)
   self.spd = spd
   self.state = 0
   self.player = nil
-  self:setDirection(dir)
   self.solidType = collision.SOLID
   self.canWalkThrough = false
   self.isLocked = {global=false}
@@ -42,6 +42,7 @@ function bossDoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt, n, tw, th, ts)
   if self.name == "" then
     self.name = nil
   end
+  self:setDirection(dir)
 end
 
 function bossDoor:added()
@@ -124,7 +125,7 @@ function bossDoor:down()
   camera.main.freeze = false
 end
 
-function bossDoor:update(dt)
+function bossDoor:update()
   if not megaMan.mainPlayer or not camera.main or not rectOverlapsRect(self.transform.x, self.transform.y, self.collisionShape.w,
     self.collisionShape.h, camera.main.scrollx, camera.main.scrolly,
     camera.main.scrollw, camera.main.scrollh) then return end
@@ -142,7 +143,6 @@ function bossDoor:update(dt)
       for i=1, #megaMan.allPlayers do
         local player = megaMan.allPlayers[i]
         if checkFalse(player.canControl) and self:collision(player) then
-          megautils.loadResource("assets/sfx/bossDoor.ogg", "bossDoorSfx")
           self.player = player
           self.state = 1
           for j=1, #megaMan.allPlayers do
@@ -167,7 +167,8 @@ function bossDoor:update(dt)
                   for x=1, (self.dir=="right" or self.dir=="left") and (2*self.tileWidth) or (self.maxSegments*self.tileHeight) do
                     self.tileList[v][x] = {}
                     for y=1, (self.dir=="right" or self.dir=="left") and (self.maxSegments*self.tileWidth) or (2*self.tileHeight) do
-                      local gid = layer:getTileAtPixelPosition(self.transform.x+(x*16)-16, self.transform.y+(y*16)-16)
+                      local gid = layer:getTileAtPixelPosition(self.transform.x+(x*self.tileWidth)-self.tileWidth,
+                        self.transform.y+(y*self.tileHeight)-self.tileHeight)
                       if gid >= 0 and (oldx ~= math.floor((x/self.tileWidth)*self.tileWidth) or
                         oldy ~= math.floor((y/self.tileHeight)*self.tileHeight)) then
                         oldx = math.floor((x/self.tileWidth)*self.tileWidth)
@@ -287,7 +288,6 @@ function bossDoor:update(dt)
         megautils.state().system.cameraUpdate = nil
       end
       self.state = 0
-      megautils.unloadResource("bossDoorSfx")
     end
   end
 end
