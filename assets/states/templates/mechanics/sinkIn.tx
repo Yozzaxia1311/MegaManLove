@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<template>
- <object name="sinkIn" width="16" height="16">
-  <properties>
-   <property name="run" type="string" value="entities/mechanics/sinkin.lua"/>
-   <property name="speed" type="float" value="0.125"/>
-  </properties>
- </object>
-</template>

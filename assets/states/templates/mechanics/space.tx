@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<template>
- <object name="space" width="16" height="16">
-  <properties>
-   <property name="grav" type="float" value="0"/>
-   <property name="run" type="string" value="entities/mechanics/water.lua"/>
-  </properties>
- </object>
-</template>

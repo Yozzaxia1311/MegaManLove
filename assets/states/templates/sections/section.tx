@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<template>
- <object name="section" width="256" height="224">
-  <properties>
-   <property name="name" value=""/>
-  </properties>
- </object>
-</template>

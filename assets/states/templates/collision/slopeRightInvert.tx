@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<template>
- <object name="slope" width="16" height="16">
-  <properties>
-   <property name="mask" value="slopeRightInvert"/>
-  </properties>
- </object>
-</template>
