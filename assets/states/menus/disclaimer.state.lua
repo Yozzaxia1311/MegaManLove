@@ -29,7 +29,7 @@ function disclaimer:new()
     "\n\n\n\nThe Mega Man Love engine is a non-profit fanmade engine created by " .. 
     "various contributors.\n\nIt is not for sale.\n\n" .. 
     "Have fun!"
-  self.bottomText = "Press start to continue" ..
+  self.bottomText = "Press Start to continue" ..
     "\nPress Alt+Enter for fullscreen" ..
     "\nPress 1-9 to set the scale" ..
     "\nPress Escape here to rebind"
