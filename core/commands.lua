@@ -436,7 +436,7 @@ concmd["kill"] = {
   fun = function(cmd)
       for i=1, #megaMan.allPlayers do
         megaMan.allPlayers[i].iFrames = 0
-        megaMan.allPlayers[i]:interact({megaMan.allPlayers[i]}, -9999)
+        megaMan.allPlayers[i]:interact(megaMan.allPlayers[i], -9999, nil)
       end
     end
 }
