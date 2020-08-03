@@ -31,7 +31,7 @@ function menuSelect:new()
   self.timer = 20
 end
 
-function menuSelect:begin()
+function menuSelect:added()
   self:addToGroup("freezable")
 end
 

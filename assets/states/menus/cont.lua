@@ -13,7 +13,7 @@ megautils.cleanFuncs.gameOver = function()
   megautils.cleanFuncs.gameOver = nil
 end
 
-contPanels = entity:extend()
+contPanels = basicEntity:extend()
 
 function contPanels:new()
   contPanels.super.new(self)
@@ -24,7 +24,7 @@ function contPanels:new()
   self.timer = 0
 end
 
-function contPanels:begin()
+function contPanels:added()
   self:addToGroup("freezable")
 end
 

@@ -10,7 +10,7 @@ megautils.cleanFuncs.rebind = function()
   megautils.cleanFuncs.rebind = nil
 end
 
-rebinder = entity:extend()
+rebinder = basicEntity:extend()
 
 function rebinder:new()
   rebinder.super.new(self)
@@ -27,7 +27,7 @@ function rebinder:new()
   inputHandler.refreshGamepads()
 end
 
-function rebinder:begin()
+function rebinder:added()
   self:addToGroup("freezable")
 end
 

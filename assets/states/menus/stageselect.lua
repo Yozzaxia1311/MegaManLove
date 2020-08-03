@@ -11,7 +11,7 @@ megautils.cleanFuncs.stageSelect = function()
   megautils.cleanFuncs.stageSelect = nil
 end
 
-stageSelect = entity:extend()
+stageSelect = basicEntity:extend()
 
 megautils.loadResource("assets/sfx/ascend.ogg", "selected")
 megautils.loadResource("assets/sfx/cursorMove.ogg", "cursorMove")
@@ -56,7 +56,7 @@ function stageSelect:new()
   self.selectBlink = 0
 end
 
-function stageSelect:begin()
+function stageSelect:added()
   self:addToGroup("freezable")
 end
 

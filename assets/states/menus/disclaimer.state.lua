@@ -12,7 +12,7 @@ megautils.cleanFuncs.disclaimer = function()
   megautils.cleanFuncs.disclaimer = nil
 end
 
-disclaimer = entity:extend()
+disclaimer = basicEntity:extend()
 
 function disclaimer:new()
   disclaimer.super.new(self)
@@ -35,7 +35,7 @@ function disclaimer:new()
     "\nPress Escape here to rebind"
 end
 
-function disclaimer:begin()
+function disclaimer:added()
   self:addToGroup("freezable")
 end
 

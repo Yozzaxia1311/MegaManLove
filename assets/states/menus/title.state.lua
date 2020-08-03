@@ -11,12 +11,12 @@ megautils.cleanFuncs.title = function()
   megautils.cleanFuncs.title = nil
 end
 
-title = entity:extend()
+title = basicEntity:extend()
 
 function title:new()
   title.super.new(self)
-  self.transform.y = 256
   self.transform.x = 37
+  self.transform.y = 256
   self.tex = megautils.getResource("title")
   self.once = false
   self.textTimer = 0
@@ -25,6 +25,9 @@ function title:new()
   self.text = "name + year"
   self.textPos = 128-(self.text:len()*8)/2
   self.timer = 0
+end
+
+function title:added()
   self:addToGroup("freezable")
 end
 
@@ -36,7 +39,7 @@ function title:update()
     megautils.playMusic("assets/sfx/music/title.ogg")
   end
   if self.drawText then
-    self.timer = self.timer + 1
+    --self.timer = self.timer + 1
     if self.timer == 400 then
       states.openRecord = "assets/demo.rd"
       megautils.add(fade, true, nil, nil, function(s)
