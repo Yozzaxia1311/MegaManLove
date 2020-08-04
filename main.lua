@@ -76,7 +76,7 @@ function love.load()
   end
   
   megautils.gotoState("assets/states/menus/disclaimer.state.lua")
-  console.parse("exec autoexec")
+  console.parse("exec assets/autoexec")
 end
 
 function love.resize(w, h)

@@ -375,7 +375,7 @@ concmd["checkpoint"] = {
 
 concmd["checkpoints"] = {
   helptext = "gives a list of checkpoints",
-  flags = {},
+  flags = {"cheat"},
   fun = function(cmd)
       local result = {globals.checkpoint}
       section.iterate(function(e)
@@ -501,8 +501,8 @@ concmd["runlua"] = {
   flags = {"cheat"},
   fun = function(cmd)
       if not cmd[2] then return end
-      if not love.filesystem.getInfo(cmd[2]) then
-        console.print("\""..cmd[2].."\" does not exist")
+      if not love.filesystem.getInfo(cmd[2] .. ".lua") then
+        console.print("\""..cmd[2]..".lua\" does not exist")
         return
       end
       love.filesystem.load(cmd[2])()
@@ -520,11 +520,11 @@ concmd["exec"] = {
   flags = {},
   fun = function(cmd)
       if not cmd[2] then return end
-      if not love.filesystem.getInfo("cfg/"..cmd[2]..".cfg") then
+      if not love.filesystem.getInfo(cmd[2]..".cfg") then
         console.print("\""..cmd[2]..".cfg\" does not exist")
         return
       end
-      local cfg = love.filesystem.lines("cfg/"..cmd[2]..".cfg")
+      local cfg = love.filesystem.lines(cmd[2]..".cfg")
       for line in cfg do
         console.parse(line)
       end
