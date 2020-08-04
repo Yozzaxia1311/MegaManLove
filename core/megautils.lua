@@ -446,10 +446,6 @@ function megautils.update(self, dt)
   self.system:update(dt)
 end
 
-function megautils.draw(self)
-  view.draw(self.system)
-end
-
 function megautils.unload()
   for k, v in pairs(megautils.cleanFuncs) do
     v()

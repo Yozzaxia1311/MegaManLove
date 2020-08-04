@@ -22,7 +22,7 @@ function states.state:update(dt)
   megautils.update(self, dt)
 end
 function states.state:draw()
-  megautils.draw(self)
+  self.system:draw()
 end
 function states.state:unload()
   megautils.unload()

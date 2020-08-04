@@ -242,7 +242,7 @@ end
 
 function love.draw()
   love.graphics.push()
-  states.draw()
+  view.draw()
   love.graphics.pop()
   if useConsole then console.draw() end
   megautils.checkQueue()

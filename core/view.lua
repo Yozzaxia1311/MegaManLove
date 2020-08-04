@@ -9,13 +9,15 @@ function view.init(sw, sh, s)
   view.canvas = love.graphics.newCanvas(view.w*view.scale, view.h*view.scale)
 end
 
-function view.draw(sys)
+function view.draw()
   love.graphics.setCanvas(view.canvas)
   love.graphics.clear(love.graphics.getBackgroundColor())
   love.graphics.push()
   love.graphics.scale(view.scale)
   love.graphics.translate(-view.x, -view.y)
-  sys:draw()
+  if states.currentState then
+    states.currentState:draw()
+  end
   love.graphics.pop()
   megautils.updateShake()
   love.graphics.setColor(1, 1, 1, 1)
