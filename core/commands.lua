@@ -18,7 +18,11 @@ convar["volume"] = {
   helptext = "game volume",
   flags = {"client"},
   value = 1,
-  fun = function(arg) local n = numberSanitize(arg) love.audio.setVolume(n) end
+  fun = function(arg)
+    local n = math.clamp(numberSanitize(arg), 0, 1)
+    convar.setValue("volume", n, false)
+    love.audio.setVolume(n)
+  end
 }
 convar["showcollision"] = {
   helptext = "draw hitboxes",
