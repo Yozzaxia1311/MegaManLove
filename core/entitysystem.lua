@@ -305,9 +305,14 @@ function entitySystem:draw()
       if checkFalse(v.canDraw) and not v.isRemoved and v.draw then
         love.graphics.setColor(1, 1, 1, 1)
         v:draw()
-        if entitySystem.drawCollision then
-          v:drawCollision()
-        end
+      end
+    end
+  end
+  if entitySystem.drawCollision and not states.switched then
+    love.graphics.setColor(1, 1, 1, 1)
+    for i=1, #self.entities do
+      for k=1, #self.entities[i].data do
+        v:drawCollision()
       end
     end
   end
