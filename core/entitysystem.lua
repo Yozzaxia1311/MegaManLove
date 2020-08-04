@@ -561,7 +561,7 @@ function basicEntity:collision(e, x, y, notme)
 end
 
 function basicEntity:drawCollision()
-  if not self.collisionShape then return end
+  if not self.collisionShape or megautils.outside(self) then return end
   if self.collisionShape.type == 0 then
     love.graphics.rectangle("line", math.round(self.transform.x), math.round(self.transform.y),
       self.collisionShape.w, self.collisionShape.h)
