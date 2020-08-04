@@ -11,18 +11,18 @@ convar["fullscreen"] = {
 }
 convar["fps"] = {
   helptext = "fps",
-  flags = {"client"},
+  flags = {"cheat", "client"},
   value = defaultFPS,
 }
 convar["volume"] = {
   helptext = "game volume",
-  flags = {"archive"},
+  flags = {"client"},
   value = 1,
   fun = function(arg) local n = numberSanitize(arg) love.audio.setVolume(n) end
 }
 convar["showcollision"] = {
   helptext = "draw hitboxes",
-  flags = {"client"},
+  flags = {"cheat", "client"},
   value = 0,
   fun = function(arg) local n = numberSanitize(arg) entitySystem.drawCollision = n == 1 end
 }
