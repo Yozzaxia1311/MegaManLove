@@ -189,7 +189,7 @@ end
 function megautils.disableConsole()
   console.close()
   console.lines = {}
-  console.y = -112*2
+  console.y = -math.huge
   useConsole = false
 end
 
