@@ -511,7 +511,7 @@ function megaMan:initChargingColors()
   self.chargeColorTwos["R.BUSTER"][2][3] = {248, 56, 0}
 end
 
-function megaMan:new(x, y, side, drop, p, g, gf, c, dr)
+function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   megaMan.super.new(self)
   self.doWeaponGet = megautils.getCurrentState() == globals.weaponGetState
   self.transform.x = x or 0
@@ -557,13 +557,14 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr)
   self.protoShielding = false
   self.doSplashing = not self.drop
   self.teleportOffY = 0
+  self.teleporter = tp
   if self.doWeaponGet then
     self.canControl.global = false
     self.drop = false
     self.transform.y = -self.collisionShape.h
     self.transform.x = math.floor(view.w/2)-(self.collisionShape.w/2)
     self.canDraw.global = false
-  elseif (dr == nil or dr) and megaMan.mainPlayer == self then
+  elseif (dr == nil or dr) and not self.teleporter and megaMan.mainPlayer == self then
     if self.playerName == "proto" then
       self.ready = megautils.add(ready, nil, 32)
       if megautils._musicQueue then
