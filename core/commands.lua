@@ -299,7 +299,6 @@ concmd["quit"] = {
   flags = {},
   fun = function() love.event.quit() end,
 }
-concmd["exit"] = concmd["quit"]
 
 concmd["state"] = {
   helptext = "load a state",
