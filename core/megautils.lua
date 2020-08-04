@@ -193,8 +193,13 @@ function megautils.disableConsole()
   useConsole = false
 end
 
+megautils._runFileCache = {}
+
 function megautils.runFile(path)
-  return love.filesystem.load(path)()
+  if not megautils._runFileCache[path] then
+    megautils._runFileCache[path] = love.filesystem.load(path)
+  end
+  return megautils._runFileCache[path]()
 end
 
 function megautils.resetGame(s, saveSfx, saveMusic)
@@ -443,7 +448,8 @@ function megautils.unload()
   end
   megautils.unloadAllResources()
   cartographer.cache = {}
-  megautils.frozen = {}
+  megautils._runFileCache = {}
+  megautils._frozen = {}
 end
 
 function megautils.addMapEntity(path)
@@ -586,13 +592,13 @@ function megautils.unregisterPlayer(e)
   end
 end
 
-megautils.frozen = {}
+megautils._frozen = {}
 
 function megautils.freeze(e, name)
   if megautils.groups().freezable then
     for k, v in pairs(megautils.groups().freezable) do
       if not e or not table.contains(e, v) then
-        megautils.frozen[#megautils.frozen+1] = v
+        megautils._frozen[#megautils._frozen+1] = v
         if name then
           v.canUpdate[name] = false
         else
@@ -612,7 +618,7 @@ function megautils.unfreeze(e, name)
           v.canUpdate.global = true
         end
         if not checkTrue(v.canUpdate) then
-          table.removevalue(megautils.frozen, v)
+          table.removevalue(megautils._frozen, v)
         end
       end
     end
