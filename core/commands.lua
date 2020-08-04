@@ -35,7 +35,7 @@ convar["showfps"] = {
 
 convar["showentitycount"] = {
   helptext = "draw entity count",
-  flags = {"client"},
+  flags = {"cheats", "client"},
   value = 0
 }
 
