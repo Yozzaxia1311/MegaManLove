@@ -193,13 +193,15 @@ function megautils.disableConsole()
   useConsole = false
 end
 
-megautils._runFileCache = {}
+megautils._runFileOnce = {}
 
-function megautils.runFile(path)
-  if not megautils._runFileCache[path] then
-    megautils._runFileCache[path] = love.filesystem.load(path)
+function megautils.runFile(path, again)
+  if again then
+    return love.filesystem.load(path)()
+  elseif not table.contains(megautils._runFileOnce, path) then
+    megautils._runFileOnce[#megautils._runFileOnce+1] = path
+    return love.filesystem.load(path)()
   end
-  return megautils._runFileCache[path]()
 end
 
 function megautils.resetGame(s, saveSfx, saveMusic)
@@ -448,7 +450,7 @@ function megautils.unload()
   end
   megautils.unloadAllResources()
   cartographer.cache = {}
-  megautils._runFileCache = {}
+  megautils._runFileOnce = {}
   megautils._frozen = {}
 end
 
