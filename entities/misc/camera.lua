@@ -266,7 +266,9 @@ function camera:doView(spdx, spdy, without)
   
   self.approachX = math.approach(self.approachX, self.transform.x, spdx or 8)
   self.approachY = math.approach(self.approachY, self.transform.y, spdy or 8)
+  
   view.x, view.y = math.round(self.approachX), math.round(self.approachY)
+  
   self:updateFuncs()
 end
 
@@ -340,17 +342,17 @@ end
 section = basicEntity:extend()
 
 mapEntity.register("section", function(v)
-  section.addSection(section(v.x, v.y, v.width, v.height, v.properties.name))
-end, 1, true)
+    section.addSection(section(v.x, v.y, v.width, v.height, v.properties.name))
+  end, 1, true)
 
 mapEntity.register("section", function(v)
-  if #section.init ~= 0 then
-    for k, v in ipairs(section.init) do
-      v:initSection()
+    if #section.init ~= 0 then
+      for k, v in ipairs(section.init) do
+        v:initSection()
+      end
+      section.init = {}
     end
-    section.init = {}
-  end
-end, 2, true)
+  end, 2, true)
 
 function section:new(x, y, w, h, n)
   section.super.new(self)

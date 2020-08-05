@@ -831,9 +831,7 @@ function mapEntity.unregister(name)
   mapEntity.iterReg(function(r)
       if r.name == name then
         if r.locked then
-          if mapEntity.registered[i].data[j].locked then
-            error("Cannot unregister \"" .. name .. "\", a locked register.")
-          end
+          error("Cannot unregister \"" .. name .. "\", a locked register.")
         else
           for i=1, #mapEntity.registered do
             table.quickremovevaluearray(mapEntity.registered[i].data, r)
