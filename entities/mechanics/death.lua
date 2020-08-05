@@ -1,6 +1,6 @@
 death = basicEntity:extend()
 
-addObjects.register("death", function(v)
+mapEntity.register("death", function(v)
   megautils.add(death, v.x, v.y, v.width, v.height, v.properties.harm)
 end, 0, true)
 

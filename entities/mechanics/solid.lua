@@ -1,6 +1,6 @@
 solid = basicEntity:extend()
 
-addObjects.register("solid", function(v)
+mapEntity.register("solid", function(v)
   megautils.add(solid, v.x, v.y, v.width, v.height)
 end, 0, true)
 
@@ -37,7 +37,7 @@ megautils.loadResource("assets/misc/slopes/slopeRightHalfUpperInvert.png", "slop
 
 slope = basicEntity:extend()
 
-addObjects.register("slope", function(v)
+mapEntity.register("slope", function(v)
   megautils.add(slope, v.x, v.y, megautils.getResourceTable(v.properties.mask))
 end, 0, true)
 
@@ -55,6 +55,6 @@ function slope:added()
   self:makeStatic()
 end
 
-addObjects.register("oneway", function(v)
+mapEntity.register("oneway", function(v)
   megautils.add(solid, v.x, v.y, v.width, v.height).solidType = collision.ONEWAY
 end, 0, true)

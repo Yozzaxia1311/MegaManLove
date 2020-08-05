@@ -1,5 +1,3 @@
-love.filesystem.load("entities/addObjects.lua")()
-
 love.filesystem.load("entities/main/barhandler.lua")()
 love.filesystem.load("entities/main/megaman.lua")()
 love.filesystem.load("entities/main/pickups.lua")()

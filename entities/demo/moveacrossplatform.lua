@@ -1,6 +1,6 @@
 megautils.loadResource("assets/global/entities/moveAcrossPlatform.png", "moveArossPlatform")
 
-addObjects.register("moveAcrossPlatform", function(v)
+mapEntity.register("moveAcrossPlatform", function(v)
   megautils.add(spawner, v.x-4, v.y-4, 40, 24, nil,
     moveAcrossPlatform, v.x, v.y, v.properties.toX, v.properties.toY)
 end)

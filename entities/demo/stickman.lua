@@ -3,7 +3,7 @@ megautils.loadResource("assets/sfx/enemyHit.ogg", "enemyHit")
 
 stickMan = bossEntity:extend()
 
-addObjects.register("stickMan", function(v)
+mapEntity.register("stickMan", function(v)
     megautils.add(spawner, v.x, v.y-8, 12, 24, nil, stickMan, v.x, v.y-8)
   end)
 

@@ -3,7 +3,7 @@ megautils.loadResource("assets/sfx/bossDoor.ogg", "bossDoorSfx", true)
 
 bossDoor = entity:extend()
 
-addObjects.register("bossDoor", function(v)
+mapEntity.register("bossDoor", function(v)
   local seg = (v.properties.dir=="up" or v.properties.dir=="down") and 
     math.round(v.width/v.properties.tileWidth) or math.round(v.height/v.properties.tileHeight)
   megautils.add(bossDoor, v.x, v.y, seg, v.properties.dir,

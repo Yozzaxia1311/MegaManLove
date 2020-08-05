@@ -1,6 +1,6 @@
 ladder = entity:extend()
 
-addObjects.register("ladder", function(v)
+mapEntity.register("ladder", function(v)
     megautils.add(ladder, v.x, v.y, v.width, v.height)
   end, 0, true)
 

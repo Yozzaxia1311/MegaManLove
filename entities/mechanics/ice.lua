@@ -1,6 +1,6 @@
 ice = basicEntity:extend()
 
-addObjects.register("ice", function(v)
+mapEntity.register("ice", function(v)
   megautils.add(ice, v.x, v.y, v.width, v.height)
 end)
 

@@ -127,7 +127,7 @@ megautils.difficultyChangeFuncs.megaMan = function(d)
     end
   end
 
-addObjects.register("player", function(v)
+mapEntity.register("player", function(v)
     if megaMan.once then return end
     if v.properties.checkpoint == globals.checkpoint and not camera.once then
       camera.once = true
@@ -135,7 +135,7 @@ addObjects.register("player", function(v)
     end
   end, -1, true)
 
-addObjects.register("player", function(v)
+mapEntity.register("player", function(v)
     if megaMan.once then return end
     if v.properties.checkpoint == globals.checkpoint and camera.main and camera.once then
       camera.main:setRectangleCollision(8, 8)
@@ -149,7 +149,7 @@ addObjects.register("player", function(v)
     end
   end, 3, true)
 
-addObjects.register("player", function(v)
+mapEntity.register("player", function(v)
     if megaMan.once then return end
     if v.properties.checkpoint == globals.checkpoint then
       local g = v.properties.gravMult * v.properties.gravFlip

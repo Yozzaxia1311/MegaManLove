@@ -1,6 +1,6 @@
 sinkIn = basicEntity:extend()
 
-addObjects.register("sinkIn", function(v)
+mapEntity.register("sinkIn", function(v)
   megautils.add(sinkIn, v.x, v.y, v.width, v.height, v.properties.speed)
 end)
 

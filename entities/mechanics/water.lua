@@ -36,7 +36,7 @@ end
 
 water = basicEntity:extend()
 
-addObjects.register("water", function(v)
+mapEntity.register("water", function(v)
   megautils.add(water, v.x, v.y, v.width, v.height, v.properties.grav)
 end)
 
@@ -109,7 +109,7 @@ end
 
 space = entity:extend()
 
-addObjects.register("space", function(v)
+mapEntity.register("space", function(v)
   megautils.add(space, v.x, v.y, v.width, v.height, v.properties.grav)
 end)
 

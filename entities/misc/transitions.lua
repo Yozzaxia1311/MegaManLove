@@ -1,6 +1,6 @@
 right = basicEntity:extend()
 
-addObjects.register("right", function(v)
+mapEntity.register("right", function(v)
   megautils.add(right, v.x, v.y, v.height,
     v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.platform, v.properties.toSection)
 end, 0, true)
@@ -47,7 +47,7 @@ end
 
 left = basicEntity:extend()
 
-addObjects.register("left", function(v)
+mapEntity.register("left", function(v)
   megautils.add(left, v.x, v.y, v.height,
     v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.platform, v.properties.toSection)
 end, 0, true)
@@ -94,7 +94,7 @@ end
 
 down = basicEntity:extend()
 
-addObjects.register("down", function(v)
+mapEntity.register("down", function(v)
   megautils.add(down, v.x, v.y, v.width,
     v.properties.doScrollX, v.properties.doScrollY, v.properties.speed,
     v.properties.platform, v.properties.toSection, v.properties.checkLadder)
@@ -144,7 +144,7 @@ end
 
 up = basicEntity:extend()
 
-addObjects.register("up", function(v)
+mapEntity.register("up", function(v)
   megautils.add(up, v.x, v.y, v.width,
     v.properties.doScrollX, v.properties.doScrollY, v.properties.speed,
     v.properties.platform, v.properties.toSection, v.properties.checkLadder)
@@ -194,7 +194,7 @@ end
 
 sectionPrioritySetter = basicEntity:extend()
 
-addObjects.register("sectionPrioritySetter", function(v)
+mapEntity.register("sectionPrioritySetter", function(v)
   megautils.add(sectionPrioritySetter, v.x, v.y, v.width, v.height, v.properties.toSection)
 end, 0, true)
 
@@ -233,7 +233,7 @@ end
 
 sectionPrioritySetterXBorder = basicEntity:extend()
 
-addObjects.register("sectionPrioritySetterXBorder", function(v)
+mapEntity.register("sectionPrioritySetterXBorder", function(v)
   megautils.add(sectionPrioritySetterXBorder, v.x, v.y, v.height, v.properties.lname, v.properties.rname)
 end, 0, true)
 
@@ -275,7 +275,7 @@ end
 
 sectionPrioritySetterYBorder = basicEntity:extend()
 
-addObjects.register("sectionPrioritySetterYBorder", function(v)
+mapEntity.register("sectionPrioritySetterYBorder", function(v)
   megautils.add(sectionPrioritySetterYBorder, v.x, v.y, v.width, v.properties.uname, v.properties.dname)
 end, 0, true)
 
@@ -317,7 +317,7 @@ end
 
 sectionPrioritySetterArea = basicEntity:extend()
 
-addObjects.register("sectionPrioritySetterArea", function(v)
+mapEntity.register("sectionPrioritySetterArea", function(v)
   megautils.add(sectionPrioritySetterArea, v.x, v.y, v.width, v.height, v.properties.inname, v.properties.outname)
 end, 0, true)
 

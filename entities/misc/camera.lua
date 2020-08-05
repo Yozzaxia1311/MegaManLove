@@ -339,11 +339,11 @@ end
 
 section = basicEntity:extend()
 
-addObjects.register("section", function(v)
+mapEntity.register("section", function(v)
   section.addSection(section(v.x, v.y, v.width, v.height, v.properties.name))
 end, 1, true)
 
-addObjects.register("section", function(v)
+mapEntity.register("section", function(v)
   if #section.init ~= 0 then
     for k, v in ipairs(section.init) do
       v:initSection()

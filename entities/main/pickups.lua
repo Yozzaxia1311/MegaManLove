@@ -92,7 +92,7 @@ end
 
 smallHealth = pickupEntity:extend()
 
-addObjects.register("smallHealth", function(v, map)
+mapEntity.register("smallHealth", function(v, map)
   megautils.add(spawner, v.x, v.y, 8, 6, function()
       return not pickupEntity.isBanned(smallHealth, v.id, map.path)
     end, smallHealth, v.x+10, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
@@ -135,7 +135,7 @@ end
 
 health = pickupEntity:extend()
 
-addObjects.register("health", function(v, map)
+mapEntity.register("health", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 14, function()
       return not pickupEntity.isBanned(health, v.id, map.path)
     end, health, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
@@ -178,7 +178,7 @@ end
 
 smallEnergy = pickupEntity:extend()
 
-addObjects.register("smallEnergy", function(v, map)
+mapEntity.register("smallEnergy", function(v, map)
   megautils.add(spawner, v.x, v.y, 8, 6, function()
       return not pickupEntity.isBanned(smallEnergy, v.id, map.path)
     end, smallEnergy, v.x, v.y+10, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
@@ -231,7 +231,7 @@ end
 
 energy = pickupEntity:extend()
 
-addObjects.register("energy", function(v, map)
+mapEntity.register("energy", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 10, function()
       return not pickupEntity.isBanned(energy, v.id, map.path)
     end, energy, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
@@ -284,7 +284,7 @@ end
 
 life = pickupEntity:extend()
 
-addObjects.register("life", function(v, map)
+mapEntity.register("life", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 15, function()
       return not pickupEntity.isBanned(life, v.id, map.path)
     end, life, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
@@ -376,7 +376,7 @@ end
 
 eTank = pickupEntity:extend()
 
-addObjects.register("eTank", function(v, map)
+mapEntity.register("eTank", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 15, function()
       return not pickupEntity.isBanned(eTank, v.id, map.path)
     end, eTank, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
@@ -432,7 +432,7 @@ end
 
 wTank = pickupEntity:extend()
 
-addObjects.register("wTank", function(v, map)
+mapEntity.register("wTank", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 15, function()
       return not pickupEntity.isBanned(wTank, v.id, map.path)
     end, wTank, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)

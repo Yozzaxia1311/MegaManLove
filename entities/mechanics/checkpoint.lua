@@ -1,6 +1,6 @@
 checkpoint = basicEntity:extend()
 
-addObjects.register("checkpoint", function(v)
+mapEntity.register("checkpoint", function(v)
   megautils.add(checkpoint, v.x, v.y, v.width, v.height, v.properties.name)
 end, 0, true)
 
@@ -24,7 +24,7 @@ end
 
 collisionCheckpoint = basicEntity:extend()
 
-addObjects.register("collisionCheckpoint", function(v)
+mapEntity.register("collisionCheckpoint", function(v)
   megautils.add(collisionCheckpoint, v.x, v.y, v.width, v.height, v.properties.name)
 end, 0, true)
 

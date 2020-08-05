@@ -700,6 +700,10 @@ end
 
 mapEntity = basicEntity:extend()
 
+mapEntity.registered = {}
+mapEntity.ranFiles = {}
+mapEntity.doSort = false
+
 function mapEntity:new(map, x, y)
   mapEntity.super.new(self)
   self.transform.x = x or 0
@@ -760,7 +764,7 @@ function mapEntity:getLayerByID(id)
 end
 
 function mapEntity:addObjects()
-  addObjects.add(self:recursiveObjectFinder(self.map), self.map)
+  mapEntity.add(self:recursiveObjectFinder(self.map), self.map)
   for k, v in pairs(megautils.postAddObjectsFuncs) do
     v(self)
   end
@@ -777,6 +781,105 @@ function mapEntity:draw()
   self.map:draw()
   love.graphics.pop()
 end
+
+function mapEntity.register(n, f, l, lock)
+  local done = false
+  for i=1, #mapEntity.registered do
+    if mapEntity.registered[i].layer == (l or 0) then
+      mapEntity.registered[i].data[#mapEntity.registered[i].data+1] = {func=f, name=n, locked=lock}
+      done = true
+      break
+    end
+  end
+  if not done then
+    mapEntity.registered[#mapEntity.registered+1] = {layer=l or 0, data={{func=f, name=n, locked=lock}}}
+    mapEntity.doSort = true
+  end
+end
+
+function mapEntity.sortReg()
+  local keys = {}
+  local vals = {}
+  for k, v in pairs(mapEntity.registered) do
+    keys[#keys+1] = v.layer
+    vals[v.layer] = v
+    mapEntity.registered[k] = nil
+  end
+  table.sort(keys)
+  for i=1, #keys do
+    mapEntity.registered[i] = vals[keys[i]]
+  end
+end
+
+function mapEntity.iterReg(f, dir)
+  if not dir or dir == 1 then
+    for i=1, #mapEntity.registered do
+      for j=1, #mapEntity.registered[i].data do
+        if f then f(mapEntity.registered[i].data[j]) end
+      end
+    end
+  elseif dir and dir == -1 then
+    for i=#mapEntity.registered, 1, -1 do
+      for j=#mapEntity.registered[i].data, 1, -1 do
+        if f then f(mapEntity.registered[i].data[j]) end
+      end
+    end
+  end
+end
+
+function mapEntity.unregister(name)
+  mapEntity.iterReg(function(r)
+      if r.name == name then
+        if r.locked then
+          if mapEntity.registered[i].data[j].locked then
+            error("Cannot unregister \"" .. name .. "\", a locked register.")
+          end
+        else
+          for i=1, #mapEntity.registered do
+            table.quickremovevaluearray(mapEntity.registered[i].data, r)
+            if #mapEntity.registered[i].data == 0 then
+              table.quickremovevaluearray(mapEntity.registered, mapEntity.registered[i])
+            end
+          end
+        end
+      end
+    end)
+end
+
+function mapEntity.add(ol, map)
+  if mapEntity.doSort then
+    mapEntity.sortReg()
+    mapEntity.doSort = false
+  end
+  for i=1, #mapEntity.registered do
+    local layer = mapEntity.registered[i]
+    for k, v in ipairs(ol) do
+      if v.properties.run and not table.contains(mapEntity.ranFiles, v.properties.run) then
+        megautils.runFile(v.properties.run)
+        mapEntity.ranFiles[#mapEntity.ranFiles+1] = v.properties.run
+      end
+      for j=1, #layer.data do
+        if layer.data[j].name == v.name then
+          layer.data[j].func(v, map)
+        end
+      end
+    end
+  end
+end
+
+megautils.cleanFuncs.mapEntity = function()
+    mapEntity.iterReg(function(r)
+        if not r.locked then
+          for i=1, #mapEntity.registered do
+            table.quickremovevaluearray(mapEntity.registered[i].data, r)
+            if #mapEntity.registered[i].data == 0 then
+              table.quickremovevaluearray(mapEntity.registered, mapEntity.registered[i])
+            end
+          end
+        end
+      end, -1)
+    mapEntity.ranFiles = {}
+  end
 
 pierce = {}
 
