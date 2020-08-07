@@ -1,4 +1,4 @@
-local disclaimerState = states.state:extend()
+local disclaimerState = state:extend()
 
 function disclaimerState:begin()
   megautils.stopMusic()

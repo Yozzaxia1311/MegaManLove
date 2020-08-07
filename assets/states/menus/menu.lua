@@ -1,4 +1,4 @@
-local menuState = states.state:extend()
+local menuState = state:extend()
 
 function menuState:begin()
   megautils.add(menuSelect)

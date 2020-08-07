@@ -1,4 +1,4 @@
-local continueState = states.state:extend()
+local continueState = state:extend()
 
 function continueState:begin()
   megautils.loadResource("assets/misc/cont.png", "cont")

@@ -1,4 +1,4 @@
-local bossIntroState = states.state:extend()
+local bossIntroState = state:extend()
 
 function bossIntroState:begin()
   megautils.loadResource("assets/misc/title.png", "title")

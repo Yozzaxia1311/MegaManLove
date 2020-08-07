@@ -1,4 +1,4 @@
-local stageSelectState = states.state:extend()
+local stageSelectState = state:extend()
 
 function stageSelectState:begin()
   megautils.loadResource("assets/misc/select.png", "mugshots")

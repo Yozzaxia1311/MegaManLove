@@ -7,24 +7,24 @@ states.recordOnSwitch = false
 states.openRecord = nil
 states.queue = nil
 
-states.baseState = class:extend()
+baseState = class:extend()
 
-function states.baseState:begin() end
-function states.baseState:update(dt) end
-function states.baseState:draw() end
-function states.baseState:switching() end
-function states.baseState:unload() end
-function states.baseState:init() end
+function baseState:begin() end
+function baseState:update(dt) end
+function baseState:draw() end
+function baseState:switching() end
+function baseState:unload() end
+function baseState:init() end
 
-states.state = states.baseState:extend()
+state = baseState:extend()
 
-function states.state:update(dt)
+function state:update(dt)
   megautils.update(self, dt)
 end
-function states.state:draw()
+function state:draw()
   self.system:draw()
 end
-function states.state:unload()
+function state:unload()
   megautils.unload()
 end
 

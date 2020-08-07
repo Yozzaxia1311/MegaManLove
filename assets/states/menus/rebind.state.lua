@@ -1,4 +1,4 @@
-local rebindState = states.state:extend()
+local rebindState = state:extend()
 
 function rebindState:begin()
   megautils.add(rebinder)

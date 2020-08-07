@@ -1,4 +1,4 @@
-local weaponGetState = states.state:extend()
+local weaponGetState = state:extend()
 
 function weaponGetState:begin()
   megautils.runFile("entities/misc/starfield.lua")

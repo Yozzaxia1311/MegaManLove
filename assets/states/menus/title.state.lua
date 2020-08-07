@@ -1,4 +1,4 @@
-local titleState = states.state:extend()
+local titleState = state:extend()
 
 function titleState:begin()
   megautils.loadResource("assets/misc/title.png", "title")
