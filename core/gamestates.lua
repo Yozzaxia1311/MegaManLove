@@ -56,8 +56,6 @@ function states.set(n, before, after)
       mapArgs.mVolume = p.musicVolume or 1
       
       mapArgs.fadeIn = p.fadeIn == nil or p.fadeIn
-      
-      view.x, view.y = 0, 0
     end
   else
     sp = nick
@@ -105,6 +103,9 @@ function states.set(n, before, after)
   if not states.currentChunk or states.current ~= sp then
     states.currentChunk = love.filesystem.load(sp)
   end
+  
+  view.x, view.y = 0, 0
+  
   states.current = nick
   states.currentState = states.currentChunk()
   states.currentState.system = entitySystem()
