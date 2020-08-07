@@ -16,6 +16,7 @@ function view.draw()
   love.graphics.scale(view.scale)
   love.graphics.translate(-view.x, -view.y)
   if states.currentState then
+    love.graphics.setColor(1, 1, 1, 1)
     states.currentState:draw()
   end
   love.graphics.pop()
