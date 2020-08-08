@@ -900,7 +900,7 @@ local function finalXML2LuaTable(str, f)
             end
             
             for o2, p2 in pairs(ref2.property) do
-              if p2.type == "int" or p2.type == "float" or p.type == "object" then
+              if p2.type == "int" or p2.type == "float" or p2.type == "object" then
                 p.properties[p2.name] = tonumber(p2.value)
               elseif p2.type == "bool" then
                 p.properties[p2.name] = p2.value == "true"
@@ -934,7 +934,7 @@ local function finalXML2LuaTable(str, f)
             p.properties = {}
             
             for o2, p2 in pairs(ref) do
-              if p2.type == "int" or p2.type == "float" or p.type == "object" then
+              if p2.type == "int" or p2.type == "float" or p2.type == "object" then
                 p.properties[p2.name] = tonumber(p2.value)
               elseif p2.type == "bool" then
                 p.properties[p2.name] = p2.value == "true"
@@ -1243,7 +1243,7 @@ local function finalXML2LuaTable(str, f)
           end
           
           for i, j in pairs(ref.property) do
-            if j.type == "int" or j.type == "float" or p.type == "object" then
+            if j.type == "int" or j.type == "float" or j.type == "object" then
               v.properties[j.name] = tonumber(j.value)
             elseif j.type == "bool" then
               v.properties[j.name] = j.value == "true"
