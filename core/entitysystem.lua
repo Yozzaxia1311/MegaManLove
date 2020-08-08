@@ -318,9 +318,9 @@ function entitySystem:draw()
 end
 
 function entitySystem:update(dt)
-  for i=#self.beginQueue, 1, -1 do
-    self.beginQueue[i]:begin()
-    self.beginQueue[i] = nil
+  while self.beginQueue[1] do
+    self.beginQueue[1]:begin()
+    table.remove(self.beginQueue, 1)
   end
   self.inLoop = true
   for i=1, #self.updates do
@@ -709,18 +709,38 @@ function mapEntity:new(map, x, y)
   self.transform.y = y or 0
   self.map = map
   self.path = self.map.path
-  self:setLayer(-5)
+  self.layers = {}
+  self:setLayer(-200)
 end
 
 function mapEntity:begin()
   self:addToGroup("freezable")
   self:addToGroup("map")
+  
+  for i=1, #self.map.layers do
+    local v = self.map.layers[i]
+    if v.draw then
+      self.layers[#self.layers+1] = megautils.add(trigger, nil, function(s)
+          if s.l.visible then
+            s.l:draw()
+          end
+        end)
+      self.layers[#self.layers].l = v
+      self.layers[#self.layers]:setLayer(v.properties.layer or (i-100))
+    end
+  end
+  
   for k, v in pairs(megautils.addMapFuncs) do
     v(self)
   end
 end
 
 function mapEntity:removed()
+  for k, v in ipairs(self.layers) do
+    if not v.isRemoved then
+      megautils.remove(v)
+    end
+  end
   for k, v in pairs(megautils.removeMapFuncs) do
     v(self)
   end
@@ -777,7 +797,7 @@ function mapEntity:draw()
   love.graphics.push()
   love.graphics.translate(-self.transform.x, -self.transform.y)
   self.map:setDrawRange(view.x, view.y, view.w, view.h)
-  self.map:draw()
+  self.map:drawBackground()
   love.graphics.pop()
 end
 
@@ -959,7 +979,7 @@ function advancedEntity:removed()
       camera.main.funcs[self] = nil
     end
     if not self.healthHandler.isRemoved then
-      megautils.removeq(self.healthHandler)
+      megautils.remove(self.healthHandler)
     end
   end
 end
