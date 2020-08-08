@@ -3,11 +3,14 @@
  <object name="player" width="16" height="16">
   <properties>
    <property name="checkpoint" value="start"/>
+   <property name="control" type="bool" value="true"/>
+   <property name="doReady" type="bool" value="true"/>
    <property name="drop" type="bool" value="true"/>
    <property name="gravFlip" type="int" value="1"/>
    <property name="gravMult" type="float" value="1"/>
    <property name="individual" type="int" value="0"/>
    <property name="side" type="int" value="1"/>
+   <property name="teleporter" type="bool" value="false"/>
   </properties>
  </object>
 </template>

@@ -157,13 +157,15 @@ mapEntity.register("player", function(v)
         if v.properties.individual <= globals.playerCount then
           megaMan.individualLanded[#megaMan.individualLanded+1] = v.properties.individual
           megautils.add(megaMan, v.x+2, v.y+((g >= 0) and -5 or 0),
-            v.properties.side, v.properties.draw, v.properties.individual, v.properties.gravMult, v.properties.gravFlip, v.properties.control)
+            v.properties.side, v.properties.drop, v.properties.individual, v.properties.gravMult, v.properties.gravFlip, v.properties.control,
+            v.properties.doReady, v.properties.teleporter)
         end
       else
         for i=1, globals.playerCount do
           if not table.contains(v.properties.individual, i) then
             megautils.add(megaMan, v.x+2, v.y+((g >= 0) and -5 or 0),
-              v.properties.side, v.properties.drop, i, v.properties.gravMult, v.properties.gravFlip, v.properties.control)
+              v.properties.side, v.properties.drop, i, v.properties.gravMult, v.properties.gravFlip, v.properties.control,
+              v.properties.doReady, v.properties.teleporter)
           end
         end
       end
