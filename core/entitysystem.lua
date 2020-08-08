@@ -312,7 +312,7 @@ function entitySystem:draw()
     love.graphics.setColor(1, 1, 1, 1)
     for i=1, #self.entities do
       for k=1, #self.entities[i].data do
-        v:drawCollision()
+        self.entities[i].data[k]:drawCollision()
       end
     end
   end
