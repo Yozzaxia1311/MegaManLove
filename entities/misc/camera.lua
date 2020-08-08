@@ -269,8 +269,10 @@ function camera:doView(spdx, spdy, without)
   
   if self.despawnLateBounds and self.approachX == self.transform.x and self.approachY == self.transform.y then
     for k, v in ipairs(self.despawnLateBounds.group) do
-      if v.despawnLateDuringTransition and not v.isRemoved and not megautils.inRemoveQueue(v) then
-        megautils.removeq(v)
+      if self.bounds and not table.contains(self.bounds.group, v) then
+        if v.despawnLateDuringTransition and not v.isRemoved and not megautils.inRemoveQueue(v) then
+          megautils.removeq(v)
+        end
       end
     end
     self.despawnLateBounds = nil
