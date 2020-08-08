@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template>
+ <object name="parallax" width="64" height="64">
+  <properties>
+   <property name="image" value="image/path/here"/>
+   <property name="layer" type="int" value="-1"/>
+   <property name="speedMult" type="float" value="0.5"/>
+   <property name="speedX" type="float" value="0"/>
+   <property name="speedY" type="float" value="0"/>
+   <property name="wrapX" type="bool" value="true"/>
+   <property name="wrapY" type="bool" value="true"/>
+  </properties>
+ </object>
+</template>

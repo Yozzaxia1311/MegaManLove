@@ -641,18 +641,6 @@ function megautils.outsideSection(o, ex, ey)
       o.transform.x, o.transform.y, o.collisionShape.w, o.collisionShape.h)
 end
 
---w: Width of drawable
---h: Height of drawable
---x: X to draw to
---y: Y to draw to
-function megautils.drawTiled(w, h, x, y, w2, h2, draw)
-  for x2=1, math.round(w2/w) do
-    for y2=1, math.round(h2/h) do
-      draw(x+(w*x2)-w, y+(h*y2)-h)
-    end
-  end
-end
-
 megautils.shake = false
 megautils.shakeX = 2
 megautils.shakeY = 0

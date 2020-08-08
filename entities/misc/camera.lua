@@ -267,6 +267,15 @@ function camera:doView(spdx, spdy, without)
   self.approachX = math.approach(self.approachX, self.transform.x, spdx or 8)
   self.approachY = math.approach(self.approachY, self.transform.y, spdy or 8)
   
+  if self.despawnLateBounds and self.approachX == self.transform.x and self.approachY == self.transform.y then
+    for k, v in ipairs(self.despawnLateBounds.group) do
+      if v.despawnLateDuringTransition and not v.isRemoved and not megautils.inRemoveQueue(v) then
+        megautils.removeq(v)
+      end
+    end
+    self.despawnLateBounds = nil
+  end
+  
   view.x, view.y = math.round(self.approachX), math.round(self.approachY)
   
   self:updateFuncs()
@@ -319,6 +328,7 @@ function camera:updateBounds(noBounds)
       if not noBounds then
         if self.bounds then
           self.bounds:deactivate(bounds.group)
+          self.despawnLateBounds = self.bounds
         end
         bounds:activate(self.bounds and self.bounds.group)
         for k, v in pairs(megautils.sectionChangeFuncs) do
@@ -334,6 +344,7 @@ function camera:updateBounds(noBounds)
     self.scrollh = self.collisionShape.h
     if not noBounds and self.bounds then
       self.bounds:deactivate()
+      self.despawnLateBounds = self.bounds
     end
     self.bounds = nil
   end

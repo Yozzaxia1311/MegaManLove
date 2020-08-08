@@ -7,10 +7,11 @@ function view.init(sw, sh, s)
   view.h = sh or 1
   view.scale = s or 1
   view.canvas = love.graphics.newCanvas(view.w*view.scale, view.h*view.scale)
+  view.wrapper = {view.canvas, stencil=true}
 end
 
 function view.draw()
-  love.graphics.setCanvas(view.canvas)
+  love.graphics.setCanvas(view.wrapper)
   love.graphics.clear(love.graphics.getBackgroundColor())
   love.graphics.push()
   love.graphics.scale(view.scale)
