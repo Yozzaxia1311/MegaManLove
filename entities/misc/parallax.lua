@@ -88,9 +88,9 @@ function parallax:draw()
         for y=self.transform.y-imgh, self.transform.y+self.collisionShape.h, imgh do
           if rectOverlapsRect(x+self.offX, y+self.offY, imgw, imgh, view.x, view.y, view.w, view.h) then
             if self.anim then
-              self.anim:draw(self.tex, x+self.offX, y+self.offY)
+              self.anim:draw(self.tex, x+math.round(self.offX), y+math.round(self.offY))
             else
-              love.graphics.draw(self.tex, x+self.offX, y+self.offY)
+              love.graphics.draw(self.tex, x+math.round(self.offX), y+math.round(self.offY))
             end
           end
         end
@@ -106,9 +106,9 @@ function parallax:draw()
       for x=self.transform.x-imgw, self.transform.x+self.collisionShape.w, imgw do
         if rectOverlapsRect(x+self.offX, self.offY, imgw, imgh, view.x, view.y, view.w, view.h) then
           if self.anim then
-            self.anim:draw(self.tex, x+self.offX, self.offY)
+            self.anim:draw(self.tex, x+math.round(self.offX), math.round(self.offY))
           else
-            love.graphics.draw(self.tex, x+self.offX, self.offY)
+            love.graphics.draw(self.tex, x+math.round(self.offX), math.round(self.offY))
           end
         end
       end
@@ -123,9 +123,9 @@ function parallax:draw()
       for y=self.transform.y-imgh, self.transform.y+self.collisionShape.h, imgh do
         if rectOverlapsRect(self.offX, y+self.offY, imgw, imgh, view.x, view.y, view.w, view.h) then
           if self.anim then
-            self.anim:draw(self.tex, self.offX, y+self.offY)
+            self.anim:draw(self.tex, math.round(self.offX), y+math.round(self.offY))
           else
-            love.graphics.draw(self.tex, self.offX, y+self.offY)
+            love.graphics.draw(self.tex, math.round(self.offX), y+math.round(self.offY))
           end
         end
       end
@@ -140,9 +140,9 @@ function parallax:draw()
       for y=self.transform.y-imgh, self.transform.y+self.collisionShape.h, imgh do
         if rectOverlapsRect(self.offX, self.offY, imgw, imgh, view.x, view.y, view.w, view.h) then
           if self.anim then
-            self.anim:draw(self.tex, self.offX, self.offY)
+            self.anim:draw(self.tex, math.round(self.offX), math.round(self.offY))
           else
-            love.graphics.draw(self.tex, self.offX, self.offY)
+            love.graphics.draw(self.tex, math.round(self.offX), math.round(self.offY))
           end
         end
       end
