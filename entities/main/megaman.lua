@@ -193,8 +193,6 @@ function megaMan.properties(self, g, gf, c)
   self.leftAirDecel = 1.3
   self.rightAirDecel = 1.3
   self.maxAirSpeed = 7
-  self.wallKickSpeed = 1
-  self.wallJumpSpeed = -4.725
   self.slideLeftSpeed = -2.5
   self.slideRightSpeed = 2.5
   self.dashJumpMultiplier = 1
@@ -208,8 +206,6 @@ function megaMan.properties(self, g, gf, c)
   self.leftKnockBackSpeed = -0.5
   self.rightKnockBackSpeed = 0.5
   self.maxShootTime = 14
-  self.maxWallJumpTime = 8
-  self.wallSlideSpeed = 0.5
   self.maxNormalBusterShots = 3
   self.cameraOffsetX = 0
   self.cameraOffsetY = 0
@@ -362,7 +358,6 @@ function megaMan:switchCharacter(n)
   self.climbAnimation = {regular="climb", shoot="climbShoot", s_dm="climbShootDM", s_um="climbShootUM", s_u="climbShootU"}
   self.climbTipAnimation = {regular="climbTip"}
   self.hitAnimation = {regular="hit"}
-  self.wallJumpAnimation = {regular="wallJump", shoot="wallJumpShoot"}
   self.dashAnimation = {regular="dash", shoot="dashShoot"}
   self.trebleAnimation = {regular="treble", shoot="trebleShoot", start="trebleStart"}
   
@@ -402,9 +397,6 @@ function megaMan:switchCharacter(n)
   self.anims:add("climbThrow", megautils.newAnimation(pp, {1, 9}))
   self.anims:add("climbTip", megautils.newAnimation(pp, {3, 3}))
   self.anims:add("hit", megautils.newAnimation(pp, {4, 3}))
-  self.anims:add("wallJump", megautils.newAnimation(pp, {2, 9}))
-  self.anims:add("wallJumpShoot", megautils.newAnimation(pp, {3, 9}))
-  self.anims:add("wallJumpThrow", megautils.newAnimation(pp, {4, 9}))
   self.anims:add("dash", megautils.newAnimation(pp, {3, 2}, 1/14, "pauseAtEnd"))
   self.anims:add("dashShoot", megautils.newAnimation(pp, {4, 10}))
   self.anims:add("dashThrow", megautils.newAnimation(pp, {1, 11}))
@@ -546,7 +538,6 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   self.stopOnShot = false
   self.slideTimer = self.maxSlideTime
   self.dashJump = false
-  self.wallJumpTimer = 0
   self.dropLanded = not self.drop
   self.bubbleTimer = 0
   self.runCheck = false
@@ -628,7 +619,6 @@ function megaMan:useShootAnimation()
   self.jumpAnimation.shoot = "jumpShoot"
   self.runAnimation.shoot = "runShoot"
   self.climbAnimation.shoot = "climbShoot"
-  self.wallJumpAnimation.shoot = "wallJumpShoot"
   self.dashAnimation.shoot = "dashShoot"
 end
 
@@ -638,7 +628,6 @@ function megaMan:useThrowAnimation()
   self.jumpAnimation.shoot = "jumpThrow"
   self.runAnimation.shoot = "runThrow"
   self.climbAnimation.shoot = "climbThrow"
-  self.wallJumpAnimation.shoot = "wallJumpThrow"
   self.dashAnimation.shoot = "dashThrow"
 end
 
@@ -669,7 +658,6 @@ function megaMan:resetStates()
   self.currentLadder = nil
   self.iFrames = 0
   self.canDraw.flash = true
-  self.wallJumping = false
   self.dashJump = false
   self.treble = false
   self.trebleSine = 0
@@ -1050,8 +1038,6 @@ function megaMan:attemptClimb()
     self.velocity.velx = 0
     self.climb = true
     self.dashJump = false
-    self.wallJumpTimer = 0
-    self.wallJumping = false
     self.ground = false
     self.slide = false
     self.extraJumps = 0
@@ -2091,8 +2077,7 @@ function megaMan:draw()
   if self.playerName == "bass" then
     offsety, offsetx = -10, -18
     if table.contains(self.climbAnimation, c) or 
-      table.contains(self.jumpAnimation, c) or 
-      table.contains(self.wallJumpAnimation, c) then
+      table.contains(self.jumpAnimation, c) then
       offsety = self.gravity >= 0 and -8 or -12
     elseif table.contains(self.climbTipAnimation, c) then
       offsety = self.gravity >= 0 and -2 or -18
@@ -2104,8 +2089,7 @@ function megaMan:draw()
   elseif self.playerName == "roll" then
     offsety, offsetx = self.gravity >= 0 and -10 or -3, -18
     if table.contains(self.climbAnimation, c) or 
-      table.contains(self.jumpAnimation, c) or 
-      table.contains(self.wallJumpAnimation, c) then
+      table.contains(self.jumpAnimation, c) then
       offsety = self.gravity >= 0 and -8 or -7
     elseif table.contains(self.climbTipAnimation, c) then
       offsety = self.gravity >= 0 and -4 or -11
@@ -2117,8 +2101,7 @@ function megaMan:draw()
   else
     offsety, offsetx = self.gravity >= 0 and -8 or -1, -15
     if table.contains(self.climbAnimation, c) or 
-      table.contains(self.jumpAnimation, c) or 
-      table.contains(self.wallJumpAnimation, c) then
+      table.contains(self.jumpAnimation, c) then
       offsety = self.gravity >= 0 and -2 or -6
     elseif table.contains(self.climbTipAnimation, c) then
       offsety = self.gravity >= 0 and 5 or -12
