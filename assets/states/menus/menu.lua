@@ -51,7 +51,7 @@ function menuSelect:update()
         self.picked = true
         self.section = -1
         megautils.stopMusic()
-        megautils.transitionToState("assets/states/menus/stageselect.state.tmx")
+        megautils.transitionToState("assets/states/menus/stageSelect.state.tmx")
       elseif self.pick == 1 then
         megautils.setFullscreen(not megautils.getFullscreen())
         local data = save.load("main.sav") or {}
