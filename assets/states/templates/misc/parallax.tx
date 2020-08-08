@@ -2,9 +2,14 @@
 <template>
  <object name="parallax" width="64" height="64">
   <properties>
+   <property name="animHeight" type="int" value="16"/>
+   <property name="animSpeed" type="float" value="0.5"/>
+   <property name="animWidth" type="int" value="16"/>
+   <property name="animate" type="bool" value="true"/>
    <property name="image" value="image/path/here"/>
    <property name="layer" type="int" value="-1"/>
-   <property name="speedMult" type="float" value="0.5"/>
+   <property name="speedMultX" type="float" value="0.5"/>
+   <property name="speedMultY" type="float" value="0.5"/>
    <property name="speedX" type="float" value="0"/>
    <property name="speedY" type="float" value="0"/>
    <property name="wrapX" type="bool" value="true"/>

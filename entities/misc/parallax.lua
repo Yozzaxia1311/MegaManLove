@@ -1,27 +1,42 @@
 mapEntity.register("parallax", function(v)
-    megautils.add(parallax, v.x, v.y, v.width, v.height, v.properties.image, v.properties.speedMult,
+    megautils.add(parallax, v.x, v.y, v.width, v.height, v.properties.image, v.properties.animate, v.properties.animSpeed,
+      v.properties.animWidth, v.properties.animHeight, v.properties.speedMultX, v.properties.speedMultY,
       v.properties.speedX, v.properties.speedY, v.properties.wrapX, v.properties.wrapY, v.properties.layer)
   end, 0, true)
 
 parallax = basicEntity:extend()
 
-function parallax:new(x, y, w, h, bg, spdMult, sx, sy, wrapx, wrapy, l)
+function parallax:new(x, y, w, h, bg, a, as, aw, ah, spdMultX, spdMultY, sx, sy, wrapx, wrapy, l)
   parallax.super.new(self)
   self.transform.x = x or 0
   self.transform.y = y or 0
   self:setRectangleCollision(w or 64, h or 64)
   self.tex = megautils.loadResource(bg, bg)
-  self.spdMult = spdMult or 0.5
+  if a then
+    local frames = {}
+    for y=1, math.floor(self.tex:getHeight()/ah) do
+      for x=1, math.floor(self.tex:getWidth()/aw) do
+        frames[#frames+1] = x
+        frames[#frames+1] = y
+      end
+    end
+    if not megautils.getResource(bg .. "Grid") then
+      megautils.loadResource(0, 0, aw, ah, bg .. "Grid")
+    end
+    self.animWidth = aw
+    self.animHeight = ah
+    self.anim = megautils.newAnimation(bg .. "Grid", frames, as or 0.5)
+  end
+  self.spdMultX = spdMultX or 0.5
+  self.spdMultY = spdMultY or 0.5
   self.velx = sx or 0
   self.vely = sy or 0
+  self.ox = 0
+  self.oy = 0
   self.wrapX = (wrapx == nil) or wrapx
   self.wrapY = (wrapy == nil) or wrapy
   self.offX = 0
   self.offY = 0
-  self.nwOffX = 0
-  self.nwOffY = 0
-  self.dx = 0
-  self.dy = 0
   self.spawnEarlyDuringTransition = true
   self.despawnLateDuringTransition = true
   self:setLayer(l or -1)
@@ -31,9 +46,10 @@ function parallax:added()
   self:addToGroup("handledBySections")
 end
 
-function parallax:beforeUpdate()
-  self.dx = view.x
-  self.dy = view.y
+function parallax:update()
+  if self.anim then
+    self.anim:update(defaultFramerate)
+  end
 end
 
 parallax.x = 0
@@ -53,42 +69,82 @@ function parallax:draw()
     parallax.h = self.collisionShape.h
     love.graphics.stencil(parallax.stencil, "replace", 1)
     love.graphics.setStencilTest("equal", 1)
-    local imgw, imgh = self.tex:getDimensions()
+    local imgw, imgh
+    if self.anim then
+      imgw = self.animWidth
+      imgh = self.animHeight
+    else
+      imgw, imgh = self.tex:getDimensions()
+    end
     if self.wrapX and self.wrapY then
-      self.offX = math.wrap(self.offX + self.velx + ((view.x - self.dx) * self.spdMult), 0, imgw)
-      self.offY = math.wrap(self.offY + self.vely + ((view.y - self.dy) * self.spdMult), 0, imgh)
+      self.ox = math.wrap(self.ox + self.velx, 0, imgw)
+      self.oy = math.wrap(self.oy + self.vely, 0, imgh)
+      self.offX = math.wrap(self.ox + (((view.x+(view.w/2)) - (self.transform.x+(self.collisionShape.w/2)))*self.spdMultX) +
+        self.transform.x + (self.collisionShape.w/2) - (imgw/2), 0, imgw)
+      self.offY = math.wrap(self.oy + (((view.y+(view.h/2)) - (self.transform.y+(self.collisionShape.h/2)))*self.spdMultY) +
+        self.transform.y + (self.collisionShape.h/2) - (imgh/2), 0, imgh)
       
       for x=self.transform.x-imgw, self.transform.x+self.collisionShape.w, imgw do
         for y=self.transform.y-imgh, self.transform.y+self.collisionShape.h, imgh do
           if rectOverlapsRect(x+self.offX, y+self.offY, imgw, imgh, view.x, view.y, view.w, view.h) then
-            love.graphics.draw(self.tex, x+self.offX, y+self.offY)
+            if self.anim then
+              self.anim:draw(self.tex, x+self.offX, y+self.offY)
+            else
+              love.graphics.draw(self.tex, x+self.offX, y+self.offY)
+            end
           end
         end
       end
     elseif self.wrapX and not self.wrapY then
-      self.offX = math.wrap(self.offX + self.velx + ((view.x - self.dx) * self.spdMult), 0, imgw)
-      self.nwOffY = self.nwOffY + ((view.y - self.dy) * self.spdMult)
+      self.ox = math.wrap(self.ox + self.velx, 0, imgw)
+      self.oy = math.wrap(self.oy + self.vely, 0, imgh)
+      self.offX = math.wrap(self.ox + (((view.x+(view.w/2)) - (self.transform.x+(self.collisionShape.w/2)))*self.spdMultX) +
+        self.transform.x + (self.collisionShape.w/2) - (imgw/2), 0, imgw)
+      self.offY = self.oy + (((view.y+(view.h/2)) - (self.transform.y+(self.collisionShape.h/2)))*self.spdMultY) +
+        self.transform.y + (self.collisionShape.h/2) - (imgh/2)
       
       for x=self.transform.x-imgw, self.transform.x+self.collisionShape.w, imgw do
-        if rectOverlapsRect(x+self.offX, self.transform.y+self.nwOffY, imgw, imgh, view.x, view.y, view.w, view.h) then
-          love.graphics.draw(self.tex, x+self.offX, self.transform.y+self.nwOffY)
+        if rectOverlapsRect(x+self.offX, self.offY, imgw, imgh, view.x, view.y, view.w, view.h) then
+          if self.anim then
+            self.anim:draw(self.tex, x+self.offX, self.offY)
+          else
+            love.graphics.draw(self.tex, x+self.offX, self.offY)
+          end
         end
       end
     elseif not self.wrapX and self.wrapY then
-      self.nwOffX = self.nwOffX + ((view.x - self.dx) * self.spdMult)
-      self.offY = math.wrap(self.offY + self.vely + ((view.y - self.dy) * self.spdMult), 0, imgh)
+      self.ox = math.wrap(self.ox + self.velx, 0, imgw)
+      self.oy = math.wrap(self.oy + self.vely, 0, imgh)
+      self.offX = self.ox + (((view.x+(view.w/2)) - (self.transform.x+(self.collisionShape.w/2)))*self.spdMultX) +
+        self.transform.x + (self.collisionShape.w/2) - (imgw/2)
+      self.offY = math.wrap(self.oy + (((view.y+(view.h/2)) - (self.transform.y+(self.collisionShape.h/2)))*self.spdMultY) +
+        self.transform.y + (self.collisionShape.h/2) - (imgh/2), 0, imgh)
       
       for y=self.transform.y-imgh, self.transform.y+self.collisionShape.h, imgh do
-        if rectOverlapsRect(self.transform.x+self.nwOffX, y+self.offY, imgw, imgh, view.x, view.y, view.w, view.h) then
-          love.graphics.draw(self.tex, self.transform.x+self.nwOffX, y+self.offY)
+        if rectOverlapsRect(self.offX, y+self.offY, imgw, imgh, view.x, view.y, view.w, view.h) then
+          if self.anim then
+            self.anim:draw(self.tex, self.offX, y+self.offY)
+          else
+            love.graphics.draw(self.tex, self.offX, y+self.offY)
+          end
         end
       end
     else
-      self.nwOffX = self.nwOffX + ((view.x - self.dx) * self.spdMult)
-      self.nwOffY = self.nwOffY + ((view.y - self.dy) * self.spdMult)
+      self.ox = math.wrap(self.ox + self.velx, 0, imgw)
+      self.oy = math.wrap(self.oy + self.vely, 0, imgh)
+      self.offX = self.ox + (((view.x+(view.w/2)) - (self.transform.x+(self.collisionShape.w/2)))*self.spdMultX) +
+        self.transform.x + (self.collisionShape.w/2) - (imgw/2)
+      self.offY = self.oy + (((view.y+(view.h/2)) - (self.transform.y+(self.collisionShape.h/2)))*self.spdMultY) +
+        self.transform.y + (self.collisionShape.h/2) - (imgh/2)
       
-      if rectOverlapsRect(self.transform.x+self.nwOffX, self.transform.y+self.nwOffY, imgw, imgh, view.x, view.y, view.w, view.h) then
-        love.graphics.draw(self.tex, self.transform.x+self.nwOffX, self.transform.y+self.nwOffY)
+      for y=self.transform.y-imgh, self.transform.y+self.collisionShape.h, imgh do
+        if rectOverlapsRect(self.offX, self.offY, imgw, imgh, view.x, view.y, view.w, view.h) then
+          if self.anim then
+            self.anim:draw(self.tex, self.offX, self.offY)
+          else
+            love.graphics.draw(self.tex, self.offX, self.offY)
+          end
+        end
       end
     end
     love.graphics.setStencilTest()
