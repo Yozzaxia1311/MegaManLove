@@ -63,7 +63,7 @@ function animationSet:gotoFrame(f, t)
 end
 
 function animationSet:length(a)
-  return table.legnth(self.anims[a or self.current].frames)
+  return table.length(self.anims[a or self.current].frames)
 end
 
 function animationSet:update(dt)
