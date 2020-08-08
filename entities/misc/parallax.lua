@@ -1,10 +1,10 @@
+parallax = basicEntity:extend()
+
 mapEntity.register("parallax", function(v)
     megautils.add(parallax, v.x, v.y, v.width, v.height, v.properties.image, v.properties.animate, v.properties.animSpeed,
       v.properties.animWidth, v.properties.animHeight, v.properties.speedMultX, v.properties.speedMultY,
       v.properties.speedX, v.properties.speedY, v.properties.wrapX, v.properties.wrapY, v.properties.layer)
   end, 0, true)
-
-parallax = basicEntity:extend()
 
 function parallax:new(x, y, w, h, bg, a, as, aw, ah, spdMultX, spdMultY, sx, sy, wrapx, wrapy, l)
   parallax.super.new(self)
