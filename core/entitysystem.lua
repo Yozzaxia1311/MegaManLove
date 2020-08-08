@@ -57,7 +57,6 @@ function entitySystem:sortLayers()
 end
 
 function entitySystem:add(c, ...)
-  if not c then return end
   local e = self:getRecycled(c, ...)
   if not e.static then
     local done = false
