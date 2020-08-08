@@ -1147,6 +1147,7 @@ function bossEntity:new()
   self.soundOnDeath = "assets/sfx/dieExplode.ogg"
   self.flipWithPlayer = false
   self.removeWhenOutside = false
+  self.skipStart = false
   self:setMusic("assets/sfx/music/boss.wav", true, 162898, 444759)
   self:setBossIntroMusic("assets/sfx/music/stageStart.ogg")
 end
@@ -1343,7 +1344,7 @@ function bossEntity:update()
   if self.doBossIntro then
     self:bossIntro()
   else
-    if not self.didIntro and self:start() then
+    if not self.didIntro and (self.skipStart or self:start()) then
       self._subState = nil
       self.didIntro = true
       local h = self.healthHandler.health
