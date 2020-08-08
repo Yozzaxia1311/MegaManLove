@@ -791,7 +791,7 @@ local function finalXML2LuaTable(str, f)
         local newPath = ""
         local tr = 0
         
-        for i=1, #test do
+        for i=#test, 1, -1 do
           if test[i] == ".." then
             table.remove(test, i)
             tr = tr + 1
@@ -1083,7 +1083,7 @@ local function finalXML2LuaTable(str, f)
                   local newPath = ""
                   local tr = 0
                   
-                  for i=1, #test do
+                  for i=#test, 1, -1 do
                     if test[i] == ".." then
                       table.remove(test, i)
                       tr = tr + 1
