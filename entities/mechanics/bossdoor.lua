@@ -14,17 +14,17 @@ end, 0, true)
 
 function bossDoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt, n, tw, th, ts)
   bossDoor.super.new(self)
-  self.transform.y = y
-  self.transform.x = x
+  self.transform.x = x or 0
+  self.transform.y = y or 0
   self:setLayer(0)
   self.tex = megautils.getResource("bossDoor")
   self.scrollx = scrollx
   self.scrolly = scrolly
   self.quad = quad(0, 0, 32, 16)
   self.timer = 0
-  self.segments = seg
-  self.maxSegments = seg
-  self.spd = spd
+  self.segments = seg or 4
+  self.maxSegments = seg or 4
+  self.spd = spd or 1
   self.state = 0
   self.player = nil
   self.solidType = collision.SOLID
@@ -63,7 +63,7 @@ function bossDoor:left()
   camera.main.doScrollY = (self.scrolly~=nil) and self.scrolly or camera.main.doScrollY
   camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
   camera.main.player = self.player
-  camera.main.speed = self.spd or 1
+  camera.main.speed = self.spd
   local s = self:collisionTable(section.getSections(self.transform.x-self.tileWidth, self.transform.y,
     self.collisionShape.w, self.collisionShape.h), -self.tileWidth, 0)[1]
   camera.main.toSection = s
@@ -80,7 +80,7 @@ function bossDoor:right()
   camera.main.doScrollY = (self.scrolly~=nil) and self.scrolly or camera.main.doScrollY
   camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
   camera.main.player = self.player
-  camera.main.speed = self.spd or 1
+  camera.main.speed = self.spd
   local s = self:collisionTable(section.getSections(self.transform.x+self.tileWidth, self.transform.y,
     self.collisionShape.w, self.collisionShape.h), self.tileWidth, 0)[1]
   camera.main.toSection = s
@@ -97,7 +97,7 @@ function bossDoor:up()
   camera.main.doScrollY = (self.scrolly~=nil) and self.scrolly or camera.main.doScrollY
   camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
   camera.main.player = self.player
-  camera.main.speed = self.spd or 1
+  camera.main.speed = self.spd
   local s = self:collisionTable(section.getSections(self.transform.x, self.transform.y-self.tileHeight,
     self.collisionShape.w, self.collisionShape.h), 0, -self.tileHeight)[1]
   camera.main.toSection = s
@@ -114,7 +114,7 @@ function bossDoor:down()
   camera.main.doScrollY = (self.scrolly~=nil) and self.scrolly or camera.main.doScrollY
   camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
   camera.main.player = self.player
-  camera.main.speed = self.spd or 1
+  camera.main.speed = self.spd
   local s = self:collisionTable(section.getSections(self.transform.x, self.transform.y+self.tileHeight,
     self.collisionShape.w, self.collisionShape.h), 0, self.tileHeight)[1]
   camera.main.toSection = s

@@ -7,17 +7,18 @@ end, 0, true)
 
 function right:new(x, y, h, scrollx, scrolly, spd, p, n)
   right.super.new(self)
-  self:setRectangleCollision(2, h)
-  self.transform.x = x + 14
-  self.transform.y = y
+  self:setRectangleCollision(2, h or view.h)
+  self.transform.x = (x or 0) + 14
+  self.transform.y = y or 0
   self.scrollx = scrollx
   self.scrolly = scrolly
-  self.spd = spd
+  self.spd = spd or 0.8
   self.platform = p
   self.name = n
   if self.name == "" then
     self.name = nil
   end
+  self.isLocked = {global=false}
 end
 
 function right:added()
@@ -25,22 +26,24 @@ function right:added()
 end
 
 function right:update(dt)
-  for i=1, #megaMan.allPlayers do
-    local player = megaMan.allPlayers[i]
-    if camera.main and checkFalse(player.canControl) and not camera.main.transition and self:collision(player, 2, 0)
-      and (not self.platform or (self.platform and player.onMovingFloor)) then
-      camera.main.transitionDirection = "right"
-      camera.main.transition = true
-      camera.main.doScrollY = (self.scrolly~=nil) and self.scrolly or camera.main.doScrollY
-      camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
-      camera.main.player = player
-      camera.main.speed = self.spd or 0.8
-      local s = self:collisionTable(section.getSections(self.transform.x+2, self.transform.y, 2, self.collisionShape.h), 2, 0)[1]
-      camera.main.toSection = s
-      camera.main.transform.x = self.transform.x+2-camera.main.collisionShape.w
-      camera.main.transX = camera.main.transform.x+camera.main.collisionShape.w+8
-      camera.main.curBoundName = self.name
-      break
+  if not checkTrue(self.isLocked) then
+    for i=1, #megaMan.allPlayers do
+      local player = megaMan.allPlayers[i]
+      if camera.main and checkFalse(player.canControl) and not camera.main.transition and self:collision(player, 2, 0)
+        and (not self.platform or (self.platform and player.onMovingFloor)) then
+        camera.main.transitionDirection = "right"
+        camera.main.transition = true
+        camera.main.doScrollY = (self.scrolly~=nil) and self.scrolly or camera.main.doScrollY
+        camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
+        camera.main.player = player
+        camera.main.speed = self.spd
+        local s = self:collisionTable(section.getSections(self.transform.x+2, self.transform.y, 2, self.collisionShape.h), 2, 0)[1]
+        camera.main.toSection = s
+        camera.main.transform.x = self.transform.x+2-camera.main.collisionShape.w
+        camera.main.transX = camera.main.transform.x+camera.main.collisionShape.w+8
+        camera.main.curBoundName = self.name
+        break
+      end
     end
   end
 end
@@ -54,17 +57,18 @@ end, 0, true)
 
 function left:new(x, y, h, scrollx, scrolly, spd, p, n)
   left.super.new(self)
-  self:setRectangleCollision(2, h)
-  self.transform.x = x
-  self.transform.y = y
+  self:setRectangleCollision(2, h or view.h)
+  self.transform.x = x or 0
+  self.transform.y = y or 0
   self.scrollx = scrollx
   self.scrolly = scrolly
-  self.spd = spd
+  self.spd = spd or 0.8
   self.platform = p
   self.name = n
   if self.name == "" then
     self.name = nil
   end
+  self.isLocked = {global=false}
 end
 
 function left:added()
@@ -72,22 +76,24 @@ function left:added()
 end
 
 function left:update(dt)
-  for i=1, #megaMan.allPlayers do
-    local player = megaMan.allPlayers[i]
-    if camera.main and checkFalse(player.canControl) and not camera.main.transition
-      and self:collision(player, -2, 0) and (not self.platform or (self.platform and player.onMovingFloor)) then
-      camera.main.transitionDirection = "left"
-      camera.main.transition = true
-      camera.main.doScrollY = (self.scrolly~=nil) and self.scrolly or camera.main.doScrollY
-      camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
-      camera.main.player = player
-      camera.main.speed = self.spd or 0.8
-      local s = self:collisionTable(section.getSections(self.transform.x-2, self.transform.y, 2, self.collisionShape.h), -2, 0)[1]
-      camera.main.toSection = s
-      camera.main.transform.x = self.transform.x
-      camera.main.transX = camera.main.transform.x-camera.main.player.collisionShape.w-8
-      camera.main.curBoundName = self.name
-      break
+  if not checkTrue(self.isLocked) then
+    for i=1, #megaMan.allPlayers do
+      local player = megaMan.allPlayers[i]
+      if camera.main and checkFalse(player.canControl) and not camera.main.transition
+        and self:collision(player, -2, 0) and (not self.platform or (self.platform and player.onMovingFloor)) then
+        camera.main.transitionDirection = "left"
+        camera.main.transition = true
+        camera.main.doScrollY = (self.scrolly~=nil) and self.scrolly or camera.main.doScrollY
+        camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
+        camera.main.player = player
+        camera.main.speed = self.spd
+        local s = self:collisionTable(section.getSections(self.transform.x-2, self.transform.y, 2, self.collisionShape.h), -2, 0)[1]
+        camera.main.toSection = s
+        camera.main.transform.x = self.transform.x
+        camera.main.transX = camera.main.transform.x-camera.main.player.collisionShape.w-8
+        camera.main.curBoundName = self.name
+        break
+      end
     end
   end
 end
@@ -102,18 +108,19 @@ end, 0, true)
 
 function down:new(x, y, w, scrollx, scrolly, spd, p, n, cl)
   down.super.new(self)
-  self:setRectangleCollision(w, 2)
-  self.transform.y = y + 14
-  self.transform.x = x
+  self:setRectangleCollision(w or view.w, 2)
+  self.transform.x = x or 0
+  self.transform.y = (y or 0) + 14
   self.scrollx = scrollx
   self.scrolly = scrolly
-  self.spd = spd
+  self.spd = spd or 0.8
   self.platform = p
   self.name = n
   if self.name == "" then
     self.name = nil
   end
   self.checkLadder = cl
+  self.isLocked = {global=false}
 end
 
 function down:added()
@@ -121,23 +128,25 @@ function down:added()
 end
 
 function down:update(dt)
-  for i=1, #megaMan.allPlayers do
-    local player = megaMan.allPlayers[i]
-    if camera.main and checkFalse(player.canControl) and not camera.main.transition
-      and self:collision(player, 0, 2) and (not self.platform or (self.platform and player.onMovingFloor)) and
-      (not self.checkLadder or (self.checkLadder and (player.climb or player.gravity >= 0))) then
-      camera.main.transitionDirection = "down"
-      camera.main.transition = true
-      camera.main.doScrollY = (self.scrolly~=nil) and self.scrolly or camera.main.doScrollY
-      camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
-      camera.main.player = player
-      camera.main.speed = self.spd or 0.8
-      local s = self:collisionTable(section.getSections(self.transform.x, self.transform.y+2, self.collisionShape.w, 2), 0, 2)[1]
-      camera.main.toSection = s
-      camera.main.transform.y = self.transform.y+2-camera.main.collisionShape.h
-      camera.main.transY = camera.main.transform.y+camera.main.collisionShape.h+8
-      camera.main.curBoundName = self.name
-      break
+  if not checkTrue(self.isLocked) then
+    for i=1, #megaMan.allPlayers do
+      local player = megaMan.allPlayers[i]
+      if camera.main and checkFalse(player.canControl) and not camera.main.transition
+        and self:collision(player, 0, 2) and (not self.platform or (self.platform and player.onMovingFloor)) and
+        (not self.checkLadder or (self.checkLadder and (player.climb or player.gravity >= 0))) then
+        camera.main.transitionDirection = "down"
+        camera.main.transition = true
+        camera.main.doScrollY = (self.scrolly~=nil) and self.scrolly or camera.main.doScrollY
+        camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
+        camera.main.player = player
+        camera.main.speed = self.spd
+        local s = self:collisionTable(section.getSections(self.transform.x, self.transform.y+2, self.collisionShape.w, 2), 0, 2)[1]
+        camera.main.toSection = s
+        camera.main.transform.y = self.transform.y+2-camera.main.collisionShape.h
+        camera.main.transY = camera.main.transform.y+camera.main.collisionShape.h+8
+        camera.main.curBoundName = self.name
+        break
+      end
     end
   end
 end
@@ -152,18 +161,19 @@ end, 0, true)
 
 function up:new(x, y, w, scrollx, scrolly, spd, p, n, cl)
   up.super.new(self)
-  self:setRectangleCollision(w, 2)
-  self.transform.y = y
-  self.transform.x = x
+  self:setRectangleCollision(w or view.w, 2)
+  self.transform.x = x or 0
+  self.transform.y = y or 0
   self.scrollx = scrollx
   self.scrolly = scrolly
-  self.spd = spd
+  self.spd = spd or 0.8
   self.platform = p
   self.name = n
   if self.name == "" then
     self.name = nil
   end
   self.checkLadder = cl
+  self.isLocked = {global=false}
 end
 
 function up:added()
@@ -171,23 +181,25 @@ function up:added()
 end
 
 function up:update(dt)
-  for i=1, #megaMan.allPlayers do
-    local player = megaMan.allPlayers[i]
-    if camera.main and checkFalse(player.canControl) and not camera.main.transition
-      and self:collision(player, 0, -2) and (not self.platform or (self.platform and player.onMovingFloor)) and
-      (not self.checkLadder or (self.checkLadder and (player.climb or player.gravity < 0))) then
-      camera.main.transitionDirection = "up"
-      camera.main.transition = true
-      camera.main.doScrollY = (self.scrolly~=nil) and self.scrolly or camera.main.doScrollY
-      camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
-      camera.main.player = player
-      camera.main.speed = self.spd or 0.8
-      local s = self:collisionTable(section.getSections(self.transform.x, self.transform.y-2, self.collisionShape.w, 2), 0, -2)[1]
-      camera.main.toSection = s
-      camera.main.transform.y = self.transform.y
-      camera.main.transY = camera.main.transform.y-camera.main.player.collisionShape.h-8
-      camera.main.curBoundName = self.name
-      break
+  if not checkTrue(self.isLocked) then
+    for i=1, #megaMan.allPlayers do
+      local player = megaMan.allPlayers[i]
+      if camera.main and checkFalse(player.canControl) and not camera.main.transition
+        and self:collision(player, 0, -2) and (not self.platform or (self.platform and player.onMovingFloor)) and
+        (not self.checkLadder or (self.checkLadder and (player.climb or player.gravity < 0))) then
+        camera.main.transitionDirection = "up"
+        camera.main.transition = true
+        camera.main.doScrollY = (self.scrolly~=nil) and self.scrolly or camera.main.doScrollY
+        camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
+        camera.main.player = player
+        camera.main.speed = self.spd
+        local s = self:collisionTable(section.getSections(self.transform.x, self.transform.y-2, self.collisionShape.w, 2), 0, -2)[1]
+        camera.main.toSection = s
+        camera.main.transform.y = self.transform.y
+        camera.main.transY = camera.main.transform.y-camera.main.player.collisionShape.h-8
+        camera.main.curBoundName = self.name
+        break
+      end
     end
   end
 end
@@ -200,9 +212,9 @@ end, 0, true)
 
 function sectionPrioritySetter:new(x, y, w, h, name)
   sectionPrioritySetter.super.new(self)
-  self:setRectangleCollision(w, h)
-  self.transform.y = y
-  self.transform.x = x
+  self:setRectangleCollision(w or 32, h or 32)
+  self.transform.x = x or 0
+  self.transform.y = y or 0
   self.name = name
 end
 
@@ -239,9 +251,9 @@ end, 0, true)
 
 function sectionPrioritySetterXBorder:new(x, y, h, lname, rname)
   sectionPrioritySetterXBorder.super.new(self)
-  self:setRectangleCollision(32, h)
-  self.transform.y = y
-  self.transform.x = x
+  self:setRectangleCollision(32, h or view.h)
+  self.transform.x = x or 0
+  self.transform.y = y or 0
   self.lname = lname
   self.rname = rname
 end
@@ -281,9 +293,9 @@ end, 0, true)
 
 function sectionPrioritySetterYBorder:new(x, y, w, uname, dname)
   sectionPrioritySetterYBorder.super.new(self)
-  self:setRectangleCollision(w, 32)
-  self.transform.y = y
-  self.transform.x = x
+  self:setRectangleCollision(w or view.w, 32)
+  self.transform.x = x or 0
+  self.transform.y = y or 0
   self.uname = uname
   self.dname = dname
 end
@@ -323,9 +335,9 @@ end, 0, true)
 
 function sectionPrioritySetterArea:new(x, y, w, h, name, name2)
   sectionPrioritySetterArea.super.new(self)
-  self:setRectangleCollision(w, h)
-  self.transform.y = y
-  self.transform.x = x
+  self:setRectangleCollision(w or 32, h or 32)
+  self.transform.x = x or 0
+  self.transform.y = y or 0
   self.inName = name
   self.outName = name2
 end
