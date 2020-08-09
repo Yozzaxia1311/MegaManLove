@@ -8,11 +8,6 @@ function menuState:begin()
   end
 end
 
-megautils.cleanFuncs.menu = function()
-  menuSelect = nil
-  megautils.cleanFuncs.menu = nil
-end
-
 menuSelect = basicEntity:extend()
 
 megautils.loadResource("assets/misc/menuSelect.png", "menuSelect")

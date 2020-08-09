@@ -3,6 +3,8 @@ megautils.loadResource(0, 70, 32, 28, "splashGrid")
 
 splash = particle:extend()
 
+splash.autoClean = false
+
 function splash:new(offx, offy, p, side)
   splash.super.new(self, p)
   self.offx = offx or 0
@@ -35,6 +37,8 @@ function splash:draw()
 end
 
 water = basicEntity:extend()
+
+water.autoClean = false
 
 mapEntity.register("water", function(v)
   megautils.add(water, v.x, v.y, v.width, v.height, v.properties.grav)
@@ -107,7 +111,9 @@ function water:update()
   end
 end
 
-space = entity:extend()
+space = basicEntity:extend()
+
+space.autoClean = false
 
 mapEntity.register("space", function(v)
   megautils.add(space, v.x, v.y, v.width, v.height, v.properties.grav)
@@ -138,7 +144,7 @@ function space:removed()
   end
 end
 
-function space:update(dt)
+function space:update()
   if megautils.groups().submergable then
     for k, v in ipairs(megautils.groups().submergable) do
       if v:collision(self) and v.gravityMultipliers.space ~= self.grav then
@@ -149,10 +155,3 @@ function space:update(dt)
     end
   end
 end
-
-megautils.cleanFuncs.water = function()
-    splash = nil
-    water = nil
-    space = nil
-    megautils.cleanFuncs.water = nil
-  end

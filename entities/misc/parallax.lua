@@ -1,5 +1,7 @@
 parallax = basicEntity:extend()
 
+parallax.autoClean = false
+
 mapEntity.register("parallax", function(v)
     megautils.add(parallax, v.x, v.y, v.width, v.height, v.properties.image, v.properties.animate, v.properties.animSpeed,
       v.properties.animWidth, v.properties.animHeight, v.properties.speedMultX, v.properties.speedMultY,

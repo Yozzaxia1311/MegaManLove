@@ -1,5 +1,7 @@
 fade = basicEntity:extend()
 
+fade.autoClean = false
+
 function fade:new(fadeToColor, gap, color, after)
   fade.super.new(self)
   self.alpha = fadeToColor and 0 or 255

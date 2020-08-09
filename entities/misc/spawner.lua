@@ -1,4 +1,6 @@
-spawner = entity:extend()
+spawner = basicEntity:extend()
+
+spawner.autoClean = false
 
 function spawner:new(x, y, w, h, cond, ...)
   spawner.super.new(self)
@@ -28,7 +30,9 @@ function spawner:update()
   end
 end
 
-intervalSpawner = entity:extend()
+intervalSpawner = basicEntity:extend()
+
+intervalSpawner.autoClean = false
 
 function intervalSpawner:new(x, y, w, h, time, cond, ...)
   intervalSpawner.super.new(self)

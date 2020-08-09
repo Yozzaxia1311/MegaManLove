@@ -412,6 +412,26 @@ end
 
 basicEntity = class:extend()
 
+basicEntity.autoClean = false
+
+function basicEntity:extend()
+  local cls = {}
+  for k, v in pairs(self) do
+    if k:find("__") == 1 then
+      cls[k] = v
+    end
+  end
+  cls.__index = cls
+  cls.super = self
+  cls.autoClean = true
+  setmetatable(cls, self)
+  return cls
+end
+
+function basicEntity:__tostring()
+  return "Entity"
+end
+
 function basicEntity:new()
   if not self.recycling then
     self.transform = {}
@@ -605,7 +625,17 @@ function basicEntity:added() end
 function basicEntity:begin() end
 function basicEntity:staticToggled() end
 
+megautils.cleanFuncs.autoCleaner = function()
+    for k, v in pairs(_G) do
+      if tostring(v) == "Entity" and v.autoClean then
+        _G[k] = nil
+      end
+    end
+  end
+
 entity = basicEntity:extend()
+
+entity.autoClean = false
 
 function entity:new()
   entity.super.new(self)
@@ -699,6 +729,8 @@ function entity:updateFlash(length, range)
 end
 
 mapEntity = basicEntity:extend()
+
+mapEntity.autoClean = false
 
 mapEntity.registered = {}
 mapEntity.ranFiles = {}
@@ -906,6 +938,8 @@ pierce.PIERCE = 1
 pierce.PIERCEIFKILLING = 2
 
 advancedEntity = entity:extend()
+
+advancedEntity.autoClean = false
 
 advancedEntity.SMALLBLAST = 1
 advancedEntity.BIGBLAST = 2
@@ -1136,6 +1170,8 @@ function advancedEntity:interactedWith(o, c)
 end
 
 bossEntity = advancedEntity:extend()
+
+bossEntity.autoClean = false
 
 function bossEntity:new()
   bossEntity.super.new(self)

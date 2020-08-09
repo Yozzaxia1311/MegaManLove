@@ -1,5 +1,7 @@
 megaMan = entity:extend()
 
+megaMan.autoClean = false
+
 megaMan.mainPlayer = nil
 megaMan.allPlayers = {}
 megaMan.resources = {}

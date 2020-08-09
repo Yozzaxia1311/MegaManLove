@@ -107,9 +107,3 @@ end
 function metBullet:draw()
   self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
 end
-
-megautils.cleanFuncs.met = function()
-  met = nil
-  metBullet = nil
-  megautils.cleanFuncs.met = nil
-end

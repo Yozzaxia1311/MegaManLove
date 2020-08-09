@@ -1,5 +1,7 @@
 timer = basicEntity:extend()
 
+timer.autoClean = false
+
 function timer:new(time, func)
   timer.super.new(self)
   self.time = 0

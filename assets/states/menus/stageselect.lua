@@ -6,11 +6,6 @@ function stageSelectState:begin()
   love.graphics.setBackgroundColor(0, 0, 0, 1)
 end
 
-megautils.cleanFuncs.stageSelect = function()
-  stageSelect = nil
-  megautils.cleanFuncs.stageSelect = nil
-end
-
 stageSelect = basicEntity:extend()
 
 megautils.loadResource("assets/sfx/ascend.ogg", "selected")

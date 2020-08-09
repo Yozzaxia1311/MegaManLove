@@ -38,8 +38,3 @@ end
 function moveAcrossPlatform:draw()
   self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
 end
-
-megautils.cleanFuncs.moveAcrossPlatform = function()
-  moveAcrossPlatform = nil
-  megautils.cleanFuncs.moveAcrossPlatform = nil
-end

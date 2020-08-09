@@ -35,8 +35,3 @@ function gravFlip:update(dt)
     end
   end
 end
-
-megautils.cleanFuncs.gravFlip = function()
-    gravFlip = nil
-    megautils.cleanFuncs.gravFlip = nil
-  end

@@ -1,7 +1,9 @@
 megautils.loadResource("assets/global/bossDoor.png", "bossDoor", true)
 megautils.loadResource("assets/sfx/bossDoor.ogg", "bossDoorSfx", true)
 
-bossDoor = entity:extend()
+bossDoor = basicEntity:extend()
+
+bossDoor.autoClean = false
 
 mapEntity.register("bossDoor", function(v)
   local seg = (v.properties.dir=="up" or v.properties.dir=="down") and 

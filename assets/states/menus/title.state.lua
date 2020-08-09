@@ -6,11 +6,6 @@ function titleState:begin()
   megautils.setMusicLock(false)
 end
 
-megautils.cleanFuncs.title = function()
-  title = nil
-  megautils.cleanFuncs.title = nil
-end
-
 title = basicEntity:extend()
 
 function title:new()

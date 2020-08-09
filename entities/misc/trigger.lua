@@ -1,5 +1,7 @@
 trigger = basicEntity:extend()
 
+trigger.autoClean = false
+
 function trigger:new(call, drawCall)
   trigger.super.new(self, tran)
   self.call = call

@@ -7,11 +7,6 @@ function disclaimerState:begin()
   megautils.add(fade, false, nil, nil, fade.remove)
 end
 
-megautils.cleanFuncs.disclaimer = function()
-  disclaimer = nil
-  megautils.cleanFuncs.disclaimer = nil
-end
-
 disclaimer = basicEntity:extend()
 
 function disclaimer:new()

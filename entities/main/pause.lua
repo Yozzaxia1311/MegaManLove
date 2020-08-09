@@ -1,5 +1,7 @@
 mmWeaponsMenu = basicEntity:extend()
 
+mmWeaponsMenu.autoClean = false
+
 function mmWeaponsMenu.resources()
   megautils.loadResource("assets/misc/weaponSelect.png", "weaponSelectBG")
   megautils.loadResource("assets/sfx/pause.ogg", "pause")

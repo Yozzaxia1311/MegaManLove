@@ -5,11 +5,6 @@ function rebindState:begin()
   megautils.add(fade, false, nil, nil, fade.remove)
 end
 
-megautils.cleanFuncs.rebind = function()
-  rebinder = nil
-  megautils.cleanFuncs.rebind = nil
-end
-
 rebinder = basicEntity:extend()
 
 function rebinder:new()

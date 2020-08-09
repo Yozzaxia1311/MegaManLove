@@ -1,5 +1,7 @@
 healthHandler = basicEntity:extend()
 
+healthHandler.autoClean = false
+
 healthHandler.playerTimers = {}
 for i=1, maxPlayerCount do
   healthHandler.playerTimers[i] = -2
@@ -170,6 +172,8 @@ end
 megautils.loadResource("assets/misc/weapons/weaponSelect.png", "weaponSelect", false, true)
 
 weaponHandler = basicEntity:extend()
+
+weaponHandler.autoClean = false
 
 weaponHandler.id = 0
 

@@ -66,7 +66,6 @@ megautils.resetGameObjectsFuncs.ice = function()
   end
 
 megautils.cleanFuncs.ice = function()
-    ice = nil
     megautils.playerGroundFuncs.ice = nil
     megautils.playerKnockbackFuncs.ice = nil
     megautils.playerAirFuncs.ice = nil

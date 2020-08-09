@@ -7,12 +7,6 @@ function continueState:begin()
   megautils.add(contPanels)
 end
 
-megautils.cleanFuncs.gameOver = function()
-  contPanels = nil
-  globals.gameOverContinueState = nil
-  megautils.cleanFuncs.gameOver = nil
-end
-
 contPanels = basicEntity:extend()
 
 function contPanels:new()
@@ -73,6 +67,7 @@ function contSelect:update()
       self.canDraw.global = false
       megautils.stopMusic()
       megautils.transitionToState(globals.gameOverContinueState)
+      globals.gameOverContinueState = nil
     elseif self.pick == 0 then
       self.picked = true
       self.canDraw.global = false

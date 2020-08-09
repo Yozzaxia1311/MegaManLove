@@ -96,11 +96,3 @@ end
 function largeStar:draw()
   self.quad:draw(self.t, math.round(self.transform.x), math.round(self.transform.y))
 end
-
-megautils.cleanFuncs.starfield = function()
-  smallStar = nil
-  star = nil
-  largeStar = nil
-  banner = nil
-  megautils.cleanFuncs.starfield = nil
-end

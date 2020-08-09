@@ -1,5 +1,7 @@
 death = basicEntity:extend()
 
+death.autoClean = false
+
 mapEntity.register("death", function(v)
   megautils.add(death, v.x, v.y, v.width, v.height, v.properties.harm)
 end, 0, true)

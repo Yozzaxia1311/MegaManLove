@@ -27,8 +27,3 @@ function sinkIn:update(dt)
     end
   end
 end
-
-megautils.cleanFuncs.sinkIn = function()
-    sinkIn = nil
-    megautils.cleanFuncs.sinkIn = nil
-  end

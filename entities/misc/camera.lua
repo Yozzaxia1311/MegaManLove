@@ -1,5 +1,7 @@
 camera = basicEntity:extend()
 
+camera.autoClean = false
+
 megautils.reloadStateFuncs.camera = function()
   camera.main = nil
   section.hash = {}
@@ -353,6 +355,8 @@ function camera:updateBounds(noBounds)
 end
 
 section = basicEntity:extend()
+
+section.autoClean = false
 
 mapEntity.register("section", function(v)
     section.addSection(section(v.x, v.y, v.width, v.height, v.properties.name))

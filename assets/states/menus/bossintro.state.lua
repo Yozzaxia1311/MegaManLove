@@ -15,12 +15,8 @@ function bossIntroState:begin()
   megautils.add(largeStar, 0, 32, 180, 6)
   megautils.add(largeStar, 90, 220, 180, 6)
   megautils.add(megautils.runFile(globals.bossIntroBoss))
-  megautils.add(fade, false, nil, nil, fade.remove)
-end
-
-megautils.cleanFuncs.bossIntro = function()
   globals.bossIntroBoss = nil
-  megautils.cleanFuncs.bossIntro = nil
+  megautils.add(fade, false, nil, nil, fade.remove)
 end
 
 return bossIntroState

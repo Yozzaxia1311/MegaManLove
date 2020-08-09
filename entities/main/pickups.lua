@@ -10,6 +10,8 @@ megautils.loadResource(72, 12, 16, 16, "tankGrid", true)
 
 pickupEntity = entity:extend()
 
+pickupEntity.autoClean = false
+
 pickupEntity.banIDs = {}
 
 function pickupEntity.isBanned(i, id, path)
@@ -92,6 +94,8 @@ end
 
 smallHealth = pickupEntity:extend()
 
+smallHealth.autoClean = false
+
 mapEntity.register("smallHealth", function(v, map)
   megautils.add(spawner, v.x, v.y, 8, 6, function()
       return not pickupEntity.isBanned(smallHealth, v.id, map.path)
@@ -135,6 +139,8 @@ end
 
 health = pickupEntity:extend()
 
+health.autoClean = false
+
 mapEntity.register("health", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 14, function()
       return not pickupEntity.isBanned(health, v.id, map.path)
@@ -177,6 +183,8 @@ function health:draw()
 end
 
 smallEnergy = pickupEntity:extend()
+
+smallEnergy.autoClean = false
 
 mapEntity.register("smallEnergy", function(v, map)
   megautils.add(spawner, v.x, v.y, 8, 6, function()
@@ -231,6 +239,8 @@ end
 
 energy = pickupEntity:extend()
 
+energy.autoClean = false
+
 mapEntity.register("energy", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 10, function()
       return not pickupEntity.isBanned(energy, v.id, map.path)
@@ -283,6 +293,8 @@ function energy:draw()
 end
 
 life = pickupEntity:extend()
+
+life.autoClean = false
 
 mapEntity.register("life", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 15, function()
@@ -376,6 +388,8 @@ end
 
 eTank = pickupEntity:extend()
 
+eTank.autoClean = false
+
 mapEntity.register("eTank", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 15, function()
       return not pickupEntity.isBanned(eTank, v.id, map.path)
@@ -431,6 +445,8 @@ function eTank:draw()
 end
 
 wTank = pickupEntity:extend()
+
+wTank.autoClean = false
 
 mapEntity.register("wTank", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 15, function()

@@ -5,6 +5,8 @@ megautils.loadResource("assets/sfx/reflect.ogg", "dink", true)
 
 weapon = entity:extend()
 
+weapon.autoClean = false
+
 weapon.DAMAGENONE = 0
 weapon.DAMAGEPLAYER = 1
 weapon.DAMAGEENEMY = 2
@@ -168,6 +170,8 @@ weapon.resources["R.BUSTER"] = function()
 
 protoSemiBuster = weapon:extend()
 
+protoSemiBuster.autoClean = false
+
 function protoSemiBuster:new(x, y, p, dir, skin)
   protoSemiBuster.super.new(self, p)
   self.transform.x = x or 0
@@ -187,6 +191,8 @@ function protoSemiBuster:draw()
 end
 
 protoChargedBuster = weapon:extend()
+
+protoChargedBuster.autoClean = false
 
 function protoChargedBuster:new(x, y, p, dir, skin)
   protoChargedBuster.super.new(self, p)
@@ -217,6 +223,8 @@ function protoChargedBuster:draw()
 end
 
 bassBuster = weapon:extend()
+
+bassBuster.autoClean = false
 
 weapon.removeGroups["B.BUSTER"] = {"bassBuster"}
 
@@ -258,6 +266,8 @@ end
 
 megaBuster = weapon:extend()
 
+megaBuster.autoClean = false
+
 weapon.removeGroups["M.BUSTER"] = {"megaBuster", "megaChargedBuster"}
 
 weapon.resources["M.BUSTER"] = function()
@@ -293,6 +303,8 @@ end
 
 megaSemiBuster = weapon:extend()
 
+megaSemiBuster.autoClean = false
+
 function megaSemiBuster:new(x, y, p, dir)
   megaSemiBuster.super.new(self, p)
   self.transform.x = x or 0
@@ -320,6 +332,8 @@ function megaSemiBuster:draw()
 end
 
 megaChargedBuster = weapon:extend()
+
+megaChargedBuster.autoClean = false
 
 function megaChargedBuster:new(x, y, p, dir)
   megaChargedBuster.super.new(self, p)
@@ -350,6 +364,8 @@ function megaChargedBuster:draw()
 end
 
 trebleBoost = weapon:extend()
+
+trebleBoost.autoClean = false
 
 weapon.removeGroups["T. BOOST"] = {"trebleBoost", "bassBuster"}
 
@@ -444,6 +460,8 @@ function trebleBoost:draw()
 end
 
 rushJet = weapon:extend()
+
+rushJet.autoClean = false
 
 weapon.removeGroups["RUSH JET"] = {"rushJet", "megaBuster", "bassBuster"}
 
@@ -603,6 +621,8 @@ end
 
 rushCoil = weapon:extend()
 
+rushCoil.autoClean = false
+
 weapon.removeGroups["RUSH C."] = {"rushCoil", "megaBuster", "bassBuster", "rollBuster"}
 
 weapon.resources["RUSH C."] = function()
@@ -724,6 +744,8 @@ function rushCoil:draw()
 end
 
 stickWeapon = weapon:extend()
+
+stickWeapon.autoClean = false
 
 weapon.removeGroups["STICK W."] = {"stickWeapon"}
 

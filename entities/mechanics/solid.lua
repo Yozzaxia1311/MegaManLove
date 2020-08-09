@@ -1,5 +1,7 @@
 solid = basicEntity:extend()
 
+solid.autoClean = false
+
 mapEntity.register("solid", function(v)
   megautils.add(solid, v.x, v.y, v.width, v.height)
 end, 0, true)
@@ -36,6 +38,8 @@ megautils.loadResource("assets/misc/slopes/slopeLeftHalfUpperInvert.png", "slope
 megautils.loadResource("assets/misc/slopes/slopeRightHalfUpperInvert.png", "slopeRightHalfUpperInvert", true, true)
 
 slope = basicEntity:extend()
+
+slope.autoClean = false
 
 mapEntity.register("slope", function(v)
   megautils.add(slope, v.x, v.y, megautils.getResourceTable(v.properties.mask))

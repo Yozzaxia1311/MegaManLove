@@ -1,5 +1,7 @@
 checkpoint = basicEntity:extend()
 
+checkpoint.autoClean = false
+
 mapEntity.register("checkpoint", function(v)
   megautils.add(checkpoint, v.x, v.y, v.width, v.height, v.properties.name)
 end, 0, true)
@@ -23,6 +25,8 @@ function checkpoint:update(dt)
 end
 
 collisionCheckpoint = basicEntity:extend()
+
+collisionCheckpoint.autoClean = false
 
 mapEntity.register("collisionCheckpoint", function(v)
   megautils.add(collisionCheckpoint, v.x, v.y, v.width, v.height, v.properties.name)

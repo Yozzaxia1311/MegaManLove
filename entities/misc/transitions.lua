@@ -1,5 +1,7 @@
 right = basicEntity:extend()
 
+right.autoClean = false
+
 mapEntity.register("right", function(v)
   megautils.add(right, v.x, v.y, v.height,
     v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.platform, v.properties.toSection)
@@ -50,6 +52,8 @@ end
 
 left = basicEntity:extend()
 
+left.autoClean = false
+
 mapEntity.register("left", function(v)
   megautils.add(left, v.x, v.y, v.height,
     v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.platform, v.properties.toSection)
@@ -99,6 +103,8 @@ function left:update(dt)
 end
 
 down = basicEntity:extend()
+
+down.autoClean = false
 
 mapEntity.register("down", function(v)
   megautils.add(down, v.x, v.y, v.width,
@@ -153,6 +159,8 @@ end
 
 up = basicEntity:extend()
 
+up.autoClean = false
+
 mapEntity.register("up", function(v)
   megautils.add(up, v.x, v.y, v.width,
     v.properties.doScrollX, v.properties.doScrollY, v.properties.speed,
@@ -206,6 +214,8 @@ end
 
 sectionPrioritySetter = basicEntity:extend()
 
+sectionPrioritySetter.autoClean = false
+
 mapEntity.register("sectionPrioritySetter", function(v)
   megautils.add(sectionPrioritySetter, v.x, v.y, v.width, v.height, v.properties.toSection)
 end, 0, true)
@@ -244,6 +254,8 @@ function sectionPrioritySetter:update(dt)
 end
 
 sectionPrioritySetterXBorder = basicEntity:extend()
+
+sectionPrioritySetterXBorder.autoClean = false
 
 mapEntity.register("sectionPrioritySetterXBorder", function(v)
   megautils.add(sectionPrioritySetterXBorder, v.x, v.y, v.height, v.properties.lname, v.properties.rname)
@@ -287,6 +299,8 @@ end
 
 sectionPrioritySetterYBorder = basicEntity:extend()
 
+sectionPrioritySetterYBorder.autoClean = false
+
 mapEntity.register("sectionPrioritySetterYBorder", function(v)
   megautils.add(sectionPrioritySetterYBorder, v.x, v.y, v.width, v.properties.uname, v.properties.dname)
 end, 0, true)
@@ -329,6 +343,8 @@ end
 
 sectionPrioritySetterArea = basicEntity:extend()
 
+sectionPrioritySetterArea.autoClean = false
+
 mapEntity.register("sectionPrioritySetterArea", function(v)
   megautils.add(sectionPrioritySetterArea, v.x, v.y, v.width, v.height, v.properties.inname, v.properties.outname)
 end, 0, true)
@@ -344,17 +360,27 @@ end
 
 function sectionPrioritySetterArea:added()
   self:addToGroup("handledBySections")
+  self:addToGroup("sectionPriorityArea")
 end
 
 function sectionPrioritySetterArea:check()
   local count = 0
-  local sx, sy, sw, sh = self.transform.x, self.transform.y, self.collisionShape.w, self.collisionShape.h
-  
-  for k, v in ipairs(megaMan.allPlayers) do
-    local x, y, w, h = v.transform.x, v.transform.y, v.collisionShape.w, v.collisionShape.h
-    if pointOverlapsRect(x, y, sx, sy, sw, sh) and pointOverlapsRect(x+w, y, sx, sy, sw, sh) and
-      pointOverlapsRect(x+w, y+h, sx, sy, sw, sh) and pointOverlapsRect(x, y+h, sx, sy, sw, sh) then
-      count = count + 1
+  local checker = {}
+  for i=1, #megaMan.allPlayers do
+    checker[i] = megaMan.allPlayers[i]
+  end
+  for i, j in ipairs(megautils.groups().sectionPriorityArea) do
+    if self.inName == j.inName then
+      local sx, sy, sw, sh = j.transform.x, j.transform.y, j.collisionShape.w, j.collisionShape.h
+      
+      for k, v in pairs(checker) do
+        local x, y, w, h = v.transform.x, v.transform.y, v.collisionShape.w, v.collisionShape.h
+        if pointOverlapsRect(x, y, sx, sy, sw, sh) and pointOverlapsRect(x+w, y, sx, sy, sw, sh) and
+          pointOverlapsRect(x+w, y+h, sx, sy, sw, sh) and pointOverlapsRect(x, y+h, sx, sy, sw, sh) then
+          checker[k] = nil
+          count = count + 1
+        end
+      end
     end
   end
   

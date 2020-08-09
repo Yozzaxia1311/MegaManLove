@@ -1,5 +1,7 @@
 ready = basicEntity:extend()
 
+ready.autoClean = false
+
 function ready:new(text, blinks)
   ready.super.new(self)
   self:setLayer(9)
