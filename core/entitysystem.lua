@@ -627,7 +627,7 @@ function basicEntity:staticToggled() end
 
 megautils.cleanFuncs.autoCleaner = function()
     for k, v in pairs(_G) do
-      if tostring(v) == "Entity" and v.autoClean then
+      if type(v) == "table" and tostring(v) == "Entity" and v.autoClean then
         _G[k] = nil
       end
     end
