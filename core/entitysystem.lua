@@ -627,6 +627,7 @@ function entity:new()
   self.canDraw.flash = true
   self.blockCollision = {global=false}
   self.ground = false
+  self.snapToGround = true
   self.xColl = 0
   self.yColl = 0
   self.shakeX = 0

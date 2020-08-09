@@ -130,7 +130,7 @@ function collision.entityPlatform(self)
             (v.transform.y + (v.collisionShape.h/2)))
           
           if not v:collision(self) then
-            local epIsPassenger = v:collision(self, 0, (v.gravity >= 0 and 1 or -1)*(v.ground and 1 or 0))
+            local epIsPassenger = v:collision(self, 0, (v.gravity >= 0 and 1 or -1)*((v.ground and v.snapToGround) and 1 or 0))
             local epWillCollide = self:collision(v, 0, myyspeed)
             
             if epIsPassenger or epWillCollide then
@@ -329,10 +329,11 @@ function collision.checkGround(self, checkAnyway, noSlope)
         self.inStandSolid = nil
       elseif self.velocity.vely * cgrav >= 0 then
         self.ground = true
-        self.transform.y = math.round(self.transform.y+cgrav) + (i - cgrav)
-        local dec = 0
-        while self:collisionNumber(solid) ~= 0 do
-          self.transform.y = self.transform.y - cgrav
+        if self.snapToGround then
+          self.transform.y = math.round(self.transform.y+cgrav) + (i - cgrav)
+          while self:collisionNumber(solid) ~= 0 do
+            self.transform.y = self.transform.y - cgrav
+          end
         end
         break
       end
