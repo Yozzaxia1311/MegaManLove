@@ -299,6 +299,7 @@ function camera:updateBounds(noBounds)
   else
     local tmp = section.getSections(self.transform.x, self.transform.y, self.collisionShape.w, self.collisionShape.h)
     local biggestArea = 0
+    local lastArea = 0
     local lx, ly = self.transform.x, self.transform.y
     local sects
     
@@ -308,15 +309,22 @@ function camera:updateBounds(noBounds)
       sects = tmp
     end
     
+    if self.bounds and self:collision(self.bounds) then
+      local left, top, right, bottom = self.bounds.transform.x, self.bounds.transform.y,
+        self.bounds.transform.x+self.bounds.collisionShape.w, self.bounds.transform.y+self.bounds.collisionShape.h
+      local cleft, ctop, cright, cbottom = self.transform.x, self.transform.y, self.transform.x+self.collisionShape.w, self.transform.y+self.collisionShape.h
+      biggestArea = math.max(0, math.min(right, cright) - math.max(left, cleft)) * math.max(0, math.min(bottom, cbottom) - math.max(top, ctop))
+      bounds = self.bounds
+    end
+    
     for k, s in ipairs(sects) do
       if self:collision(s) then
         local left, top, right, bottom = s.transform.x, s.transform.y, s.transform.x+s.collisionShape.w, s.transform.y+s.collisionShape.h
         local cleft, ctop, cright, cbottom = self.transform.x, self.transform.y, self.transform.x+self.collisionShape.w, self.transform.y+self.collisionShape.h
-        local xoverlap = math.max(0, math.min(right, cright) - math.max(left, cleft))
-        local yoverlap = math.max(0, math.min(bottom, cbottom) - math.max(top, ctop))
+        local area = math.max(0, math.min(right, cright) - math.max(left, cleft)) * math.max(0, math.min(bottom, cbottom) - math.max(top, ctop))
         
-        if xoverlap*yoverlap > biggestArea then
-          biggestArea = xoverlap*yoverlap
+        if area > biggestArea then
+          biggestArea = area
           bounds = s
         end
       end
