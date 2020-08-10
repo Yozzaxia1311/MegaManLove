@@ -40,4 +40,5 @@ function view.draw()
   love.graphics.setCanvas()
   cscreen.apply()
   love.graphics.draw(view.canvas)
+  cscreen.cease()
 end

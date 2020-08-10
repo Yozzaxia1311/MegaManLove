@@ -2,6 +2,8 @@ io.stdout:setvbuf("no")
 collectgarbage("setpause", 100)
 
 isMobile = love.system.getOS() == "Android" or love.system.getOS() == "iOS"
+borderLeft = love.graphics.newImage("assets/misc/borderLeft.png")
+borderRight = love.graphics.newImage("assets/misc/borderRight.png")
 
 -- Initializes the whole game to its base state.
 function initEngine()
@@ -10,7 +12,7 @@ function initEngine()
   globals = {}
   love.filesystem.load("requires.lua")()
   view.init(256, 224, 1)
-  cscreen.init(view.w*view.scale, view.h*view.scale, true)
+  cscreen.init(view.w*view.scale, view.h*view.scale, true, borderLeft, borderRight)
   
   megautils.runFile("core/commands.lua")
   

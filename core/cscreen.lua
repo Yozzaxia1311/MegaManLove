@@ -31,13 +31,17 @@ local CScreen = {}
 local rx, ry, ctr = 800, 600, true
 local rxv, ryv, fsv, fsvr = 800, 600, 1.0, 1.0
 local tx, ty, rwf, rhf = 0, 0, 800, 600
-local cr, cg, cb, ca = 0, 0, 0, 255
+local cr, cg, cb, ca = 60/255, 188/255, 255, 1
+local ir, ig, ib, ia = 1, 1, 1, 1
+local imgl, imgr
 
 -- Initializes CScreen with the initial size values
-function CScreen.init(tw, th, cntr)
+function CScreen.init(tw, th, cntr, imgle, imgri)
 	rx = tw or 800
 	ry = th or 600
 	ctr = cntr or false
+  imgl = imgle
+  imgr = imgri
 	CScreen.update(love.graphics.getWidth(), love.graphics.getHeight())
 end
 
@@ -45,13 +49,31 @@ end
 function CScreen.cease()
 	if ctr then
 		local pr, pg, pb, pa = love.graphics.getColor()
-		love.graphics.setColor(cr, cg, cb, ca)
 		love.graphics.scale(fsvr, fsvr)
 
 		if tx ~= 0 then
-			love.graphics.rectangle("fill", -tx, 0, tx, rhf)
-			love.graphics.rectangle("fill", rxv, 0, tx, rhf)
+      if imgl then
+        love.graphics.setColor(ir, ig, ib, ia)
+        love.graphics.setScissor(0, 0, tx, rhf)
+        local ratio = math.max(tx/imgl:getWidth(), rhf/imgl:getHeight())
+        love.graphics.draw(imgl, 0, rhf/2, 0, ratio, ratio, imgl:getWidth(), imgl:getHeight()/2)
+        love.graphics.setScissor()
+      else
+        love.graphics.setColor(cr, cg, cb, ca)
+        love.graphics.rectangle("fill", -tx, 0, tx, rhf)
+      end
+      if imgr then
+        love.graphics.setColor(ir, ig, ib, ia)
+        love.graphics.setScissor(rxv+tx, 0, tx, rhf)
+        local ratio = math.max(tx/imgr:getWidth(), rhf/imgr:getHeight())
+        love.graphics.draw(imgr, rxv, rhf/2, 0, ratio, ratio, 0, imgr:getHeight()/2)
+        love.graphics.setScissor()
+      else
+        love.graphics.setColor(cr, cg, cb, ca)
+        love.graphics.rectangle("fill", rxv, 0, tx, rhf)
+      end
 		elseif ty ~= 0 then
+      love.graphics.setColor(cr, cg, cb, ca)
 			love.graphics.rectangle("fill", 0, -ty, rwf, ty)
 			love.graphics.rectangle("fill", 0, ryv, rwf, ty)
 		end
@@ -100,6 +122,16 @@ function CScreen.setColor(r, g, b, a)
 	cg = g
 	cb = b
 	ca = a
+  ir = r
+  ig = g
+  ib = b
+  ia = a
+end
+
+-- Change image borders
+function CScreen.setImageBorders(l, r)
+  imgl = l
+  imgr = r
 end
 
 -- Return the table for use
