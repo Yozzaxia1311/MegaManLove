@@ -271,7 +271,7 @@ function megaMan:loadPlayer(name)
     megaMan.weaponHandler[i]:register(0, "P.BUSTER", {quad(48, 32, 16, 16), quad(64, 32, 16, 16)},
       {216, 40, 0}, {184, 184, 184}, {0, 0, 0})
     
-    if not getFlag(t, 313, 546) then
+    if not getFlag(t, 313, 564) then
       megaMan.weaponHandler[i]:register(9, "PROTO C.", {quad(176, 0, 16, 16), quad(192, 0, 16, 16)},
         {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
       
@@ -288,7 +288,7 @@ function megaMan:loadPlayer(name)
     megaMan.weaponHandler[i]:register(0, "B.BUSTER", {quad(144, 32, 16, 16), quad(160, 32, 16, 16)},
         {112, 112, 112}, {248, 152, 56}, {0, 0, 0})
     
-    if not getFlag(t, 313, 546) then
+    if not getFlag(t, 313, 564) then
       megaMan.weaponHandler[i]:register(9, "RUSH C.", {quad(144, 0, 16, 16), quad(160, 0, 16, 16)},
         {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
       
@@ -305,7 +305,7 @@ function megaMan:loadPlayer(name)
     megaMan.weaponHandler[i]:register(0, "R.BUSTER", {quad(80, 32, 16, 16), quad(96, 32, 16, 16)},
       {248, 56, 0}, {0, 168, 0}, {0, 0, 0})
     
-    if not getFlag(t, 313, 546) then
+    if not getFlag(t, 313, 564) then
       megaMan.weaponHandler[i]:register(9, "TANGO C.", {quad(208, 0, 16, 16), quad(224, 0, 16, 16)},
         {0, 168, 0}, {255, 255, 255}, {0, 0, 0})
       
@@ -322,7 +322,7 @@ function megaMan:loadPlayer(name)
     megaMan.weaponHandler[i]:register(0, "M.BUSTER", {quad(16, 32, 16, 16), quad(32, 32, 16, 16)},
       {0, 120, 248}, {0, 232, 216}, {0, 0, 0})
     
-    if not getFlag(t, 313, 546) then
+    if not getFlag(t, 313, 564) then
       megaMan.weaponHandler[i]:register(9, "RUSH C.", {quad(144, 0, 16, 16), quad(160, 0, 16, 16)},
         {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
       
@@ -371,9 +371,13 @@ function megaMan:switchCharacter(n)
   self.canClimb.global = self:getPixel(self.texBase, 88, 564)
   self.canDash.global = self:getPixel(self.texBase, 128, 573)
   self.canHaveSmallSlide.global = self:getPixel(self.texBase, 160, 583)
-  self.maxExtraJumps = self.texBase:getPixel(self.texBase, 71, 531)
-  self.canProtoShield.global = false
-  self.canDashJump.global = false
+  self.canProtoShield.global = self:getPixel(self.texBase, 305, 537)
+  self.maxExtraJumps = (self:getPixel(self.texBase, 345, 573) and 1 or 0) + (self:getPixel(self.texBase, 351, 573) and 1 or 0) +
+    (self:getPixel(self.texBase, 357, 573) and 1 or 0)
+  if self.maxExtraJumps == 3 then
+    self.maxExtraJumps = math.huge
+  end
+  self.canDashJump.global = self:getPixel(self.texBase, 281, 582)
   
   self.dropAnimation = {regular="spawn"}
   self.dropLandAnimation = {regular="spawnLand"}
