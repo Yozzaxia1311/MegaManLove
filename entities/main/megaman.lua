@@ -10,7 +10,7 @@ megaMan.resources.megaMan = function()
     megautils.loadResource("assets/players/megaman/megaManOne.png", "megaManOne")
     megautils.loadResource("assets/players/megaman/megaManTwo.png", "megaManTwo")
     megautils.loadResource("assets/players/megaman/megaManOutline.png", "megaManOutline")
-    megautils.loadResource("assets/players/megaman/megaManFace.png", "megaManFace")
+    megautils.loadResource("assets/players/megaman/megaMan.png", "megaMan")
     megautils.loadResource("assets/sfx/mmLand.ogg", "land")
     megautils.loadResource("assets/sfx/mmHurt.ogg", "hurt")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
@@ -25,7 +25,7 @@ megaMan.resources.protoMan = function()
     megautils.loadResource("assets/players/proto/protoManOne.png", "protoManOne")
     megautils.loadResource("assets/players/proto/protoManTwo.png", "protoManTwo")
     megautils.loadResource("assets/players/proto/protoManOutline.png", "protoManOutline")
-    megautils.loadResource("assets/players/proto/protoManFace.png", "protoManFace")
+    megautils.loadResource("assets/players/proto/protoMan.png", "protoMan")
     megautils.loadResource("assets/sfx/mmLand.ogg", "land")
     megautils.loadResource("assets/sfx/mmHurt.ogg", "hurt")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
@@ -41,7 +41,7 @@ megaMan.resources.bass = function()
     megautils.loadResource("assets/players/bass/bassOne.png", "bassOne")
     megautils.loadResource("assets/players/bass/bassTwo.png", "bassTwo")
     megautils.loadResource("assets/players/bass/bassOutline.png", "bassOutline")
-    megautils.loadResource("assets/players/bass/bassFace.png", "bassFace")
+    megautils.loadResource("assets/players/bass/bass.png", "bass")
     megautils.loadResource("assets/sfx/mmLand.ogg", "land")
     megautils.loadResource("assets/sfx/mmHurt.ogg", "hurt")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
@@ -57,7 +57,7 @@ megaMan.resources.roll = function()
     megautils.loadResource("assets/players/roll/rollOne.png", "rollOne")
     megautils.loadResource("assets/players/roll/rollTwo.png", "rollTwo")
     megautils.loadResource("assets/players/roll/rollOutline.png", "rollOutline")
-    megautils.loadResource("assets/players/roll/rollFace.png", "rollFace")
+    megautils.loadResource("assets/players/roll/roll.png", "roll")
     megautils.loadResource("assets/sfx/mmLand.ogg", "land")
     megautils.loadResource("assets/sfx/mmHurt.ogg", "hurt")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
@@ -242,6 +242,7 @@ function megaMan.properties(self, g, gf, c)
   self.canChargeBuster = {global=true}
   self.canWalk = {global=true}
   self.canJump = {global=true}
+  self.canClimb = {global=true}
   self.canHaveCameraFocus = {global=true}
   self.canHaveThreeWeaponIcons = {global=false}
   self.canBeInvincible = {global=false}
@@ -311,44 +312,35 @@ function megaMan:switchCharacter(n)
     self:loadPlayer(self.playerName)
   end
   
-  local pp = "megaManGrid"
-  
   if self.playerName == "proto" then
     self.texOutline = megautils.getResource("protoManOutline")
     self.texOne = megautils.getResource("protoManOne")
     self.texTwo = megautils.getResource("protoManTwo")
-    self.texFace = megautils.getResource("protoManFace")
-    self.maxExtraJumps = 0
-    self.canProtoShield.global = true
-    self.canDashJump.global = false
+    self.texBase = megautils.getResource("protoMan")
   elseif self.playerName == "bass" then
     self.texOutline = megautils.getResource("bassOutline")
     self.texOne = megautils.getResource("bassOne")
     self.texTwo = megautils.getResource("bassTwo")
-    self.texFace = megautils.getResource("bassFace")
-    self.maxExtraJumps = 1
-    self.canProtoShield.global = false
-    self.canDashJump.global = true
+    self.texBase = megautils.getResource("bass")
     megaMan.weaponHandler[self.player]:unregister(9)
-    pp = "bassGrid"
   elseif self.playerName == "roll" then
     self.texOutline = megautils.getResource("rollOutline")
     self.texOne = megautils.getResource("rollOne")
     self.texTwo = megautils.getResource("rollTwo")
-    self.texFace = megautils.getResource("rollFace")
-    self.maxExtraJumps = 0
-    self.canProtoShield.global = false
-    self.canDashJump.global = false
-    pp = "rollGrid"
+    self.texBase = megautils.getResource("roll")
   else
     self.texOutline = megautils.getResource("megaManOutline")
     self.texOne = megautils.getResource("megaManOne")
     self.texTwo = megautils.getResource("megaManTwo")
-    self.texFace = megautils.getResource("megaManFace")
-    self.maxExtraJumps = 0
-    self.canProtoShield.global = false
-    self.canDashJump.global = false
+    self.texBase = megautils.getResource("megaMan")
   end
+  
+  self.canWalk.global = self.texBase:getPixel(71, 531)
+  self.canJump.global = self.texBase:getPixel(80, 546)
+  self.canShoot.global = self.texBase:getPixel(88, 555)
+  self.maxExtraJumps = self.texBase:getPixel(71, 531)
+  self.canProtoShield.global = false
+  self.canDashJump.global = false
   
   self.dropAnimation = {regular="spawn"}
   self.dropLandAnimation = {regular="spawnLand"}
@@ -363,6 +355,7 @@ function megaMan:switchCharacter(n)
   self.dashAnimation = {regular="dash", shoot="dashShoot"}
   self.trebleAnimation = {regular="treble", shoot="trebleShoot", start="trebleStart"}
   
+  local pp = "megaManGrid"
   self.anims = animationSet()
   if self.playerName == "bass" then
     self.anims:add("trebleStart", megautils.newAnimation(pp, {4, 10, "1-4", 11, 1, 12}, 1/8, "pauseAtEnd"))
@@ -601,7 +594,7 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
       end
     end
   end
-  self.anims.flipX = self.side == 1
+  self.anims.flipX = self.side ~= 1
   self.anims:set(self.drop and "spawn" or "idle")
   
   for k, v in pairs(megautils.playerCreatedFuncs) do
@@ -770,6 +763,7 @@ function megaMan:checkWeaponEnergy(n)
 end
 
 function megaMan:attemptWeaponUsage()
+  if not checkFalse(self.canShoot) then return end
   local w = megaMan.weaponHandler[self.player]
   local shots = {}
   if control.shootDown[self.player] then
@@ -1011,7 +1005,7 @@ function megaMan:attemptWeaponUsage()
 end
 
 function megaMan:attemptClimb()
-  if not control.downDown[self.player] and not control.upDown[self.player] then
+  if not checkFalse(self.canClimb) or (not control.downDown[self.player] and not control.upDown[self.player]) then
     return
   end
   local lad = self:checkLadder(0, self.gravity >= 0 and 1 or -1)
@@ -1273,7 +1267,7 @@ function megaMan:code(dt)
       v(self)
     end
     self:phys()
-    if checkFalse(self.canShoot) and control.shootDown[self.player] then
+    if control.shootDown[self.player] then
       self:charge()
     else
       self:charge(true)
@@ -1423,10 +1417,10 @@ function megaMan:code(dt)
       v(self)
     end
     self:phys()
-    local cd, cs = checkFalse(self.canDashShoot), checkFalse(self.canShoot)
-    if cs and not cd and control.shootDown[self.player] then
+    local cd = checkFalse(self.canDashShoot)
+    if not cd and control.shootDown[self.player] then
       self:charge()
-    elseif cs and cd then
+    elseif cd then
       self:attemptWeaponUsage()
     else
       self:charge(true)
@@ -1499,9 +1493,8 @@ function megaMan:code(dt)
     if not self.ground then
       self.standSolidJumpTimer = -1
     end
-    if checkFalse(self.canShoot) then
-      self:attemptWeaponUsage()
-    end
+    
+    self:attemptWeaponUsage()
     self:attemptClimb()
   else
     collision.doGrav(self)
@@ -1546,9 +1539,8 @@ function megaMan:code(dt)
     else
       self:attemptClimb()
     end
-    if checkFalse(self.canShoot) then
-      self:attemptWeaponUsage()
-    end
+    
+    self:attemptWeaponUsage()
   end
   if megautils.groups().enemyWeapon then
     for k, v in ipairs(megautils.groups().enemyWeapon) do
@@ -1613,6 +1605,7 @@ function megaMan:resetCharge()
 end
 
 function megaMan:charge(animOnly)
+  if not checkFalse(self.canShoot) then return end
   if self.chargeColorOutlines[megaMan.weaponHandler[self.player].current] then
     self.chargeTimer2 = math.min(self.chargeTimer2+1, 4)
     if self.chargeTimer2 == 4 and self.chargeColorOutlines[megaMan.weaponHandler[self.player].current]
@@ -1881,9 +1874,9 @@ function megaMan:animate()
     end
   end
   if self.anims.current ~= self.climbAnimation.regular and self.anims.current ~= self.climbTipAnimation.regular then
-    self.anims.flipX = self.side == 1
+    self.anims.flipX = self.side ~= 1
   else
-    self.anims.flipX = false
+    self.anims.flipX = true
   end
   self.anims:update(defaultFramerate)
 end
@@ -2134,14 +2127,14 @@ function megaMan:draw()
     end
   end
   
+  love.graphics.setColor(1, 1, 1, 1)
+  self.anims:draw(self.texBase, roundx+offsetx, roundy+offsety)
   love.graphics.setColor(megaMan.colorOutline[self.player][1]/255, megaMan.colorOutline[self.player][2]/255, megaMan.colorOutline[self.player][3]/255, 1)
   self.anims:draw(self.texOutline, roundx+offsetx, roundy+offsety)
   love.graphics.setColor(megaMan.colorOne[self.player][1]/255, megaMan.colorOne[self.player][2]/255, megaMan.colorOne[self.player][3]/255, 1)
   self.anims:draw(self.texOne, roundx+offsetx, roundy+offsety)
   love.graphics.setColor(megaMan.colorTwo[self.player][1]/255, megaMan.colorTwo[self.player][2]/255, megaMan.colorTwo[self.player][3]/255, 1)
   self.anims:draw(self.texTwo, roundx+offsetx, roundy+offsety)
-  love.graphics.setColor(1, 1, 1, 1)
-  self.anims:draw(self.texFace, roundx+offsetx, roundy+offsety)
   
   if self.weaponSwitchTimer ~= 70 then
     love.graphics.setColor(1, 1, 1, 1)

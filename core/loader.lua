@@ -77,8 +77,7 @@ function loader.load(path, nick, typ, parameters, lock)
     end
   elseif typ == "grid" then
     if lock then
-      loader.locked[nick] = {anim8.newGrid(parameters[1], parameters[2], parameters[3], parameters[4], parameters[5] or 0,
-      parameters[6] or 0), path}
+      loader.locked[nick] = {anim8.newGrid(parameters[1], parameters[2], parameters[3], parameters[4], parameters[5]), path}
       loader.resources[nick] = nil
       
       return loader.locked[nick]
@@ -86,8 +85,7 @@ function loader.load(path, nick, typ, parameters, lock)
       if loader.locked[nick] then
         error("Cannot overwrite a locked resource.")
       end
-      loader.resources[nick] = {anim8.newGrid(parameters[1], parameters[2], parameters[3], parameters[4], parameters[5] or 0,
-      parameters[6] or 0), path}
+      loader.resources[nick] = {anim8.newGrid(parameters[1], parameters[2], parameters[3], parameters[4], parameters[5]), path}
       
       return loader.resources[nick]
     end

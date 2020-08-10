@@ -295,7 +295,11 @@ function megautils.loadResource(...)
     local grid
     t = "grid"
     path = nil
-    if type(args[3]) == "number" and type(args[4]) == "number" then
+    if type(args[5]) == "number" then
+      nick = args[6]
+      locked = args[7]
+      grid = {args[3], args[4], args[1], args[2], args[5]}
+    elseif type(args[3]) == "number" and type(args[4]) == "number" then
       nick = args[5]
       locked = args[6]
       grid = {args[3], args[4], args[1], args[2]}
