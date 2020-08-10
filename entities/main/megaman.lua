@@ -10,7 +10,6 @@ megaMan.resources.megaMan = function()
     megautils.loadResource("assets/players/megaman/megaManOne.png", "megaManOne")
     megautils.loadResource("assets/players/megaman/megaManTwo.png", "megaManTwo")
     megautils.loadResource("assets/players/megaman/megaManOutline.png", "megaManOutline")
-    megautils.loadResource("assets/players/megaman/megaMan.png", "megaMan")
     megautils.loadResource("assets/sfx/mmLand.ogg", "land")
     megautils.loadResource("assets/sfx/mmHurt.ogg", "hurt")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
@@ -19,13 +18,13 @@ megaMan.resources.megaMan = function()
     megautils.loadResource("assets/sfx/switch.ogg", "switch")
     megautils.loadResource("assets/sfx/charge.ogg", "charge")
     megautils.loadResource(41, 30, "megaManGrid")
+    return megautils.loadResource("assets/players/megaman/megaMan.png", "megaMan")
   end
 
 megaMan.resources.protoMan = function()
     megautils.loadResource("assets/players/proto/protoManOne.png", "protoManOne")
     megautils.loadResource("assets/players/proto/protoManTwo.png", "protoManTwo")
     megautils.loadResource("assets/players/proto/protoManOutline.png", "protoManOutline")
-    megautils.loadResource("assets/players/proto/protoMan.png", "protoMan")
     megautils.loadResource("assets/sfx/mmLand.ogg", "land")
     megautils.loadResource("assets/sfx/mmHurt.ogg", "hurt")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
@@ -35,13 +34,13 @@ megaMan.resources.protoMan = function()
     megautils.loadResource("assets/sfx/charge.ogg", "charge")
     megautils.loadResource("assets/sfx/protoCharge.ogg", "protoCharge")
     megautils.loadResource(41, 30, "megaManGrid")
+    return megautils.loadResource("assets/players/proto/protoMan.png", "protoMan")
   end
 
 megaMan.resources.bass = function()
     megautils.loadResource("assets/players/bass/bassOne.png", "bassOne")
     megautils.loadResource("assets/players/bass/bassTwo.png", "bassTwo")
     megautils.loadResource("assets/players/bass/bassOutline.png", "bassOutline")
-    megautils.loadResource("assets/players/bass/bass.png", "bass")
     megautils.loadResource("assets/sfx/mmLand.ogg", "land")
     megautils.loadResource("assets/sfx/mmHurt.ogg", "hurt")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
@@ -51,13 +50,13 @@ megaMan.resources.bass = function()
     megautils.loadResource("assets/sfx/treble.ogg", "trebleStart")
     megautils.loadResource("assets/sfx/charge.ogg", "charge")
     megautils.loadResource(45, 41, "bassGrid")
+    return megautils.loadResource("assets/players/bass/bass.png", "bass")
   end
 
 megaMan.resources.roll = function()
     megautils.loadResource("assets/players/roll/rollOne.png", "rollOne")
     megautils.loadResource("assets/players/roll/rollTwo.png", "rollTwo")
     megautils.loadResource("assets/players/roll/rollOutline.png", "rollOutline")
-    megautils.loadResource("assets/players/roll/roll.png", "roll")
     megautils.loadResource("assets/sfx/mmLand.ogg", "land")
     megautils.loadResource("assets/sfx/mmHurt.ogg", "hurt")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
@@ -66,6 +65,7 @@ megaMan.resources.roll = function()
     megautils.loadResource("assets/sfx/switch.ogg", "switch")
     megautils.loadResource("assets/sfx/charge.ogg", "charge")
     megautils.loadResource(45, 34, "rollGrid")
+    return megautils.loadResource("assets/players/roll/roll.png", "roll")
   end
 
 megautils.reloadStateFuncs.megaMan = function()
@@ -251,57 +251,87 @@ function megaMan.properties(self, g, gf, c)
   self.canStep = {global=true}
   self.canIgnoreKnockback = {global=false}
   self.canProtoShield = {global=false}
+  self.canHaveSmallSlide = {global=true}
   self.canControl = {global=(c == nil) or c}
+end
+
+local function getFlag(t, x, y)
+  local r, g, b, a = t:getPixel(x, y)
+  return a > 0
 end
 
 function megaMan:loadPlayer(name)
   local i = (type(self) == "number") and self or self.player
   local n = name or megautils.getPlayer(i)
+  local t
   
   if n == "proto" then
-    megaMan.resources.protoMan()
-        
+    t = megaMan.resources.protoMan()
+    
     megaMan.weaponHandler[i]:register(0, "P.BUSTER", {quad(48, 32, 16, 16), quad(64, 32, 16, 16)},
       {216, 40, 0}, {184, 184, 184}, {0, 0, 0})
     
-    megaMan.weaponHandler[i]:register(9, "PROTO C.", {quad(176, 0, 16, 16), quad(192, 0, 16, 16)},
-      {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
-    
-    megaMan.weaponHandler[i]:register(10, "PROTO JET", {quad(176, 16, 16, 16), quad(192, 16, 16, 16)},
-      {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+    if not getFlag(t, 313, 546) then
+      megaMan.weaponHandler[i]:register(9, "PROTO C.", {quad(176, 0, 16, 16), quad(192, 0, 16, 16)},
+        {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+      
+      megaMan.weaponHandler[i]:register(10, "PROTO JET", {quad(176, 16, 16, 16), quad(192, 16, 16, 16)},
+        {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+    else
+      megaMan.weaponHandler[i]:register(10, "T. BOOST", {quad(144, 16, 16, 16), quad(160, 16, 16, 16)},
+        {112, 112, 112}, {128, 0, 240}, {0, 0, 0})
+    end
     
   elseif n == "bass" then
-    megaMan.resources.bass()
+    t = megaMan.resources.bass()
     
     megaMan.weaponHandler[i]:register(0, "B.BUSTER", {quad(144, 32, 16, 16), quad(160, 32, 16, 16)},
-      {112, 112, 112}, {248, 152, 56}, {0, 0, 0})
+        {112, 112, 112}, {248, 152, 56}, {0, 0, 0})
     
-    megaMan.weaponHandler[i]:register(10, "T. BOOST", {quad(144, 16, 16, 16), quad(160, 16, 16, 16)},
-      {112, 112, 112}, {128, 0, 240}, {0, 0, 0})
+    if not getFlag(t, 313, 546) then
+      megaMan.weaponHandler[i]:register(9, "RUSH C.", {quad(144, 0, 16, 16), quad(160, 0, 16, 16)},
+        {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+      
+      megaMan.weaponHandler[i]:register(10, "RUSH JET", {quad(112, 32, 16, 16), quad(128, 32, 16, 16)},
+        {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+    else
+      megaMan.weaponHandler[i]:register(10, "T. BOOST", {quad(144, 16, 16, 16), quad(160, 16, 16, 16)},
+        {112, 112, 112}, {128, 0, 240}, {0, 0, 0})
+    end
     
   elseif n == "roll" then
-    megaMan.resources.roll()
+    t = megaMan.resources.roll()
     
     megaMan.weaponHandler[i]:register(0, "R.BUSTER", {quad(80, 32, 16, 16), quad(96, 32, 16, 16)},
       {248, 56, 0}, {0, 168, 0}, {0, 0, 0})
     
-    megaMan.weaponHandler[i]:register(9, "TANGO C.", {quad(208, 0, 16, 16), quad(224, 0, 16, 16)},
-      {0, 168, 0}, {255, 255, 255}, {0, 0, 0})
-    
-    megaMan.weaponHandler[i]:register(10, "TANGO JET", {quad(208, 16, 16, 16), quad(224, 16, 16, 16)},
-      {0, 168, 0}, {255, 255, 255}, {0, 0, 0})
+    if not getFlag(t, 313, 546) then
+      megaMan.weaponHandler[i]:register(9, "TANGO C.", {quad(208, 0, 16, 16), quad(224, 0, 16, 16)},
+        {0, 168, 0}, {255, 255, 255}, {0, 0, 0})
+      
+      megaMan.weaponHandler[i]:register(10, "TANGO JET", {quad(208, 16, 16, 16), quad(224, 16, 16, 16)},
+        {0, 168, 0}, {255, 255, 255}, {0, 0, 0})
+    else
+      megaMan.weaponHandler[i]:register(10, "T. BOOST", {quad(144, 16, 16, 16), quad(160, 16, 16, 16)},
+        {112, 112, 112}, {128, 0, 240}, {0, 0, 0})
+    end
     
   else
-    megaMan.resources.megaMan()
+    t = megaMan.resources.megaMan()
     
     megaMan.weaponHandler[i]:register(0, "M.BUSTER", {quad(16, 32, 16, 16), quad(32, 32, 16, 16)},
       {0, 120, 248}, {0, 232, 216}, {0, 0, 0})
     
-    megaMan.weaponHandler[i]:register(9, "RUSH C.", {quad(144, 0, 16, 16), quad(160, 0, 16, 16)},
-      {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
-    
-    megaMan.weaponHandler[i]:register(10, "RUSH JET", {quad(112, 32, 16, 16), quad(128, 32, 16, 16)},
-      {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+    if not getFlag(t, 313, 546) then
+      megaMan.weaponHandler[i]:register(9, "RUSH C.", {quad(144, 0, 16, 16), quad(160, 0, 16, 16)},
+        {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+      
+      megaMan.weaponHandler[i]:register(10, "RUSH JET", {quad(112, 32, 16, 16), quad(128, 32, 16, 16)},
+        {248, 56, 0}, {255, 255, 255}, {0, 0, 0})
+    else
+      megaMan.weaponHandler[i]:register(10, "T. BOOST", {quad(144, 16, 16, 16), quad(160, 16, 16, 16)},
+        {112, 112, 112}, {128, 0, 240}, {0, 0, 0})
+    end
     
   end
 end
@@ -335,10 +365,13 @@ function megaMan:switchCharacter(n)
     self.texBase = megautils.getResource("megaMan")
   end
   
-  self.canWalk.global = self.texBase:getPixel(71, 531)
-  self.canJump.global = self.texBase:getPixel(80, 546)
-  self.canShoot.global = self.texBase:getPixel(88, 555)
-  self.maxExtraJumps = self.texBase:getPixel(71, 531)
+  self.canWalk.global = self:getFlag(self.texBase, 71, 531)
+  self.canJump.global = self:getFlag(self.texBase, 80, 546)
+  self.canShoot.global = self:getPixel(self.texBase, 88, 555)
+  self.canClimb.global = self:getPixel(self.texBase, 88, 564)
+  self.canDash.global = self:getPixel(self.texBase, 128, 573)
+  self.canHaveSmallSlide.global = self:getPixel(self.texBase, 160, 583)
+  self.maxExtraJumps = self.texBase:getPixel(self.texBase, 71, 531)
   self.canProtoShield.global = false
   self.canDashJump.global = false
   
@@ -356,17 +389,12 @@ function megaMan:switchCharacter(n)
   self.trebleAnimation = {regular="treble", shoot="trebleShoot", start="trebleStart"}
   
   local pp = "megaManGrid"
+  
   self.anims = animationSet()
-  if self.playerName == "bass" then
-    self.anims:add("trebleStart", megautils.newAnimation(pp, {4, 10, "1-4", 11, 1, 12}, 1/8, "pauseAtEnd"))
-    self.anims:add("treble", megautils.newAnimation(pp, {"2-3", 12}, 1/12))
-    self.anims:add("trebleShoot", megautils.newAnimation(pp, {4, 12, 1, 13}, 1/12))
-  end
-  if self.playerName == "proto" then
-    self.anims:add("idle", megautils.newAnimation(pp, {1, 1, 2, 1}, 1/8))
-  else
-    self.anims:add("idle", megautils.newAnimation(pp, {1, 1, 2, 1}, {2.5, 0.1}))
-  end
+  self.anims:add("trebleStart", megautils.newAnimation(pp, {4, 10, "1-4", 11, 1, 12}, 1/8, "pauseAtEnd"))
+  self.anims:add("treble", megautils.newAnimation(pp, {"2-3", 12}, 1/12))
+  self.anims:add("trebleShoot", megautils.newAnimation(pp, {4, 12, 1, 13}, 1/12))
+  self.anims:add("idle", megautils.newAnimation(pp, {1, 1, 2, 1}, getFlag(self.texBase, 257, 546) and (1/8) or {2.5, 0.1}))
   self.anims:add("idleShoot", megautils.newAnimation(pp, {1, 4}))
   self.anims:add("idleShootDM", megautils.newAnimation(pp, {3, 6}))
   self.anims:add("idleShootUM", megautils.newAnimation(pp, {4, 6}))
@@ -683,11 +711,11 @@ function megaMan:regBox()
 end
 
 function megaMan:basicSlideBox()
-  self:setRectangleCollision(11, self.playerName == "bass" and 21 or 14)
+  self:setRectangleCollision(11, checkFalse(self.canHaveSmallSlide) and 21 or 14)
 end
 
 function megaMan:slideBox()
-  self:setRectangleCollision(17, self.playerName == "bass" and 21 or 14)
+  self:setRectangleCollision(17, checkFalse(self.canHaveSmallSlide) and 21 or 14)
 end
 
 function megaMan:checkRegBox(ox, oy)
