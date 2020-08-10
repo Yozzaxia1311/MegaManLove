@@ -5,6 +5,23 @@ megaMan.autoClean = false
 megaMan.mainPlayer = nil
 megaMan.allPlayers = {}
 megaMan.resources = {}
+megaMan.skins = {}
+megaMan.skinCache = {}
+
+function megaMan.setSkin(player, path)
+  if not megaMan.skinCache[path] then
+    megaMan.skinCache[path] = {love.graphics.newImage(path .. "/" .. path .. ".png"),
+      love.graphics.newImage(path .. "/" .. path .. "_outline.png"),
+      love.graphics.newImage(path .. "/" .. path .. "_one.png"),
+      love.graphics.newImage(path .. "/" .. path .. "_two.png")}
+  end
+  
+  megaMan.skins[player] = megaMan.skinCache[path]
+end
+
+function megaMan.getSkin(player)
+  return unpack(megaMan.skins[player])
+end
 
 megaMan.resources.megaMan = function()
     megautils.loadResource("assets/players/megaman/megaManOne.png", "megaManOne")
