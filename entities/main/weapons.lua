@@ -46,6 +46,7 @@ function weapon:new(p, enWeapon)
     self.autoGravity = false
     self.doAutoCollisionBeforeUpdate = true
     self.doDink = true
+    self.applyAutoFace = false
   end
   
   self.dinkedBy = nil
@@ -56,6 +57,7 @@ function weapon:new(p, enWeapon)
   self.damageTypeOnDink = weapon.DAMAGENONE
   self.pierceType = pierce.NOPIERCE
   self.isEnemyWeapon = false
+  self.autoFace = -1
   if enWeapon then
     self.isEnemyWeapon = true
     self.damageType = weapon.DAMAGEPLAYER
@@ -138,6 +140,11 @@ function weapon:beforeUpdate()
   if self.autoCollision and self.doAutoCollisionBeforeUpdate then
     collision.doCollision(self)
     self._didCol = true
+  end
+  local s = megautils.side(self, self.user, true)
+  self.autoFace = s or self.autoFace
+  if self.applyAutoFace then
+    self.side = self.autoFace
   end
 end
 
@@ -355,8 +362,8 @@ weapon.icons["B.BUSTER"] = {
 
 weapon.colors["B.BUSTER"] = {
     outline = {0, 0, 0},
-    one = {112, 112, 112},
-    two = {248, 152, 56}
+    one = {248, 152, 56},
+    two = {112, 112, 112}
   }
 
 weapon.sevenWayAnim["B.BUSTER"] = true
@@ -565,8 +572,8 @@ weapon.icons["T. BOOST"] = {
 
 weapon.colors["T. BOOST"] = {
     outline = {0, 0, 0},
-    one = {112, 112, 112},
-    two = {128, 0, 240}
+    one = {128, 0, 240},
+    two = {112, 112, 112}
   }
 
 function trebleBoost:new(x, y, p, side)
@@ -581,7 +588,7 @@ function trebleBoost:new(x, y, p, side)
   self.anims:add("spawnLand", megautils.newAnimation("trebleGrid", {2, 1, 1, 1, 3, 1}, 1/20))
   self.anims:add("idle", megautils.newAnimation("trebleGrid", {4, 1}))
   self.anims:add("start", megautils.newAnimation("trebleGrid", {"5-6", 1, "5-6", 1, "5-6", 1, "5-6", 1, "7-8", 1}, 1/16, "pauseAtEnd"))
-  self.side = side or 1
+  self.side = side or -1
   self.s = 0
   self.timer = 0
   self.blockCollision.global = true
@@ -642,7 +649,7 @@ function trebleBoost:act()
     end
   end
   
-  self.anims.flipX = self.side ~= (self.s >= 4 and -1 or 1)
+  self.anims.flipX = self.side == 1
   self.anims.flipY = self.gravity < 0
 end
 
@@ -928,6 +935,7 @@ function rushCoil:new(x, y, p, side, skin)
   self.weaponGroup = "rushCoil"
   self.sound = nil
   self.doDink = false
+  self.anims.flipX = self.side ~= 1
 end
 
 function rushCoil:added()
@@ -992,7 +1000,6 @@ function rushCoil:act(dt)
     end
   end
   
-  self.anims.flipX = self.side ~= 1
   self.anims.flipY = self.gravity < 0
 end
 

@@ -40,4 +40,7 @@ shootY1-4: 22
 shootX2-4: 35
 shootY2-4: 17
 
+shootX4-6: 45
+shootY4-6: 28
+
 protoMug: false

@@ -694,7 +694,7 @@ function megaMan:attemptWeaponUsage()
     self.rapidShotTime = self.maxRapidShotTime
   end
   if control.shootPressed[self.player] then
-    if (w.current == "M.BUSTER" or (w.weapons[0] == "M.BUSTER" and (w.current == "RUSH JET" or w.current == "RUSH C.")))
+    if (w.current == "M.BUSTER" or w.current == "RUSH JET" or w.current == "RUSH C.")
       and self:numberOfShots("megaBuster") < 3 and self:numberOfShots("megaChargedBuster") == 0 then
       if w.current == "RUSH C." and self:checkWeaponEnergy("RUSH C.") and self:numberOfShots("rushCoil") < 1 then
         self.shootFrames = 14
@@ -710,7 +710,7 @@ function megaMan:attemptWeaponUsage()
         self:useShootAnimation()
         shots[#shots+1] = megautils.add(megaBuster, self.transform.x+self:shootOffX(), self.transform.y+self:shootOffY(), self, self.side)
       end
-    elseif (w.current == "P.BUSTER" or (w.weapons[0] == "P.BUSTER" and (w.current == "PROTO JET" or w.current == "PROTO C.")))
+    elseif (w.current == "P.BUSTER" or w.current == "PROTO JET" or w.current == "PROTO C.")
       and self:numberOfShots("megaBuster") < 3 and self:numberOfShots("protoChargedBuster") == 0 then
       if w.current == "PROTO C." and self:checkWeaponEnergy("PROTO C.") and self:numberOfShots("rushCoil") < 1 then
         self.shootFrames = 14
@@ -728,7 +728,7 @@ function megaMan:attemptWeaponUsage()
         self:useShootAnimation()
         shots[#shots+1] = megautils.add(megaBuster, self.transform.x+self:shootOffX(), self.transform.y+self:shootOffY(), self, self.side)
       end
-    elseif (w.current == "R.BUSTER" or (w.weapons[0] == "R.BUSTER" and (w.current == "TANGO JET" or w.current == "TANGO C.")))
+    elseif (w.current == "R.BUSTER" or w.current == "TANGO JET" or w.current == "TANGO C.")
       and self:numberOfShots("megaBuster") < 3 and self:numberOfShots("protoChargedBuster") == 0 then
       if w.current == "TANGO C." and self:checkWeaponEnergy("TANGO C.") and self:numberOfShots("rushCoil") < 1 then
         self.shootFrames = 14

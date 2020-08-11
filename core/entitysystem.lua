@@ -1038,12 +1038,6 @@ function advancedEntity:beforeUpdate()
   if self.flipWithPlayer and megaMan.mainPlayer then
     self:setGravityMultiplier("flipWithPlayer", megaMan.mainPlayer.gravityMultipliers.gravityFlip or 1)
   end
-  local s, n = megautils.side(self, megaMan.allPlayers)
-  self.autoFace = s or self.autoFace
-  if self.applyAutoFace then
-    self.side = self.autoFace
-  end
-  self.closest = n
   if self.autoGravity then
     collision.doGrav(self)
   end
@@ -1052,6 +1046,12 @@ function advancedEntity:beforeUpdate()
     collision.doCollision(self)
     self._didCol = true
   end
+  local s, n = megautils.side(self, megaMan.allPlayers)
+  self.autoFace = s or self.autoFace
+  if self.applyAutoFace then
+    self.side = self.autoFace
+  end
+  self.closest = n
   self:updateFlash()
   self:updateIFrame()
   self:updateShake()
