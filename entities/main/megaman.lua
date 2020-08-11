@@ -12,9 +12,11 @@ function megaMan.setSkin(player, path)
     local t = {}
     if love.filesystem.getInfo(path .. "/conf.txt") then
       for line in love.filesystem.lines(path .. "/conf.txt") do
-        local data = data:split(":")
-        local v = data[2]:trimmed()
-        t[data[1]] = tonumber(v) or toboolean(v) or v
+        if line ~= "" and line:match(":") then
+          local data = line:split(":")
+          local v = data[2]:trimmed()
+          t[data[1]] = tonumber(v) or toboolean(v) or v
+        end
       end
     end
     megaMan.skinCache[path] = {path, love.graphics.newImage(path .. "/player.png"),
@@ -65,7 +67,7 @@ megautils.resetGameObjectsFuncs.megaMan = function()
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
     megautils.loadResource("assets/sfx/switch.ogg", "switch")
     megautils.loadResource("assets/sfx/treble.ogg", "trebleStart")
-    megautils.loadResource(2, 2, 63, 62, 4, "megaManGrid")
+    megautils.loadResource(0, 0, 63, 62, 2, "megaManGrid")
     
     for i=1, globals.playerCount do
       megaMan.weaponHandler[i] = weaponHandler(nil, nil, 10)
@@ -237,32 +239,28 @@ function megaMan.registerWeapons(p)
 end
 
 function megaMan:syncPlayerSkin()
-  if self.playerName ~= n then
-    self.playerName = n
-    
-    megaMan.registerWeapons(self.player)
-    
-    local skin = megaMan.getSkin(self.player)
-    
-    self.texOutline = skin.outline
-    self.texOne = skin.one
-    self.texTwo = skin.two
-    self.texBase = skin.texture
-    
-    self.canWalk.global = skin.traits.canWalk == nil or skin.traits.canWalk
-    self.canJump.global = skin.traits.canJump == nil or skin.traits.canJump
-    self.canShoot.global = skin.traits.canShoot == nil or skin.traits.canShoot
-    self.canClimb.global = skin.traits.canClimb == nil or skin.traits.canClimb
-    self.canDash.global = skin.traits.canDash == nil or skin.traits.canDash
-    self.canHaveSmallSlide.global = skin.traits.smallSlideHitbox == nil or skin.traits.smallSlideHitbox
-    self.canProtoShield.global = not not skin.traits.protoShield
-    self.protoIdle = not not skin.traits.protoIdle
-    self.protoWhistle = not not skin.traits.protoWhistle
-    self.maxExtraJumps = skin.traits.extraJumps or 0
-    self.canDashJump.global = skin.traits.canDashJump == nil or skin.traits.canDashJump
-    
-    self:switchWeaponSlot(0)
-  end
+  megaMan.registerWeapons(self.player)
+  
+  local skin = megaMan.getSkin(self.player)
+  
+  self.texOutline = skin.outline
+  self.texOne = skin.one
+  self.texTwo = skin.two
+  self.texBase = skin.texture
+  
+  self.canWalk.global = skin.traits.canWalk == nil or skin.traits.canWalk
+  self.canJump.global = skin.traits.canJump == nil or skin.traits.canJump
+  self.canShoot.global = skin.traits.canShoot == nil or skin.traits.canShoot
+  self.canClimb.global = skin.traits.canClimb == nil or skin.traits.canClimb
+  self.canDash.global = skin.traits.canDash == nil or skin.traits.canDash
+  self.canHaveSmallSlide.global = skin.traits.smallSlideHitbox == nil or skin.traits.smallSlideHitbox
+  self.canProtoShield.global = skin.traits.protoShield == true
+  self.protoIdle = skin.traits.protoIdle == true
+  self.protoWhistle = skin.traits.protoWhistle == true
+  self.maxExtraJumps = skin.traits.extraJumps or 0
+  self.canDashJump.global = skin.traits.canDashJump == nil or skin.traits.canDashJump
+  
+  self:switchWeaponSlot(0)
 end
 
 function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
@@ -336,7 +334,7 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   self.anims:add("idleShootU", megautils.newAnimation(pp, {7, 2}))
   self.anims:add("idleThrow", megautils.newAnimation(pp, {3, 4}))
   self.anims:add("nudge", megautils.newAnimation(pp, {3, 1}))
-  self.anims:add("jump", megautils.newAnimation(pp, {8, 1))
+  self.anims:add("jump", megautils.newAnimation(pp, {8, 1}))
   self.anims:add("jumpShootDM", megautils.newAnimation(pp, {3, 3}))
   self.anims:add("jumpShoot", megautils.newAnimation(pp, {4, 3}))
   self.anims:add("jumpShootUM", megautils.newAnimation(pp, {5, 3}))
@@ -391,12 +389,12 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
       nil, nil, globals.lifeSegments, self)
     self.healthHandler.canDraw.global = false
     
-    megautils.adde(megaMan.weaponHandler[self.player])
-    megaMan.colorOutline[self.player] = megaMan.weaponHandler[self.player].colorOutline[0]
-    megaMan.colorOne[self.player] = megaMan.weaponHandler[self.player].colorOne[0]
-    megaMan.colorTwo[self.player] = megaMan.weaponHandler[self.player].colorTwo[0]
-    megaMan.weaponHandler[self.player]:reinit()
-    megaMan.weaponHandler[self.player].canDraw.global = false
+    local w = megautils.adde(megaMan.weaponHandler[self.player])
+    megaMan.colorOutline[self.player] = weapon.colors[w.current].outline
+    megaMan.colorOne[self.player] = weapon.colors[w.current].one
+    megaMan.colorTwo[self.player] = weapon.colors[w.current].two
+    w:reinit()
+    w.canDraw.global = false
     
     if camera.main and not camera.main.funcs.megaMan then
       camera.main.funcs.megaMan = function(s)
@@ -813,11 +811,8 @@ function megaMan:attemptWeaponUsage()
       end
     end
   end
-  if control.shootDown[self.player] then
-    if checkFalse(self.canChargeBuster) and self.chargeColorOutlines[w.current] and
-      self.chargeColorOnes[w.current] and self.chargeColorTwos[w.current] then
-      self:charge()
-    end
+  if control.shootDown[self.player] and checkFalse(self.canChargeBuster) then
+    self:charge()
   end
   for k, v in pairs(megautils.playerAttemptWeaponFuncs) do
     v(self, shots)
@@ -1435,7 +1430,7 @@ function megaMan:charge(animOnly)
       self.chargeTimer = math.min(self.chargeTimer+1, self.maxChargeTime)
     end
     if self.chargeTimer == self.maxChargeTime and self.chargeState <
-      table.length(weapon.chargeColors[w.current].outline[w.current])-1 then
+      table.length(weapon.chargeColors[w.current].outline) then
       self.chargeTimer = 0
       self.chargeFrame = 1
       if self.chargeState == 0 then
@@ -1443,14 +1438,14 @@ function megaMan:charge(animOnly)
       end
       if not animOnly then
         self.chargeState = math.min(self.chargeState+1, 
-          table.length(weapon.chargeColors[w.current].outline[w.current])-1)
+          table.length(weapon.chargeColors[w.current].outline))
       end
     end
     
     if self.chargeState > 0 then
-      megaMan.colorOutline[self.player] = weapon.chargeColors[w.current].outline[w.current][self.chargeState][self.chargeFrame]
-      megaMan.colorOne[self.player] = weapon.chargeColors[w.current].one[w.current][self.chargeState][self.chargeFrame]
-      megaMan.colorTwo[self.player] = weapon.chargeColors[w.current].two[w.current][self.chargeState][self.chargeFrame]
+      megaMan.colorOutline[self.player] = weapon.chargeColors[w.current].outline[self.chargeState][self.chargeFrame]
+      megaMan.colorOne[self.player] = weapon.chargeColors[w.current].one[self.chargeState][self.chargeFrame]
+      megaMan.colorTwo[self.player] = weapon.chargeColors[w.current].two[self.chargeState][self.chargeFrame]
     else
       megaMan.colorOutline[self.player] = weapon.colors[w.current].outline
       megaMan.colorOne[self.player] = weapon.colors[w.current].one
@@ -1882,6 +1877,7 @@ end
 function megaMan:draw()
   if megaMan.mainPlayer and megaMan.mainPlayer.ready then return end
   
+  local offsetx, offsety = 0, 0
   local roundx, roundy = math.round(self.transform.x), math.round(self.transform.y)
   
   self.anims.flipY = self.gravity < 0

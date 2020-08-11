@@ -192,7 +192,6 @@ weaponHandler.id = 0
 
 function weaponHandler:new(side, r, slots)
   weaponHandler.super.new(self)
-  self.current = "M.BUSTER"
   self.slotSize = slots
   self.currentSlot = 0
   self.weapons = {}
@@ -221,18 +220,19 @@ function weaponHandler:added()
 end
 
 function weaponHandler:reinit()
-  self.current = self.weapons[0]
-  self.curSegment = 0
   self.riseTimer = 4
-  self.currentSlot = 0
+  self:switch(0)
 end
 
 function weaponHandler:register(slot, name)
   self.weapons[slot] = name
-  self.segments[slot] = weapon.segments[name] or 7
-  self.energy[slot] = self.segments[slot]*4
+  self.energy[slot] = (weapon.segments[slot] or 7)*4
   self.renderedWE[slot] = self.energy[slot]
   self.slots[name] = slot
+  
+  if not self.current then
+    self.current = name
+  end
   
   if weapon.resources[name] then
     weapon.resources[name]()
@@ -241,7 +241,6 @@ end
 
 function weaponHandler:unregister(slot)
   self.weapons[slot] = nil
-  self.segments[slot] = nil
   self.energy[slot] = nil
   self.renderedWE[slot] = nil
   if self.weapons[slot] then
@@ -270,10 +269,9 @@ function weaponHandler:switch(slot)
     self:removeWeaponShots()
   end
   self.current = self.weapons[slot]
-  self.currentSlot = self.slots[self.current]
-  self.renderedWE[self.currentSlot] = self.energy[self.currentSlot]
-  if func then
-    func(self)
+  if self.current then
+    self.currentSlot = self.slots[self.current]
+    self.renderedWE[self.currentSlot] = self.energy[self.currentSlot]
   end
 end
 
@@ -286,23 +284,27 @@ function weaponHandler:currentWE()
 end
 
 function weaponHandler:updateCurrent(newWE)
-  if newWE > self.energy[self.currentSlot] and self.energy[self.currentSlot] < 4*self.segments[self.currentSlot] then
-    megautils.freeze({self}, "wb")
-    self.energy[self.currentSlot] = math.min(newWE, 4*(weapon.segments[self.current] or 7))
-    self.riseTimer = 0
-  elseif newWE < self.energy[self.currentSlot] then
-    self.energy[self.currentSlot] = math.max(newWE, 0)
-    self.renderedWE[self.currentSlot] = self.energy[self.currentSlot]
+  if self.current then
+    if newWE > self.energy[self.currentSlot] and self.energy[self.currentSlot] < 4*self.segments[self.currentSlot] then
+      megautils.freeze({self}, "wb")
+      self.energy[self.currentSlot] = math.min(newWE, 4*(weapon.segments[self.current] or 7))
+      self.riseTimer = 0
+    elseif newWE < self.energy[self.currentSlot] then
+      self.energy[self.currentSlot] = math.max(newWE, 0)
+      self.renderedWE[self.currentSlot] = self.energy[self.currentSlot]
+    end
   end
 end
 
 function weaponHandler:instantUpdate(newWE, slot)
-  self.energy[slot or self.currentSlot] = math.clamp(newWE, 0, 4*(weapon.segments[self.weapons[slot] or self.current] or 7))
-  self.renderedWE[slot or self.currentSlot] = self.energy[slot or self.currentSlot]
+  if self.current then
+    self.energy[slot or self.currentSlot] = math.clamp(newWE, 0, 4*(weapon.segments[self.weapons[slot] or self.current] or 7))
+    self.renderedWE[slot or self.currentSlot] = self.energy[slot or self.currentSlot]
+  end
 end
 
 function weaponHandler:update(dt)
-  if self.energy[self.currentSlot] and weapon.segments[self.current] then
+  if self.current and self.energy[self.currentSlot] and weapon.segments[self.current] then
     self.energy[self.currentSlot] = math.clamp(self.energy[self.currentSlot], 0, self.segments[self.currentSlot]*4)
     if self.renderedWE[self.currentSlot] < self.energy[self.currentSlot] then
       self.riseTimer = math.min(self.riseTimer+1, 4)
@@ -324,7 +326,7 @@ function weaponHandler:removed()
 end
 
 function weaponHandler:draw()
-  if (self.currentSlot == 0 and self.energy[self.currentSlot]) or not self.energy[self.currentSlot] then return end
+  if not self.current or (self.currentSlot == 0 and self.energy[self.currentSlot]) or not self.energy[self.currentSlot] then return end
   local curSeg = math.ceil(self.renderedWE[self.currentSlot]/4)
   self.energy[self.currentSlot] = math.clamp(self.energy[self.currentSlot], 0, weapon.segments[self.current] or 7)
   self.renderedWE[self.currentSlot] = math.clamp(self.renderedWE[self.currentSlot], 0, weapon.segments[self.current] or 7)

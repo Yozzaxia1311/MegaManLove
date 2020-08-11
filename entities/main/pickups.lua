@@ -327,6 +327,8 @@ function life:draw()
     
     self.quad.flipY = self.gravity < 0
     
+    love.graphics.setColor(1, 1, 1, 1)
+    self.quad:draw(skin.texture, math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, 1, 33, 39)
     love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
     self.quad:draw(skin.outline, math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, 1, 33, 39)
@@ -336,21 +338,19 @@ function life:draw()
     love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255, megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
       megaMan.colorTwo[megaMan.mainPlayer.player][3]/255, 1)
     self.quad:draw(skin.two, math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, 1, 33, 39)
-    love.graphics.setColor(1, 1, 1, 1)
-    self.quad:draw(skin.texture, math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, 1, 33, 39)
   else
     local skin = megaMan.getSkin(1)
     
     self.quad.flipY = self.gravity < 0
     
+    love.graphics.setColor(1, 1, 1, 1)
+    self.quad:draw(skin.texture, math.round(self.transform.x), math.round(self.transform.y)+oy, 0, 1, 1, 33, 39)
     love.graphics.setColor(0, 0, 0, 1)
     self.quad:draw(skin.outline, math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, 1, 33, 39)
     love.graphics.setColor(0, 120/255, 248/255, 1)
     self.quad:draw(skin.one, math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, 1, 33, 39)
     love.graphics.setColor(0, 232/255, 216/255, 1)
     self.quad:draw(skin.two, math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, 1, 33, 39)
-    love.graphics.setColor(1, 1, 1, 1)
-    self.quad:draw(skin.texture, math.round(self.transform.x), math.round(self.transform.y)+oy, 0, 1, 1, 33, 39)
   end
 end
 

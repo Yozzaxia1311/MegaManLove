@@ -9,3 +9,7 @@ protoIdle: false
 protoWhistle: false
 extraJumps: 0
 canDashJump: false
+
+slot0: M.BUSTER
+slot9: RUSH C.
+slot10: RUSH JET

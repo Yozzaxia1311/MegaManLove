@@ -41,8 +41,8 @@ end
 local function createFrame(self, x, y)
   local fw, fh = self.frameWidth, self.frameHeight
   return love.graphics.newQuad(
-    self.left + (x-1) * fw + x * self.border,
-    self.top  + (y-1) * fh + y * self.border,
+    self.left + self.border + (x-1) * (fw + (self.border * 2)),
+    self.top + self.border + (y-1) * (fh + (self.border * 2)),
     fw,
     fh,
     1,

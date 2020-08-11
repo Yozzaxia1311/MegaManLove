@@ -200,7 +200,7 @@ weapon.chargeColors["P.BUSTER"] = {
         {216, 40, 0},
         {0, 0, 0}
       }
-    }
+    },
     one = {
       {
         {216, 40, 0},
@@ -258,7 +258,7 @@ weapon.chargeColors["R.BUSTER"] = {
         {248, 56, 0},
         {0, 0, 0}
       }
-    }
+    },
     one = {
       {
         {248, 56, 0},
@@ -429,7 +429,7 @@ weapon.chargeColors["M.BUSTER"] = {
         {0, 0, 0},
         {0, 232, 216}
       }
-    }
+    },
     one = {
       {
         {0, 120, 248},
