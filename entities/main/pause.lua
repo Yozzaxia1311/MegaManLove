@@ -92,6 +92,10 @@ function mmWeaponsMenu:new(w, h, p)
   megaMan.colorOne[self.player.player] = weapon.colors[self.w.weapons[self.list[self.y][self.x]]].one
   megaMan.colorTwo[self.player.player] = weapon.colors[self.w.weapons[self.list[self.y][self.x]]].two
   self:setLayer(10)
+  if mmWeaponsMenu.main then
+    megautils.removeq(mmWeaponsMenu.main)
+  end
+  mmWeaponsMenu.main = self
 end
 
 function mmWeaponsMenu:added()
@@ -99,6 +103,7 @@ function mmWeaponsMenu:added()
 end
 
 function mmWeaponsMenu:removed()
+  mmWeaponsMenu.main = nil
   megautils.unfreeze(nil, "pause")
   for k, v in pairs(self.fills) do
     for i, j in pairs(v) do

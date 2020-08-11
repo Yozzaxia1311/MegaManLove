@@ -45,6 +45,10 @@ function megaMan:setSkin(path)
   if type(self) == "table" then
     self:syncPlayerSkin()
   end
+  
+  for k, v in pairs(megautils.skinChangeFuncs) do
+    v(player, path, self)
+  end
 end
 
 function megaMan:getSkin()

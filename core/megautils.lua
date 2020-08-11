@@ -18,6 +18,7 @@ megautils = {}
 ]]--
 megautils.reloadState = true
 megautils.resetGameObjects = true
+
 megautils.reloadStateFuncs = {}
 megautils.cleanFuncs = {}
 megautils.resetGameObjectsFuncs = {}
@@ -28,6 +29,7 @@ megautils.removeMapFuncs = {}
 megautils.sectionChangeFuncs = {}
 megautils.difficultyChangeFuncs = {}
 megautils.postAddObjectsFuncs = {}
+megautils.skinChangeFuncs = {}
 
 --Player callback functions. These apply to all active players.
 megautils.playerCreatedFuncs = {}       --megautils.playerCreatedFuncs.exampleFunc = function(player) end
