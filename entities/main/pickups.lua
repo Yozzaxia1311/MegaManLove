@@ -307,15 +307,7 @@ function life:new(x, y, despawn, gd, fwp, id, path)
   self.transform.x = x or 0
   self.transform.y = y or 0
   self:setRectangleCollision(16, 15)
-  self.tex = megautils.getResource("particles")
-  self.texTwo = megautils.getResource("particlesTwo")
-  self.texOutline = megautils.getResource("particlesOutline")
-  self.texOne = megautils.getResource("particlesOne")
-  self.quad = {}
-  self.quad.mega = quad(104, 12, 16, 16, 128, 98)
-  self.quad.proto = quad(56, 31, 16, 15, 128, 98)
-  self.quad.bass = quad(54, 16, 18, 15, 128, 98)
-  self.quad.roll = quad(38, 16, 16, 16, 128, 98)
+  self.quad = quad(203, 398, 63, 62)
 end
 
 function life:taken(p)
@@ -329,60 +321,36 @@ end
 
 function life:draw()
   local ox, oy = 0, 0
-  if self.gravity < 0 then
-    oy = -1
-  end
+  
   if megaMan.mainPlayer then
-    if megaMan.mainPlayer.playerName == "proto" then
-      --oy = 1
-      if self.gravity < 0 then
-        oy = -2
-      end
-    elseif megaMan.mainPlayer.playerName == "bass" then
-      ox = -1
-      if self.gravity < 0 then
-        oy = -2
-      end
-    end
-    self.quad[megaMan.mainPlayer.playerName].flipY = self.gravity < 0
-    love.graphics.setColor(1, 1, 1, 1)
-    self.quad[megaMan.mainPlayer.playerName]:draw(self.tex,
-      math.round(self.transform.x+ox), math.round(self.transform.y)+oy)
-    love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255, megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
-      megaMan.colorTwo[megaMan.mainPlayer.player][3]/255, 1)
-    self.quad[megaMan.mainPlayer.playerName]:draw(self.texTwo,
-      math.round(self.transform.x+ox), math.round(self.transform.y)+oy)
+    local skin = megaMan.getSkin(megaMan.mainPlayer.player)
+    
+    self.quad.flipY = self.gravity < 0
+    
     love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
-    self.quad[megaMan.mainPlayer.playerName]:draw(self.texOutline,
-      math.round(self.transform.x+ox), math.round(self.transform.y)+oy)
+    self.quad:draw(skin.outline, math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, 1, 33, 39)
     love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255, megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOne[megaMan.mainPlayer.player][3]/255, 1)
-    self.quad[megaMan.mainPlayer.playerName]:draw(self.texOne,
-      math.round(self.transform.x+ox), math.round(self.transform.y)+oy)
-  else
-    if megautils.getPlayer(1) == "proto" then
-      --oy = 1
-      if self.gravity < 0 then
-        oy = -2
-      end
-    elseif megautils.getPlayer(1) == "bass" then
-      ox = -1
-      --oy = 1
-      if self.gravity < 0 then
-        oy = -2
-      end
-    end
-    local p1 = megautils.getPlayer(1)
-    self.quad[p1].flipY = self.gravity < 0
+    self.quad:draw(skin.one, math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, 1, 33, 39)
+    love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255, megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
+      megaMan.colorTwo[megaMan.mainPlayer.player][3]/255, 1)
+    self.quad:draw(skin.two, math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, 1, 33, 39)
     love.graphics.setColor(1, 1, 1, 1)
-    self.quad[p1]:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y)+oy)
-    love.graphics.setColor(0, 232/255, 216/255, 1)
-    self.quad[p1]:draw(self.texTwo, math.round(self.transform.x+ox), math.round(self.transform.y)+oy)
+    self.quad:draw(skin.texture, math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, 1, 33, 39)
+  else
+    local skin = megaMan.getSkin(1)
+    
+    self.quad.flipY = self.gravity < 0
+    
     love.graphics.setColor(0, 0, 0, 1)
-    self.quad[p1]:draw(self.texOutline, math.round(self.transform.x+ox), math.round(self.transform.y)+oy)
+    self.quad:draw(skin.outline, math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, 1, 33, 39)
     love.graphics.setColor(0, 120/255, 248/255, 1)
-    self.quad[p1]:draw(self.texOne, math.round(self.transform.x+ox), math.round(self.transform.y)+oy)
+    self.quad:draw(skin.one, math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, 1, 33, 39)
+    love.graphics.setColor(0, 232/255, 216/255, 1)
+    self.quad:draw(skin.two, math.round(self.transform.x+ox), math.round(self.transform.y)+oy, 0, 1, 1, 33, 39)
+    love.graphics.setColor(1, 1, 1, 1)
+    self.quad:draw(skin.texture, math.round(self.transform.x), math.round(self.transform.y)+oy, 0, 1, 1, 33, 39)
   end
 end
 

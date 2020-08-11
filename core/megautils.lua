@@ -174,10 +174,6 @@ function megautils.getAllPlayers()
   return result
 end
 
-function megautils.getPlayerSkin(p)
-  return megaMan.skins[p]
-end
-
 function megautils.getDifficulty()
   return convar.getString("diff")
 end

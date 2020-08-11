@@ -1,0 +1,11 @@
+canWalk: true
+canJump: true
+canShoot: true
+canClimb: true
+canDash: true
+smallSlideHitbox: true
+protoShield: false
+protoIdle: false
+protoWhistle: false
+extraJumps: 0
+canDashJump: false

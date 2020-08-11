@@ -357,9 +357,9 @@ function mmWeaponsMenu:draw()
         j:draw()
         love.graphics.setColor(1, 1, 1, 1)
         if self.x == j.gridX and self.y == j.gridY then
-          self.w:drawIcon(j.id, true, view.x+(j.icoX), view.y+(j.icoY))
+          weapon.drawIcon(self.w.weapons[j.id], true, view.x+(j.icoX), view.y+(j.icoY))
         else
-          self.w:drawIcon(j.id, false, view.x+(j.icoX), view.y+(j.icoY))
+          weapon.drawIcon(self.w.weapons[j.id], false, view.x+(j.icoX), view.y+(j.icoY))
         end
         love.graphics.print(self.w.weapons[j.id], view.x+(j.icoX+16), view.y+(j.icoY))
       end
@@ -369,7 +369,7 @@ function mmWeaponsMenu:draw()
       for i, j in pairs(v) do
         j:draw()
         love.graphics.setColor(1, 1, 1, 1)
-        self.w:drawIcon(j.id, false, view.x+(j.icoX), view.y+(j.icoY))
+        weapon.drawIcon(self.w.weapons[j.id], false, view.x+(j.icoX), view.y+(j.icoY))
         love.graphics.print(self.w.weapons[j.id], view.x+(j.icoX+16), view.y+(j.icoY))
       end
     end
