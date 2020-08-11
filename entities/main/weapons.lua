@@ -308,7 +308,7 @@ function protoSemiBuster:new(x, y, p, dir, skin)
 end
 
 function protoSemiBuster:draw()
-  self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y)-3)
+  self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
 end
 
 protoChargedBuster = weapon:extend()
@@ -523,7 +523,7 @@ function megaChargedBuster:new(x, y, p, dir)
   self.tex = megautils.getResource("busterTex")
   self.anim = megautils.newAnimation("chargeGrid", {"1-4", 1}, 1/20)
   self.side = dir or 1
-  --self.velocity.velx = self.side * 5.5
+  self.velocity.velx = self.side * 5.5
   self.anim.flipX = self.side ~= 1
   self.pierceType = pierce.PIERCEIFKILLING
   self.sound = "charged"
@@ -541,7 +541,6 @@ end
 
 function megaChargedBuster:draw()
   self.anim:draw(self.tex, math.round(self.transform.x)+(self.side == 1 and -8 or 0), math.round(self.transform.y)-3)
-  self:drawCollision()
 end
 
 trebleBoost = weapon:extend()

@@ -28,7 +28,8 @@ function stageSelect:new()
   self.anims:add("0-2", megautils.newAnimation("megaManGrid", {6, 8}))
   self.anims:add("1-2", megautils.newAnimation("megaManGrid", {7, 8}))
   self.anims:add("2-2", megautils.newAnimation("megaManGrid", {8, 8}))
-  self.anims:add("proto", megautils.newAnimation("megaManGrid", {"6-8", 6, 7, 7}, 1/28, "pauseAtStart"))
+  self.anims:add("proto", megautils.newAnimation("megaManGrid", {7, 7}))
+  self.anims:add("protoGlint", megautils.newAnimation("megaManGrid", {"6-8", 6}, 1/28))
   
   if megaMan.getSkin(1).traits.protoMug then
     self.anims:set("proto")
@@ -90,6 +91,10 @@ function stageSelect:update()
   self.x = math.wrap(self.x, 0, 2)
   self.y = math.wrap(self.y, 0, 2)
   
+  if self.anims.current == "protoGlint" and self.anims:looped() then
+    self.anims:set("proto")
+  end
+  
   if oldx ~= self.x or oldy ~= self.y then
     megautils.playSound("cursorMove")
     local newx, newy = 0, 0
@@ -122,7 +127,7 @@ function stageSelect:update()
       newy = 2
     end
     if megaMan.getSkin(1).traits.protoMug then
-      self.anims:resume()
+      self.anims:set("protoGlint")
     else
       self.anims:set(tostring(self.x) .. "-" .. tostring(self.y))
     end

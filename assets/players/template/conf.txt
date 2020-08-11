@@ -1,4 +1,4 @@
-name: Mega Man
+name: Template Man
 
 canWalk: true
 canJump: true
@@ -12,7 +12,7 @@ protoWhistle: false
 extraJumps: 0
 canDashJump: false
 
-slot0: M.BUSTER
+slot0: B.BUSTER
 slot9: RUSH C.
 slot10: RUSH JET
 

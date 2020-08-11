@@ -224,9 +224,12 @@ function weaponHandler:reinit()
   self:switch(0)
 end
 
-function weaponHandler:register(slot, name)
+function weaponHandler:register(slot, name, noRefill)
   self.weapons[slot] = name
-  self.energy[slot] = (weapon.segments[slot] or 7)*4
+  if not noRefill or not self.energy[slot] then
+    self.energy[slot] = 4*(weapon.segments[slot] or 7)
+  end
+  self.energy[slot] = math.clamp(self.energy[slot], 0, 4*(weapon.segments[slot] or 7))
   self.renderedWE[slot] = self.energy[slot]
   self.slots[name] = slot
   

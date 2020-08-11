@@ -1,4 +1,4 @@
-name: Mega Man
+name: Proto Man
 
 canWalk: true
 canJump: true
@@ -6,18 +6,18 @@ canShoot: true
 canClimb: true
 canDash: true
 smallSlideHitbox: true
-protoShield: false
-protoIdleAnim: false
-protoWhistle: false
+protoShield: true
+protoIdleAnim: true
+protoWhistle: true
 extraJumps: 0
 canDashJump: false
 
-slot0: M.BUSTER
-slot9: RUSH C.
-slot10: RUSH JET
+slot0: P.BUSTER
+slot9: PROTO C.
+slot10: PROTO JET
 
-shootX: 50
-shootY: 29
+shootX: 44
+shootY: 32
 
 shootX4-2: 47
 shootY4-2: 37
@@ -35,16 +35,16 @@ shootY6-3: 18
 
 shootX7-3: 42
 shootY7-3: 35
-shootX8-3: 45
-shootY8-3: 28
+shootX8-3: 46
+shootY8-3: 30
 shootX1-4: 42
 shootY1-4: 22
 shootX2-4: 35
 shootY2-4: 17
-shootX8-4: 45
-shootY8-4: 28
+shootX8-4: 46
+shootY8-4: 30
 
 shootX4-6: 45
 shootY4-6: 28
 
-protoMug: false
+protoMug: true

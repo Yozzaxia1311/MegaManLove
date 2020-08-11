@@ -145,7 +145,6 @@ function mmWeaponsMenu:update(dt)
     self.fills[self.y][self.x].colorOne = weapon.colors[self.w.weapons[self.list[self.y][self.x]]].one
     self.fills[self.y][self.x].colorTwo = weapon.colors[self.w.weapons[self.list[self.y][self.x]]].two
     if control.startPressed[self.player.player] then
-      self.player:switchWeaponSlot(self.list[self.y][self.x])
       local ff = megautils.add(fade, true, nil, nil, function(s)
           megautils.removeq(self)
           megautils.removeq(s)
@@ -243,7 +242,7 @@ function mmWeaponsMenu:update(dt)
           self.section = 1
           self.x = 1
           self.y = 1
-          
+          self.cur = self.last[1]
           megautils.playSound("cursorMove")
          return
         end
@@ -254,10 +253,7 @@ function mmWeaponsMenu:update(dt)
       end
     end
     if olx ~= self.x or oly ~= self.y then
-      self.cur = self.fills[self.y][self.x].id
-      megaMan.colorOutline[self.player.player] = weapon.colors[self.w.weapons[self.list[self.y][self.x]]].outline
-      megaMan.colorOne[self.player.player] = weapon.colors[self.w.weapons[self.list[self.y][self.x]]].one
-      megaMan.colorTwo[self.player.player] = weapon.colors[self.w.weapons[self.list[self.y][self.x]]].two
+      self.cur = self.list[self.y][self.x]
       megautils.playSound("cursorMove")
     end
   elseif self.section == 1 then
@@ -289,9 +285,7 @@ function mmWeaponsMenu:update(dt)
         end
         self.y = self.y-1
       end
-      megaMan.colorOutline[self.player.player] = weapon.colors[self.w.weapons[self.list[self.y][self.x]]].outline
-      megaMan.colorOne[self.player.player] = weapon.colors[self.w.weapons[self.list[self.y][self.x]]].one
-      megaMan.colorTwo[self.player.player] = weapon.colors[self.w.weapons[self.list[self.y][self.x]]].two
+      self.cur = self.list[self.y][self.x]
       olx = -69
     end
     if self.x == 1 and control.rightPressed[self.player.player] then
@@ -326,13 +320,13 @@ function mmWeaponsMenu:draw()
   self.headQuad:draw(skin.texture, tx, ty, 0, 1, 1, 31, 37)
   love.graphics.setColor(megaMan.colorOutline[self.player.player][1]/255, megaMan.colorOutline[self.player.player][2]/255,
     megaMan.colorOutline[self.player.player][3]/255, 1)
-  self.headQuad:draw(self.texOutline, tx, ty, 0, 1, 1, 31, 37)
+  self.headQuad:draw(skin.outline, tx, ty, 0, 1, 1, 31, 37)
   love.graphics.setColor(megaMan.colorOne[self.player.player][1]/255, megaMan.colorOne[self.player.player][2]/255,
     megaMan.colorOne[self.player.player][3]/255, 1)
-  self.headQuad:draw(self.texOne, tx, ty, 0, 1, 1, 31, 37)
+  self.headQuad:draw(skin.one, tx, ty, 0, 1, 1, 31, 37)
   love.graphics.setColor(megaMan.colorTwo[self.player.player][1]/255, megaMan.colorTwo[self.player.player][2]/255,
     megaMan.colorTwo[self.player.player][3]/255, 1)
-  self.headQuad:draw(self.texTwo, tx, ty, 0, 1, 1, 31, 37)
+  self.headQuad:draw(skin.two, tx, ty, 0, 1, 1, 31, 37)
   
   if self.section == 0 then
     local tx, ty, tx2 = view.x+(8*6), view.y+(22*8), view.x+(8*10)

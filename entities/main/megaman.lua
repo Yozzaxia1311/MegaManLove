@@ -10,6 +10,7 @@ megaMan.skinCache = {}
 function megaMan:setSkin(path)
   local player = (type(self) == "number") and self or self.player
   local finfo = love.filesystem.getInfo(path)
+  if not finfo then error("Skin \"" .. path .. "\" does not exist") end
   if not megaMan.skinCache[path] or megaMan.skinCache[path][7] ~= finfo.modtime then
     local t = {}
     local mount
@@ -51,7 +52,11 @@ function megaMan:getSkin()
   return megaMan.skins[player]
 end
 
-megaMan.setSkin(1, "assets/players/megaMan")
+megaMan.setSkin(1, "assets/players/protoMan")
+
+for i=5, maxPlayerCount do
+  megaMan.setSkin(i, "assets/players/megaMan")
+end
 
 megautils.reloadStateFuncs.megaMan = function()
     megaMan.once = nil
@@ -247,9 +252,10 @@ function megaMan.registerWeapons(p)
   local skin = megaMan.getSkin(p)
   
   for i=0, 10 do
-    megaMan.weaponHandler[p]:unregister(i)
     if skin.traits["slot" .. i] then
-      megaMan.weaponHandler[p]:register(i, skin.traits["slot" .. i])
+      megaMan.weaponHandler[p]:register(i, skin.traits["slot" .. i], true)
+    else
+      megaMan.weaponHandler[p]:unregister(i)
     end
   end
 end
@@ -264,17 +270,17 @@ function megaMan:syncPlayerSkin()
   self.texTwo = skin.two
   self.texBase = skin.texture
   
-  self.canWalk.global = skin.traits.canWalk or self.canWalk.global
-  self.canJump.global = skin.traits.canJump or self.canJump.global
-  self.canShoot.global = skin.traits.canShoot or self.canShoot.global
-  self.canClimb.global = skin.traits.canClimb or self.canClimb.global
-  self.canDash.global = skin.traits.canDash or self.canDash.global
-  self.canHaveSmallSlide.global = skin.traits.smallSlideHitbox or self.canHaveSmallSlide.global
-  self.canProtoShield.global = skin.traits.protoShield or self.canProtoShield.global
-  self.protoIdle = skin.traits.protoIdleAnim or self.protoIdle
-  self.protoWhistle = skin.traits.protoWhistle or self.protoWhistle
-  self.maxExtraJumps = skin.traits.extraJumps or self.maxExtraJumps
-  self.canDashJump.global = skin.traits.canDashJump or self.canDashJump.global
+  self.canWalk.global = skin.traits.canWalk == nil and self.canWalk.global or skin.traits.canWalk
+  self.canJump.global = skin.traits.canJump == nil and self.canJump.global or skin.traits.canJump
+  self.canShoot.global = skin.traits.canShoot == nil and self.canShoot.global or skin.traits.canShoot
+  self.canClimb.global = skin.traits.canClimb == nil and self.canClimb.global or skin.traits.canClimb
+  self.canDash.global = skin.traits.canDash == nil and self.canDash.global or skin.traits.canDash
+  self.canHaveSmallSlide.global = skin.traits.smallSlideHitbox == nil and self.canHaveSmallSlide.global or skin.traits.smallSlideHitbox
+  self.canProtoShield.global = skin.traits.protoShield == nil and self.canProtoShield.global or skin.traits.protoShield
+  self.protoIdle = skin.traits.protoIdleAnim == nil and self.protoIdle or skin.traits.protoIdleAnim
+  self.protoWhistle = skin.traits.protoWhistle == nil and self.protoWhistle or skin.traits.protoWhistle
+  self.maxExtraJumps = skin.traits.extraJumps == nil and self.maxExtraJumps or skin.traits.extraJumps
+  self.canDashJump.global = skin.traits.canDashJump == nil and self.canDashJump.global or skin.traits.canDashJump
   
   self.shootOffsetXTable = {}
   self.shootOffsetYTable = {}
@@ -699,7 +705,7 @@ function megaMan:attemptWeaponUsage()
       if w.current == "RUSH C." and self:checkWeaponEnergy("RUSH C.") and self:numberOfShots("rushCoil") < 1 then
         self.shootFrames = 14
         self:useShootAnimation()
-        shots[#shots+1] = megautils.add(rushCoil, self.transform.x+self:shootOffX(16), self.transform.y+self:shootOffY(), self, self.side, "rush")
+        shots[#shots+1] = megautils.add(rushCoil, self.transform.x+self:shootOffX(16), self.transform.y+self:shootOffY(-16), self, self.side, "rush")
       elseif w.current == "RUSH JET" and self:checkWeaponEnergy("RUSH JET") and self:numberOfShots("rushJet") < 1 then
         self.shootFrames = 14
         self:useShootAnimation()
@@ -716,7 +722,7 @@ function megaMan:attemptWeaponUsage()
         self.shootFrames = 14
         self:useShootAnimation()
         shots[#shots+1] = megautils.add(rushCoil, self.transform.x+self:shootOffX(16),
-          self.transform.y+self:shootOffY(), self, self.side, "protoRush")
+          self.transform.y+self:shootOffY(-16), self, self.side, "protoRush")
       elseif w.current == "PROTO JET" and self:checkWeaponEnergy("PROTO JET") and self:numberOfShots("rushJet") < 1 then
         self.shootFrames = 14
         self:useShootAnimation()
@@ -734,7 +740,7 @@ function megaMan:attemptWeaponUsage()
         self.shootFrames = 14
         self:useShootAnimation()
         shots[#shots+1] = megautils.add(rushCoil, self.transform.x+self:shootOffX(16),
-          self.transform.y+self:shootOffY(), self, self.side, "tango")
+          self.transform.y+self:shootOffY(-16), self, self.side, "tango")
       elseif w.current == "TANGO JET" and self:checkWeaponEnergy("TANGO JET") and
         (not megautils.groups()["rushJet" .. w.id] or #megautils.groups()["rushJet" .. w.id] < 1) and self:numberOfShots("rushJet") then
         self.shootFrames = 14
@@ -767,7 +773,7 @@ function megaMan:attemptWeaponUsage()
         self:resetCharge()
         self:useShootAnimation()
         shots[#shots+1] = megautils.add(trebleBoost, self.transform.x+self:shootOffX(16), 
-          self.transform.y+self:shootOffY(), self, self.side)
+          self.transform.y+self:shootOffY(-16), self, self.side)
       end
     elseif w.current == "STICK W." and self:checkWeaponEnergy("STICK W.") and
       self:numberOfShots("stickWeapon") < 1 then
@@ -1148,16 +1154,20 @@ function megaMan:code(dt)
         end
         self.climb = false
     else
-      if control.leftDown[self.player] then
-        self.side = -1
-      elseif control.rightDown[self.player] then
-        self.side = 1
+      if self.runCheck then
+        if control.leftDown[self.player] then
+          self.side = -1
+        else
+          self.side = 1
+        end
       end
       self.transform.x = self.currentLadder.transform.x+(self.currentLadder.collisionShape.w/2)-(self.collisionShape.w/2)
-      if control.upDown[self.player] and self.shootFrames == 0 then
-        self.velocity.vely = self.climbUpSpeed
-      elseif control.downDown[self.player] and self.shootFrames == 0 then
-        self.velocity.vely = self.climbDownSpeed
+      if (control.upDown[self.player] or control.downDown[self.player]) and self.shootFrames == 0 then
+        if control.upDown[self.player] then
+          self.velocity.vely = self.climbUpSpeed
+        else
+          self.velocity.vely = self.climbDownSpeed
+        end
       end
       self.velocity.vely = self.velocity.vely + self.currentLadder.velocity.vely
     end
@@ -1579,10 +1589,10 @@ function megaMan:switchWeapon(n)
   local w = megaMan.weaponHandler[self.player]
   local changing = w.current ~= n
   w:switchName(n)
+  megaMan.colorOutline[self.player] = weapon.colors[w.current].outline
+  megaMan.colorOne[self.player] = weapon.colors[w.current].one
+  megaMan.colorTwo[self.player] = weapon.colors[w.current].two
   if changing then
-    megaMan.colorOutline[self.player] = weapon.colors[w.current].outline
-    megaMan.colorOne[self.player] = weapon.colors[w.current].one
-    megaMan.colorTwo[self.player] = weapon.colors[w.current].two
     self:resetCharge()
   end
 end
@@ -1591,10 +1601,10 @@ function megaMan:switchWeaponSlot(s)
   local w = megaMan.weaponHandler[self.player]
   local changing = w.currentSlot ~= s
   w:switch(s)
+  megaMan.colorOutline[self.player] = weapon.colors[w.current].outline
+  megaMan.colorOne[self.player] = weapon.colors[w.current].one
+  megaMan.colorTwo[self.player] = weapon.colors[w.current].two
   if changing then
-    megaMan.colorOutline[self.player] = weapon.colors[w.current].outline
-    megaMan.colorOne[self.player] = weapon.colors[w.current].one
-    megaMan.colorTwo[self.player] = weapon.colors[w.current].two
     self:resetCharge()
   end
 end

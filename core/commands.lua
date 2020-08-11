@@ -131,6 +131,38 @@ concmd["help"] = {
     end
 }
 
+concmd["setskin"] = {
+  helptext = "sets the skin for a player",
+  flags = {},
+  fun = function(cmd)
+      if not cmd[2] or not cmd[3] then return end
+      local player = numberSanitize(cmd[2])
+      local path = cmd[3]
+      local dir, file = love.filesystem.getInfo(path), love.filesystem.getInfo(path .. ".zip")
+      if dir or file then
+        if dir then
+          if #megaMan.allPlayers > 0 then
+            for k, v in ipairs(megaMan.allPlayers) do
+              v:setSkin(path)
+            end
+          else
+            megaMan.setSkin(player, path)
+          end
+        else
+          if #megaMan.allPlayer > 0 then
+            for k, v in ipairs(megaMan.allPlayers) do
+              v:setSkin(path .. ".zip")
+            end
+          else
+            megaMan.setSkin(player, path .. ".zip")
+          end
+        end
+      else
+        console.print("No such skin \"" .. path .. "\"")
+      end
+    end
+}
+
 concmd["rec"] = {
   helptext = "record after the state switches",
   flags = {},
