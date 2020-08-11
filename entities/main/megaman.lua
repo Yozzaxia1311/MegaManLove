@@ -1659,19 +1659,15 @@ function megaMan:animate(getDataOnly)
         else
           newAnim = self.climbTipAnimation.regular
         end
-      elseif not (control.downDown[self.player] or control.upDown[self.player]) and not self.anims:isPaused() then
+      elseif not (control.downDown[self.player] or control.upDown[self.player]) then
         pause = true
-        if shoot == "regular" then
-          if self.lastSide == -1 then
-            newFrame = 1
-          elseif self.lastSide == 1 then
+        if shoot == "regular" and self.anims.current ~= self.climbAnimation.regular and
+          table.contains(self.climbAnimation, self.anims.current) then
+          if self.side == 1 then
             newFrame = 2
+          else
+            newFrame = 1
           end
-          if not getDataOnly then
-            self.lastSide = nil
-          end
-        elseif not getDataOnly then
-          self.lastSide = self.side
         end
       elseif control.downDown[self.player] or control.upDown[self.player] and self.anims:isPaused() then
         resume = true
@@ -1939,7 +1935,7 @@ function megaMan:draw()
   
   self.anims.flipY = self.gravity < 0
   
-  if (self.anims.current == "climbShoot" or self.anims.current == "climbThrow") and not self.anims.flipX then
+  if self.anims.current ~= "climb" and table.contains(self.climbAnimation, self.anims.current) and not self.anims.flipX then
     offsetx = offsetx - 1
   end
   

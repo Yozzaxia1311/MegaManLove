@@ -31,13 +31,13 @@ shootY5-3: 21
 shootX6-3: 36
 shootY6-3: 18
 
-shootX7-3: 47
-shootY7-3: 37
+shootX7-3: 42
+shootY7-3: 35
 shootX8-3: 45
 shootY8-3: 28
-shootX5-3: 48
-shootY5-3: 21
-shootX6-3: 36
-shootY6-3: 18
+shootX1-4: 42
+shootY1-4: 22
+shootX2-4: 35
+shootY2-4: 17
 
 protoMug: false
