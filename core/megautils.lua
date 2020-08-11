@@ -821,3 +821,16 @@ function megautils.removeAllShots()
   megautils.removeEnemyShots()
   megautils.removePlayerShots()
 end
+
+local _stenx, _steny, _stenw, _stenh = 0, 0, 16, 16
+
+function megautils.rectStencil(x, y, w, h)
+  if x then
+    _stenx = x
+    _steny = y
+    _stenw = w
+    _stenh = h
+  else
+    love.graphics.rectangle("fill", _stenx, _steny, _stenw, _stenh)
+  end
+end

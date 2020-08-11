@@ -54,23 +54,10 @@ function parallax:update()
   end
 end
 
-local _x, _y, _w, _h = 0, 0, 16, 16
-
-function parallax.stencil(x, y, w, h)
-  if x then
-    _x = x
-    _y = y
-    _w = w
-    _h = h
-  else
-    love.graphics.rectangle("fill", _x, _y, _w, _h)
-  end
-end
-
 function parallax:draw()
   if not megautils.outside(self) then
-    parallax.stencil(self.transform.x, self.transform.y, self.collisionShape.w, self.collisionShape.h)
-    love.graphics.stencil(parallax.stencil, "replace", 1)
+    megautils.rectStencil(self.transform.x, self.transform.y, self.collisionShape.w, self.collisionShape.h)
+    love.graphics.stencil(megautils.rectStencil, "replace", 1)
     love.graphics.setStencilTest("equal", 1)
     local imgw, imgh
     if self.anim then
