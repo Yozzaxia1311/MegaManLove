@@ -1,0 +1,660 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "D:/RHRNewer/rhr/stages/intro/intro.stage.tmx",
+    "expandedProjectPaths": [
+        "assets/states/templates/sections",
+        "assets/states/templates",
+        "D:/RHRNewer/assets/states/templates/misc",
+        "D:/RHRNewer/assets/states/templates/player",
+        ".",
+        "D:/RHRNewer/rhr",
+        "assets/states/templates/misc",
+        "assets/states/tilesets",
+        "D:/RHRNewer/assets/states/templates/collision",
+        "D:/RHRNewer/assets/states/templates",
+        "assets",
+        "D:/RHRNewer/assets",
+        "D:/RHRNewer",
+        "D:/RHRNewer/assets/states/templates/sections",
+        "assets/states",
+        "D:/RHRNewer/assets/states",
+        "D:/RHRNewer/rhr/stages/intro",
+        "assets/states/templates/demo",
+        "D:/RHRNewer/rhr/stages"
+    ],
+    "exportAsImage.drawTileGrid": false,
+    "exportAsImage.includeBackgroundColor": false,
+    "exportAsImage.useCurrentScale": false,
+    "exportAsImage.visibleLayersOnly": true,
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "C:/Users/Shawna Page/AppData/Roaming/LOVE/MMLOVE/MegaManProject/assets/maps/introstage.tmx": {
+            "scale": 1,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 419,
+                "y": 340
+            }
+        },
+        "C:/Users/Shawna Page/AppData/Roaming/LOVE/MMLOVE/PeppermintSalt/assets/maps/introstage.tmx": {
+            "scale": 1,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1039,
+                "y": 941
+            }
+        },
+        "C:/Users/Shawna_Page/AppData/Roaming/LOVE/MMLOVE/MegaManProject/assets/maps/introstage.tmx": {
+            "scale": 4,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 148.25,
+                "y": 182
+            }
+        },
+        "C:/Users/Shawna_Page/Desktop/BassCX/assets/maps/cont.tmx": {
+            "scale": 2.1205357142857144,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 302.98947368421057,
+                "y": 200.42105263157893
+            }
+        },
+        "C:/Users/Shawna_Page/Desktop/BassCX/assets/maps/intro.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 106.33333333333331,
+                "y": 56
+            }
+        },
+        "C:/Users/Shawna_Page/Desktop/BassCX/assets/maps/title.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 554.3333333333333,
+                "y": 1056
+            }
+        },
+        "C:/Users/Shawna_Page/Desktop/MegaManRHRNew/assets/maps/flint man/flint_man.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 7,
+            "viewCenter": {
+                "x": 2320.333333333333,
+                "y": 3716.6666666666665
+            }
+        },
+        "C:/Users/Shawna_Page/Desktop/MegaManRHRNew/assets/maps/intro/intro.tmx": {
+            "scale": 2,
+            "selectedLayer": 6,
+            "viewCenter": {
+                "x": 1407.75,
+                "y": 479.75
+            }
+        },
+        "C:/Users/Shawna_Page/Desktop/MegaManRHRNew/assets/maps/stage_select.tmx": {
+            "scale": 5.5,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 223.27272727272728,
+                "y": 202.36363636363637
+            }
+        },
+        "C:/Users/Shawna_Page/Desktop/MegaManRHRNew/assets/maps/stage_select.tmx#menu_tiled": {
+            "scaleInDock": 1
+        },
+        "C:/Users/Shawna_Page/Desktop/MegaManRHRNew/assets/maps/tilesets/intro_tileset.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/Shawna_Page/Desktop/RCS/assets/maps/egg_corridor.tmx": {
+            "scale": 4,
+            "selectedLayer": 5,
+            "viewCenter": {
+                "x": 3213.125,
+                "y": 74
+            }
+        },
+        "C:/Users/Shawna_Page/Desktop/RCS/assets/maps/first_cave.tmx": {
+            "scale": 5.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 2139.3636363636365,
+                "y": 968.1818181818182
+            }
+        },
+        "C:/Users/Shawna_Page/Desktop/RCS/assets/maps/first_cave_save.tmx": {
+            "scale": 2,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 185.25,
+                "y": 151.5
+            }
+        },
+        "C:/Users/Shawna_Page/Desktop/RCS/assets/maps/grass_storage.tmx": {
+            "scale": 1.8584375,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 567.9502270052128,
+                "y": 320.6995123591727
+            }
+        },
+        "C:/Users/Shawna_Page/Desktop/RCS/assets/maps/graveyard.tmx": {
+            "scale": 4,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 1208.375,
+                "y": 613.25
+            }
+        },
+        "C:/Users/Shawna_Page/Desktop/RCS/assets/maps/mimi.tmx": {
+            "scale": 3,
+            "selectedLayer": 6,
+            "viewCenter": {
+                "x": 1457.8333333333333,
+                "y": 382.66666666666663
+            }
+        },
+        "C:/Users/Shawna_Page/Desktop/RCS/assets/maps/mimi_shed.tmx": {
+            "scale": 2.331458333333333,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 263.1400232329551,
+                "y": 181.00259136806363
+            }
+        },
+        "C:/Users/Shawna_Page/Desktop/RCS/assets/maps/root.tmx": {
+            "scale": 1,
+            "selectedLayer": 7,
+            "viewCenter": {
+                "x": 841.5,
+                "y": 912
+            }
+        },
+        "C:/Users/Shawna_Page/Desktop/RCS/assets/maps/silver_house.tmx": {
+            "scale": 4,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 278.625,
+                "y": 192
+            }
+        },
+        "C:/Users/Shawna_Page/Desktop/RCS/assets/maps/start.tmx": {
+            "scale": 3.4595833333333332,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 160.27941707816453,
+                "y": 120.24569432735156
+            }
+        },
+        "C:/Users/Shawna_Page/Desktop/TetraForce-master/maps/overworld.tmx": {
+            "scale": 2,
+            "selectedLayer": 5,
+            "viewCenter": {
+                "x": 377.5,
+                "y": 127.5
+            }
+        },
+        "C:/Users/Shawna_Page/Desktop/stripped/assets/maps/demo.tmx": {
+            "scale": 4,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 722.625,
+                "y": -66.5
+            }
+        },
+        "C:/Users/Shawna_Page/Documents/GitHub/cartographer/demos/platformer/platformer.tmx": {
+            "scale": 1.1436538461538461,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 592.3995291743736,
+                "y": 287.6744577097697
+            }
+        },
+        "C:/Users/Shawna_Page/Documents/GitHub/cartographer/demos/rpg/rpg.tmx": {
+            "scale": 0.20833333333333331,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 2234.4000000000005,
+                "y": 1156.8000000000002
+            }
+        },
+        "C:/Users/Shawna_Page/Documents/MegaManPercent/maps/flint_man.tmx": {
+            "scale": 0.12318464730290457,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1672.286315789474,
+                "y": 1306.981052631579
+            }
+        },
+        "D:/RHRNewer/assets/states/menus/menu.state.tmx": {
+            "scale": 3.7363839285714286,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 127.79735945994385,
+                "y": 111.73905251209749
+            }
+        },
+        "D:/RHRNewer/assets/states/menus/stageSelect.state.tmx": {
+            "scale": 2,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 187.5,
+                "y": 185
+            }
+        },
+        "D:/RHRNewer/assets/states/tilesets/demoTileset.tsx": {
+            "scaleInDock": 1
+        },
+        "D:/RHRNewer/assets/states/tilesets/menuTiled.tsx": {
+            "scaleInDock": 1.5
+        },
+        "D:/RHRNewer/rhr/stages/intro/intro.stage.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 376.66666666666663,
+                "y": 651.3333333333333
+            }
+        },
+        "D:/RHRNewer/rhr/stages/intro/introTileset.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "D:/RHRNewer/rhr/stages/tilesets/demoTileset.tsx": {
+            "scaleInDock": 1
+        },
+        "F:/FUN/MegaManLove-master/MarioKartTest/assets/test.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 181.33333333333331,
+                "y": 202.66666666666666
+            }
+        },
+        "F:/FUN/MegaManLove-master/realmegaman11/assets/maps/demo.tmx": {
+            "scale": 1,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 511,
+                "y": 671
+            }
+        },
+        "F:/FUN/MegaManLove-master/realmegaman11/assets/maps/engine_asset.tmx": {
+            "scale": 0.33,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 1915.1515151515152,
+                "y": 648.4848484848485
+            }
+        },
+        "F:/FUN/MegaManLove-master/realmegaman11/assets/maps/menu.tmx": {
+            "scale": 2,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 351,
+                "y": 250.5
+            }
+        },
+        "F:/FUN/MegaManLove-master/realmegaman11/assets/maps/stage_select.tmx": {
+            "scale": 3,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 200,
+                "y": 116.33333333333333
+            }
+        },
+        "F:/FUN/MegaManPeppermint/assets/maps/demo.tmx": {
+            "scale": 1,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 520,
+                "y": 356
+            }
+        },
+        "F:/FUN/MegaManPeppermint/assets/maps/introstage.tmx": {
+            "scale": 4,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 176.25,
+                "y": 160
+            }
+        },
+        "F:/FUN/MegaManRHR2/assets/maps/intro/intro.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 6,
+            "viewCenter": {
+                "x": 170,
+                "y": 233.33333333333331
+            }
+        },
+        "F:/FUN/RCS/assets/maps/egg_corridor.tmx": {
+            "scale": 2,
+            "selectedLayer": 8,
+            "viewCenter": {
+                "x": 3827.5,
+                "y": 921
+            }
+        },
+        "F:/FUN/RCS/assets/maps/first_cave.tmx": {
+            "scale": 3,
+            "selectedLayer": 6,
+            "viewCenter": {
+                "x": 216.33333333333331,
+                "y": 353.3333333333333
+            }
+        },
+        "F:/FUN/RCS/assets/maps/first_cave_save.tmx": {
+            "scale": 5.5,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 214.72727272727272,
+                "y": 175.8181818181818
+            }
+        },
+        "F:/FUN/RCS/assets/maps/grass_storage.tmx": {
+            "scale": 2,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 211,
+                "y": 177.5
+            }
+        },
+        "F:/FUN/RCS/assets/maps/graveyard.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 310,
+                "y": 640.6666666666666
+            }
+        },
+        "F:/FUN/RCS/assets/maps/mimi.tmx": {
+            "scale": 3,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 2068.6666666666665,
+                "y": 690
+            }
+        },
+        "F:/FUN/RCS/assets/maps/mimi_shed.tmx": {
+            "scale": 4,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 236.25,
+                "y": 159.25
+            }
+        },
+        "F:/FUN/RCS/assets/maps/silver_house.tmx": {
+            "scale": 2,
+            "selectedLayer": 5,
+            "viewCenter": {
+                "x": 291.5,
+                "y": 137.5
+            }
+        },
+        "F:/FUN/RCS/assets/maps/start.tmx": {
+            "scale": 3,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 146.66666666666666,
+                "y": 184.66666666666666
+            }
+        },
+        "F:/FUN/git/MegaManLove/assets/maps/cont.tmx": {
+            "scale": 1,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 127,
+                "y": 111
+            }
+        },
+        "F:/FUN/git/MegaManLove/assets/maps/demo.tmx": {
+            "scale": 1,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 444,
+                "y": 459
+            }
+        },
+        "F:/FUN/git/MegaManLove/assets/maps/game_loader.tmx": {
+            "scale": 2,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 145.5,
+                "y": -27
+            }
+        },
+        "F:/FUN/git/MegaManLove/assets/maps/menu.tmx": {
+            "scale": 3,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 171.33333333333331,
+                "y": 125
+            }
+        },
+        "F:/FUN/git/MegaManLove/assets/maps/stage_select.tmx": {
+            "scale": 1,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 127,
+                "y": 111
+            }
+        },
+        "F:/FUN/git/MegaManLove/assets/maps/weapon_select.tmx": {
+            "scale": 1,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 367,
+                "y": 254
+            }
+        },
+        "F:/FUN/git/MegaManLove/demogame/assets/demo.tmx": {
+            "scale": 4,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 152,
+                "y": 710
+            }
+        },
+        "F:/FUN/git/MegaManLove/demogame/assets/menu.tmx": {
+            "scale": 1,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 367,
+                "y": 254
+            }
+        },
+        "assets/maps/blank.tmx": {
+            "scale": 7.413392857142857,
+            "selectedLayer": -1,
+            "viewCenter": {
+                "x": 60.09394194869325,
+                "y": 56.18210285438999
+            }
+        },
+        "assets/maps/cont.tmx": {
+            "scale": 1.9153225806451613,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 252.4378947368421,
+                "y": 141.49052631578948
+            }
+        },
+        "assets/maps/demo.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 776.3333333333333,
+                "y": 896.6666666666665
+            }
+        },
+        "assets/maps/menu.tmx": {
+            "scale": 3,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 169.83333333333331,
+                "y": 114.33333333333334
+            }
+        },
+        "assets/maps/stageSelect.tmx": {
+            "scale": 3,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 95.49999999999997,
+                "y": 100.66666666666667
+            }
+        },
+        "assets/maps/stage_select.tmx": {
+            "scale": 3.7109375,
+            "selectedLayer": -1,
+            "viewCenter": {
+                "x": 128.13473684210527,
+                "y": 112.10105263157894
+            }
+        },
+        "assets/maps/untitled.tmx": {
+            "scale": 3.7066964285714286,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 120.1878838973865,
+                "y": 112.22931470552814
+            }
+        },
+        "assets/states/cont.state.tmx": {
+            "scale": 3.7066964285714286,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 124.2346139949416,
+                "y": 112.22931470552814
+            }
+        },
+        "assets/states/demo.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 1027.6666666666665,
+                "y": 140
+            }
+        },
+        "assets/states/menu.state.tmx": {
+            "scale": 2.1205357142857144,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 307.23368421052635,
+                "y": 141.0021052631579
+            }
+        },
+        "assets/states/menus/cont.state.tmx": {
+            "scale": 1.0819444444444444,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 136.79075738125803,
+                "y": 158.51091142490378
+            }
+        },
+        "assets/states/menus/menu.state.tmx": {
+            "scale": 2,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 132.25,
+                "y": 141.5
+            }
+        },
+        "assets/states/menus/stageSelect.state.tmx": {
+            "scale": 1.1128571428571428,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 481.1938382541721,
+                "y": 325.28883183568684
+            }
+        },
+        "assets/states/stageSelect.state.tmx": {
+            "scale": 3.7066964285714286,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 128.01156208599303,
+                "y": 112.22931470552814
+            }
+        },
+        "assets/states/templates/template.renamethispartofthefiletostateorstage.tmx": {
+            "scale": 1,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": -7.5,
+                "y": 8
+            }
+        },
+        "assets/states/templates/template.stage.tmx": {
+            "scale": 2,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 144.75,
+                "y": 130.5
+            }
+        },
+        "assets/states/templates/template.state.tmx": {
+            "scale": 1,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 159.5,
+                "y": 153
+            }
+        },
+        "assets/states/templates/templateStage.stage.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 127.33333333333333,
+                "y": 127.99999999999994
+            }
+        },
+        "assets/states/templates/templateState.state.tmx": {
+            "scale": 1.1455882352941176,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 451.73299101412067,
+                "y": 275.8408215661104
+            }
+        },
+        "assets/states/tilesets/demoTileset.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        }
+    },
+    "map.fixedSize": false,
+    "map.height": 14,
+    "map.lastUsedExportFilter": "Lua files (*.lua)",
+    "map.layerDataFormat": 3,
+    "map.orientation": 1,
+    "map.tileHeight": 16,
+    "map.tileWidth": 16,
+    "map.width": 16,
+    "openFiles": [
+        "D:/RHRNewer/rhr/stages/intro/intro.stage.tmx"
+    ],
+    "project": "tiledProject.tiled-project",
+    "property.type": "string",
+    "recentFiles": [
+        "D:/RHRNewer/rhr/stages/intro/intro.stage.tmx",
+        "assets/states/templates/templateStage.stage.tmx",
+        "C:/Users/Shawna_Page/Desktop/MegaManRHRNew/assets/maps/intro/intro.tmx",
+        "D:/RHRNewer/rhr/stages/intro/introTileset.tsx",
+        "C:/Users/Shawna_Page/Desktop/MegaManRHRNew/assets/maps/stage_select.tmx",
+        "D:/RHRNewer/assets/states/menus/menu.state.tmx",
+        "D:/RHRNewer/assets/states/menus/stageSelect.state.tmx",
+        "assets/states/tilesets/demoTileset.tsx"
+    ],
+    "tileset.embedInMap": false,
+    "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
+    "tileset.margin": 0,
+    "tileset.spacing": 0,
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    },
+    "tileset.transparentColor": "#ff00ff",
+    "tileset.type": 0,
+    "tileset.useTransparentColor": false
+}

@@ -328,8 +328,8 @@ end
 function weaponHandler:draw()
   if not self.current or (self.currentSlot == 0 and self.energy[self.currentSlot]) or not self.energy[self.currentSlot] then return end
   local curSeg = math.ceil(self.renderedWE[self.currentSlot]/4)
-  self.energy[self.currentSlot] = math.clamp(self.energy[self.currentSlot], 0, weapon.segments[self.current] or 7)
-  self.renderedWE[self.currentSlot] = math.clamp(self.renderedWE[self.currentSlot], 0, weapon.segments[self.current] or 7)
+  self.energy[self.currentSlot] = math.clamp(self.energy[self.currentSlot], 0, 4*(weapon.segments[self.current] or 7))
+  self.renderedWE[self.currentSlot] = math.clamp(self.renderedWE[self.currentSlot], 0, 4*(weapon.segments[self.current] or 7))
   for i=1, weapon.segments[self.current] or 7 do
     local bit = 0
     if i == curSeg then

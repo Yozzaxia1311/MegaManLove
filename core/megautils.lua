@@ -145,35 +145,6 @@ function megautils.getWTanks()
   return convar.getNumber("wtanks")
 end
 
-function megautils.setPlayer(p, what)
-  local old = convar.getString("players"):split(",")
-  local back = ""
-  old[p] = what
-  
-  for i=1, #old do
-    back = back .. old[i]
-    if i == #old then
-      back = back .. ","
-    end
-  end
-  
-  convar.setValue("players", back, true)
-end
-
-function megautils.getPlayer(p)
-  return convar.getString("players"):split(",")[p]
-end
-
-function megautils.getAllPlayers()
-  local result = {}
-  
-  for i=1, maxPlayerCount do
-    result = megautils.getPlayer(i)
-  end
-  
-  return result
-end
-
 function megautils.getDifficulty()
   return convar.getString("diff")
 end

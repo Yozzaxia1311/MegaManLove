@@ -26,13 +26,9 @@ function mmWeaponsMenu:new(w, h, p)
   self.texOutline = megautils.getResource("particlesOutline")
   self.texOne = megautils.getResource("particlesOne")
   self.texTwo = megautils.getResource("particlesTwo")
-  self.quadE = quad(72, 12, 16, 16, 128, 98)
-  self.quadW = quad(88, 12, 16, 16, 128, 98)
-  self.heads = {}
-  self.heads.mega = quad(104, 12, 16, 16, 128, 98)
-  self.heads.proto = quad(56, 31, 16, 15, 128, 98)
-  self.heads.bass = quad(54, 16, 18, 15, 128, 98)
-  self.heads.roll = quad(38, 16, 16, 16, 128, 98)
+  self.quadE = quad(72, 12, 16, 16)
+  self.quadW = quad(88, 12, 16, 16)
+  self.headQuad = quad(203, 398, 63, 62)
   self.w = w
   self.h = h
   self.player = p
@@ -61,7 +57,7 @@ function mmWeaponsMenu:new(w, h, p)
           h.segments = self.h.segments
           h.health = self.h.health
         else
-          h.segments = self.w.segments[self.list[y][x]]
+          h.segments = weapon.segments[self.w.weapons[self.list[y][x]]] or 7
           h.health = self.w.energy[self.list[y][x]]
         end
         h.side = -1
@@ -81,8 +77,8 @@ function mmWeaponsMenu:new(w, h, p)
     end
   end
   self.cur = self.w.currentSlot
-  self.activeTankColor = {self.w.colorOne[0], self.w.colorTwo[0], self.w.colorOutline[0]}
-  self.inactiveTankColor = {{188, 188, 188}, {255, 255, 255}, {0, 0, 0}}
+  self.last = {self.w.currentSlot, megaMan.colorOutline[self.player.player], megaMan.colorOne[self.player.player], megaMan.colorTwo[self.player.player]}
+  self.inactiveTankColor = {{0, 0, 0}, {188, 188, 188}, {255, 255, 255}}
   local trig = megautils.add(trigger, function(s, dt)
     for k, v in pairs(s.fills) do
       for i, j in pairs(v) do
@@ -92,9 +88,9 @@ function mmWeaponsMenu:new(w, h, p)
   end)
   trig.fills = self.fills
   trig:removeFromGroup("freezable")
-  megaMan.colorOutline[self.player.player] = self.w.colorOutline[self.list[self.y][self.x]]
-  megaMan.colorOne[self.player.player] = self.w.colorOne[self.list[self.y][self.x]]
-  megaMan.colorTwo[self.player.player] = self.w.colorTwo[self.list[self.y][self.x]]
+  megaMan.colorOutline[self.player.player] = weapon.colors[self.w.weapons[self.list[self.y][self.x]]].outline
+  megaMan.colorOne[self.player.player] = weapon.colors[self.w.weapons[self.list[self.y][self.x]]].one
+  megaMan.colorTwo[self.player.player] = weapon.colors[self.w.weapons[self.list[self.y][self.x]]].two
   self:setLayer(10)
 end
 
@@ -104,6 +100,21 @@ end
 
 function mmWeaponsMenu:removed()
   megautils.unfreeze(nil, "pause")
+  for k, v in pairs(self.fills) do
+    for i, j in pairs(v) do
+      if j.id ~= 0 then
+        self.w:instantUpdate(j.health, j.id)
+      else
+        self.h:instantUpdate(j.health)
+      end
+    end 
+  end
+  self.player:switchWeaponSlot(self.cur)
+  if self.cur == self.last[1] then
+    megaMan.colorOutline[self.player.player] = self.last[2]
+    megaMan.colorOne[self.player.player] = self.last[3]
+    megaMan.colorTwo[self.player.player] = self.last[4]
+  end
 end
 
 function mmWeaponsMenu:update(dt)
@@ -131,19 +142,10 @@ function mmWeaponsMenu:update(dt)
         j.colorTwo = {188, 188, 188}
       end
     end
-    self.fills[self.y][self.x].colorOne = self.w.colorOne[self.list[self.y][self.x]]
-    self.fills[self.y][self.x].colorTwo = self.w.colorTwo[self.list[self.y][self.x]]
+    self.fills[self.y][self.x].colorOne = weapon.colors[self.w.weapons[self.list[self.y][self.x]]].one
+    self.fills[self.y][self.x].colorTwo = weapon.colors[self.w.weapons[self.list[self.y][self.x]]].two
     if control.startPressed[self.player.player] then
       self.player:switchWeaponSlot(self.list[self.y][self.x])
-      for k, v in pairs(self.fills) do
-        for i, j in pairs(v) do
-          if j.id ~= 0 then
-            self.w:instantUpdate(j.health, j.id)
-          else
-            self.h:instantUpdate(j.health)
-          end
-        end 
-      end
       local ff = megautils.add(fade, true, nil, nil, function(s)
           megautils.removeq(self)
           megautils.removeq(s)
@@ -186,6 +188,7 @@ function mmWeaponsMenu:update(dt)
           break
         end
       end
+      self.cur = self.fills[self.y][self.x].id
     elseif control.leftPressed[self.player.player] then
       self.x = math.clamp(self.x-1, 1, 2)
       local ly = self.y
@@ -221,6 +224,7 @@ function mmWeaponsMenu:update(dt)
           break
         end
       end
+      self.cur = self.fills[self.y][self.x].id
     elseif control.upPressed[self.player.player] then
       while true do
         if (not self.fills[self.y] or not self.fills[self.y][self.x]) and self.y == 1 and self.x == 2 then
@@ -232,15 +236,14 @@ function mmWeaponsMenu:update(dt)
           break
         end
       end
+      self.cur = self.fills[self.y][self.x].id
     elseif control.downPressed[self.player.player] then
       while true do
         if self.y >= 6 then
           self.section = 1
           self.x = 1
           self.y = 1
-          megaMan.colorOutline[self.player.player] = self.w.colorOutline[self.cur]
-          megaMan.colorOne[self.player.player] = self.w.colorOne[self.cur]
-          megaMan.colorTwo[self.player.player] = self.w.colorTwo[self.cur]
+          
           megautils.playSound("cursorMove")
          return
         end
@@ -251,9 +254,10 @@ function mmWeaponsMenu:update(dt)
       end
     end
     if olx ~= self.x or oly ~= self.y then
-      megaMan.colorOutline[self.player.player] = self.w.colorOutline[self.list[self.y][self.x]]
-      megaMan.colorOne[self.player.player] = self.w.colorOne[self.list[self.y][self.x]]
-      megaMan.colorTwo[self.player.player] = self.w.colorTwo[self.list[self.y][self.x]]
+      self.cur = self.fills[self.y][self.x].id
+      megaMan.colorOutline[self.player.player] = weapon.colors[self.w.weapons[self.list[self.y][self.x]]].outline
+      megaMan.colorOne[self.player.player] = weapon.colors[self.w.weapons[self.list[self.y][self.x]]].one
+      megaMan.colorTwo[self.player.player] = weapon.colors[self.w.weapons[self.list[self.y][self.x]]].two
       megautils.playSound("cursorMove")
     end
   elseif self.section == 1 then
@@ -285,9 +289,9 @@ function mmWeaponsMenu:update(dt)
         end
         self.y = self.y-1
       end
-      megaMan.colorOutline[self.player.player] = self.w.colorOutline[self.list[self.y][self.x]]
-      megaMan.colorOne[self.player.player] = self.w.colorOne[self.list[self.y][self.x]]
-      megaMan.colorTwo[self.player.player] = self.w.colorTwo[self.list[self.y][self.x]]
+      megaMan.colorOutline[self.player.player] = weapon.colors[self.w.weapons[self.list[self.y][self.x]]].outline
+      megaMan.colorOne[self.player.player] = weapon.colors[self.w.weapons[self.list[self.y][self.x]]].one
+      megaMan.colorTwo[self.player.player] = weapon.colors[self.w.weapons[self.list[self.y][self.x]]].two
       olx = -69
     end
     if self.x == 1 and control.rightPressed[self.player.player] then
@@ -315,42 +319,36 @@ function mmWeaponsMenu:draw()
   love.graphics.print(tostring(megautils.getETanks()), view.x+(8*8), view.y+(23*8))
   love.graphics.print(tostring(megautils.getWTanks()), view.x+(12*8), view.y+(23*8))
   
-  local ox, oy = 0, 0
-  local tx, ty = view.x+(8*21), view.y+(22*8)
+  local tx, ty = view.x+(8*21)+8, view.y+(22*8)+16
+  local skin = megaMan.getSkin(self.player.player)
 
-  if self.player.playerName == "proto" then
-    oy = 1
-  elseif self.player.playerName == "bass" then
-    ox = -1
-    oy = 1
-  end
   love.graphics.setColor(1, 1, 1, 1)
-  self.heads[self.player.playerName]:draw(self.tex, tx+ox, ty+oy)
-  love.graphics.setColor(megaMan.colorTwo[self.player.player][1]/255, megaMan.colorTwo[self.player.player][2]/255,
-    megaMan.colorTwo[self.player.player][3]/255, 1)
-  self.heads[self.player.playerName]:draw(self.texTwo, tx+ox, ty+oy)
+  self.headQuad:draw(skin.texture, tx, ty, 0, 1, 1, 31, 37)
   love.graphics.setColor(megaMan.colorOutline[self.player.player][1]/255, megaMan.colorOutline[self.player.player][2]/255,
     megaMan.colorOutline[self.player.player][3]/255, 1)
-  self.heads[self.player.playerName]:draw(self.texOutline, tx+ox, ty+oy)
+  self.headQuad:draw(self.texOutline, tx, ty, 0, 1, 1, 31, 37)
   love.graphics.setColor(megaMan.colorOne[self.player.player][1]/255, megaMan.colorOne[self.player.player][2]/255,
     megaMan.colorOne[self.player.player][3]/255, 1)
-  self.heads[self.player.playerName]:draw(self.texOne, tx+ox, ty+oy)
+  self.headQuad:draw(self.texOne, tx, ty, 0, 1, 1, 31, 37)
+  love.graphics.setColor(megaMan.colorTwo[self.player.player][1]/255, megaMan.colorTwo[self.player.player][2]/255,
+    megaMan.colorTwo[self.player.player][3]/255, 1)
+  self.headQuad:draw(self.texTwo, tx, ty, 0, 1, 1, 31, 37)
   
   if self.section == 0 then
     local tx, ty, tx2 = view.x+(8*6), view.y+(22*8), view.x+(8*10)
-    love.graphics.setColor(self.inactiveTankColor[2][1]/255, self.inactiveTankColor[2][2]/255, self.inactiveTankColor[2][3]/255, 1)
-    self.quadE:draw(self.texTwo, tx, ty)
-    love.graphics.setColor(self.inactiveTankColor[3][1]/255, self.inactiveTankColor[3][2]/255, self.inactiveTankColor[3][3]/255, 1)
+    love.graphics.setColor(self.inactiveTankColor[1][1]/255, self.inactiveTankColor[1][2]/255, self.inactiveTankColor[1][3]/255, 1)
     self.quadE:draw(self.texOutline, tx, ty)
-    love.graphics.setColor(self.inactiveTankColor[1][1]/255, self.inactiveTankColor[1][2]/255, self.inactiveTankColor[1][3]/255, 1)
-    self.quadE:draw(self.texOne, tx, ty)
-    
     love.graphics.setColor(self.inactiveTankColor[2][1]/255, self.inactiveTankColor[2][2]/255, self.inactiveTankColor[2][3]/255, 1)
-    self.quadW:draw(self.texTwo, tx2, ty)
+    self.quadE:draw(self.texOne, tx, ty)
     love.graphics.setColor(self.inactiveTankColor[3][1]/255, self.inactiveTankColor[3][2]/255, self.inactiveTankColor[3][3]/255, 1)
-    self.quadW:draw(self.texOutline, tx2, ty)
+    self.quadE:draw(self.texTwo, tx, ty)
+    
     love.graphics.setColor(self.inactiveTankColor[1][1]/255, self.inactiveTankColor[1][2]/255, self.inactiveTankColor[1][3]/255, 1)
+    self.quadW:draw(self.texOutline, tx2, ty)
+    love.graphics.setColor(self.inactiveTankColor[2][1]/255, self.inactiveTankColor[2][2]/255, self.inactiveTankColor[2][3]/255, 1)
     self.quadW:draw(self.texOne, tx2, ty)
+    love.graphics.setColor(self.inactiveTankColor[3][1]/255, self.inactiveTankColor[3][2]/255, self.inactiveTankColor[3][3]/255, 1)
+    self.quadW:draw(self.texTwo, tx2, ty)
     
     for k, v in pairs(self.fills) do
       for i, j in pairs(v) do
@@ -376,34 +374,40 @@ function mmWeaponsMenu:draw()
     love.graphics.setColor(1, 1, 1, 1)
     if self.x == 1 then
       local tx, ty, tx2 = view.x+(8*6), view.y+(22*8), view.x+(8*10)
-      love.graphics.setColor(self.activeTankColor[2][1]/255, self.activeTankColor[2][2]/255, self.activeTankColor[2][3]/255, 1)
-      self.quadE:draw(self.texTwo, tx, ty)
-      love.graphics.setColor(self.activeTankColor[3][1]/255, self.activeTankColor[3][2]/255, self.activeTankColor[3][3]/255, 1)
+      love.graphics.setColor(weapon.colors[self.w.weapons[self.cur]].outline[1]/255,
+        weapon.colors[self.w.weapons[self.cur]].outline[2]/255, weapon.colors[self.w.weapons[self.cur]].outline[3]/255, 1)
       self.quadE:draw(self.texOutline, tx, ty)
-      love.graphics.setColor(self.activeTankColor[1][1]/255, self.activeTankColor[1][2]/255, self.activeTankColor[1][3]/255, 1)
+      love.graphics.setColor(weapon.colors[self.w.weapons[self.cur]].one[1]/255,
+        weapon.colors[self.w.weapons[self.cur]].one[2]/255, weapon.colors[self.w.weapons[self.cur]].one[3]/255, 1)
       self.quadE:draw(self.texOne, tx, ty)
+      love.graphics.setColor(weapon.colors[self.w.weapons[self.cur]].two[1]/255,
+        weapon.colors[self.w.weapons[self.cur]].two[2]/255, weapon.colors[self.w.weapons[self.cur]].two[3]/255, 1)
+      self.quadE:draw(self.texTwo, tx, ty)
       
-      love.graphics.setColor(self.inactiveTankColor[2][1]/255, self.inactiveTankColor[2][2]/255, self.inactiveTankColor[2][3]/255, 1)
-      self.quadW:draw(self.texTwo, tx2, ty)
-      love.graphics.setColor(self.inactiveTankColor[3][1]/255, self.inactiveTankColor[3][2]/255, self.inactiveTankColor[3][3]/255, 1)
-      self.quadW:draw(self.texOutline, tx2, ty)
       love.graphics.setColor(self.inactiveTankColor[1][1]/255, self.inactiveTankColor[1][2]/255, self.inactiveTankColor[1][3]/255, 1)
+      self.quadW:draw(self.texOutline, tx2, ty)
+      love.graphics.setColor(self.inactiveTankColor[2][1]/255, self.inactiveTankColor[2][2]/255, self.inactiveTankColor[2][3]/255, 1)
       self.quadW:draw(self.texOne, tx2, ty)
+      love.graphics.setColor(self.inactiveTankColor[3][1]/255, self.inactiveTankColor[3][2]/255, self.inactiveTankColor[3][3]/255, 1)
+      self.quadW:draw(self.texTwo, tx2, ty)
     elseif self.x == 2 then
       local tx, ty, tx2 = view.x+(8*6), view.y+(22*8), view.x+(8*10)
-      love.graphics.setColor(self.inactiveTankColor[2][1]/255, self.inactiveTankColor[2][2]/255, self.inactiveTankColor[2][3]/255, 1)
-      self.quadE:draw(self.texTwo, tx, ty)
-      love.graphics.setColor(self.inactiveTankColor[3][1]/255, self.inactiveTankColor[3][2]/255, self.inactiveTankColor[3][3]/255, 1)
-      self.quadE:draw(self.texOutline, tx, ty)
       love.graphics.setColor(self.inactiveTankColor[1][1]/255, self.inactiveTankColor[1][2]/255, self.inactiveTankColor[1][3]/255, 1)
+      self.quadE:draw(self.texOutline, tx, ty)
+      love.graphics.setColor(self.inactiveTankColor[2][1]/255, self.inactiveTankColor[2][2]/255, self.inactiveTankColor[2][3]/255, 1)
       self.quadE:draw(self.texOne, tx, ty)
+      love.graphics.setColor(self.inactiveTankColor[3][1]/255, self.inactiveTankColor[3][2]/255, self.inactiveTankColor[3][3]/255, 1)
+      self.quadE:draw(self.texTwo, tx, ty)
       
-      love.graphics.setColor(self.activeTankColor[2][1]/255, self.activeTankColor[2][2]/255, self.activeTankColor[2][3]/255, 1)
-      self.quadW:draw(self.texTwo, tx2, ty)
-      love.graphics.setColor(self.activeTankColor[3][1]/255, self.activeTankColor[3][2]/255, self.activeTankColor[3][3]/255, 1)
+      love.graphics.setColor(weapon.colors[self.w.weapons[self.cur]].outline[1]/255,
+        weapon.colors[self.w.weapons[self.cur]].outline[2]/255, weapon.colors[self.w.weapons[self.cur]].outline[3]/255, 1)
       self.quadW:draw(self.texOutline, tx2, ty)
-      love.graphics.setColor(self.activeTankColor[1][1]/255, self.activeTankColor[1][2]/255, self.activeTankColor[1][3]/255, 1)
+      love.graphics.setColor(weapon.colors[self.w.weapons[self.cur]].one[1]/255,
+        weapon.colors[self.w.weapons[self.cur]].one[2]/255, weapon.colors[self.w.weapons[self.cur]].one[3]/255, 1)
       self.quadW:draw(self.texOne, tx2, ty)
+      love.graphics.setColor(weapon.colors[self.w.weapons[self.cur]].two[1]/255,
+        weapon.colors[self.w.weapons[self.cur]].two[2]/255, weapon.colors[self.w.weapons[self.cur]].two[3]/255, 1)
+      self.quadW:draw(self.texTwo, tx2, ty)
     end
   end
 end

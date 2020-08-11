@@ -10,18 +10,33 @@ stageSelect = basicEntity:extend()
 
 megautils.loadResource("assets/sfx/ascend.ogg", "selected")
 megautils.loadResource("assets/sfx/cursorMove.ogg", "cursorMove")
-megautils.loadResource(0, 96, 32, 32, "protoGrid")
+megautils.loadResource(0, 0, 63, 62, 2, "megaManGrid")
 
 function stageSelect:new()
   stageSelect.super.new(self)
   self.transform.y = 8
   self.transform.x = 24
   self.blinkQuad = quad(0, 128, 48, 48)
-  self.megaQuad = quad(32, 32, 32, 32)
-  self.protoAnim = megautils.newAnimation("protoGrid", {"1-4", 1}, 1/28, "pauseAtStart")
-  self.protoAnim:pause()
-  self.bassQuad = quad(128, 32, 32, 32)
-  self.rollQuad = quad(224, 32, 32, 32)
+  
+  self.anims = animationSet()
+  self.anims:add("0-0", megautils.newAnimation("megaManGrid", {1, 1}))
+  self.anims:add("1-0", megautils.newAnimation("megaManGrid", {7, 6}))
+  self.anims:add("2-0", megautils.newAnimation("megaManGrid", {8, 6}))
+  self.anims:add("0-1", megautils.newAnimation("megaManGrid", {6, 7}))
+  self.anims:add("1-1", megautils.newAnimation("megaManGrid", {7, 7}))
+  self.anims:add("2-1", megautils.newAnimation("megaManGrid", {8, 7}))
+  self.anims:add("0-2", megautils.newAnimation("megaManGrid", {6, 8}))
+  self.anims:add("1-2", megautils.newAnimation("megaManGrid", {7, 8}))
+  self.anims:add("2-2", megautils.newAnimation("megaManGrid", {8, 8}))
+  self.anims:add("proto", megautils.newAnimation("megaManGrid", {"6-8", 6, 7, 7}, 1/28, "pauseAtStart"))
+  
+  if megaMan.getSkin(1).traits.protoMug then
+    self.anims:set("proto")
+    self.anims:pause()
+  else
+    self.anims:set("1-1")
+  end
+  
   self.wilyQuad = quad(320, 32, 32, 32)
   
   self.quad11 = quad(288, 0, 32, 32)
@@ -56,7 +71,7 @@ function stageSelect:added()
 end
 
 function stageSelect:update()
-  self.protoAnim:update(defaultFramerate)
+  self.anims:update(defaultFramerate)
   
   local oldx, oldy = self.x, self.y
   
@@ -106,10 +121,11 @@ function stageSelect:update()
       newx = 2
       newy = 2
     end
-    self.megaQuad:setViewport(newx*32, newy*32, 32, 32)
-    self.protoAnim:resume()
-    self.bassQuad:setViewport(128+(newx*32), newy*32, 32, 32)
-    self.rollQuad:setViewport(192+(newx*32), newy*32, 32, 32)
+    if megaMan.getSkin(1).traits.protoMug then
+      self.anims:resume()
+    else
+      self.anims:set(tostring(self.x) .. "-" .. tostring(self.y))
+    end
     self.timer = 0
   end
   
@@ -159,15 +175,7 @@ end
 
 function stageSelect:draw()
   if not checkFalse(globals.defeats) then
-    if megautils.getPlayer(1) == "proto" then
-      self.protoAnim:draw(self.tex, 112, 88)
-    elseif megautils.getPlayer(1) == "bass" then
-      self.bassQuad:draw(self.tex, 112, 88)
-    elseif megautils.getPlayer(1) == "roll" then
-      self.rollQuad:draw(self.tex, 112, 88)
-    else
-      self.megaQuad:draw(self.tex, 112, 88)
-    end
+    self.anims:draw(megaMan.getSkin(1).texture, 112, 88, 0, 1, 1, 16, 15)
     
     if false then -- For select slot 1, 1
       self.quad11:draw(self.tex, self.oldX+(1*56), self.oldY+(1*40))

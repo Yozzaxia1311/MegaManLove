@@ -406,8 +406,8 @@ weapon.resources["M.BUSTER"] = function()
   end
 
 weapon.icons["M.BUSTER"] = {
-    active = quad(80, 32, 16, 16),
-    inactive = quad(96, 32, 16, 16)
+    active = quad(16, 32, 16, 16),
+    inactive = quad(32, 32, 16, 16)
   }
 
 weapon.colors["M.BUSTER"] = {
@@ -474,7 +474,7 @@ function megaBuster:new(x, y, p, dir)
 end
 
 function megaBuster:draw()
-  self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
+  self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y), 0, 1, 1, 4, 3)
 end
 
 megaSemiBuster = weapon:extend()

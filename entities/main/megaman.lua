@@ -15,7 +15,8 @@ function megaMan.setSkin(player, path)
         if line ~= "" and line:match(":") then
           local data = line:split(":")
           local v = data[2]:trimmed()
-          t[data[1]] = tonumber(v) or toboolean(v) or v
+          v = tonumber(v) or (toboolean(v) == nil and v) or toboolean(v)
+          t[data[1]] = v
         end
       end
     end
@@ -201,6 +202,9 @@ function megaMan.properties(self, g, gf, c)
     self.protoShieldLeftCollision = {x=-7, y=0, w=8, h=14, goy=8}
     self.protoShieldRightCollision = {x=10, y=0, w=8, h=14, goy=8}
   end
+  self.leftShootOffsetX = -18
+  self.rightShootOffsetX = 21
+  self.shootOffsetY = 9
   self.canJumpOutFromDash = {global=true}
   self.canBackOutFromDash = {global=true}
   self.canSwitchWeapons = {global=true}
@@ -248,17 +252,20 @@ function megaMan:syncPlayerSkin()
   self.texTwo = skin.two
   self.texBase = skin.texture
   
-  self.canWalk.global = skin.traits.canWalk == nil or skin.traits.canWalk
-  self.canJump.global = skin.traits.canJump == nil or skin.traits.canJump
-  self.canShoot.global = skin.traits.canShoot == nil or skin.traits.canShoot
-  self.canClimb.global = skin.traits.canClimb == nil or skin.traits.canClimb
-  self.canDash.global = skin.traits.canDash == nil or skin.traits.canDash
-  self.canHaveSmallSlide.global = skin.traits.smallSlideHitbox == nil or skin.traits.smallSlideHitbox
-  self.canProtoShield.global = skin.traits.protoShield == true
-  self.protoIdle = skin.traits.protoIdle == true
-  self.protoWhistle = skin.traits.protoWhistle == true
-  self.maxExtraJumps = skin.traits.extraJumps or 0
-  self.canDashJump.global = skin.traits.canDashJump == nil or skin.traits.canDashJump
+  self.canWalk.global = skin.traits.canWalk or self.canWalk.global
+  self.canJump.global = skin.traits.canJump or self.canJump.global
+  self.canShoot.global = skin.traits.canShoot or self.canShoot.global
+  self.canClimb.global = skin.traits.canClimb or self.canClimb.global
+  self.canDash.global = skin.traits.canDash or self.canDash.global
+  self.canHaveSmallSlide.global = skin.traits.smallSlideHitbox or self.canHaveSmallSlide.global
+  self.canProtoShield.global = skin.traits.protoShield or self.canProtoShield.global
+  self.protoIdle = skin.traits.protoIdleAnim or self.protoIdle
+  self.protoWhistle = skin.traits.protoWhistle or self.protoWhistle
+  self.maxExtraJumps = skin.traits.extraJumps or self.maxExtraJumps
+  self.canDashJump.global = skin.traits.canDashJump or self.canDashJump.global
+  self.leftShootOffsetX = skin.traits.leftShootOffsetX or self.leftShootOffsetX
+  self.rightShootOffsetX = skin.traits.rightShootOffsetX or self.rightShootOffsetX
+  self.shootOffsetY = skin.traits.shootOffsetY or self.shootOffsetY
   
   self:switchWeaponSlot(0)
 end
@@ -377,7 +384,7 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
         self.mq = megautils._musicQueue
         megautils.stopMusic()
       end
-      megautils.playSoundFromFile("assets/sfx/protoReady.ogg")
+      megautils.playSoundFromFile((self.protoWhistle == true) and "assets/sfx/protoReady.ogg" or self.protoWhistle)
     else
       self.ready = megautils.add(ready)
     end
@@ -584,6 +591,13 @@ function megaMan:attemptWeaponUsage()
   if not checkFalse(self.canShoot) then return end
   local w = megaMan.weaponHandler[self.player]
   local shots = {}
+  local ofx, ofy
+  ofx = (self.side == -1) and self.leftShootOffsetX or self.rightShootOffsetX
+  if self.gravity >= 0 then
+    ofy = self.shootOffsetY
+  else
+    ofy = self.collisionShape.h-self.shootOffsetY
+  end
   if control.shootDown[self.player] then
     if w.current == "B.BUSTER" then
       self.rapidShotTime = math.min(self.rapidShotTime + 1, self.maxRapidShotTime)
@@ -674,8 +688,7 @@ function megaMan:attemptWeaponUsage()
         self.shootTimer = 0
         self:useShootAnimation()
       else
-        shots[#shots+1] = megautils.add(megaBuster, self.transform.x+(self.side==1 and 21 or -18), 
-          self.transform.y+(self.gravity >= 0 and 6 or (self.climb and 10 or 9)), self, self.side)
+        shots[#shots+1] = megautils.add(megaBuster, self.transform.x+ofx, self.transform.y+ofy, self, self.side)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
@@ -696,8 +709,7 @@ function megaMan:attemptWeaponUsage()
         self.shootTimer = 0
         self:useShootAnimation()
       else
-        shots[#shots+1] = megautils.add(megaBuster, self.transform.x+(self.side==1 and 16 or -13), 
-          self.transform.y+(self.climb and (self.gravity >= 0 and 8 or 7) or (self.gravity >= 0 and 10 or 5)), self, self.side)
+        shots[#shots+1] = megautils.add(megaBuster, self.transform.x+ofx, self.transform.y+ofy, self, self.side)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
@@ -719,8 +731,7 @@ function megaMan:attemptWeaponUsage()
         self.shootTimer = 0
         self:useShootAnimation()
       else
-        shots[#shots+1] = megautils.add(megaBuster, self.transform.x+(self.side==1 and 21 or -18), 
-          self.transform.y+(self.gravity >= 0 and (self.climb and 5 or 6) or (self.climb and 8 or 9)), self, self.side)
+        shots[#shots+1] = megautils.add(megaBuster, self.transform.x+ofx, self.transform.y+ofy, self, self.side)
         self.maxShootTime = 14
         self.shootTimer = 0
         self:resetCharge()
@@ -751,8 +762,8 @@ function megaMan:attemptWeaponUsage()
       end
     elseif w.current == "STICK W." and self:checkWeaponEnergy("STICK W.") and
       self:numberOfShots("stickWeapon") < 1 then
-      shots[#shots+1] = megautils.add(stickWeapon, self.transform.x+(self.side==1 and 17 or -14), 
-        self.transform.y+6, self, self.side)
+      shots[#shots+1] = megautils.add(stickWeapon, self.transform.x+offx, 
+        self.transform.y+offy, self, self.side)
       self.maxShootTime = 14
       self.shootTimer = 0
       self:resetCharge()
@@ -1557,21 +1568,27 @@ function megaMan:attemptWeaponSwitch()
 end
 
 function megaMan:switchWeapon(n)
-  self:resetCharge()
   local w = megaMan.weaponHandler[self.player]
+  local changing = w.current ~= n
   w:switchName(n)
-  megaMan.colorOutline[self.player] = weapon.colors[w.current].outline
-  megaMan.colorOne[self.player] = weapon.colors[w.current].one
-  megaMan.colorTwo[self.player] = weapon.colors[w.current].two
+  if changing then
+    megaMan.colorOutline[self.player] = weapon.colors[w.current].outline
+    megaMan.colorOne[self.player] = weapon.colors[w.current].one
+    megaMan.colorTwo[self.player] = weapon.colors[w.current].two
+    self:resetCharge()
+  end
 end
 
 function megaMan:switchWeaponSlot(s)
-  self:resetCharge()
   local w = megaMan.weaponHandler[self.player]
+  local changing = w.currentSlot ~= s
   w:switch(s)
-  megaMan.colorOutline[self.player] = weapon.colors[w.current].outline
-  megaMan.colorOne[self.player] = weapon.colors[w.current].one
-  megaMan.colorTwo[self.player] = weapon.colors[w.current].two
+  if changing then
+    megaMan.colorOutline[self.player] = weapon.colors[w.current].outline
+    megaMan.colorOne[self.player] = weapon.colors[w.current].one
+    megaMan.colorTwo[self.player] = weapon.colors[w.current].two
+    self:resetCharge()
+  end
 end
 
 function megaMan:bassBusterAnim(shoot)
@@ -1630,12 +1647,15 @@ function megaMan:animate()
         end
       elseif not (control.downDown[self.player] or control.upDown[self.player]) and not self.anims:isPaused() then
         self.anims:pause()
-        if shoot ~= "regular" then
-          if self.side == -1 then
-            self.anims:gotoFrame(2)
-          else
+        if shoot == "regular" then
+          if self.lastSide == -1 then
             self.anims:gotoFrame(1)
+          elseif self.lastSide == 1 then
+            self.anims:gotoFrame(2)
           end
+          self.lastSide = nil
+        else
+          self.lastSide = self.side
         end
       elseif control.downDown[self.player] or control.upDown[self.player] and self.anims:isPaused() then
         self.anims:resume()
@@ -1688,7 +1708,7 @@ function megaMan:animate()
   if self.anims.current ~= self.climbAnimation.regular and self.anims.current ~= self.climbTipAnimation.regular then
     self.anims.flipX = self.side ~= 1
   else
-    self.anims.flipX = true
+    self.anims.flipX = false
   end
   self.anims:update(defaultFramerate)
 end
@@ -1877,19 +1897,23 @@ end
 function megaMan:draw()
   if megaMan.mainPlayer and megaMan.mainPlayer.ready then return end
   
-  local offsetx, offsety = 0, 0
+  local offsetx, offsety = math.round(self.collisionShape.w/2), self.collisionShape.h
   local roundx, roundy = math.round(self.transform.x), math.round(self.transform.y)
   
   self.anims.flipY = self.gravity < 0
   
+  if (self.anims.current == "climbShoot" or self.anims.current == "climbThrow") and not self.anims.flipX then
+    offsetx = offsetx - 1
+  end
+  
   love.graphics.setColor(1, 1, 1, 1)
-  self.anims:draw(self.texBase, roundx+offsetx, roundy+self.teleportOffY)
+  self.anims:draw(self.texBase, roundx+offsetx, roundy+offsety+self.teleportOffY, 0, 1, 1, 32, 41)
   love.graphics.setColor(megaMan.colorOutline[self.player][1]/255, megaMan.colorOutline[self.player][2]/255, megaMan.colorOutline[self.player][3]/255, 1)
-  self.anims:draw(self.texOutline, roundx+offsetx, roundy+self.teleportOffY)
+  self.anims:draw(self.texOutline, roundx+offsetx, roundy+offsety+self.teleportOffY, 0, 1, 1, 32, 41)
   love.graphics.setColor(megaMan.colorOne[self.player][1]/255, megaMan.colorOne[self.player][2]/255, megaMan.colorOne[self.player][3]/255, 1)
-  self.anims:draw(self.texOne, roundx+offsetx, roundy+self.teleportOffY)
+  self.anims:draw(self.texOne, roundx+offsetx, roundy+offsety+self.teleportOffY, 0, 1, 1, 32, 41)
   love.graphics.setColor(megaMan.colorTwo[self.player][1]/255, megaMan.colorTwo[self.player][2]/255, megaMan.colorTwo[self.player][3]/255, 1)
-  self.anims:draw(self.texTwo, roundx+offsetx, roundy+self.teleportOffY)
+  self.anims:draw(self.texTwo, roundx+offsetx, roundy+offsety+self.teleportOffY, 0, 1, 1, 32, 41)
   
   if self.weaponSwitchTimer ~= 70 then
     love.graphics.setColor(1, 1, 1, 1)

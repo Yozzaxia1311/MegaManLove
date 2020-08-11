@@ -5,11 +5,16 @@ canClimb: true
 canDash: true
 smallSlideHitbox: true
 protoShield: false
-protoIdle: false
+protoIdleAnim: false
 protoWhistle: false
 extraJumps: 0
 canDashJump: false
+leftShootOffsetX: -15
+rightShootOffsetX: 26
+shootOffsetY: 9
 
 slot0: M.BUSTER
 slot9: RUSH C.
 slot10: RUSH JET
+
+protoMug: false
