@@ -380,7 +380,7 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   self.anims:add("runShoot", megautils.newAnimation(pp, {8, 2, "1-2", 3, 1, 3}, 1/8))
   self.anims:add("runThrow", megautils.newAnimation(pp, {"4-6", 4, 5, 4}, 1/8))
   self.anims:add("climb", megautils.newAnimation(pp, {"1-2", 2}, 1/8))
-  self.anims:add("climbShootDM", megautils.newAnimation(pp, {7, 2}))
+  self.anims:add("climbShootDM", megautils.newAnimation(pp, {7, 3}))
   self.anims:add("climbShoot", megautils.newAnimation(pp, {8, 3}))
   self.anims:add("climbShootUM", megautils.newAnimation(pp, {1, 4}))
   self.anims:add("climbShootU", megautils.newAnimation(pp, {2, 4}))
@@ -1667,8 +1667,10 @@ function megaMan:animate(getDataOnly)
           elseif self.lastSide == 1 then
             newFrame = 2
           end
-          self.lastSide = nil
-        else
+          if not getDataOnly then
+            self.lastSide = nil
+          end
+        elseif not getDataOnly then
           self.lastSide = self.side
         end
       elseif control.downDown[self.player] or control.upDown[self.player] and self.anims:isPaused() then
