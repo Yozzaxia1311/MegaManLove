@@ -1,4 +1,3 @@
-megautils.loadResource("assets/misc/weapons/weaponSelect.png", "weaponSelect", false, true)
 megautils.loadResource("assets/sfx/enemyHit.ogg", "enemyHit", true)
 megautils.loadResource("assets/sfx/enemyExplode.ogg", "enemyExplode", true)
 megautils.loadResource("assets/sfx/buster.ogg", "buster", true)
@@ -21,13 +20,16 @@ weapon.chargeSounds = {}
 weapon.icons = {}
 weapon.segments = {}
 weapon.sevenWayAnim = {}
-weapon.iconTex = megautils.getResource("weaponSelect")
+
+weapon._activeQuad = quad(0, 0, 16, 16)
+weapon._inactiveQuad = quad(16, 0, 16, 16)
 
 function weapon.drawIcon(p, on, x, y)
+  local tex = megautils.getResource(weapon.icons[p])
   if on == nil or on then
-    weapon.icons[p].active:draw(weapon.iconTex, x, y)
+    weapon._activeQuad:draw(tex, x, y)
   else
-    weapon.icons[p].inactive:draw(weapon.iconTex, x, y)
+    weapon._inactiveQuad:draw(tex, x, y)
   end
 end
 
@@ -178,16 +180,14 @@ weapon.removeGroups["P.BUSTER"] = {"megaBuster", "protoChargedBuster"}
 weapon.resources["P.BUSTER"] = function()
     megautils.loadResource("assets/misc/weapons/buster.png", "busterTex")
     megautils.loadResource("assets/misc/weapons/protoBuster.png", "protoBuster")
+    megautils.loadResource("assets/misc/weapons/icons/protoBuster.png", "protoBusterIcon")
     megautils.loadResource("assets/sfx/semi.ogg", "semiCharged")
     megautils.loadResource("assets/sfx/protoCharge.ogg", "protoCharge")
     megautils.loadResource("assets/sfx/protoCharged.ogg", "protoCharged")
     megautils.loadResource(10, 0, 29, 10, "protoBusterGrid")
   end
 
-weapon.icons["P.BUSTER"] = {
-    active = quad(48, 32, 16, 16),
-    inactive = quad(64, 32, 16, 16)
-  }
+weapon.icons["P.BUSTER"] = "protoBusterIcon"
 
 weapon.colors["P.BUSTER"] = {
     outline = {0, 0, 0},
@@ -236,16 +236,14 @@ weapon.chargeColors["P.BUSTER"] = {
 weapon.resources["R.BUSTER"] = function()
     megautils.loadResource("assets/misc/weapons/buster.png", "busterTex")
     megautils.loadResource("assets/misc/weapons/rollBuster.png", "rollBuster")
+    megautils.loadResource("assets/misc/weapons/icons/rollBuster.png", "rollBusterIcon")
     megautils.loadResource("assets/sfx/semi.ogg", "semiCharged")
     megautils.loadResource("assets/sfx/charge.ogg", "charge")
     megautils.loadResource("assets/sfx/protoCharged.ogg", "protoCharged")
     megautils.loadResource(10, 0, 29, 10, "protoBusterGrid")
   end
 
-weapon.icons["R.BUSTER"] = {
-    active = quad(80, 32, 16, 16),
-    inactive = quad(96, 32, 16, 16)
-  }
+weapon.icons["R.BUSTER"] = "rollBusterIcon"
 
 weapon.colors["R.BUSTER"] = {
     outline = {0, 0, 0},
@@ -353,12 +351,10 @@ weapon.removeGroups["B.BUSTER"] = {"bassBuster"}
 
 weapon.resources["B.BUSTER"] = function()
     megautils.loadResource("assets/misc/weapons/bassBuster.png", "bassBuster")
+    megautils.loadResource("assets/misc/weapons/icons/bassBuster.png", "bassBusterIcon")
   end
 
-weapon.icons["B.BUSTER"] = {
-    active = quad(144, 32, 16, 16),
-    inactive = quad(160, 32, 16, 16)
-  }
+weapon.icons["B.BUSTER"] = "bassBusterIcon"
 
 weapon.colors["B.BUSTER"] = {
     outline = {0, 0, 0},
@@ -408,6 +404,7 @@ weapon.removeGroups["M.BUSTER"] = {"megaBuster", "megaChargedBuster"}
 
 weapon.resources["M.BUSTER"] = function()
     megautils.loadResource("assets/misc/weapons/buster.png", "busterTex")
+    megautils.loadResource("assets/misc/weapons/icons/megaBuster.png", "megaBusterIcon")
     megautils.loadResource("assets/sfx/semi.ogg", "semiCharged")
     megautils.loadResource("assets/sfx/charge.ogg", "charge")
     megautils.loadResource("assets/sfx/charged.ogg", "charged")
@@ -415,10 +412,7 @@ weapon.resources["M.BUSTER"] = function()
     megautils.loadResource(8, 31, 17, 16, "smallChargeGrid")
   end
 
-weapon.icons["M.BUSTER"] = {
-    active = quad(16, 32, 16, 16),
-    inactive = quad(32, 32, 16, 16)
-  }
+weapon.icons["M.BUSTER"] = "megaBusterIcon"
 
 weapon.colors["M.BUSTER"] = {
     outline = {0, 0, 0},
@@ -559,16 +553,14 @@ weapon.removeGroups["T. BOOST"] = {"trebleBoost", "bassBuster"}
 weapon.resources["T. BOOST"] = function()
     megautils.loadResource("assets/misc/weapons/bassBuster.png", "bassBuster")
     megautils.loadResource("assets/misc/weapons/treble.png", "trebleTex")
+    megautils.loadResource("assets/misc/weapons/icons/trebleBoost.png", "trebleBoostIcon")
     megautils.loadResource("assets/sfx/treble.ogg", "treble")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
     megautils.loadResource(33, 32, "trebleGrid")    
   end
 
-weapon.icons["T. BOOST"] = {
-    active = quad(144, 16, 16, 16),
-    inactive = quad(160, 16, 16, 16)
-  }
+weapon.icons["T. BOOST"] = "trebleBoostIcon"
 
 weapon.colors["T. BOOST"] = {
     outline = {0, 0, 0},
@@ -665,6 +657,7 @@ weapon.removeGroups["RUSH JET"] = {"rushJet", "megaBuster", "bassBuster"}
 
 weapon.resources["RUSH JET"] = function()
     megautils.loadResource("assets/misc/weapons/rush.png", "rush")
+    megautils.loadResource("assets/misc/weapons/icons/rushJet.png", "rushJetIcon")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
     megautils.loadResource(32, 32, "rushGrid")
@@ -672,10 +665,7 @@ weapon.resources["RUSH JET"] = function()
     weapon.resources["M.BUSTER"]() -- So it's possible to use the Mega Buster shots even if the weapon wasn't already loaded in for some reason...
   end
 
-weapon.icons["RUSH JET"] = {
-    active = quad(112, 32, 16, 16),
-    inactive = quad(128, 32, 16, 16)
-  }
+weapon.icons["RUSH JET"] = "rushJetIcon"
 
 weapon.colors["RUSH JET"] = {
     outline = {0, 0, 0},
@@ -687,6 +677,7 @@ weapon.removeGroups["PROTO JET"] = {"rushJet", "megaBuster", "bassBuster"}
 
 weapon.resources["PROTO JET"] = function()
     megautils.loadResource("assets/misc/weapons/protoRush.png", "protoRush")
+    megautils.loadResource("assets/misc/weapons/icons/protoJet.png", "protoJetIcon")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
     megautils.loadResource(32, 32, "rushGrid")
@@ -694,10 +685,7 @@ weapon.resources["PROTO JET"] = function()
     weapon.resources["P.BUSTER"]()
   end
 
-weapon.icons["PROTO JET"] = {
-    active = quad(176, 16, 16, 16),
-    inactive = quad(192, 16, 16, 16)
-  }
+weapon.icons["PROTO JET"] = "protoJetIcon"
 
 weapon.colors["PROTO JET"] = {
     outline = {0, 0, 0},
@@ -709,6 +697,7 @@ weapon.removeGroups["TANGO JET"] = {"rushJet", "megaBuster", "bassBuster"}
 
 weapon.resources["TANGO JET"] = function()
     megautils.loadResource("assets/misc/weapons/tango.png", "tango")
+    megautils.loadResource("assets/misc/weapons/icons/tangoJet.png", "tangoJetIcon")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
     megautils.loadResource(32, 32, "rushGrid")
@@ -716,10 +705,7 @@ weapon.resources["TANGO JET"] = function()
     weapon.resources["R.BUSTER"]()
   end
 
-weapon.icons["TANGO JET"] = {
-    active = quad(208, 16, 16, 16),
-    inactive = quad(224, 16, 16, 16)
-  }
+weapon.icons["TANGO JET"] = "tangoJetIcon"
 
 weapon.colors["TANGO JET"] = {
     outline = {0, 0, 0},
@@ -858,6 +844,7 @@ weapon.removeGroups["RUSH C."] = {"rushCoil", "megaBuster", "bassBuster", "rollB
 
 weapon.resources["RUSH C."] = function()
     megautils.loadResource("assets/misc/weapons/rush.png", "rush")
+    megautils.loadResource("assets/misc/weapons/icons/rushCoil.png", "rushCoilIcon")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
     megautils.loadResource(32, 32, "rushGrid")
@@ -865,10 +852,7 @@ weapon.resources["RUSH C."] = function()
     weapon.resources["M.BUSTER"]() -- So it's possible to use the Mega Buster shots even if the weapon wasn't already loaded in for some reason...
   end
 
-weapon.icons["RUSH C."] = {
-    active = quad(144, 0, 16, 16),
-    inactive = quad(160, 0, 16, 16)
-  }
+weapon.icons["RUSH C."] = "rushCoilIcon"
 
 weapon.colors["RUSH C."] = {
     outline = {0, 0, 0},
@@ -878,6 +862,7 @@ weapon.colors["RUSH C."] = {
 
 weapon.resources["PROTO C."] = function()
     megautils.loadResource("assets/misc/weapons/protoRush.png", "protoRush")
+    megautils.loadResource("assets/misc/weapons/icons/protoCoil.png", "protoCoilIcon")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
     megautils.loadResource(32, 32, "rushGrid")
@@ -885,10 +870,7 @@ weapon.resources["PROTO C."] = function()
     weapon.resources["P.BUSTER"]()
   end
 
-weapon.icons["PROTO C."] = {
-    active = quad(176, 0, 16, 16),
-    inactive = quad(192, 0, 16, 16)
-  }
+weapon.icons["PROTO C."] = "protoCoilIcon"
 
 weapon.colors["PROTO C."] = {
     outline = {0, 0, 0},
@@ -898,6 +880,7 @@ weapon.colors["PROTO C."] = {
 
 weapon.resources["TANGO C."] = function()
     megautils.loadResource("assets/misc/weapons/tango.png", "tango")
+    megautils.loadResource("assets/misc/weapons/icons/tangoCoil.png", "tangoCoilIcon")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
     megautils.loadResource(32, 32, "rushGrid")
@@ -905,10 +888,7 @@ weapon.resources["TANGO C."] = function()
     weapon.resources["R.BUSTER"]()
   end
 
-weapon.icons["TANGO C."] = {
-    active = quad(208, 0, 16, 16),
-    inactive = quad(224, 0, 16, 16)
-  }
+weapon.icons["TANGO C."] = "tangoCoilIcon"
 
 weapon.colors["TANGO C."] = {
     outline = {0, 0, 0},
@@ -1015,12 +995,10 @@ weapon.removeGroups["STICK W."] = {"stickWeapon"}
 
 weapon.resources["STICK W."] = function()
     megautils.loadResource("assets/misc/weapons/stickWeapon.png", "stickWeapon")
+    megautils.loadResource("assets/misc/weapons/icons/stickWeapon.png", "stickWeaponIcon")
   end
 
-weapon.icons["STICK W."] = {
-    active = quad(208, 0, 16, 16),
-    inactive = quad(224, 0, 16, 16)
-  }
+weapon.icons["STICK W."] = "stickWeaponIcon"
 
 weapon.colors["STICK W."] = {
     outline = {0, 0, 0},
