@@ -7,11 +7,19 @@ megaMan.allPlayers = {}
 megaMan.skins = {}
 megaMan.skinCache = {}
 
-function megaMan.setSkin(player, path)
-  if not megaMan.skinCache[path] then
+function megaMan:setSkin(path)
+  local player = (type(self) == "number") and self or self.player
+  local finfo = love.filesystem.getInfo(path)
+  if not megaMan.skinCache[path] or megaMan.skinCache[path][7] ~= finfo.modtime then
     local t = {}
-    if love.filesystem.getInfo(path .. "/conf.txt") then
-      for line in love.filesystem.lines(path .. "/conf.txt") do
+    local mount
+    
+    if finfo.type == "file" then
+      mount = "skinArchive"
+      love.filesystem.mount(path, mount)
+    end
+    if love.filesystem.getInfo((mount or path) .. "/conf.txt") then
+      for line in love.filesystem.lines((mount or path) .. "/conf.txt") do
         if line ~= "" and line:match(":") then
           local data = line:split(":")
           local v = data[2]:trimmed()
@@ -20,18 +28,26 @@ function megaMan.setSkin(player, path)
         end
       end
     end
-    megaMan.skinCache[path] = {path, love.graphics.newImage(path .. "/player.png"),
+    megaMan.skinCache[path] = {path, love.graphics.newImage((mount or path) .. "/player.png"),
       love.graphics.newImage(path .. "/outline.png"),
       love.graphics.newImage(path .. "/one.png"),
-      love.graphics.newImage(path .. "/two.png"), t}
+      love.graphics.newImage(path .. "/two.png"), t, finfo.modtime}
+    if mount then
+      love.graphics.unmount(path)
+    end
   end
   
   local p, tex, out, on, tw, t = unpack(megaMan.skinCache[path])
   
   megaMan.skins[player] = {traits=t, path=p, texture=tex, outline=out, one=on, two=tw}
+  
+  if type(self) == "table" then
+    self:syncPlayerSkin()
+  end
 end
 
-function megaMan.getSkin(player)
+function megaMan:getSkin()
+  local player = (type(self) == "number") and self or self.player
   return megaMan.skins[player]
 end
 
@@ -180,7 +196,6 @@ function megaMan.properties(self, g, gf, c)
   self.maxHitTime = 32
   self.leftKnockBackSpeed = -0.5
   self.rightKnockBackSpeed = 0.5
-  self.maxShootTime = 14
   self.maxNormalBusterShots = 3
   self.cameraOffsetX = 0
   self.cameraOffsetY = 0
@@ -202,9 +217,6 @@ function megaMan.properties(self, g, gf, c)
     self.protoShieldLeftCollision = {x=-7, y=0, w=8, h=14, goy=8}
     self.protoShieldRightCollision = {x=10, y=0, w=8, h=14, goy=8}
   end
-  self.leftShootOffsetX = -18
-  self.rightShootOffsetX = 21
-  self.shootOffsetY = 9
   self.canJumpOutFromDash = {global=true}
   self.canBackOutFromDash = {global=true}
   self.canSwitchWeapons = {global=true}
@@ -263,9 +275,22 @@ function megaMan:syncPlayerSkin()
   self.protoWhistle = skin.traits.protoWhistle or self.protoWhistle
   self.maxExtraJumps = skin.traits.extraJumps or self.maxExtraJumps
   self.canDashJump.global = skin.traits.canDashJump or self.canDashJump.global
-  self.leftShootOffsetX = skin.traits.leftShootOffsetX or self.leftShootOffsetX
-  self.rightShootOffsetX = skin.traits.rightShootOffsetX or self.rightShootOffsetX
-  self.shootOffsetY = skin.traits.shootOffsetY or self.shootOffsetY
+  
+  self.shootOffsetXTable = {}
+  self.shootOffsetYTable = {}
+  for k, v in pairs(skin.traits) do
+    local s, e = k:find("shootX")
+    if s == 1 and k:len() > e then
+      self.shootOffsetXTable[k:sub(e+1)] = v
+    end
+    s, e = k:find("shootY")
+    if s == 1 and k:len() > e then
+      self.shootOffsetYTable[k:sub(e+1)] = v
+    end
+  end
+  
+  self.shootX = skin.traits.shootX or self.shootX
+  self.shootY = skin.traits.shootY or self.shootY
   
   self:switchWeaponSlot(0)
 end
@@ -297,7 +322,7 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   self.drop = drop==nil or drop
   self.rise = false
   self.stepTime = 0
-  self.shootTimer = self.maxShootTime
+  self.shootFrames = 0
   self.stopOnShot = false
   self.slideTimer = self.maxSlideTime
   self.dashJump = false
@@ -316,6 +341,10 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   self.teleporter = tp
   self.protoIdle = false
   self.protoWhistle = false
+  self.shootOffsetXTable = {}
+  self.shootOffsetYTable = {}
+  self.shootX = 50
+  self.shootY = 29
   
   self.dropAnimation = {regular="spawn"}
   self.dropLandAnimation = {regular="spawnLand"}
@@ -486,7 +515,7 @@ function megaMan:resetStates()
   self.trebleForce.vely = 0
   self.canBeInvincible.treble = false
   self.extraJumps = 0
-  self.shootTimer = self.maxShootTime
+  self.shootFrames = 0
   if self.slide then
     self:slideToReg()
     self.slide = false
@@ -587,86 +616,78 @@ function megaMan:checkWeaponEnergy(n)
   return w.energy[w.slots[n]] > 0
 end
 
+function megaMan:shootOffX(n)
+  local an, fr = self:animate(true)
+  local x, y = self.anims:getFramePosition(fr, an)
+  local key =  x .. "-" .. y
+  local sotx = self.shootOffsetXTable[key]
+  local offx = sotx or self.shootX
+  
+  if self.side == -1 then
+    return self.collisionShape.w - (math.round(self.collisionShape.w/2) - 32 + (n or 0) + offx)
+  else
+    return math.round(self.collisionShape.w/2) - 32 + (n or 0) + offx
+  end
+end
+
+function megaMan:shootOffY(n)
+  local an, fr = self:animate(true)
+  local x, y = self.anims:getFramePosition(fr, an)
+  local key =  x .. "-" .. y
+  local soty = self.shootOffsetYTable[key]
+  local offy = soty or self.shootY
+  
+  if self.gravity < 0 then
+    return self.collisionShape.h - (self.collisionShape.h - 41 + (n or 0) + offy)
+  else
+    return self.collisionShape.h - 41 + (n or 0) + offy
+  end
+end
+
 function megaMan:attemptWeaponUsage()
   if not checkFalse(self.canShoot) then return end
+  
   local w = megaMan.weaponHandler[self.player]
   local shots = {}
-  local ofx, ofy
-  ofx = (self.side == -1) and self.leftShootOffsetX or self.rightShootOffsetX
-  if self.gravity >= 0 then
-    ofy = self.shootOffsetY
-  else
-    ofy = self.collisionShape.h-self.shootOffsetY
-  end
+  
   if control.shootDown[self.player] then
     if w.current == "B.BUSTER" then
       self.rapidShotTime = math.min(self.rapidShotTime + 1, self.maxRapidShotTime)
       if self.rapidShotTime == self.maxRapidShotTime then
         self.rapidShotTime = 0
+        self.shootFrames = 14
+        self:resetCharge()
+        self:useShootAnimation()
+        self.stopOnShot = true
         if self:numberOfShots("bassBuster") < 4 then
           local dir = self.side == 1 and 0 or 180
-          local tx = self.side == 1 and 22 or -19
-          local ty = 6
           if control.upDown[self.player] then
             if control.leftDown[self.player] then
               dir = -45+180
-              tx = -14
-              ty = -3
             elseif control.rightDown[self.player] then
               dir = 45
-              tx = 19
-              ty = -3
             else
               if self.gravity >= 0 then
                 dir = 90
-                tx = self.side == 1 and 7 or -3
-                ty = -8
-                if self.climb then
-                  tx = tx + (self.side == 1 and 0 or 1)
-                end
               else
                 dir = self.side == 1 and 45 or -45+180
-                tx = self.side == 1 and 19 or -14
-                ty = -3
               end
             end
           elseif control.downDown[self.player] then
             if control.leftDown[self.player] then
               dir = 45+180
-              tx = -14
-              ty = 15
             elseif control.rightDown[self.player] then
               dir = -45
-              tx = 19
-              ty = 15
             else
               if self.gravity >= 0 then
                 dir = self.side == 1 and -45 or 45+180
-                tx = self.side == 1 and 19 or -14
-                ty = 15
               else
                 dir = -90
-                tx = self.side == 1 and 7 or -3
-                ty = 15
-                if self.climb then
-                  tx = tx + (self.side == 1 and 0 or 1)
-                end
               end
             end
           end
-          if self.climb then
-            ty = ty + (self.gravity >= 0 and -4 or 4)
-          end
-          if self.gravity < 0 then
-            ty = ty + 3
-          end
-          shots[#shots+1] = megautils.add(bassBuster, self.transform.x+tx, self.transform.y+ty, self, dir)
+          shots[#shots+1] = megautils.add(bassBuster, self.transform.x+self:shootOffX(tx), self.transform.y+self:shootOffY(ty), self, dir)
         end
-        self.maxShootTime = 14
-        self.shootTimer = 0
-        self:resetCharge()
-        self:useShootAnimation()
-        self.stopOnShot = true
       end
     end
   else
@@ -676,149 +697,136 @@ function megaMan:attemptWeaponUsage()
     if (w.current == "M.BUSTER" or (w.weapons[0] == "M.BUSTER" and (w.current == "RUSH JET" or w.current == "RUSH C.")))
       and self:numberOfShots("megaBuster") < 3 and self:numberOfShots("megaChargedBuster") == 0 then
       if w.current == "RUSH C." and self:checkWeaponEnergy("RUSH C.") and self:numberOfShots("rushCoil") < 1 then
-        shots[#shots+1] = megautils.add(rushCoil, self.transform.x+(self.side==1 and 18 or -32),
-          self.transform.y, self, self.side, "rush")
-        self.maxShootTime = 14
-        self.shootTimer = 0
+        self.shootFrames = 14
         self:useShootAnimation()
+        shots[#shots+1] = megautils.add(rushCoil, self.transform.x+self:shootOffX(16), self.transform.y+self:shootOffY(), self, self.side, "rush")
       elseif w.current == "RUSH JET" and self:checkWeaponEnergy("RUSH JET") and self:numberOfShots("rushJet") < 1 then
-        shots[#shots+1] = megautils.add(rushJet, self.transform.x+(self.side==1 and 18 or -32),
-          self.transform.y+6, self, self.side, "rush")
-        self.maxShootTime = 14
-        self.shootTimer = 0
+        self.shootFrames = 14
         self:useShootAnimation()
+        shots[#shots+1] = megautils.add(rushJet, self.transform.x+self:shootOffX(16), self.transform.y+self:shootOffY(), self, self.side, "rush")
       else
-        shots[#shots+1] = megautils.add(megaBuster, self.transform.x+ofx, self.transform.y+ofy, self, self.side)
-        self.maxShootTime = 14
-        self.shootTimer = 0
+        self.shootFrames = 14
         self:resetCharge()
         self:useShootAnimation()
+        shots[#shots+1] = megautils.add(megaBuster, self.transform.x+self:shootOffX(), self.transform.y+self:shootOffY(), self, self.side)
       end
     elseif (w.current == "P.BUSTER" or (w.weapons[0] == "P.BUSTER" and (w.current == "PROTO JET" or w.current == "PROTO C.")))
       and self:numberOfShots("megaBuster") < 3 and self:numberOfShots("protoChargedBuster") == 0 then
       if w.current == "PROTO C." and self:checkWeaponEnergy("PROTO C.") and self:numberOfShots("rushCoil") < 1 then
-        shots[#shots+1] = megautils.add(rushCoil, self.transform.x+(self.side==1 and 18 or -32),
-          self.transform.y, self, self.side, "protoRush")
-        self.maxShootTime = 14
-        self.shootTimer = 0
+        self.shootFrames = 14
         self:useShootAnimation()
+        shots[#shots+1] = megautils.add(rushCoil, self.transform.x+self:shootOffX(16),
+          self.transform.y+self:shootOffY(), self, self.side, "protoRush")
       elseif w.current == "PROTO JET" and self:checkWeaponEnergy("PROTO JET") and self:numberOfShots("rushJet") < 1 then
-        shots[#shots+1] = megautils.add(rushJet, self.transform.x+(self.side==1 and 18 or -32),
-          self.transform.y+6, self, self.side, "protoRush")
-        self.maxShootTime = 14
-        self.shootTimer = 0
+        self.shootFrames = 14
         self:useShootAnimation()
+        shots[#shots+1] = megautils.add(rushJet, self.transform.x+self:shootOffX(16),
+          self.transform.y+self:shootOffY(), self, self.side, "protoRush")
       else
-        shots[#shots+1] = megautils.add(megaBuster, self.transform.x+ofx, self.transform.y+ofy, self, self.side)
-        self.maxShootTime = 14
-        self.shootTimer = 0
+        self.shootFrames = 14
         self:resetCharge()
         self:useShootAnimation()
+        shots[#shots+1] = megautils.add(megaBuster, self.transform.x+self:shootOffX(), self.transform.y+self:shootOffY(), self, self.side)
       end
     elseif (w.current == "R.BUSTER" or (w.weapons[0] == "R.BUSTER" and (w.current == "TANGO JET" or w.current == "TANGO C.")))
       and self:numberOfShots("megaBuster") < 3 and self:numberOfShots("protoChargedBuster") == 0 then
       if w.current == "TANGO C." and self:checkWeaponEnergy("TANGO C.") and self:numberOfShots("rushCoil") < 1 then
-        shots[#shots+1] = megautils.add(rushCoil, self.transform.x+(self.side==1 and 18 or -32),
-          self.transform.y, self, self.side, "tango")
-        self.maxShootTime = 14
-        self.shootTimer = 0
+        self.shootFrames = 14
         self:useShootAnimation()
+        shots[#shots+1] = megautils.add(rushCoil, self.transform.x+self:shootOffX(16),
+          self.transform.y+self:shootOffY(), self, self.side, "tango")
       elseif w.current == "TANGO JET" and self:checkWeaponEnergy("TANGO JET") and
-      (not megautils.groups()["rushJet" .. w.id] or #megautils.groups()["rushJet" .. w.id] < 1) and self:numberOfShots("rushJet") then
-        shots[#shots+1] = megautils.add(rushJet, self.transform.x+(self.side==1 and 18 or -32),
-          self.transform.y+6, self, self.side, "tango")
-        self.maxShootTime = 14
-        self.shootTimer = 0
+        (not megautils.groups()["rushJet" .. w.id] or #megautils.groups()["rushJet" .. w.id] < 1) and self:numberOfShots("rushJet") then
+        self.shootFrames = 14
         self:useShootAnimation()
+        shots[#shots+1] = megautils.add(rushJet, self.transform.x+self:shootOffX(16),
+          self.transform.y+self:shootOffY(), self, self.side, "tango")
       else
-        shots[#shots+1] = megautils.add(megaBuster, self.transform.x+ofx, self.transform.y+ofy, self, self.side)
-        self.maxShootTime = 14
-        self.shootTimer = 0
+        self.shootFrames = 14
         self:resetCharge()
         self:useShootAnimation()
+        shots[#shots+1] = megautils.add(megaBuster, self.transform.x+self:shootOffX(), self.transform.y+self:shootOffY(), self, self.side)
       end
     elseif w.current == "T. BOOST" and self:checkWeaponEnergy("T. BOOST") then
       if self.treble == 3 then
         if self:numberOfShots("bassBuster") < 1 then
-          shots[#shots+1] = megautils.add(bassBuster, self.transform.x+(self.side==1 and 16 or -14), self.transform.y+(self.gravity >= 0 and 5 or 10),
-            self, self.side==1 and 0 or 180, true)
-          shots[#shots+1] = megautils.add(bassBuster, self.transform.x+(self.side==1 and 16 or -14), self.transform.y+(self.gravity >= 0 and 5 or 10),
-            self, self.side==1 and 45 or 180+45, true)
-          shots[#shots+1] = megautils.add(bassBuster, self.transform.x+(self.side==1 and 16 or -14), self.transform.y+(self.gravity >= 0 and 5 or 10),
-            self, self.side==1 and -45 or 180-45, true)
-          self.maxShootTime = 14
-          self.shootTimer = 0
+          self.shootFrames = 14
           self:resetCharge()
           self:useShootAnimation()
+          local ox, oy = self:shootOffX(), self:shootOffY()
+          shots[#shots+1] = megautils.add(bassBuster, self.transform.x+ox, self.transform.y+oy,
+            self, self.side==1 and 0 or 180, true)
+          shots[#shots+1] = megautils.add(bassBuster, self.transform.x+ox, self.transform.y+oy,
+            self, self.side==1 and 45 or 180+45, true)
+          shots[#shots+1] = megautils.add(bassBuster, self.transform.x+ox, self.transform.y+oy,
+            self, self.side==1 and -45 or 180-45, true)
           megautils.playSound("buster")
         end
       elseif self:numberOfShots("trebleBoost") < 1 then
-        shots[#shots+1] = megautils.add(trebleBoost, self.transform.x+(self.side==1 and 24 or -34), 
-          self.transform.y, self, self.side)
-        self.maxShootTime = 14
-        self.shootTimer = 0
+        self.shootFrames = 14
         self:resetCharge()
         self:useShootAnimation()
+        shots[#shots+1] = megautils.add(trebleBoost, self.transform.x+self:shootOffX(16), 
+          self.transform.y+self:shootOffY(), self, self.side)
       end
     elseif w.current == "STICK W." and self:checkWeaponEnergy("STICK W.") and
       self:numberOfShots("stickWeapon") < 1 then
-      shots[#shots+1] = megautils.add(stickWeapon, self.transform.x+offx, 
-        self.transform.y+offy, self, self.side)
-      self.maxShootTime = 14
-      self.shootTimer = 0
+      self.shootFrames = 14
       self:resetCharge()
       self:useShootAnimation()
+      shots[#shots+1] = megautils.add(stickWeapon, self.transform.x+self:shootOffX(), 
+        self.transform.y+self:shootOffY(), self, self.side)
       w:updateCurrent(w.energy[w.currentSlot] - 1)
     end
   end
   if not control.shootDown[self.player] and self.chargeState ~= 0 then
     if w.current == "M.BUSTER" then
-      if self.chargeState == 1 then
-        shots[#shots+1] = megautils.add(megaSemiBuster, self.transform.x+(self.side==1 and 17 or -20), 
-          self.transform.y+(self.gravity >= 0 and 4 or (self.climb and 8 or 7)), self, self.side)
-        self.maxShootTime = 14
-        self.shootTimer = 0
+      if self.chargeState == 1 and self:numberOfShots("megaBuster") < 3 then
+        self.shootFrames = 14
         self:resetCharge()
         self:useShootAnimation()
-      elseif self.chargeState == 2 then
-        shots[#shots+1] = megautils.add(megaChargedBuster, self.transform.x+(self.side==1 and 17 or -20), 
-          self.transform.y+(self.gravity >= 0 and -2 or 1), self, self.side)
-        self.maxShootTime = 14
-        self.shootTimer = 0
+        shots[#shots+1] = megautils.add(megaSemiBuster, self.transform.x+self:shootOffX(2), 
+          self.transform.y+self:shootOffY(), self, self.side)
+      elseif self.chargeState == 2 and self:numberOfShots("megaChargedBuster") < 1 then
+        self.shootFrames = 14
         self:resetCharge()
         self:useShootAnimation()
+        shots[#shots+1] = megautils.add(megaChargedBuster, self.transform.x+self:shootOffX(4), 
+          self.transform.y+self:shootOffY(), self, self.side)
+      else
+        self:resetCharge()
       end
     elseif w.current == "P.BUSTER" then
-      if self.chargeState == 1 then
-        shots[#shots+1] = megautils.add(protoSemiBuster, self.transform.x+(self.side==1 and 17 or -16), 
-          self.transform.y+(self.climb and 9 or (self.gravity >= 0 and 10 or 7)), self, self.side, "protoBuster")
-        self.maxShootTime = 14
-        self.shootTimer = 0
+      if self.chargeState == 1 and self:numberOfShots("megaBuster") < 3 then
+        self.shootFrames = 14
         self:resetCharge()
         self:useShootAnimation()
-      elseif self.chargeState == 2 then
-        shots[#shots+1] = megautils.add(protoChargedBuster, self.transform.x+(self.side==1 and 16 or -34), 
-          self.transform.y+(self.climb and 7 or (self.gravity >= 0 and 9 or 5)), self, self.side, "protoBuster")
-        self.maxShootTime = 14
-        self.shootTimer = 0
+        shots[#shots+1] = megautils.add(protoSemiBuster, self.transform.x+self:shootOffX(2), 
+          self.transform.y+self:shootOffY(), self, self.side, "protoBuster")
+      elseif self.chargeState == 2 and self:numberOfShots("protoChargedBuster") < 1 then
+        self.shootFrames = 14
         self:resetCharge()
         self:useShootAnimation()
+        shots[#shots+1] = megautils.add(protoChargedBuster, self.transform.x+self:shootOffX(8), 
+          self.transform.y+self:shootOffY(), self, self.side, "protoBuster")
+      else
+        self:resetCharge()
       end
     elseif w.current == "R.BUSTER" then
-      if self.chargeState == 1 then
-        shots[#shots+1] = megautils.add(protoSemiBuster, self.transform.x+(self.side==1 and 19 or -18), 
-          self.transform.y+(self.climb and (self.gravity >= 0 and 5 or 9) or (self.gravity >= 0 and 7 or 10)), self, self.side, "rollBuster")
-        self.maxShootTime = 14
-        self.shootTimer = 0
+      if self.chargeState == 1 and self:numberOfShots("megaBuster") < 3 then
+        self.shootFrames = 14
         self:resetCharge()
         self:useShootAnimation()
-      elseif self.chargeState == 2 then
-        shots[#shots+1] = megautils.add(protoChargedBuster, self.transform.x+(self.side==1 and 16 or -34), 
-          self.transform.y+(self.climb and (self.gravity >= 0 and 4 or 7) or (self.gravity >= 0 and 6 or 8)), self, self.side, "rollBuster")
-        self.maxShootTime = 14
-        self.shootTimer = 0
+        shots[#shots+1] = megautils.add(protoSemiBuster, self.transform.x+self:shootOffX(2), 
+          self.transform.y+self:shootOffY(), self, self.side, "rollBuster")
+      elseif self.chargeState == 2 and self:numberOfShots("protoChargedBuster") < 1 then
+        self.shootFrames = 14
         self:resetCharge()
         self:useShootAnimation()
+        shots[#shots+1] = megautils.add(protoChargedBuster, self.transform.x+self:shootOffX(8), 
+          self.transform.y+self:shootOffY(), self, self.side, "rollBuster")
+      else
+        self:resetCharge()
       end
     end
   end
@@ -1146,9 +1154,9 @@ function megaMan:code(dt)
         self.side = 1
       end
       self.transform.x = self.currentLadder.transform.x+(self.currentLadder.collisionShape.w/2)-(self.collisionShape.w/2)
-      if control.upDown[self.player] and self.shootTimer == self.maxShootTime then
+      if control.upDown[self.player] and self.shootFrames == 0 then
         self.velocity.vely = self.climbUpSpeed
-      elseif control.downDown[self.player] and self.shootTimer == self.maxShootTime then
+      elseif control.downDown[self.player] and self.shootFrames == 0 then
         self.velocity.vely = self.climbDownSpeed
       end
       self.velocity.vely = self.velocity.vely + self.currentLadder.velocity.vely
@@ -1157,7 +1165,7 @@ function megaMan:code(dt)
       v(self)
     end
     self:attemptWeaponUsage()
-    if self.shootTimer ~= self.maxShootTime then
+    if self.shootFrames ~= 0 then
       self.velocity.vely = 0      
     end
     self:phys()
@@ -1254,7 +1262,7 @@ function megaMan:code(dt)
     self:attemptClimb()
   elseif self.ground then
     collision.doGrav(self)
-    if checkFalse(self.canWalk) and not (self.stopOnShot and self.shootTimer ~= self.maxShootTime) then
+    if checkFalse(self.canWalk) and not (self.stopOnShot and self.shootFrames ~= 0) then
       if self.runCheck and not self.step then
         self.side = control.leftDown[self.player] and -1 or 1
         local sv = checkFalse(self.canStep)
@@ -1387,7 +1395,7 @@ function megaMan:code(dt)
     (view.x+view.w)+(-self.collisionShape.w/2)-2)
   self.transform.y = math.clamp(self.transform.y, view.y-(self.collisionShape.h*1.4),
     view.y+view.h+4)
-  self.shootTimer = math.min(self.shootTimer+1, self.maxShootTime)
+  self.shootFrames = math.max(self.shootFrames-1, 0)
   if ((self.gravity >= 0 and self.transform.y >= view.y+view.h) or (self.gravity < 0 and self.transform.y+self.collisionShape.h <= view.y)) or 
     (checkFalse(self.blockCollision) and checkTrue(self.canGetCrushed) and collision.checkSolid(self)) then
     self.iFrames = 0
@@ -1398,7 +1406,7 @@ function megaMan:code(dt)
   end
   self:updateIFrame()
   self:updateFlash()
-  if self.stopOnShot and self.shootTimer == self.maxShootTime then
+  if self.stopOnShot and self.shootFrames == 0 then
     self.stopOnShot = false
   end
   if megaMan.mainPlayer and control.startPressed[self.player] and
@@ -1592,9 +1600,9 @@ function megaMan:switchWeaponSlot(s)
 end
 
 function megaMan:bassBusterAnim(shoot)
-  if megaMan.weaponHandler[self.player].current ~= "B.BUSTER" then return shoot end
+  if not weapon.sevenWayAnim[megaMan.weaponHandler[self.player].current] then return shoot end
   local dir = shoot
-  if self.shootTimer ~= self.maxShootTime then
+  if self.shootFrames ~= 0 then
     if control.upDown[self.player] then
       if control.leftDown[self.player] or control.rightDown[self.player] then
         dir = self.gravity >= 0 and "s_um" or "s_dm"
@@ -1612,58 +1620,64 @@ function megaMan:bassBusterAnim(shoot)
   return dir
 end
 
-function megaMan:animate()
+function megaMan:animate(getDataOnly)
+  local newAnim = self.idleAnimation.regular
+  local newFrame
+  local newTime
+  local pause
+  local resume
+  
   if self.drop or self.rise then
-    self.anims:set(self.dropLanded and self.dropLandAnimation.regular or self.dropAnimation.regular)
+    newAnim = self.dropLanded and self.dropLandAnimation.regular or self.dropAnimation.regular
   elseif checkFalse(self.canControl) then
     local shoot = "regular"
-    if self.shootTimer ~= self.maxShootTime then
+    if self.shootFrames ~= 0 then
       shoot = "shoot"
     end
     if self.treble then
       if self.treble == 1 then
-        self.anims:set(self.idleAnimation.regular)
+        newAnim = self.idleAnimation.regular
       elseif self.treble == 2 then
-        self.anims:set(self.trebleAnimation.start)
+        newAnim = self.trebleAnimation.start
       elseif self.treble == 3 then
         if table.contains(self.trebleAnimation, self.anims.current) and
           self.anims.current ~= self.trebleAnimation.start and
           self.anims.current ~= self.trebleAnimation[shoot] then
-          self.anims:set(self.trebleAnimation[shoot], self.anims:frame(), self.anims:time())
+          newAnim, newFrame, newTime = self.trebleAnimation[shoot], self.anims:frame(), self.anims:time()
         else
-          self.anims:set(self.trebleAnimation[shoot])
+          newAnim = self.trebleAnimation[shoot]
         end
       end
     elseif self.hitTimer ~= self.maxHitTime then
-      self.anims:set(self.hitAnimation.regular)
+      newAnim = self.hitAnimation.regular
     elseif self.climb then
       shoot = self:bassBusterAnim(shoot)
-      self.anims:set(self.climbAnimation[shoot])
+      newAnim = self.climbAnimation[shoot]
       if self.climbTip then
-        if self.shootTimer ~= self.maxShootTime then
-          self.anims:set(self.climbAnimation[shoot])
+        if self.shootFrames ~= 0 then
+          newAnim = self.climbAnimation[shoot]
         else
-          self.anims:set(self.climbTipAnimation.regular)
+          newAnim = self.climbTipAnimation.regular
         end
       elseif not (control.downDown[self.player] or control.upDown[self.player]) and not self.anims:isPaused() then
-        self.anims:pause()
+        pause = true
         if shoot == "regular" then
           if self.lastSide == -1 then
-            self.anims:gotoFrame(1)
+            newFrame = 1
           elseif self.lastSide == 1 then
-            self.anims:gotoFrame(2)
+            newFrame = 2
           end
           self.lastSide = nil
         else
           self.lastSide = self.side
         end
       elseif control.downDown[self.player] or control.upDown[self.player] and self.anims:isPaused() then
-        self.anims:resume()
+        resume = true
       end
     elseif self.slide then
-      self.anims:set(self.dashAnimation[checkFalse(self.canDashShoot) and shoot or "regular"])
-      if checkFalse(self.canDashShoot) and self.shootTimer ~= self.maxShootTime then
-        self.anims:gotoFrame(self.anims:length())
+      newAnim = self.dashAnimation[checkFalse(self.canDashShoot) and shoot or "regular"]
+      if checkFalse(self.canDashShoot) and self.shootFrames ~= 0 then
+        newFrame = self.anims:length()
       end
     elseif self.ground then
       if checkFalse(self.canWalk) and not self.step and self.runCheck then
@@ -1672,16 +1686,16 @@ function megaMan:animate()
           if self.protoShielding and shoot == "regular" then
             shoot = "ps"
           end
-          self.anims:set(self.jumpAnimation[shoot])
+          newAnim = self.jumpAnimation[shoot]
         else
-          self.anims:set(self.nudgeAnimation[shoot])
+          newAnim = self.nudgeAnimation[shoot]
         end
       elseif checkFalse(self.canWalk) and self.runCheck and
-        not (self.stopOnShot and self.shootTimer ~= self.maxShootTime) then
+        not (self.stopOnShot and self.shootFrames ~= 0) then
         if table.contains(self.runAnimation, self.anims.current) and self.anims.current ~= self.runAnimation[shoot] then
-          self.anims:set(self.runAnimation[shoot], self.anims:frame(), self.anims:time())
+          newAnim, newFrame, newTime = self.runAnimation[shoot], self.anims:frame(), self.anims:time()
         else
-          self.anims:set(self.runAnimation[shoot])
+          newAnim = self.runAnimation[shoot]
         end
       else
         shoot = self:bassBusterAnim(shoot)
@@ -1689,12 +1703,12 @@ function megaMan:animate()
           if self.protoShielding and shoot == "regular" then
             shoot = "ps"
           end
-          self.anims:set(self.jumpAnimation[shoot])
+          newAnim = self.jumpAnimation[shoot]
         else
           if shoot == "regular" and self.protoIdle then
             shoot = "proto"
           end
-          self.anims:set(self.idleAnimation[shoot])
+          newAnim = self.idleAnimation[shoot]
         end
       end
     else
@@ -1702,15 +1716,36 @@ function megaMan:animate()
       if self.protoShielding and shoot == "regular" then
         shoot = "ps"
       end
-      self.anims:set(self.jumpAnimation[shoot])
+      newAnim = self.jumpAnimation[shoot]
     end
   end
-  if self.anims.current ~= self.climbAnimation.regular and self.anims.current ~= self.climbTipAnimation.regular then
-    self.anims.flipX = self.side ~= 1
+  
+  if not getDataOnly then
+    if newAnim then
+      self.anims:set(newAnim)
+    end
+    if newFrame then
+      self.anims:gotoFrame(newFrame)
+    end
+    if newTime then
+      self.anims:setTime(newTime)
+    end
+    if pause then
+      self.anims:pause()
+    end
+    if resume then
+      self.anims:resume()
+    end
+    
+    if self.anims.current ~= self.climbAnimation.regular and self.anims.current ~= self.climbTipAnimation.regular then
+      self.anims.flipX = self.side ~= 1
+    else
+      self.anims.flipX = false
+    end
+    self.anims:update(defaultFramerate)
   else
-    self.anims.flipX = false
+    return newAnim, newFrame, newTime, pause, resume
   end
-  self.anims:update(defaultFramerate)
 end
 
 function megaMan:die()
@@ -1762,7 +1797,7 @@ function megaMan:die()
   megautils.playSoundFromFile("assets/sfx/dieExplode.ogg")
 end
 
-function megaMan:update(dt)
+function megaMan:update()
   if self.doWeaponGet then
     if not self._subState then
       self._subState = 0
@@ -1879,7 +1914,7 @@ function megaMan:update(dt)
       elseif checkFalse(self.canControl) then
         self:code(dt)
       end
-      if self.doAnimation then self:animate(dt) end
+      if self.doAnimation then self:animate() end
       if checkFalse(self.canSwitchWeapons) and not self.drop and not self.rise then self:attemptWeaponSwitch() end
       self.weaponSwitchTimer = math.min(self.weaponSwitchTimer+1, 70)
     end

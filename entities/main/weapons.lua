@@ -20,6 +20,7 @@ weapon.chargeColors = {}
 weapon.chargeSounds = {}
 weapon.icons = {}
 weapon.segments = {}
+weapon.sevenWayAnim = {}
 weapon.iconTex = megautils.getResource("weaponSelect")
 
 function weapon.drawIcon(p, on, x, y)
@@ -289,8 +290,8 @@ protoSemiBuster.autoClean = false
 
 function protoSemiBuster:new(x, y, p, dir, skin)
   protoSemiBuster.super.new(self, p)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.transform.x = (x or 0) - 5
+  self.transform.y = (y or 0) - 5
   self:setRectangleCollision(10, 10)
   self.tex = megautils.getResource(skin)
   self.quad = quad(0, 0, 10, 10)
@@ -311,8 +312,8 @@ protoChargedBuster.autoClean = false
 
 function protoChargedBuster:new(x, y, p, dir, skin)
   protoChargedBuster.super.new(self, p)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.transform.x = (x or 0) - 14
+  self.transform.y = (y or 0) - 4
   self:setRectangleCollision(29, 8)
   self.tex = megautils.getResource(skin)
   self.anim = megautils.newAnimation("protoBusterGrid", {"1-2", 1}, 1/20)
@@ -358,6 +359,8 @@ weapon.colors["B.BUSTER"] = {
     two = {248, 152, 56}
   }
 
+weapon.sevenWayAnim["B.BUSTER"] = true
+
 function bassBuster:new(x, y, p, dir, t)
   bassBuster.super.new(self, p)
   
@@ -368,8 +371,8 @@ function bassBuster:new(x, y, p, dir, t)
     self.recycle = true
   end
   
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.transform.x = (x or 0) - 3
+  self.transform.y = (y or 0) - 3
   self.velocity.velx = megautils.calcX(dir or 1) * 5
   self.velocity.vely = megautils.calcY(dir or 1) * 5
   self.side = self.velocity.velx < 0 and -1 or 1
@@ -467,14 +470,14 @@ function megaBuster:new(x, y, p, dir)
     self.recycle = true
   end
   
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.transform.x = (x or 0) - 4
+  self.transform.y = (y or 0) - 3
   self.side = dir or 1
   self.velocity.velx = self.side * 5
 end
 
 function megaBuster:draw()
-  self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y), 0, 1, 1, 4, 3)
+  self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
 end
 
 megaSemiBuster = weapon:extend()
@@ -483,8 +486,8 @@ megaSemiBuster.autoClean = false
 
 function megaSemiBuster:new(x, y, p, dir)
   megaSemiBuster.super.new(self, p)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.transform.x = (x or 0) - 8
+  self.transform.y = (y or 0) - 5
   self:setRectangleCollision(16, 10)
   self.tex = megautils.getResource("busterTex")
   self.anim = megautils.newAnimation("smallChargeGrid", {"1-2", 1}, 1/12)
@@ -513,13 +516,13 @@ megaChargedBuster.autoClean = false
 
 function megaChargedBuster:new(x, y, p, dir)
   megaChargedBuster.super.new(self, p)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.transform.x = (x or 0) - 12
+  self.transform.y = (y or 0) - 12
   self:setRectangleCollision(24, 24)
   self.tex = megautils.getResource("busterTex")
   self.anim = megautils.newAnimation("chargeGrid", {"1-4", 1}, 1/20)
   self.side = dir or 1
-  self.velocity.velx = self.side * 5.5
+  --self.velocity.velx = self.side * 5.5
   self.anim.flipX = self.side ~= 1
   self.pierceType = pierce.PIERCEIFKILLING
   self.sound = "charged"
@@ -536,7 +539,8 @@ function megaChargedBuster:act()
 end
 
 function megaChargedBuster:draw()
-  self.anim:draw(self.tex, math.round(self.transform.x)-8, math.round(self.transform.y)-3)
+  self.anim:draw(self.tex, math.round(self.transform.x)+(self.side == 1 and -8 or 0), math.round(self.transform.y)-3)
+  self:drawCollision()
 end
 
 trebleBoost = weapon:extend()
@@ -567,9 +571,9 @@ weapon.colors["T. BOOST"] = {
 
 function trebleBoost:new(x, y, p, side)
   trebleBoost.super.new(self, p)
-  self.transform.x = x or 0
+  self.transform.x = (x or 0) - 10
   self.transform.y = view.y-8
-  self.toY = y or 0
+  self.toY = (y or 0) - 9
   self:setRectangleCollision(20, 19)
   self.tex = megautils.getResource("trebleTex")
   self.anims = animationSet()
@@ -718,9 +722,9 @@ weapon.colors["TANGO JET"] = {
 
 function rushJet:new(x, y, p, side, skin)
   rushJet.super.new(self, p)
-  self.transform.x = x or 0
+  self.transform.x = (x or 0) - 14
   self.transform.y = view.y
-  self.toY = y or 0
+  self.toY = (y or 0) - 4
   self:setRectangleCollision(27, 8)
   self.tex = megautils.getResource(skin) or megautils.loadResource(skin, skin)
   self.skin = skin
@@ -907,9 +911,9 @@ weapon.colors["TANGO C."] = {
 
 function rushCoil:new(x, y, p, side, skin)
   rushCoil.super.new(self, p)
-  self.transform.x = x or 0
+  self.transform.x = (x or 0) - 10
   self.transform.y = view.y-8
-  self.toY = y or 0
+  self.toY = (y or 0) - 9
   self:setRectangleCollision(20, 19)
   self.tex = megautils.getResource(skin)
   self.skin = skin
@@ -1019,8 +1023,8 @@ weapon.colors["STICK W."] = {
 
 function stickWeapon:new(x, y, p, dir)
   stickWeapon.super.new(self, p)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.transform.x = (x or 0) - 4
+  self.transform.y = (y or 0) - 3
   self:setRectangleCollision(8, 6)
   self.tex = megautils.getResource("stickWeapon")
   self.side = dir or 1

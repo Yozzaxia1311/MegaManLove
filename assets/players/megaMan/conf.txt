@@ -13,8 +13,15 @@ leftShootOffsetX: -15
 rightShootOffsetX: 26
 shootOffsetY: 9
 
-slot0: M.BUSTER
+slot0: B.BUSTER
 slot9: RUSH C.
 slot10: RUSH JET
+
+shootX: 50
+shootY: 29
+shootX4-2: 47
+shootY4-2: 37
+shootX6-2: 48
+shootY6-2: 21
 
 protoMug: false

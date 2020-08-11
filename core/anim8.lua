@@ -45,8 +45,8 @@ local function createFrame(self, x, y)
     self.top + self.border + (y-1) * (fh + (self.border * 2)),
     fw,
     fh,
-    1,
-    1
+    x,
+    y
   )
 end
 
@@ -167,8 +167,14 @@ local function newAnimation(frames, durations, onLoop)
   onLoop = onLoop or nop
   durations = parseDurations(durations, #frames)
   local intervals, totalDuration = parseIntervals(durations)
+  local framePositions = {}
+  for i=1, #frames do
+    framePositions[i] = {frames[i]:getTextureDimensions()}
+  end
+  
   return setmetatable({
       frames         = cloneArray(frames),
+      framePositions = framePositions,
       durations      = durations,
       intervals      = intervals,
       totalDuration  = totalDuration,
@@ -176,7 +182,7 @@ local function newAnimation(frames, durations, onLoop)
       timer          = 0,
       position       = 1,
       status         = "playing",
-      _looped         = false,
+      _looped        = false,
       flipX       = false,
       flipY       = false
     },
@@ -246,6 +252,10 @@ function Animation:update(dt)
   end
 
   self.position = seekFrameIndex(self.intervals, self.timer)
+end
+
+function Animation:getFramePosition(f)
+  return unpack(self.framePositions[f or self.position])
 end
 
 function Animation:pause()
