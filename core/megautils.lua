@@ -32,17 +32,18 @@ megautils.postAddObjectsFuncs = {}
 megautils.skinChangeFuncs = {}
 
 --Player callback functions. These apply to all active players.
-megautils.playerCreatedFuncs = {}       --megautils.playerCreatedFuncs.exampleFunc = function(player) end
-megautils.playerTransferFuncs = {}      --megautils.playerTransferFuncs.exampleFunc = function(fromPlayer, toPlayer) end
-megautils.playerGroundFuncs = {}        --megautils.playerGroundFuncs.exampleFunc = function(player) end
-megautils.playerAirFuncs = {}           --megautils.playerAirFuncs.exampleFunc = function(player) end
-megautils.playerSlideFuncs = {}         --megautils.playerSlideFuncs.exampleFunc = function(player) end
-megautils.playerClimbFuncs = {}         --megautils.playerClimbFuncs.exampleFunc = function(player) end
-megautils.playerKnockbackFuncs = {}     --megautils.playerKnockbackFuncs.exampleFunc = function(player) end
-megautils.playerTrebleFuncs = {}        --megautils.playerTrebleFuncs.exampleFunc = function(player) end
-megautils.playerInteractedWithFuncs = {} --megautils.playerInteractedWithFuncs.exampleFunc = function(player) end
-megautils.playerDeathFuncs = {}         --megautils.playerDeathFuncs.exampleFunc = function(player) end
-megautils.playerAttemptWeaponFuncs = {} --megautils.playerAttemptWeaponFuncs.exampleFunc = function(player, shotsInTable) end
+megautils.playerCreatedFuncs = {}         --megautils.playerCreatedFuncs.exampleFunc = function(player) end
+megautils.playerTransferFuncs = {}        --megautils.playerTransferFuncs.exampleFunc = function(fromPlayer, toPlayer) end
+megautils.playerGroundFuncs = {}          --megautils.playerGroundFuncs.exampleFunc = function(player) end
+megautils.playerAirFuncs = {}             --megautils.playerAirFuncs.exampleFunc = function(player) end
+megautils.playerSlideFuncs = {}           --megautils.playerSlideFuncs.exampleFunc = function(player) end
+megautils.playerClimbFuncs = {}           --megautils.playerClimbFuncs.exampleFunc = function(player) end
+megautils.playerKnockbackFuncs = {}       --megautils.playerKnockbackFuncs.exampleFunc = function(player) end
+megautils.playerTrebleFuncs = {}          --megautils.playerTrebleFuncs.exampleFunc = function(player) end
+megautils.playerInteractedWithFuncs = {}  --megautils.playerInteractedWithFuncs.exampleFunc = function(player) end
+megautils.playerDeathFuncs = {}           --megautils.playerDeathFuncs.exampleFunc = function(player) end
+megautils.playerAttemptWeaponFuncs = {}   --megautils.playerAttemptWeaponFuncs.exampleFunc = function(player, shotsInTable) end
+megautils.playerPauseFuncs = {}           --megautils.playerPauseFuncs.exampleFunc = function(player) end
 
 megautils._q = {}
 

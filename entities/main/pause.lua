@@ -12,6 +12,9 @@ end
 function mmWeaponsMenu.pause(self)
   megautils.freeze(nil, "pause")
   megautils.add(fade, true, nil, nil, function(s)
+      for k, v in pairs(megautils.playerPauseFuncs) do
+        v(self)
+      end
       megautils.add(mmWeaponsMenu, megaMan.weaponHandler[self.player], self.healthHandler, self)
       local ff = megautils.add(fade, false, nil, nil, fade.remove)
       megautils.removeq(s)
