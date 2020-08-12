@@ -56,7 +56,7 @@ function love.load()
   deadZone = 0.8
   defaultFPS = 60
   defaultFramerate = 1/defaultFPS
-  mapCacheSize = 3
+  mapCacheSize = 2
   useConsole = love.keyboard
   
   maxPlayerCount = 4
