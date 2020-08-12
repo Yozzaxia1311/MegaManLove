@@ -12,14 +12,14 @@ for i=1, maxPlayerCount do
   healthHandler.playerTimers[i] = -2
 end
 
-megautils.resetGameObjectsFuncs.barHandler = function()
+megautils.resetGameObjectsFuncs.barHandler = {func=function()
     healthHandler.playerTimers = {}
     for i=1, maxPlayerCount do
       healthHandler.playerTimers[i] = -2
     end
     
     weaponHandler.id = 0
-  end
+  end, autoClean=false}
 
 function healthHandler:new(colorOne, colorTwo, colorOutline, side, r, segments, player)
   healthHandler.super.new(self)

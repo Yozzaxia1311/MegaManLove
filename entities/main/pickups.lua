@@ -468,6 +468,6 @@ function wTank:draw()
   end
 end
 
-megautils.resetGameObjectsFuncs.pickups = function()
-  pickupEntity.banIDs = {}
-end
+megautils.resetGameObjectsFuncs.pickups = {func=function()
+    pickupEntity.banIDs = {}
+  end, autoClean=false}

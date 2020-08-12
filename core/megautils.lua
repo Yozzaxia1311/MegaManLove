@@ -22,7 +22,6 @@ megautils.resetGameObjects = true
 megautils.reloadStateFuncs = {}
 megautils.cleanFuncs = {}
 megautils.resetGameObjectsFuncs = {}
-megautils.resetGameObjectsPreFuncs = {}
 megautils.initEngineFuncs = {}
 megautils.addMapFuncs = {}
 megautils.removeMapFuncs = {}
@@ -44,6 +43,42 @@ megautils.playerInteractedWithFuncs = {}  --megautils.playerInteractedWithFuncs.
 megautils.playerDeathFuncs = {}           --megautils.playerDeathFuncs.exampleFunc = function(player) end
 megautils.playerAttemptWeaponFuncs = {}   --megautils.playerAttemptWeaponFuncs.exampleFunc = function(player, shotsInTable) end
 megautils.playerPauseFuncs = {}           --megautils.playerPauseFuncs.exampleFunc = function(player) end
+
+function megautils.cleanCallbacks()
+  local callbacks = {
+      "reloadStateFuncs",
+      "cleanFuncs",
+      "resetGameObjectsFuncs",
+      "initEngineFuncs",
+      "addMapFuncs",
+      "removeMapFuncs",
+      "sectionChangeFuncs",
+      "difficultyChangeFuncs",
+      "postAddObjectsFuncs",
+      "skinChangeFuncs",
+      "playerCreatedFuncs",
+      "playerTransferFuncs",
+      "playerGroundFuncs",
+      "playerAirFuncs",
+      "playerSlideFuncs",
+      "playerClimbFuncs",
+      "playerKnockbackFuncs",
+      "playerTrebleFuncs",
+      "playerInteractedWithFuncs",
+      "playerDeathFuncs",
+      "playerAttemptWeaponFuncs",
+      "playerPauseFuncs",
+    }
+  
+  for i=1, #callbacks do
+    local name = callbacks[i]
+    for k, v in pairs(megautils[name]) do
+      if type(v) == "function" or (type(v) == "table" and (v.autoClean == nil or v.autoClean)) then
+        megautils[name][k] = nil
+      end
+    end
+  end
+end
 
 megautils._q = {}
 
@@ -153,7 +188,7 @@ function megautils.getDifficulty()
 end
 
 function megautils.setDifficulty(d)
-  convar.setValue("diff", d or convar.getString("diff"))
+  convar.setValue("diff", d or convar.getString("diff"), true)
 end
 
 function megautils.enableConsole()
@@ -426,8 +461,13 @@ end
 
 function megautils.unload()
   for k, v in pairs(megautils.cleanFuncs) do
-    v()
+    if type(v) == "function" then
+      v()
+    else
+      v.func()
+    end
   end
+  megautils.cleanCallbacks()
   megautils.unloadAllResources()
   cartographer.cache = {}
   megautils._runFileOnce = {}

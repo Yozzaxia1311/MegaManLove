@@ -2,12 +2,12 @@ camera = basicEntity:extend()
 
 camera.autoClean = false
 
-megautils.reloadStateFuncs.camera = function()
-  camera.main = nil
-  section.hash = {}
-  section.names = {}
-  section.init = {}
-end
+megautils.reloadStateFuncs.camera = {func=function()
+    camera.main = nil
+    section.hash = {}
+    section.names = {}
+    section.init = {}
+  end, autoClean=false}
 
 function camera:new(x, y, doScrollX, doScrollY)
   camera.super.new(self)
@@ -344,7 +344,11 @@ function camera:updateBounds(noBounds)
         end
         bounds:activate(self.bounds and self.bounds.group)
         for k, v in pairs(megautils.sectionChangeFuncs) do
-          v()
+          if type(v) == "function" then
+            v()
+          else
+            v.func()
+          end
         end
       end
       self.bounds = bounds

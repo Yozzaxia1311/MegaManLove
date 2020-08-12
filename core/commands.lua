@@ -85,7 +85,11 @@ convar["diff"] = {
   value = "normal",
   fun = function(arg)
       for k, v in pairs(megautils.difficultyChangeFuncs) do
-        v(arg, convar.getValue("diff"))
+        if type(v) == "function" then
+          v(arg, convar.getValue("diff"))
+        else
+          v.func(arg, convar.getValue("diff"))
+        end
       end
     end
 }

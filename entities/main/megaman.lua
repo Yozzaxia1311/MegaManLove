@@ -48,6 +48,11 @@ function megaMan:setSkin(path)
   
   for k, v in pairs(megautils.skinChangeFuncs) do
     v(player, path, self)
+    if type(v) == "function" then
+      v(player, path, self)
+    else
+      v.func(player, path, self)
+    end
   end
 end
 
@@ -62,16 +67,16 @@ for i=5, maxPlayerCount do
   megaMan.setSkin(i, "assets/players/megaMan")
 end
 
-megautils.reloadStateFuncs.megaMan = function()
+megautils.reloadStateFuncs.megaMan = {func=function()
     megaMan.once = nil
-  end
+  end, autoClean=false}
 
-megautils.cleanFuncs.megaMan = function()
+megautils.cleanFuncs.megaMan = {func=function()
     megaMan.mainPlayer = nil
     megaMan.allPlayers = {}
-  end
+  end, autoClean=false}
 
-megautils.resetGameObjectsFuncs.megaMan = function()
+megautils.resetGameObjectsFuncs.megaMan = {func=function()
     megaMan.colorOutline = {}
     megaMan.colorOne = {}
     megaMan.colorTwo = {}
@@ -107,25 +112,27 @@ megautils.resetGameObjectsFuncs.megaMan = function()
     end
     
     megaMan.individualLanded = {}
-  end
+  end, autoClean=false}
 
-megautils.postAddObjectsFuncs.megaMan = function()
+megautils.postAddObjectsFuncs.megaMan = {func=function()
     if megaMan.mainPlayer and megaMan.mainPlayer.ready then
       megautils.freeze(nil, "ready")
     end
-  end
+  end, autoClean=false}
 
-megautils.difficultyChangeFuncs.megaMan = function(d)
-    if d == "easy" then
-      self.jumpAnimation.ps = "jumpProtoShield2"
-      self.protoShieldLeftCollision = {x=-7, y=0, w=8, h=20, goy=2}
-      self.protoShieldRightCollision = {x=10, y=0, w=8, h=20, goy=2}
-    else
-      self.jumpAnimation.ps = "jumpProtoShield"
-      self.protoShieldLeftCollision = {x=-7, y=0, w=8, h=14, goy=8}
-      self.protoShieldRightCollision = {x=10, y=0, w=8, h=14, goy=8}
+megautils.difficultyChangeFuncs.megaMan = {func=function(d)
+    for k, v in ipairs(megaMan.allPlayers) do
+      if d == "easy" then
+        v.jumpAnimation.ps = "jumpProtoShield2"
+        v.protoShieldLeftCollision = {x=-7, y=0, w=8, h=20, goy=2}
+        v.protoShieldRightCollision = {x=10, y=0, w=8, h=20, goy=2}
+      else
+        v.jumpAnimation.ps = "jumpProtoShield"
+        v.protoShieldLeftCollision = {x=-7, y=0, w=8, h=14, goy=8}
+        v.protoShieldRightCollision = {x=10, y=0, w=8, h=14, goy=8}
+      end
     end
-  end
+  end, autoClean=false}
 
 mapEntity.register("player", function(v)
     if megaMan.once then return end
@@ -462,7 +469,11 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   self.anims:set(self.drop and "spawn" or "idle")
   
   for k, v in pairs(megautils.playerCreatedFuncs) do
-    v(self)
+    if type(v) == "function" then
+      v(self)
+    else
+      v.func(self)
+    end
   end
 end
 
@@ -506,7 +517,11 @@ function megaMan:transferState(to)
   to.gravityMultipliers = table.clone(self.gravityMultipliers)
   to.gravity = self.gravity
   for k, v in pairs(megautils.playerTransferFuncs) do
-    v(self, to)
+    if type(v) == "function" then
+      v(self, to)
+    else
+      v.func(self, to)
+    end
   end
 end
 
@@ -844,7 +859,11 @@ function megaMan:attemptWeaponUsage()
     self:charge()
   end
   for k, v in pairs(megautils.playerAttemptWeaponFuncs) do
-    v(self, shots)
+    if type(v) == "function" then
+      v(self, shots)
+    else
+      v.func(self, shots)
+    end
   end
 end
 
@@ -934,7 +953,11 @@ function megaMan:interactedWith(o, c)
     end
   end
   for k, v in pairs(megautils.playerInteractedWithFuncs) do
-    v(self)
+    if type(v) == "function" then
+      v(self, o)
+    else
+      v.func(self, o)
+    end
   end
   self.healthHandler:updateThis(self.healthHandler.health + self.changeHealth)
   if self.changeHealth < 0 then
@@ -1091,7 +1114,11 @@ function megaMan:code(dt)
       self:attemptWeaponUsage()
     end
     for k, v in pairs(megautils.playerTrebleFuncs) do
-      v(self)
+      if type(v) == "function" then
+        v(self)
+      else
+        v.func(self)
+      end
     end
     self:phys()
     if megaMan.weaponHandler[self.player].current ~= "T. BOOST" or
@@ -1108,7 +1135,11 @@ function megaMan:code(dt)
     collision.doGrav(self)
     self.hitTimer = math.min(self.hitTimer+1, self.maxHitTime)
     for k, v in pairs(megautils.playerKnockbackFuncs) do
-      v(self)
+      if type(v) == "function" then
+        v(self)
+      else
+        v.func(self)
+      end
     end
     self:phys()
     if control.shootDown[self.player] then
@@ -1176,7 +1207,11 @@ function megaMan:code(dt)
       self.velocity.vely = self.velocity.vely + self.currentLadder.velocity.vely
     end
     for k, v in pairs(megautils.playerClimbFuncs) do
-      v(self)
+      if type(v) == "function" then
+        v(self)
+      else
+        v.func(self)
+      end
     end
     self:attemptWeaponUsage()
     if self.shootFrames ~= 0 then
@@ -1262,7 +1297,11 @@ function megaMan:code(dt)
     end
     if not self.slide and not jumped then self.velocity.vely = 0 end
     for k, v in pairs(megautils.playerSlideFuncs) do
-      v(self)
+      if type(v) == "function" then
+        v(self)
+      else
+        v.func(self)
+      end
     end
     self:phys()
     local cd = checkFalse(self.canDashShoot)
@@ -1335,7 +1374,11 @@ function megaMan:code(dt)
     end
     self.velocity.velx = math.clamp(self.velocity.velx, self.maxLeftSpeed, self.maxRightSpeed)
     for k, v in pairs(megautils.playerGroundFuncs) do
-      v(self)
+      if type(v) == "function" then
+        v(self)
+      else
+        v.func(self)
+      end
     end
     self:phys()
     if not self.ground then
@@ -1375,7 +1418,11 @@ function megaMan:code(dt)
       self.velocity:slowY(self.jumpDecel)
     end
     for k, v in pairs(megautils.playerAirFuncs) do
-      v(self)
+      if type(v) == "function" then
+        v(self)
+      else
+        v.func(self)
+      end
     end
     self:phys()
     if self.died then return end
@@ -1890,7 +1937,11 @@ function megaMan:update()
       end
     elseif self.dying then
       for k, v in pairs(megautils.playerDeathFuncs) do
-        v(self)
+        if type(v) == "function" then
+          v(self)
+        else
+          v.func(self)
+        end
       end
       if self.cameraTween:update(defaultFramerate) then
         self:die()

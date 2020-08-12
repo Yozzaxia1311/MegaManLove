@@ -25,9 +25,9 @@ function initEngine()
   globals.bossIntroState = "assets/states/menus/bossintro.state.lua"
   globals.weaponGetState = "assets/states/menus/weaponget.state.lua"
   
-  megautils.difficultyChangeFuncs.startingLives = function(d)
+  megautils.difficultyChangeFuncs.startingLives = {func=function(d)
       globals.startingLives = (d == "easy") and 3 or 2
-    end
+    end, autoClean=false}
   
   -- `globals.defeats` tells who you've defeated. Add to this to track what bosses you've defeated.
   globals.defeats = {}
@@ -37,11 +37,19 @@ function initEngine()
   globals.gamepadCheck = {}
   
   for k, v in pairs(megautils.cleanFuncs) do
-    v()
+    if type(v) == "function" then
+      v()
+    else
+      v.func()
+    end
   end
   megautils.unloadAllResources()
   for k, v in pairs(megautils.initEngineFuncs) do
-    v()
+    if type(v) == "function" then
+      v()
+    else
+      v.func()
+    end
   end
   
   megautils.setDifficulty("normal")
