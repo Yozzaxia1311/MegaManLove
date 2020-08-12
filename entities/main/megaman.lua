@@ -291,11 +291,11 @@ function megaMan:syncPlayerSkin()
   for k, v in pairs(skin.traits) do
     local s, e = k:find("shootX")
     if s == 1 and k:len() > e then
-      self.shootOffsetXTable[k:sub(e+1)] = v
+      self.shootOffsetXTable[k:sub(e+1)] = clampSkinShootOffsets and math.clamp(v, 0, 63) or v
     end
     s, e = k:find("shootY")
     if s == 1 and k:len() > e then
-      self.shootOffsetYTable[k:sub(e+1)] = v
+      self.shootOffsetYTable[k:sub(e+1)] = clampSkinShootOffsets and math.clamp(v, 0, 41) or v
     end
   end
   

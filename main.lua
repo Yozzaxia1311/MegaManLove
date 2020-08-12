@@ -57,6 +57,7 @@ function love.load()
   defaultFPS = 60
   defaultFramerate = 1/defaultFPS
   mapCacheSize = 2
+  clampSkinShootOffsets = true
   useConsole = love.keyboard
   
   maxPlayerCount = 4
