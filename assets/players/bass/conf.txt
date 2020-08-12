@@ -1,20 +1,19 @@
-name: Template Man
+name: Bass
 
 canWalk: true
 canJump: true
 canShoot: true
 canClimb: true
 canDash: true
-smallSlideHitbox: true
+smallSlideHitbox: false
 protoShield: false
 protoIdleAnim: false
 protoWhistle: false
-extraJumps: 0
-canDashJump: false
+extraJumps: 1
+canDashJump: true
 
-slot0: M.BUSTER
-slot9: RUSH C.
-slot10: RUSH JET
+slot0: B.BUSTER
+slot10: T. BOOST
 
 shootX: 50
 shootY: 29

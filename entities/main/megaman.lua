@@ -56,7 +56,7 @@ function megaMan:getSkin()
   return megaMan.skins[player]
 end
 
-megaMan.setSkin(1, "assets/players/protoMan")
+megaMan.setSkin(1, "assets/players/bass")
 
 for i=5, maxPlayerCount do
   megaMan.setSkin(i, "assets/players/megaMan")
