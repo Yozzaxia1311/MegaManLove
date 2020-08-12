@@ -58,6 +58,8 @@ end
 function love.load()
   love.keyboard.setKeyRepeat(true)
   love.graphics.setDefaultFilter("nearest", "nearest")
+  
+  -- Engine globals.
   consoleFont = love.graphics.getFont() -- needs to be preserved
   altEnterOnce = false
   scaleOnce = false
