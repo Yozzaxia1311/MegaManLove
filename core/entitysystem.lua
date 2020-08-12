@@ -97,7 +97,7 @@ function entitySystem:add(c, ...)
 end
 
 function entitySystem:adde(e)
-  if not e or not e.isRemoved or e.isAdded or table.contains(self.updates, e) then return end
+  if not e or table.contains(self.all, e) then return end
   if not e.static then
     local done = false
     for i=1, #self.entities do
