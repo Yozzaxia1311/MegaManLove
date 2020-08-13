@@ -7,6 +7,7 @@ borderRight = love.graphics.newImage("assets/misc/borderRight.png")
 
 -- Initializes the whole game to its base state.
 function initEngine()
+  love.graphics.setFont(mmFont)
   inputHandler.init()
   control.init()
   globals = {}
@@ -17,7 +18,6 @@ function initEngine()
   megautils.runFile("core/commands.lua")
   
   -- Game globals.
-  mmFont = love.graphics.newFont("assets/misc/mm.ttf", 8)
   globals.checkpoint = "start"
   globals.lifeSegments = 7
   globals.startingLives = 2
@@ -29,7 +29,7 @@ function initEngine()
       globals.startingLives = (d == "easy") and 3 or 2
     end, autoClean=false}
   
-  -- `globals.defeats` tells who you've defeated. Add to this to track what bosses you've defeated.
+  -- `globals.defeats` tells who you've defeated. Fill this in appropriatly. Your `bossEntity` should be configured to fill this in.
   globals.defeats = {}
   globals.defeats.stickMan = false
   
@@ -69,6 +69,7 @@ function love.load()
   mapCacheSize = 2
   clampSkinShootOffsets = true
   useConsole = love.keyboard
+  mmFont = love.graphics.newFont("assets/misc/mm.ttf", 8)
   
   maxPlayerCount = 4
   maxLives = 10

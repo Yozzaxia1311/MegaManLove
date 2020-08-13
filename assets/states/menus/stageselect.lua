@@ -1,25 +1,26 @@
 local stageSelectState = state:extend()
 
 function stageSelectState:begin()
-  megautils.loadResource("assets/misc/select.png", "mugshots")
   megautils.add(stageSelect)
   love.graphics.setBackgroundColor(0, 0, 0, 1)
 end
 
 stageSelect = basicEntity:extend()
 
+megautils.loadResource("assets/misc/select.png", "mugshots")
 megautils.loadResource("assets/sfx/ascend.ogg", "selected")
 megautils.loadResource("assets/sfx/cursorMove.ogg", "cursorMove")
 megautils.loadResource(0, 0, 63, 62, 2, "megaManGrid")
 
 function stageSelect:new()
   stageSelect.super.new(self)
-  self.transform.y = 8
   self.transform.x = 24
-  self.blinkQuad = quad(0, 128, 48, 48)
+  self.transform.y = 24
+  
+  self.blinkQuad = quad(0, 96, 48, 48)
   
   self.anims = animationSet()
-  self.anims:add("0-0", megautils.newAnimation("megaManGrid", {1, 1}))
+  self.anims:add("0-0", megautils.newAnimation("megaManGrid", {6, 6}))
   self.anims:add("1-0", megautils.newAnimation("megaManGrid", {7, 6}))
   self.anims:add("2-0", megautils.newAnimation("megaManGrid", {8, 6}))
   self.anims:add("0-1", megautils.newAnimation("megaManGrid", {6, 7}))
@@ -38,18 +39,18 @@ function stageSelect:new()
     self.anims:set("1-1")
   end
   
-  self.wilyQuad = quad(320, 32, 32, 32)
+  self.wilyQuad = quad(32, 32, 32, 32)
   
-  self.quad11 = quad(288, 0, 32, 32)
-  self.quad21 = quad(320, 0, 32, 32)
-  self.quad31 = quad(352, 0, 32, 32)
+  self.quad11 = quad(0, 0, 32, 32)
+  self.quad21 = quad(32, 0, 32, 32)
+  self.quad31 = quad(64, 0, 32, 32)
   
-  self.quad12 = quad(288, 32, 32, 32)
-  self.quad32 = quad(352, 32, 32, 32)
+  self.quad12 = quad(0, 32, 32, 32)
+  self.quad32 = quad(64, 32, 32, 32)
   
-  self.quad13 = quad(288, 64, 32, 32)
-  self.quad23 = quad(320, 64, 32, 32)
-  self.quad33 = quad(352, 64, 32, 32)
+  self.quad13 = quad(0, 64, 32, 32)
+  self.quad23 = quad(32, 64, 32, 32)
+  self.quad33 = quad(64, 64, 32, 32)
   
   self.tex = megautils.getResource("mugshots")
   self.timer = 0
@@ -174,40 +175,40 @@ function stageSelect:update()
     self.timer = math.wrap(self.timer+1, 0, 14)
     self.blink = self.timer < 7
     self.transform.x = self.oldX + self.x*80
-    self.transform.y = self.oldY + self.y*72
+    self.transform.y = self.oldY + self.y*64
   end
 end
 
 function stageSelect:draw()
   if not checkFalse(globals.defeats) then
-    self.anims:draw(megaMan.getSkin(1).texture, 112, 88, 0, 1, 1, 16, 15)
+    self.anims:draw(megaMan.getSkin(1).texture, 32+(1*81), 32+(1*64), 0, 1, 1, 16, 15)
     
     if false then -- For select slot 1, 1
-      self.quad11:draw(self.tex, self.oldX+(1*56), self.oldY+(1*40))
+      self.quad11:draw(self.tex, 32+(0*81), 32+(0*64))
     end
     if false then -- For select slot 2, 1
-      self.quad21:draw(self.tex, self.oldX+(2*56), self.oldY+(1*40))
+      self.quad21:draw(self.tex, 32+(1*81), 32+(0*64))
     end
     if false then -- For select slot 3, 1
-      self.quad31:draw(self.tex, self.oldX+(3*56), self.oldY+(1*40))
+      self.quad31:draw(self.tex, 32+(2*81), 32+(0*64))
     end
     if false then -- For select slot 1, 2
-      self.quad12:draw(self.tex, self.oldX+(1*56), self.oldY+(2*40))
+      self.quad12:draw(self.tex, 32+(0*81), 32+(1*64))
     end
     if not globals.defeats.stickMan then -- For select slot 3, 2
-      self.quad32:draw(self.tex, self.oldX+(3*56), self.oldY+(2*40))
+      self.quad32:draw(self.tex, 32+(2*81), 32+(1*64))
     end
     if false then -- For select slot 1, 3
-      self.quad13:draw(self.tex, self.oldX+(1*56), self.oldY+(3*40))
+      self.quad13:draw(self.tex, 32+(0*81), 32+(3*64))
     end
     if false then -- For select slot 2, 3
-      self.quad23:draw(self.tex, self.oldX+(2*56), self.oldY+(3*40))
+      self.quad23:draw(self.tex, 32+(1*81), 32+(3*64))
     end
     if false then -- For select slot 3, 3
-      self.quad33:draw(self.tex, self.oldX+(3*56), self.oldY+(3*40))
+      self.quad33:draw(self.tex, 32+(2*81), 32+(3*64))
     end
   else
-    self.wilyQuad:draw(self.tex, 112, 88)
+    self.wilyQuad:draw(self.tex, 32+(1*81), 32+(1*64))
   end
   if (self.blink and not self.stop) or self.selected then
     self.blinkQuad:draw(self.tex, self.transform.x, self.transform.y)

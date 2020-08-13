@@ -1,6 +1,6 @@
-megautils.loadResource("assets/players/bar/barOne.png", "barOne", false, true)
-megautils.loadResource("assets/players/bar/barTwo.png", "barTwo", false, true)
-megautils.loadResource("assets/players/bar/barOutline.png", "barOutline", false, true)
+megautils.loadResource("assets/misc/barOne.png", "barOne", false, true)
+megautils.loadResource("assets/misc/barTwo.png", "barTwo", false, true)
+megautils.loadResource("assets/misc/barOutline.png", "barOutline", false, true)
 megautils.loadResource("assets/sfx/error.ogg", "error", true)
 
 healthHandler = basicEntity:extend()
