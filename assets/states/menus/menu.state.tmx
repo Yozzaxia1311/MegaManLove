@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="32" height="28" tilewidth="8" tileheight="8" infinite="0" backgroundcolor="#0078f8" nextlayerid="10" nextobjectid="34">
+<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="32" height="28" tilewidth="8" tileheight="8" infinite="0" backgroundcolor="#007f87" nextlayerid="10" nextobjectid="34">
  <properties>
   <property name="musicLoop" type="bool" value="true"/>
-  <property name="musicLoopEndPoint" type="int" value="490212"/>
+  <property name="musicLoopEndPoint" type="int" value="490496"/>
   <property name="musicLoopPoint" type="int" value="55129"/>
   <property name="musicPath" value="assets/sfx/music/menu.wav"/>
  </properties>
  <tileset firstgid="1" source="../tilesets/menuTiled.tsx"/>
  <layer id="1" name="layout" width="32" height="28">
   <data encoding="base64" compression="zlib">
-   eAHtlgsKwjAQRKueQD2B9kapHxC/+AMvUG+gx3YGsrAEoRtotwgGhqR26ctst3HroiieUN3T/AL3DVnmAeKGDRplPI/cHO9jxE+i9phX0AG6xd94bwrl5NLqnXEzaN6gEvctuRQuwv/DkAFL7UltsgbbHrr2WGcX6AoF6BzXUpuswbZHyhfWt9mDv4PBI0T/S0jvw4Oveenag8/3T+93iOeQ3oMHX/PStQd/Dc88d1kHlN6DB1/z0rUHn+9/AYXoX9eABz/1rK89+Dzz6LmCNhD/h+Uc8OBrv+nag3+CX9Z9gB4Qc8GccC8e/NSzvvbgV/BJ7/wGtlDXfEvvJb1Zif38ysjpf3P6WutzpQ/ta+7Ck9U743J69S5y9AE70ozJ
+   eAHdlttKAzEQhvcZfLT1BOIRT+ALqNh6q6L3ClrfQG+r1NOdSj09kt9AB4bQMpNliWDgI9lmmj+zm5lMt6qqboBdbPZg3+GA+Q5E1hSbaDvC8BhOHE6ZP4Noe8TwCbz+GZsXmHLoMX8N3no6/4ntF3j9NzY/oPrLjOdgBbbM7zeMb8FbT+cxDbVzrC5A9Sf1l9hchVbMM+pjfgf3DgPmH6Dt9sqCb/DuMGT+A/5Ti8a+5gbNAW29g2jsa27IyQFNY38D5zahhvXRWGMiJwc0iX3VmdTn5AC27rZxsb/Ev1ZB/J8Fu5e2c8A4fauXjkvoy/cX37dB8rDdQwl9q5eOS+jP47PcO3IOBLuHEvpWLx2X0JfvPwP1yH97Bkropz7b5xL6kvPE52lYAKlDNA+U0Lf+puMS+mv4K+e+hh2QdyHvRPaSo9/0/kl9ts899hCtQZveP/LdxXeJgUWw+m3fP33Wj9R+WhsOsG+zBozWflob5tSAh+z1L/kF7z73mg==
   </data>
  </layer>
 </map>

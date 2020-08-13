@@ -2,9 +2,9 @@ local menuState = state:extend()
 
 function menuState:begin()
   megautils.add(menuSelect)
-  megautils.add(parallax, 0, 28, view.w, 200, "assets/states/menus/menuParallax.png", nil, nil, nil, nil, 1, 1, 0.4, 0, true, true)
+  megautils.add(parallax, 0, 0, view.w, view.h, "assets/states/menus/menuParallax.png", nil, nil, nil, nil, 1, 1, 0.4, 0.4, true, true)
     :addToGroup("freezable")
-  megautils.add(parallax, 0, 59, view.w, 164, "assets/states/menus/menuParallax.png", nil, nil, nil, nil, 1, 1, -0.4, 0, true, true)
+  megautils.add(parallax, 0, -32, view.w, view.h+32, "assets/states/menus/menuParallax.png", nil, nil, nil, nil, 1, 1, -0.4, 0.4, true, true)
     :addToGroup("freezable")
   if globals.wgsToMenu then
     globals.wgsToMenu = nil
@@ -21,7 +21,7 @@ megautils.loadResource("assets/sfx/selected.ogg", "selected")
 function menuSelect:new()
   menuSelect.super.new(self)
   self.transform.x = 88
-  self.transform.y = 7*8
+  self.transform.y = 10*8
   self.tex = megautils.getResource("menuSelect")
   self.pick = 0
   self.offY = self.transform.y
@@ -143,13 +143,13 @@ function menuSelect:draw()
     love.graphics.draw(self.tex, self.transform.x, self.transform.y)
   end
   if self.section ~= 1 or self.timer > 10 then
-    love.graphics.print(megautils.getScale(), 96, (15*8)-1)
+    love.graphics.print(megautils.getScale(), 96, (18*8)-1)
   end
   if self.section ~= 2 or self.timer > 10 then
-    love.graphics.print(tostring(globals.playerCount), 96, (19*8)-1)
+    love.graphics.print(tostring(globals.playerCount), 96, (22*8)-1)
   end
   if globals.playerCount > 1 then
-    love.graphics.print("S", 20*8, (19*8)-1)
+    love.graphics.print("S", 20*8, (22*8)-1)
   end
 end
 

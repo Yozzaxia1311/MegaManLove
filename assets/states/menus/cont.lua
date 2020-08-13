@@ -16,6 +16,11 @@ function contPanels:new()
   self.quadTwo = quad(0, 48, 160, 56)
   self.state = 0
   self.timer = 0
+  if megautils._musicQueue then
+    self.mq = megautils._musicQueue
+    megautils.stopMusic()
+  end
+  megautils.playMusic("assets/sfx/music/gameOver.ogg", false)
 end
 
 function contPanels:added()
@@ -27,7 +32,10 @@ function contPanels:update()
   if self.timer == 198 then
     self.state = 1
     megautils.add(contSelect)
-    megautils.playMusic("assets/sfx/music/menu.ogg", true)
+    if self.mq then
+      megautils.playMusic(unpack(self.mq))
+      self.mq = nil
+    end
   end
 end
 
@@ -42,7 +50,7 @@ contSelect = entity:extend()
 
 function contSelect:new()
   contSelect.super.new(self)
-  self.transform.x = 56
+  self.transform.x = 64
   self.transform.y = 144
   self.tex = megautils.getResource("menuSelect")
   self.pick = 0

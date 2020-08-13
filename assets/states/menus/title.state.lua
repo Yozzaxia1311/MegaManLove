@@ -10,7 +10,7 @@ title = basicEntity:extend()
 
 function title:new()
   title.super.new(self)
-  self.transform.x = 37
+  self.transform.x = 0
   self.transform.y = 256
   self.tex = megautils.getResource("title")
   self.once = false
@@ -27,8 +27,8 @@ function title:added()
 end
 
 function title:update()
-  self.transform.y = math.max(self.transform.y-8, 32)
-  if self.transform.y == 32 and not self.once then
+  self.transform.y = math.max(self.transform.y-8, 0)
+  if self.transform.y == 0 and not self.once then
     self.once = true
     self.drawText = true
     megautils.playMusic("assets/sfx/music/title.ogg")
@@ -61,14 +61,13 @@ function title:update()
 end
 
 function title:draw()
+  love.graphics.draw(self.tex, self.transform.x, self.transform.y)
   if self.drawText then
-    love.graphics.setFont(mmFont)
     love.graphics.print(self.text, self.textPos, 208)
     if self.textTimer < 20 then
-      love.graphics.print("PRESS START", 84, 124)
+      love.graphics.print("PRESS START", 56, 144)
     end
   end
-  love.graphics.draw(self.tex, self.transform.x, self.transform.y)
 end
 
 return titleState
