@@ -20,6 +20,8 @@ shootY: 29
 
 shootX4-2: 47
 shootY4-2: 37
+shootX4-3: 50
+shootY4-3: 28
 shootX6-2: 48
 shootY6-2: 21
 shootX7-2: 36

@@ -60,13 +60,14 @@ function love.load()
   love.graphics.setDefaultFilter("nearest", "nearest")
   
   -- Engine globals.
-  consoleFont = love.graphics.getFont() -- needs to be preserved
+  consoleFont = love.graphics.getFont() -- Needs to be preserved
   altEnterOnce = false
   scaleOnce = false
   deadZone = 0.8
   defaultFPS = 60
   defaultFramerate = 1/defaultFPS
   mapCacheSize = 2
+  extraSkinCacheSize = 1 -- Increase this if you're using a lot of skins at once outside the boundaries of `maxPlayerCount`
   clampSkinShootOffsets = true
   useConsole = love.keyboard
   mmFont = love.graphics.newFont("assets/misc/mm.ttf", 8)
@@ -90,7 +91,7 @@ function love.load()
   end
   
   megautils.gotoState("assets/states/menus/disclaimer.state.lua")
-  console.parse("exec assets/autoexec")
+  console.parse("exec autoexec")
 end
 
 function love.resize(w, h)

@@ -9,32 +9,49 @@ megaMan.skinCache = {}
 
 function megaMan:setSkin(path)
   local player = (type(self) == "number") and self or self.player
-  local finfo = love.filesystem.getInfo(path)
-  if not finfo then error("Skin \"" .. path .. "\" does not exist") end
-  if not megaMan.skinCache[path] or megaMan.skinCache[path][7] ~= finfo.modtime then
-    local t = {}
-    local mount
-    
-    if finfo.type == "file" then
-      mount = "skinArchive"
-      love.filesystem.mount(path, mount)
-    end
-    if love.filesystem.getInfo((mount or path) .. "/conf.txt") then
-      for line in love.filesystem.lines((mount or path) .. "/conf.txt") do
-        if line ~= "" and line:match(":") then
-          local data = line:split(":")
-          local v = data[2]:trimmed()
-          v = tonumber(v) or (toboolean(v) == nil and v) or toboolean(v)
-          t[data[1]] = v
+  
+  if table.length(megaMan.skinCache) > maxPlayerCount+extraSkinCacheSize then
+    for p, skin in pairs(megaMan.skinCache) do
+      if not table.contains(megaMan.skins, skin) then
+        megaMan.skinCache[p] = nil
+        if table.length(megaMan.skinCache) <= maxPlayerCount+extraSkinCacheSize then
+          break
         end
       end
     end
-    megaMan.skinCache[path] = {path, love.graphics.newImage((mount or path) .. "/player.png"),
-      love.graphics.newImage(path .. "/outline.png"),
-      love.graphics.newImage(path .. "/one.png"),
-      love.graphics.newImage(path .. "/two.png"), t, finfo.modtime}
-    if mount then
-      love.graphics.unmount(path)
+  end
+  
+  if not path then
+    megaMan.skins[player] = nil
+  else
+    local finfo = love.filesystem.getInfo(path)
+    if not finfo then error("Skin \"" .. path .. "\" does not exist") end
+    
+    if not megaMan.skinCache[path] or megaMan.skinCache[path][7] ~= finfo.modtime then
+      local t = {}
+      local mount
+      
+      if finfo.type == "file" then
+        mount = "skinArchive"
+        love.filesystem.mount(path, mount)
+      end
+      if love.filesystem.getInfo((mount or path) .. "/conf.txt") then
+        for line in love.filesystem.lines((mount or path) .. "/conf.txt") do
+          if line ~= "" and line:match(":") then
+            local data = line:split(":")
+            local v = data[2]:trimmed()
+            v = tonumber(v) or (toboolean(v) == nil and v) or toboolean(v)
+            t[data[1]] = v
+          end
+        end
+      end
+      megaMan.skinCache[path] = {path, love.graphics.newImage((mount or path) .. "/player.png"),
+        love.graphics.newImage(path .. "/outline.png"),
+        love.graphics.newImage(path .. "/one.png"),
+        love.graphics.newImage(path .. "/two.png"), t, finfo.modtime}
+      if mount then
+        love.graphics.unmount(path)
+      end
     end
   end
   
@@ -61,9 +78,7 @@ function megaMan:getSkin()
   return megaMan.skins[player]
 end
 
-megaMan.setSkin(1, "assets/players/bass")
-
-for i=5, maxPlayerCount do
+for i=1, maxPlayerCount do
   megaMan.setSkin(i, "assets/players/megaMan")
 end
 

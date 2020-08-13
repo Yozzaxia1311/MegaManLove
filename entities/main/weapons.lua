@@ -233,6 +233,8 @@ weapon.chargeColors["P.BUSTER"] = {
     }
   }
 
+weapon.removeGroups["R.BUSTER"] = {"megaBuster", "protoChargedBuster"}
+
 weapon.resources["R.BUSTER"] = function()
     megautils.loadResource("assets/misc/weapons/buster.png", "busterTex")
     megautils.loadResource("assets/misc/weapons/rollBuster.png", "rollBuster")
@@ -770,6 +772,12 @@ function rushJet:act(dt)
       self.playerOn = true
     end
   elseif self.s == 3 then
+    if self.playerOn and self.user and (not self.user.ground or
+      not (self.user:collision(self, 0, self.user.gravity >= 0 and 1 or -1) and
+      not self.user:collision(self))) then
+      self.user.canWalk.rj = true
+      self.playerOn = false
+    end
     if self.playerOn and self.user then
       if control.upDown[self.user.player] then
         self.velocity.vely = -1
@@ -781,18 +789,12 @@ function rushJet:act(dt)
     else
       self.velocity.vely = 0
       if self.user and self.user.ground and self.user:collision(self, 0, self.user.gravity >= 0 and 1 or -1) and
-        not self.player:collision(self) then
+        not self.user:collision(self) then
         self.s = 3
         self.velocity.velx = self.side
         self.user.canWalk.rj = false
         self.playerOn = true
       end
-    end
-    if self.playerOn and self.user and (not self.user.ground or
-      not (self.user:collision(self, 0, self.user.gravity >= 0 and 1 or -1) and
-      not self.user:collision(self))) then
-      self.user.canWalk.rj = true
-      self.playerOn = false
     end
     if self.xColl ~= 0 or
       (self.playerOn and self.user and collision.checkSolid(self.user, 0, self.user.gravity >= 0 and -4 or 4)) then
@@ -859,6 +861,8 @@ weapon.colors["RUSH C."] = {
     two = {255, 255, 255}
   }
 
+weapon.removeGroups["PROTO C."] = {"rushCoil", "megaBuster", "bassBuster", "rollBuster"}
+
 weapon.resources["PROTO C."] = function()
     megautils.loadResource("assets/misc/weapons/protoRush.png", "protoRush")
     megautils.loadResource("assets/misc/weapons/icons/protoCoil.png", "protoCoilIcon")
@@ -876,6 +880,8 @@ weapon.colors["PROTO C."] = {
     one = {248, 56, 0},
     two = {255, 255, 255}
   }
+
+weapon.removeGroups["TANGO C."] = {"rushCoil", "megaBuster", "bassBuster", "rollBuster"}
 
 weapon.resources["TANGO C."] = function()
     megautils.loadResource("assets/misc/weapons/tango.png", "tango")
