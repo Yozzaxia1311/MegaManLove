@@ -1750,8 +1750,8 @@ function megaMan:animate(getDataOnly)
       end
     elseif self.slide then
       newAnim = self.dashAnimation[checkFalse(self.canDashShoot) and shoot or "regular"]
-      if checkFalse(self.canDashShoot) and self.shootFrames ~= 0 then
-        newFrame = self.anims:length()
+      if shoot == "regular" and self.anims.current ~= self.dashAnimation.regular and table.contains(self.dashAnimation, self.anims.current) then
+        newFrame = self.anims:length(self.dashAnimation.regular)
       end
     elseif self.ground then
       if checkFalse(self.canWalk) and not self.step and self.runCheck then
