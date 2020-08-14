@@ -1697,7 +1697,7 @@ function megaMan:bassBusterAnim(shoot)
 end
 
 function megaMan:animate(getDataOnly)
-  local newAnim = self.idleAnimation.regular
+  local newAnim = self.anims.current
   local newFrame
   local newTime
   local pause
