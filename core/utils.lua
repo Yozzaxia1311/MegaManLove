@@ -1,6 +1,14 @@
 function toboolean(v)
   if type(v) == "string" then
-    return v=="true"
+    if v == "true" then
+      return true
+    elseif v == "false" then
+      return false
+    end
+  elseif type(v) == "number" then
+    return v > 0
+  elseif type(v) == "boolean" then
+    return v
   end
 end
 

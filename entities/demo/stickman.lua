@@ -28,12 +28,7 @@ function stickMan:new(x, y)
       return true
     end
   self.defeatSlot = "stickMan"
-  self.defeatSlotValue = {weaponSlot=1,
-    weaponName="STICK W.",
-    oneColor={188, 188, 188},
-    twoColor={124, 124, 124},
-    activeQuad=quad(16, 0, 16, 16),
-    inactiveQuad=quad(32, 0, 16, 16)}
+  self.defeatSlotValue = {weaponSlot=1, weaponName="STICK W."}
 end
 
 function stickMan:weaponTable(o)

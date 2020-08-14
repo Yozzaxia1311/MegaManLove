@@ -85,7 +85,11 @@ convar["diff"] = {
   value = "normal",
   fun = function(arg)
       for k, v in pairs(megautils.difficultyChangeFuncs) do
-        v(arg, convar.getValue("diff"))
+        if type(v) == "function" then
+          v(arg, convar.getValue("diff"))
+        else
+          v.func(arg, convar.getValue("diff"))
+        end
       end
     end
 }
@@ -110,39 +114,6 @@ convar["scale"] = {
     end
 }
 
-convar["players"] = {
-  helptext = "set players from csv (no spaces, \"old\" leaves old value in)",
-  flags = {"cheat"},
-  value = "mega,proto,bass,roll",
-  fun = function(arg)
-      local t = convar.getValue("players"):split(",")
-      local new = arg:split(",")
-      local res = ""
-      
-      for i = 1, #new do
-        if new[i] ~= "old" then
-          t[i] = new[i]
-        end
-      end
-      
-      for i = 1, #t do
-        if megaMan.allPlayers then
-          for k, v in ipairs(megaMan.allPlayers) do
-            if v.player == i then
-              v:switchCharacter(t[i])
-            end
-          end
-        end
-        res = res .. t[i]
-        if i ~= #t then
-          res = res .. ","
-        end
-      end
-      
-      convar.setValue("players", res, false)
-    end
-}
-
 concmd["help"] = {
   helptext = "get info about commands",
   flags = {},
@@ -160,6 +131,38 @@ concmd["help"] = {
         end
       else
         console.print("Unknown command: "..cmd[2])
+      end
+    end
+}
+
+concmd["setskin"] = {
+  helptext = "sets the skin for a player",
+  flags = {},
+  fun = function(cmd)
+      if not cmd[2] or not cmd[3] then return end
+      local player = numberSanitize(cmd[2])
+      local path = cmd[3]
+      local dir, file = love.filesystem.getInfo(path), love.filesystem.getInfo(path .. ".zip")
+      if dir or file then
+        if dir then
+          if #megaMan.allPlayers > 0 then
+            for k, v in ipairs(megaMan.allPlayers) do
+              v:setSkin(path)
+            end
+          else
+            megaMan.setSkin(player, path)
+          end
+        else
+          if #megaMan.allPlayer > 0 then
+            for k, v in ipairs(megaMan.allPlayers) do
+              v:setSkin(path .. ".zip")
+            end
+          else
+            megaMan.setSkin(player, path .. ".zip")
+          end
+        end
+      else
+        console.print("No such skin \"" .. path .. "\"")
       end
     end
 }
@@ -481,17 +484,18 @@ concmd["give"] = {
         if _G[cmd[2]] then
           local args = {_G[cmd[2]]}
           for i=3, #cmd do
-            if cmd[i] == "playerx" then
-              local v = cmd[i]:split(",")
-              args[#args+1] = megaMan.mainPlayer.transform.x+(numberSanitize(v[2]))
-            elseif cmd[i] == "playery" then
-              local v = cmd[i]:split(",")
-              args[#args+1] = megaMan.mainPlayer.transform.y+(numberSanitize(v[2]))
+            if cmd[i]:match("playerx") then
+              local st, en = cmd[i]:find("playerx")
+              local v = cmd[i]:sub(en+1, cmd[i]:len())
+              args[#args+1] = megaMan.mainPlayer.transform.x+numberSanitize(v)
+            elseif cmd[i]:match("playery") then
+              local st, en = cmd[i]:find("playery")
+              local v = cmd[i]:sub(en+1, cmd[i]:len())
+              args[#args+1] = megaMan.mainPlayer.transform.y+numberSanitize(v)
             else
               args[#arg+1] = tonumber(cmd[i]) or toboolean(cmd[i]) or cmd[i]
             end
           end
-          print(inspect(args))
           megautils.add(unpack(args))
         else
           console.print("Entity \"" .. cmd[2] .. "\" does not exist in global context.")

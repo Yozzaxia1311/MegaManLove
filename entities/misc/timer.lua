@@ -90,7 +90,7 @@ function timer.absorbCutscene(func, music)
           s.timer = 0
         end
         megautils.removePlayerShots()
-        megautils.playMusic(music or "assets/sfx/music/win.ogg")
+        megautils.playMusic(music or "assets/sfx/music/win.ogg", false)
       elseif s.state == 1 then
         s.timer = math.min(s.timer+1, 300)
         if s.timer == 300 then

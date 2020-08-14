@@ -1,3 +1,8 @@
+megautils.loadResource("assets/misc/barOne.png", "barOne", false, true)
+megautils.loadResource("assets/misc/barTwo.png", "barTwo", false, true)
+megautils.loadResource("assets/misc/barOutline.png", "barOutline", false, true)
+megautils.loadResource("assets/sfx/error.ogg", "error", true)
+
 healthHandler = basicEntity:extend()
 
 healthHandler.autoClean = false
@@ -6,6 +11,15 @@ healthHandler.playerTimers = {}
 for i=1, maxPlayerCount do
   healthHandler.playerTimers[i] = -2
 end
+
+megautils.resetGameObjectsFuncs.barHandler = {func=function()
+    healthHandler.playerTimers = {}
+    for i=1, maxPlayerCount do
+      healthHandler.playerTimers[i] = -2
+    end
+    
+    weaponHandler.id = 0
+  end, autoClean=false}
 
 function healthHandler:new(colorOne, colorTwo, colorOutline, side, r, segments, player)
   healthHandler.super.new(self)
@@ -51,7 +65,6 @@ function healthHandler:instantUpdate(newHealth)
 end
 
 function healthHandler:update(dt)
-  self.health = math.clamp(self.health, 0, 4*self.segments)
   if self.renderedHealth < self.health then
     self.riseTimer = math.min(self.riseTimer+1, 4)
     if self.riseTimer == 4 then
@@ -101,6 +114,8 @@ function healthHandler:removed()
 end
 
 function healthHandler:draw()
+  self.health = math.clamp(self.health, 0, 4*self.segments)
+  self.renderedHealth = math.clamp(self.renderedHealth, 0, 4*self.segments)
   if megaMan.mainPlayer then
     self.mp = megaMan.mainPlayer
   end
@@ -169,8 +184,6 @@ function healthHandler:draw()
   end
 end
 
-megautils.loadResource("assets/misc/weapons/weaponSelect.png", "weaponSelect", false, true)
-
 weaponHandler = basicEntity:extend()
 
 weaponHandler.autoClean = false
@@ -179,7 +192,6 @@ weaponHandler.id = 0
 
 function weaponHandler:new(side, r, slots)
   weaponHandler.super.new(self)
-  self.current = "M.BUSTER"
   self.slotSize = slots
   self.currentSlot = 0
   self.weapons = {}
@@ -195,16 +207,7 @@ function weaponHandler:new(side, r, slots)
   self.quads[2] = quad(8*2, 48, 8, 8)
   self.quads[3] = quad(8*3, 48, 8, 8)
   self.quads[4] = quad(8*4, 48, 8, 8)
-  self.segments = {}
   self.renderedWE = {}
-  self.colorOne = {}
-  self.colorTwo = {}
-  self.colorOutline = {}
-  self.currentColorOne = {}
-  self.currentColorTwo = {}
-  self.pauseNames = {}
-  self.activeIcons = {}
-  self.inactiveIcons = {}
   self.riseTimer = 4
   self.side = side or 1
   self.rot = r or "y"
@@ -212,36 +215,27 @@ function weaponHandler:new(side, r, slots)
   weaponHandler.id = weaponHandler.id + 1
 end
 
-function weaponHandler:drawIcon(i, on, x, y)
-  if on == nil or on then
-    self.activeIcons[i]:draw(self.iconTex, x, y)
-  else
-    self.inactiveIcons[i]:draw(self.iconTex, x, y)
-  end
-end
-
 function weaponHandler:added()
   self:addToGroup("freezable")
 end
 
 function weaponHandler:reinit()
-  self.current = self.weapons[0]
-  self.curSegment = 0
   self.riseTimer = 4
-  self.currentSlot = 0
+  self:switch(0)
 end
 
-function weaponHandler:register(slot, name, pn, colorone, colortwo, coloroutline, segments)
+function weaponHandler:register(slot, name, noRefill)
   self.weapons[slot] = name
-  self.segments[slot] = segments or 7
-  self.energy[slot] = self.segments[slot]*4
+  if not noRefill or not self.energy[slot] then
+    self.energy[slot] = 4*(weapon.segments[slot] or 7)
+  end
+  self.energy[slot] = math.clamp(self.energy[slot], 0, 4*(weapon.segments[slot] or 7))
   self.renderedWE[slot] = self.energy[slot]
   self.slots[name] = slot
-  self.colorOne[slot] = colorone
-  self.colorTwo[slot] = colortwo
-  self.colorOutline[slot] = coloroutline
-  self.activeIcons[slot] = pn[1]
-  self.inactiveIcons[slot] = pn[2]
+  
+  if not self.current then
+    self.current = name
+  end
   
   if weapon.resources[name] then
     weapon.resources[name]()
@@ -250,17 +244,11 @@ end
 
 function weaponHandler:unregister(slot)
   self.weapons[slot] = nil
-  self.segments[slot] = nil
   self.energy[slot] = nil
   self.renderedWE[slot] = nil
   if self.weapons[slot] then
     self.slots[self.weapons[slot]] = nil
   end
-  self.colorOne[slot] = nil
-  self.colorTwo[slot] = nil
-  self.colorOutline[slot] = nil
-  self.activeIcons[slot] = nil
-  self.inactiveIcons[slot] = nil
   
   if slot == self.currentSlot then
     self:switch(0)
@@ -284,12 +272,9 @@ function weaponHandler:switch(slot)
     self:removeWeaponShots()
   end
   self.current = self.weapons[slot]
-  self.currentSlot = self.slots[self.current]
-  self.currentColorOne = self.colorOne[self.currentSlot]
-  self.currentColorTwo = self.colorTwo[self.currentSlot]
-  self.renderedWE[self.currentSlot] = self.energy[self.currentSlot]
-  if func then
-    func(self)
+  if self.current then
+    self.currentSlot = self.slots[self.current]
+    self.renderedWE[self.currentSlot] = self.energy[self.currentSlot]
   end
 end
 
@@ -302,23 +287,27 @@ function weaponHandler:currentWE()
 end
 
 function weaponHandler:updateCurrent(newWE)
-  if newWE > self.energy[self.currentSlot] and self.energy[self.currentSlot] < 4*self.segments[self.currentSlot] then
-    megautils.freeze({self}, "wb")
-    self.energy[self.currentSlot] = math.min(newWE, 4*self.segments[self.currentSlot])
-    self.riseTimer = 0
-  elseif newWE < self.energy[self.currentSlot] then
-    self.energy[self.currentSlot] = math.max(newWE, 0)
-    self.renderedWE[self.currentSlot] = self.energy[self.currentSlot]
+  if self.current then
+    if newWE > self.energy[self.currentSlot] and self.energy[self.currentSlot] < 4*self.segments[self.currentSlot] then
+      megautils.freeze({self}, "wb")
+      self.energy[self.currentSlot] = math.min(newWE, 4*(weapon.segments[self.current] or 7))
+      self.riseTimer = 0
+    elseif newWE < self.energy[self.currentSlot] then
+      self.energy[self.currentSlot] = math.max(newWE, 0)
+      self.renderedWE[self.currentSlot] = self.energy[self.currentSlot]
+    end
   end
 end
 
 function weaponHandler:instantUpdate(newWE, slot)
-  self.energy[slot or self.currentSlot] = math.clamp(newWE, 0, 4*self.segments[slot or self.currentSlot])
-  self.renderedWE[slot or self.currentSlot] = self.energy[slot or self.currentSlot]
+  if self.current then
+    self.energy[slot or self.currentSlot] = math.clamp(newWE, 0, 4*(weapon.segments[self.weapons[slot] or self.current] or 7))
+    self.renderedWE[slot or self.currentSlot] = self.energy[slot or self.currentSlot]
+  end
 end
 
 function weaponHandler:update(dt)
-  if self.energy[self.currentSlot] and self.segments[self.currentSlot] then
+  if self.current and self.energy[self.currentSlot] and weapon.segments[self.current] then
     self.energy[self.currentSlot] = math.clamp(self.energy[self.currentSlot], 0, self.segments[self.currentSlot]*4)
     if self.renderedWE[self.currentSlot] < self.energy[self.currentSlot] then
       self.riseTimer = math.min(self.riseTimer+1, 4)
@@ -339,11 +328,12 @@ function weaponHandler:removed()
   megautils.unfreeze(nil, "wb")
 end
 
-function weaponHandler:draw(x, y)
-  if (self.currentSlot == 0 and self.energy[self.currentSlot]) or not self.energy[self.currentSlot] or
-    not self.segments[self.currentSlot] then return end
+function weaponHandler:draw()
+  if not self.current or (self.currentSlot == 0 and self.energy[self.currentSlot]) or not self.energy[self.currentSlot] then return end
   local curSeg = math.ceil(self.renderedWE[self.currentSlot]/4)
-  for i=1, self.segments[self.currentSlot] do
+  self.energy[self.currentSlot] = math.clamp(self.energy[self.currentSlot], 0, 4*(weapon.segments[self.current] or 7))
+  self.renderedWE[self.currentSlot] = math.clamp(self.renderedWE[self.currentSlot], 0, 4*(weapon.segments[self.current] or 7))
+  for i=1, weapon.segments[self.current] or 7 do
     local bit = 0
     if i == curSeg then
       bit = 4 + (math.round(self.renderedWE[self.currentSlot])-(i*4))
@@ -356,23 +346,11 @@ function weaponHandler:draw(x, y)
     local tx, ty, tr = self.transform.x-(self.rot=="x" and (8*i)*self.side or 0), 
       self.transform.y-(self.rot=="y" and (8*i)*self.side or 0), math.rad(self.rot=="x" and 90 or 0)
     self.quads[bit]:draw(self.barOutline, tx, ty, tr)
-    love.graphics.setColor(self.currentColorOne[1]/255, self.currentColorOne[2]/255, self.currentColorOne[3]/255, 1)
+    love.graphics.setColor(weapon.colors[self.current].one[1]/255, weapon.colors[self.current].one[2]/255,
+      weapon.colors[self.current].one[3]/255, 1)
     self.quads[bit]:draw(self.barOne, tx, ty, tr)
-    love.graphics.setColor(self.currentColorTwo[1]/255, self.currentColorTwo[2]/255, self.currentColorTwo[3]/255, 1)
+    love.graphics.setColor(weapon.colors[self.current].two[1]/255, weapon.colors[self.current].two[2]/255,
+      weapon.colors[self.current].two[3]/255, 1)
     self.quads[bit]:draw(self.barTwo, tx, ty, tr)
   end
 end
-
-megautils.resetGameObjectsFuncs.barHandler = function()
-    healthHandler.playerTimers = {}
-    for i=1, maxPlayerCount do
-      healthHandler.playerTimers[i] = -2
-    end
-    
-    weaponHandler.id = 0
-    
-    megautils.loadResource("assets/players/bar/barOne.png", "barOne")
-    megautils.loadResource("assets/players/bar/barTwo.png", "barTwo")
-    megautils.loadResource("assets/players/bar/barOutline.png", "barOutline")
-    megautils.loadResource("assets/sfx/error.ogg", "error")
-  end

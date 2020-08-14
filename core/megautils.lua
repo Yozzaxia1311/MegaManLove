@@ -18,29 +18,67 @@ megautils = {}
 ]]--
 megautils.reloadState = true
 megautils.resetGameObjects = true
+
 megautils.reloadStateFuncs = {}
 megautils.cleanFuncs = {}
 megautils.resetGameObjectsFuncs = {}
-megautils.resetGameObjectsPreFuncs = {}
 megautils.initEngineFuncs = {}
 megautils.addMapFuncs = {}
 megautils.removeMapFuncs = {}
 megautils.sectionChangeFuncs = {}
 megautils.difficultyChangeFuncs = {}
 megautils.postAddObjectsFuncs = {}
+megautils.skinChangeFuncs = {}
 
 --Player callback functions. These apply to all active players.
-megautils.playerCreatedFuncs = {}       --megautils.playerCreatedFuncs.exampleFunc = function(player) end
-megautils.playerTransferFuncs = {}      --megautils.playerTransferFuncs.exampleFunc = function(fromPlayer, toPlayer) end
-megautils.playerGroundFuncs = {}        --megautils.playerGroundFuncs.exampleFunc = function(player) end
-megautils.playerAirFuncs = {}           --megautils.playerAirFuncs.exampleFunc = function(player) end
-megautils.playerSlideFuncs = {}         --megautils.playerSlideFuncs.exampleFunc = function(player) end
-megautils.playerClimbFuncs = {}         --megautils.playerClimbFuncs.exampleFunc = function(player) end
-megautils.playerKnockbackFuncs = {}     --megautils.playerKnockbackFuncs.exampleFunc = function(player) end
-megautils.playerTrebleFuncs = {}        --megautils.playerTrebleFuncs.exampleFunc = function(player) end
-megautils.playerInteractedWithFuncs = {} --megautils.playerInteractedWithFuncs.exampleFunc = function(player) end
-megautils.playerDeathFuncs = {}         --megautils.playerDeathFuncs.exampleFunc = function(player) end
-megautils.playerAttemptWeaponFuncs = {} --megautils.playerAttemptWeaponFuncs.exampleFunc = function(player, shotsInTable) end
+megautils.playerCreatedFuncs = {}         --megautils.playerCreatedFuncs.exampleFunc = function(player) end
+megautils.playerTransferFuncs = {}        --megautils.playerTransferFuncs.exampleFunc = function(fromPlayer, toPlayer) end
+megautils.playerGroundFuncs = {}          --megautils.playerGroundFuncs.exampleFunc = function(player) end
+megautils.playerAirFuncs = {}             --megautils.playerAirFuncs.exampleFunc = function(player) end
+megautils.playerSlideFuncs = {}           --megautils.playerSlideFuncs.exampleFunc = function(player) end
+megautils.playerClimbFuncs = {}           --megautils.playerClimbFuncs.exampleFunc = function(player) end
+megautils.playerKnockbackFuncs = {}       --megautils.playerKnockbackFuncs.exampleFunc = function(player) end
+megautils.playerTrebleFuncs = {}          --megautils.playerTrebleFuncs.exampleFunc = function(player) end
+megautils.playerInteractedWithFuncs = {}  --megautils.playerInteractedWithFuncs.exampleFunc = function(player) end
+megautils.playerDeathFuncs = {}           --megautils.playerDeathFuncs.exampleFunc = function(player) end
+megautils.playerAttemptWeaponFuncs = {}   --megautils.playerAttemptWeaponFuncs.exampleFunc = function(player, shotsInTable) end
+megautils.playerPauseFuncs = {}           --megautils.playerPauseFuncs.exampleFunc = function(player) end
+
+function megautils.cleanCallbacks()
+  local callbacks = {
+      "reloadStateFuncs",
+      "cleanFuncs",
+      "resetGameObjectsFuncs",
+      "initEngineFuncs",
+      "addMapFuncs",
+      "removeMapFuncs",
+      "sectionChangeFuncs",
+      "difficultyChangeFuncs",
+      "postAddObjectsFuncs",
+      "skinChangeFuncs",
+      "playerCreatedFuncs",
+      "playerTransferFuncs",
+      "playerGroundFuncs",
+      "playerAirFuncs",
+      "playerSlideFuncs",
+      "playerClimbFuncs",
+      "playerKnockbackFuncs",
+      "playerTrebleFuncs",
+      "playerInteractedWithFuncs",
+      "playerDeathFuncs",
+      "playerAttemptWeaponFuncs",
+      "playerPauseFuncs",
+    }
+  
+  for i=1, #callbacks do
+    local name = callbacks[i]
+    for k, v in pairs(megautils[name]) do
+      if type(v) == "function" or (type(v) == "table" and (v.autoClean == nil or v.autoClean)) then
+        megautils[name][k] = nil
+      end
+    end
+  end
+end
 
 megautils._q = {}
 
@@ -145,41 +183,12 @@ function megautils.getWTanks()
   return convar.getNumber("wtanks")
 end
 
-function megautils.setPlayer(p, what)
-  local old = convar.getString("players"):split(",")
-  local back = ""
-  old[p] = what
-  
-  for i=1, #old do
-    back = back .. old[i]
-    if i == #old then
-      back = back .. ","
-    end
-  end
-  
-  convar.setValue("players", back, true)
-end
-
-function megautils.getPlayer(p)
-  return convar.getString("players"):split(",")[p]
-end
-
-function megautils.getAllPlayers()
-  local result = {}
-  
-  for i=1, maxPlayerCount do
-    result = megautils.getPlayer(i)
-  end
-  
-  return result
-end
-
 function megautils.getDifficulty()
   return convar.getString("diff")
 end
 
 function megautils.setDifficulty(d)
-  convar.setValue("diff", d or convar.getString("diff"))
+  convar.setValue("diff", d or convar.getString("diff"), true)
 end
 
 function megautils.enableConsole()
@@ -295,7 +304,11 @@ function megautils.loadResource(...)
     local grid
     t = "grid"
     path = nil
-    if type(args[3]) == "number" and type(args[4]) == "number" then
+    if type(args[5]) == "number" then
+      nick = args[6]
+      locked = args[7]
+      grid = {args[3], args[4], args[1], args[2], args[5]}
+    elseif type(args[3]) == "number" and type(args[4]) == "number" then
       nick = args[5]
       locked = args[6]
       grid = {args[3], args[4], args[1], args[2]}
@@ -448,8 +461,13 @@ end
 
 function megautils.unload()
   for k, v in pairs(megautils.cleanFuncs) do
-    v()
+    if type(v) == "function" then
+      v()
+    else
+      v.func()
+    end
   end
+  megautils.cleanCallbacks()
   megautils.unloadAllResources()
   cartographer.cache = {}
   megautils._runFileOnce = {}
@@ -845,4 +863,17 @@ end
 function megautils.removeAllShots()
   megautils.removeEnemyShots()
   megautils.removePlayerShots()
+end
+
+local _stenx, _steny, _stenw, _stenh = 0, 0, 16, 16
+
+function megautils.rectStencil(x, y, w, h)
+  if x then
+    _stenx = x
+    _steny = y
+    _stenw = w
+    _stenh = h
+  else
+    love.graphics.rectangle("fill", _stenx, _steny, _stenw, _stenh)
+  end
 end

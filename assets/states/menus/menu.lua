@@ -2,6 +2,10 @@ local menuState = state:extend()
 
 function menuState:begin()
   megautils.add(menuSelect)
+  megautils.add(parallax, 0, 0, view.w, view.h, "assets/states/menus/menuParallax.png", nil, nil, nil, nil, 1, 1, 0.4, 0.4, true, true)
+    :addToGroup("freezable")
+  megautils.add(parallax, 0, -32, view.w, view.h+32, "assets/states/menus/menuParallax.png", nil, nil, nil, nil, 1, 1, -0.4, 0.4, true, true)
+    :addToGroup("freezable")
   if globals.wgsToMenu then
     globals.wgsToMenu = nil
     megautils._musicQueue = nil
@@ -16,8 +20,8 @@ megautils.loadResource("assets/sfx/selected.ogg", "selected")
 
 function menuSelect:new()
   menuSelect.super.new(self)
-  self.transform.y = 9*8
   self.transform.x = 88
+  self.transform.y = 10*8
   self.tex = megautils.getResource("menuSelect")
   self.pick = 0
   self.offY = self.transform.y
@@ -34,9 +38,9 @@ function menuSelect:update()
   if self.section == 0 then
     local old = self.pick
     if control.upPressed[1] then
-      self.pick = math.wrap(self.pick-1, 0, 6)
+      self.pick = math.wrap(self.pick-1, 0, 7)
     elseif control.downPressed[1] then
-      self.pick = math.wrap(self.pick+1, 0, 6)
+      self.pick = math.wrap(self.pick+1, 0, 7)
     end
     if old ~= self.pick then
       megautils.playSound("cursorMove")
@@ -48,17 +52,17 @@ function menuSelect:update()
         megautils.stopMusic()
         megautils.transitionToState("assets/states/menus/stageSelect.state.tmx")
       elseif self.pick == 1 then
-        megautils.setFullscreen(not megautils.getFullscreen())
-        local data = save.load("main.sav") or {}
-        data.fullscreen = megautils.getFullscreen()
-        save.save("main.sav", data)
-      elseif self.pick == 2 then
-        self.picked = true
-        self.section = -1
-        globals.lastStateName = megautils.getCurrentState()
-        megautils.transitionToState("assets/states/menus/rebind.state.lua")
-      elseif self.pick == 3 then
+        local data = save.load("save.sav") or {}
+        data.defeats = globals.defeats
+        data.infiniteLives = megautils.hasInfiniteLives()
+        data.lives = megautils.getLives()
+        data.lifeSegments = globals.lifeSegments
+        data.eTanks = megautils.getETanks()
+        data.wTanks = megautils.getWTanks()
+        data.player = megautils.getAllPlayers()
+        save.save("save.sav", data)
         megautils.playSound("selected")
+      elseif self.pick == 2 then
         local data = save.load("save.sav")
         if data then
           globals.defeats = data.defeats
@@ -71,22 +75,28 @@ function menuSelect:update()
             megautils.setPlayer(k, v)
           end
         end
-      elseif self.pick == 4 then
-        local data = save.load("save.sav") or {}
-        data.defeats = globals.defeats
-        data.infiniteLives = megautils.hasInfiniteLives()
-        data.lives = megautils.getLives()
-        data.lifeSegments = globals.lifeSegments
-        data.eTanks = megautils.getETanks()
-        data.wTanks = megautils.getWTanks()
-        data.player = megautils.getAllPlayers()
-        save.save("save.sav", data)
         megautils.playSound("selected")
-      elseif self.pick == 5 then
+        
+        
+      elseif self.pick == 3 then
+        megautils.setFullscreen(not megautils.getFullscreen())
+        local data = save.load("main.sav") or {}
+        data.fullscreen = megautils.getFullscreen()
+        save.save("main.sav", data)
+      elseif self.pick == 4 then
         self.section = 1
         self.timer = 0
         megautils.playSound("selected")
+      elseif self.pick == 5 then
+        self.picked = true
+        self.section = -1
+        globals.lastStateName = megautils.getCurrentState()
+        megautils.transitionToState("assets/states/menus/rebind.state.lua")
       elseif self.pick == 6 then
+        self.section = 2
+        self.timer = 0
+        megautils.playSound("selected")
+      elseif self.pick == 7 then
         self.picked = true
         self.section = -1
         megautils.stopMusic()
@@ -95,6 +105,21 @@ function menuSelect:update()
     end
     self.transform.y = self.offY + self.pick*16
   elseif self.section == 1 then
+    self.timer = math.wrap(self.timer+1, 0, 20)
+    local old = megautils.getScale()
+    if control.leftPressed[1] then
+      megautils.playSound("selected")
+      megautils.setScale(math.wrap(megautils.getScale()-1, 1, 8))
+    elseif control.rightPressed[1] then
+      megautils.playSound("selected")
+      megautils.setScale(math.wrap(megautils.getScale()+1, 1, 8))
+    end
+    if control.jumpPressed[1] or control.startPressed[1] then
+      self.section = 0
+      self.timer = 20
+      megautils.playSound("selected")
+    end
+  elseif self.section == 2 then
     self.timer = math.wrap(self.timer+1, 0, 20)
     local old = globals.playerCount
     if control.leftPressed[1] then
@@ -117,12 +142,14 @@ function menuSelect:draw()
   if self.section == 0 then
     love.graphics.draw(self.tex, self.transform.x, self.transform.y)
   end
-  if self.timer > 10 then
-    love.graphics.setFont(mmFont)
-    love.graphics.print(tostring(globals.playerCount), 12*8, 19*8)
+  if self.section ~= 1 or self.timer > 10 then
+    love.graphics.print(megautils.getScale(), 96, (18*8)-1)
+  end
+  if self.section ~= 2 or self.timer > 10 then
+    love.graphics.print(tostring(globals.playerCount), 96, (22*8)-1)
   end
   if globals.playerCount > 1 then
-    love.graphics.print("s", 20*8, 19*8)
+    love.graphics.print("S", 20*8, (22*8)-1)
   end
 end
 

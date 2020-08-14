@@ -10,16 +10,18 @@ title = basicEntity:extend()
 
 function title:new()
   title.super.new(self)
-  self.transform.x = 37
-  self.transform.y = 256
   self.tex = megautils.getResource("title")
-  self.once = false
   self.textTimer = 0
   self.drawText = false
   self.cont = false
   self.text = "name + year"
   self.textPos = 128-(self.text:len()*8)/2
   self.timer = 0
+  self.s = 0
+  self.quad1 = quad(0, 0, 256, 115)
+  self.quad2 = quad(0, 115, 256, 109)
+  self.oneOff = 256
+  self.twoOff = -256
 end
 
 function title:added()
@@ -27,13 +29,27 @@ function title:added()
 end
 
 function title:update()
-  self.transform.y = math.max(self.transform.y-8, 32)
-  if self.transform.y == 32 and not self.once then
-    self.once = true
-    self.drawText = true
+  if self.s < 2 and (control.startPressed[1] or control.jumpPressed[1]) then
+    self.s = 3
+    self.oneOff = 0
+    self.twoOff = 0
     megautils.playMusic("assets/sfx/music/title.ogg")
+    return
   end
-  if self.drawText then
+  if self.s == 0 then
+    self.oneOff = math.max(self.oneOff-8, 0)
+    if self.oneOff == 0 then
+      self.s = 1
+    end
+  elseif self.s == 1 then
+    self.twoOff = math.min(self.twoOff+8, 0)
+    if self.twoOff == 0 then
+      self.s = 2
+      megautils.playMusic("assets/sfx/music/title.ogg")
+    end
+  elseif self.s == 2 then
+    self.s = 3
+  elseif self.s == 3 then
     --self.timer = self.timer + 1
     if self.timer == 400 then
       states.openRecord = "assets/demo.rd"
@@ -52,7 +68,7 @@ function title:update()
         end)
     end
     self.textTimer = math.wrap(self.textTimer+1, 0, 40)
-    if control.startDown[1] then
+    if control.startPressed[1] then
       megautils.stopMusic()
       self.drawText = false
       megautils.transitionToState("assets/states/menus/menu.state.tmx")
@@ -61,14 +77,14 @@ function title:update()
 end
 
 function title:draw()
-  if self.drawText then
-    love.graphics.setFont(mmFont)
+  self.quad1:draw(self.tex, self.oneOff, self.transform.y)
+  self.quad2:draw(self.tex, self.twoOff, self.transform.y+115)
+  if self.s == 3 then
     love.graphics.print(self.text, self.textPos, 208)
     if self.textTimer < 20 then
-      love.graphics.print("PRESS START", 84, 124)
+      love.graphics.print("PRESS START", 56, 144)
     end
   end
-  love.graphics.draw(self.tex, self.transform.x, self.transform.y)
 end
 
 return titleState

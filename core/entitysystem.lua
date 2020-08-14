@@ -97,7 +97,7 @@ function entitySystem:add(c, ...)
 end
 
 function entitySystem:adde(e)
-  if not e or not e.isRemoved or e.isAdded or table.contains(self.updates, e) then return end
+  if not e or table.contains(self.all, e) then return end
   if not e.static then
     local done = false
     for i=1, #self.entities do
@@ -625,13 +625,13 @@ function basicEntity:added() end
 function basicEntity:begin() end
 function basicEntity:staticToggled() end
 
-megautils.cleanFuncs.autoCleaner = function()
+megautils.cleanFuncs.autoCleaner = {func=function()
     for k, v in pairs(_G) do
       if type(v) == "table" and tostring(v) == "Entity" and v.autoClean then
         _G[k] = nil
       end
     end
-  end
+  end, autoClean=false}
 
 entity = basicEntity:extend()
 
@@ -764,7 +764,11 @@ function mapEntity:begin()
   end
   
   for k, v in pairs(megautils.addMapFuncs) do
-    v(self)
+    if type(v) == "function" then
+      v(self)
+    else
+      v.func(self)
+    end
   end
 end
 
@@ -775,7 +779,11 @@ function mapEntity:removed()
     end
   end
   for k, v in pairs(megautils.removeMapFuncs) do
-    v(self)
+    if type(v) == "function" then
+      v(self)
+    else
+      v.func(self)
+    end
   end
 end
 
@@ -818,7 +826,11 @@ end
 function mapEntity:addObjects()
   mapEntity.add(self:recursiveObjectFinder(self.map), self.map)
   for k, v in pairs(megautils.postAddObjectsFuncs) do
-    v(self)
+    if type(v) == "function" then
+      v(self)
+    else
+      v.func(self)
+    end
   end
 end
 
@@ -917,7 +929,7 @@ function mapEntity.add(ol, map)
   end
 end
 
-megautils.cleanFuncs.mapEntity = function()
+megautils.cleanFuncs.mapEntity = {func=function()
     mapEntity.iterReg(function(r)
         if not r.locked then
           for i=1, #mapEntity.registered do
@@ -929,7 +941,7 @@ megautils.cleanFuncs.mapEntity = function()
         end
       end, -1)
     mapEntity.ranFiles = {}
-  end
+  end, autoClean=false}
 
 pierce = {}
 
@@ -1038,12 +1050,6 @@ function advancedEntity:beforeUpdate()
   if self.flipWithPlayer and megaMan.mainPlayer then
     self:setGravityMultiplier("flipWithPlayer", megaMan.mainPlayer.gravityMultipliers.gravityFlip or 1)
   end
-  local s, n = megautils.side(self, megaMan.allPlayers)
-  self.autoFace = s or self.autoFace
-  if self.applyAutoFace then
-    self.side = self.autoFace
-  end
-  self.closest = n
   if self.autoGravity then
     collision.doGrav(self)
   end
@@ -1052,6 +1058,12 @@ function advancedEntity:beforeUpdate()
     collision.doCollision(self)
     self._didCol = true
   end
+  local s, n = megautils.side(self, megaMan.allPlayers)
+  self.autoFace = s or self.autoFace
+  if self.applyAutoFace then
+    self.side = self.autoFace
+  end
+  self.closest = n
   self:updateFlash()
   self:updateIFrame()
   self:updateShake()

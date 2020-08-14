@@ -71,6 +71,4 @@ megautils.cleanFuncs.ice = function()
     megautils.playerAirFuncs.ice = nil
     megautils.playerClimbFuncs.ice = nil
     megautils.playerTrebleFuncs.ice = nil
-    megautils.resetGameObjectsFuncs.ice = nil
-    megautils.cleanFuncs.ice = nil
   end

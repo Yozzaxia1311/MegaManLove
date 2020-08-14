@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="32" height="28" tilewidth="8" tileheight="8" infinite="0" nextlayerid="5" nextobjectid="36">
+<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="32" height="28" tilewidth="8" tileheight="8" infinite="0" nextlayerid="5" nextobjectid="36">
  <properties>
-  <property name="musicLoopEndPoint" type="int" value="315541"/>
-  <property name="musicLoopPoint" type="int" value="80724"/>
-  <property name="musicPath" value="assets/sfx/music/select.wav"/>
+  <property name="musicPath" value="assets/sfx/music/select.ogg"/>
  </properties>
  <tileset firstgid="1" source="../tilesets/menuTiled.tsx"/>
  <layer id="2" name="bg" width="32" height="28">
@@ -15,7 +13,7 @@
    <property name="musicPath" value="assets/sfx/music/select.wav"/>
   </properties>
   <data encoding="base64" compression="zlib">
-   eAHVljlOA0EQRSfwIYATALdjzcFAzpqz5sZAbrYDIESAEAgB9+B9iZJKrW4zoC5GBE890/Ndv6dc/nKvaZpeh0zgPQlTMAfzsACLsATLoPNF6aapPQOzsAKr0Ic1WIcNkH+Uzvd+E58t2IYd2IU98Bpd19appvq7DwdwCEdwDCeg78bOUFtnddXfAZzCEM7gHC5A302UzupqHcElXME13MAteE1tnZ/r1MffR+n8XHu/9DpKl/p0da/+lvInnf+aOntf9beUP+n819SZv9baudKmnp/rUv7obFE6P9cDfHL5I/8one9/F/nj/dtev9KPN3iA9y9yn9WzD3iEe3iCnO43e1b7jpo6i3zG1XnmubQv3+jG1Yh45ue6lCvyjdL5uS7livyjdL6nbfJC+to6628pf9L8r6mz91d/S/mT5n9NnflrHcF/+v/jfxP2Hj/d83NtNXJrTldjL+f1l3ufagbu+g==
+   eAHt1TkKwlAQxvEUAY/gETyCR/A8cetde9fetXftXQ8QxEJEEeM9/Af8GgVFeSDiK37MhJmM8nB8ruM4rvXyDE6c0RlbBDc6t/D5Ah9hT5ir9k70eC+JFNLIIIv7GSb7IsyXHHkeBRRRQhmqK5rsizJfKuRV1FBHA02ormiyL8Z8aZG30UEXPfShuqLJvjjzZUA+xAhjTDCF6oom+xLMlxn5HAssscIaqiua7Lv/bf/zs8dZ2/23+2/3//HO++R/IWCfwrt4hw32+GSOiXcOfLaP45PvYPff3v/2/v/ejprY81+bcQWlTPnU
   </data>
  </layer>
 </map>

@@ -1,25 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="32" height="28" tilewidth="8" tileheight="8" infinite="0" nextlayerid="9" nextobjectid="34">
+<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="32" height="28" tilewidth="8" tileheight="8" infinite="0" backgroundcolor="#007f87" nextlayerid="10" nextobjectid="34">
  <properties>
-  <property name="musicPath" value="assets/sfx/music/menu.ogg"/>
+  <property name="musicLoop" type="bool" value="true"/>
+  <property name="musicLoopEndPoint" type="int" value="490496"/>
+  <property name="musicLoopPoint" type="int" value="55129"/>
+  <property name="musicPath" value="assets/sfx/music/menu.wav"/>
  </properties>
  <tileset firstgid="1" source="../tilesets/menuTiled.tsx"/>
- <layer id="1" name="bg" width="32" height="28">
+ <layer id="1" name="layout" width="32" height="28">
   <data encoding="base64" compression="zlib">
-   eAHt0jENAAAMw7Ac5Y95PCYfIRB51eQBAwwwwAADDDDAAAMMMPDewAEvvg4B
-  </data>
- </layer>
- <layer id="2" name="bg2" width="32" height="28">
-  <properties>
-   <property name="fff" type="bool" value="false"/>
-  </properties>
-  <data encoding="base64" compression="zlib">
-   eAHtljsKwDAMQz2m7QX6uUA/979fFYpAQ9bKiwNatAjkh+MWERM0QwvUX4Nc3oqsDdqhA+rP6Z3Iu6AbeqD+nF5G5zrrjM511hmd66ydrGvvzHWyrr0z18m69s7c4t+/c3QO5HDEpsMjhyM2HR451E6cXvFf/Nf94705da/V/eO79bV3/ju1/7/9xz5GHf3pvbm4RZ8=
-  </data>
- </layer>
- <layer id="3" name="graphics" width="32" height="28">
-  <data encoding="base64" compression="zlib">
-   eAHtlgkKwjAQRaueQD2B9katC4grbuD9D+D70kAYSiEQB4UEHk1IyZuZTMWqKqNUYLgCI7bHiUyGj0zanfL2zHBkvYETPMye3p1DrrHgoGUidS75j5yT0gM57z6kb3vgxsYdGrh289AjOe+eoz/D+oOr7+nh3xKV+v7QEcfh4Y99du7h153r+29hB/odWINi8fDbnOO1h1/3foYGQt4hBg9/cPU9Pfz6/pX7E9QHcRwe/thn5x7+CzmrB1SDF6gG+iYUi4ff5hyvPfwteSr3Fezh2/6U/wA18ZRRKvAPFXgDAKgaTw==
+   eAHdlttKAzEQhvcZfLT1BOIRT+ALqNh6q6L3ClrfQG+r1NOdSj09kt9AB4bQMpNliWDgI9lmmj+zm5lMt6qqboBdbPZg3+GA+Q5E1hSbaDvC8BhOHE6ZP4Noe8TwCbz+GZsXmHLoMX8N3no6/4ntF3j9NzY/oPrLjOdgBbbM7zeMb8FbT+cxDbVzrC5A9Sf1l9hchVbMM+pjfgf3DgPmH6Dt9sqCb/DuMGT+A/5Ti8a+5gbNAW29g2jsa27IyQFNY38D5zahhvXRWGMiJwc0iX3VmdTn5AC27rZxsb/Ev1ZB/J8Fu5e2c8A4fauXjkvoy/cX37dB8rDdQwl9q5eOS+jP47PcO3IOBLuHEvpWLx2X0JfvPwP1yH97Bkropz7b5xL6kvPE52lYAKlDNA+U0Lf+puMS+mv4K+e+hh2QdyHvRPaSo9/0/kl9ts899hCtQZveP/LdxXeJgUWw+m3fP33Wj9R+WhsOsG+zBozWflob5tSAh+z1L/kF7z73mg==
   </data>
  </layer>
 </map>

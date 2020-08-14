@@ -1,0 +1,50 @@
+name: Template Man
+
+canWalk: true
+canJump: true
+canShoot: true
+canClimb: true
+canDash: true
+smallSlideHitbox: true
+protoShield: false
+protoIdleAnim: false
+protoWhistle: false
+extraJumps: 0
+canDashJump: false
+
+slot0: M.BUSTER
+slot9: RUSH C.
+slot10: RUSH JET
+
+shootX: 50
+shootY: 29
+
+shootX4-2: 47
+shootY4-2: 37
+shootX6-2: 48
+shootY6-2: 21
+shootX7-2: 36
+shootY7-2: 18
+
+shootX3-3: 47
+shootY3-3: 37
+shootX5-3: 48
+shootY5-3: 21
+shootX6-3: 36
+shootY6-3: 18
+
+shootX7-3: 42
+shootY7-3: 35
+shootX8-3: 45
+shootY8-3: 28
+shootX1-4: 42
+shootY1-4: 22
+shootX2-4: 35
+shootY2-4: 17
+shootX8-4: 45
+shootY8-4: 28
+
+shootX4-6: 45
+shootY4-6: 28
+
+protoMug: false

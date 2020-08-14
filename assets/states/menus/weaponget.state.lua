@@ -15,7 +15,7 @@ function weaponGetState:begin()
   megautils.add(largeStar, 90, 220, 180, 6)
   megautils.add(megaMan)
   megautils.add(fade, false, nil, nil, fade.remove)
-  megautils.playMusic("assets/sfx/music/get.ogg", true)
+  megautils.playMusic("assets/sfx/music/get.ogg")
 end
 
 return weaponGetState

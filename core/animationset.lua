@@ -55,6 +55,10 @@ function animationSet:frame(a)
   return self.anims[a or self.current].position
 end
 
+function animationSet:getFramePosition(f, a)
+  return self.anims[a or self.current]:getFramePosition(f)
+end
+
 function animationSet:gotoFrame(f, t)
   self.anims[self.current]:gotoFrame(f)
   if t then
