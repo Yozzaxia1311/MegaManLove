@@ -163,10 +163,8 @@ function collision.entityPlatform(self)
               
               if resolid == 1 then
                 if epCanCrush and v:collision(self) then
-                  if self.crushing then
-                    self:crushing(v)
-                  end
-                  if v.crushed then
+                  local crushing = self.crushing and self:crushing(v)
+                  if v.crushed and (crushing == nil or crushing) then
                     v:crushed(self)
                   end
                 end
