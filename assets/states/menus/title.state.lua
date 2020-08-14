@@ -29,8 +29,8 @@ function title:added()
 end
 
 function title:update()
-  if self.s ~= 2 and (control.startPressed[1] or control.jumpPressed[1]) then
-    self.s = 2
+  if self.s < 2 and (control.startPressed[1] or control.jumpPressed[1]) then
+    self.s = 3
     self.oneOff = 0
     self.twoOff = 0
     megautils.playMusic("assets/sfx/music/title.ogg")
@@ -48,6 +48,8 @@ function title:update()
       megautils.playMusic("assets/sfx/music/title.ogg")
     end
   elseif self.s == 2 then
+    self.s = 3
+  elseif self.s == 3 then
     --self.timer = self.timer + 1
     if self.timer == 400 then
       states.openRecord = "assets/demo.rd"
@@ -77,7 +79,7 @@ end
 function title:draw()
   self.quad1:draw(self.tex, self.oneOff, self.transform.y)
   self.quad2:draw(self.tex, self.twoOff, self.transform.y+115)
-  if self.s == 2 then
+  if self.s == 3 then
     love.graphics.print(self.text, self.textPos, 208)
     if self.textTimer < 20 then
       love.graphics.print("PRESS START", 56, 144)
