@@ -78,7 +78,7 @@ function camera:updateCam(spdx, spdy)
     elseif not self.once then
       if megautils.groups().removeOnTransition then
         for k, v in pairs(megautils.groups().removeOnTransition) do
-          if not v.dontRemove then
+          if not v.dontRemoveOnTransition then
             megautils.removeq(v)
           end
         end
@@ -179,6 +179,10 @@ function camera:updateCam(spdx, spdy)
       self.toSection = nil
       if self.player.onMovingFloor then
         self.flx = self.player.onMovingFloor.transform.x - self.player.transform.x
+        self.player.onMovingFloor._oldDontRemoveOnTransition = self.player.onMovingFloor.dontRemoveOnTransition
+        self.player.onMovingFloor._oldDontRemoveOnSectionChange = self.player.onMovingFloor.dontRemoveOnSectionChange
+        self.player.onMovingFloor.dontRemoveOnTransition = true
+        self.player.onMovingFloor.dontRemoveOnSectionChange = true
       end
       self.once = true
       megautils.state().system.cameraUpdate = function(s)
@@ -202,7 +206,10 @@ function camera:updateCam(spdx, spdy)
             end
           end
           if camera.main.player and camera.main.player.onMovingFloor then
-            camera.main.player.onMovingFloor.dontRemove = nil
+            camera.main.player.onMovingFloor.dontRemoveOnTransition = camera.main.player.onMovingFloor._oldDontRemoveOnTransition
+            camera.main.player.onMovingFloor.dontRemoveOnSectionChange = camera.main.player.onMovingFloor._oldDontRemoveOnSectionChange
+            camera.main.player.onMovingFloor._oldDontRemoveOnTransition = nil
+            camera.main.player.onMovingFloor._oldDontRemoveOnSectionChange = nil
           end
           for i=1, #megaMan.allPlayers do
             if megaMan.allPlayers[i] ~= camera.main.player then
@@ -408,7 +415,7 @@ end
 
 function section:deactivate(ignore)
   for k, v in ipairs(self.group) do
-    if not v.isRemoved and not v.dontRemove and not megautils.inRemoveQueue(v) and
+    if not v.isRemoved and not v.dontRemoveOnSectionChange and not megautils.inRemoveQueue(v) and
       (not ignore or not table.contains(ignore, v)) then
       megautils.removeq(v)
     end
@@ -417,7 +424,7 @@ end
 
 function section:initSection()
   for k, v in ipairs(self.group) do
-    if not v.isRemoved and not v.dontRemove then
+    if not v.isRemoved then
       megautils.stopRemoveQueue(v)
       megautils.remove(v)
     end
