@@ -354,9 +354,9 @@ function love.window.updateMode(w, h, f)
 end
 
 function love.run()
+  local bu = love.timer.getTime()
   if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
   if love.timer then love.timer.step() end
-  local bu = love.timer.getTime()
   return function()
       if love.event then
         love.event.pump()
