@@ -15,8 +15,17 @@ collectgarbage("setpause", 100)
 borderLeft = love.graphics.newImage("assets/misc/borderLeft.jpg")
 borderRight = love.graphics.newImage("assets/misc/borderRight.jpg")
 
+keyboardCheck = {}
+gamepadCheck = {}
+
+lastPressed = nil
+lastTextInput = nil
+lastTouch = nil
+
 -- Initializes the whole game to its base state.
 function initEngine()
+  keyboardCheck = {}
+  gamepadCheck = {}
   love.graphics.setFont(mmFont)
   inputHandler.init()
   control.init()
@@ -42,9 +51,6 @@ function initEngine()
   -- `globals.defeats` tells who you've defeated. Fill this in appropriatly. Your `bossEntity` should be configured to fill this in.
   globals.defeats = {}
   globals.defeats.stickMan = false
-  
-  globals.keyboardCheck = {}
-  globals.gamepadCheck = {}
   
   for k, v in pairs(megautils.cleanFuncs) do
     if type(v) == "function" then
@@ -110,7 +116,6 @@ function love.resize(w, h)
     console.y = -math.huge
     console.update()
   end
-  resized = true
 end
 
 function love.joystickadded(j)
@@ -122,8 +127,10 @@ function love.joystickremoved(j)
 end
 
 function love.keypressed(k, s, r)
+  if control and control.demo and not control.pressAnyway then return end
+  
   -- keypressed event must be hijacked for console to work
-	if useConsole and console.state == 1 then
+	if useConsole and console and console.state == 1 then
 		if (k == "backspace") then
 			console.backspace()
 		end
@@ -139,29 +146,52 @@ function love.keypressed(k, s, r)
     return
 	end
   
-  if not globals.keyboardCheck[k] then
-    globals.lastKeyPressed = {"keyboard", k}
+  if not keyboardCheck[k] then
+    lastPressed = {"keyboard", k}
   end
-  globals.keyboardCheck[k] = 5
+  keyboardCheck[k] = 5
   
   control.anyPressed = true
+  if control.demo and not control.pressAnyway then
+    control.anyPressedDuringRec = true
+  end
+  
+  if control and control.recordInput then
+    if not control.keyPressedRec then
+      control.keyPressedRec = {}
+    end
+    control.keyPressedRec[#control.keyPressedRec+1] = {k, s, r}
+  end
 end
 
 function love.gamepadpressed(j, b)
-  if useConsole and console.state == 1 then return end
+  if control and control.demo and not control.pressAnyway then return end
+  if useConsole and console and console.state == 1 then return end
   
-  if not globals.gamepadCheck[b] then
-    globals.lastKeyPressed = {"gamepad", b, j:getName()}
+  if not gamepadCheck[b] then
+    lastPressed = {"gamepad", b, j:getName()}
   end
-  globals.gamepadCheck[b] = 5
+  gamepadCheck[b] = 5
+  
   control.anyPressed = true
+  if control.demo and not control.pressAnyway then
+    control.anyPressedDuringRec = true
+  end
+  
+  if control and control.recordInput then
+    if not control.gamepadPressedRec then
+      control.gamepadPressedRec = {}
+    end
+    control.gamepadPressedRec[#control.gamepadPressedRec+1] = {k, s, r}
+  end
 end
 
 function love.gamepadaxis(j, b, v)
-  if useConsole and console.state == 1 then return end
+  if control and control.demo and not control.pressAnyway then return end
+  if useConsole and console and console.state == 1 then return end
   
   if not math.between(v, -deadZone, deadZone) then
-    if not globals.gamepadCheck[b] then
+    if not gamepadCheck[b] then
       if (b == "leftx" or b == "lefty" or b == "rightx" or b == "righty") then
         globals.axisTmp = {}
         if b == "leftx" or b == "rightx" then
@@ -170,15 +200,46 @@ function love.gamepadaxis(j, b, v)
           globals.axisTmp.y = {"axis", b .. (v > 0 and "+" or "-"), v, j:getName()}
         end
       else
-        globals.lastKeyPressed =  {"axis", b .. (v > 0 and "+" or "-"), j:getName()}
+        lastPressed = {"axis", b .. (v > 0 and "+" or "-"), j:getName()}
       end
     end
-    globals.gamepadCheck[b] = 10
+    gamepadCheck[b] = 10
+  end
+  
+  if control and control.recordInput then
+    if not control.gamepadAxisRec then
+      control.gamepadAxisRec = {}
+    end
+    control.gamepadAxisRec[#control.gamepadAxisRec+1] = {k, s, r}
+  end
+end
+
+function love.touchpressed(id, x, y, dx, dy, pressure)
+  if control and control.demo and not control.pressAnyway then return end
+  if useConsole and console and console.state == 1 then return end
+  
+  lastTouch = {x, y, id, pressure, dx, dy}
+  
+  if control and control.recordInput then
+    if not control.touchPressedRec then
+      control.touchPressedRec = {}
+    end
+    control.touchPressedRec[#control.touchPressedRec+1] = {k, s, r}
   end
 end
 
 function love.textinput(k)
-  if useConsole then console.doInput(k) end
+  if control and control.demo and not control.pressAnyway then return end
+  if useConsole and console then console.doInput(k) end
+  
+  lastTextInput = k
+  
+  if control and control.recordInput then
+    if not control.textInputRec then
+      control.textInputRec = {}
+    end
+    control.textInputRec[#control.textInputRec+1] = k
+  end
 end
 
 function love.update(dt)
@@ -242,24 +303,24 @@ function love.update(dt)
     if globals.axisTmp then
       if globals.axisTmp.x and (not globals.axisTmp.y or
         math.abs(globals.axisTmp.x[3]) > math.abs(globals.axisTmp.y[3])) then
-        globals.lastKeyPressed = {globals.axisTmp.x[1], globals.axisTmp.x[2], globals.axisTmp.x[4]}
+        lastPressed = {globals.axisTmp.x[1], globals.axisTmp.x[2], globals.axisTmp.x[4]}
       elseif globals.axisTmp.y then
-        globals.lastKeyPressed = {globals.axisTmp.y[1], globals.axisTmp.y[2], globals.axisTmp.y[4]}
+        lastPressed = {globals.axisTmp.y[1], globals.axisTmp.y[2], globals.axisTmp.y[4]}
       end
       globals.axisTmp = nil
     end
-    for k, v in pairs(globals.gamepadCheck) do
-      globals.gamepadCheck[k] = globals.gamepadCheck[k] - 1
-      if globals.gamepadCheck[k] < 0 then
-        globals.gamepadCheck[k] = nil
+    for k, v in pairs(gamepadCheck) do
+      gamepadCheck[k] = gamepadCheck[k] - 1
+      if gamepadCheck[k] < 0 then
+        gamepadCheck[k] = nil
       end
     end
   end
   if love.keyboard then
-    for k, v in pairs(globals.keyboardCheck) do
-      globals.keyboardCheck[k] = globals.keyboardCheck[k] - 1
-      if globals.keyboardCheck[k] < 0 then
-        globals.keyboardCheck[k] = nil
+    for k, v in pairs(keyboardCheck) do
+      keyboardCheck[k] = keyboardCheck[k] - 1
+      if keyboardCheck[k] < 0 then
+        keyboardCheck[k] = nil
       end
     end
   end
@@ -270,10 +331,6 @@ function love.draw()
   view.draw()
   love.graphics.pop()
   if useConsole then console.draw() end
-  megautils.checkQueue()
-  states.checkQueue()
-  megautils.checkMusicQueue()
-  console.doWait()
 end
 
 -- Love2D doesn't fire the resize event for several functions, so here's some hacks.
@@ -299,11 +356,8 @@ end
 function love.run()
   if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
   if love.timer then love.timer.step() end
-  local bu = 0
+  local bu = love.timer.getTime()
   return function()
-      if love.timer then
-        bu = love.timer.getTime()
-      end
       if love.event then
         love.event.pump()
         for name, a,b,c,d,e,f in love.event.poll() do
@@ -325,7 +379,14 @@ function love.run()
       if love.timer then
         local delta, fps = love.timer.getTime() - bu, 1/megautils.getFPS()
         if delta < fps then love.timer.sleep(fps - delta) end
+        bu = love.timer.getTime()
       end
-      resized = false
+      megautils.checkQueue()
+      states.checkQueue()
+      megautils.checkMusicQueue()
+      console.doWait()
+      lastPressed = nil
+      lastTextInput = nil
+      lastTouch = nil
     end
 end

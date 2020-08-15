@@ -97,6 +97,24 @@ function convar.getValue(str)
   return val
 end
 
+function convar.getAllValues()
+  local res = {}
+  for k, v in pairs(convar) do
+    if convar.isValid(k) then
+      res[k] = v.value
+    end
+  end
+  return res
+end
+
+function convar.setAllValues(t)
+  for k, v in pairs(t) do
+    if convar.isValid(k) then
+      convar[k].value = v
+    end
+  end
+end
+
 function convar.getString(str)
   -- nil = does not exist or invalid
   if not convar.isValid(str) then return end

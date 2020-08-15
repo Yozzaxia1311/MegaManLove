@@ -102,6 +102,8 @@ function control.init()
   end
   
   control.demo = false
+  control.pressAnyway = false
+  control.anyPressedDuringRec = false
   control.resetRec()
   
   local defaultInputBinds, defaultInputBindsExtra = control.defaultBindsTable()
@@ -325,6 +327,7 @@ function control.resetRec()
   control.record = {}
   control.anyPressed = false
   control.recordInput = false
+  control.pressAnyway = false
   control.once = false
 end
 
@@ -358,8 +361,10 @@ function control.update()
     end
   else
     control.playRecord()
-    local result = control.anyPressed
-    if control.updateDemoFunc then
+    local result = false
+    if not control.updateDemoFunc then
+      result = control.anyPressedDuringRec
+    else
       result = control.updateDemoFunc()
     end
     if control.recPos >= control.record.last then
@@ -372,6 +377,7 @@ function control.update()
       control.record = {}
       control.updateDemoFunc = nil
       control.drawDemoFunc = nil
+      control.anyPressedDuringRec = false
       globals = control.oldGlobals
       convar = control.oldConvars
       megautils.reloadState = true
@@ -391,17 +397,22 @@ end
 
 function control.finishRecord()
   control.recordInput = false
+  control.pressAnyway = false
   local result = control.record
   result.last = control.recPos
   result.globals = control.record.globals
   result.convars = control.record.convars
   result.seed = control.record.seed
+  result.reload = control.record.reload
+  result.rgo = control.record.rgo
   if love.filesystem.getInfo(control.recordName .. ".rd") then
     love.filesystem.remove(control.recordName .. ".rd")
   end
   save.save(control.recordName .. ".rd", result)
+  print(control.record.last)
   control.record = {}
   control.recPos = 1
+  save.vfs = {}
 end
 
 function control.playRecord()
@@ -441,6 +452,33 @@ function control.playRecord()
       control.dashPressed[i] = control.dashDown[i] and control.pressed[i].dash
       if control.dashPressed[i] then control.pressed[i].dash = false end
     end
+    control.pressAnyway = true
+    if control.record[control.recPos].kp then
+      for i=1, #control.record[control.recPos].kp do
+        love.keypressed(unpack(control.record[control.recPos].kp[i]))
+      end
+    end
+    if control.record[control.recPos].gpp then
+      for i=1, #control.record[control.recPos].gpp do
+        love.gamepadpressed(unpack(control.record[control.recPos].gpp[i]))
+      end
+    end
+    if control.record[control.recPos].gpa then
+      for i=1, #control.record[control.recPos].gpa do
+        love.keypressed(unpack(control.record[control.recPos].gpa[i]))
+      end
+    end
+    if control.record[control.recPos].tp then
+      for i=1, #control.record[control.recPos].tp do
+        love.touchpressed(unpack(control.record[control.recPos].tp[i]))
+      end
+    end
+    if control.record[control.recPos].ti then
+      for i=1, #control.record[control.recPos].ti do
+        love.textinput(control.record[control.recPos].ti[i])
+      end
+    end
+    control.pressAnyway = false
   else
     for i=1, globals.playerCount do
       control.leftDown[i] = false
@@ -588,6 +626,43 @@ function control.doRecording()
       control.record[control.recPos].dad[i] = control.dashDown[i]
     end
   end
+  
+  if control.keyPressedRec then
+    if control.record[control.recPos] == nil then
+      control.record[control.recPos] = {}
+    end
+    control.record[control.recPos].kp = control.keyPressedRec
+    control.keyPressedRec = nil
+  end
+  if control.gamepadPressedRec then
+    if control.record[control.recPos] == nil then
+      control.record[control.recPos] = {}
+    end
+    control.record[control.recPos].gpp = control.gamepadPressedRec
+    control.gamepadPressedRec = nil
+  end
+  if control.gamepadAxisRec then
+    if control.record[control.recPos] == nil then
+      control.record[control.recPos] = {}
+    end
+    control.record[control.recPos].gpa = control.gamepadAxisRec
+    control.gamepadAxisRec = nil
+  end
+  if control.touchPressedRec then
+    if control.record[control.recPos] == nil then
+      control.record[control.recPos] = {}
+    end
+    control.record[control.recPos].tp = control.touchPressedRec
+    control.touchPressedRec = nil
+  end
+  if control.textInputRec then
+    if control.record[control.recPos] == nil then
+      control.record[control.recPos] = {}
+    end
+    control.record[control.recPos].ti = control.textInputRec
+    control.textInputRec = nil
+  end
+  
   control.recPos = control.recPos + 1
 end
 

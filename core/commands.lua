@@ -228,16 +228,20 @@ concmd["recopen"] = {
       if love.filesystem.getInfo(cmd[2] .. ".rd") then
         states.openRecord = cmd[2] .. ".rd"
         megautils.add(fade, true, nil, nil, function(s)
-              megautils.gotoState(nil, nil, function()
-                  megautils.stopMusic()
-                  love.audio.stop()
-                  control.updateDemoFunc = function()
-                      return console.state == 1
+            megautils.gotoState(nil, function()
+                megautils.stopMusic()
+                love.audio.stop()
+                control.updateDemoFunc = function()
+                    if console.state == 1 and control.recPos >= control.record.last then
+                      console.close()
+                      console.y = -math.huge
                     end
-                end)
-            end)
+                    return control.anyPressedDuringRec
+                  end
+              end)
+          end)
         console.close()
-        console.y = -112*2
+        console.y = -math.huge
       else
         console.print("No such record file \""..cmd[2].."\"")
       end
@@ -256,7 +260,11 @@ concmd["defbinds"] = {
 concmd["opendir"] = {
   helptext = "open save directory",
   flags = {"client"},
-  fun = function(cmd) love.system.openURL(love.filesystem.getSaveDirectory()) end
+  fun = function(cmd)
+    if not control.demo then
+      love.system.openURL(love.filesystem.getSaveDirectory())
+    end
+  end
 }
 
 concmd["recs"] = {

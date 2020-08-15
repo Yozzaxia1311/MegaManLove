@@ -32,33 +32,35 @@ function states.set(n, before, after)
   if before then before() end
   
   local nick = n
-  local isStage = nick:sub(-10) == ".stage.lua" or nick:sub(-10) == ".stage.tmx"
+  local isStage = nick and (nick:sub(-10) == ".stage.lua" or nick:sub(-10) == ".stage.tmx")
   local map
   local mapArgs = {}
   local sp = "assets/states/blank.lua"
-    
-  if nick:sub(-10) == ".state.tmx" or nick:sub(-10) == ".stage.tmx" then
-    map = megautils.createMapEntity(nick)
-    local p = map.map.properties
-    
-    if p then
-      local otherp = nick:sub(0, -11)
-      if p.state and p.state ~= "" then
-        sp = p.state
-      elseif love.filesystem.getInfo(otherp .. ".lua") then
-        sp = otherp .. ".lua"
+  
+  if nick then
+    if nick:sub(-10) == ".state.tmx" or nick:sub(-10) == ".stage.tmx" then
+      map = megautils.createMapEntity(nick)
+      local p = map.map.properties
+      
+      if p then
+        local otherp = nick:sub(0, -11)
+        if p.state and p.state ~= "" then
+          sp = p.state
+        elseif love.filesystem.getInfo(otherp .. ".lua") then
+          sp = otherp .. ".lua"
+        end
+        
+        mapArgs.mPath = p.musicPath and p.musicPath ~= "" and p.musicPath
+        mapArgs.mLoopPoint = (p.musicLoopPoint and p.musicLoopPoint ~= 0) and p.musicLoopPoint
+        mapArgs.mLoopEndPoint = (p.musicLoopEndPoint and p.musicLoopEndPoint ~= 0) and p.musicLoopEndPoint
+        mapArgs.mLoop = p.musicLoop == nil or p.musicLoop
+        mapArgs.mVolume = p.musicVolume or 1
+        
+        mapArgs.fadeIn = p.fadeIn == nil or p.fadeIn
       end
-      
-      mapArgs.mPath = p.musicPath and p.musicPath ~= "" and p.musicPath
-      mapArgs.mLoopPoint = (p.musicLoopPoint and p.musicLoopPoint ~= 0) and p.musicLoopPoint
-      mapArgs.mLoopEndPoint = (p.musicLoopEndPoint and p.musicLoopEndPoint ~= 0) and p.musicLoopEndPoint
-      mapArgs.mLoop = p.musicLoop == nil or p.musicLoop
-      mapArgs.mVolume = p.musicVolume or 1
-      
-      mapArgs.fadeIn = p.fadeIn == nil or p.fadeIn
+    else
+      sp = nick
     end
-  else
-    sp = nick
   end
   
   if states.currentState then
@@ -76,22 +78,39 @@ function states.set(n, before, after)
     control.oldGlobals = globals
     globals = control.record.globals
     control.oldConvars = convar
-    convar = control.record.convars
+    convar.setAllValues(control.record.convars)
     love.math.setRandomSeed(control.record.seed)
+    megautils.reloadState = control.record.reload
+    megautils.resetGameObjects = control.record.rgo
+    lastPressed = nil
+    lastTextInput = nil
+    lastTouch = nil
+    keyboardCheck = {}
+    gamepadCheck = {}
+    megautils._q = {}
     control.demo = true
-    states.set(states.current)
+    states.set(nick, before, after)
     return
   end
   
   if states.recordOnSwitch then
+    lastPressed = nil
+    lastTextInput = nil
+    lastTouch = nil
+    keyboardCheck = {}
+    gamepadCheck = {}
+    megautils._q = {}
     states.recordOnSwitch = false
-    control.drawDemoFunc = control.baseDrawDemoFunc
+    control.updateDemoFunc = nil
+    control.drawDemoFunc = nil
     control.resetRec()
     control.recordInput = true
     control.record.globals = table.clone(globals)
-    control.record.convars = table.clone(convar)
-    control.record.state = states.current
+    control.record.convars = convar.getAllValues()
+    control.record.state = sp
     control.record.seed = love.math.getRandomSeed()
+    control.record.reload = megautils.reloadState
+    control.record.rgo = megautils.resetGameObjects
   end
   
   if megautils.reloadState then
@@ -145,13 +164,13 @@ function states.set(n, before, after)
   states.currentState:begin()
 end
 
-function states.setq(n, s, after)
-  states.queue = {n, s, after}
+function states.setq(n, before, after)
+  states.queue = {n, before, after}
 end
 
 function states.checkQueue()
   if states.queue then
-    states.set(unpack(states.queue))
+    states.set(states.queue[1], states.queue[2], states.queue[3])
     states.queue = nil
   end
 end
