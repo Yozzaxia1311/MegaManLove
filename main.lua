@@ -1,9 +1,16 @@
+-- Splash screen
+if love.graphics and love.graphics.isActive() then
+  local s = love.graphics.newImage("assets/misc/splash.bmp")
+  love.graphics.draw(s, (love.graphics.getWidth()/2)-(s:getWidth()/2), (love.graphics.getHeight()/2)-(s:getHeight()/2))
+  love.graphics.present()
+end
+
 io.stdout:setvbuf("no")
 collectgarbage("setpause", 100)
 
 isMobile = love.system.getOS() == "Android" or love.system.getOS() == "iOS"
-borderLeft = love.graphics.newImage("assets/misc/borderLeft.png")
-borderRight = love.graphics.newImage("assets/misc/borderRight.png")
+borderLeft = love.graphics.newImage("assets/misc/borderLeft.jpg")
+borderRight = love.graphics.newImage("assets/misc/borderRight.jpg")
 
 -- Initializes the whole game to its base state.
 function initEngine()
@@ -287,10 +294,8 @@ function love.window.updateMode(w, h, f)
 end
 
 function love.run()
-  
   if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
   if love.timer then love.timer.step() end
-  local dt = 0
   local bu = 0
   return function()
       if love.timer then
@@ -307,10 +312,7 @@ function love.run()
           love.handlers[name](a,b,c,d,e,f)
         end
       end
-      if love.timer then
-        dt = love.timer.step()
-      end
-      if love.update then love.update(dt) end
+      if love.update then love.update(love.timer and love.timer.step()) end
       if love.graphics and love.graphics.isActive() then
         love.graphics.origin()
         love.graphics.clear(love.graphics.getBackgroundColor())
