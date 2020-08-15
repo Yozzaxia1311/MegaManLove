@@ -983,6 +983,7 @@ function advancedEntity:new()
     self.autoCollision = true
     self.autoGravity = true
     self.doAutoCollisionBeforeUpdate = false
+    self.autoCrush = true
   end
   
   self.dead = false
@@ -1035,6 +1036,21 @@ function advancedEntity:grav()
   if self.ground then return end
   self.velocity.vely = self.velocity.vely+self.gravity
   self.velocity:clampY(7)
+end
+
+function advancedEntity:crushed(o)
+  if self.autoCrush and self.hurtable then
+    local oldInv, oldIF = table.clone(self.canBeInvincible), self.iFrames
+    self.iFrames = 0
+    for k, v in pairs(self.canBeInvincible) do
+      self.canBeInvincible[k] = false
+    end
+    o:interact(self, -99999, true)
+    if not self.dead then
+      self.iFrames = oldIF
+      self.canBeInvincible = oldInv
+    end
+  end
 end
 
 function advancedEntity:getHealth()
