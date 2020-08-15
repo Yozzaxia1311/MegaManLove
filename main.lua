@@ -1,6 +1,10 @@
+splash = love.graphics.newImage("assets/misc/splash.bmp")
+isMobile = love.system.getOS() == "Android" or love.system.getOS() == "iOS"
+
 -- Splash screen
-if love.graphics and love.graphics.isActive() then
-  local s = love.graphics.newImage("assets/misc/splash.bmp")
+if not isMobile and love.graphics and love.graphics.isActive() then
+  local s = splash
+  love.graphics.clear(0, 0, 0, 1)
   love.graphics.draw(s, (love.graphics.getWidth()/2)-(s:getWidth()/2), (love.graphics.getHeight()/2)-(s:getHeight()/2))
   love.graphics.present()
 end
@@ -8,7 +12,6 @@ end
 io.stdout:setvbuf("no")
 collectgarbage("setpause", 100)
 
-isMobile = love.system.getOS() == "Android" or love.system.getOS() == "iOS"
 borderLeft = love.graphics.newImage("assets/misc/borderLeft.jpg")
 borderRight = love.graphics.newImage("assets/misc/borderRight.jpg")
 

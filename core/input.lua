@@ -89,7 +89,7 @@ function inputHandler.down(k)
       end
     elseif inputHandler.keys[k][i][1] == "custom" then
       if inputHandler.custom[k] then
-        result = inputHandler.custom[k](i)
+        result = inputHandler.custom[k]()
       end
     end
     if result then break end
