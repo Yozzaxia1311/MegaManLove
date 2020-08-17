@@ -188,16 +188,10 @@ weaponHandler = basicEntity:extend()
 
 weaponHandler.autoClean = false
 
-function weaponHandler.ser()
-  return weaponHandler.id
-end
-
-function weaponHandler.deser(t)
-  weaponHandler.id = t
-end
-
 binser.register(weaponHandler, "weaponHandler", function(o)
-    local result = basicEntity.transfer(o, result)
+    local result = {}
+    
+    basicEntity.transfer(o, result)
     
     result.slotSize = o.slotSize
     result.currentSlot = o.currentSlot

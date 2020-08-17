@@ -384,6 +384,15 @@ end
 
 velocity = class:extend()
 
+binser.register(velocity, "velocity" function(o)
+    return {velx = self.velx, vely = self.vely}
+  end, function(o)
+    local result = velocity()
+    result.velx = o.velx
+    result.vely = o.vely
+    return result
+  end)
+
 function velocity:new()
   self.velx = 0
   self.vely = 0
@@ -433,12 +442,24 @@ function basicEntity:__tostring()
 end
 
 function basicEntity.transfer(from, to)
-  local t = to or {}
-  t.transform = table.clone(from.transform)
-  t.canUpdate = table.clone(from.canUpdate)
-  t.canDraw = table.clone(from.canDraw)
-  t.isRemoved = from.isRemoved
-  t.isAdded = from.isAdded
+  to.transform = table.clone(from.transform)
+  to.canUpdate = table.clone(from.canUpdate)
+  to.canDraw = table.clone(from.canDraw)
+  to.isRemoved = from.isRemoved
+  to.isAdded = from.isAdded
+  to.layer = from.layer
+  to.iFrames = from.iFrames
+  to.changeHealth = from.changeHealth
+  to.recycle = from.recycle
+  to.recycling = from.recycling
+  if from.collisionShape then
+    to.collisionShape = {
+        w = from.collisionShape.w,
+        h = from.collisionShape.h,
+        type = from.collisionShape.type,
+        data = table.clone(from.collisionShape.data)
+      }
+  end
 end
 
 function basicEntity:new()
@@ -646,6 +667,30 @@ entity = basicEntity:extend()
 
 entity.autoClean = false
 
+function entity.transfer(from, to)
+  entity.super.transfer(from, to)
+  
+  to.gravityMultipliers = table.clone(from.gravityMultipliers)
+  to.velocity = from.velocity
+  to.solidType = from.solidType
+  to.normalGravity = from.normalGravity
+  to.gravity = from.gravity
+  to.doShake = from.doShake
+  to.maxShakeTime = from.maxShakeTime
+  to.blockCollision = table.clone(from.blockCollision)
+  to.ground = from.ground
+  to.snapToGround = from.snapToGround
+  to.xColl = from.xColl
+  to.yColl = from.yColl
+  to.shakeX = from.shakeX
+  to.shakeY = from.shakeY
+  to.shakeTime = from.shakeTime
+  to.shakeSide = from.shakeSide
+  to.moveByMoveX = from.moveByMoveY
+  to.canBeInvincible = table.clone(from.canBeInvincible)
+  to.canStandSolid = table.clone(from.canStandSolid)
+end
+
 function entity:new()
   entity.super.new(self)
   
@@ -740,6 +785,42 @@ end
 mapEntity = basicEntity:extend()
 
 mapEntity.autoClean = false
+
+function mapEntity.ser()
+  return {
+      registered = table.clone(mapEntity.registered),
+      ranFiles = table.clone(mapEntity.ranFiles),
+      doSort = mapEntity.doSort
+    }
+end
+
+function mapEntity.deser(t)
+  mapEntity.registered = t.registered
+  mapEntity.ranFiles = t.ranFiles
+  mapEntity.doSort = t.doSort
+end
+
+binser.register(mapEntity, "mapEntity", function(o)
+    local result = {}
+    
+    entity.transfer(o, result)
+    
+    result.map = o.map
+    result.path = o.path
+    result.layers = o.layers
+    
+    return result
+  end, function(o)
+      local result = mapEntity()
+      
+      entity.transfer(o, result)
+      
+      result.map = o.map
+      result.path = o.path
+      result.layers = o.layers
+      
+      return result
+    end)
 
 mapEntity.registered = {}
 mapEntity.ranFiles = {}
@@ -962,6 +1043,48 @@ advancedEntity = entity:extend()
 
 advancedEntity.autoClean = false
 
+function advancedEntity.transfer(from, to)
+  advancedEntity.super.transfer(from, to)
+  
+  to.explosionType = from.explosionType
+  to.removeOnDeath = from.removeOnDeath
+  to.dropItem = from.dropItem
+  to.health = from.health
+  to.soundOnHit = from.soundOnHit
+  to.soundOnDeath = from.soundOnDeath
+  to.autoHitPlayer = from.autoHitPlayer
+  to.damage = from.damage
+  to.hurtable = from.hurtable
+  to.flipWithPlayer = from.flipWithPlayer
+  if type(from.defeatSlot) == "table" then
+    to.defeatSlot = table.clone(from.defeatSlot)
+  else
+    to.defeatSlot = from.defeatSlot
+  end
+  if type(from.defeatSlotValue) == "table" then
+    to.defeatSlotValue = table.clone(from.defeatSlotValue)
+  else
+    to.defeatSlotValue = from.defeatSlotValue
+  end
+  to.removeWhenOutside = from.removeWhenOutside
+  to.removeHealthBarWithSelf = from.removeHealthBarWithSelf
+  to.barRelativeToView = from.barRelativeToView
+  to.barOffsetX = from.barOffsetX
+  to.barOffsetY = from.barOffsetY
+  to.applyAutoFace = from.applyAutoFace
+  to.pierceType = from.pierceType
+  to.autoCollision = from.autoCollision
+  to.autoGravity = from.autoGravity
+  to.doAutoCollisionBeforeUpdate = from.doAutoCollisionBeforeUpdate
+  to.autoCrush = from.autoCrush
+  to.dead = from.dead
+  to.closest = from.closest
+  to._didCol = from._didCol
+  to.healthHandler = from.healthHandler
+  to.autoFace = from.autoFace
+  to.side = from.side
+end
+
 advancedEntity.SMALLBLAST = 1
 advancedEntity.BIGBLAST = 2
 advancedEntity.DEATHBLAST = 3
@@ -1010,6 +1133,7 @@ function advancedEntity:added()
   self:addToGroup("collision")
   self:addToGroup("handledBySection")
   self:addToGroup("interactable")
+  self:addToGroup("advancedEntity")
 end
 
 function advancedEntity:useHealthBar(oneColor, twoColor, outlineColor, add)
@@ -1023,18 +1147,19 @@ function advancedEntity:useHealthBar(oneColor, twoColor, outlineColor, add)
   self.healthHandler:instantUpdate(self.health)
   self.health = nil
   if camera.main then
-    camera.main.funcs[self] = function(s)
-        self.healthHandler.transform.x = (self.barRelativeToView and view.x or 0) + self.barOffsetX
-        self.healthHandler.transform.y = (self.barRelativeToView and view.y or 0) + self.barOffsetY
+    camera.main.funcs["advancedEntity"] = function(s)
+        if megautils.groups().advancedEntity then
+          for k, v in ipairs(megautils.groups().advancedEntity) do
+            v.healthHandler.transform.x = (v.barRelativeToView and view.x or 0) + v.barOffsetX
+            v.healthHandler.transform.y = (v.barRelativeToView and view.y or 0) + v.barOffsetY
+          end
+        end
       end
   end
 end
 
 function advancedEntity:removed()
   if self.removeHealthBarWithSelf and self.healthHandler then
-    if camera.main then
-      camera.main.funcs[self] = nil
-    end
     if not self.healthHandler.isRemoved then
       megautils.remove(self.healthHandler)
     end

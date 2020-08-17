@@ -396,8 +396,10 @@ function love.run()
     end
 end
 
+-- Save state to memory
 function ser()
   return {
+      megaMan = megaMan.ser(),
       state = states.ser(),
       lastPressed = table.clone(lastPressed),
       lastTextInput = table.clone(lastTextInput),
@@ -409,10 +411,12 @@ function ser()
       megautils = megautils.ser(),
       seed = love.math.getRandomSeed(),
       console = console.ser(),
-      mega = megaMan.ser()
+      weaponHandler = weaponHandler.id,
+      mapEntity = mapEntity.ser()
     }
 end
 
+-- Load state
 function deser(t)
   
 end

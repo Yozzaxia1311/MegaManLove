@@ -1,13 +1,17 @@
 megaMan = entity:extend()
 
+megaMan.autoClean = false
+
 function megaMan.ser()
   local skins = {}
   for k, v in pairs(megaMan.skins) do
     skins[k] = v.path
   end
   return {
-    skins=skins,
-    we=binser.serialize(megaMan.weaponHandlers)
+    skins = skins,
+    we = binser.serialize(megaMan.weaponHandlers)
+    players = binser.serialize(megaMan.allPlayers)
+    main = megaMan.mainPlayer ~= nil
   }
 end
 
@@ -16,9 +20,13 @@ function megaMan.deser(t)
     megaMan.setSkin(k, v)
   end
   megaMan.weaponHandler = binser.deserialize(t.we)
+  megaMan.allPlayers = binser.deserialize(t.players)
+  if t.main then
+    megaMan.mainPlayer = megaMan.allPlayers[1]
+  else
+    megaMan.mainPlayer = nil
+  end
 end
-
-megaMan.autoClean = false
 
 megaMan.mainPlayer = nil
 megaMan.allPlayers = {}
