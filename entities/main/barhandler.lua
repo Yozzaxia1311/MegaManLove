@@ -188,6 +188,46 @@ weaponHandler = basicEntity:extend()
 
 weaponHandler.autoClean = false
 
+function weaponHandler.ser()
+  return weaponHandler.id
+end
+
+function weaponHandler.deser(t)
+  weaponHandler.id = t
+end
+
+binser.register(weaponHandler, "weaponHandler", function(o)
+    local result = basicEntity.transfer(o, result)
+    
+    result.slotSize = o.slotSize
+    result.currentSlot = o.currentSlot
+    result.weapons = table.clone(o.weapons)
+    result.energy = table.clone(o.energy)
+    result.slots = table.clone(o.slots)
+    result.renderedWE = table.clone(o.renderedWE)
+    result.riseTimer = o.riseTimer
+    result.side = o.side
+    result.rot = o.rot
+    
+    return result
+  end, function(o)
+    local result = weaponHandler()
+    
+    basicEntity.transfer(o, result)
+    
+    result.slotSize = o.slotSize
+    result.currentSlot = o.currentSlot
+    result.weapons = o.weapons
+    result.energy = o.energy
+    result.slots = o.slots
+    result.renderedWE = o.renderedWE
+    result.riseTimer = o.riseTimer
+    result.side = o.side
+    result.rot = o.rot
+    
+    return result
+  end)
+
 weaponHandler.id = 0
 
 function weaponHandler:new(side, r, slots)

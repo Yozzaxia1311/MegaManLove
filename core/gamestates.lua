@@ -1,5 +1,25 @@
 states = {}
 
+function states.ser()
+  return {
+      currentState = binser.serialize(states.currentState),
+      current = states.current,
+      switched = states.switched,
+      recordOnSwitch = states.recordOnSwitch,
+      openRecord = states.openRecord,
+      queue = states.queue and table.clone(states.queue)
+    }
+end
+
+function states.deser(t)
+  states.currentState = binser.deserialize(t.currentState)
+  states.current = t.current
+  states.switched = t.switched
+  states.recordOnSwitch = t.recordOnSwitch
+  states.openRecord = t.openRecord
+  states.queue = t.queue
+end
+
 states.currentState = nil
 states.current = nil
 states.switched = false
@@ -29,6 +49,7 @@ function state:unload()
 end
 
 function states.set(n, before, after)
+  states.switched = false
   if before then before() end
   
   local nick = n
@@ -75,31 +96,27 @@ function states.set(n, before, after)
     control.record = save.load(states.openRecord)
     nick = control.record.state
     states.openRecord = nil
-    control.oldGlobals = globals
-    globals = control.record.globals
-    control.oldConvars = convar
-    convar.setAllValues(control.record.convars)
-    love.math.setRandomSeed(control.record.seed)
-    megautils.reloadState = control.record.reload
-    megautils.resetGameObjects = control.record.rgo
-    control.oldSkins = {}
-    for k, v in pairs(megaMan.skins) do
-      control.oldSkins[k] = v.path
-    end
-    for k, v in pairs(control.record.skins) do
-      megaMan.setSkin(k, v)
-    end
-    control.oldConsole = console.ser()
-    console.deser(control.record.console)
+    
     lastPressed = nil
     lastTextInput = nil
     lastTouch = nil
     keyboardCheck = {}
     gamepadCheck = {}
     megautils._q = {}
+    
     control.demo = true
-    states.set(nick, before, after)
+    
+    control.oldContext = states.ser()
+    states.deser(control.record.context)
     return
+  end
+  
+  view.x, view.y = 0, 0
+  states.current = nick
+  states.switched = true
+  
+  if not states.currentChunk or states.current ~= sp then
+    states.currentChunk = love.filesystem.load(sp)
   end
   
   if states.recordOnSwitch then
@@ -114,17 +131,10 @@ function states.set(n, before, after)
     control.drawDemoFunc = nil
     control.resetRec()
     control.recordInput = true
-    control.record.globals = table.clone(globals)
-    control.record.convars = convar.getAllValues()
+    
+    control.record.context = states.ser()
+    
     control.record.state = sp
-    control.record.seed = love.math.getRandomSeed()
-    control.record.reload = megautils.reloadState
-    control.record.rgo = megautils.resetGameObjects
-    control.record.skins = {}
-    for k, v in pairs(megaMan.skins) do
-      control.record.skins[k] = v.path
-    end
-    control.record.console = console.ser()
   end
   
   if megautils.reloadState then
@@ -137,16 +147,8 @@ function states.set(n, before, after)
     end
   end
   
-  if not states.currentChunk or states.current ~= sp then
-    states.currentChunk = love.filesystem.load(sp)
-  end
-  
-  view.x, view.y = 0, 0
-  
-  states.current = nick
   states.currentState = states.currentChunk()
   states.currentState.system = entitySystem()
-  states.switched = true
   
   if after then after() end
   
@@ -184,8 +186,9 @@ end
 
 function states.checkQueue()
   if states.queue then
-    states.set(states.queue[1], states.queue[2], states.queue[3])
+    local q = states.queue
     states.queue = nil
+    states.set(q[1], q[2], q[3])
   end
 end
 

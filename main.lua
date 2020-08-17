@@ -127,10 +127,13 @@ function love.joystickremoved(j)
 end
 
 function love.keypressed(k, s, r)
-  if control and control.demo and not control.pressAnyway then return end
+  if control.demo and not control.pressAnyway then
+    control.anyPressedDuringRec = true
+    return
+  end
   
   -- keypressed event must be hijacked for console to work
-	if useConsole and console and console.state == 1 then
+	if useConsole and console.state == 1 then
 		if (k == "backspace") then
 			console.backspace()
 		end
@@ -152,11 +155,8 @@ function love.keypressed(k, s, r)
   keyboardCheck[k] = 5
   
   control.anyPressed = true
-  if control.demo and not control.pressAnyway then
-    control.anyPressedDuringRec = true
-  end
   
-  if control and control.recordInput then
+  if control.recordInput then
     if not control.keyPressedRec then
       control.keyPressedRec = {}
     end
@@ -165,8 +165,11 @@ function love.keypressed(k, s, r)
 end
 
 function love.gamepadpressed(j, b)
-  if control and control.demo and not control.pressAnyway then return end
-  if useConsole and console and console.state == 1 then return end
+  if control.demo and not control.pressAnyway then
+    control.anyPressedDuringRec = true
+    return
+  end
+  if useConsole and console.state == 1 then return end
   
   if not gamepadCheck[b] then
     lastPressed = {"gamepad", b, j:getName()}
@@ -174,11 +177,8 @@ function love.gamepadpressed(j, b)
   gamepadCheck[b] = 5
   
   control.anyPressed = true
-  if control.demo and not control.pressAnyway then
-    control.anyPressedDuringRec = true
-  end
   
-  if control and control.recordInput then
+  if control.recordInput then
     if not control.gamepadPressedRec then
       control.gamepadPressedRec = {}
     end
@@ -187,8 +187,8 @@ function love.gamepadpressed(j, b)
 end
 
 function love.gamepadaxis(j, b, v)
-  if control and control.demo and not control.pressAnyway then return end
-  if useConsole and console and console.state == 1 then return end
+  if control.demo and not control.pressAnyway then return end
+  if useConsole and console.state == 1 then return end
   
   if not math.between(v, -deadZone, deadZone) then
     if not gamepadCheck[b] then
@@ -206,7 +206,7 @@ function love.gamepadaxis(j, b, v)
     gamepadCheck[b] = 10
   end
   
-  if control and control.recordInput then
+  if control.recordInput then
     if not control.gamepadAxisRec then
       control.gamepadAxisRec = {}
     end
@@ -215,12 +215,15 @@ function love.gamepadaxis(j, b, v)
 end
 
 function love.touchpressed(id, x, y, dx, dy, pressure)
-  if control and control.demo and not control.pressAnyway then return end
-  if useConsole and console and console.state == 1 then return end
+  if control.demo and not control.pressAnyway then
+    control.anyPressedDuringRec = true
+    return
+  end
+  if useConsole and console.state == 1 then return end
   
   lastTouch = {x, y, id, pressure, dx, dy}
   
-  if control and control.recordInput then
+  if control.recordInput then
     if not control.touchPressedRec then
       control.touchPressedRec = {}
     end
@@ -385,8 +388,31 @@ function love.run()
       states.checkQueue()
       megautils.checkMusicQueue()
       console.doWait()
+      control.anyPressed = false
+      control.anyPressedDuringRec = false
       lastPressed = nil
       lastTextInput = nil
       lastTouch = nil
     end
+end
+
+function ser()
+  return {
+      state = states.ser(),
+      lastPressed = table.clone(lastPressed),
+      lastTextInput = table.clone(lastTextInput),
+      lastTouch = table.clone(lastTouch),
+      keyboardCheck = table.clone(keyboardCheck),
+      gamepadCheck = table.clone(gamepadCheck),
+      globals = table.clone(globals),
+      convars = convar.getAllValues(),
+      megautils = megautils.ser(),
+      seed = love.math.getRandomSeed(),
+      console = console.ser(),
+      mega = megaMan.ser()
+    }
+end
+
+function deser(t)
+  
 end

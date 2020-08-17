@@ -372,18 +372,10 @@ function control.update()
       control.updateDemoFunc = nil
       control.drawDemoFunc = nil
       control.anyPressedDuringRec = false
-      globals = control.oldGlobals
-      convar = control.oldConvars
-      for k, v in pairs(control.oldSkins) do
-        megaMan.setSkin(k, v)
-      end
-      console.deser(control.oldConsole)
-      control.oldGlobals = nil
-      control.oldConvars = nil
-      control.oldSkins = nil
-      control.oldConsole = nil
-      megautils.reloadState = true
-      megautils.resetGameObjects = true
+      
+      states.deser(control.oldContext)
+      control.oldContext = nil
+      
       if control.returning then
         control.returning()
         control.returning = nil
@@ -402,16 +394,11 @@ function control.finishRecord()
   control.pressAnyway = false
   local result = control.record
   result.last = control.recPos
-  result.globals = control.record.globals
-  result.convars = control.record.convars
-  result.seed = control.record.seed
-  result.reload = control.record.reload
-  result.rgo = control.record.rgo
+  result.context = control.record.context
   if love.filesystem.getInfo(control.recordName .. ".rd") then
     love.filesystem.remove(control.recordName .. ".rd")
   end
   save.save(control.recordName .. ".rd", result)
-  print(control.record.last)
   control.record = {}
   control.recPos = 1
   save.vfs = {}
@@ -526,15 +513,18 @@ function control.drawDemo()
   if control.drawDemoFunc then
     control.drawDemoFunc()
   else
-    if control.demo and math.wrap(control.recPos, 0, 40) < 20 then
-      love.graphics.setColor(1, 1, 1, 1)
-      love.graphics.print("REPLAY", view.w - 64, view.h - 16)
+    if control.demo then
+      love.graphics.setColor(0, 0, 0, 0.4)
+      love.graphics.rectangle("fill", view.w-144, view.h-24, 144, 16)
+      love.graphics.setColor(1, 1, 1, 0.4)
+      love.graphics.print("REPLAY", view.w - 64, view.h - 24)
+      love.graphics.print("ANY BUTTON TO END", view.w - 142, view.h - 16)
     elseif control.recordInput then
       love.graphics.setColor(0, 0, 0, 0.4)
-      love.graphics.rectangle("fill", view.w-124, view.h-24, 126, 16)
+      love.graphics.rectangle("fill", view.w-134, view.h-24, 142, 16)
       love.graphics.setColor(1, 1, 1, 0.4)
-      love.graphics.print("RECORDING\n", view.w - 88, view.h - 24)
-      love.graphics.print("PRESS BACKSPACE TO END", view.w - 124, view.h - 16)
+      love.graphics.print("RECORDING", view.w - 88, view.h - 24)
+      love.graphics.print("BACKSPACE TO END", view.w - 132, view.h - 16)
     end
   end
 end

@@ -432,6 +432,15 @@ function basicEntity:__tostring()
   return "Entity"
 end
 
+function basicEntity.transfer(from, to)
+  local t = to or {}
+  t.transform = table.clone(from.transform)
+  t.canUpdate = table.clone(from.canUpdate)
+  t.canDraw = table.clone(from.canDraw)
+  t.isRemoved = from.isRemoved
+  t.isAdded = from.isAdded
+end
+
 function basicEntity:new()
   if not self.recycling then
     self.transform = {}

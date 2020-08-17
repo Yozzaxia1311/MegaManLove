@@ -231,13 +231,6 @@ concmd["recopen"] = {
             megautils.gotoState(nil, function()
                 megautils.stopMusic()
                 love.audio.stop()
-                control.updateDemoFunc = function()
-                    if console.state == 1 and control.recPos >= control.record.last then
-                      console.close()
-                      console.y = -math.huge
-                    end
-                    return control.anyPressedDuringRec
-                  end
               end)
           end)
         console.close()
