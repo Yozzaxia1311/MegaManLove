@@ -82,6 +82,15 @@ function states.set(n, before, after)
     love.math.setRandomSeed(control.record.seed)
     megautils.reloadState = control.record.reload
     megautils.resetGameObjects = control.record.rgo
+    control.oldSkins = {}
+    for k, v in pairs(megaMan.skins) do
+      control.oldSkins[k] = v.path
+    end
+    for k, v in pairs(control.record.skins) do
+      megaMan.setSkin(k, v)
+    end
+    control.oldConsole = console.ser()
+    console.deser(control.record.console)
     lastPressed = nil
     lastTextInput = nil
     lastTouch = nil
@@ -111,6 +120,11 @@ function states.set(n, before, after)
     control.record.seed = love.math.getRandomSeed()
     control.record.reload = megautils.reloadState
     control.record.rgo = megautils.resetGameObjects
+    control.record.skins = {}
+    for k, v in pairs(megaMan.skins) do
+      control.record.skins[k] = v.path
+    end
+    control.record.console = console.ser()
   end
   
   if megautils.reloadState then

@@ -328,7 +328,6 @@ function control.resetRec()
   control.anyPressed = false
   control.recordInput = false
   control.pressAnyway = false
-  control.once = false
 end
 
 function control.update()
@@ -362,16 +361,11 @@ function control.update()
   else
     control.playRecord()
     local result = false
-    if not control.updateDemoFunc then
-      result = control.anyPressedDuringRec
-    else
-      result = control.updateDemoFunc()
-    end
+    result = control.updateDemo()
     if control.recPos >= control.record.last then
       result = true
     end
-    if result and not control.once then
-      control.once = true
+    if result then
       control.demo = false
       control.recPos = 1
       control.record = {}
@@ -380,6 +374,14 @@ function control.update()
       control.anyPressedDuringRec = false
       globals = control.oldGlobals
       convar = control.oldConvars
+      for k, v in pairs(control.oldSkins) do
+        megaMan.setSkin(k, v)
+      end
+      console.deser(control.oldConsole)
+      control.oldGlobals = nil
+      control.oldConvars = nil
+      control.oldSkins = nil
+      control.oldConsole = nil
       megautils.reloadState = true
       megautils.resetGameObjects = true
       if control.returning then
@@ -506,6 +508,13 @@ function control.playRecord()
     end
   end
   control.recPos = control.recPos + 1
+end
+
+function control.updateDemo()
+  if control.updateDemoFunc then
+    return control.updateDemoFunc()
+  end
+  return control.anyPressedDuringRec
 end
 
 function control.drawDemo()
@@ -664,6 +673,8 @@ function control.doRecording()
   end
   
   control.recPos = control.recPos + 1
+  
+  control.updateDemo()
 end
 
 function control.flush()

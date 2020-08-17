@@ -22,6 +22,44 @@ console = {
   aliases = {},
 }
 
+function console.ser()
+  return {
+    scale=console.scale,
+    input=console.input,
+    inputOld=console.inputOld,
+    inputCycle=console.inputCycle,
+    state=console.state,
+    wait=console.wait,
+    waitBuffer=table.clone(console.waitBuffer),
+    x=console.x,
+    y=console.y,
+    w=console.w,
+    h=console.h,
+    ignoreKeys=table.clone(console.ignoreKeys),
+    lines=table.clone(console.lines),
+    inputList=table.clone(console.inputList),
+    aliases=table.clone(console.aliases)
+  }
+end
+
+function console.deser(t)
+  console.scale = t.scale
+  console.input = t.input
+  console.inputOld = t.inputOld
+  console.inputCycle = t.inputCycle
+  console.state = t.state
+  console.wait = t.wait
+  console.waitBuffer = t.waitBuffer
+  console.x = t.x
+  console.y = t.y
+  console.w = t.w
+  console.h = t.h
+  console.ignoreKeys = t.ignoreKeys
+  console.lines = t.lines
+  console.inputList = t.inputList
+  console.aliases = t.aliases
+end
+
 function numberSanitize(v)
   local n = tonumber(v)
   -- if NaN then return 0
