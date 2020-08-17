@@ -513,8 +513,13 @@ end
 function control.updateDemo()
   if control.updateDemoFunc then
     return control.updateDemoFunc()
+  else
+    if control.demo then
+      return control.anyPressedDuringRec
+    else
+      return lastPressed and lastPressed[2] == "backspace"
+    end
   end
-  return control.anyPressedDuringRec
 end
 
 function control.drawDemo()
@@ -522,13 +527,14 @@ function control.drawDemo()
     control.drawDemoFunc()
   else
     if control.demo and math.wrap(control.recPos, 0, 40) < 20 then
-      love.graphics.setFont(mmFont)
       love.graphics.setColor(1, 1, 1, 1)
       love.graphics.print("REPLAY", view.w - 64, view.h - 16)
     elseif control.recordInput then
-      love.graphics.setFont(mmFont)
-      love.graphics.setColor(1, 1, 1, 0.8)
-      love.graphics.print("RECORDING", view.w - 88, view.h - 16)
+      love.graphics.setColor(0, 0, 0, 0.4)
+      love.graphics.rectangle("fill", view.w-124, view.h-24, 126, 16)
+      love.graphics.setColor(1, 1, 1, 0.4)
+      love.graphics.print("RECORDING\n", view.w - 88, view.h - 24)
+      love.graphics.print("PRESS BACKSPACE TO END", view.w - 124, view.h - 16)
     end
   end
 end
@@ -674,7 +680,12 @@ function control.doRecording()
   
   control.recPos = control.recPos + 1
   
-  control.updateDemo()
+  if control.updateDemo() then
+    console.parse("recend")
+    if console.state == 0 then
+      console.open()
+    end
+  end
 end
 
 function control.flush()
