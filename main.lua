@@ -18,9 +18,9 @@ borderRight = love.graphics.newImage("assets/misc/borderRight.jpg")
 keyboardCheck = {}
 gamepadCheck = {}
 
-lastPressed = nil
+lastPressed = {type=nil, input=nil, name=nil}
+lastTouch = {x=nil, y=nil, id=nil, pressure=nil, dx=nil, dy=nil}
 lastTextInput = nil
-lastTouch = nil
 
 -- Initializes the whole game to its base state.
 function initEngine()
@@ -43,6 +43,10 @@ function initEngine()
   globals.playerCount = 1
   globals.bossIntroState = "assets/states/menus/bossintro.state.lua"
   globals.weaponGetState = "assets/states/menus/weaponget.state.lua"
+  globals.rebindState = "assets/states/menus/rebind.state.lua"
+  globals.titleState = "assets/states/menus/title.state.lua"
+  globals.menuState = "assets/states/menus/menu.state.tmx"
+  globals.stageSelectState = "assets/states/menus/stageSelect.state.tmx"
   
   megautils.difficultyChangeFuncs.startingLives = {func=function(d)
       globals.startingLives = (d == "easy") and 3 or 2
@@ -150,7 +154,8 @@ function love.keypressed(k, s, r)
 	end
   
   if not keyboardCheck[k] then
-    lastPressed = {"keyboard", k}
+    lastPressed.type = "keyboard"
+    lastPressed.input = k
   end
   keyboardCheck[k] = 5
   
@@ -172,7 +177,9 @@ function love.gamepadpressed(j, b)
   if useConsole and console.state == 1 then return end
   
   if not gamepadCheck[b] then
-    lastPressed = {"gamepad", b, j:getName()}
+    lastPressed.type = "gamepad"
+    lastPressed.input = b
+    lastPressed.name = j:getName()
   end
   gamepadCheck[b] = 5
   
@@ -200,7 +207,9 @@ function love.gamepadaxis(j, b, v)
           globals.axisTmp.y = {"axis", b .. (v > 0 and "+" or "-"), v, j:getName()}
         end
       else
-        lastPressed = {"axis", b .. (v > 0 and "+" or "-"), j:getName()}
+        lastPressed.type = "axis"
+        lastPressed.input = b .. (v > 0 and "+" or "-")
+        lastPressed.name = j:getName()
       end
     end
     gamepadCheck[b] = 10
@@ -221,7 +230,12 @@ function love.touchpressed(id, x, y, dx, dy, pressure)
   end
   if useConsole and console.state == 1 then return end
   
-  lastTouch = {x, y, id, pressure, dx, dy}
+  lastTouch.x = x
+  lastTouc.y = y
+  lastTouch.id = id
+  lastTouch.pressure = pressure
+  lastTouch.dx = dx
+  lastTouch.dy = dy
   
   if control.recordInput then
     if not control.touchPressedRec then
@@ -301,6 +315,8 @@ function love.update(dt)
     control.flush()
     doAgain = states.switched
   end
+  
+  mmMusic.update()
   
   if love.joystick then
     if globals.axisTmp then
@@ -384,21 +400,33 @@ function love.run()
         if delta < fps then love.timer.sleep(fps - delta) end
         bu = love.timer.getTime()
       end
+      
       megautils.checkQueue()
       states.checkQueue()
-      megautils.checkMusicQueue()
+      mmMusic.checkQueue()
       console.doWait()
       control.anyPressed = false
       control.anyPressedDuringRec = false
-      lastPressed = nil
+      
+      lastPressed.type = nil
+      lastPressed.input = nil
+      lastPressed.name = nil
+      lastTouch.x = nil
+      lastTouch.y = nil
+      lastTouch.id = nil
+      lastTouch.pressure = nil
+      lastTouch.dx = nil
+      lastTouch.dy = nil
       lastTextInput = nil
-      lastTouch = nil
     end
 end
 
 -- Save state to memory
 function ser()
   return {
+      loader = loader.ser(),
+      music = mmMusic.ser(),
+      megautils = megautils.ser(),
       megaMan = megaMan.ser(),
       state = states.ser(),
       lastPressed = table.clone(lastPressed),
@@ -408,10 +436,9 @@ function ser()
       gamepadCheck = table.clone(gamepadCheck),
       globals = table.clone(globals),
       convars = convar.getAllValues(),
-      megautils = megautils.ser(),
       seed = love.math.getRandomSeed(),
       console = console.ser(),
-      weaponHandler = weaponHandler.id,
+      basicEntity = basicEntity.id,
       mapEntity = mapEntity.ser()
     }
 end

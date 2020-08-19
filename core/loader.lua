@@ -1,5 +1,35 @@
 loader = {}
 
+function loader.ser()
+  local result = {resources={}, locked={}}
+  
+  for k, v in pairs(loader.resources) do
+    result.resources[k] = {path=v.path, nick=v.nick}
+    if v.parameters then
+      result.resources[k].parameters = table.clone(v.parameters)
+    end
+  end
+  for k, v in pairs(loader.locked) do
+    result.locked[k] = {path=v.path, nick=v.nick}
+    if v.parameters then
+      result.locked[k].parameters = table.clone(v.parameters)
+    end
+  end
+  
+  return result
+end
+
+function loader.deser(t)
+  loader.resource = {}
+  for k, v in pairs(t.resources) do
+    loader.load(v.path, k, v.type, v.parameters, false)
+  end
+  loader.locked = {}
+  for k, v in pairs(t.locked) do
+    loader.load(v.path, k, v.type, v.parameters, true)
+  end
+end
+
 loader.resources = {}
 loader.locked = {}
 
@@ -24,9 +54,9 @@ function loader.load(path, nick, typ, parameters, lock)
         local img = love.image.newImageData(path)
         loader.tmp = {}
         img:mapPixel(loader.imgMap)
-        loader.locked[nick] = {loader.tmp, path, love.graphics.newImage(img)}
+        loader.locked[nick] = {data=loader.tmp, path=path, img=love.graphics.newImage(img), type=typ}
       else
-        loader.locked[nick] = {love.graphics.newImage(path), path}
+        loader.locked[nick] = {data=love.graphics.newImage(path), path=path, type=typ}
       end
       
       loader.resources[nick] = nil
@@ -40,30 +70,16 @@ function loader.load(path, nick, typ, parameters, lock)
         local img = love.image.newImageData(path)
         loader.tmp = {}
         img:mapPixel(loader.imgMap)
-        loader.resources[nick] = {loader.tmp, path, love.graphics.newImage(img)}
+        loader.resources[nick] = {data=loader.tmp, path=path, img=love.graphics.newImage(img), type=typ}
       else
-        loader.resources[nick] = {love.graphics.newImage(path), path}
+        loader.resources[nick] = {data=love.graphics.newImage(path), path=path, type=typ}
       end
-      
-      return loader.resources[nick]
-    end
-  elseif typ == "music" then
-    if lock then
-      loader.locked[nick] = {love.audio.newSource(path), path}
-      loader.resources[nick] = nil
-      
-      return loader.locked[nick]
-    else
-      if loader.locked[nick] then
-        error("Cannot overwrite a locked resource.")
-      end
-      loader.resources[nick] = {love.audio.newSource(path), path}
       
       return loader.resources[nick]
     end
   elseif typ == "sound" then
     if lock then
-      loader.locked[nick] = {love.audio.newSource(path, "static"), path}
+      loader.locked[nick] = {data=love.audio.newSource(path, "static"), path=path, type=typ}
       loader.resources[nick] = nil
       
       return loader.locked[nick]
@@ -71,13 +87,14 @@ function loader.load(path, nick, typ, parameters, lock)
       if loader.locked[nick] then
         error("Cannot overwrite a locked resource.")
       end
-      loader.resources[nick] = {love.audio.newSource(path, "static"), path}
+      loader.resources[nick] = {data=love.audio.newSource(path, "static"), path=path, type=typ}
       
       return loader.resources[nick]
     end
   elseif typ == "grid" then
     if lock then
-      loader.locked[nick] = {anim8.newGrid(parameters[1], parameters[2], parameters[3], parameters[4], parameters[5]), path}
+      loader.locked[nick] = {data=anim8.newGrid(parameters[1], parameters[2], parameters[3], parameters[4], parameters[5]),
+        parameters=parameters, type=typ}
       loader.resources[nick] = nil
       
       return loader.locked[nick]
@@ -85,7 +102,8 @@ function loader.load(path, nick, typ, parameters, lock)
       if loader.locked[nick] then
         error("Cannot overwrite a locked resource.")
       end
-      loader.resources[nick] = {anim8.newGrid(parameters[1], parameters[2], parameters[3], parameters[4], parameters[5]), path}
+      loader.resources[nick] = {data=anim8.newGrid(parameters[1], parameters[2], parameters[3], parameters[4], parameters[5]),
+        parameters=parameters, type=typ}
       
       return loader.resources[nick]
     end
@@ -107,13 +125,13 @@ function loader.unlock(nick)
 end
 
 function loader.get(nick)
-  return (loader.resources[nick] and loader.resources[nick][1]) or (loader.locked[nick] and loader.locked[nick][1])
+  return (loader.resources[nick] and loader.resources[nick].data) or (loader.locked[nick] and loader.locked[nick].data)
 end
 
 function loader.unload(nick)
   if loader.resources[nick] then
-    if loader.resources[nick][1]:type() == "Source" then
-      loader.resources[nick][1]:stop()
+    if loader.resources[nick].data:type() == "Source" then
+      loader.resources[nick].data:stop()
     end
     loader.resources[nick] = nil
   end

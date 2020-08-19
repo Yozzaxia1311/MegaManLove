@@ -71,7 +71,7 @@ function title:update()
     if control.startPressed[1] then
       megautils.stopMusic()
       self.drawText = false
-      megautils.transitionToState("assets/states/menus/menu.state.tmx")
+      megautils.transitionToState(globals.menuState)
     end
   end
 end

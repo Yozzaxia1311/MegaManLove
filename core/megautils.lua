@@ -351,50 +351,40 @@ function megautils.newAnimation(gnick, a, t, eFunc)
   return anim8.newAnimation(megautils.getResource(gnick)(unpack(a)), t or 1, eFunc)
 end
 
-megautils._curM = nil
-megautils._lockM = false
-megautils._musicQueue = nil
-
-function megautils.checkMusicQueue()
-  if megautils._musicQueue then
-    megautils._playMusic(unpack(megautils._musicQueue))
-    megautils._musicQueue = nil
-  end
-end
-
 function megautils.setMusicLock(w)
-  megautils._lockM = w
+  mmMusic.locked = w
 end
 
 function megautils.getCurrentMusic()
-  return megautils._curM
+  return mmMusic.music
 end
 
 function megautils.playMusic(...)
-  megautils._musicQueue = {...}
-end
-
-function megautils._playMusic(path, loop, lp, lep, vol)
-  if megautils._lockM or (megautils._curM and megautils._curM.id == path and not megautils._curM:stopped()) then return end
-  
-  megautils.stopMusic()
-  
-  megautils._curM = mmMusic(love.audio.newSource(path, "stream"))
-  megautils._curM.id = path
-  megautils._curM.playedVol = vol
-  megautils._curM:play(loop, lp, lep, vol)
+  mmMusic.playq(...)
 end
 
 function megautils.stopMusic()
-  if not megautils._lockM then
-    if megautils._musicQueue then
-      megautils._musicQueue = nil
-    end
-    if megautils._curM then
-      megautils._curM:pause()
-      megautils._curM = nil
-    end
-  end
+  mmMusic.stop()
+end
+
+function megautils.musicIsStopped()
+  return mmMusic.stopped()
+end
+
+function megautils.pauseMusic()
+  mmMusic.pause()
+end
+
+function megautils.unpauseMusic()
+  mmMusic.unpause()
+end
+
+function megautils.setMusicLooping(w)
+  mmMusic.setLooping(w)
+end
+
+function megautils.musicIsLooping()
+  return mmMusic.isLooping()
 end
 
 function megautils.playSound(p, l, v, stack)
@@ -450,13 +440,6 @@ function megautils.stopAllSounds()
   if megautils._curS.sfx then
     megautils._curS.sfx:stop()
   end
-end
-
-function megautils.update(self, dt)
-  if megautils._curM then
-    megautils._curM:update()
-  end
-  self.system:update(dt)
 end
 
 function megautils.unload()
@@ -526,6 +509,10 @@ end
 
 function megautils.state()
   return states.currentState
+end
+
+function megautils.entityFromID(id)
+  return states.currentState.system:entityFromID(id)
 end
 
 function megautils.add(o, ...)

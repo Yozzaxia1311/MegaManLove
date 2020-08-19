@@ -17,8 +17,6 @@ megautils.resetGameObjectsFuncs.barHandler = {func=function()
     for i=1, maxPlayerCount do
       healthHandler.playerTimers[i] = -2
     end
-    
-    weaponHandler.id = 0
   end, autoClean=false}
 
 function healthHandler:new(colorOne, colorTwo, colorOutline, side, r, segments, player)
@@ -222,8 +220,6 @@ binser.register(weaponHandler, "weaponHandler", function(o)
     return result
   end)
 
-weaponHandler.id = 0
-
 function weaponHandler:new(side, r, slots)
   weaponHandler.super.new(self)
   self.slotSize = slots
@@ -245,8 +241,6 @@ function weaponHandler:new(side, r, slots)
   self.riseTimer = 4
   self.side = side or 1
   self.rot = r or "y"
-  self.id = tostring(weaponHandler.id)
-  weaponHandler.id = weaponHandler.id + 1
 end
 
 function weaponHandler:added()
@@ -292,8 +286,8 @@ end
 function weaponHandler:removeWeaponShots()
   if weapon.removeGroups[self.current] then
     for _, i in ipairs(weapon.removeGroups[self.current]) do
-      if megautils.groups()[i .. self.id] then
-        for _, v in ipairs(megautils.groups()[i .. self.id]) do
+      if megautils.groups()[i .. tostring(self.id)] then
+        for _, v in ipairs(megautils.groups()[i .. tostring(self.id)]) do
           megautils.removeq(v)
         end
       end

@@ -80,7 +80,7 @@ function mmWeaponsMenu:new(p)
         h.icoY = 24+(y*16)-16
         h.gridX = x
         h.gridY = y
-        h.id = self.list[y][x]
+        h.wid = self.list[y][x]
         h:setLayer(10)
         if not self.fills[y] then
           self.fills[y] = {}
@@ -120,8 +120,8 @@ function mmWeaponsMenu:removed()
   megautils.unfreeze(nil, "pause")
   for k, v in pairs(self.fills) do
     for i, j in pairs(v) do
-      if j.id ~= 0 then
-        megaMan.weaponHandler[self.player.player]:instantUpdate(j.health, j.id)
+      if j.wid ~= 0 then
+        megaMan.weaponHandler[self.player.player]:instantUpdate(j.health, j.wid)
       else
         self.player.healthHandler:instantUpdate(j.health)
       end
@@ -147,7 +147,7 @@ function mmWeaponsMenu:update(dt)
       local res = true
       for k, v in pairs(self.fills) do
         for i, j in pairs(v) do
-          if j.id ~= 0 and j.health ~= w.segments[j.id] * 4 then
+          if j.wid ~= 0 and j.health ~= w.segments[j.wid] * 4 then
             res = false
           end
         end
@@ -221,7 +221,7 @@ function mmWeaponsMenu:update(dt)
           break
         end
       end
-      self.cur = self.fills[self.y][self.x].id
+      self.cur = self.fills[self.y][self.x].wid
     elseif control.leftPressed[self.player.player] then
       self.x = math.clamp(self.x-1, 1, 2)
       local ly = self.y
@@ -257,7 +257,7 @@ function mmWeaponsMenu:update(dt)
           break
         end
       end
-      self.cur = self.fills[self.y][self.x].id
+      self.cur = self.fills[self.y][self.x].wid
     elseif control.upPressed[self.player.player] then
       while true do
         if (not self.fills[self.y] or not self.fills[self.y][self.x]) and self.y == 1 and self.x == 2 then
@@ -269,7 +269,7 @@ function mmWeaponsMenu:update(dt)
           break
         end
       end
-      self.cur = self.fills[self.y][self.x].id
+      self.cur = self.fills[self.y][self.x].wid
     elseif control.downPressed[self.player.player] then
       while true do
         if self.y >= 6 then
@@ -301,8 +301,8 @@ function mmWeaponsMenu:update(dt)
         local frz = false
         for k, v in pairs(self.fills) do
           for i, j in pairs(v) do
-            if j.id ~= 0 then
-              j:updateThis(w.segments[j.id] * 4)
+            if j.wid ~= 0 then
+              j:updateThis(w.segments[j.wid] * 4)
             end
           end
         end
@@ -406,11 +406,11 @@ function mmWeaponsMenu:draw()
         j:draw()
         love.graphics.setColor(1, 1, 1, 1)
         if self.x == j.gridX and self.y == j.gridY then
-          weapon.drawIcon(w.weapons[j.id], true, view.x+(j.icoX), view.y+(j.icoY))
+          weapon.drawIcon(w.weapons[j.wid], true, view.x+(j.icoX), view.y+(j.icoY))
         else
-          weapon.drawIcon(w.weapons[j.id], false, view.x+(j.icoX), view.y+(j.icoY))
+          weapon.drawIcon(w.weapons[j.wid], false, view.x+(j.icoX), view.y+(j.icoY))
         end
-        love.graphics.print(w.weapons[j.id], view.x+(j.icoX+24), view.y+(j.icoY))
+        love.graphics.print(w.weapons[j.wid], view.x+(j.icoX+24), view.y+(j.icoY))
       end
     end
   else
@@ -418,8 +418,8 @@ function mmWeaponsMenu:draw()
       for i, j in pairs(v) do
         j:draw()
         love.graphics.setColor(1, 1, 1, 1)
-        weapon.drawIcon(w.weapons[j.id], false, view.x+(j.icoX), view.y+(j.icoY))
-        love.graphics.print(w.weapons[j.id], view.x+(j.icoX+24), view.y+(j.icoY))
+        weapon.drawIcon(w.weapons[j.wid], false, view.x+(j.icoX), view.y+(j.icoY))
+        love.graphics.print(w.weapons[j.wid], view.x+(j.icoX+24), view.y+(j.icoY))
       end
     end
     love.graphics.setColor(1, 1, 1, 1)

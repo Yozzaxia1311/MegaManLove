@@ -1,9 +1,18 @@
 quad = class:extend()
 
-binser.register(quad, "quad", function(d)
-    return {d.quad:getViewport()}
-  end, function(d)
-    return quad(unpack(d))
+binser.register(quad, "quad", function(o)
+    return {
+        quad={o.quad:getViewport()},
+        flipX=o.flipX,
+        flipY=o.flipY
+      }
+  end, function(o)
+    local result = quad(unpack(o.quad))
+    
+    result.flipX = o.flipX
+    result.flipY = o.flipY
+    
+    return result
   end)
 
 function quad:new(x, y, w, h)

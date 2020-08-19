@@ -31,63 +31,64 @@ function inputHandler.down(k)
   end
   local result = false
   for i=1, #inputHandler.keys[k] do
-    if inputHandler.keys[k][i][1] == "keyboard" then
-      result = love.keyboard.isDown(inputHandler.keys[k][i][2])
-    elseif inputHandler.keys[k][i][1] == "gamepad" then
+    if inputHandler.keys[k][i].type == "keyboard" then
+      result = love.keyboard.isDown(inputHandler.keys[k][i].input)
+    elseif inputHandler.keys[k][i].type == "gamepad" then
       for _, v in ipairs(inputHandler.gamepads) do
-        if inputHandler.keys[k][i][3] == v:getName() and v:isGamepadDown(inputHandler.keys[k][i][2]) then
+        if inputHandler.keys[k][i].name == v:getName() and v:isGamepadDown(inputHandler.keys[k][i].input) then
           result = true
           break
         end
       end
-    elseif inputHandler.keys[k][i][1] == "axis" then
+    elseif inputHandler.keys[k][i].type == "axis" then
       for _, v in ipairs(inputHandler.gamepads) do
-        if inputHandler.keys[k][i][3] == v:getName() then
-          if inputHandler.keys[k][i][2] == "leftx+" and v:getGamepadAxis("leftx") > deadZone then
+        if inputHandler.keys[k][i].name == v:getName() then
+          local input = inputHandler.keys[k][i].input
+          if input == "leftx+" and v:getGamepadAxis("leftx") > deadZone then
             result = v:getGamepadAxis("leftx")
             break
-          elseif inputHandler.keys[k][i][2] == "leftx-" and v:getGamepadAxis("leftx") < -deadZone then
+          elseif input == "leftx-" and v:getGamepadAxis("leftx") < -deadZone then
             result = v:getGamepadAxis("leftx")
             break
           end
-          if inputHandler.keys[k][i][2] == "lefty+" and v:getGamepadAxis("lefty") > deadZone then
+          if input == "lefty+" and v:getGamepadAxis("lefty") > deadZone then
             result = v:getGamepadAxis("lefty")
             break
-          elseif inputHandler.keys[k][i][2] == "lefty-" and v:getGamepadAxis("lefty") < -deadZone then
+          elseif input == "lefty-" and v:getGamepadAxis("lefty") < -deadZone then
             result = v:getGamepadAxis("lefty")
             break
           end
-          if inputHandler.keys[k][i][2] == "rightx+" and v:getGamepadAxis("rightx") > deadZone then
+          if input == "rightx+" and v:getGamepadAxis("rightx") > deadZone then
             result = v:getGamepadAxis("rightx")
             break
-          elseif inputHandler.keys[k][i][2] == "rightx-" and v:getGamepadAxis("rightx") < -deadZone then
+          elseif input == "rightx-" and v:getGamepadAxis("rightx") < -deadZone then
             result = v:getGamepadAxis("rightx")
             break
           end
-          if inputHandler.keys[k][i][2] == "righty+" and v:getGamepadAxis("righty") > deadZone then
+          if input == "righty+" and v:getGamepadAxis("righty") > deadZone then
             result = v:getGamepadAxis("righty")
             break
-          elseif inputHandler.keys[k][i][2] == "righty-" and v:getGamepadAxis("righty") < -deadZone then
+          elseif input == "righty-" and v:getGamepadAxis("righty") < -deadZone then
             result = v:getGamepadAxis("righty")
             break
           end
-          if inputHandler.keys[k][i][2] == "triggerleft+" and v:getGamepadAxis("triggerleft") > deadZone then
+          if input == "triggerleft+" and v:getGamepadAxis("triggerleft") > deadZone then
             result = v:getGamepadAxis("triggerleft")
             break
-          elseif inputHandler.keys[k][i][2] == "triggerleft-" and v:getGamepadAxis("triggerleft") < -deadZone then
+          elseif input == "triggerleft-" and v:getGamepadAxis("triggerleft") < -deadZone then
             result = v:getGamepadAxis("triggerleft")
             break
           end
-          if inputHandler.keys[k][i][2] == "triggerright+" and v:getGamepadAxis("triggerright") > deadZone then
+          if input == "triggerright+" and v:getGamepadAxis("triggerright") > deadZone then
             result = v:getGamepadAxis("triggerright")
             break
-          elseif inputHandler.keys[k][i][2] == "triggerright-" and v:getGamepadAxis("triggerright") < -deadZone then
+          elseif input == "triggerright-" and v:getGamepadAxis("triggerright") < -deadZone then
             result = v:getGamepadAxis("triggerright")
             break
           end
         end
       end
-    elseif inputHandler.keys[k][i][1] == "custom" then
+    elseif inputHandler.keys[k][i].type == "custom" then
       if inputHandler.custom[k] then
         result = inputHandler.custom[k]()
       end

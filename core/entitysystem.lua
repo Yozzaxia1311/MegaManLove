@@ -56,6 +56,15 @@ function entitySystem:sortLayers()
   end
 end
 
+function entitySystem:entityFromID(id)
+  for i=1, #self.all do
+    local v = self.all[i]
+    if v.id == id then
+      return v
+    end
+  end
+end
+
 function entitySystem:add(c, ...)
   local e = self:getRecycled(c, ...)
   if not e.static then
@@ -384,7 +393,7 @@ end
 
 velocity = class:extend()
 
-binser.register(velocity, "velocity" function(o)
+binser.register(velocity, "velocity", function(o)
     return {velx = self.velx, vely = self.vely}
   end, function(o)
     local result = velocity()
@@ -452,15 +461,17 @@ function basicEntity.transfer(from, to)
   to.changeHealth = from.changeHealth
   to.recycle = from.recycle
   to.recycling = from.recycling
-  if from.collisionShape then
-    to.collisionShape = {
-        w = from.collisionShape.w,
-        h = from.collisionShape.h,
-        type = from.collisionShape.type,
-        data = table.clone(from.collisionShape.data)
-      }
+  to.id = from.id
+  if from.collisionShape.type == 0 then
+    to:setRectangleCollision(from.collisionShape.w, from.collisionShape.h)
+  elseif from.collisionShape.type == 1 then
+    to:setImageCollision(from.collisionShape.resource)
+  elseif from.collisionShape.type == 2 then
+    to:setCircleCollision(from.collisionShape.r)
   end
 end
+
+basicEntity.id = 0
 
 function basicEntity:new()
   if not self.recycling then
@@ -478,6 +489,8 @@ function basicEntity:new()
   self.changeHealth = 0
   self.canUpdate = {global=true}
   self.canDraw = {global=true}
+  self.id = basicEntity.id
+  basicEntity.id = basicEntity.id + 1
 end
 
 function basicEntity:determineIFrames(o)
@@ -542,28 +555,31 @@ function basicEntity:setRectangleCollision(w, h)
   self.collisionShape.h = h
 end
 
+function basicEntity:setImageCollision(resource)
+  local res = megautils.getResourceTable(resource)
+  
+  self.collisionShape.resource = resource
+  
+  if res.img then
+    self.collisionShape.type = 1
+    self.collisionShape.data = res.data
+    self.collisionShape.image = res.img
+    self.collisionShape.w = #self.collisionShape.data[1]
+    self.collisionShape.h = #self.collisionShape.data
+  else
+    self.collisionShape.type = 1
+    self.collisionShape.data = res.data
+    self.collisionShape.w = #self.collisionShape.data[1]
+    self.collisionShape.h = #self.collisionShape.data
+  end
+end
+
 function basicEntity:setCircleCollision(r)
   self.collisionShape = {}
   self.collisionShape.type = 2
   self.collisionShape.r = r
   self.collisionShape.w = r
   self.collisionShape.h = r
-end
-
-function basicEntity:setImageCollision(data)
-  self.collisionShape = {}
-  if data and type(data[2]) == "string" then
-    self.collisionShape.type = 1
-    self.collisionShape.data = data[1]
-    self.collisionShape.image = data[3]
-    self.collisionShape.w = #self.collisionShape.data[1]
-    self.collisionShape.h = #self.collisionShape.data
-  else
-    self.collisionShape.type = 1
-    self.collisionShape.data = data
-    self.collisionShape.w = #self.collisionShape.data[1]
-    self.collisionShape.h = #self.collisionShape.data
-  end
 end
 
 function basicEntity:collision(e, x, y, notme)
@@ -661,6 +677,7 @@ megautils.cleanFuncs.autoCleaner = {func=function()
         _G[k] = nil
       end
     end
+    basicEntity.id = 0
   end, autoClean=false}
 
 entity = basicEntity:extend()
@@ -1078,9 +1095,13 @@ function advancedEntity.transfer(from, to)
   to.doAutoCollisionBeforeUpdate = from.doAutoCollisionBeforeUpdate
   to.autoCrush = from.autoCrush
   to.dead = from.dead
-  to.closest = from.closest
+  if from.closest then
+    to.closest = megautils.entityFromID(from.closest.id)
+  end
   to._didCol = from._didCol
-  to.healthHandler = from.healthHandler
+  if from.healthHandler then
+    to.healthHandler = megautils.entityFromID(from.healthHandler.id)
+  end
   to.autoFace = from.autoFace
   to.side = from.side
 end
@@ -1335,37 +1356,75 @@ bossEntity = advancedEntity:extend()
 
 bossEntity.autoClean = false
 
+function bossEntity.transfer(from, to)
+  bossEntity.super.transfer(from, to)
+  
+  to.state = from.state
+  to._subState = from._subState
+  to.skipBoss = from.skipBoss
+  to.skipBossState = from.skipBossState
+  to.doIntro = from.doIntro
+  to.strikePose = from.strikePose
+  to.continueAfterDeath = from.continueAfterDeath
+  to.afterDeathState = from.afterDeathState
+  to.weaponGetMenuState = from.weaponGetMenuState
+  to.doBossIntro = from.doBossIntro
+  to.bossIntroText = from.bossIntroText
+  to.weaponGetText = from.weaponGetText
+  to.stageState = from.stageState
+  to.bossIntroWaitTime = from.bossIntroWaitTime
+  to.weaponGetBehaviour = from.weaponGetBehaviour
+  to.skipStart = from.skipStart
+  to.musicPath = from.musicPath
+  to.musicLoop = from.musicLoop
+  to.musicLoopPoint = from.musicLoopPoint
+  to.musicLoopEndPoint = from.musicLoopEndPoint
+  to.musicVolume = from.musicVolume
+  to.musicBIPath = from.musicBIPath
+  to.musicBIVolume = from.musicBIVolume
+  to.ds = from.ds
+  to.screen = from.screen
+  if from.screen then
+    to.screen = megautils.entityFromID(from.screen.id)
+  end
+  to.dOff = from.dOff
+  to.oldY = from.oldY
+  to._timer = from._timer
+  to._textPos = from._textPos
+  to._textTimer = from._textTimer
+  to._halfWidth = from._halfWidth
+end
+
 function bossEntity:new()
   bossEntity.super.new(self)
   self.soundOnDeath = "assets/sfx/dieExplode.ogg"
   self.dropItem = false
-  self.state = 0
-  self._subState = 0
+  self.explosionType = advancedEntity.DEATHBLAST
   self.canDraw.global = false
   self.canBeInvincible.intro = true
+  self.defeatSlot = nil
+  self.flipWithPlayer = false
+  self.removeWhenOutside = false
+  self.autoCollision = false
+  self.autoGravity = false
+  self.removeHealthBarWithSelf = false
+  self.state = 0
+  self._subState = 0
   self.skipBoss = false
-  self.skipBossState = "assets/states/menus/menu.state.tmx"
+  self.skipBossState = globals.menuState
   self.doIntro = true
   self.strikePose = true
   self.continueAfterDeath = false
-  self.afterDeathState = weaponGetState
-  self.weaponGetMenuState = "assets/states/menus/menu.state.tmx"
-  self.defeatSlot = nil
+  self.afterDeathState = globals.weaponGetState
+  self.weaponGetMenuState = globals.menuState
   self.doBossIntro = megautils.getCurrentState() == globals.bossIntroState
-  self.autoCollision = false
-  self.autoGravity = false
   self.bossIntroText = nil
   self.weaponGetText = "WEAPON GET... (NAME HERE)"
   self.stageState = nil
   self.bossIntroWaitTime = 400
-  self.removeHealthBarWithSelf = false
-  self.weaponGetBehaviour = function(m)
+  self.weaponGetBehaviour = function(s)
       return true
     end
-  self.explosionType = advancedEntity.DEATHBLAST
-  self.soundOnDeath = "assets/sfx/dieExplode.ogg"
-  self.flipWithPlayer = false
-  self.removeWhenOutside = false
   self.skipStart = false
   self:setMusic("assets/sfx/music/boss.wav", true, 162898, 444759)
   self:setBossIntroMusic("assets/sfx/music/stageStart.ogg")
@@ -1528,9 +1587,7 @@ function bossEntity:bossIntro()
     self._textPos = 0
     self._textTimer = 0
     self._subState = 1
-    self._textObj = love.graphics.newText(mmFont, self.bossIntroText)
-    self._halfWidth = self._textObj:getWidth()/2
-    self._textObj:set("")
+    self._halfWidth = love.graphics.newText(mmFont, self.bossIntroText):getWidth()/2
     if self.musicBIPath then
       megautils.playMusic(self.musicBIPath, false, nil, nil, self.musicBIVolume)
     end
@@ -1581,9 +1638,7 @@ function bossEntity:update()
 end
 
 function bossEntity:draw()
-  if self.doBossIntro and self.bossIntroText and self._textObj then
-    love.graphics.setFont(mmFont)
-    self._textObj:set(self.bossIntroText:sub(0, self._textPos or 0))
-    love.graphics.draw(self._textObj, (view.w/2)-self._halfWidth, 142)
+  if self.doBossIntro and self.bossIntroText then
+    love.graphics.print(self.bossIntroText:sub(0, self._textPos or 0), (view.w/2)-self._halfWidth, 142)
   end
 end

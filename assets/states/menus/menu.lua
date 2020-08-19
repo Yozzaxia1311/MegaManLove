@@ -50,7 +50,7 @@ function menuSelect:update()
         self.picked = true
         self.section = -1
         megautils.stopMusic()
-        megautils.transitionToState("assets/states/menus/stageSelect.state.tmx")
+        megautils.transitionToState(globals.stageSelectState)
       elseif self.pick == 1 then
         local data = save.load("save.sav") or {}
         data.defeats = globals.defeats
@@ -91,7 +91,7 @@ function menuSelect:update()
         self.picked = true
         self.section = -1
         globals.lastStateName = megautils.getCurrentState()
-        megautils.transitionToState("assets/states/menus/rebind.state.lua")
+        megautils.transitionToState(globals.rebindState)
       elseif self.pick == 6 then
         self.section = 2
         self.timer = 0
@@ -100,7 +100,7 @@ function menuSelect:update()
         self.picked = true
         self.section = -1
         megautils.stopMusic()
-        megautils.transitionToState("assets/states/menus/title.state.lua")
+        megautils.transitionToState(globals.titleState)
       end
     end
     self.transform.y = self.offY + self.pick*16

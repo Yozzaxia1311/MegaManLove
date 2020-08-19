@@ -39,7 +39,7 @@ function baseState:init() end
 state = baseState:extend()
 
 function state:update(dt)
-  megautils.update(self, dt)
+  self.system:update(dt)
 end
 function state:draw()
   self.system:draw()
@@ -112,12 +112,13 @@ function states.set(n, before, after)
   end
   
   view.x, view.y = 0, 0
-  states.current = nick
   states.switched = true
   
   if not states.currentChunk or states.current ~= sp then
     states.currentChunk = love.filesystem.load(sp)
   end
+  
+  states.current = nick
   
   if states.recordOnSwitch then
     lastPressed = nil

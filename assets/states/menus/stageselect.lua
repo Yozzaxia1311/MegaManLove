@@ -169,7 +169,7 @@ function stageSelect:update()
     end
   elseif control.selectPressed[1] and not self.stop then
     self.stop = true
-    megautils.transitionToState("assets/states/menus/menu.state.tmx")
+    megautils.transitionToState(globals.menuState)
     megautils.stopMusic()
   else
     self.timer = math.wrap(self.timer+1, 0, 14)

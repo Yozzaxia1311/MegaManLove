@@ -1,141 +1,133 @@
-mmMusic = class:extend()
+mmMusic = {}
 
-function mmMusic:new(path)
-  self.musicLoop = path
-  self.paused = true
+function mmMusic.ser()
+  return {
+      paused=mmMusic.paused,
+      curID=mmMusic.curID,
+      playing=not mmMusic.stopped(),
+      lp=mmMusic.loopPoint,
+      lep=mmMusic.loopEndPoint,
+      loop=mmMusic.isLooping(),
+      volume=mmMusic.getVolume(),
+      seek=mmMusic.music and mmMusic.music:tell("samples"),
+      queue=table.clone(mmMusic.queue),
+      locked=mmMusic.locked
+    }
 end
 
-function mmMusic:pause()
-  self.musicLoop:pause()
-  self.paused = true
+function mmMusic.deser(t)
+  mmMusic.curID = t.curID
+  if t.curID and t.playing then
+    mmMusic.play(t.curID, t.loop, t.lp, t.lep, t.volume)
+    if t.seek then
+      mmMusic.music:seek(t.seek, "samples")
+    end
+  end
+  mmMusic.paused = t.paused
+  mmMusic.locked = t.locked
+  mmMusic._queue = t.queue
 end
 
-function mmMusic:setVolume(v)
-  if v then
-    self.musicLoop:setVolume(math.clamp(v, 0, 1))
+mmMusic.paused = false
+mmMusic.music = nil
+mmMusic.curID = nil
+mmMusic.locked = false
+mmMusic.loopPoint = nil
+mmMusic.loopEndPoint = nil
+mmMusic._queue = nil
+
+function mmMusic.setVolume(v)
+  if mmMusic.music and not mmMusic.locked and v then
+    mmMusic.music:setVolume(math.clamp(v, 0, 1))
   end
 end
 
-function mmMusic:getVolume()
-  return self.musicLoop:getVolume()
+function mmMusic.getVolume()
+  return mmMusic.music and mmMusic.music:getVolume() or 1
 end
 
-function mmMusic:stopped()
-  return not self.musicLoop:isPlaying()
+function mmMusic.stop()
+  if not mmMusic.locked and mmMusic.music then
+    mmMusic.paused = false
+    mmMusic.curID = nil
+    mmMusic.loopPoint = nil
+    mmMusic.loopEndPoint = nil
+    mmMusic._queue = nil
+    mmMusic.music:stop()
+    mmMusic.music = nil
+  end
 end
 
-function mmMusic:unpause()
-  self.musicLoop:resume()
-  self.paused = false
+function mmMusic.stopped()
+  return mmMusic.music and not mmMusic.music:isPlaying()
 end
 
-function mmMusic:play(loop, loopPoint, loopEndPoint, vol)
-  self.loopPoint = loopPoint
-  self.loopEndPoint = loopEndPoint == nil and self.musicLoop:getDuration("samples") or
-    math.clamp(loopEndPoint, self.loopPoint, self.musicLoop:getDuration("samples"))
-  if loopPoint or loopEndPoint then
-    if self.loopEndPoint == self.musicLoop:getDuration("samples") then
+function mmMusic.pause()
+  if mmMusic.music and not mmMusic.locked then
+    mmMusic.music:pause()
+    mmMusic.paused = true
+  end
+end
+
+
+function mmMusic.unpause()
+  if mmMusic.music and not mmMusic.locked then
+    mmMusic.music:resume()
+    mmMusic.paused = false
+  end
+end
+
+function mmMusic.setLooping(w)
+  if mmMusic.music and not mmMusic.locked then
+    mmMusic.music:setLooping(w == true)
+  end
+end
+
+function mmMusic.isLooping()
+  return mmMusic.music and mmMusic.music:isLooping()
+end
+
+function mmMusic.checkQueue()
+  if mmMusic._queue then
+    mmMusic.play(unpack(mmMusic._queue))
+    mmMusic._queue = nil
+  end
+end
+
+function mmMusic.playq(...)
+  mmMusic._queue = {...}
+end
+
+function mmMusic.play(path, loop, loopPoint, loopEndPoint, vol)
+  if mmMusic.locked or (mmMusic.music and mmMusic.curID == path and not mmMusic.stopped()) then return end
+  
+  mmMusic.stop()
+  
+  mmMusic.music = love.audio.newSource(path, "stream")
+  mmMusic.curID = path
+  mmMusic.loopPoint = loopPoint
+  mmMusic.loopEndPoint = loopEndPoint
+  
+  if mmMusic.loopPoint or mmMusic.loopEndPoint then
+    if mmMusic.loopEndPoint >= mmMusic.music:getDuration("samples") then
       print("It's recommended to add a portion of music from the loop point to the loop end point; this makes the looping seamless.")
     end
-    self.musicLoop:setLooping(false)
+    mmMusic.setLooping(false)
   else
-    self.musicLoop:setLooping(loop == nil or loop)
+    mmMusic.setLooping(loop == nil or loop)
   end
-  self:setVolume(1)
-  self:setVolume(vol)
-  self.musicLoop:play()
-  self.paused = false
+  
+  mmMusic.music:play()
+  mmMusic.paused = false
 end
 
-function mmMusic:update()
-  if self.loopPoint and self.loopEndPoint then
-    if not self.musicLoop:isPlaying() and not self.paused and self.musicLoop:tell("samples") == 0 then
-      self.musicLoop:seek(self.musicLoop:getDuration("samples") - (self.loopEndPoint - self.loopPoint), "samples")
-      self.musicLoop:play()
-    elseif self.musicLoop:isPlaying() and self.musicLoop:tell("samples") > self.loopEndPoint then
-      self.musicLoop:seek(self.musicLoop:tell("samples") - (self.loopEndPoint - self.loopPoint), "samples")
+function mmMusic.update()
+  if mmMusic.music and mmMusic.loopPoint and mmMusic.loopEndPoint then
+    if not mmMusic.music:isPlaying() and not mmMusic.paused and mmMusic.music:tell("samples") == 0 then
+      mmMusic.music:seek(mmMusic.music:getDuration("samples") - (mmMusic.loopEndPoint - mmMusic.loopPoint), "samples")
+      mmMusic.music:play()
+    elseif mmMusic.music:isPlaying() and mmMusic.music:tell("samples") > mmMusic.loopEndPoint then
+      mmMusic.music:seek(mmMusic.music:tell("samples") - (mmMusic.loopEndPoint - mmMusic.loopPoint), "samples")
     end
-  end
-end
-
-mmMusicOld = class:extend()
-
-function mmMusicOld:new(path, pathIntro)
-  self.musicLoop = path
-  self.musicIntro = pathIntro
-  self.playingLoop = false
-  self.current = self.musicIntro or self.musicLoop
-  self.paused = false
-end
-
-function mmMusicOld:pause()
-  if self.musicLoop then
-    self.musicLoop:pause()
-  end
-  if self.musicIntro then
-    self.musicIntro:pause()
-  end
-  self.paused = true
-end
-
-function mmMusicOld:setVolume(v)
-  if self.musicLoop then
-    self.musicLoop:setVolume(v)
-  end
-  if self.musicIntro then
-    self.musicIntro:setVolume(v)
-  end
-end
-
-function mmMusicOld:getVolume()
-  return self.current:getVolume()
-end
-
-function mmMusicOld:stopped()
-  return self.current:isStopped()
-end
-
-function mmMusicOld:unpause()
-  if self.musicLoop and not self.musicIntro then
-    self.musicLoop:resume()
-  elseif self.musicLoop and self.musicIntro then
-    if not self.musicIntro:isPlaying() then
-      self.musicIntro:resume()
-    elseif not self.musicLoop:isPlaying() then
-      self.musicLoop:resume()
-    end
-  end
-  self.paused = false
-end
-
-function mmMusicOld:play(l, v)
-  if self.musicLoop and v then
-    self.musicLoop:setVolume(v)
-  end
-  if self.musicIntro and v then
-    self.musicIntro:setVolume(v)
-  end
-  if not self.musicIntro then
-    self.musicLoop:play()
-    self.musicLoop:setLooping(l == nil and true or l)
-    self.current = self.musicLoop
-  else
-    self.musicIntro:setLooping(false)
-    if self.musicLoop then
-      self.musicLoop:setLooping(true)
-    end
-    self.musicIntro:play()
-    self.playingLoop = false
-    self.current = self.musicIntro
-  end
-  self.paused = false
-end
-
-function mmMusicOld:update()
-  if not self.paused and not self.playingLoop and self.musicIntro and self.musicLoop and
-      not self.musicLoop:isPlaying() and not self.musicIntro:isPlaying() then
-    self.musicLoop:play()
-    self.current = self.musicLoop
-    self.playingLoop = true
   end
 end

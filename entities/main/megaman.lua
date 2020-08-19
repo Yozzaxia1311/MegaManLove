@@ -9,22 +9,27 @@ function megaMan.ser()
   end
   return {
     skins = skins,
-    we = binser.serialize(megaMan.weaponHandlers)
-    players = binser.serialize(megaMan.allPlayers)
+    we = megaMan.weaponHandler,
+    players = megaMan.allPlayers,
     main = megaMan.mainPlayer ~= nil
   }
 end
 
 function megaMan.deser(t)
-  for k, v in pairs(t)
+  for k, v in pairs(t) do
     megaMan.setSkin(k, v)
   end
-  megaMan.weaponHandler = binser.deserialize(t.we)
-  megaMan.allPlayers = binser.deserialize(t.players)
+  megaMan.weaponHandler = {}
+  for k, v in pairs(t.we) do
+    megaMan.weaponHandler[k] = megautils.entityFromID(v.id)
+  end
+  megaMan.allPlayers = {}
+  for k, v in pairs(t.players) do
+    megaMan.allPlayers[k] = megautils.entityFromID(v.id)
+  end
+  megaMan.mainPlayer = nil
   if t.main then
     megaMan.mainPlayer = megaMan.allPlayers[1]
-  else
-    megaMan.mainPlayer = nil
   end
 end
 
@@ -674,7 +679,7 @@ end
 
 function megaMan:numberOfShots(n)
   local w = megaMan.weaponHandler[self.player]
-  return megautils.groups()[n .. w.id] and #megautils.groups()[n .. w.id] or 0
+  return megautils.groups()[n .. tostring(w.id)] and #megautils.groups()[n .. tostring(w.id)] or 0
 end
 
 function megaMan:checkWeaponEnergy(n)
@@ -801,8 +806,7 @@ function megaMan:attemptWeaponUsage()
         self:useShootAnimation()
         shots[#shots+1] = megautils.add(rushCoil, self.transform.x+self:shootOffX(16),
           self.transform.y+self:shootOffY(-16), self, self.side, "tango")
-      elseif w.current == "TANGO JET" and self:checkWeaponEnergy("TANGO JET") and
-        (not megautils.groups()["rushJet" .. w.id] or #megautils.groups()["rushJet" .. w.id] < 1) and self:numberOfShots("rushJet") then
+      elseif w.current == "TANGO JET" and self:checkWeaponEnergy("TANGO JET") and self:numberOfShots("rushJet") < 1 then
         self.shootFrames = 14
         self:useShootAnimation()
         shots[#shots+1] = megautils.add(rushJet, self.transform.x+self:shootOffX(16),
@@ -1912,9 +1916,7 @@ function megaMan:update()
       self._textPos = 0
       self._textTimer = 0
       self._timer = 0
-      self._textObj = love.graphics.newText(mmFont, self._text)
-      self._halfWidth = self._textObj:getWidth()/2
-      self._textObj:set("")
+      self._halfWidth = love.graphics.newText(mmFont, self._text):getWidth()/2
       self._w1 = megaMan.weaponHandler[self.player].current
       self._w2 = self._wgv and self._wgv.weaponName
       self.canDraw.global = true
@@ -2064,10 +2066,8 @@ function megaMan:draw()
     weapon.drawIcon(w.current, true, roundx+math.round(self.collisionShape.w/2)-8, roundy-20)
   end
   
-  if self.doWeaponGet and self._text and self._textObj then
-    love.graphics.setFont(mmFont)
-    self._textObj:set(self._text:sub(0, self._textPos or 0))
-    love.graphics.draw(self._textObj, (view.w/2)-self._halfWidth, 142)
+  if self.doWeaponGet and self._text then
+    love.graphics.print(self._text:sub(0, self._textPos or 0), (view.w/2)-self._halfWidth, 142)
   end
   --self:drawCollision()
 end

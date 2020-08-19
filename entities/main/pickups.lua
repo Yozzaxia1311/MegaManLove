@@ -21,15 +21,15 @@ end
 function pickupEntity:new(despawn, gd, fwp, id, path)
   pickupEntity.super.new(self)
   self:setRectangleCollision(16, 16)
-  self.despawn = despawn == nil and self.id == nil or despawn
   self.timer = 0
   self.blockCollision.global = true
   self.fwp = fwp
   self.gravDir = gd or 1
-  self.id = id
-  if self.id == -1 then
-    self.id = nil
+  self.mapID = id
+  if self.mapID == -1 then
+    self.mapID = nil
   end
+  self.despawn = despawn == nil and self.mapID == nil or despawn
   self.path = path or ""
   self.removeWhenOutside = self.despawn
   self.autoCollision = true
@@ -73,9 +73,9 @@ function pickupEntity:afterUpdate()
     local p = megaMan.allPlayers[i]
     if self:collision(p) then
       self:taken(p)
-      if not self.despawn and self.id and
-        not table.contains(pickupEntity.banIDs[self.__index], self.path .. "|" .. self.id) then
-        pickupEntity.banIDs[self.__index][#pickupEntity.banIDs[self.__index]+1] = self.path .. "|" .. self.id
+      if not self.despawn and self.mapID and
+        not table.contains(pickupEntity.banIDs[self.__index], self.path .. "|" .. tostring(self.mapID)) then
+        pickupEntity.banIDs[self.__index][#pickupEntity.banIDs[self.__index]+1] = self.path .. "|" .. tostring(self.mapID)
       end
       megautils.removeq(self)
       return

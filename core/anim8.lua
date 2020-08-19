@@ -55,7 +55,7 @@ local function getGridKey(...)
 end
 
 local function getOrCreateFrame(self, x, y)
-  local key = self._key
+  local key = self.key
   _frames[key]       = _frames[key]       or {}
   _frames[key][x]    = _frames[key][x]    or {}
   _frames[key][x][y] = _frames[key][x][y] or createFrame(self, x, y)
@@ -94,6 +94,19 @@ local Gridmt = {
   __call  = Grid.getFrames
 }
 
+binser.register(Gridmt, "grid", function(o)
+    return {
+        frameWidth=o.frameWidth,
+        frameHeight=o.frameHeight,
+        left=o.left,
+        right=o.right,
+        top=o.top,
+        border=o.border
+      }
+  end, function(o)
+    return newGrid(o.frameWidth, o.frameHeight, o.left, o.top, o.border)
+  end)
+
 local function newGrid(frameWidth, frameHeight, left, top, border)
   assertPositiveInteger(frameWidth,  "frameWidth")
   assertPositiveInteger(frameHeight, "frameHeight")
@@ -105,12 +118,13 @@ local function newGrid(frameWidth, frameHeight, left, top, border)
   local key  = getGridKey(frameWidth, frameHeight, left, top, border)
 
   local grid = setmetatable(
-    { frameWidth  = frameWidth,
+    {
+      frameWidth  = frameWidth,
       frameHeight = frameHeight,
       left        = left,
       top         = top,
       border      = border,
-      _key        = key
+      key        = key
     },
     Gridmt
   )
@@ -158,6 +172,31 @@ end
 
 local Animationmt = { __index = Animation }
 local nop = function() end
+
+binser.register(Animationmt, "animation", function(o)
+    return {
+        frames=frames,
+        durations=durations,
+        onLoop=o.onLoop,
+        timer=o.timer,
+        position=o.position,
+        status=o.status,
+        _looped=o._looped,
+        flipX=o.flipX,
+        flipY=o.flipY
+      }
+  end, function(o)
+    local result = newAnimation(o.frames, o.durations, o.onLoop)
+    
+    result.timer = o.timer
+    result.position = o.position
+    result.status = o.status
+    result._looped = o._looped
+    result.flipX = o.flipX
+    result.flipY = o.flipY
+    
+    return result
+  end)
 
 local function newAnimation(frames, durations, onLoop)
   local td = type(durations);

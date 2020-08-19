@@ -1,5 +1,23 @@
 animationSet = class:extend()
 
+binser.register(animationSet, "animationSet", function(o)
+    return {
+        flipX=o.flipX,
+        flipY=o.flipY,
+        anims=o.anims,
+        current=o.current
+      }
+  end, function(o)
+    local result = animationSet()
+    
+    result.flipX = o.flipX
+    result.flipY = o.flipY
+    result.anims = o.anims
+    result.current = o.current
+    
+    return result
+  end)
+
 function animationSet:new()
   self.flipX = false
   self.flipY = false

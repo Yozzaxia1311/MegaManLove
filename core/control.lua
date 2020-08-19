@@ -4,47 +4,47 @@ function control.defaultBindsTable()
   inputHandler.refreshGamepads()
   local joysticks = inputHandler.gamepads
   
-  local defaultInputBinds = {up={{"keyboard", "up"}, {"custom", "up"}},
-    down={{"keyboard", "down"}, {"custom", "down"}},
-    left={{"keyboard", "left"}, {"custom", "left"}},
-    right={{"keyboard", "right"}, {"custom", "right"}},
-    jump={{"keyboard", "z"}, {"custom", "jump"}},
-    shoot={{"keyboard", "x"}, {"custom", "shoot"}},
-    start={{"keyboard", "return"}, {"custom", "start"}},
-    select={{"keyboard", "rshift"}, {"custom", "select"}},
-    prev={{"keyboard", "a"}, {"custom", "prev"}},
-    next={{"keyboard", "s"}, {"custom", "next"}},
-    dash={{"keyboard", "c"}, {"custom", "dash"}}}
+  local defaultInputBinds = {up={{type="keyboard", input="up"}, {type="custom", input="up"}},
+    down={{type="keyboard", input="down"}, {type="custom", input="down"}},
+    left={{type="keyboard", input="left"}, {type="custom", input="left"}},
+    right={{type="keyboard", input="right"}, {type="custom", input="right"}},
+    jump={{type="keyboard", input="z"}, {type="custom", input="jump"}},
+    shoot={{type="keyboard", input="x"}, {type="custom", input="shoot"}},
+    start={{type="keyboard", input="return"}, {type="custom", input="start"}},
+    select={{type="keyboard", input="rshift"}, {type="custom", input="select"}},
+    prev={{type="keyboard", input="a"}, {type="custom", input="prev"}},
+    next={{type="keyboard", input="s"}, {type="custom", input="next"}},
+    dash={{type="keyboard", input="c"}, {type="custom", input="dash"}}}
   
   local defaultInputBindsExtra = {}
   
   if #joysticks > 0 then
-    local joyBinds = {up={"axis", "lefty-", joysticks[1]:getName()},
-    down={"axis", "lefty+", joysticks[1]:getName()},
-    left={"axis", "leftx-", joysticks[1]:getName()},
-    right={"axis", "leftx+", joysticks[1]:getName()},
-    jump={"gamepad", "a", joysticks[1]:getName()},
-    shoot={"gamepad", "x", joysticks[1]:getName()},
-    start={"gamepad", "start", joysticks[1]:getName()},
-    select={"gamepad", "back", joysticks[1]:getName()},
-    prev={"gamepad", "leftshoulder", joysticks[1]:getName()},
-    next={"gamepad", "rightshoulder", joysticks[1]:getName()},
-    dash={"gamepad", "b", joysticks[1]:getName()}}
+    local joyBinds = {up={type="axis", input="lefty-", name=joysticks[1]:getName()},
+    down={type="axis", input="lefty+", name=joysticks[1]:getName()},
+    left={type="axis", input="leftx-", name=joysticks[1]:getName()},
+    right={type="axis", input="leftx+", name=joysticks[1]:getName()},
+    jump={type="gamepad", input="a", name=joysticks[1]:getName()},
+    shoot={type="gamepad", input="x", name=joysticks[1]:getName()},
+    start={type="gamepad", input="start", name=joysticks[1]:getName()},
+    select={type="gamepad", input="back", name=joysticks[1]:getName()},
+    prev={type="gamepad", input="leftshoulder", name=joysticks[1]:getName()},
+    next={type="gamepad", input="rightshoulder", name=joysticks[1]:getName()},
+    dash={type="gamepad", input="b", name=joysticks[1]:getName()}}
     for k, v in pairs(defaultInputBinds) do
       defaultInputBinds[k] = table.merge({defaultInputBinds[k], {joyBinds[k]}})
     end
     for i=2, #joysticks do
-      defaultInputBindsExtra[i] = {up={"axis", "lefty-", joysticks[i]:getName()},
-      down={"axis", "lefty+", joysticks[i]:getName()},
-      left={"axis", "leftx-", joysticks[i]:getName()},
-      right={"axis", "leftx+", joysticks[i]:getName()},
-      jump={"gamepad", "a", joysticks[i]:getName()},
-      shoot={"gamepad", "x", joysticks[i]:getName()},
-      start={"gamepad", "start", joysticks[i]:getName()},
-      select={"gamepad", "back", joysticks[i]:getName()},
-      prev={"gamepad", "leftshoulder", joysticks[i]:getName()},
-      next={"gamepad", "rightshoulder", joysticks[i]:getName()},
-      dash={"gamepad", "b", joysticks[i]:getName()}}
+      defaultInputBindsExtra[i] = {up={type="axis", input="lefty-", name=joysticks[i]:getName()},
+      down={type="axis", input="lefty+", name=joysticks[i]:getName()},
+      left={type="axis", input="leftx-", name=joysticks[i]:getName()},
+      right={type="axis", input="leftx+", name=joysticks[i]:getName()},
+      jump={type="gamepad", input="a", name=joysticks[i]:getName()},
+      shoot={type="gamepad", input="x", name=joysticks[i]:getName()},
+      start={type="gamepad", input="start", name=joysticks[i]:getName()},
+      select={type="gamepad", input="back", name=joysticks[i]:getName()},
+      prev={type="gamepad", input="leftshoulder", name=joysticks[i]:getName()},
+      next={type="gamepad", input="rightshoulder", name=joysticks[i]:getName()},
+      dash={type="gamepad", input="b", name=joysticks[i]:getName()}}
     end
   end
   

@@ -72,7 +72,7 @@ function weapon:added()
   if self.weaponGroup then
     self:addToGroup(self.weaponGroup)
     if self.user and megaMan.weaponHandler[self.user.player] then
-      self:addToGroup(self.weaponGroup .. megaMan.weaponHandler[self.user.player].id)
+      self:addToGroup(self.weaponGroup .. tostring(megaMan.weaponHandler[self.user.player].id))
     end
   end
   self:addToGroup("freezable")
