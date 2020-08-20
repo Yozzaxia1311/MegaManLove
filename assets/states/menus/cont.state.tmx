@@ -2,9 +2,8 @@
 <map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="32" height="28" tilewidth="8" tileheight="8" infinite="0" backgroundcolor="#008088" nextlayerid="4" nextobjectid="21">
  <properties>
   <property name="musicLoop" type="bool" value="true"/>
-  <property name="musicLoopEndPoint" type="int" value="490496"/>
-  <property name="musicLoopPoint" type="int" value="55129"/>
-  <property name="musicPath" value="assets/sfx/music/menu.wav"/>
+  <property name="musicLoopPoint" type="float" value="1.25"/>
+  <property name="musicPath" value="assets/sfx/music/menu.ogg"/>
  </properties>
  <tileset firstgid="1" source="../tilesets/menuTiled.tsx"/>
  <layer id="3" name="layout" width="32" height="28">

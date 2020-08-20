@@ -73,7 +73,6 @@ function states.set(n, before, after)
         
         mapArgs.mPath = p.musicPath and p.musicPath ~= "" and p.musicPath
         mapArgs.mLoopPoint = (p.musicLoopPoint and p.musicLoopPoint ~= 0) and p.musicLoopPoint
-        mapArgs.mLoopEndPoint = (p.musicLoopEndPoint and p.musicLoopEndPoint ~= 0) and p.musicLoopEndPoint
         mapArgs.mLoop = p.musicLoop == nil or p.musicLoop
         mapArgs.mVolume = p.musicVolume or 1
         
@@ -174,7 +173,7 @@ function states.set(n, before, after)
     end
     
     if mapArgs.mPath then
-      megautils.playMusic(mapArgs.mPath, mapArgs.mLoop, mapArgs.mLoopPoint, mapArgs.mLoopEndPoint, mapArgs.mVolume)
+      megautils.playMusic(mapArgs.mPath, mapArgs.mLoop, mapArgs.mLoopPoint, mapArgs.mVolume)
     end
   end
   

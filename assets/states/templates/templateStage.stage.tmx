@@ -3,8 +3,7 @@
  <properties>
   <property name="fadeIn" type="bool" value="true"/>
   <property name="musicLoop" type="bool" value="true"/>
-  <property name="musicLoopEndPoint" type="int" value="0"/>
-  <property name="musicLoopPoint" type="int" value="0"/>
+  <property name="musicLoopPoint" type="float" value="0"/>
   <property name="musicPath" value=""/>
   <property name="musicVolume" type="float" value="1"/>
   <property name="state" value=""/>
@@ -13,7 +12,7 @@
  <layer id="1" name="layout" width="16" height="14">
   <data encoding="base64" compression="zlib">
    <chunk x="0" y="0" width="16" height="16">
-   eAFjYBgFtAoBViSDkdlIwniZyHqQ2Xg14ZCkp35sdmETw+FUBkagBDaMS/2oOPkhAABiKAAv
+   eAFjYBgFoyEwuEKAEegcbHhwuXJ4uAYADEwABw==
   </chunk>
   </data>
  </layer>
@@ -26,9 +25,6 @@
   </objectgroup>
   <objectgroup id="5" name="entities">
    <object id="5" template="player/player.tx" x="120" y="144"/>
-   <object id="36" template="collision/ladder.tx" x="80" y="144"/>
-   <object id="37" template="collision/ladder.tx" x="112" y="80" width="16" height="32"/>
-   <object id="38" template="collision/ladder.tx" x="160" y="80" width="16" height="80"/>
   </objectgroup>
  </group>
 </map>

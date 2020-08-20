@@ -1,5 +1,4 @@
 megautils.loadResource("assets/global/bosses/stickMan.png", "stickMan")
-megautils.loadResource("assets/sfx/enemyHit.ogg", "enemyHit")
 
 stickMan = bossEntity:extend()
 

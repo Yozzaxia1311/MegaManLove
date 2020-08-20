@@ -1426,7 +1426,7 @@ function bossEntity:new()
       return true
     end
   self.skipStart = false
-  self:setMusic("assets/sfx/music/boss.wav", true, 162898, 444759)
+  self:setMusic("assets/sfx/music/boss.ogg", true, 162898)
   self:setBossIntroMusic("assets/sfx/music/stageStart.ogg")
 end
 
@@ -1434,11 +1434,10 @@ function bossEntity:useHealthBar(oneColor, twoColor, outlineColor, add)
   bossEntity.super.useHealthBar(self, oneColor, twoColor, outlineColor, add or add ~= nil)
 end
 
-function bossEntity:setMusic(p, l, lp, lep, v)
+function bossEntity:setMusic(p, l, lp, v)
   self.musicPath = p
   self.musicLoop = l == nil or l
   self.musicLoopPoint = lp
-  self.musicLoopEndPoint = lep
   self.musicVolume = v or 1
 end
 
