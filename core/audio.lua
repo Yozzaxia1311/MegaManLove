@@ -21,12 +21,13 @@ function mmMusic.deser(t)
   if t.curID and t.playing then
     mmMusic.play(t.curID, t.loop, t.lp, t.volume, t.seek)
   end
-  mmMusic.paused = t.paused
+  if t.paused then
+    mmMusic.pause()
+  end
   mmMusic.locked = t.locked
   mmMusic._queue = t.queue
 end
 
-mmMusic.paused = false
 mmMusic.music = nil
 mmMusic.dec = nil
 mmMusic.curID = nil
@@ -49,7 +50,6 @@ end
 
 function mmMusic.stop()
   if not mmMusic.locked and mmMusic.music then
-    mmMusic.paused = false
     mmMusic.curID = nil
     mmMusic.loopPoint = nil
     mmMusic._queue = nil
@@ -65,7 +65,6 @@ end
 function mmMusic.pause()
   if mmMusic.music and not mmMusic.locked then
     mmMusic.music:pause()
-    mmMusic.paused = true
   end
 end
 
@@ -73,7 +72,6 @@ end
 function mmMusic.unpause()
   if mmMusic.music and not mmMusic.locked then
     mmMusic.music:resume()
-    mmMusic.paused = false
   end
 end
 
@@ -114,7 +112,6 @@ function mmMusic.play(path, loop, loopPoint, vol, from)
   mmMusic.loop = loop == nil or loop
   
   mmMusic.music:play()
-  mmMusic.paused = false
 end
 
 function mmMusic.update()
