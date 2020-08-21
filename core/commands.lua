@@ -329,6 +329,7 @@ concmd["state"] = {
       megautils.resetGameObjects = true
       megautils.reloadState = true
       if cmd[3] then globals.overrideCheckpoint = cmd[3] end
+      cscreen.setFade(1)
       megautils.gotoState(map)
     end
 }
@@ -342,6 +343,7 @@ concmd["resetstate"] = {
       megautils.resetGameObjects = true
       megautils.reloadState = true
       if cmd[2] then globals.overrideCheckpoint = cmd[2] end
+      cscreen.setFade(1)
       megautils.gotoState(megautils.getCurrentState())
     end
 }

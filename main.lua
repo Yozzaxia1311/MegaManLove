@@ -1,19 +1,19 @@
-splash = love.graphics.newImage("assets/misc/splash.bmp")
+splash = "assets/misc/splash.bmp"
+borderLeft = "assets/misc/borderLeft.png"
+borderRight = "assets/misc/borderRight.png"
 isMobile = love.system.getOS() == "Android" or love.system.getOS() == "iOS"
 
 -- Splash screen
 if not isMobile and love.graphics and love.graphics.isActive() then
-  local s = splash
+  local s = love.graphics.newImage(splash)
   love.graphics.clear(0, 0, 0, 1)
   love.graphics.draw(s, (love.graphics.getWidth()/2)-(s:getWidth()/2), (love.graphics.getHeight()/2)-(s:getHeight()/2))
   love.graphics.present()
+  s:release()
 end
 
 io.stdout:setvbuf("no")
 collectgarbage("setpause", 100)
-
-borderLeft = love.graphics.newImage("assets/misc/borderLeft.jpg")
-borderRight = love.graphics.newImage("assets/misc/borderRight.jpg")
 
 keyboardCheck = {}
 gamepadCheck = {}
@@ -32,7 +32,7 @@ function initEngine()
   globals = {}
   love.filesystem.load("requires.lua")()
   view.init(256, 224, 1)
-  cscreen.init(view.w*view.scale, view.h*view.scale, true, borderLeft, borderRight)
+  cscreen.init(view.w*view.scale, view.h*view.scale, borderLeft, borderRight)
   
   megautils.runFile("core/commands.lua")
   
@@ -41,6 +41,7 @@ function initEngine()
   globals.lifeSegments = 7
   globals.startingLives = 2
   globals.playerCount = 1
+  globals.disclaimerState = "assets/states/menus/disclaimer.state.lua"
   globals.bossIntroState = "assets/states/menus/bossintro.state.lua"
   globals.weaponGetState = "assets/states/menus/weaponget.state.lua"
   globals.rebindState = "assets/states/menus/rebind.state.lua"
@@ -110,7 +111,7 @@ function love.load()
     megautils.setScale(data.scale)
   end
   
-  megautils.gotoState("assets/states/menus/disclaimer.state.lua")
+  megautils.gotoState(globals.disclaimerState)
   console.parse("exec autoexec")
 end
 
@@ -407,6 +408,7 @@ function love.run()
       console.doWait()
       control.anyPressed = false
       control.anyPressedDuringRec = false
+      cscreen.updateFade()
       
       lastPressed.type = nil
       lastPressed.input = nil
@@ -424,6 +426,8 @@ end
 -- Save state to memory
 function ser()
   return {
+      cscreen = cscreen.ser(),
+      view = view.ser(),
       loader = loader.ser(),
       music = mmMusic.ser(),
       megautils = megautils.ser(),

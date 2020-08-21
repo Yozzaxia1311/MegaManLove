@@ -29,7 +29,7 @@ end
 function rebinder:update()
   if lastPressed.input == "escape" and not self.done then
     megautils.add(fade, true, nil, nil, function(s)
-      megautils.gotoState(globals.sendBackToDisclaimer and "assets/states/menus/disclaimer.state.lua" or globals.lastStateName)
+      megautils.gotoState(globals.sendBackToDisclaimer and globals.disclaimerState or globals.lastStateName)
       globals.sendBackToDisclaimer = nil
     end)
     return
@@ -48,7 +48,7 @@ function rebinder:update()
         control.usesDefaultBinds = false
         save.save("main.sav", self.data)
         megautils.add(fade, true, nil, nil, function(s)
-            megautils.gotoState(globals.sendBackToDisclaimer and "assets/states/menus/disclaimer.state.lua" or globals.lastStateName)
+            megautils.gotoState(globals.sendBackToDisclaimer and globals.disclaimerState or globals.lastStateName)
             globals.sendBackToDisclaimer = nil
           end)
       else

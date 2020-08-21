@@ -230,7 +230,7 @@ function megautils.resetGame(s, saveSfx, saveMusic)
   megautils.resetGameObjects = true
   megautils.unload()
   initEngine()
-  states.set(s or "assets/states/menus/disclaimer.state.lua")
+  states.set(s or globals.disclaimerState)
 end
 
 function megautils.getResource(nick)
@@ -471,8 +471,8 @@ function megautils.getCurrentState()
   return states.current
 end
 
-function megautils.transitionToState(s, before, after)
-  local tmp = megautils.add(fade, true, nil, nil, function(se)
+function megautils.transitionToState(s, before, after, gap)
+  local tmp = megautils.add(fade, true, gap, nil, function(se)
       megautils.gotoState(s, before, after)
     end)
 end
