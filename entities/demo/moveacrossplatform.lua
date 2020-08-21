@@ -20,7 +20,7 @@ function moveAcrossPlatform:new(x, y, toX, toY)
   self.hurtable = false
 end
 
-function moveAcrossPlatform:update(dt)
+function moveAcrossPlatform:update()
   if self.state == 0 then
     for i=1, #megaMan.allPlayers do
       local p = megaMan.allPlayers[i]
@@ -36,5 +36,5 @@ function moveAcrossPlatform:update(dt)
 end
 
 function moveAcrossPlatform:draw()
-  self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
+  self.quad:draw(self.tex, math.floor(self.transform.x), math.floor(self.transform.y))
 end

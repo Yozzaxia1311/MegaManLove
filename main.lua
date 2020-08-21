@@ -354,6 +354,7 @@ end
 function love.quit()
   if mmMusic then
     mmMusic.stop()
+    mmMusic.thread:wait()
   end
 end
 

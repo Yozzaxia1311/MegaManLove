@@ -1001,6 +1001,12 @@ function megaMan:checkProtoShield(e, side)
   return result
 end
 
+function megaMan:weaponTable(o)
+  if o.death then
+    return megautils.diffValue(o.damage, {easy=-14})
+  end
+end
+
 function megaMan:interactedWith(o, c)
   if not checkFalse(self.canControl) or megautils.isInvincible() or megautils.isNoClip() then return end
   if self.protoShielding and not o.dinked and o.dink and self:checkProtoShield(o, self.side) then
@@ -1011,7 +1017,7 @@ function megaMan:interactedWith(o, c)
   if c < 0 and checkTrue(self.canBeInvincible) then
     self.changeHealth = 0
   else
-    self.changeHealth = c
+    self.changeHealth = self:weaponTable(o) or c
     if self.changeHealth < 0 and self.iFrames <= 0 then
       self.iFrames = o:determineIFrames(self)
     else
@@ -1027,8 +1033,8 @@ function megaMan:interactedWith(o, c)
   end
   self.healthHandler:updateThis(self.healthHandler.health + self.changeHealth)
   if self.changeHealth < 0 then
-    if self.healthHandler.health <= 0 and not self.dying then
-      self.dying = true
+    if self.healthHandler.health <= 0 and not self.dead then
+      self.dead = true
       megautils.freeze({self}, "dying")
       if camera.main then
         if #megaMan.allPlayers == 1 then
@@ -1612,47 +1618,6 @@ end
 function megaMan:phys()
   self.velocity.vely = self.gravity >= 0 and math.min(self.maxAirSpeed, self.velocity.vely) or math.max(-self.maxAirSpeed, self.velocity.vely)
   collision.doCollision(self)
-  if checkFalse(self.blockCollision) and checkFalse(self.canDieFromSpikes) and
-    (self.xColl ~= 0 or self.yColl ~= 0 or (self.ground and self.gravity ~= 0)) then
-    local t = self:collisionTable(megautils.groups().death, self.xColl, self.yColl+math.sign(self.gravity))
-    if #t ~= 0 then
-      local lx, ly = self.transform.x, self.transform.y
-      local lg = self.ground
-      local lcx, lcy = self.xColl, self.yColl
-      local lss = self.inStandSolid
-      local lmf = self.onMovingFloor
-      for i=1, #t do
-        t[i].solidType = collision.NONE
-      end
-      collision.shiftObject(self, self.xColl, self.yColl+math.sign(self.gravity), true, false)
-      for i=1, #t do
-        t[i].solidType = collision.SOLID
-      end
-      if collision.checkSolid(self) then
-        local dv = self:collisionTable(megautils.groups().death)
-        if dv[1] and dv[1].harm > 0 then
-          dv[1]:interact(self, dv[1].harm, true)
-        end
-        if self.healthHandler.health <= 0 then
-          self.ground = false
-        else
-          self.ground = lg
-          self.xColl = lcx
-          self.yColl = lcy
-          self.inStandSolid = lss
-          self.onMovingFloor = lmf
-        end
-      else
-        self.ground = lg
-        self.xColl = lcx
-        self.yColl = lcy
-        self.inStandSolid = lss
-        self.onMovingFloor = lmf
-      end
-      self.transform.x = lx
-      self.transform.y = ly
-    end
-  end
 end
 
 function megaMan:attemptWeaponSwitch()
@@ -1999,7 +1964,7 @@ function megaMan:update()
           self.mq = nil
         end
       end
-    elseif self.dying then
+    elseif self.dead then
       for k, v in pairs(megautils.playerDeathFuncs) do
         if type(v) == "function" then
           v(self)
@@ -2049,7 +2014,7 @@ function megaMan:update()
 end
 
 function megaMan:afterUpdate(dt)
-  if not self.dying and camera.main and megaMan.mainPlayer == self and
+  if not self.dead and camera.main and megaMan.mainPlayer == self and
     checkFalse(self.canHaveCameraFocus) and not self.drop and not self.rise
     and self.collisionShape then
     camera.main:updateCam()

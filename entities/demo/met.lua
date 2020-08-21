@@ -105,5 +105,5 @@ function metBullet:new(x, y, p, vx, vy)
 end
 
 function metBullet:draw()
-  self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
+  self.quad:draw(self.tex, math.floor(self.transform.x), math.floor(self.transform.y))
 end

@@ -338,7 +338,7 @@ function protoSemiBuster:new(x, y, p, dir, skin)
 end
 
 function protoSemiBuster:draw()
-  self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
+  self.quad:draw(self.tex, math.floor(self.transform.x), math.floor(self.transform.y))
 end
 
 protoChargedBuster = weapon:extend()
@@ -370,7 +370,7 @@ function protoChargedBuster:act()
 end
 
 function protoChargedBuster:draw()
-  self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y)-1)
+  self.anim:draw(self.tex, math.floor(self.transform.x), math.floor(self.transform.y)-1)
 end
 
 bassBuster = weapon:extend()
@@ -423,7 +423,7 @@ function bassBuster:act()
 end
 
 function bassBuster:draw()
-  love.graphics.draw(self.tex, math.round(self.transform.x)-1, math.round(self.transform.y)-1)
+  love.graphics.draw(self.tex, math.floor(self.transform.x)-1, math.floor(self.transform.y)-1)
 end
 
 megaBuster = weapon:extend()
@@ -508,7 +508,7 @@ function megaBuster:new(x, y, p, dir)
 end
 
 function megaBuster:draw()
-  self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
+  self.quad:draw(self.tex, math.floor(self.transform.x), math.floor(self.transform.y))
 end
 
 megaSemiBuster = weapon:extend()
@@ -538,7 +538,7 @@ function megaSemiBuster:act()
 end
 
 function megaSemiBuster:draw()
-  self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y)-3)
+  self.anim:draw(self.tex, math.floor(self.transform.x), math.floor(self.transform.y)-3)
 end
 
 megaChargedBuster = weapon:extend()
@@ -570,7 +570,7 @@ function megaChargedBuster:act()
 end
 
 function megaChargedBuster:draw()
-  self.anim:draw(self.tex, math.round(self.transform.x)+(self.side == 1 and -8 or 0), math.round(self.transform.y)-3)
+  self.anim:draw(self.tex, math.floor(self.transform.x)+(self.side == 1 and -8 or 0), math.floor(self.transform.y)-3)
 end
 
 trebleBoost = weapon:extend()
@@ -675,7 +675,7 @@ function trebleBoost:act()
 end
 
 function trebleBoost:draw()
-  self.anims:draw(self.tex, math.round(self.transform.x)-6, math.round(self.transform.y)-12+(self.gravity >= 0 and 0 or 11))
+  self.anims:draw(self.tex, math.floor(self.transform.x)-6, math.floor(self.transform.y)-12+(self.gravity >= 0 and 0 or 11))
 end
 
 rushJet = weapon:extend()
@@ -859,9 +859,9 @@ end
 
 function rushJet:draw()
   if (self.anims.current == "spawn" or self.anims.current == "spawnLand") and self.user then
-    self.anims:draw(self.tex, math.round(self.transform.x)-4, math.round(self.transform.y)+(self.user.gravity >= 0 and -16 or -6))
+    self.anims:draw(self.tex, math.floor(self.transform.x)-4, math.floor(self.transform.y)+(self.user.gravity >= 0 and -16 or -6))
   else
-    self.anims:draw(self.tex, math.round(self.transform.x)-4, math.round(self.transform.y)-12)
+    self.anims:draw(self.tex, math.floor(self.transform.x)-4, math.floor(self.transform.y)-12)
   end
 end
 
@@ -1017,7 +1017,7 @@ function rushCoil:act(dt)
 end
 
 function rushCoil:draw()
-  self.anims:draw(self.tex, math.round(self.transform.x)-8, math.round(self.transform.y)-12+(self.gravity >= 0 and 0 or 11))
+  self.anims:draw(self.tex, math.floor(self.transform.x)-8, math.floor(self.transform.y)-12+(self.gravity >= 0 and 0 or 11))
 end
 
 stickWeapon = weapon:extend()
@@ -1051,5 +1051,5 @@ function stickWeapon:new(x, y, p, dir)
 end
 
 function stickWeapon:draw()
-  love.graphics.draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
+  love.graphics.draw(self.tex, math.floor(self.transform.x), math.floor(self.transform.y))
 end

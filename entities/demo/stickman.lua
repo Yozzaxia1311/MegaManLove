@@ -47,8 +47,7 @@ end
 function stickMan:draw()
   stickMan.super.draw(self)
   love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.draw(self.t, math.round(self.transform.x)-4, math.round(self.transform.y)-8)
-  --self:drawCollision()
+  love.graphics.draw(self.t, math.floor(self.transform.x)-4, math.floor(self.transform.y)-8)
 end
 
 return stickMan

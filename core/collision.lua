@@ -27,6 +27,7 @@ function collision.doGrav(self, noSlope)
 end
 
 function collision.doCollision(self, noSlope)
+  local lvx, lvy = self.velocity.velx, self.velocity.vely
   noSlope = noSlope or collision.noSlope
   if checkFalse(self.blockCollision) then
     collision.generalCollision(self, noSlope)
@@ -36,6 +37,7 @@ function collision.doCollision(self, noSlope)
   end
   collision.entityPlatform(self)
   collision.checkGround(self, false, noSlope)
+  collision.checkDeath(self, lvx, lvy + (self.ground and math.sign(self.gravity) or 0))
 end
 
 function collision.getTable(self, dx, dy, noSlope)
@@ -126,7 +128,7 @@ function collision.entityPlatform(self)
     local myyspeed = self.transform.y - self.epY
     local myxspeed = self.transform.x - self.epX
     local all = megautils.groups().collision
-    local possible = resolid ~= 0 and self.collisionShape and all ~= nil
+    local possible = resolid ~= 0 and self.collisionShape and all
     
     self.solidType = collision.NONE
     self.transform.x = self.epX
@@ -141,6 +143,10 @@ function collision.entityPlatform(self)
           local epDir = math.sign(self.transform.y + (self.collisionShape.h/2) -
             (v.transform.y + (v.collisionShape.h/2)))
           
+          if v:collision(self, 0, -myyspeed) then
+            collision.performDeath(v, self)
+          end
+          
           if not v:collision(self) then
             local epIsPassenger = v:collision(self, 0, (v.gravity >= 0 and 1 or -1)*((v.ground and v.snapToGround) and 1 or 0))
             local epWillCollide = self:collision(v, 0, myyspeed)
@@ -149,8 +155,10 @@ function collision.entityPlatform(self)
               self.transform.y = self.transform.y + myyspeed
               
               xypre = v.transform.y
+              
               if epIsPassenger then
                 v.transform.y = v.transform.y + myyspeed
+                collision.checkDeath(v, 0, math.sign(v.gravity))
               end
               
               if resolid == collision.SOLID or (resolid == collision.ONEWAY and (epDir*(v.gravity >= 0 and 1 or -1))>0 and
@@ -168,6 +176,7 @@ function collision.entityPlatform(self)
                   end
                 end
               end
+              
               xypre = xypre - v.transform.y
               v.transform.y = v.transform.y + xypre
               
@@ -203,6 +212,11 @@ function collision.entityPlatform(self)
         if v ~= self and checkFalse(v.blockCollision) and v.collisionShape and
           (not self.exclusivelySolidFor or table.contains(self.exclusivelySolidFor, v)) and
           (not self.excludeSolidFor or not table.contains(self.excludeSolidFor, v)) then
+          
+          if v:collision(self, -myxspeed, 0) then
+            collision.performDeath(v, self)
+          end
+          
           if not v:collision(self) then
             local epIsOnPlat = false
             local epDir = math.sign((self.transform.x + (self.collisionShape.w/2)) -
@@ -210,6 +224,7 @@ function collision.entityPlatform(self)
             
             if v:collision(self, 0, (v.gravity >= 0 and 1 or -1)*(v.ground and 1 or 0)) then
               collision.shiftObject(v, myxspeed, 0, true)
+              collision.checkDeath(v, 0, math.sign(v.gravity))
               epIsOnPlat = true
               v.onMovingFloor = self
             end
@@ -296,7 +311,9 @@ function collision.shiftObject(self, dx, dy, checkforcol, ep, noSlope)
 end
 
 function collision.checkGround(self, checkAnyway, noSlope)
-  if not checkFalse(self.blockCollision) or not self.collisionShape or not megautils.groups().collision then
+  local possible = self.collisionShape and checkFalse(self.blockCollision) and megautils.groups().collision
+  
+  if not possible then
     self.ground = false
   end
   
@@ -314,18 +331,21 @@ function collision.checkGround(self, checkAnyway, noSlope)
   local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
   local slp = math.ceil(math.abs(self.velocity.velx)) + 1
   local all = megautils.groups().collision
+  local lx, ly, lg = self.transform.x, self.transform.y, self.ground
   
-  for i=1, #all do
-    local v = all[i]
-    if v ~= self and v.collisionShape and
-      (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
-      (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) then
-      if (v.solidType == collision.SOLID or v.solidType == collision.ONEWAY) and
-        not v:collision(self, 0, cgrav) and (v.solidType ~= collision.ONEWAY or (v:collision(self, 0, -cgrav * slp) and
-        (not v.ladder or v:collisionNumber(megautils.groups().ladder, 0, -cgrav, true) == 0))) then
-        solid[#solid+1] = v
-      elseif v.solidType == collision.STANDIN then
-        solid[#solid+1] = v
+  if possible then
+    for i=1, #all do
+      local v = all[i]
+      if v ~= self and v.collisionShape and
+        (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
+        (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) then
+        if (v.solidType == collision.SOLID or v.solidType == collision.ONEWAY) and
+          not v:collision(self, 0, cgrav) and (v.solidType ~= collision.ONEWAY or (v:collision(self, 0, -cgrav * slp) and
+          (not v.ladder or v:collisionNumber(megautils.groups().ladder, 0, -cgrav, true) == 0))) then
+          solid[#solid+1] = v
+        elseif v.solidType == collision.STANDIN then
+          solid[#solid+1] = v
+        end
       end
     end
   end
@@ -366,7 +386,7 @@ function collision.generalCollision(self, noSlope)
   local stand = {}
   local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
   local all = megautils.groups().collision
-  local possible = self.collisionShape and checkFalse(self.blockCollision) and all ~= nil
+  local possible = self.collisionShape and checkFalse(self.blockCollision) and all
     
   if possible then
     for i=1, #all do
@@ -403,7 +423,7 @@ function collision.generalCollision(self, noSlope)
         end
       end
     end
-      
+    
     self.transform.x = self.transform.x + self.velocity.velx
     
     if possible and self:collisionNumber(solid) ~= 0 then
@@ -487,15 +507,62 @@ function collision.generalCollision(self, noSlope)
     end
   end
   
-  if possible and checkFalse(self.canStandSolid) then
-    local ss = self:collisionTable(stand, 0, cgrav)
-    if #ss ~= 0 then
-      if self.velocity.vely * cgrav > 0 then
-        self.ground = true
-        self.yColl = self.velocity.vely
-        self.velocity.vely = 0
+  if possible then
+    if checkFalse(self.canStandSolid) then
+      local ss = self:collisionTable(stand, 0, cgrav)
+      if #ss ~= 0 then
+        if self.velocity.vely * cgrav > 0 then
+          self.ground = true
+          self.yColl = self.velocity.vely
+          self.velocity.vely = 0
+        end
+        self.inStandSolid = ss[1]
       end
-      self.inStandSolid = ss[1]
     end
+  end
+end
+
+function collision.checkDeath(self, x, y)
+  local all = megautils.groups().collision
+  local possible = self.iFrames == 0 and self.collisionShape and checkFalse(self.blockCollision) and all
+  
+  if possible then
+    local death = {}
+    
+    for i=1, #all do
+      local v = all[i]
+      if v ~= self and v.collisionShape and v.death then
+        death[#death+1] = v
+      end
+    end
+    
+    local lx, ly, lg, lxc, lyc, lsd, lmf = 
+      self.transform.x, self.transform.y, self.ground, self.xColl, self.yColl, self.inStandSolid, self.onMovingFloor
+    
+    for i=1, #death do
+      local v = death[i]
+      v._LST = v.solidType
+      v.solidType = collision.NONE
+    end
+    
+    collision.shiftObject(self, x, y, true, false)
+    
+    for i=1, #death do
+      local v = death[i]
+      v.solidType = v._LST
+      v._LST = nil
+      if self:collision(v) then
+        collision.performDeath(self, v)
+      end
+    end
+    
+    self.transform.x, self.transform.y, self.ground, self.xColl, self.yColl, self.inStandSolid, self.onMovingFloor =
+      lx, ly, lg, lxc, lyc, lsd, lmf
+  end
+end
+
+function collision.performDeath(self, death)
+  if death.death then
+    death:interact(self, death.damage, true)
   end
 end

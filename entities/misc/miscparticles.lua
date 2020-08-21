@@ -91,7 +91,7 @@ function slideParticle:update()
 end
 
 function slideParticle:draw()
-  self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
+  self.anim:draw(self.tex, math.floor(self.transform.x), math.floor(self.transform.y))
 end
 
 damageSteam = particle:extend()
@@ -125,7 +125,7 @@ function damageSteam:update()
 end
 
 function damageSteam:draw()
-  self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
+  self.anim:draw(self.tex, math.floor(self.transform.x), math.floor(self.transform.y))
 end
 
 airBubble = particle:extend()
@@ -166,7 +166,7 @@ function airBubble:update(dt)
 end
 
 function airBubble:draw()
-  self.quad:draw(self.tex, math.round(self.transform.x)-self.off, math.round(self.transform.y))
+  self.quad:draw(self.tex, math.floor(self.transform.x)-self.off, math.floor(self.transform.y))
 end
 
 harm = particle:extend()
@@ -192,15 +192,15 @@ function harm:update()
   if not self.user or self.user.isRemoved or self.timer == self.maxTime then
     megautils.removeq(self)
   else
-    self.transform.x = math.round(self.user.transform.x)+math.round(self.user.collisionShape.w/2)-12
-    self.transform.y = math.round(self.user.transform.y)+math.round(self.user.collisionShape.h/2)-12
+    self.transform.x = math.floor(self.user.transform.x)+math.floor(self.user.collisionShape.w/2)-12
+    self.transform.y = math.floor(self.user.transform.y)+math.floor(self.user.collisionShape.h/2)-12
     self.timer = math.min(self.timer+1, self.maxTime)
     self.canDraw.global = not self.user.canDraw.flash
   end
 end
 
 function harm:draw()
-  self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
+  self.quad:draw(self.tex, math.floor(self.transform.x), math.floor(self.transform.y))
 end
 
 deathExplodeParticle = particle:extend()
@@ -223,7 +223,7 @@ function deathExplodeParticle:update(dt)
 end
 
 function deathExplodeParticle:draw()
-  self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
+  self.anim:draw(self.tex, math.floor(self.transform.x), math.floor(self.transform.y))
 end
 
 function deathExplodeParticle.createExplosion(x, y, p)
@@ -267,7 +267,7 @@ function absorbParticle:update()
 end
 
 function absorbParticle:draw()
-  self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y), 0, 1, 1, 12, 12)
+  self.anim:draw(self.tex, math.floor(self.transform.x), math.floor(self.transform.y), 0, 1, 1, 12, 12)
 end
 
 function absorbParticle.createAbsorbtion(towards, spd)
@@ -336,7 +336,7 @@ function smallBlast:update()
 end
 
 function smallBlast:draw()
-  self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
+  self.anim:draw(self.tex, math.floor(self.transform.x), math.floor(self.transform.y))
 end
 
 blast = particle:extend()

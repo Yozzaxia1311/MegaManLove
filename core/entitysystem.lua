@@ -1147,7 +1147,7 @@ function advancedEntity:new()
     self.barOffsetX = (view.w - 24)
     self.barOffsetY = 80
     self.applyAutoFace = true
-    self.pierceType = pierce.NOPIERCE
+    self.pierceType = pierce.PIERCE
     self.autoCollision = true
     self.autoGravity = true
     self.doAutoCollisionBeforeUpdate = false
@@ -1265,13 +1265,6 @@ function advancedEntity:afterUpdate()
   if self.removeWhenOutside and megautils.outside(self) then
     megautils.removeq(self)
   end
-end
-
-function advancedEntity:determineIFrames(o)
-  if megaMan.allPlayers and table.contains(megaMan.allPlayers, o) then
-    return 80
-  end
-  return 2
 end
 
 function advancedEntity:interactedWith(o, c)

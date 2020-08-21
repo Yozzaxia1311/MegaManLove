@@ -316,7 +316,7 @@ end
 
 function weaponHandler:updateCurrent(newWE)
   if self.current then
-    if newWE > self.energy[self.currentSlot] and self.energy[self.currentSlot] < 4*self.segments[self.currentSlot] then
+    if newWE > self.energy[self.currentSlot] and self.energy[self.currentSlot] < 4*weapon.segments[self.currentSlot] then
       megautils.freeze({self}, "wb")
       self.energy[self.currentSlot] = math.min(newWE, 4*(weapon.segments[self.current] or 7))
       self.riseTimer = 0
@@ -336,7 +336,7 @@ end
 
 function weaponHandler:update(dt)
   if self.current and self.energy[self.currentSlot] and weapon.segments[self.current] then
-    self.energy[self.currentSlot] = math.clamp(self.energy[self.currentSlot], 0, self.segments[self.currentSlot]*4)
+    self.energy[self.currentSlot] = math.clamp(self.energy[self.currentSlot], 0, weapon.segments[self.currentSlot]*4)
     if self.renderedWE[self.currentSlot] < self.energy[self.currentSlot] then
       self.riseTimer = math.min(self.riseTimer+1, 4)
       if self.riseTimer == 4 then
