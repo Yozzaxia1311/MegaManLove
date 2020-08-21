@@ -1,4 +1,4 @@
-death = entity:extend()
+death = basicEntity:extend()
 
 death.autoClean = false
 
@@ -19,6 +19,5 @@ end
 
 function death:added()
   self:addToGroup("handledBySections")
-  self:addToGroup("freezable")
   self:addToGroup("collision")
 end

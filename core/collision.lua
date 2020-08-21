@@ -566,3 +566,18 @@ function collision.performDeath(self, death)
     death:interact(self, death.damage, true)
   end
 end
+
+function collision.getLadders()
+  local result = {}
+  local all = megautils.groups().collision
+  local possible = self.iFrames == 0 and self.collisionShape and checkFalse(self.blockCollision) and all
+  
+  if possible then
+    for i=1, #all do
+      local v = all[i]
+      if v.ladder then
+        result[#result+1] = v
+      end
+    end
+  end
+end
