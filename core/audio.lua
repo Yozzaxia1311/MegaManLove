@@ -87,6 +87,19 @@ function mmMusic.isLooping()
   return mmMusic.loop
 end
 
+function mmMusic.seek(s)
+  if s and mmMusic.time ~= s and mmMusic.music and mmMusic.dec then
+    mmMusic.time = s
+    mmMusic.dec:seek(mmMusic.time)
+    mmMusic.music:seek(mmMusic.music:getDuration()+1)
+    mmMusic.music:queue(mmMusic.dec:decode())
+  end
+end
+
+function mmMusic.tell()
+  return mmMusic.time
+end
+
 function mmMusic.checkQueue()
   if mmMusic._queue then
     mmMusic.play(mmMusic._queue[1], mmMusic._queue[2], mmMusic._queue[3], mmMusic._queue[4], mmMusic._queue[5])
@@ -108,7 +121,7 @@ function mmMusic.play(path, loop, loopPoint, vol, from)
   mmMusic.dec:seek(mmMusic.time)
   mmMusic.music = love.audio.newQueueableSource(mmMusic.dec:getSampleRate(), mmMusic.dec:getBitDepth(), mmMusic.dec:getChannelCount(), 8)
   mmMusic.music:queue(mmMusic.dec:decode())
-  mmMusic.rate = ((1024*16) / (mmMusic.dec:getBitDepth() / 8)) / mmMusic.dec:getSampleRate()
+  mmMusic.rate = ((1024*16) / ((mmMusic.dec:getBitDepth() * mmMusic.dec:getChannelCount()) / 8)) / mmMusic.dec:getSampleRate()
   mmMusic.curID = path
   mmMusic.loopPoint = loopPoint
   mmMusic.loop = loop == nil or loop
