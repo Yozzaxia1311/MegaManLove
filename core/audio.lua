@@ -30,7 +30,7 @@ mmMusic.music = nil
 mmMusic.dec = nil
 mmMusic.curID = nil
 mmMusic.locked = false
-mmMusic.loopPoint = nil
+mmMusic.loopPoint = 0
 mmMusic.loop = true
 mmMusic.rate = 0
 mmMusic.time = 0
@@ -49,7 +49,7 @@ end
 function mmMusic.stop()
   if not mmMusic.locked and mmMusic.music then
     mmMusic.curID = nil
-    mmMusic.loopPoint = nil
+    mmMusic.loopPoint = 0
     mmMusic.time = 0
     mmMusic._queue = nil
     mmMusic.music:stop()
@@ -102,19 +102,32 @@ end
 
 function mmMusic.checkQueue()
   if mmMusic._queue then
-    mmMusic.play(mmMusic._queue[1], mmMusic._queue[2], mmMusic._queue[3], mmMusic._queue[4], mmMusic._queue[5])
+    mmMusic.play(mmMusic._queue[1], mmMusic._queue[2], mmMusic._queue[3])
     mmMusic._queue = nil
   end
 end
 
-function mmMusic.playq(path, loop, loopPoint, vol, from)
-  mmMusic._queue = {path, loop, loopPoint, vol, from}
+function mmMusic.playq(path, vol, from)
+  mmMusic._queue = {path, vol, from}
 end
 
-function mmMusic.play(path, loop, loopPoint, vol, from)
+function mmMusic.play(path, vol, from)
   if mmMusic.locked or (mmMusic.music and mmMusic.curID == path and not mmMusic.stopped()) then return end
   
   mmMusic.stop()
+  
+  local t = {}
+  
+  if love.filesystem.getInfo(path .. ".txt") then
+    for line in love.filesystem.lines(path .. ".txt") do
+      if line ~= "" and line:match(":") then
+        local data = line:split(":")
+        local v = data[2]:trimmed()
+        v = tonumber(v) or (toboolean(v) == nil and v) or toboolean(v)
+        t[data[1]] = v
+      end
+    end
+  end
   
   mmMusic.dec = love.sound.newDecoder(path, 1024*16)
   mmMusic.time = from or 0
@@ -123,8 +136,8 @@ function mmMusic.play(path, loop, loopPoint, vol, from)
   mmMusic.music:queue(mmMusic.dec:decode())
   mmMusic.rate = ((1024*16) / ((mmMusic.dec:getBitDepth() * mmMusic.dec:getChannelCount()) / 8)) / mmMusic.dec:getSampleRate()
   mmMusic.curID = path
-  mmMusic.loopPoint = loopPoint
-  mmMusic.loop = loop == nil or loop
+  mmMusic.loopPoint = t.loopPoint or 0
+  mmMusic.loop = t.loop == nil or t.loop
   
   mmMusic.music:play()
 end
@@ -139,9 +152,9 @@ function mmMusic.update()
         mmMusic.music:queue(sd)
       else
         if mmMusic.loop then
-          mmMusic.dec:seek(mmMusic.loopPoint or 0)
+          mmMusic.dec:seek(mmMusic.loopPoint)
           mmMusic.music:queue(mmMusic.dec:decode())
-          mmMusic.time = mmMusic.loopPoint or 0
+          mmMusic.time = mmMusic.loopPoint
         else
           mmMusic.music:stop()
         end

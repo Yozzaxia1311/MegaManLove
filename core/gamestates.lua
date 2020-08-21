@@ -173,7 +173,7 @@ function states.set(n, before, after)
     end
     
     if mapArgs.mPath then
-      megautils.playMusic(mapArgs.mPath, mapArgs.mLoop, mapArgs.mLoopPoint, mapArgs.mVolume)
+      megautils.playMusic(mapArgs.mPath, mapArgs.mVolume)
     end
   end
   
