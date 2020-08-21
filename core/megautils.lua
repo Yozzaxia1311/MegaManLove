@@ -408,6 +408,9 @@ function megautils.playSoundFromFile(p, l, v, stack)
     s:stop()
   end
   if not s or megautils._curS.id ~= p then
+    if s then
+      s:release()
+    end
     s = love.audio.newSource(p, "static")
   end
   s:setLooping(l == true)
@@ -452,7 +455,6 @@ function megautils.unload()
   end
   megautils.cleanCallbacks()
   megautils.unloadAllResources()
-  cartographer.cache = {}
   megautils._runFileOnce = {}
   megautils._frozen = {}
 end

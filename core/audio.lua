@@ -53,7 +53,10 @@ function mmMusic.stop()
     mmMusic.time = 0
     mmMusic._queue = nil
     mmMusic.music:stop()
+    mmMusic.music:release()
     mmMusic.music = nil
+    mmMusic.dec:release()
+    mmMusic.dec = nil
   end
 end
 

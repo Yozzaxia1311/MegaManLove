@@ -885,6 +885,7 @@ function mapEntity:removed()
       megautils.remove(v)
     end
   end
+  
   for k, v in pairs(megautils.removeMapFuncs) do
     if type(v) == "function" then
       v(self)
@@ -892,6 +893,8 @@ function mapEntity:removed()
       v.func(self)
     end
   end
+  
+  self.map:release()
 end
 
 function mapEntity:recursiveChecker(tab, index, name)

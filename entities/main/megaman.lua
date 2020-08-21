@@ -44,6 +44,10 @@ function megaMan:setSkin(path)
   if table.length(megaMan.skinCache) > maxPlayerCount+extraSkinCacheSize then
     for p, skin in pairs(megaMan.skinCache) do
       if not table.contains(megaMan.skins, skin) then
+        megaMan.skinCache[p][2]:release()
+        megaMan.skinCache[p][3]:release()
+        megaMan.skinCache[p][4]:release()
+        megaMan.skinCache[p][5]:release()
         megaMan.skinCache[p] = nil
         if table.length(megaMan.skinCache) <= maxPlayerCount+extraSkinCacheSize then
           break

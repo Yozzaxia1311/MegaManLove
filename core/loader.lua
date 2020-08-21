@@ -130,8 +130,15 @@ end
 
 function loader.unload(nick)
   if loader.resources[nick] then
-    if loader.resources[nick].data:type() == "Source" then
-      loader.resources[nick].data:stop()
+    if loader.resources[nick].img then
+      loader.resources[nick].img:release()
+    elseif loader.resources[nick].data.type then
+      if loader.resources[nick].data:type() == "Image" then
+        loader.resources[nick].data:release()
+      elseif loader.resources[nick].data:type() == "Source" then
+        loader.resources[nick].data:stop()
+        loader.resources[nick].data:release()
+      end
     end
     loader.resources[nick] = nil
   end
@@ -142,5 +149,7 @@ function loader.getTable(nick)
 end
 
 function loader.clear()
-  loader.resources = {}
+  for k, v in pairs(loader.resources) do
+    loader.unload(k)
+  end
 end

@@ -588,7 +588,7 @@ end
 
 function Map:_init(path)
   self.dir = splitPath(path)
-  self.quadCache = {}
+  self._quadCache = {}
   self.tilesetCache = {}
   self.tileCache = {}
   self.path = path
@@ -617,15 +617,15 @@ function Map:_getTileQuad(gid, frame)
   local gridWidth = math.floor(tileset.imagewidth / (tileset.tilewidth + tileset.spacing))
   local x, y = indexToCoordinates(id + 1, gridWidth)
   id = id + tileset.firstgid
-  if not self.quadCache[id] then
-    self.quadCache[id] = love.graphics.newQuad(
+  if not self._quadCache[id] then
+    self._quadCache[id] = love.graphics.newQuad(
       x * (tileset.tilewidth + tileset.spacing),
       y * (tileset.tileheight + tileset.spacing),
       tileset.tilewidth, tileset.tileheight,
       tileset.imagewidth, tileset.imageheight
     )
   end
-  return self.quadCache[id]
+  return self._quadCache[id]
 end
 
 -- Gets the quad of the tile with the given global ID.
@@ -722,6 +722,18 @@ function Map:draw()
   for _, layer in ipairs(self.layers) do
     if layer.visible and layer.draw then layer:draw() end
   end
+end
+
+function Map:release()
+  for k, v in pairs(self._quadCache) do
+    v:release()
+  end
+  self._quadCache = nil
+  
+  for k, v in pairs(self._images) do
+    v:release()
+  end
+  self._images = nil
 end
 
 local function finalXML2LuaTable(str, f)
@@ -1265,32 +1277,20 @@ local function finalXML2LuaTable(str, f)
   return result
 end
 
-cartographer.cache = {}
-
 -- Loads a Tiled map from a tmx file.
 function cartographer.load(path)
   if not path then error('No map path provided', 2) end
+  
   local map
-  local i
-  for k, v in ipairs(cartographer.cache) do
-    if v[2] == path then
-      i = k
-      break
-    end
+  
+  if path:sub(path:len()-3, path:len()) == ".tmx" then
+    map = setmetatable(finalXML2LuaTable(love.filesystem.read(path), path), Map)
+  else
+    map = setmetatable(love.filesystem.load(path)(), Map)
   end
-  if not i then
-    if #cartographer.cache == mapCacheSize then
-      table.remove(cartographer.cache, 1)
-    end
-    if path:sub(path:len()-3, path:len()) == ".tmx" then
-      cartographer.cache[#cartographer.cache+1] = {finalXML2LuaTable(love.filesystem.read(path), path), path}
-    else
-      cartographer.cache[#cartographer.cache+1] = {love.filesystem.read(path)(), path}
-    end
-    i = #cartographer.cache
-  end
-  map = setmetatable(table.clone(cartographer.cache[i][1]), Map)
+  
   map:_init(path)
+  
   return map
 end
 
