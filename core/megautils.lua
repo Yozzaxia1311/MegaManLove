@@ -28,7 +28,11 @@ function megautils.ser()
     }
   
   for k, v in ipairs(callbacks) do
-    result[k] = table.clone(v)
+    if type(megautils[k]) == "table" then
+      result[k] = table.clone(v)
+    else
+      result[k] = v
+    end
   end
   
   result._q = table.clone(megautils._q)
