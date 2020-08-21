@@ -1,7 +1,21 @@
 megautils.loadResource("assets/misc/starField.png", "starField")
 megautils.loadResource("assets/misc/starFieldOne.png", "starFieldOne")
 
-banner = entity:extend()
+banner = basicEntity:extend()
+
+function banner.ser()
+  return {
+      outline = table.clone(banner.colorOutline),
+      one = table.clone(banner.colorOne),
+      two = table.clone(banner.colorTwo)
+    }
+end
+
+function banner.deser(t)
+  banner.colorOutline = t.outline
+  banner.colorOne = t.one
+  banner.colorTwo = t.two
+end
 
 banner.colorOutline = {0, 0, 0}
 banner.colorOne = {0, 120, 248}

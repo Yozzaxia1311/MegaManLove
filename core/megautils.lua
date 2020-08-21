@@ -1,5 +1,90 @@
 megautils = {}
 
+function megautils.ser()
+  local result = {}
+  local callbacks = {
+      "reloadStateFuncs",
+      "cleanFuncs",
+      "resetGameObjectsFuncs",
+      "initEngineFuncs",
+      "addMapFuncs",
+      "removeMapFuncs",
+      "sectionChangeFuncs",
+      "difficultyChangeFuncs",
+      "postAddObjectsFuncs",
+      "skinChangeFuncs",
+      "playerCreatedFuncs",
+      "playerTransferFuncs",
+      "playerGroundFuncs",
+      "playerAirFuncs",
+      "playerSlideFuncs",
+      "playerClimbFuncs",
+      "playerKnockbackFuncs",
+      "playerTrebleFuncs",
+      "playerInteractedWithFuncs",
+      "playerDeathFuncs",
+      "playerAttemptWeaponFuncs",
+      "playerPauseFuncs",
+    }
+  
+  for k, v in ipairs(callbacks) do
+    result[k] = table.clone(v)
+  end
+  
+  result._q = table.clone(megautils._q)
+  result._runFileOnce = table.clone(megautils._runFileOnce)
+  result._frozen = table.clone(megautils._frozen)
+  result.shake = megautils.shake
+  result.shakeX = megautils.shakeX
+  result.shakeY = megautils.shakeY
+  result.shakeSide = megautils.shakeSide
+  result.shakeTimer = megautils.shakeTimer
+  result.maxShakeTime = megautils.maxShakeTime
+  result.shakeLength = megautils.shakeLength
+end
+
+function megautils.deser(t)
+  local callbacks = {
+      "reloadStateFuncs",
+      "cleanFuncs",
+      "resetGameObjectsFuncs",
+      "initEngineFuncs",
+      "addMapFuncs",
+      "removeMapFuncs",
+      "sectionChangeFuncs",
+      "difficultyChangeFuncs",
+      "postAddObjectsFuncs",
+      "skinChangeFuncs",
+      "playerCreatedFuncs",
+      "playerTransferFuncs",
+      "playerGroundFuncs",
+      "playerAirFuncs",
+      "playerSlideFuncs",
+      "playerClimbFuncs",
+      "playerKnockbackFuncs",
+      "playerTrebleFuncs",
+      "playerInteractedWithFuncs",
+      "playerDeathFuncs",
+      "playerAttemptWeaponFuncs",
+      "playerPauseFuncs",
+    }
+  
+  for k, v in ipairs(callbacks) do
+    megautils[k] = t[k]
+  end
+  
+  megautils._q = result._q
+  megautils._runFileOnce = result._runFileOnce
+  megautils._frozen = result._frozen
+  megautils.shake = result.shake
+  megautils.shakeX = result.shakeX
+  megautils.shakeY = result.shakeY
+  megautils.shakeSide = result.shakeSide
+  megautils.shakeTimer = result.shakeTimer
+  megautils.maxShakeTime = result.maxShakeTime
+  megautils.shakeLength = result.shakeLength
+end
+
 --Game / state callback functions.
 --[[
   Examples:

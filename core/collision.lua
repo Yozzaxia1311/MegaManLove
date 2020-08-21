@@ -1,5 +1,17 @@
 collision = {}
 
+function collision.ser()
+  return {
+      noSlope=collision.noSlope,
+      maxSlope=collision.maxSlope
+    }
+end
+
+function collision.deser(t)
+  collision.noSlope = t.noSlope
+  collision.maxSlope = t.maxSlope
+end
+
 collision.NONE = 0
 collision.SOLID = 1
 collision.ONEWAY = 2

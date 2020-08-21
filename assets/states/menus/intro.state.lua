@@ -4,9 +4,10 @@ function introState:begin()
   self.lastW = view.w
   self.lastH = view.h
   self.lastS = view.scale
-  view.init(640, 480, 1)
-  cscreen.init(640, 480)
   self.video = love.graphics.newVideo("assets/misc/intro.ogv")
+  local vw, vh = self.video:getDimensions()
+  view.init(vw, vh, 1)
+  cscreen.init(vw, vh)
   self.video:play()
 end
 

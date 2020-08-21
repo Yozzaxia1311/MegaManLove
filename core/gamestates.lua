@@ -2,7 +2,7 @@ states = {}
 
 function states.ser()
   return {
-      currentState = binser.serialize(states.currentState),
+      currentState = states.currentState,
       current = states.current,
       switched = states.switched,
       recordOnSwitch = states.recordOnSwitch,
@@ -12,7 +12,7 @@ function states.ser()
 end
 
 function states.deser(t)
-  states.currentState = binser.deserialize(t.currentState)
+  states.currentState = t.currentState
   states.current = t.current
   states.switched = t.switched
   states.recordOnSwitch = t.recordOnSwitch

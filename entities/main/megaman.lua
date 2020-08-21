@@ -11,7 +11,11 @@ function megaMan.ser()
     skins = skins,
     we = megaMan.weaponHandler,
     players = megaMan.allPlayers,
-    main = megaMan.mainPlayer ~= nil
+    main = megaMan.mainPlayer ~= nil,
+    outline = table.clone(megaMan.colorOutline),
+    one = table.clone(megaMan.colorOne),
+    two = table.clone(megaMan.colorTwo),
+    once = megaMan.once
   }
 end
 
@@ -27,10 +31,23 @@ function megaMan.deser(t)
   for k, v in pairs(t.players) do
     megaMan.allPlayers[k] = megautils.entityFromID(v.id)
   end
+  megaMan.colorOutline = {}
+  for k, v in pairs(t.outline) do
+    megaMan.colorOutline[k] = v
+  end
+  megaMan.colorOne = {}
+  for k, v in pairs(t.one) do
+    megaMan.colorOne[k] = v
+  end
+  megaMan.colorTwo = {}
+  for k, v in pairs(t.two) do
+    megaMan.colorTwo[k] = v
+  end
   megaMan.mainPlayer = nil
   if t.main then
     megaMan.mainPlayer = megaMan.allPlayers[1]
   end
+  megaMan.once = t.once
 end
 
 megaMan.mainPlayer = nil

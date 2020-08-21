@@ -1,5 +1,84 @@
 control = {}
 
+function control.ser()
+  return {
+      demo = control.demo,
+      anyPressed = control.anyPressed,
+      pressAnyway = control.pressAnyway,
+      anyPressedDuringRec = control.anyPressedDuringRec,
+      recPos = control.recPos,
+      record = table.clone(control.record),
+      recordInput = control.recordInput,
+      keyPressedRec = table.clone(control.keyPressedRec),
+      gamepadPressedRec = table.clone(control.gamepadPressedRec),
+      gamepadAxisRec = table.clone(control.gamepadAxisRec),
+      touchPressedRec = table.clone(control.touchPressedRec),
+      textInputRec = table.clone(control.textInputRec),
+      leftDown = table.clone(control.leftDown),
+      leftPressed = table.clone(control.leftPressed),
+      rightDown = table.clone(control.rightDown),
+      rightPressed = table.clone(control.rightPressed),
+      upDown = table.clone(control.upDown),
+      upPressed = table.clone(control.upPressed),
+      downDown = table.clone(control.downDown),
+      downPressed = table.clone(control.downPressed),
+      startDown = table.clone(control.startDown),
+      startPressed = table.clone(control.startPressed),
+      selectDown = table.clone(control.selectDown),
+      selectPressed = table.clone(control.selectPressed),
+      jumpDown = table.clone(control.jumpDown),
+      jumpPressed = table.clone(control.jumpPressed),
+      shootDown = table.clone(control.shootDown),
+      shootPressed = table.clone(control.shootPressed),
+      prevDown = table.clone(control.prevDown),
+      prevPressed = table.clone(control.prevPressed),
+      nextDown = table.clone(control.nextDown),
+      nextPressed = table.clone(control.nextPressed),
+      dashDown = table.clone(control.dashDown),
+      dashPressed = table.clone(control.dashPressed),
+      pressed = table.clone(control.pressed)
+    }
+end
+
+function control.deser(t)
+  control.demo = t.demo
+  control.anyPressed = t.anyPressed
+  control.pressAnyway = t.pressAnyway
+  control.anyPressedDuringRec = t.anyPressedDuringRec
+  control.recPos = t.recPos
+  control.record = t.record
+  control.recordInput = t.recordInput
+  control.keyPressedRec = t.keyPressedRec
+  control.gamepadPressedRec = t.gamepadPressedRec
+  control.gamepadAxisRec = t.gamepadAxisRec
+  control.touchPressedRec = t.touchPressedRec
+  control.textInputRec = t.textInputRec
+  control.leftDown = t.leftDown
+  control.leftPressed = t.leftPressed
+  control.rightDown = t.rightDown
+  control.rightPressed = t.rightPressed
+  control.upDown = t.upDown
+  control.upPressed = t.upPressed
+  control.downDown = t.downDown
+  control.downPressed = t.downPressed
+  control.startDown = t.startDown
+  control.startPressed = t.startPressed
+  control.selectDown = t.selectDown
+  control.selectPressed = t.selectPressed
+  control.jumpDown = t.jumpDown
+  control.jumpPressed = t.jumpPressed
+  control.shootDown = t.shootDown
+  control.shootPressed = t.shootPressed
+  control.prevDown = t.prevDown
+  control.prevPressed = t.prevPressed
+  control.nextDown = t.nextDown
+  control.nextPressed = t.nextPressed
+  control.dashDown = t.dashDown
+  control.dashPressed = t.dashPressed
+  control.pressed = t.pressed
+end
+
+
 function control.defaultBindsTable()
   inputHandler.refreshGamepads()
   local joysticks = inputHandler.gamepads
@@ -104,6 +183,7 @@ function control.init()
   control.demo = false
   control.pressAnyway = false
   control.anyPressedDuringRec = false
+  control.anyPressed = false
   control.resetRec()
   
   local defaultInputBinds, defaultInputBindsExtra = control.defaultBindsTable()

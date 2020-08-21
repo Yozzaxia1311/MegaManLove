@@ -1,5 +1,17 @@
 entitySystem = class:extend()
 
+function entitySystem.ser()
+  return {
+      drawCollision = entitySystem.drawCollision,
+      doDrawFlicker = entitySystem.doDrawFlicker
+    }
+end
+
+function entitySystem.deser(t)
+  entitySystem.drawCollision = t.drawCollision
+  entitySystem.doDrawFlicker = t.doDrawFlicker
+end
+
 entitySystem.drawCollision = false
 entitySystem.doDrawFlicker = true
 

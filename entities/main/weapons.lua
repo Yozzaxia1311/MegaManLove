@@ -7,6 +7,34 @@ weapon = entity:extend()
 
 weapon.autoClean = false
 
+function weapon.ser()
+  return {
+      removeGroups = table.clone(weapon.removeGroups),
+      resources = table.clone(weapon.resources),
+      colors = table.clone(weapon.colors),
+      chargeColors = table.clone(weapon.chargeColors),
+      chargeSounds = table.clone(weapon.chargeSounds),
+      icons = table.clone(weapon.icons),
+      segments = table.clone(weapon.segments),
+      sevenWayAnim = table.clone(weapon.sevenWayAnim),
+      _activeQuad = weapon._activeQuad,
+      _inactiveQuad = weapon._inactiveQuad
+    }
+end
+
+function weapon.deser(t)
+  weapon.removeGroups = t.removeGroups
+  weapon.resources = t.resources
+  weapon.colors = t.colors
+  weapon.chargeColors = t.chargeColors
+  weapon.chargeSounds = t.chargeSounds
+  weapon.icons = t.icons
+  weapon.segments = t.segments
+  weapon.sevenWayAnim = t.sevenWayAnim
+  weapon._activeQuad = t._activeQuad
+  weapon._inactiveQuad = t._inactiveQuad
+end
+
 weapon.DAMAGENONE = 0
 weapon.DAMAGEPLAYER = 1
 weapon.DAMAGEENEMY = 2
