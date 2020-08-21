@@ -22,7 +22,6 @@ function title:new()
   self.quad2 = quad(0, 115, 256, 109)
   self.oneOff = 256
   self.twoOff = -256
-  self.doIntro = love.filesystem.getInfo("assets/misc/intro.ogv") ~= nil
 end
 
 function title:added()
@@ -51,20 +50,27 @@ function title:update()
   elseif self.s == 2 then
     self.s = 3
   elseif self.s == 3 then
-    self.timer = self.timer + 1
+    --self.timer = self.timer + 1
     self.textTimer = math.wrap(self.textTimer+1, 0, 40)
-    if self.doIntro and self.timer == 1440*1.2 then
-      self.s = 4
-      cscreen.setFade(0)
-      megautils.stopMusic()
+    if self.timer == 400 then
+      states.openRecord = "assets/demo.rd"
+      megautils.add(fade, true, nil, nil, function(s)
+          megautils.setMusicLock(true)
+          control.drawDemoFunc = function()
+              if control.demo and math.wrap(control.recPos, 0, 40) < 20 then
+                love.graphics.setFont(mmFont)
+                love.graphics.print("DEMO", view.w - 48, view.h - 16)
+              end
+            end
+          control.returning = function()
+              megautils.add(fade, true, nil, nil, function(s) megautils.resetGame("assets/states/menus/title.state.lua", false, true) end)
+            end
+          megautils.gotoState()
+        end)
     elseif control.startPressed[1] then
       megautils.stopMusic()
       self.drawText = false
       megautils.transitionToState(globals.menuState)
-    end
-  elseif self.s == 4 then
-    if cscreen.getFade() < 0.2 then
-      megautils.transitionToState("assets/states/menus/intro.state.lua", nil, nil, 16)
     end
   end
 end
