@@ -706,7 +706,6 @@ function Map:drawBackground()
   if self.backgroundcolor then
     love.graphics.setColor(self.backgroundcolor[1], self.backgroundcolor[2], self.backgroundcolor[3], 1)
     love.graphics.rectangle("fill", view.x-1, view.y-1, view.w+1, view.h+1)
-    love.graphics.setColor(1, 1, 1, 1)
   end
 end
 
