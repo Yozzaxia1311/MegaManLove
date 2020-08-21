@@ -1532,7 +1532,7 @@ function bossEntity:start()
     if not table.contains(result, false) then
       self._subState = 2
       if self.musicPath then
-        megautils.playMusic(self.musicPath, self.musicLoop, self.musicLoopPoint, self.musicLoopEndPoint, self.musicVolume)
+        megautils.playMusic(self.musicPath, self.musicLoop, self.musicLoopPoint, self.musicVolume)
       end
     end
   elseif self._subState == 2 then
@@ -1588,7 +1588,7 @@ function bossEntity:bossIntro()
     self._subState = 1
     self._halfWidth = love.graphics.newText(mmFont, self.bossIntroText):getWidth()/2
     if self.musicBIPath then
-      megautils.playMusic(self.musicBIPath, false, nil, nil, self.musicBIVolume)
+      megautils.playMusic(self.musicBIPath, false, nil, self.musicBIVolume)
     end
   elseif self._subState == 1 then
     self.transform.y = math.min(self.transform.y+10, math.floor(view.h/2)-(self.collisionShape.h/2))

@@ -1,7 +1,5 @@
 mmMusic = {}
 
-local maxDecLength = 0.18575963718821
-
 function mmMusic.ser()
   return {
       paused=mmMusic.paused,
@@ -10,7 +8,7 @@ function mmMusic.ser()
       lp=mmMusic.loopPoint,
       loop=mmMusic.isLooping(),
       volume=mmMusic.getVolume(),
-      seek=mmMusic.music and mmMusic.dec and (mmMusic.from+(mmMusic.segment*maxDecLength)+mmMusic.music:tell()),
+      time=mmMusic.time,
       queue=table.clone(mmMusic.queue),
       locked=mmMusic.locked
     }
@@ -19,7 +17,7 @@ end
 function mmMusic.deser(t)
   mmMusic.curID = t.curID
   if t.curID and t.playing then
-    mmMusic.play(t.curID, t.loop, t.lp, t.volume, t.seek)
+    mmMusic.play(t.curID, t.loop, t.lp, t.volume, t.time)
   end
   if t.paused then
     mmMusic.pause()
@@ -34,8 +32,8 @@ mmMusic.curID = nil
 mmMusic.locked = false
 mmMusic.loopPoint = nil
 mmMusic.loop = true
-mmMusic.segment = 0
-mmMusic.from = 0
+mmMusic.rate = 0
+mmMusic.time = 0
 mmMusic._queue = nil
 
 function mmMusic.setVolume(v)
@@ -52,6 +50,7 @@ function mmMusic.stop()
   if not mmMusic.locked and mmMusic.music then
     mmMusic.curID = nil
     mmMusic.loopPoint = nil
+    mmMusic.time = 0
     mmMusic._queue = nil
     mmMusic.music:stop()
     mmMusic.music = nil
@@ -101,12 +100,12 @@ function mmMusic.play(path, loop, loopPoint, vol, from)
   
   mmMusic.stop()
   
-  mmMusic.dec = love.sound.newDecoder(path)
-  mmMusic.from = from or 0
-  mmMusic.dec:seek(mmMusic.from)
+  mmMusic.dec = love.sound.newDecoder(path, 1024*16)
+  mmMusic.time = from or 0
+  mmMusic.dec:seek(mmMusic.time)
   mmMusic.music = love.audio.newQueueableSource(mmMusic.dec:getSampleRate(), mmMusic.dec:getBitDepth(), mmMusic.dec:getChannelCount(), 8)
   mmMusic.music:queue(mmMusic.dec:decode())
-  mmMusic.segment = 0
+  mmMusic.rate = ((1024*16) / (mmMusic.dec:getBitDepth() / 8)) / mmMusic.dec:getSampleRate()
   mmMusic.curID = path
   mmMusic.loopPoint = loopPoint
   mmMusic.loop = loop == nil or loop
@@ -117,8 +116,8 @@ end
 function mmMusic.update()
   if mmMusic.music then
     if mmMusic.music:tell() >= mmMusic.music:getDuration()-(mmMusic.music:getDuration()*0.2) then
-      mmMusic.segment = mmMusic.segment + 1
-      mmMusic.dec:seek(mmMusic.from+(mmMusic.segment*maxDecLength))
+      mmMusic.time = mmMusic.time + mmMusic.rate
+      mmMusic.dec:seek(mmMusic.time)
       local sd = mmMusic.dec:decode()
       if sd then
         mmMusic.music:queue(sd)
@@ -126,6 +125,7 @@ function mmMusic.update()
         if mmMusic.loop then
           mmMusic.dec:seek(mmMusic.loopPoint or 0)
           mmMusic.music:queue(mmMusic.dec:decode())
+          mmMusic.time = mmMusic.loopPoint or 0
         else
           mmMusic.music:stop()
         end
