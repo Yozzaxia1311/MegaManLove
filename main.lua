@@ -12,9 +12,6 @@ if not isMobile and love.graphics and love.graphics.isActive() then
   s:release()
 end
 
-io.stdout:setvbuf("no")
-collectgarbage("setpause", 100)
-
 keyboardCheck = {}
 gamepadCheck = {}
 
@@ -30,7 +27,6 @@ function initEngine()
   inputHandler.init()
   control.init()
   globals = {}
-  love.filesystem.load("requires.lua")()
   view.init(256, 224, 1)
   cscreen.init(view.w*view.scale, view.h*view.scale, borderLeft, borderRight)
   
@@ -64,7 +60,9 @@ function initEngine()
       v.func()
     end
   end
+  
   megautils.unloadAllResources()
+  
   for k, v in pairs(megautils.initEngineFuncs) do
     if type(v) == "function" then
       v()
@@ -74,6 +72,8 @@ function initEngine()
   end
   
   megautils.setDifficulty("normal")
+  
+  megautils.runFile("init.lua")
 end
 
 function love.load()
@@ -98,7 +98,7 @@ function love.load()
   maxETanks = 10
   maxWTanks = 10
   
-  love.filesystem.load("requirelibs.lua")()
+  require("requires")
   
   console.init()
   initEngine()
@@ -317,8 +317,6 @@ function love.update(dt)
     doAgain = states.switched
   end
   
-  mmMusic.update()
-  
   if love.joystick then
     if globals.axisTmp then
       if globals.axisTmp.x and (not globals.axisTmp.y or
@@ -351,6 +349,12 @@ function love.draw()
   view.draw()
   love.graphics.pop()
   if useConsole then console.draw() end
+end
+
+function love.quit()
+  if mmMusic then
+    mmMusic.stop()
+  end
 end
 
 -- Love2D doesn't fire the resize event for several functions, so here's some hacks.

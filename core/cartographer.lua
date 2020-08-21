@@ -140,9 +140,9 @@ Layer.spritelayer.__index = Layer.spritelayer
 function Layer.spritelayer.transfer(from, to)
   Layer.base.transfer(from, to)
   
-  to._animations = table.clone(from._animations),
-  to.offGridMap = table.clone(from._sprites.offGridMap),
-  to.map = table.clone(from._sprites.map),
+  to._animations = table.clone(from._animations)
+  to.offGridMap = table.clone(from._sprites.offGridMap)
+  to.map = table.clone(from._sprites.map)
   to.drawRange = table.clone(from.drawRange)
 end
 

@@ -69,8 +69,8 @@ function camera:updateCam(spdx, spdy)
           self.preTrans = true
         end
       end
-      self.transform.x = math.round(self.transform.x)
-      self.transform.y = math.round(self.transform.y)
+      self.transform.x = math.floor(self.transform.x)
+      self.transform.y = math.floor(self.transform.y)
       self.approachX = self.transform.x
       self.approachY = self.transform.y
       view.x, view.y = self.approachX, self.approachY
@@ -221,8 +221,8 @@ function camera:updateCam(spdx, spdy)
           camera.main.player.onMovingFloor.transform.x = camera.main.player.transform.x + camera.main.flx
           camera.main.player.onMovingFloor.transform.y = camera.main.player.transform.y + camera.main.player.collisionShape.h
         end
-        camera.main.transform.x = math.round(camera.main.transform.x)
-        camera.main.transform.y = math.round(camera.main.transform.y)
+        camera.main.transform.x = math.floor(camera.main.transform.x)
+        camera.main.transform.y = math.floor(camera.main.transform.y)
         camera.main.approachX = camera.main.transform.x
         camera.main.approachY = camera.main.transform.y
         view.x, view.y = camera.main.approachX, camera.main.approachY
@@ -287,7 +287,7 @@ function camera:doView(spdx, spdy, without)
     self.despawnLateBounds = nil
   end
   
-  view.x, view.y = math.round(self.approachX), math.round(self.approachY)
+  view.x, view.y = math.floor(self.approachX), math.floor(self.approachY)
   
   self:updateFuncs()
 end

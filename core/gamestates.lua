@@ -114,7 +114,7 @@ function states.set(n, before, after)
   states.switched = true
   
   if not states.currentChunk or states.current ~= sp then
-    states.currentChunk = love.filesystem.load(sp)
+    states.currentChunk = loadfile(sp)
   end
   
   states.current = nick

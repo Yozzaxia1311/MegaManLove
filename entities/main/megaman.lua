@@ -2060,7 +2060,7 @@ function megaMan:draw()
   if megaMan.mainPlayer and megaMan.mainPlayer.ready then return end
   
   local offsetx, offsety = math.round(self.collisionShape.w/2), self.collisionShape.h
-  local roundx, roundy = math.round(self.transform.x), math.round(self.transform.y)
+  local roundx, roundy = math.floor(self.transform.x), math.floor(self.transform.y)
   
   self.anims.flipY = self.gravity < 0
   

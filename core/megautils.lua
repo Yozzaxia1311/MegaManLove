@@ -293,19 +293,8 @@ end
 
 megautils._runFileOnce = {}
 
-function megautils.runFile(path, again)
-  if again then
-    return love.filesystem.load(path)()
-  elseif not megautils._runFileOnce[path] then
-    local ret = love.filesystem.load(path)()
-    megautils._runFileOnce[path] = ret or -42
-  end
-  
-  if megautils._runFileOnce[path] == -42 then
-    return
-  else
-    return megautils._runFileOnce[path]
-  end
+function megautils.runFile(path)
+  return love.filesystem.load(path)()
 end
 
 function megautils.resetGame(s, saveSfx, saveMusic)
