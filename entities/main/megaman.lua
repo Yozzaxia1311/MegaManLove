@@ -23,26 +23,11 @@ function megaMan.deser(t)
   for k, v in pairs(t) do
     megaMan.setSkin(k, v)
   end
-  megaMan.weaponHandler = {}
-  for k, v in pairs(t.we) do
-    megaMan.weaponHandler[k] = megautils.entityFromID(v.id)
-  end
-  megaMan.allPlayers = {}
-  for k, v in pairs(t.players) do
-    megaMan.allPlayers[k] = megautils.entityFromID(v.id)
-  end
-  megaMan.colorOutline = {}
-  for k, v in pairs(t.outline) do
-    megaMan.colorOutline[k] = v
-  end
-  megaMan.colorOne = {}
-  for k, v in pairs(t.one) do
-    megaMan.colorOne[k] = v
-  end
-  megaMan.colorTwo = {}
-  for k, v in pairs(t.two) do
-    megaMan.colorTwo[k] = v
-  end
+  megaMan.weaponHandler = t.we
+  megaMan.allPlayers = t.players
+  megaMan.colorOutline = t.outline
+  megaMan.colorOne = t.one
+  megaMan.colorTwo = t.two
   megaMan.mainPlayer = nil
   if t.main then
     megaMan.mainPlayer = megaMan.allPlayers[1]

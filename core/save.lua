@@ -41,5 +41,5 @@ function save.load(file)
   if not sv then
     return nil
   end
-  return unpack(binser.deserialize(sv))
+  return binser.deserialize(sv)
 end

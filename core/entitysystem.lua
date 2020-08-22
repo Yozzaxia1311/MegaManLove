@@ -1110,13 +1110,9 @@ function advancedEntity.transfer(from, to)
   to.doAutoCollisionBeforeUpdate = from.doAutoCollisionBeforeUpdate
   to.autoCrush = from.autoCrush
   to.dead = from.dead
-  if from.closest then
-    to.closest = megautils.entityFromID(from.closest.id)
-  end
+  to.closest = from.closest
   to._didCol = from._didCol
-  if from.healthHandler then
-    to.healthHandler = megautils.entityFromID(from.healthHandler.id)
-  end
+  to.healthHandler = from.healthHandler
   to.autoFace = from.autoFace
   to.side = from.side
 end

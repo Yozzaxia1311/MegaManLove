@@ -509,7 +509,7 @@ local function newbinser()
                 break
             end
         end
-        return vals, len
+        return unpack(vals), len
     end
 
     local function deserializeN(str, n, index)
