@@ -214,7 +214,7 @@ function mmMusic._threadPlay(curID, loop, loopPoint, time)
   
   mmMusic.dec = love.sound.newDecoder(curID, 1024*16)
   mmMusic.time = time or 0
-  mmMusic.music = love.audio.newQueueableSource(mmMusic.dec:getSampleRate(), mmMusic.dec:getBitDepth(), mmMusic.dec:getChannelCount(), 4)
+  mmMusic.music = love.audio.newQueueableSource(mmMusic.dec:getSampleRate(), mmMusic.dec:getBitDepth(), mmMusic.dec:getChannelCount(), 6)
   mmMusic.rate = ((1024*16) / ((mmMusic.dec:getBitDepth() * mmMusic.dec:getChannelCount()) / 8)) / mmMusic.dec:getSampleRate()
   mmMusic.curID = curID
   mmMusic.loopPoint = loopPoint
@@ -257,7 +257,7 @@ end
 
 function mmMusic._threadUpdate()
   if mmMusic.music then
-    while mmMusic.music:getFreeBufferCount() > 2 do
+    while mmMusic.music:getFreeBufferCount() > 3 do
       mmMusic.time = math.min(mmMusic.time + mmMusic.rate, mmMusic.dec:getDuration())
       mmMusic._threadDecode()
       if not mmMusic.music then
