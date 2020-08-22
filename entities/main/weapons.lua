@@ -35,6 +35,32 @@ function weapon.deser(t)
   weapon._inactiveQuad = t._inactiveQuad
 end
 
+function weapon.transfer(from, to)
+  weapon.super.transfer(from, to)
+  
+  to.autoHit = from.autoHit
+  to.sound = from.sound
+  to.soundOnDink = from.soundOnDink
+  to.damage = from.damage
+  to.flipWithUser = from.flipWithUser
+  to.weaponGroup = from.weaponGroup
+  to.removeWhenOutside = from.removeWhenOutside
+  to.autoCollision = from.autoCollision
+  to.autoGravity = from.autoGravity
+  to.doAutoCollisionBeforeUpdate = from.doAutoCollisionBeforeUpdate
+  to.doDink = from.doDink
+  to.applyAutoFace = from.applyAutoFace
+  to.dinkedBy = from.dinkedBy
+  to._didCol = from._didCol
+  to.dinked = from.dinked
+  to.user = from.user
+  to.damageType = from.damageType
+  to.damageTypeOnDink = from.damageTypeOnDink
+  to.pierceType = from.pierceType
+  to.isEnemyWeapon = from.isEnemyWeapon
+  to.side = from.side
+end
+
 weapon.DAMAGENONE = 0
 weapon.DAMAGEPLAYER = 1
 weapon.DAMAGEENEMY = 2
@@ -88,6 +114,7 @@ function weapon:new(p, enWeapon)
   self.pierceType = pierce.NOPIERCE
   self.isEnemyWeapon = false
   self.autoFace = -1
+  self.side = -1
   if enWeapon then
     self.isEnemyWeapon = true
     self.damageType = weapon.DAMAGEPLAYER
@@ -323,12 +350,29 @@ protoSemiBuster = weapon:extend()
 
 protoSemiBuster.autoClean = false
 
+binser.register(protoSemiBuster, "protoSemiBuster", function(o)
+    local result = {}
+    
+    protoSemiBuster.super.transfer(o, result)
+    
+    result.skin = o.skin
+    
+    return result
+  end, function(o)
+    local result = protoSemiBuster(nil, nil, nil, nil, o.skin)
+    
+    protoSemiBuster.super.transfer(o, result)
+    
+    return result
+  end)
+
 function protoSemiBuster:new(x, y, p, dir, skin)
   protoSemiBuster.super.new(self, p)
   self.transform.x = (x or 0) - 5
   self.transform.y = (y or 0) - 5
   self:setRectangleCollision(10, 10)
-  self.tex = megautils.getResource(skin)
+  self.skin = skin
+  self.tex = megautils.getResource(self.skin)
   self.quad = quad(0, 0, 10, 10)
   self.side = dir or 1
   self.velocity.velx = self.side * 5
@@ -345,12 +389,32 @@ protoChargedBuster = weapon:extend()
 
 protoChargedBuster.autoClean = false
 
+binser.register(protoChargedBuster, "protoChargedBuster", function(o)
+    local result = {}
+    
+    protoChargedBuster.super.transfer(o, result)
+    
+    result.skin = o.skin
+    result.anim = o.anim
+    
+    return result
+  end, function(o)
+    local result = protoChargedBuster(nil, nil, nil, nil, o.skin)
+    
+    protoChargedBuster.super.transfer(o, result)
+    
+    result.anim = o.anim
+    
+    return result
+  end)
+
 function protoChargedBuster:new(x, y, p, dir, skin)
   protoChargedBuster.super.new(self, p)
   self.transform.x = (x or 0) - 14
   self.transform.y = (y or 0) - 4
   self:setRectangleCollision(29, 8)
-  self.tex = megautils.getResource(skin)
+  self.skin = skin
+  self.tex = megautils.getResource(self.skin)
   self.anim = megautils.newAnimation("protoBusterGrid", {"1-2", 1}, 1/20)
   self.side = dir or 1
   self.velocity.velx = self.side * 6
@@ -373,10 +437,6 @@ function protoChargedBuster:draw()
   self.anim:draw(self.tex, math.floor(self.transform.x), math.floor(self.transform.y)-1)
 end
 
-bassBuster = weapon:extend()
-
-bassBuster.autoClean = false
-
 weapon.removeGroups["B.BUSTER"] = {"bassBuster"}
 
 weapon.resources["B.BUSTER"] = function()
@@ -393,6 +453,28 @@ weapon.colors["B.BUSTER"] = {
   }
 
 weapon.sevenWayAnim["B.BUSTER"] = true
+
+bassBuster = weapon:extend()
+
+bassBuster.autoClean = false
+
+binser.register(bassBuster, "bassBuster", function(o)
+    local result = {}
+    
+    bassBuster.super.transfer(o, result)
+    
+    result.treble = o.treble
+    
+    return result
+  end, function(o)
+    local result = bassBuster()
+    
+    bassBuster.super.transfer(o, result)
+    
+    result.treble = o.treble
+    
+    return result
+  end)
 
 function bassBuster:new(x, y, p, dir, t)
   bassBuster.super.new(self, p)
@@ -425,10 +507,6 @@ end
 function bassBuster:draw()
   love.graphics.draw(self.tex, math.floor(self.transform.x)-1, math.floor(self.transform.y)-1)
 end
-
-megaBuster = weapon:extend()
-
-megaBuster.autoClean = false
 
 weapon.removeGroups["M.BUSTER"] = {"megaBuster", "megaChargedBuster"}
 
@@ -488,6 +566,24 @@ weapon.chargeColors["M.BUSTER"] = {
     }
   }
 
+megaBuster = weapon:extend()
+
+megaBuster.autoClean = false
+
+binser.register(megaBuster, "megaBuster", function(o)
+    local result = {}
+    
+    megaBuster.super.transfer(o, result)
+    
+    return result
+  end, function(o)
+    local result = megaBuster()
+    
+    megaBuster.super.transfer(o, result)
+    
+    return result
+  end)
+
 function megaBuster:new(x, y, p, dir)
   megaBuster.super.new(self, p)
   
@@ -514,6 +610,24 @@ end
 megaSemiBuster = weapon:extend()
 
 megaSemiBuster.autoClean = false
+
+binser.register(megaSemiBuster, "megaSemiBuster", function(o)
+    local result = {}
+    
+    megaSemiBuster.super.transfer(o, result)
+    
+    result.anim = o.anim
+    
+    return result
+  end, function(o)
+    local result = megaSemiBuster()
+    
+    megaSemiBuster.super.transfer(o, result)
+    
+    result.anim = o.anim
+    
+    return result
+  end)
 
 function megaSemiBuster:new(x, y, p, dir)
   megaSemiBuster.super.new(self, p)
@@ -545,6 +659,24 @@ megaChargedBuster = weapon:extend()
 
 megaChargedBuster.autoClean = false
 
+binser.register(megaChargedBuster, "megaChargedBuster", function(o)
+    local result = {}
+    
+    megaChargedBuster.super.transfer(o, result)
+    
+    result.anim = o.anim
+    
+    return result
+  end, function(o)
+    local result = megaChargedBuster()
+    
+    megaChargedBuster.super.transfer(o, result)
+    
+    result.anim = o.anim
+    
+    return result
+  end)
+
 function megaChargedBuster:new(x, y, p, dir)
   megaChargedBuster.super.new(self, p)
   self.transform.x = (x or 0) - 12
@@ -573,10 +705,6 @@ function megaChargedBuster:draw()
   self.anim:draw(self.tex, math.floor(self.transform.x)+(self.side == 1 and -8 or 0), math.floor(self.transform.y)-3)
 end
 
-trebleBoost = weapon:extend()
-
-trebleBoost.autoClean = false
-
 weapon.removeGroups["T. BOOST"] = {"trebleBoost", "bassBuster"}
 
 weapon.resources["T. BOOST"] = function()
@@ -596,6 +724,34 @@ weapon.colors["T. BOOST"] = {
     one = {128, 0, 240},
     two = {112, 112, 112}
   }
+
+trebleBoost = weapon:extend()
+
+trebleBoost.autoClean = false
+
+binser.register(trebleBoost, "trebleBoost", function(o)
+    local result = {}
+    
+    trebleBoost.super.transfer(o, result)
+    
+    result.anims = o.anims
+    result.toY = o.toY
+    result.s = o.s
+    result.timer = o.timer
+    
+    return result
+  end, function(o)
+    local result = trebleBoost()
+    
+    trebleBoost.super.transfer(o, result)
+    
+    result.anims = o.anims
+    result.toY = o.toY
+    result.s = o.s
+    result.timer = o.timer
+    
+    return result
+  end)
 
 function trebleBoost:new(x, y, p, side)
   trebleBoost.super.new(self, p)
@@ -678,10 +834,6 @@ function trebleBoost:draw()
   self.anims:draw(self.tex, math.floor(self.transform.x)-6, math.floor(self.transform.y)-12+(self.gravity >= 0 and 0 or 11))
 end
 
-rushJet = weapon:extend()
-
-rushJet.autoClean = false
-
 weapon.removeGroups["RUSH JET"] = {"rushJet", "megaBuster", "bassBuster"}
 
 weapon.resources["RUSH JET"] = function()
@@ -742,14 +894,43 @@ weapon.colors["TANGO JET"] = {
     two = {255, 255, 255}
   }
 
+rushJet = weapon:extend()
+
+rushJet.autoClean = false
+
+binser.register(rushJet, "rushJet", function(o)
+    local result = {}
+    
+    rushJet.super.transfer(o, result)
+    
+    result.anims = o.anims
+    result.toY = o.toY
+    result.s = o.s
+    result.timer = o.timer
+    result.skin = o.skin
+    
+    return result
+  end, function(o)
+    local result = rushJet(nil, nil, nil, nil, o.skin)
+    
+    rushJet.super.transfer(o, result)
+    
+    result.anims = o.anims
+    result.toY = o.toY
+    result.s = o.s
+    result.timer = o.timer
+    
+    return result
+  end)
+
 function rushJet:new(x, y, p, side, skin)
   rushJet.super.new(self, p)
   self.transform.x = (x or 0) - 14
   self.transform.y = view.y
   self.toY = (y or 0) - 4
   self:setRectangleCollision(27, 8)
-  self.tex = megautils.getResource(skin) or megautils.loadResource(skin, skin)
   self.skin = skin
+  self.tex = megautils.getResource(skin)
   self.anims = animationSet()
   self.anims:add("spawn", megautils.newAnimation("rushGrid", {1, 1}))
   self.anims:add("spawnLand", megautils.newAnimation("rushGrid", {2, 1, 1, 1, 3, 1}, 1/20))
@@ -865,10 +1046,6 @@ function rushJet:draw()
   end
 end
 
-rushCoil = weapon:extend()
-
-rushCoil.autoClean = false
-
 weapon.removeGroups["RUSH C."] = {"rushCoil", "megaBuster", "bassBuster", "rollBuster"}
 
 weapon.resources["RUSH C."] = function()
@@ -929,14 +1106,43 @@ weapon.colors["TANGO C."] = {
     two = {255, 255, 255}
   }
 
+rushCoil = weapon:extend()
+
+rushCoil.autoClean = false
+
+binser.register(rushCoil, "rushCoil", function(o)
+    local result = {}
+    
+    rushCoil.super.transfer(o, result)
+    
+    result.anims = o.anims
+    result.toY = o.toY
+    result.s = o.s
+    result.timer = o.timer
+    result.skin = o.skin
+    
+    return result
+  end, function(o)
+    local result = rushCoil(nil, nil, nil, nil, o.skin)
+    
+    rushCoil.super.transfer(o, result)
+    
+    result.anims = o.anims
+    result.toY = o.toY
+    result.s = o.s
+    result.timer = o.timer
+    
+    return result
+  end)
+
 function rushCoil:new(x, y, p, side, skin)
   rushCoil.super.new(self, p)
   self.transform.x = (x or 0) - 10
   self.transform.y = view.y-8
   self.toY = (y or 0) - 9
   self:setRectangleCollision(20, 19)
-  self.tex = megautils.getResource(skin)
   self.skin = skin
+  self.tex = megautils.getResource(skin)
   self.anims = animationSet()
   self.anims:add("spawn", megautils.newAnimation("rushGrid", {1, 1}))
   self.anims:add("spawnLand", megautils.newAnimation("rushGrid", {2, 1, 1, 1, 3, 1}, 1/20))
@@ -1020,10 +1226,6 @@ function rushCoil:draw()
   self.anims:draw(self.tex, math.floor(self.transform.x)-8, math.floor(self.transform.y)-12+(self.gravity >= 0 and 0 or 11))
 end
 
-stickWeapon = weapon:extend()
-
-stickWeapon.autoClean = false
-
 weapon.removeGroups["STICK W."] = {"stickWeapon"}
 
 weapon.resources["STICK W."] = function()
@@ -1038,6 +1240,24 @@ weapon.colors["STICK W."] = {
     one = {0, 168, 0},
     two = {255, 255, 255}
   }
+
+stickWeapon = weapon:extend()
+
+stickWeapon.autoClean = false
+
+binser.register(stickWeapon, "stickWeapon", function(o)
+    local result = {}
+    
+    stickWeapon.super.transfer(o, result)
+    
+    return result
+  end, function(o)
+    local result = stickWeapon()
+    
+    stickWeapon.super.transfer(o, result)
+    
+    return result
+  end)
 
 function stickWeapon:new(x, y, p, dir)
   stickWeapon.super.new(self, p)

@@ -12,6 +12,20 @@ pickupEntity = entity:extend()
 
 pickupEntity.autoClean = false
 
+function pickupEntity.transfer(from, to)
+  pickupEntity.super.transfer(from, to)
+  
+  to.timer = from.timer
+  to.fwp = from.fwp
+  to.gravDir = from.gravDir
+  to.mapID = from.mapID
+  to.despawn = from.despawn
+  to.path = from.path
+  to.removeWhenOutside = from.removeWhenOutside
+  to.autoCollision = from.autoCollision
+  to.autoGravity = from.autoGravity
+end
+
 pickupEntity.banIDs = {}
 
 function pickupEntity.isBanned(i, id, path)
@@ -96,6 +110,24 @@ smallHealth = pickupEntity:extend()
 
 smallHealth.autoClean = false
 
+binser.register(smallHealth, "smallHealth", function(o)
+    local result = {}
+    
+    smallHealth.super.transfer(o, result)
+    
+    result.anim = o.anim
+    
+    return result
+  end, function(o)
+    local result = smallHealth()
+    
+    smallHealth.super.transfer(o, result)
+    
+    result.anim = o.anim
+    
+    return result
+  end)
+
 mapEntity.register("smallHealth", function(v, map)
   megautils.add(spawner, v.x, v.y, 8, 6, function()
       return not pickupEntity.isBanned(smallHealth, v.id, map.path)
@@ -141,6 +173,24 @@ health = pickupEntity:extend()
 
 health.autoClean = false
 
+binser.register(health, "health", function(o)
+    local result = {}
+    
+    health.super.transfer(o, result)
+    
+    result.anim = o.anim
+    
+    return result
+  end, function(o)
+    local result = health()
+    
+    health.super.transfer(o, result)
+    
+    result.anim = o.anim
+    
+    return result
+  end)
+
 mapEntity.register("health", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 14, function()
       return not pickupEntity.isBanned(health, v.id, map.path)
@@ -185,6 +235,24 @@ end
 smallEnergy = pickupEntity:extend()
 
 smallEnergy.autoClean = false
+
+binser.register(smallEnergy, "smallEnergy", function(o)
+    local result = {}
+    
+    smallEnergy.super.transfer(o, result)
+    
+    result.anim = o.anim
+    
+    return result
+  end, function(o)
+    local result = smallEnergy()
+    
+    smallEnergy.super.transfer(o, result)
+    
+    result.anim = o.anim
+    
+    return result
+  end)
 
 mapEntity.register("smallEnergy", function(v, map)
   megautils.add(spawner, v.x, v.y, 8, 6, function()
@@ -241,6 +309,24 @@ energy = pickupEntity:extend()
 
 energy.autoClean = false
 
+binser.register(energy, "energy", function(o)
+    local result = {}
+    
+    energy.super.transfer(o, result)
+    
+    result.anim = o.anim
+    
+    return result
+  end, function(o)
+    local result = energy()
+    
+    energy.super.transfer(o, result)
+    
+    result.anim = o.anim
+    
+    return result
+  end)
+
 mapEntity.register("energy", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 10, function()
       return not pickupEntity.isBanned(energy, v.id, map.path)
@@ -295,6 +381,20 @@ end
 life = pickupEntity:extend()
 
 life.autoClean = false
+
+binser.register(life, "life", function(o)
+    local result = {}
+    
+    life.super.transfer(o, result)
+    
+    return result
+  end, function(o)
+    local result = life()
+    
+    life.super.transfer(o, result)
+    
+    return result
+  end)
 
 mapEntity.register("life", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 15, function()
@@ -358,6 +458,24 @@ eTank = pickupEntity:extend()
 
 eTank.autoClean = false
 
+binser.register(eTank, "eTank", function(o)
+    local result = {}
+    
+    eTank.super.transfer(o, result)
+    
+    result.anim = o.anim
+    
+    return result
+  end, function(o)
+    local result = eTank()
+    
+    eTank.super.transfer(o, result)
+    
+    result.anim = o.anim
+    
+    return result
+  end)
+
 mapEntity.register("eTank", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 15, function()
       return not pickupEntity.isBanned(eTank, v.id, map.path)
@@ -415,6 +533,24 @@ end
 wTank = pickupEntity:extend()
 
 wTank.autoClean = false
+
+binser.register(wTank, "eTank", function(o)
+    local result = {}
+    
+    wTank.super.transfer(o, result)
+    
+    result.anim = o.anim
+    
+    return result
+  end, function(o)
+    local result = wTank()
+    
+    wTank.super.transfer(o, result)
+    
+    result.anim = o.anim
+    
+    return result
+  end)
 
 mapEntity.register("wTank", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 15, function()

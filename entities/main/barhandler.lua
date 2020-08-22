@@ -7,6 +7,40 @@ healthHandler = basicEntity:extend()
 
 healthHandler.autoClean = false
 
+binser.register(healthHandler, "healthHandler", function(o)
+    local result = {}
+    
+    healthHandler.super.transfer(o, result)
+    
+    result.colorOne = o.colorOne
+    result.colorTwo = o.colorTwo
+    result.colorOutline = o.colorOutline
+    result.segments = o.segments
+    result.side = o.side
+    result.health = o.health
+    result.renderedHealth = o.renderedHealth
+    result.rot = o.rot
+    result.player = o.player
+    
+    return result
+  end, function(o)
+    local result = healthHandler()
+    
+    healthHandler.super.transfer(o, result)
+    
+    result.colorOne = o.colorOne
+    result.colorTwo = o.colorTwo
+    result.colorOutline = o.colorOutline
+    result.segments = o.segments
+    result.side = o.side
+    result.health = o.health
+    result.renderedHealth = o.renderedHealth
+    result.rot = o.rot
+    result.player = o.player
+    
+    return result
+  end)
+
 healthHandler.playerTimers = {}
 for i=1, maxPlayerCount do
   healthHandler.playerTimers[i] = -2
@@ -24,9 +58,9 @@ function healthHandler:new(colorOne, colorTwo, colorOutline, side, r, segments, 
   self.barOne = megautils.getResource("barOne")
   self.barTwo = megautils.getResource("barTwo")
   self.barOutline = megautils.getResource("barOutline")
-  self.colorOne = colorOne
-  self.colorTwo = colorTwo
-  self.colorOutline = colorOutline
+  self.colorOne = colorOne or {252, 224, 168}
+  self.colorTwo = colorTwo or {255, 255, 255}
+  self.colorOutline = {0, 0, 0}
   self.quads = {}
   self.quads[0] = quad(0, 48, 8, 8)
   self.quads[1] = quad(8, 48, 8, 8)
@@ -193,10 +227,10 @@ binser.register(weaponHandler, "weaponHandler", function(o)
     
     result.slotSize = o.slotSize
     result.currentSlot = o.currentSlot
-    result.weapons = table.clone(o.weapons)
-    result.energy = table.clone(o.energy)
-    result.slots = table.clone(o.slots)
-    result.renderedWE = table.clone(o.renderedWE)
+    result.weapons = o.weapons
+    result.energy = o.energy
+    result.slots = o.slots
+    result.renderedWE = o.renderedWE
     result.riseTimer = o.riseTimer
     result.side = o.side
     result.rot = o.rot

@@ -12,6 +12,36 @@ function entitySystem.deser(t)
   entitySystem.doDrawFlicker = t.doDrawFlicker
 end
 
+binser.register(entitySystem, "entitySystem", function(o)
+    return {
+        entities=o.entities,
+        updates=o.updates,
+        groups=o.groups,
+        all=o.all,
+        addQueue=o.addQueue,
+        removeQueue=o.removeQueue,
+        beginQueue=o.beginQueue,
+        recycle=o.recycle,
+        doSort=o.doSort,
+        inLoop=o.inLoop
+      }
+  end, function(o)
+      local result = entitySystem()
+      
+      result.entities=o.entities
+      result.updates=o.updates
+      result.groups=o.groups
+      result.all=o.all
+      result.addQueue=o.addQueue
+      result.removeQueue=o.removeQueue
+      result.beginQueue=o.beginQueue
+      result.recycle=o.recycle
+      result.doSort=o.doSort
+      result.inLoop=o.inLoop
+      
+      return result
+    end)
+
 entitySystem.drawCollision = false
 entitySystem.doDrawFlicker = true
 
@@ -472,6 +502,12 @@ function basicEntity.transfer(from, to)
   to.recycle = from.recycle
   to.recycling = from.recycling
   to.id = from.id
+  to.previousX = from.previousX
+  to.previousY = from.previousY
+  to.epX = from.epX
+  to.epY = from.epY
+  to.exclusivelySolidFor = table.clone(from.exclusivelySolidFor)
+  to.excludeSolidFor = table.clone(from.excludeSolidFor)
   if from.collisionShape.type == 0 then
     to:setRectangleCollision(from.collisionShape.w, from.collisionShape.h)
   elseif from.collisionShape.type == 1 then

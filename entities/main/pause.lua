@@ -2,6 +2,34 @@ mmWeaponsMenu = basicEntity:extend()
 
 mmWeaponsMenu.autoClean = false
 
+binser.register(mmWeaponsMenu, "mmWeaponsMenu", function(o)
+    local result = {}
+    
+    mmWeaponsMenu.super.transfer(o, result)
+    
+    result.segment = o.segment
+    result.x = o.x
+    result.y = o.y
+    result.cur = o.cur
+    result.last = o.last
+    result.changing = o.changing
+    
+    return result
+  end, function(o)
+    local result = mmWeaponsMenu(o.player)
+    
+    mmWeaponsMenu.super.transfer(o, result)
+    
+    result.segment = o.segment
+    result.x = o.x
+    result.y = o.y
+    result.cur = o.cur
+    result.last = o.last
+    result.changing = o.changing
+    
+    return result
+  end)
+
 function mmWeaponsMenu.resources()
   megautils.loadResource("assets/misc/weaponSelect.png", "weaponSelectBG")
   megautils.loadResource("assets/sfx/pause.ogg", "pause")

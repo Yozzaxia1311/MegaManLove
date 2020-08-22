@@ -1,17 +1,37 @@
 megautils.loadResource("assets/global/entities/moveAcrossPlatform.png", "moveArossPlatform")
 
-mapEntity.register("moveAcrossPlatform", function(v)
-  megautils.add(spawner, v.x-4, v.y-4, 40, 24, nil,
-    moveAcrossPlatform, v.x, v.y, v.properties.toX, v.properties.toY)
-end)
-
 moveAcrossPlatform = advancedEntity:extend()
+
+binser.register(moveAcrossPlatform, "moveAcrossPlatform", function(o)
+    local result = {}
+    
+    moveAcrossPlatform.super.transfer(o, result)
+    
+    result.state = o.state
+    result.tween = o.tween
+    
+    return result
+  end, function(o)
+    local result = moveAcrossPlatform()
+    
+    moveAcrossPlatform.super.transfer(o, result)
+    
+    result.state = o.state
+    result.tween = o.tween
+    
+    return result
+  end)
+
+mapEntity.register("moveAcrossPlatform", function(v)
+    megautils.add(spawner, v.x-4, v.y-4, 40, 24, nil,
+      moveAcrossPlatform, v.x, v.y, v.properties.toX, v.properties.toY)
+  end)
 
 function moveAcrossPlatform:new(x, y, toX, toY)
   moveAcrossPlatform.super.new(self)
   self.solidType = collision.SOLID
-  self.transform.x = x
-  self.transform.y = y
+  self.transform.x = x or 0
+  self.transform.y = y or 0
   self:setRectangleCollision(32, 16)
   self.tex = megautils.getResource("moveArossPlatform")
   self.quad = quad(0, 0, 32, 16)

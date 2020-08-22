@@ -2,14 +2,36 @@ megautils.loadResource("assets/global/entities/met.png", "met")
 
 met = advancedEntity:extend()
 
+binser.register(met, "met", function(o)
+    local result = {}
+    
+    met.super.transfer(o, result)
+    
+    result.c = o.c
+    result.s = o.s
+    result.timer = o.timer
+    
+    return result
+  end, function(o)
+    local result = met()
+    
+    met.super.transfer(o, result)
+    
+    result.c = o.c
+    result.s = o.s
+    result.timer = o.timer
+    
+    return result
+  end)
+
 mapEntity.register("met", function(v)
   megautils.add(spawner, v.x, v.y+2, 14, 14, nil, met, v.x, v.y+2)
 end)
 
 function met:new(x, y)
   met.super.new(self)
-  self.transform.y = y
-  self.transform.x = x
+  self.transform.x = x or 0
+  self.transform.y = y or 0
   self:setRectangleCollision(14, 14)
   self.t = megautils.getResource("met")
   self.c = "safe"
@@ -87,6 +109,20 @@ end
 
 metBullet = weapon:extend()
 
+binser.register(metBullet, "metBullet", function(o)
+    local result = {}
+    
+    metBullet.super.transfer(o, result)
+    
+    return result
+  end, function(o)
+    local result = metBullet()
+    
+    metBullet.super.transfer(o, result)
+    
+    return result
+  end)
+
 function metBullet:new(x, y, p, vx, vy)
   metBullet.super.new(self, p, true)
   
@@ -99,8 +135,8 @@ function metBullet:new(x, y, p, vx, vy)
   
   self.transform.x = x or 0
   self.transform.y = y or 0
-  self.velocity.velx = vx
-  self.velocity.vely = vy
+  self.velocity.velx = vx or 0
+  self.velocity.vely = vy or 0
   self.damage = megautils.diffValue(-2, {easy=-1, normal=-2, hard=-3})
 end
 
