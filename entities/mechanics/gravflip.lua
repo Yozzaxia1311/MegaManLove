@@ -2,6 +2,24 @@ megautils.loadResource("assets/sfx/gravityFlip.ogg", "gravityFlip")
 
 gravFlip = basicEntity:extend()
 
+binser.register(gravFlip, "gravFlip", function(o)
+    local result = {}
+    
+    gravFlip.super.transfer(o, result)
+    
+    result.dir = o.dir
+    
+    return result
+  end, function(o)
+    local result = gravFlip()
+    
+    gravFlip.super.transfer(o, result)
+    
+    result.dir = o.dir
+    
+    return result
+  end)
+
 mapEntity.register("gravFlip", function(v)
     megautils.add(gravFlip, v.x, v.y, v.width, v.height, v.properties.dir)
   end)
@@ -12,7 +30,6 @@ function gravFlip:new(x, y, w, h, dir)
   self.transform.y = y
   self:setRectangleCollision(w, h)
   self.dir = dir or 1
-  self.doEffect = false
 end
 
 function gravFlip:added()

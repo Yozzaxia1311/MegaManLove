@@ -274,9 +274,9 @@ function megaMan.ser()
     we = megaMan.weaponHandler,
     players = megaMan.allPlayers,
     main = megaMan.mainPlayer ~= nil,
-    outline = table.clone(megaMan.colorOutline),
-    one = table.clone(megaMan.colorOne),
-    two = table.clone(megaMan.colorTwo),
+    outline = megaMan.colorOutline,
+    one = megaMan.colorOne,
+    two = megaMan.colorTwo,
     once = megaMan.once
   }
 end

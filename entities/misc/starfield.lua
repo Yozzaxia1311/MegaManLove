@@ -5,9 +5,9 @@ banner = basicEntity:extend()
 
 function banner.ser()
   return {
-      outline = table.clone(banner.colorOutline),
-      one = table.clone(banner.colorOne),
-      two = table.clone(banner.colorTwo)
+      outline = banner.colorOutline,
+      one = banner.colorOne,
+      two = banner.colorTwo
     }
 end
 

@@ -7,7 +7,7 @@ function states.ser()
       switched = states.switched,
       recordOnSwitch = states.recordOnSwitch,
       openRecord = states.openRecord,
-      queue = states.queue and table.clone(states.queue)
+      queue = states.queue
     }
 end
 

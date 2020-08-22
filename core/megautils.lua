@@ -28,16 +28,11 @@ function megautils.ser()
     }
   
   for k, v in ipairs(callbacks) do
-    if type(megautils[k]) == "table" then
-      result[k] = table.clone(v)
-    else
-      result[k] = v
-    end
+    result[k] = v
   end
   
-  result._q = table.clone(megautils._q)
-  result._runFileOnce = table.clone(megautils._runFileOnce)
-  result._frozen = table.clone(megautils._frozen)
+  result._q = megautils._q
+  result._frozen = megautils._frozen
   result.shake = megautils.shake
   result.shakeX = megautils.shakeX
   result.shakeY = megautils.shakeY
@@ -78,7 +73,6 @@ function megautils.deser(t)
   end
   
   megautils._q = result._q
-  megautils._runFileOnce = result._runFileOnce
   megautils._frozen = result._frozen
   megautils.shake = result.shake
   megautils.shakeX = result.shakeX
@@ -290,8 +284,6 @@ function megautils.disableConsole()
   console.y = -math.huge
   useConsole = false
 end
-
-megautils._runFileOnce = {}
 
 function megautils.runFile(path)
   return love.filesystem.load(path)()

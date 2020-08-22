@@ -1,5 +1,19 @@
 ice = basicEntity:extend()
 
+binser.register(ice, "ice", function(o)
+    local result = {}
+    
+    ice.super.transfer(o, result)
+    
+    return result
+  end, function(o)
+    local result = ice()
+    
+    ice.super.transfer(o, result)
+    
+    return result
+  end)
+
 mapEntity.register("ice", function(v)
   megautils.add(ice, v.x, v.y, v.width, v.height)
 end)
@@ -58,11 +72,11 @@ function ice.gFunc(s)
 end
 
 megautils.resetGameObjectsFuncs.ice = function()
-    megautils.playerGroundFuncs.ice = ice.gFunc
-    megautils.playerKnockbackFuncs.ice = ice.gFunc
-    megautils.playerAirFuncs.ice = ice.elseFunc
-    megautils.playerClimbFuncs.ice = ice.elseFunc
-    megautils.playerTrebleFuncs.ice = ice.elseFunc
+    megautils.playerGroundFuncs.ice = cloneFunc(ice.gFunc)
+    megautils.playerKnockbackFuncs.ice = cloneFunc(ice.gFunc)
+    megautils.playerAirFuncs.ice = cloneFunc(ice.elseFunc)
+    megautils.playerClimbFuncs.ice = cloneFunc(ice.elseFunc)
+    megautils.playerTrebleFuncs.ice = cloneFunc(ice.elseFunc)
   end
 
 megautils.cleanFuncs.ice = function()

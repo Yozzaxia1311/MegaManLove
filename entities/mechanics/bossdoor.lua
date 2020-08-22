@@ -5,6 +5,54 @@ bossDoor = basicEntity:extend()
 
 bossDoor.autoClean = false
 
+binser.register(bossDoor, "bossDoor", function(o)
+    local result = {}
+    
+    bossDoor.super.transfer(o, result)
+    
+    result.scrollx = o.scrollx
+    result.scrolly = o.scrolly
+    result.timer = o.timer
+    result.segments = o.segments
+    result.maxSegments = o.maxSegments
+    result.spd = o.spd
+    result.state = o.state
+    result.player = o.player
+    result.canWalkThrough = o.canWalkThrough
+    result.isLocked = o.isLocked
+    result.tileWidth = o.tileWidth
+    result.tileHeight = o.tileHeight
+    result.tileSpeed = o.tileSpeed
+    result.useMapTiles = o.useMapTiles
+    result.name = o.name
+    result.dir = o.dir
+    
+    return result
+  end, function(o)
+    local result = bossDoor()
+    
+    bossDoor.super.transfer(o, result)
+    
+    result.scrollx = o.scrollx
+    result.scrolly = o.scrolly
+    result.timer = o.timer
+    result.segments = o.segments
+    result.maxSegments = o.maxSegments
+    result.spd = o.spd
+    result.state = o.state
+    result.player = o.player
+    result.canWalkThrough = o.canWalkThrough
+    result.isLocked = o.isLocked
+    result.tileWidth = o.tileWidth
+    result.tileHeight = o.tileHeight
+    result.tileSpeed = o.tileSpeed
+    result.useMapTiles = o.useMapTiles
+    result.name = o.name
+    result.dir = o.dir
+    
+    return result
+  end)
+
 mapEntity.register("bossDoor", function(v)
   local seg = (v.properties.dir=="up" or v.properties.dir=="down") and 
     math.round(v.width/v.properties.tileWidth) or math.round(v.height/v.properties.tileHeight)

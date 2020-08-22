@@ -430,7 +430,7 @@ end
 
 -- Save state to memory
 function ser()
-  return {
+  local data = {
       cscreen = cscreen.ser(),
       view = view.ser(),
       entitySystem = entitySystem.ser(),
@@ -458,6 +458,7 @@ function ser()
       basicEntity = basicEntity.id,
       mapEntity = mapEntity.ser()
     }
+  return binser.serialize(data)
 end
 
 -- Load state

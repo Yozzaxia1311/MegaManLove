@@ -377,6 +377,24 @@ section = basicEntity:extend()
 
 section.autoClean = false
 
+function section.ser()
+  return {
+      hash = section.hash,
+      names = section.names,
+      init = section.init
+    }
+end
+
+function section.deser(t)
+  section.hash = t.hash
+  section.names = t.names
+  section.init = t.init
+end
+
+section.hash = {}
+section.names = {}
+section.init = {}
+
 mapEntity.register("section", function(v)
     section.addSection(section(v.x, v.y, v.width, v.height, v.properties.name))
   end, 1, true)
@@ -392,9 +410,9 @@ mapEntity.register("section", function(v)
 
 function section:new(x, y, w, h, n)
   section.super.new(self)
-  self.transform.x = x
-  self.transform.y = y
-  self:setRectangleCollision(w, h)
+  self.transform.x = x or 0
+  self.transform.y = y or 0
+  self:setRectangleCollision(w or view.w, h or view.h)
   if n and n ~= "" then
     self.name = n
     section.names[self.name] = self
@@ -430,10 +448,6 @@ function section:initSection()
     end
   end
 end
-
-section.hash = {}
-section.names = {}
-section.init = {}
 
 function section.getSections(xx, yy, ww, hh)
   local result = {}

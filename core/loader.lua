@@ -6,13 +6,13 @@ function loader.ser()
   for k, v in pairs(loader.resources) do
     result.resources[k] = {path=v.path, nick=v.nick}
     if v.parameters then
-      result.resources[k].parameters = table.clone(v.parameters)
+      result.resources[k].parameters = v.parameters
     end
   end
   for k, v in pairs(loader.locked) do
     result.locked[k] = {path=v.path, nick=v.nick}
     if v.parameters then
-      result.locked[k].parameters = table.clone(v.parameters)
+      result.locked[k].parameters = v.parameters
     end
   end
   

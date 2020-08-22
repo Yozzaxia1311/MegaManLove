@@ -2,6 +2,20 @@ solid = basicEntity:extend()
 
 solid.autoClean = false
 
+binser.register(solid, "solid", function(o)
+    local result = {}
+    
+    solid.super.transfer(o, result)
+    
+    return result
+  end, function(o)
+    local result = solid()
+    
+    solid.super.transfer(o, result)
+    
+    return result
+  end)
+
 mapEntity.register("solid", function(v)
   megautils.add(solid, v.x, v.y, v.width, v.height)
 end, 0, true)
@@ -40,6 +54,20 @@ megautils.loadResource("assets/misc/slopes/slopeRightHalfUpperInvert.png", "slop
 slope = basicEntity:extend()
 
 slope.autoClean = false
+
+binser.register(slope, "slope", function(o)
+    local result = {}
+    
+    slope.super.transfer(o, result)
+    
+    return result
+  end, function(o)
+    local result = slope()
+    
+    slope.super.transfer(o, result)
+    
+    return result
+  end)
 
 mapEntity.register("slope", function(v)
   megautils.add(slope, v.x, v.y, megautils.getResourceTable(v.properties.mask))

@@ -7,6 +7,18 @@ particle = entity:extend()
 
 particle.autoClean = false
 
+function particle.transfer(from, to)
+  particle.super.transfer(from, to)
+  
+  to.user = from.user
+  to._didCol = from._didCol
+  to.autoCollision = from.autoCollision
+  to.autoGravity = from.autoGravity
+  to.removeWhenOutside = from.removeWhenOutside
+  to.doAutoCollisionBeforeUpdate = from.doAutoCollisionBeforeUpdate
+  to.flipWithUser = from.flipWithUser
+end
+
 function particle:new(user)
   particle.super.new(self)
   

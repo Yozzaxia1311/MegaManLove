@@ -6,7 +6,7 @@ function mmMusic.ser()
       curID=mmMusic.curID,
       playing=not mmMusic.stopped(),
       volume=mmMusic.getVolume(),
-      queue=table.clone(mmMusic.queue),
+      queue=mmMusic.queue,
       locked=mmMusic.locked
     }
 end

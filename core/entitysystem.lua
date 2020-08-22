@@ -508,6 +508,10 @@ function basicEntity.transfer(from, to)
   to.epY = from.epY
   to.exclusivelySolidFor = table.clone(from.exclusivelySolidFor)
   to.excludeSolidFor = table.clone(from.excludeSolidFor)
+  to.spawnEarlyDuringTransition = from.spawnEarlyDuringTransition
+  to.despawnLateDuringTransition = from.despawnLateDuringTransition
+  to.death = from.death
+  to.ladder = from.ladder
   if from.collisionShape.type == 0 then
     to:setRectangleCollision(from.collisionShape.w, from.collisionShape.h)
   elseif from.collisionShape.type == 1 then
@@ -851,8 +855,8 @@ mapEntity.autoClean = false
 
 function mapEntity.ser()
   return {
-      registered = table.clone(mapEntity.registered),
-      ranFiles = table.clone(mapEntity.ranFiles),
+      registered = mapEntity.registered,
+      ranFiles = mapEntity.ranFiles,
       doSort = mapEntity.doSort
     }
 end

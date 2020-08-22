@@ -5,6 +5,26 @@ splash = particle:extend()
 
 splash.autoClean = false
 
+binser.register(splash, "splash", function(o)
+    local result = {}
+    
+    splash.super.transfer(o, result)
+    
+    result.anim = o.anim
+    result.rot = o.rot
+    
+    return result
+  end, function(o)
+    local result = splash()
+    
+    splash.super.transfer(o, result)
+    
+    result.anim = o.anim
+    result.rot = o.rot
+    
+    return result
+  end)
+
 function splash:new(offx, offy, p, side)
   splash.super.new(self, p)
   self.offx = offx or 0
@@ -40,15 +60,35 @@ water = basicEntity:extend()
 
 water.autoClean = false
 
+binser.register(water, "water", function(o)
+    local result = {}
+    
+    water.super.transfer(o, result)
+    
+    result.grav = o.grav
+    result.current = o.current
+    
+    return result
+  end, function(o)
+    local result = water()
+    
+    water.super.transfer(o, result)
+    
+    result.grav = o.grav
+    result.current = o.current
+    
+    return result
+  end)
+
 mapEntity.register("water", function(v)
   megautils.add(water, v.x, v.y, v.width, v.height, v.properties.grav)
 end)
 
 function water:new(x, y, w, h, grav)
   water.super.new(self)
-  self.transform.x = x
-  self.transform.y = y
-  self:setRectangleCollision(w, h)
+  self.transform.x = x or 0
+  self.transform.y = y or 0
+  self:setRectangleCollision(w or 16, h or 16)
   self.current = false
   self.grav = grav or 0.4
 end
@@ -115,15 +155,33 @@ space = basicEntity:extend()
 
 space.autoClean = false
 
+binser.register(space, "space", function(o)
+    local result = {}
+    
+    space.super.transfer(o, result)
+    
+    result.grav = o.grav
+    
+    return result
+  end, function(o)
+    local result = space()
+    
+    space.super.transfer(o, result)
+    
+    result.grav = o.grav
+    
+    return result
+  end)
+
 mapEntity.register("space", function(v)
   megautils.add(space, v.x, v.y, v.width, v.height, v.properties.grav)
 end)
 
 function space:new(x, y, w, h, grav)
   space.super.new(self)
-  self.transform.x = x
-  self.transform.y = y
-  self:setRectangleCollision(w, h)
+  self.transform.x = x or 0
+  self.transform.y = y or 0
+  self:setRectangleCollision(w or 16, h or 16)
   self.grav = grav or 0.4
 end
 

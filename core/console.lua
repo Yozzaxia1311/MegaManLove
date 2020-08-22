@@ -30,15 +30,15 @@ function console.ser()
     inputCycle=console.inputCycle,
     state=console.state,
     wait=console.wait,
-    waitBuffer=table.clone(console.waitBuffer),
+    waitBuffer=console.waitBuffer,
     x=console.x,
     y=console.y,
     w=console.w,
     h=console.h,
-    ignoreKeys=table.clone(console.ignoreKeys),
-    lines=table.clone(console.lines),
-    inputList=table.clone(console.inputList),
-    aliases=table.clone(console.aliases)
+    ignoreKeys=console.ignoreKeys,
+    lines=console.lines,
+    inputList=console.inputList,
+    aliases=console.aliases
   }
 end
 

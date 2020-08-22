@@ -9,14 +9,14 @@ weapon.autoClean = false
 
 function weapon.ser()
   return {
-      removeGroups = table.clone(weapon.removeGroups),
-      resources = table.clone(weapon.resources),
-      colors = table.clone(weapon.colors),
-      chargeColors = table.clone(weapon.chargeColors),
-      chargeSounds = table.clone(weapon.chargeSounds),
-      icons = table.clone(weapon.icons),
-      segments = table.clone(weapon.segments),
-      sevenWayAnim = table.clone(weapon.sevenWayAnim),
+      removeGroups = weapon.removeGroups,
+      resources = weapon.resources,
+      colors = weapon.colors,
+      chargeColors = weapon.chargeColors,
+      chargeSounds = weapon.chargeSounds,
+      icons = weapon.icons,
+      segments = weapon.segments,
+      sevenWayAnim = weapon.sevenWayAnim,
       _activeQuad = weapon._activeQuad,
       _inactiveQuad = weapon._inactiveQuad
     }
