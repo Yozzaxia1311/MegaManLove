@@ -35,6 +35,7 @@ mmMusic.loop = true
 mmMusic.rate = 0
 mmMusic.time = 0
 mmMusic.seek = 0
+mmMusic.buffers = 3
 mmMusic._queue = nil
 mmMusic.paused = true
 mmMusic.stopping = true
@@ -165,7 +166,7 @@ function mmMusic._threadSeek(s)
   if s and mmMusic.time ~= s and mmMusic.music and mmMusic.dec then
     mmMusic.music:seek(mmMusic.music:getDuration()+1)
     mmMusic.time = s
-    mmMusic.decode()
+    mmMusic._threadUpdate()
   end
 end
 
@@ -214,13 +215,17 @@ function mmMusic._threadPlay(curID, loop, loopPoint, time)
   
   mmMusic.dec = love.sound.newDecoder(curID, 1024*16)
   mmMusic.time = time or 0
-  mmMusic.music = love.audio.newQueueableSource(mmMusic.dec:getSampleRate(), mmMusic.dec:getBitDepth(), mmMusic.dec:getChannelCount(), 6)
   mmMusic.rate = ((1024*16) / ((mmMusic.dec:getBitDepth() * mmMusic.dec:getChannelCount()) / 8)) / mmMusic.dec:getSampleRate()
+  mmMusic.buffers = 3
+  while mmMusic.dec:getDuration() * mmMusic.buffers < mmMusic.rate do -- incase of unbelievably short "music".
+    mmMusic.buffers = mmMusic.buffers + 1
+  end
+  mmMusic.music = love.audio.newQueueableSource(mmMusic.dec:getSampleRate(), mmMusic.dec:getBitDepth(), mmMusic.dec:getChannelCount(), mmMusic.buffers + 2)
   mmMusic.curID = curID
   mmMusic.loopPoint = loopPoint
   mmMusic.loop = loop
   
-  mmMusic._threadDecode()
+  mmMusic._threadUpdate()
   mmMusic.music:play()
 end
 
@@ -257,7 +262,10 @@ end
 
 function mmMusic._threadUpdate()
   if mmMusic.music then
-    while mmMusic.music:getFreeBufferCount() > 3 do
+    while mmMusic.music:getFreeBufferCount() > mmMusic.buffers do
+      if mmMusic.music:getDuration() == 0 then
+        mmMusic._threadDecode()
+      end
       mmMusic.time = math.min(mmMusic.time + mmMusic.rate, mmMusic.dec:getDuration())
       mmMusic._threadDecode()
       if not mmMusic.music then
