@@ -190,8 +190,8 @@ function mmMusic._threadDecode()
       mmMusic.dec:seek(mmMusic.loopPoint)
       mmMusic.music:queue(mmMusic.dec:decode())
       mmMusic.time = mmMusic.loopPoint
-    else
-      mmMusic.music:stop()
+    elseif mmMusic.time + mmMusic.music:tell() == mmMusic.dec:getDuration() then
+      mmMusic._threadStop()
     end
   end
 end
@@ -258,8 +258,11 @@ end
 function mmMusic._threadUpdate()
   if mmMusic.music then
     while mmMusic.music:getFreeBufferCount() > 2 do
-      mmMusic.time = mmMusic.time + mmMusic.rate
+      mmMusic.time = math.min(mmMusic.time + mmMusic.rate, mmMusic.dec:getDuration())
       mmMusic._threadDecode()
+      if not mmMusic.music then
+        return
+      end
     end
     mmMusic.seek = mmMusic.music:tell()
   end

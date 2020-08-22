@@ -77,6 +77,15 @@ function entitySystem:entityFromID(id)
   end
 end
 
+function entitySystem:getLayer(l)
+  for i=1, #self.entities do
+    local v = self.entities[i]
+    if v.layer == l then
+      return v
+    end
+  end
+end
+
 function entitySystem:add(c, ...)
   local e = self:getRecycled(c, ...)
   if not e.static then
@@ -85,15 +94,12 @@ function entitySystem:add(c, ...)
       local v = self.entities[i]
       if v.layer == e.layer then
         v.data[#v.data+1] = e
-        e.actualLayer = v
         done = true
         break
       end
     end
     if not done then
       self.entities[#self.entities+1] = {layer=e.layer, data={e}, flicker=true}
-      e.actualLayer = self.entities[#self.entities]
-      e.layer = e.actualLayer.layer
       self.doSort = true
     end
     self.updates[#self.updates+1] = e
@@ -125,15 +131,12 @@ function entitySystem:adde(e)
       local v = self.entities[i]
       if v.layer == e.layer then
         v.data[#v.data+1] = e
-        e.actualLayer = v
         done = true
         break
       end
     end
     if not done then
       self.entities[#self.entities+1] = {layer=e.layer, data={e}, flicker=true}
-      e.actualLayer = self.entities[#self.entities]
-      e.layer = e.actualLayer.layer
       self.doSort = true
     end
     self.updates[#self.updates+1] = e
@@ -193,9 +196,10 @@ end
 
 function entitySystem:makeStatic(e)
   table.quickremovevaluearray(self.updates, e)
-  table.quickremovevaluearray(e.actualLayer.data, e)
-  if #e.actualLayer.data == 0 then
-    table.removevaluearray(self.entities, e.actualLayer)
+  local al = self:getLayer(e.layer)
+  table.quickremovevaluearray(al.data, e)
+  if #al.data == 0 then
+    table.removevaluearray(self.entities, al)
   end
   self.static[#self.static+1] = e
   e.static = true
@@ -210,15 +214,12 @@ function entitySystem:revertFromStatic(e)
       local v = self.entities[i]
       if v.layer == e.layer then
         v.data[#v.data+1] = e
-        e.actualLayer = v
         done = true
         break
       end
     end
     if not done then
       self.entities[#self.entities+1] = {layer=e.layer, data={e}, flicker=true}
-      e.actualLayer = self.entities[#self.entities]
-      e.layer = e.actualLayer.layer
       self.doSort = true
     end
     self.updates[#self.updates+1] = e
@@ -229,9 +230,10 @@ end
 
 function entitySystem:setLayer(e, l)
   if l and e.layer ~= l then
-    table.quickremovevaluearray(e.actualLayer.data, e)
-    if #e.actualLayer.data == 0 then
-      table.removevaluearray(self.entities, e.actualLayer)
+    local al = self:getLayer(e.layer)
+    table.quickremovevaluearray(al.data, e)
+    if #al.data == 0 then
+      table.removevaluearray(self.entities, al)
     end
     e.layer = l
     local done = false
@@ -239,15 +241,12 @@ function entitySystem:setLayer(e, l)
       local v = self.entities[i]
       if v.layer == e.layer then
         v.data[#v.data+1] = e
-        e.actualLayer = v
         done = true
         break
       end
     end
     if not done then
       self.entities[#self.entities+1] = {layer=e.layer, data={e}, flicker=true}
-      e.actualLayer = self.entities[#self.entities]
-      e.layer = e.actualLayer.layer
       self.doSort = true
     end
   end
@@ -267,16 +266,15 @@ function entitySystem:remove(e)
   e.isRemoved = true
   e:removed()
   e:removeFromAllGroups()
+  local al = self:getLayer(e.layer)
   if e.static then
     table.quickremovevaluearray(self.static, e)
-    e.static = false
-    e:staticToggled()
   else
-    table.quickremovevaluearray(e.actualLayer.data, e)
+    table.quickremovevaluearray(al.data, e)
     table.quickremovevaluearray(self.updates, e)
   end
-  if #e.actualLayer.data == 0 then
-    table.removevaluearray(self.entities, e.actualLayer)
+  if #al.data == 0 then
+    table.removevaluearray(self.entities, al)
   end
   table.quickremovevaluearray(self.all, e)
   table.quickremovevaluearray(self.beginQueue, e)

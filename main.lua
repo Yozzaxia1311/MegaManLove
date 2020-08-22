@@ -352,7 +352,7 @@ function love.draw()
 end
 
 function love.quit()
-  if mmMusic then
+  if mmMusic and mmMusic.thread:isRunning() then
     mmMusic.stop()
     mmMusic.thread:wait()
   end
