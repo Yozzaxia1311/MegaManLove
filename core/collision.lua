@@ -563,7 +563,7 @@ end
 
 function collision.performDeath(self, death)
   if death.death then
-    death:interact(self, death.damage, true)
+    death:interact(self, death.damage or -99999, true)
   end
 end
 
