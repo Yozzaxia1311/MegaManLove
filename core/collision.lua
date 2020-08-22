@@ -570,9 +570,8 @@ end
 function collision.getLadders()
   local result = {}
   local all = megautils.groups().collision
-  local possible = self.iFrames == 0 and self.collisionShape and checkFalse(self.blockCollision) and all
   
-  if possible then
+  if all then
     for i=1, #all do
       local v = all[i]
       if v.ladder then
@@ -580,4 +579,6 @@ function collision.getLadders()
       end
     end
   end
+  
+  return result
 end
