@@ -32,6 +32,7 @@ function megautils.ser()
   end
   
   result._q = megautils._q
+  result._ranFiles = megautils._ranFiles
   result._frozen = megautils._frozen
   result.shake = megautils.shake
   result.shakeX = megautils.shakeX
@@ -81,6 +82,10 @@ function megautils.deser(t)
   megautils.shakeTimer = result.shakeTimer
   megautils.maxShakeTime = result.maxShakeTime
   megautils.shakeLength = result.shakeLength
+    
+  for k, v in ipairs(result._ranFiles) do
+    megautils.runFile(v)
+  end
 end
 
 --Game / state callback functions.
@@ -285,7 +290,12 @@ function megautils.disableConsole()
   useConsole = false
 end
 
+megautils._ranFiles = {}
+
 function megautils.runFile(path)
+  if not table.contains(megautils._ranFiles, path) then
+    megautils._ranFiles[#megautils._ranFiles+1] = path
+  end
   return love.filesystem.load(path)()
 end
 
@@ -525,7 +535,7 @@ function megautils.unload()
   end
   megautils.cleanCallbacks()
   megautils.unloadAllResources()
-  megautils._runFileOnce = {}
+  megautils._ranFiles = {}
   megautils._frozen = {}
 end
 

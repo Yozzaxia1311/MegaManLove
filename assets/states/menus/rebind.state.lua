@@ -7,6 +7,30 @@ end
 
 rebinder = basicEntity:extend()
 
+binser.register(rebinder, "rebinder", function(o)
+    local result = {}
+    
+    rebinder.super.transfer(o, result)
+    
+    result.currentKey = o.currentKey
+    result.step = o.step
+    result.done = o.done
+    result.data = o.data
+    
+    return result
+  end, function(o)
+    local result = rebinder()
+    
+    rebinder.super.transfer(o, result)
+    
+    result.currentKey = o.currentKey
+    result.step = o.step
+    result.done = o.done
+    result.data = o.data
+    
+    return result
+  end)
+
 function rebinder:new()
   lastPressed = nil
   rebinder.super.new(self)

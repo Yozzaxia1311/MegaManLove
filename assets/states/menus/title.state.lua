@@ -1,12 +1,39 @@
 local titleState = state:extend()
 
 function titleState:begin()
-  megautils.loadResource("assets/misc/title.png", "title")
   megautils.add(title)
   megautils.setMusicLock(false)
 end
 
+megautils.loadResource("assets/misc/title.png", "title")
+
 title = basicEntity:extend()
+
+binser.register(title, "title", function(o)
+    local result = {}
+    
+    title.super.transfer(o, result)
+    
+    result.textTimer = o.textTimer
+    result.drawText = o.drawText
+    result.s = o.s
+    result.oneOff = o.oneOff
+    result.twoOff = o.twoOff
+    
+    return result
+  end, function(o)
+    local result = title()
+    
+    title.super.transfer(o, result)
+    
+    result.textTimer = o.textTimer
+    result.drawText = o.drawText
+    result.s = o.s
+    result.oneOff = o.oneOff
+    result.twoOff = o.twoOff
+    
+    return result
+  end)
 
 function title:new()
   title.super.new(self)

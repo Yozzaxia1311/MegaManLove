@@ -5,12 +5,48 @@ function stageSelectState:begin()
   love.graphics.setBackgroundColor(0, 0, 0, 1)
 end
 
-stageSelect = basicEntity:extend()
-
 megautils.loadResource("assets/misc/select.png", "mugshots")
 megautils.loadResource("assets/sfx/ascend.ogg", "selected")
 megautils.loadResource("assets/sfx/cursorMove.ogg", "cursorMove")
 megautils.loadResource(0, 0, 63, 62, 2, "megaManGrid")
+
+stageSelect = basicEntity:extend()
+
+binser.register(stageSelect, "stageSelect", function(o)
+    local result = {}
+    
+    stageSelect.super.transfer(o, result)
+    
+    result.anims = o.anims
+    result.timer = o.timer
+    result.oldX = o.oldX
+    result.oldY = o.oldY
+    result.x = o.x
+    result.y = o.y
+    result.blink = o.blink
+    result.stop = o.stop
+    result.selected = o.selected
+    result.selectBlink = o.selectBlink
+    
+    return result
+  end, function(o)
+    local result = stageSelect()
+    
+    stageSelect.super.transfer(o, result)
+    
+    result.anims = o.anims
+    result.timer = o.timer
+    result.oldX = o.oldX
+    result.oldY = o.oldY
+    result.x = o.x
+    result.y = o.y
+    result.blink = o.blink
+    result.stop = o.stop
+    result.selected = o.selected
+    result.selectBlink = o.selectBlink
+    
+    return result
+  end)
 
 function stageSelect:new()
   stageSelect.super.new(self)
@@ -56,8 +92,6 @@ function stageSelect:new()
   self.timer = 0
   self.oldX = self.transform.x
   self.oldY = self.transform.y
-  self.oldNewX = 0
-  self.oldNewY = 0
   self.x = 1
   self.y = 1
   self.transform.x = self.oldX + self.x*80

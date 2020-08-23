@@ -2,7 +2,7 @@ parallax = basicEntity:extend()
 
 parallax.autoClean = false
 
-binser.register(parallax, "blast", function(o)
+binser.register(parallax, "parallax", function(o)
     local result = {}
     
     parallax.super.transfer(o, result)

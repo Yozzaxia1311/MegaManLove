@@ -9,6 +9,32 @@ end
 
 disclaimer = basicEntity:extend()
 
+binser.register(disclaimer, "disclaimer", function(o)
+    local result = {}
+    
+    disclaimer.super.transfer(o, result)
+    
+    result.timer = o.timer
+    result.alpha = o.alpha
+    result.otherTimer = o.otherTimer
+    result.check = o.check
+    result.cycler = o.cycler
+    
+    return result
+  end, function(o)
+    local result = disclaimer()
+    
+    disclaimer.super.transfer(o, result)
+    
+    result.timer = o.timer
+    result.alpha = o.alpha
+    result.otherTimer = o.otherTimer
+    result.check = o.check
+    result.cycler = o.cycler
+    
+    return result
+  end)
+
 function disclaimer:new()
   disclaimer.super.new(self)
   self.transform.x = 0

@@ -4,7 +4,7 @@ borderRight = "assets/misc/borderRight.png"
 isMobile = love.system.getOS() == "Android" or love.system.getOS() == "iOS"
 
 -- Splash screen
-if not isMobile and love.graphics and love.graphics.isActive() then
+if not isMobile and love.graphics then
   local s = love.graphics.newImage(splash)
   love.graphics.clear(0, 0, 0, 1)
   love.graphics.draw(s, (love.graphics.getWidth()/2)-(s:getWidth()/2), (love.graphics.getHeight()/2)-(s:getHeight()/2))
@@ -358,6 +358,100 @@ function love.quit()
   end
 end
 
+function love.errorhandler(msg)
+  local utf8 = require("utf8")
+  
+  print((debug.traceback("Error: " .. tostring(msg), 1+2):gsub("\n[^\n]+$", "")))
+  
+  if not love.window or not love.graphics or not love.event or not view or not view.canvas or not cscreen then
+    return
+  end
+  
+  local trace = debug.traceback()
+  local sanitizedmsg = {}
+  local err = {}
+  
+  for char in msg:gmatch(utf8.charpattern) do
+    table.insert(sanitizedmsg, char)
+  end
+  sanitizedmsg = table.concat(sanitizedmsg)
+  
+  table.insert(err, "Error\n")
+  table.insert(err, sanitizedmsg)
+  
+  if #sanitizedmsg ~= #msg then
+    table.insert(err, "Invalid UTF-8 string in error message.")
+  end
+  
+  table.insert(err, "\n")
+  
+  for l in trace:gmatch("(.-)\n") do
+    if not l:match("boot.lua") then
+      l = l:gsub("stack traceback:", "Traceback\n")
+      table.insert(err, l)
+    end
+  end
+
+  local p = table.concat(err, "\n")
+
+  p = p:gsub("\t", "")
+  p = p:gsub("%[string \"(.-)\"%]", "%1")
+  
+  if not love.graphics.isCreated() or not love.window.isOpen() then
+    local success, status = pcall(love.window.setMode, 800, 600)
+    if not success or not status then
+      return
+    end
+  end
+  
+  love.graphics.setFont(mmFont)
+  
+  local old = view.canvas
+  local lc = love.graphics.newCanvas(love.graphics.getDimensions())
+  local pos = 32
+  
+  love.graphics.setCanvas(lc)
+  love.graphics.setColor(1, 1, 1, 1)
+  love.graphics.draw(view.canvas)
+  love.graphics.setCanvas()
+  
+  if love.audio then love.audio.stop() end
+  
+  return function()
+    if love.event then
+      love.event.pump()
+      for name, a,b,c,d,e,f in love.event.poll() do
+        if name == "quit" then
+          if not love.quit or not love.quit() then
+            return a or 0
+          end
+        end
+        love.handlers[name](a,b,c,d,e,f)
+      end
+    end
+    
+    if love.graphics then
+      love.graphics.origin()
+      love.graphics.clear(0, 0, 0, 1)
+      love.graphics.setColor(1, 1, 1, 1)
+      cscreen.apply()
+      love.graphics.draw(lc)
+      cscreen.cease()
+      
+      love.graphics.origin()
+      love.graphics.setColor(89/255, 157/255, 220/255, 0.4)
+      love.graphics.rectangle("fill", 0, 0, love.graphics.getDimensions())
+      love.graphics.setColor(1, 1, 1, 1)
+      love.graphics.printf(p, pos, pos, love.graphics.getWidth() - pos)
+      love.graphics.present()
+    end
+    
+    if love.timer then
+      love.timer.sleep(0.05)
+    end
+  end
+end
+
 -- Love2D doesn't fire the resize event for several functions, so here's some hacks.
 local lf = love.window.setFullscreen
 local lsm = love.window.setMode
@@ -383,6 +477,26 @@ function love.run()
   if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
   if love.timer then love.timer.step() end
   return function()
+      if serQueue then
+        serData = ser()
+        serQueue = false
+      end
+      
+      if deserQueue then
+        deser(deserQueue)
+        deserQueue = nil
+      end
+      
+      if control._openRecQ then
+        control.openRec(control._openRecQ)
+        control._openRecQ = nil
+      end
+      
+      if control._startRecQ then
+        control.startRec()
+        control._startRecQ = false
+      end
+      
       if love.event then
         love.event.pump()
         for name, a,b,c,d,e,f in love.event.poll() do
@@ -415,6 +529,10 @@ function love.run()
       control.anyPressedDuringRec = false
       cscreen.updateFade()
       
+      local t = ser()
+      deser(t)
+      error("Success!!")
+      
       lastPressed.type = nil
       lastPressed.input = nil
       lastPressed.name = nil
@@ -428,6 +546,9 @@ function love.run()
     end
 end
 
+serQueue = false
+deserQueue = nil
+
 -- Save state to memory
 function ser()
   local data = {
@@ -440,18 +561,18 @@ function ser()
       control = control.ser(),
       megautils = megautils.ser(),
       collision = collision.ser(),
-      banner = banner.ser(),
-      banIDs = table.clone(pickupEntity.banIDs),
+      banner = banner and banner.ser(),
+      banIDs = pickupEntity.banIDs,
       weapon = weapon.ser(),
       camera = camera.main and camera.main,
       fade = fade.main and fade.main,
       megaMan = megaMan.ser(),
-      lastPressed = table.clone(lastPressed),
-      lastTextInput = table.clone(lastTextInput),
-      lastTouch = table.clone(lastTouch),
-      keyboardCheck = table.clone(keyboardCheck),
-      gamepadCheck = table.clone(gamepadCheck),
-      globals = table.clone(globals),
+      lastPressed = lastPressed,
+      lastTextInput = lastTextInput,
+      lastTouch = lastTouch,
+      keyboardCheck = keyboardCheck,
+      gamepadCheck = gamepadCheck,
+      globals = globals,
       convars = convar.getAllValues(),
       seed = love.math.getRandomSeed(),
       console = console.ser(),
@@ -462,6 +583,35 @@ function ser()
 end
 
 -- Load state
-function deser(t)
+function deser(from)
+  local t = binser.deserialize(from)
   
+  cscreen.deser(t.cscreen)
+  view.deser(t.view)
+  entitySystem.deser(t.entitySystem)
+  loader.deser(t.loader)
+  mmMusic.deser(t.music)
+  states.deser(t.state)
+  control.deser(t.control)
+  megautils.deser(t.megautils)
+  collision.deser(t.collision)
+  if t.banner then
+    banner.deser(t.banner)
+  end
+  pickupEntity.banIDs = t.banIDs
+  weapon.deser(t.weapon)
+  camera.main = t.camera
+  fade.main = t.fade
+  megaMan.deser(t.megaMan)
+  lastPressed = t.lastPressed
+  lastTextInput = t.lastTextInput
+  lastTouch = t.lastTouch
+  keyboardCheck = t.keyboardCheck
+  gamepadCheck = t.gamepadCheck
+  globals = t.globals
+  convar.setAllValues(t.convars)
+  love.math.setRandomSeed(t.seed)
+  console.deser(t.console)
+  basicEntity.id = t.basicEntity
+  mapEntity.deser(t.mapEntity)
 end

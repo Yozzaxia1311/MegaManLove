@@ -512,12 +512,14 @@ function basicEntity.transfer(from, to)
   to.despawnLateDuringTransition = from.despawnLateDuringTransition
   to.death = from.death
   to.ladder = from.ladder
-  if from.collisionShape.type == 0 then
-    to:setRectangleCollision(from.collisionShape.w, from.collisionShape.h)
-  elseif from.collisionShape.type == 1 then
-    to:setImageCollision(from.collisionShape.resource)
-  elseif from.collisionShape.type == 2 then
-    to:setCircleCollision(from.collisionShape.r)
+  if from.collisionShape then
+    if from.collisionShape.type == 0 then
+      to:setRectangleCollision(from.collisionShape.w, from.collisionShape.h)
+    elseif from.collisionShape.type == 1 then
+      to:setImageCollision(from.collisionShape.resource)
+    elseif from.collisionShape.type == 2 then
+      to:setCircleCollision(from.collisionShape.r)
+    end
   end
 end
 

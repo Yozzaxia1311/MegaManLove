@@ -92,7 +92,7 @@ function states.set(n, before, after)
   
   if states.openRecord then
     control.resetRec()
-    control.record = save.load(states.openRecord)
+    control.record = 
     nick = control.record.state
     states.openRecord = nil
     
@@ -133,7 +133,6 @@ function states.set(n, before, after)
     control.recordInput = true
     
     control.record.context = states.ser()
-    
     control.record.state = sp
   end
   

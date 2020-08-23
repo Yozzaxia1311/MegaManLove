@@ -9,6 +9,26 @@ end
 
 contPanels = basicEntity:extend()
 
+binser.register(contPanels, "contPanels", function(o)
+    local result = {}
+    
+    contPanels.super.transfer(o, result)
+    
+    result.state = o.state
+    result.timer = o.timer
+    
+    return result
+  end, function(o)
+    local result = contPanels()
+    
+    contPanels.super.transfer(o, result)
+    
+    result.state = o.state
+    result.timer = o.timer
+    
+    return result
+  end)
+
 function contPanels:new()
   contPanels.super.new(self)
   self.tex = megautils.getResource("cont")

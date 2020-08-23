@@ -12,11 +12,37 @@ function menuState:begin()
   end
 end
 
-menuSelect = basicEntity:extend()
-
 megautils.loadResource("assets/misc/menuSelect.png", "menuSelect")
 megautils.loadResource("assets/sfx/cursorMove.ogg", "cursorMove")
 megautils.loadResource("assets/sfx/selected.ogg", "selected")
+
+menuSelect = basicEntity:extend()
+
+binser.register(menuSelect, "menuSelect", function(o)
+    local result = {}
+    
+    menuSelect.super.transfer(o, result)
+    
+    result.pick = o.pick
+    result.offY = o.offY
+    result.picked = o.picked
+    result.section = o.section
+    result.timer = o.timer
+    
+    return result
+  end, function(o)
+    local result = menuSelect()
+    
+    menuSelect.super.transfer(o, result)
+    
+    result.pick = o.pick
+    result.offY = o.offY
+    result.picked = o.picked
+    result.section = o.section
+    result.timer = o.timer
+    
+    return result
+  end)
 
 function menuSelect:new()
   menuSelect.super.new(self)

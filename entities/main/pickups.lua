@@ -534,7 +534,7 @@ wTank = pickupEntity:extend()
 
 wTank.autoClean = false
 
-binser.register(wTank, "eTank", function(o)
+binser.register(wTank, "wTank", function(o)
     local result = {}
     
     wTank.super.transfer(o, result)
