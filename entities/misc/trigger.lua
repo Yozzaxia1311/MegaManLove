@@ -2,8 +2,28 @@ trigger = basicEntity:extend()
 
 trigger.autoClean = false
 
+binser.register(trigger, "trigger", function(o)
+    local result = {}
+    
+    trigger.super.transfer(o, result)
+    
+    result.call = o.call
+    result.drawCall = o.drawCall
+    
+    return result
+  end, function(o)
+    local result = trigger()
+    
+    trigger.super.transfer(o, result)
+    
+    result.call = o.call
+    result.drawCall = o.drawCall
+    
+    return result
+  end)
+
 function trigger:new(call, drawCall)
-  trigger.super.new(self, tran)
+  trigger.super.new(self)
   self.call = call
   self.drawCall = drawCall
 end

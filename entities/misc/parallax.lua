@@ -2,6 +2,46 @@ parallax = basicEntity:extend()
 
 parallax.autoClean = false
 
+binser.register(parallax, "blast", function(o)
+    local result = {}
+    
+    parallax.super.transfer(o, result)
+    
+    result.animWidth = o.animWidth
+    result.animHeight = o.animHeight
+    result.anim = o.anim
+    result.spdMultX = o.spdMultX
+    result.spdMultY = o.spdMultY
+    result.velx = o.velx
+    result.vely = o.vely
+    result.ox = o.ox
+    result.oy = o.oy
+    result.wrapX = o.wrapX
+    result.wrapY = o.wrapY
+    result.bg = o.bg
+    result.offX = o.offX
+    result.offY = o.offY
+    
+    return result
+  end, function(o)
+    local result = parallax(nil, nil, nil, nil, o.bg, o.anim ~= nil, o.animWidth, o.animHeight)
+    
+    parallax.super.transfer(o, result)
+    
+    result.spdMultX = o.spdMultX
+    result.spdMultY = o.spdMultY
+    result.velx = o.velx
+    result.vely = o.vely
+    result.ox = o.ox
+    result.oy = o.oy
+    result.wrapX = o.wrapX
+    result.wrapY = o.wrapY
+    result.offX = o.offX
+    result.offY = o.offY
+    
+    return result
+  end)
+
 mapEntity.register("parallax", function(v)
     megautils.add(parallax, v.x, v.y, v.width, v.height, v.properties.image, v.properties.animate, v.properties.animSpeed,
       v.properties.animWidth, v.properties.animHeight, v.properties.speedMultX, v.properties.speedMultY,
@@ -13,7 +53,8 @@ function parallax:new(x, y, w, h, bg, a, as, aw, ah, spdMultX, spdMultY, sx, sy,
   self.transform.x = x or 0
   self.transform.y = y or 0
   self:setRectangleCollision(w or 64, h or 64)
-  self.tex = megautils.loadResource(bg, bg)
+  self.bg = bg
+  self.tex = megautils.loadResource(self.bg, self.bg)
   if a then
     local frames = {}
     for y=1, math.floor(self.tex:getHeight()/ah) do
@@ -22,12 +63,12 @@ function parallax:new(x, y, w, h, bg, a, as, aw, ah, spdMultX, spdMultY, sx, sy,
         frames[#frames+1] = y
       end
     end
-    if not megautils.getResource(bg .. "Grid") then
-      megautils.loadResource(0, 0, aw, ah, bg .. "Grid")
+    if not megautils.getResource(self.bg .. "Grid") then
+      megautils.loadResource(0, 0, aw, ah, self.bg .. "Grid")
     end
     self.animWidth = aw
     self.animHeight = ah
-    self.anim = megautils.newAnimation(bg .. "Grid", frames, as or 0.5)
+    self.anim = megautils.newAnimation(self.bg .. "Grid", frames, as or 0.5)
   end
   self.spdMultX = spdMultX or 0.5
   self.spdMultY = spdMultY or 0.5

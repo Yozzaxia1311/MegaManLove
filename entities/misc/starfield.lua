@@ -17,14 +17,28 @@ function banner.deser(t)
   banner.colorTwo = t.two
 end
 
+binser.register(banner, "banner", function(o)
+    local result = {}
+    
+    banner.super.transfer(o, result)
+    
+    return result
+  end, function(o)
+    local result = banner()
+    
+    banner.super.transfer(o, result)
+    
+    return result
+  end)
+
 banner.colorOutline = {0, 0, 0}
 banner.colorOne = {0, 120, 248}
 banner.colorTwo = {0, 232, 216}
 
 function banner:new()
   banner.super.new(self)
-  self.transform.y = 240
   self.transform.x = 0
+  self.transform.y = 240
   self.tTwo = megautils.getResource("starField")
   self.tOne = megautils.getResource("starFieldOne")
   self.quad = quad(0, 0, 256, 103)
@@ -44,15 +58,33 @@ end
 
 smallStar = basicEntity:extend()
 
+binser.register(smallStar, "smallStar", function(o)
+    local result = {}
+    
+    smallStar.super.transfer(o, result)
+    
+    result.velocity = o.velocity
+    
+    return result
+  end, function(o)
+    local result = smallStar()
+    
+    smallStar.super.transfer(o, result)
+    
+    result.velocity = o.velocity
+    
+    return result
+  end)
+
 function smallStar:new(x, y, angle, spd)
   smallStar.super.new(self)
-  self.transform.y = y
-  self.transform.x = x
+  self.transform.x = x or 0
+  self.transform.y = y or 0
   self.t = megautils.getResource("starField")
   self.quad = quad(25, 120, 3, 3)
   self.velocity = velocity()
-  self.velocity.velx = megautils.calcX(angle) * spd
-  self.velocity.vely = megautils.calcY(angle) * spd
+  self.velocity.velx = megautils.calcX(angle or 0) * (spd or 1)
+  self.velocity.vely = megautils.calcY(angle or 0) * (spd or 1)
   self:setLayer(-1)
 end
 
@@ -67,15 +99,33 @@ end
 
 star = basicEntity:extend()
 
+binser.register(star, "star", function(o)
+    local result = {}
+    
+    star.super.transfer(o, result)
+    
+    result.velocity = o.velocity
+    
+    return result
+  end, function(o)
+    local result = star()
+    
+    star.super.transfer(o, result)
+    
+    result.velocity = o.velocity
+    
+    return result
+  end)
+
 function star:new(x, y, angle, spd)
   star.super.new(self)
-  self.transform.y = y
-  self.transform.x = x
+  self.transform.x = x or 0
+  self.transform.y = y or 0
   self.t = megautils.getResource("starField")
   self.quad = quad(0, 120, 10, 6)
   self.velocity = velocity()
-  self.velocity.velx = megautils.calcX(angle) * spd
-  self.velocity.vely = megautils.calcY(angle) * spd
+  self.velocity.velx = megautils.calcX(angle or 0) * (spd or 1)
+  self.velocity.vely = megautils.calcY(angle or 0) * (spd or 1)
   self:setLayer(-1)
 end
 
@@ -90,15 +140,33 @@ end
 
 largeStar = basicEntity:extend()
 
+binser.register(largeStar, "largeStar", function(o)
+    local result = {}
+    
+    largeStar.super.transfer(o, result)
+    
+    result.velocity = o.velocity
+    
+    return result
+  end, function(o)
+    local result = largeStar()
+    
+    largeStar.super.transfer(o, result)
+    
+    result.velocity = o.velocity
+    
+    return result
+  end)
+
 function largeStar:new(x, y, angle, spd)
   largeStar.super.new(self)
-  self.transform.y = y
-  self.transform.x = x
+  self.transform.x = x or 0
+  self.transform.y = y or 0
   self.t = megautils.getResource("starField")
   self.quad = quad(10, 120, 15, 11)
   self.velocity = velocity()
-  self.velocity.velx = megautils.calcX(angle) * spd
-  self.velocity.vely = megautils.calcY(angle) * spd
+  self.velocity.velx = megautils.calcX(angle or 0) * (spd or 1)
+  self.velocity.vely = megautils.calcY(angle or 0) * (spd or 1)
   self:setLayer(-1)
 end
 

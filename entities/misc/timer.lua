@@ -2,6 +2,28 @@ timer = basicEntity:extend()
 
 timer.autoClean = false
 
+binser.register(timer, "timer", function(o)
+    local result = {}
+    
+    timer.super.transfer(o, result)
+    
+    result.time = o.time
+    result.max = o.max
+    result.func = o.func
+    
+    return result
+  end, function(o)
+    local result = timer()
+    
+    timer.super.transfer(o, result)
+    
+    result.time = o.time
+    result.max = o.max
+    result.func = o.func
+    
+    return result
+  end)
+
 function timer:new(time, func)
   timer.super.new(self)
   self.time = 0

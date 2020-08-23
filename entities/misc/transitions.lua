@@ -2,6 +2,34 @@ right = basicEntity:extend()
 
 right.autoClean = false
 
+binser.register(right, "right", function(o)
+    local result = {}
+    
+    right.super.transfer(o, result)
+    
+    result.scrollx = o.scrollx
+    result.scrolly = o.scrolly
+    result.spd = o.spd
+    result.platform = o.platform
+    result.name = o.name
+    result.isLocked = o.isLocked
+    
+    return result
+  end, function(o)
+    local result = right()
+    
+    right.super.transfer(o, result)
+    
+    result.scrollx = o.scrollx
+    result.scrolly = o.scrolly
+    result.spd = o.spd
+    result.platform = o.platform
+    result.name = o.name
+    result.isLocked = o.isLocked
+    
+    return result
+  end)
+
 mapEntity.register("right", function(v)
   megautils.add(right, v.x, v.y, v.height,
     v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.platform, v.properties.toSection)
@@ -54,6 +82,34 @@ left = basicEntity:extend()
 
 left.autoClean = false
 
+binser.register(left, "left", function(o)
+    local result = {}
+    
+    left.super.transfer(o, result)
+    
+    result.scrollx = o.scrollx
+    result.scrolly = o.scrolly
+    result.spd = o.spd
+    result.platform = o.platform
+    result.name = o.name
+    result.isLocked = o.isLocked
+    
+    return result
+  end, function(o)
+    local result = left()
+    
+    left.super.transfer(o, result)
+    
+    result.scrollx = o.scrollx
+    result.scrolly = o.scrolly
+    result.spd = o.spd
+    result.platform = o.platform
+    result.name = o.name
+    result.isLocked = o.isLocked
+    
+    return result
+  end)
+
 mapEntity.register("left", function(v)
   megautils.add(left, v.x, v.y, v.height,
     v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.platform, v.properties.toSection)
@@ -105,6 +161,36 @@ end
 down = basicEntity:extend()
 
 down.autoClean = false
+
+binser.register(down, "down", function(o)
+    local result = {}
+    
+    down.super.transfer(o, result)
+    
+    result.scrollx = o.scrollx
+    result.scrolly = o.scrolly
+    result.spd = o.spd
+    result.platform = o.platform
+    result.name = o.name
+    result.isLocked = o.isLocked
+    result.checkLadder = o.checkLadder
+    
+    return result
+  end, function(o)
+    local result = down()
+    
+    down.super.transfer(o, result)
+    
+    result.scrollx = o.scrollx
+    result.scrolly = o.scrolly
+    result.spd = o.spd
+    result.platform = o.platform
+    result.name = o.name
+    result.isLocked = o.isLocked
+    result.checkLadder = o.checkLadder
+    
+    return result
+  end)
 
 mapEntity.register("down", function(v)
   megautils.add(down, v.x, v.y, v.width,
@@ -161,6 +247,36 @@ up = basicEntity:extend()
 
 up.autoClean = false
 
+binser.register(up, "up", function(o)
+    local result = {}
+    
+    up.super.transfer(o, result)
+    
+    result.scrollx = o.scrollx
+    result.scrolly = o.scrolly
+    result.spd = o.spd
+    result.platform = o.platform
+    result.name = o.name
+    result.isLocked = o.isLocked
+    result.checkLadder = o.checkLadder
+    
+    return result
+  end, function(o)
+    local result = up()
+    
+    up.super.transfer(o, result)
+    
+    result.scrollx = o.scrollx
+    result.scrolly = o.scrolly
+    result.spd = o.spd
+    result.platform = o.platform
+    result.name = o.name
+    result.isLocked = o.isLocked
+    result.checkLadder = o.checkLadder
+    
+    return result
+  end)
+
 mapEntity.register("up", function(v)
   megautils.add(up, v.x, v.y, v.width,
     v.properties.doScrollX, v.properties.doScrollY, v.properties.speed,
@@ -216,6 +332,24 @@ sectionPrioritySetter = basicEntity:extend()
 
 sectionPrioritySetter.autoClean = false
 
+binser.register(sectionPrioritySetter, "sectionPrioritySetter", function(o)
+    local result = {}
+    
+    sectionPrioritySetter.super.transfer(o, result)
+    
+    result.name = o.name
+    
+    return result
+  end, function(o)
+    local result = sectionPrioritySetter()
+    
+    sectionPrioritySetter.super.transfer(o, result)
+    
+    result.name = o.name
+    
+    return result
+  end)
+
 mapEntity.register("sectionPrioritySetter", function(v)
   megautils.add(sectionPrioritySetter, v.x, v.y, v.width, v.height, v.properties.toSection)
 end, 0, true)
@@ -256,6 +390,26 @@ end
 sectionPrioritySetterXBorder = basicEntity:extend()
 
 sectionPrioritySetterXBorder.autoClean = false
+
+binser.register(sectionPrioritySetterXBorder, "sectionPrioritySetterXBorder", function(o)
+    local result = {}
+    
+    sectionPrioritySetterXBorder.super.transfer(o, result)
+    
+    result.lname = o.lname
+    result.rname = o.rname
+    
+    return result
+  end, function(o)
+    local result = sectionPrioritySetterXBorder()
+    
+    sectionPrioritySetterXBorder.super.transfer(o, result)
+    
+    result.lname = o.lname
+    result.rname = o.rname
+    
+    return result
+  end)
 
 mapEntity.register("sectionPrioritySetterXBorder", function(v)
   megautils.add(sectionPrioritySetterXBorder, v.x, v.y, v.height, v.properties.lname, v.properties.rname)
@@ -301,6 +455,26 @@ sectionPrioritySetterYBorder = basicEntity:extend()
 
 sectionPrioritySetterYBorder.autoClean = false
 
+binser.register(sectionPrioritySetterYBorder, "sectionPrioritySetterYBorder", function(o)
+    local result = {}
+    
+    sectionPrioritySetterYBorder.super.transfer(o, result)
+    
+    result.uname = o.uname
+    result.dname = o.dname
+    
+    return result
+  end, function(o)
+    local result = sectionPrioritySetterYBorder()
+    
+    sectionPrioritySetterYBorder.super.transfer(o, result)
+    
+    result.uname = o.uname
+    result.dname = o.dname
+    
+    return result
+  end)
+
 mapEntity.register("sectionPrioritySetterYBorder", function(v)
   megautils.add(sectionPrioritySetterYBorder, v.x, v.y, v.width, v.properties.uname, v.properties.dname)
 end, 0, true)
@@ -344,6 +518,26 @@ end
 sectionPrioritySetterArea = basicEntity:extend()
 
 sectionPrioritySetterArea.autoClean = false
+
+binser.register(sectionPrioritySetterArea, "sectionPrioritySetterArea", function(o)
+    local result = {}
+    
+    sectionPrioritySetterArea.super.transfer(o, result)
+    
+    result.inName = o.inName
+    result.outName = o.outName
+    
+    return result
+  end, function(o)
+    local result = sectionPrioritySetterArea()
+    
+    sectionPrioritySetterArea.super.transfer(o, result)
+    
+    result.inName = o.inName
+    result.outName = o.outName
+    
+    return result
+  end)
 
 mapEntity.register("sectionPrioritySetterArea", function(v)
   megautils.add(sectionPrioritySetterArea, v.x, v.y, v.width, v.height, v.properties.inname, v.properties.outname)

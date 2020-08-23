@@ -72,11 +72,11 @@ function ice.gFunc(s)
 end
 
 megautils.resetGameObjectsFuncs.ice = function()
-    megautils.playerGroundFuncs.ice = cloneFunc(ice.gFunc)
-    megautils.playerKnockbackFuncs.ice = cloneFunc(ice.gFunc)
-    megautils.playerAirFuncs.ice = cloneFunc(ice.elseFunc)
-    megautils.playerClimbFuncs.ice = cloneFunc(ice.elseFunc)
-    megautils.playerTrebleFuncs.ice = cloneFunc(ice.elseFunc)
+    megautils.playerGroundFuncs.ice = ice.gFunc
+    megautils.playerKnockbackFuncs.ice = ice.gFunc
+    megautils.playerAirFuncs.ice = ice.elseFunc
+    megautils.playerClimbFuncs.ice = ice.elseFunc
+    megautils.playerTrebleFuncs.ice = ice.elseFunc
   end
 
 megautils.cleanFuncs.ice = function()

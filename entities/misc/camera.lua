@@ -2,6 +2,74 @@ camera = basicEntity:extend()
 
 camera.autoClean = false
 
+binser.register(camera, "camera", function(o)
+    local result = {}
+    
+    camera.super.transfer(o, result)
+    
+    result.transition = o.transition
+    result.transitionDirection = o.transitionDirection
+    result.freeze = o.freeze
+    result.scrollx = o.scrollx
+    result.scrolly = o.scrolly
+    result.scrollw = o.scrollw
+    result.scrollh = o.scrollh
+    result.curPriority = o.curPriority
+    result.dontUpdateSections = o.dontUpdateSections
+    result.tweenFinished = o.tweenFinished
+    result.doScrollY = o.doScrollY
+    result.doScrollX = o.doScrollX
+    result.transX = o.transX
+    result.transY = o.transY
+    result.approachX = o.approachX
+    result.approachY = o.approachY
+    result.speed = o.speed
+    result.once = o.once
+    result.player = o.player
+    result.funcs = o.funcs
+    result.preTrans = o.preTrans
+    result.toPos = o.toPos
+    result.once = o.once
+    result.toSection = o.toSection
+    result.tween = o.tween
+    result.tween2 = o.tween2
+    
+    return result
+  end, function(o)
+    local result = camera()
+    
+    camera.super.transfer(o, result)
+    
+    result.transition = o.transition
+    result.transitionDirection = o.transitionDirection
+    result.freeze = o.freeze
+    result.scrollx = o.scrollx
+    result.scrolly = o.scrolly
+    result.scrollw = o.scrollw
+    result.scrollh = o.scrollh
+    result.curPriority = o.curPriority
+    result.dontUpdateSections = o.dontUpdateSections
+    result.tweenFinished = o.tweenFinished
+    result.doScrollY = o.doScrollY
+    result.doScrollX = o.doScrollX
+    result.transX = o.transX
+    result.transY = o.transY
+    result.approachX = o.approachX
+    result.approachY = o.approachY
+    result.speed = o.speed
+    result.once = o.once
+    result.player = o.player
+    result.funcs = o.funcs
+    result.preTrans = o.preTrans
+    result.toPos = o.toPos
+    result.once = o.once
+    result.toSection = o.toSection
+    result.tween = o.tween
+    result.tween2 = o.tween2
+    
+    return result
+  end)
+
 megautils.reloadStateFuncs.camera = {func=function()
     camera.main = nil
     section.hash = {}
@@ -11,8 +79,8 @@ megautils.reloadStateFuncs.camera = {func=function()
 
 function camera:new(x, y, doScrollX, doScrollY)
   camera.super.new(self)
-  self.transform.x = x
-  self.transform.y = y
+  self.transform.x = x or 0
+  self.transform.y = y or 0
   self:setRectangleCollision(view.w, view.h)
   self.transition = false
   self.transitionDirection = "right"
@@ -33,10 +101,13 @@ function camera:new(x, y, doScrollX, doScrollY)
   self.speed = 1
   self.once = false
   self.player = nil
-  view.x, view.y = self.transform.x, self.transform.y
   self.funcs = {}
-  camera.main = self
   megautils.state().system.cameraUpdate = nil
+end
+
+function camera:added()
+  view.x, view.y = self.transform.x, self.transform.y
+  camera.main = self
 end
 
 function camera:removed()
