@@ -28,10 +28,6 @@ end
 serQueue = nil
 deserQueue = nil
 
-altEnterOnce = false
-scaleOnce = false
-contextOnce = false
-
 keyboardCheck = {}
 gamepadCheck = {}
 
@@ -263,75 +259,6 @@ function love.textinput(k)
 end
 
 function love.update(dt)
-  if love.keyboard then
-    if not (useConsole and console.state == 1) then
-      if (love.keyboard.isDown("ralt") or love.keyboard.isDown("lalt")) and love.keyboard.isDown("return") then
-        if not altEnterOnce then
-          megautils.setFullscreen(not megautils.getFullscreen())
-          local data = save.load("main.sav") or {}
-          data.fullscreen = megautils.getFullscreen()
-          save.save("main.sav", data)
-        end
-        altEnterOnce = 10
-      end
-      
-      if altEnterOnce then
-        altEnterOnce = altEnterOnce - 1
-        if altEnterOnce == 0 then
-          altEnterOnce = false
-        end
-        return
-      end
-      
-      for i=1, 9 do
-        local k = tostring(i)
-        if love.keyboard.isDown(k) or love.keyboard.isDown("kp" .. k) then
-          if view.w * i ~= love.graphics.getWidth() or
-            view.h * i ~= love.graphics.getHeight() then
-            if not scaleOnce then
-              megautils.setScale(i)
-              local data = save.load("main.sav") or {}
-              data.scale = megautils.getScale()
-              save.save("main.sav", data)
-            end
-            scaleOnce = 10
-          end
-        end
-      end
-      
-      if scaleOnce then
-        scaleOnce = scaleOnce - 1
-        if scaleOnce == 0 then
-          scaleOnce = false
-        end
-        return
-      end
-    end
-    
-    if (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl")) then
-      if not contextOnce then
-        if love.keyboard.isDown("o") then
-          console.parse("contextsave quickContext")
-          contextOnce = 2
-        elseif love.keyboard.isDown("p") then
-          console.parse("contextopen quickContext")
-          contextOnce = 2
-        elseif love.keyboard.isDown("r") then
-          console.parse("rec")
-          contextOnce = 2
-        end
-      end
-    end
-    
-    if contextOnce then
-      contextOnce = contextOnce - 1
-      if contextOnce == 0 then
-        contextOnce = false
-      end
-      return
-    end
-  end
-  
   local doAgain = true
   
   while doAgain do
@@ -412,14 +339,98 @@ function love.run()
   if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
   if love.timer then love.timer.step() end
   return function()
+      if love.keyboard and console and save and megautils then
+        local didIt = false
+        
+        if not (useConsole and console.state == 1) then
+          if not love.keyboard.isDown("return") then
+            altEnterOnce = false
+          elseif (love.keyboard.isDown("ralt") or love.keyboard.isDown("lalt")) and love.keyboard.isDown("return") then
+            if not altEnterOnce then
+              megautils.setFullscreen(not megautils.getFullscreen())
+              local data = save.load("main.sav") or {}
+              data.fullscreen = megautils.getFullscreen()
+              save.save("main.sav", data)
+              didIt = true
+            end
+            altEnterOnce = true
+          end
+          
+          for i=1, 9 do
+            local k = tostring(i)
+            if love.keyboard.isDown(k) or love.keyboard.isDown("kp" .. k) then
+              if view.w * i ~= love.graphics.getWidth() or
+                view.h * i ~= love.graphics.getHeight() then
+                local last = megautils.getScale()
+                megautils.setScale(i)
+                if i ~= last then
+                  local data = save.load("main.sav") or {}
+                  data.scale = megautils.getScale()
+                  save.save("main.sav", data)
+                  didIt = true
+                end
+              end
+            end
+          end
+        end
+        
+        if not love.keyboard.isDown("o") and not love.keyboard.isDown("p") and not love.keyboard.isDown("r") then
+          contextOnce = false
+        elseif (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl")) then
+          if love.keyboard.isDown("o") then
+            if not contextOnce then
+              console.parse("contextsave quickContext")
+              didIt = true
+            end
+            contextOnce = true
+          elseif love.keyboard.isDown("p") then
+            if not contextOnce then
+              console.parse("contextopen quickContext")
+              didIt = true
+            end
+            contextOnce = true
+          elseif love.keyboard.isDown("r") then
+            if not contextOnce then
+              console.parse("rec")
+              didIt = true
+            end
+            contextOnce = true
+          end
+        end
+        
+        if didIt then
+          if love.graphics then
+            love.graphics.origin()
+            love.graphics.clear(0, 0, 0, 1)
+            if view and view.canvas then
+              love.graphics.push()
+              cscreen.apply()
+              love.graphics.draw(view.canvas)
+              cscreen.cease()
+              love.graphics.pop()
+              if useConsole then console.draw() end
+            end
+            love.graphics.present()
+          end
+          
+          return
+        end
+      end
+      
       if serQueue then
         local f = serQueue
+        if type(serQueue) == "function" then
+          f = serQueue()
+        end
         serQueue = nil
         f(ser())
       end
       
       if deserQueue then
         local f = deserQueue
+        if type(deserQueue) == "function" then
+          f = deserQueue()
+        end
         deserQueue = nil
         deser(f)
       end

@@ -210,10 +210,6 @@ function mmMusic.isLocked()
   return mmMusic.locked
 end
 
-function mmMusic._threadMusicDone()
-  return mmMusic.music and mmMusic.music:getFreeBufferCount() == mmMusic.buffers + 2 and mmMusic.music:tell() == 0 and mmMusic.time ~= 0
-end
-
 function mmMusic._threadDecode()
   mmMusic.dec:seek(mmMusic.time)
   local sd = mmMusic.dec:decode()
@@ -226,6 +222,8 @@ function mmMusic._threadDecode()
       mmMusic.time = mmMusic.loopPoint
     end
   end
+  
+  return sd
 end
 
 function mmMusic.checkQueue()
@@ -299,8 +297,8 @@ function mmMusic._threadUpdate()
         mmMusic._threadDecode()
       end
       mmMusic.time = math.min(mmMusic.time + mmMusic.rate, mmMusic.dec:getDuration())
-      mmMusic._threadDecode()
-      if mmMusic._threadMusicDone() then
+      local sd = mmMusic._threadDecode()
+      if not sd and not mmMusic.loop and mmMusic.music:tell() == 0 and mmMusic.time ~= 0 then
         stop = true
         break
       end

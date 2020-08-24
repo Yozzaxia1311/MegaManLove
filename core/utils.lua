@@ -95,92 +95,15 @@ function iterateDirs(func, path, noAppdata, special)
   return results
 end
 
-function hash(data)
-  local temp = 0
-  local timer = 0
-  local hashd = ""
-  local t = iterateDirs(nil, nil, true, true)
-  local olds = love.math.getRandomState()
-  local old = love.math.getRandomSeed()
-  
-  love.math.setRandomSeed(#t * 2)
-  
-  for k, v in ipairs(t) do
-    for i=1, v:len() do
-      temp = temp + v:sub(i):byte()
-    end
-    timer = timer + 1
-    if timer > 10 then
-      hashd = hashd .. tostring(temp)
-      temp = love.math.random(10)
-      timer = 0
-    end
-  end
-  
-  local result = ""
-  
-  for i=1, data:len() do
-    local byte = data:byte(i)
-    
-    if math.between(byte, 32, 126) then
-      local w = i % hashd:len()+1
-      local r = love.math.random(hashd:sub(w, w):byte() * 100)
-      result = result .. string.char(math.wrap(byte + r, 32, 126))
-    else
-      result = result .. string.char(byte)
-    end
-  end
-  
-  love.math.setRandomSeed(old)
-  love.math.setRandomState(olds)
-  
-  return result
-end
-
-function fromHash(data)
-  local temp = 0
-  local timer = 0
-  local hashd = ""
-  local t = iterateDirs(nil, nil, true, true)
-  local olds = love.math.getRandomState()
-  local old = love.math.getRandomSeed()
-  
-  love.math.setRandomSeed(#t * 2)
-  
-  for k, v in ipairs(t) do
-    for i=1, v:len() do
-      temp = temp + v:sub(i):byte()
-    end
-    timer = timer + 1
-    if timer > 10 then
-      hashd = hashd .. tostring(temp)
-      temp = love.math.random(10)
-      timer = 0
-    end
-  end
-  
-  local result = ""
-  
-  for i=1, data:len() do
-    local byte = data:byte(i)
-    
-    if math.between(byte, 32, 126) then
-      local w = i % hashd:len()+1
-      local r = love.math.random(hashd:sub(w, w):byte() * 100)
-      result = result .. string.char(math.wrap(byte - r, 32, 126))
-    else
-      result = result .. string.char(byte)
-    end
-  end
-  
-  love.math.setRandomSeed(old)
-  love.math.setRandomState(olds)
-  
-  return result
-end
-
 function string:trimmed()
   return self:match("^%s*(.-)%s*$")
+end
+
+function string:replaceIndex(i, s)
+  local st = self:sub(1, i-1)
+  local en = self:sub(i+1, self:len())
+  
+  return st .. s .. en
 end
 
 function string:split(inSplitPattern, outResults)

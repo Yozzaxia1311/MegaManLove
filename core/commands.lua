@@ -377,9 +377,9 @@ concmd["contextsave"] = {
   fun = function(cmd)
       if not cmd[2] then return end
       serQueue = function(s)
-          save.save(cmd[2] .. ".cntx", s, true)
+          save.save(cmd[2] .. ".cntx", s)
+          console.print("Context saved")
         end
-      console.print("Context saved")
     end
 }
 
@@ -389,7 +389,7 @@ concmd["contextopen"] = {
   fun = function(cmd)
       if not cmd[2] then return end
       if love.filesystem.getInfo(cmd[2] .. ".cntx") then
-        deserQueue = save.load(cmd[2] .. ".cntx", love.filesystem.getRealDirectory(cmd[2] .. ".cntx") == love.filesystem.getAppdataDirectory())
+        deserQueue = save.load(cmd[2] .. ".cntx")
       else
         console.print("No such context file \"" .. cmd[2] .. "\"")
       end

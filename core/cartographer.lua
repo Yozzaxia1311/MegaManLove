@@ -739,13 +739,13 @@ function Map:release()
 end
 
 local function finalXML2LuaTable(str, f)
-  str = string.gsub(str, "<layer", "<layer type=\"tilelayer\"")
-  str = string.gsub(str, "<objectgroup", "<layer type=\"objectgroup\"")
-  str = string.gsub(str, "<imagelayer", "<layer type=\"imagelayer\"")
-  str = string.gsub(str, "<group", "<layer type=\"group\"")
-  str = string.gsub(str, "</objectgroup", "</layer")
-  str = string.gsub(str, "</imagelayer", "</layer")
-  str = string.gsub(str, "</group", "</layer")
+  str = str:gsub("<layer", "<layer type=\"tilelayer\"")
+  str = str:gsub("<objectgroup", "<layer type=\"objectgroup\"")
+  str = str:gsub("<imagelayer", "<layer type=\"imagelayer\"")
+  str = str:gsub("<group", "<layer type=\"group\"")
+  str = str:gsub("</objectgroup", "</layer")
+  str = str:gsub("</imagelayer", "</layer")
+  str = str:gsub("</group", "</layer")
   
   local result = xml2lua:parse(str).map
   

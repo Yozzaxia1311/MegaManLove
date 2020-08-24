@@ -422,8 +422,8 @@ function control.resetRec()
   control.drawDemoFunc = nil
 end
 
-function control.startRecQ()
-  control._startRecQ = true
+function control.startRecQ(f)
+  control._startRecQ = f == nil or f
 end
 
 function control.startRec()
@@ -435,7 +435,7 @@ end
 
 function control.finishRecord(name)
   control.record.last = control.recPos
-  save.save(name, control.record, true)
+  save.save(name, control.record)
   
   control.resetRec()
 end
@@ -469,7 +469,7 @@ end
 
 function control.openRec(f)
   control.resetLoadedRec()
-  local file = save.load(f, love.filesystem.getRealDirectory(f) == love.filesystem.getAppdataDirectory())
+  local file = save.load(f)
   control.oldContext = ser()
   
   deser(file.context)
@@ -523,8 +523,12 @@ function control.update()
         control.returning()
         control.returning = nil
       else
-        deserQueue = control.oldContext
-        control.oldContext = nil
+        deserQueue = function()
+          control.demo = false
+          local c = control.oldContext
+          control.oldContext = nil
+          return c
+        end
       end
     end
   end

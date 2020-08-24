@@ -20,7 +20,7 @@ function save.createDirChain(p)
   end
 end
 
-function save.save(file, data, hashed)
+function save.save(file, data)
   if control.demo or control.recordInput then
     error("Cannot save during recordings")
   end
@@ -29,14 +29,10 @@ function save.save(file, data, hashed)
   
   save.createDirChain(file)
   
-  if hashed then
-    love.filesystem.write(file, hash(sv))
-  else
-    love.filesystem.write(file, sv)
-  end
+  love.filesystem.write(file, sv)
 end
 
-function save.load(file, hashed)
+function save.load(file)
   if control.demo or control.recordInput then
     error("Cannot load during recordings")
   end
@@ -45,10 +41,6 @@ function save.load(file, hashed)
   
   if not sv then
     return
-  end
-  
-  if hashed then
-    sv = fromHash(sv)
   end
   
   return binser.deserialize(sv)
