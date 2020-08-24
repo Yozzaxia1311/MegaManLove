@@ -6,6 +6,7 @@ function mmMusic.ser()
       curID=mmMusic.curID,
       playing=not mmMusic.stopped(),
       volume=mmMusic.getVolume(),
+      tell=mmMusic.mTell,
       queue=mmMusic.queue,
       locked=mmMusic.locked
     }
@@ -15,7 +16,7 @@ function mmMusic.deser(t)
   mmMusic.stop()
   mmMusic.curID = t.curID
   if t.curID and t.playing then
-    mmMusic.play(t.curID, t.volume)
+    mmMusic.play(t.curID, t.volume, t.tell)
   end
   if t.paused then
     mmMusic.pause()
@@ -32,7 +33,7 @@ mmMusic.loopPoint = 0
 mmMusic.loop = true
 mmMusic.rate = 0
 mmMusic.time = 0
-mmMusic.seek = 0
+mmMusic.mTell = 0
 mmMusic.buffers = 3
 mmMusic._queue = nil
 mmMusic.paused = true
@@ -69,6 +70,8 @@ mmMusic.thread = love.thread.newThread([[
             mmMusic._threadUnpause()
           elseif value == "seek" then
             mmMusic._threadSeek(threadChannel:pop())
+          elseif value == "lock" then
+            mmMusic.locked = threadChannel:pop()
           end
         else
           break
@@ -77,8 +80,10 @@ mmMusic.thread = love.thread.newThread([[
       
       mainChannel:push("time")
       mainChannel:push(mmMusic.time)
-      mainChannel:push("seek")
-      mainChannel:push(mmMusic.seek)
+      if mmMusic.music then
+        mainChannel:push("tell")
+        mainChannel:push(math.max(mmMusic.time + mmMusic.music:tell() - mmMusic.rate, 0))
+      end
       
       if mmMusic._threadStopped() then
         run = false
@@ -108,7 +113,7 @@ function mmMusic._threadStop()
     mmMusic.curID = nil
     mmMusic.loopPoint = 0
     mmMusic.time = 0
-    mmMusic.seek = 0
+    mmMusic.mTell = 0
     mmMusic._queue = nil
     mmMusic.music:stop()
     mmMusic.music:release()
@@ -175,8 +180,16 @@ function mmMusic.seek(s)
   end
 end
 
-function mmMusic.tell()
-  return mmMusic.thread:isRunning() and mmMusic.seek or 0
+function mmMusic.setLock(w)
+  mmMusic.locked = w == true
+  if mmMusic.thread:isRunning() then
+    mmMusic.threadChannel:push("lock")
+    mmMusic.threadChannel:push(mmMusic.locked)
+  end
+end
+
+function mmMusic.isLocked()
+  return mmMusic.locked
 end
 
 function mmMusic._threadDecode()
@@ -218,7 +231,7 @@ function mmMusic._threadPlay(curID, loop, loopPoint, time)
   while mmMusic.dec:getDuration() * mmMusic.buffers < mmMusic.rate do -- incase of unbelievably short "music".
     mmMusic.buffers = mmMusic.buffers + 1
   end
-  mmMusic.music = love.audio.newQueueableSource(mmMusic.dec:getSampleRate(), mmMusic.dec:getBitDepth(), mmMusic.dec:getChannelCount(), mmMusic.buffers + 2)
+  mmMusic.music = love.audio.newQueueableSource(mmMusic.dec:getSampleRate(), mmMusic.dec:getBitDepth(), mmMusic.dec:getChannelCount(), mmMusic.buffers+2)
   mmMusic.curID = curID
   mmMusic.loopPoint = loopPoint
   mmMusic.loop = loop
@@ -250,12 +263,13 @@ function mmMusic.play(path, vol, from)
   
   mmMusic.curID = path
   mmMusic.time = from or 0
-  mmMusic.seek = mmMusic.time
+  mmMusic.mTell = mmMusic.time
   mmMusic.loopPoint = t.loopPoint or 0
   mmMusic.loop = t.loop == nil or t.loop
   mmMusic.stopping = false
   
   mmMusic.thread:start(mmMusic.curID, mmMusic.loop, mmMusic.loopPoint, mmMusic.time)
+  mmMusic.setLock(mmMusic.locked)
 end
 
 function mmMusic._threadUpdate()
@@ -270,7 +284,6 @@ function mmMusic._threadUpdate()
         return
       end
     end
-    mmMusic.seek = mmMusic.music:tell()
   end
 end
 
@@ -280,13 +293,13 @@ function mmMusic.update()
     if value ~= nil then
       if value == "time" then
         mmMusic.time = mmMusic.mainChannel:pop()
-      elseif value == "seek" then
-        mmMusic.seek = mmMusic.mainChannel:pop()
+      elseif value == "tell" then
+        mmMusic.mTell = mmMusic.mainChannel:pop()
       elseif value == "stop" then
         mmMusic.curID = nil
         mmMusic.loopPoint = 0
         mmMusic.time = 0
-        mmMusic.seek = 0
+        mmMusic.mTell = 0
         mmMusic._queue = nil
         mmMusic.stopping = true
       end

@@ -320,6 +320,8 @@ function love.update(dt)
     doAgain = states.switched
   end
   
+  mmMusic.update()
+  
   if love.joystick then
     if globals.axisTmp then
       if globals.axisTmp.x and (not globals.axisTmp.y or
@@ -490,7 +492,7 @@ function ser()
 end
 
 -- Load state
-function deser(from)
+function deser(from, dontChangeMusic)
   local t = binser.deserialize(from)
   
   serQueue = t.serQueue
@@ -500,7 +502,9 @@ function deser(from)
   states.deser(t.state)
   entitySystem.deser(t.entitySystem)
   loader.deser(t.loader)
-  mmMusic.deser(t.music)
+  if not dontChangeMusic then
+    mmMusic.deser(t.music)
+  end
   control.deser(t.control)
   megautils.deser(t.megautils)
   collision.deser(t.collision)

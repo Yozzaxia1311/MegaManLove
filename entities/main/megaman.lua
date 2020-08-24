@@ -20,7 +20,7 @@ function megaMan.ser()
 end
 
 function megaMan.deser(t)
-  for k, v in pairs(t) do
+  for k, v in pairs(t.skins) do
     megaMan.setSkin(k, v)
   end
   megaMan.weaponHandler = t.we

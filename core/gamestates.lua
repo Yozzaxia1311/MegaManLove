@@ -18,8 +18,6 @@ function states.deser(t)
   states.recordOnSwitch = t.recordOnSwitch
   states.openRecord = t.openRecord
   states.queue = t.queue
-  
-  states.set(states.current)
 end
 
 states.currentState = nil

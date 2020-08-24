@@ -41,6 +41,8 @@ function megautils.ser()
   result.shakeTimer = megautils.shakeTimer
   result.maxShakeTime = megautils.maxShakeTime
   result.shakeLength = megautils.shakeLength
+  
+  return result
 end
 
 function megautils.deser(t)
@@ -73,17 +75,17 @@ function megautils.deser(t)
     megautils[k] = t[k]
   end
   
-  megautils._q = result._q
-  megautils._frozen = result._frozen
-  megautils.shake = result.shake
-  megautils.shakeX = result.shakeX
-  megautils.shakeY = result.shakeY
-  megautils.shakeSide = result.shakeSide
-  megautils.shakeTimer = result.shakeTimer
-  megautils.maxShakeTime = result.maxShakeTime
-  megautils.shakeLength = result.shakeLength
+  megautils._q = t._q
+  megautils._frozen = t._frozen
+  megautils.shake = t.shake
+  megautils.shakeX = t.shakeX
+  megautils.shakeY = t.shakeY
+  megautils.shakeSide = t.shakeSide
+  megautils.shakeTimer = t.shakeTimer
+  megautils.maxShakeTime = t.maxShakeTime
+  megautils.shakeLength = t.shakeLength
     
-  for k, v in ipairs(result._ranFiles) do
+  for k, v in ipairs(t._ranFiles) do
     megautils.runFile(v, true)
   end
 end
@@ -438,7 +440,11 @@ function megautils.newAnimation(gnick, a, t, eFunc)
 end
 
 function megautils.setMusicLock(w)
-  mmMusic.locked = w
+  mmMusic.setLock(w)
+end
+
+function megautils.isMusicLocked()
+  return mmMusic.locked
 end
 
 function megautils.getCurrentMusic()
