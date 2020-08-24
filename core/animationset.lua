@@ -1,4 +1,4 @@
-local animationSet = class:extend()
+animationSet = class:extend()
 
 binser.register(animationSet, "animationSet", function(o)
     return {
@@ -101,5 +101,3 @@ function animationSet:draw(image, x, y, r, sx, sy, ox, oy, kx, ky)
     self.anims[self.current]:draw(image, x, y, r, sx, sy, ox, oy, kx, ky)
   end
 end
-
-return animationSet

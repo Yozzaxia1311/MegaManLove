@@ -104,21 +104,9 @@ local Layer = {}
 Layer.base = {}
 Layer.base.__index = Layer.base
 
-function Layer.base.ser(from, to)
-  to.visible = from.visible
-  to.type = from.type
-  to.offsetx = from.offsetx
-  to.offsety = from.offsety
+function Layer.base:_init(map)
+  self._map = map
 end
-
-function Layer.base.deser(from, to)
-  to.visible = from.visible
-  to.type = from.type
-  to.offsetx = from.offsetx
-  to.offsety = from.offsety
-end
-
-function Layer.base:_init() end
 
 -- Converts grid coordinates to pixel coordinates for this layer.
 function Layer.base:gridToPixel(x, y)
@@ -144,25 +132,6 @@ end
 ]]
 Layer.spritelayer = setmetatable({}, Layer.base)
 Layer.spritelayer.__index = Layer.spritelayer
-
-function Layer.spritelayer.ser(from, to)
-  Layer.base.ser(from, to)
-  
-  to.sOffGridMap = from._sprites.offGridMap
-  to.sMap = from._sprites.map
-  to.drawRange = from.drawRange
-  to.anims = from._animations
-end
-
-function Layer.spritelayer.deser(from, to)
-  Layer.base.deser(from, to)
-  
-  to._sprites = {}
-  to._sprites.offGridMap = from.sOffGridMap
-  to._sprites.map = from.sMap
-  to.drawRange = from.drawRange
-  to._animations = from.anims
-end
 
 function Layer.spritelayer:_initAnimations()
   self._animations = {}
@@ -248,18 +217,17 @@ function Layer.spritelayer:_setSprite(x, y, gid, offGrid)
   end
 end
 
-function Layer.spritelayer:_init(noInit)
-  Layer.base._init(self, map, noInit)
-  if not noInit then
-    self:_initAnimations()
-    self._sprites = {
-      map = {},
-      quads = {},
-      offGridMap = {},
-      offGridQuads = {},
-      drawRange = {x=0, y=0, w=self._map.width*self._map.tilewidth, h=self._map.height*self._map.tileheight}
-    }
-  end
+function Layer.spritelayer:_init(map)
+  Layer.base._init(self, map)
+  
+  self:_initAnimations()
+  self._sprites = {
+    map = {},
+    quads = {},
+    offGridMap = {},
+    offGridQuads = {},
+    drawRange = {x=0, y=0, w=self._map.width*self._map.tilewidth, h=self._map.height*self._map.tileheight}
+  }
 end
 
 function Layer.spritelayer:setDrawRange(x, y, w, h)
@@ -361,7 +329,7 @@ function Layer.spritelayer:draw()
       if self._sprites.map[y] and self._sprites.map[y][x] and self._sprites.quads[y] and self._sprites.quads[y][x] then
         local tileset = self._map:getTileset(self._sprites.map[y][x])
         if tileset.image then
-          love.graphics.draw(self._map._images[tileset.image], self._sprites.quads[y][x], x*self._map.tilewidth, y*self._map.tileheight)
+          self._map._images[tileset.image]:draw(self._sprites.quads[y][x], x*self._map.tilewidth, y*self._map.tileheight)
         end
       end
     end
@@ -373,62 +341,39 @@ end
 Layer.tilelayer = setmetatable({}, Layer.spritelayer)
 Layer.tilelayer.__index = Layer.tilelayer
 
-binser.register(Layer.tilelayer, "tilelayer", function(o)
-    local result = {}
-    
-    Layer.spritelayer.ser(o, result)
-    
-    result.data = o.data
-    result.chunks = o.chunks
-    
-    return result
-  end, function(o)
-    local result = {}
-    setmetatable(result, Layer[o.type])
-    result:_init(true)
-    
-    Layer.spritelayer.deser(o, result)
-    
-    result.data = o.data
-    result.chunks = o.chunks
-    
-    return result
-  end)
-
-function Layer.tilelayer:_init(noInit)
-  Layer.spritelayer._init(self, noInit)
-  if not noInit then
-    if self.encoding == "base64" then
-      assert(require "ffi", "Compressed maps require LuaJIT FFI.\nPlease Switch your interperator to LuaJIT or your Tile Layer Format to \"CSV\".")
-      if self.chunks then
-        for k, v in ipairs(self.chunks) do
-          if v.data then
-            local data = love.data.decode("string", "base64", v.data)
-            if self.compression == "zstd" then
-              error("Zstandard is not a supported compression type.")
-            elseif self.compression == "gzip" then
-              data = love.data.decompress("string", "gzip", data)
-            elseif self.compression == "zlib" then
-              data = love.data.decompress("string", "zlib", data)
-            end
-            v.data = getDecompressedData(data)
+function Layer.tilelayer:_init(map)
+  Layer.spritelayer._init(self, map)
+  
+  if self.encoding == "base64" then
+    assert(require "ffi", "Compressed maps require LuaJIT FFI.\nPlease Switch your interperator to LuaJIT or your Tile Layer Format to \"CSV\".")
+    if self.chunks then
+      for k, v in ipairs(self.chunks) do
+        if v.data then
+          local data = love.data.decode("string", "base64", v.data)
+          if self.compression == "zstd" then
+            error("Zstandard is not a supported compression type.")
+          elseif self.compression == "gzip" then
+            data = love.data.decompress("string", "gzip", data)
+          elseif self.compression == "zlib" then
+            data = love.data.decompress("string", "zlib", data)
           end
+          v.data = getDecompressedData(data)
         end
-      else
-        local data = love.data.decode("string", "base64", self.data)
-        if self.compression == "zstd" then
-          error("Zstandard is not a supported compression type.")
-        elseif self.compression == "gzip" then
-          data = love.data.decompress("string", "gzip", data)
-        elseif self.compression == "zlib" then
-          data = love.data.decompress("string", "zlib", data)
-        end
-        self.data = getDecompressedData(data)
       end
+    else
+      local data = love.data.decode("string", "base64", self.data)
+      if self.compression == "zstd" then
+        error("Zstandard is not a supported compression type.")
+      elseif self.compression == "gzip" then
+        data = love.data.decompress("string", "gzip", data)
+      elseif self.compression == "zlib" then
+        data = love.data.decompress("string", "zlib", data)
+      end
+      self.data = getDecompressedData(data)
     end
-    for _, gid, gridX, gridY, _, _ in self:getTiles() do
-      self:_setSprite(gridX, gridY, gid)
-    end
+  end
+  for _, gid, gridX, gridY, _, _ in self:getTiles() do
+    self:_setSprite(gridX, gridY, gid)
   end
 end
 
@@ -551,34 +496,12 @@ end
 Layer.objectgroup = setmetatable({}, Layer.spritelayer)
 Layer.objectgroup.__index = Layer.objectgroup
 
-binser.register(Layer.objectgroup, "objectgroup", function(o)
-    local result = {}
-    
-    Layer.spritelayer.ser(o, result)
-    
-    result.objects = o.objects
-    
-    return result
-  end, function(o)
-    local result = {}
-    setmetatable(result, Layer[o.type])
-    result:_init(true)
-    
-    Layer.spritelayer.deser(o, result)
-    
-    result.objects = o.objects
-    
-    return result
-  end)
-
-function Layer.objectgroup:_init(noInit)
-  Layer.spritelayer._init(self, noInit)
+function Layer.objectgroup:_init(map)
+  Layer.spritelayer._init(self, map)
   
-  if not noInit then
-    for _, object in ipairs(self.objects) do
-      if object.gid and object.visible then
-        self:_setSprite(object.x, object.y - object.height, object.gid, true)
-      end
+  for _, object in ipairs(self.objects) do
+    if object.gid and object.visible then
+      self:_setSprite(object.x, object.y - object.height, object.gid, true)
     end
   end
 end
@@ -587,62 +510,20 @@ end
 Layer.imagelayer = setmetatable({}, Layer.base)
 Layer.imagelayer.__index = Layer.imagelayer
 
-binser.register(Layer.imagelayer, "imagelayer", function(o)
-    local result = {}
-    
-    Layer.base.ser(o, result)
-    
-    return result
-  end, function(o)
-    local result = {}
-    setmetatable(result, Layer[o.type])
-    result:_init(true)
-    
-    Layer.base.deser(o, result)
-    
-    return result
-  end)
-
 function Layer.imagelayer:draw()
-  love.graphics.draw(self._map._images[self.image], self.offsetx, self.offsety)
+  self._map._images[self.image]:draw(self.offsetx, self.offsety)
 end
 
 -- Represents a layer group in an exported Tiled map.
 Layer.group = setmetatable({}, Layer.base)
 Layer.group.__index = Layer.group
 
-binser.register(Layer.group, "group", function(o)
-    local result = {}
-    
-    Layer.base.ser(o, result)
-    
-    result.layers = o.layers
-    
-    return result
-  end, function(o)
-    local result = {}
-    setmetatable(result, Layer[o.type])
-    result:_init(true)
-    
-    Layer.base.deser(o, result)
-    
-    result.layers = o.layers
-    
-    return result
-  end)
-
-function Layer.group:_init(noInit)
-  Layer.base._init(self, noInit)
-  if not noInit then
-    self:_initLayers(noInit)
-  end
-end
-
-function Layer.group:_initLayers(noInit)
+function Layer.group:_init(map)
+  Layer.base._init(self, map)
+  
   for _, layer in ipairs(self.layers) do
     setmetatable(layer, Layer[layer.type])
-    layer._map = self._map
-    layer:_init(noInit)
+    layer:_init(self._map)
   end
   setmetatable(self.layers, getByNameMetatable)
 end
@@ -670,29 +551,13 @@ end
 local Map = {}
 Map.__index = Map
 
-binser.register(Map, "map", function(o)
-    local result = {}
-    
-    result.layers = o.layers
-    result.path = o.path
-    
-    return result
-  end, function(o)
-    local result = cartographer.load(o.path, true)
-    
-    result.layers = o.layers
-    result:_initLayers()
-    
-    return result
-  end)
-
 -- Loads an image if it hasn't already been loaded yet.
 -- Images are stored in map._images, and the key is the relative
 -- path to the image.
 function Map:_loadImage(relativeImagePath)
   if self._images[relativeImagePath] then return end
   local imagePath = formatPath(self.dir .. relativeImagePath)
-  self._images[relativeImagePath] = love.graphics.newImage(imagePath)
+  self._images[relativeImagePath] = image(imagePath)
 end
 
 -- Loads all of the images used by the map.
@@ -717,16 +582,15 @@ function Map:_loadImages()
   recursiveImageLayer(self.layers)
 end
 
-function Map:_initLayers(noInit)
+function Map:_initLayers()
   for _, layer in ipairs(self.layers) do
     setmetatable(layer, Layer[layer.type])
-    layer._map = self
-    layer:_init(noInit)
+    layer:_init(self)
   end
   setmetatable(self.layers, getByNameMetatable)
 end
 
-function Map:_init(path, noInitLayers)
+function Map:_init(path)
   self.dir = splitPath(path)
   self._quadCache = {}
   self.tilesetCache = {}
@@ -739,9 +603,7 @@ function Map:_init(path, noInitLayers)
   end
   self:_loadImages()
   setmetatable(self.tilesets, getByNameMetatable)
-  if not noInitLayers then
-    self:_initLayers(noInitLayers)
-  end
+  self:_initLayers()
 end
 
 -- Gets the quad of the tile with the given global ID.
@@ -760,11 +622,10 @@ function Map:_getTileQuad(gid, frame)
   local x, y = indexToCoordinates(id + 1, gridWidth)
   id = id + tileset.firstgid
   if not self._quadCache[id] then
-    self._quadCache[id] = love.graphics.newQuad(
+    self._quadCache[id] = quad(
       x * (tileset.tilewidth + tileset.spacing),
       y * (tileset.tileheight + tileset.spacing),
-      tileset.tilewidth, tileset.tileheight,
-      tileset.imagewidth, tileset.imageheight
+      tileset.tilewidth, tileset.tileheight
     )
   end
   return self._quadCache[id]

@@ -457,9 +457,9 @@ end
 
 function control.openRec(f)
   control.resetLoadedRec()
-  
   control.loadedRec = save.load(f)
   control.loadedRec.oldContext = ser()
+  
   deser(control.loadedRec.context)
 end
 

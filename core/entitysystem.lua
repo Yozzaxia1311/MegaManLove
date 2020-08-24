@@ -12,36 +12,6 @@ function entitySystem.deser(t)
   entitySystem.doDrawFlicker = t.doDrawFlicker
 end
 
-binser.register(entitySystem, "entitySystem", function(o)
-    return {
-        entities=o.entities,
-        updates=o.updates,
-        groups=o.groups,
-        all=o.all,
-        addQueue=o.addQueue,
-        removeQueue=o.removeQueue,
-        beginQueue=o.beginQueue,
-        recycle=o.recycle,
-        doSort=o.doSort,
-        inLoop=o.inLoop
-      }
-  end, function(o)
-      local result = entitySystem()
-      
-      result.entities=o.entities
-      result.updates=o.updates
-      result.groups=o.groups
-      result.all=o.all
-      result.addQueue=o.addQueue
-      result.removeQueue=o.removeQueue
-      result.beginQueue=o.beginQueue
-      result.recycle=o.recycle
-      result.doSort=o.doSort
-      result.inLoop=o.inLoop
-      
-      return result
-    end)
-
 entitySystem.drawCollision = false
 entitySystem.doDrawFlicker = true
 
@@ -352,6 +322,7 @@ function entitySystem:draw()
       local v = self.entities[i].data[k]
       if checkFalse(v.canDraw) and not v.isRemoved and v.draw then
         love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.setFont(mmFont)
         v:draw()
       end
     end
@@ -434,7 +405,7 @@ end
 velocity = class:extend()
 
 binser.register(velocity, "velocity", function(o)
-    return {velx = self.velx, vely = self.vely}
+    return {velx = o.velx, vely = o.vely}
   end, function(o)
     local result = velocity()
     result.velx = o.velx

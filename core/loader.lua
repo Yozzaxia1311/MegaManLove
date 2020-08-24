@@ -4,13 +4,13 @@ function loader.ser()
   local result = {resources={}, locked={}}
   
   for k, v in pairs(loader.resources) do
-    result.resources[k] = {path=v.path, nick=v.nick}
+    result.resources[k] = {path=v.path, nick=v.nick, type=v.type}
     if v.parameters then
       result.resources[k].parameters = v.parameters
     end
   end
   for k, v in pairs(loader.locked) do
-    result.locked[k] = {path=v.path, nick=v.nick}
+    result.locked[k] = {path=v.path, nick=v.nick, type=v.type}
     if v.parameters then
       result.locked[k].parameters = v.parameters
     end

@@ -1,4 +1,4 @@
-local anim8 = {
+anim8 = {
   _VERSION     = 'anim8 v2.3.0',
   _DESCRIPTION = 'An animation library for LÖVE',
   _URL         = 'https://github.com/kikito/anim8',
@@ -40,14 +40,15 @@ end
 
 local function createFrame(self, x, y)
   local fw, fh = self.frameWidth, self.frameHeight
-  return love.graphics.newQuad(
+  local result = quad(
     self.left + self.border + (x-1) * (fw + (self.border * 2)),
     self.top + self.border + (y-1) * (fh + (self.border * 2)),
     fw,
-    fh,
-    x,
-    y
+    fh
   )
+  result.fx = x
+  result.fy = y
+  return result
 end
 
 local function getGridKey(...)
@@ -89,7 +90,7 @@ function Grid:getFrames(...)
   return result
 end
 
-local Gridmt = {
+Gridmt = {
   __index = Grid,
   __call  = Grid.getFrames
 }
@@ -104,7 +105,7 @@ binser.register(Gridmt, "grid", function(o)
         border=o.border
       }
   end, function(o)
-    return newGrid(o.frameWidth, o.frameHeight, o.left, o.top, o.border)
+    return anim8.newGrid(o.frameWidth, o.frameHeight, o.left, o.top, o.border)
   end)
 
 local function newGrid(frameWidth, frameHeight, left, top, border)
@@ -170,13 +171,13 @@ local function parseIntervals(durations)
   return result, time
 end
 
-local Animationmt = { __index = Animation }
+Animationmt = { __index = Animation }
 local nop = function() end
 
 binser.register(Animationmt, "animation", function(o)
     return {
-        frames=frames,
-        durations=durations,
+        frames=o.frames,
+        durations=o.durations,
         onLoop=o.onLoop,
         timer=o.timer,
         position=o.position,
@@ -186,7 +187,7 @@ binser.register(Animationmt, "animation", function(o)
         flipY=o.flipY
       }
   end, function(o)
-    local result = newAnimation(o.frames, o.durations, o.onLoop)
+    local result = anim8.newAnimation(o.frames, o.durations, o.onLoop)
     
     result.timer = o.timer
     result.position = o.position
@@ -199,7 +200,7 @@ binser.register(Animationmt, "animation", function(o)
   end)
 
 local function newAnimation(frames, durations, onLoop)
-  local td = type(durations);
+  local td = type(durations)
   if (td ~= 'number' or durations <= 0) and td ~= 'table' then
     error("durations must be a positive number. Was " .. tostring(durations) )
   end
@@ -208,7 +209,7 @@ local function newAnimation(frames, durations, onLoop)
   local intervals, totalDuration = parseIntervals(durations)
   local framePositions = {}
   for i=1, #frames do
-    framePositions[i] = {frames[i]:getTextureDimensions()}
+    framePositions[i] = {frames[i].fx, frames[i].fy}
   end
   
   return setmetatable({
@@ -328,31 +329,27 @@ function Animation:resume()
 end
 
 function Animation:draw(image, x, y, r, sx, sy, ox, oy, kx, ky)
-  local vx, vy, vw, vh = self.frames[self.position]:getViewport()
-  self.frames[self.position]:setViewport(vx, vy, vw, vh, image:getDimensions())
-  love.graphics.draw(image, self:getFrameInfo(x, y, r, sx, sy, ox, oy, kx, ky))
+  local frame = self.frames[self.position]
+  local lfx, lfy = frame.flipX, frame.flipY
+  local vx, vy, vw, vh = frame:getViewport()
+  frame:setViewport(vx, vy, vw, vh, image:getDimensions())
+  
+  if self.flipX then
+    frame.flipX = not frame.flipX
+  end
+  if self.flipY then
+    frame.flipY = not frame.flipY
+  end
+  
+  frame:draw(image, x, y, r, sx, sy, ox, oy, kx, ky)
+  
+  frame.flipX = lfx
+  frame.flipY = lfy
 end
 
 function Animation:getFrameInfo(x, y, r, sx, sy, ox, oy, kx, ky)
-  local frame = self.frames[self.position]
-  if self.flipX or self.flipY then
-    x,y,r,sx,sy,ox,oy,kx,ky = x or 0, y or 0, r or 0, sx or 1, sy or 1, ox or 0, oy or 0, kx or 0, ky or 0
-    local _,_,w,h = frame:getViewport()
-
-    if self.flipX then
-      sx = sx * -1
-      ox = w - ox
-      kx = kx * -1
-      ky = ky * -1
-    end
-
-    if self.flipY then
-      sy = sy * -1
-      oy = h - oy
-      kx = kx * -1
-      ky = ky * -1
-    end
-  end
+  
+  
   return frame, x, y, r, sx, sy, ox, oy, kx, ky
 end
 
@@ -365,5 +362,3 @@ end
 
 anim8.newGrid       = newGrid
 anim8.newAnimation  = newAnimation
-
-return anim8

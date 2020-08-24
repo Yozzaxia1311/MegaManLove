@@ -1,4 +1,4 @@
-local image = class:extend()
+image = class:extend()
 
 binser.register(image, "image", function(o)
     return o.path
@@ -66,5 +66,3 @@ function image:draw(x, y, r, sx, sy, ox, oy, kx, ky, flipx, flipy, what)
     love.graphics.draw(self.image, x, y, r, sx, sy, ox, oy, kx, ky)
   end
 end
-
-return image

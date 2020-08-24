@@ -70,6 +70,10 @@ function stageSelect:added()
   self:addToGroup("freezable")
 end
 
+function stageSelect:removed()
+  love.graphics.setBackgroundColor(0, 0, 0, 1)
+end
+
 function stageSelect:update()
   self.anims:update(defaultFramerate)
   

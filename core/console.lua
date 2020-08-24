@@ -20,6 +20,7 @@ console = {
   lines = {},
   inputList = {},
   aliases = {},
+  font = love.graphics.newFont()
 }
 
 function console.ser()
@@ -426,7 +427,7 @@ function console.draw()
   local oldFont = love.graphics.getFont()
   local lineMax = math.floor(6.67*console.scale)
 
-  love.graphics.setFont(consoleFont)
+  love.graphics.setFont(console.font)
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.setColor(0, 0, 0, 0.95)
   love.graphics.rectangle("fill", console.x, console.y, console.w, console.h)

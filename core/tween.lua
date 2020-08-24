@@ -1,4 +1,4 @@
-local tween = {
+tween = {
   _VERSION     = 'tween 2.1.1',
   _DESCRIPTION = 'tweening for lua',
   _URL         = 'https://github.com/kikito/tween.lua',
@@ -313,7 +313,7 @@ end
 -- Tween methods
 
 local Tween = {}
-local Tween_mt = {__index = Tween}
+Tween_mt = {__index = Tween}
 
 function Tween:set(clock)
   assert(type(clock) == 'number', "clock must be a positive number or 0")
@@ -381,5 +381,3 @@ binser.register(Tween_mt, "tween", function(o)
     
     return result
   end)
-
-return tween

@@ -1,7 +1,20 @@
+-- Engine globals.
 splash = "assets/misc/splash.bmp"
 borderLeft = "assets/misc/borderLeft.png"
 borderRight = "assets/misc/borderRight.png"
 isMobile = love.system.getOS() == "Android" or love.system.getOS() == "iOS"
+deadZone = 0.8
+defaultFPS = 60
+defaultFramerate = 1/defaultFPS
+mapCacheSize = 2
+extraSkinCacheSize = 1 -- Increase this if you're using a lot of skins at once outside the boundaries of `maxPlayerCount`
+clampSkinShootOffsets = true
+useConsole = love.keyboard
+mmFont = love.graphics.newFont("assets/misc/mm.ttf", 8)
+maxPlayerCount = 4
+maxLives = 10
+maxETanks = 10
+maxWTanks = 10
 
 -- Splash screen
 if not isMobile and love.graphics then
@@ -14,6 +27,10 @@ end
 
 serQueue = nil
 deserQueue = nil
+
+altEnterOnce = false
+scaleOnce = false
+contextOnce = false
 
 keyboardCheck = {}
 gamepadCheck = {}
@@ -82,24 +99,6 @@ end
 function love.load()
   love.keyboard.setKeyRepeat(true)
   love.graphics.setDefaultFilter("nearest", "nearest")
-  
-  -- Engine globals.
-  consoleFont = love.graphics.getFont() -- Needs to be preserved
-  altEnterOnce = false
-  scaleOnce = false
-  deadZone = 0.8
-  defaultFPS = 60
-  defaultFramerate = 1/defaultFPS
-  mapCacheSize = 2
-  extraSkinCacheSize = 1 -- Increase this if you're using a lot of skins at once outside the boundaries of `maxPlayerCount`
-  clampSkinShootOffsets = true
-  useConsole = love.keyboard
-  mmFont = love.graphics.newFont("assets/misc/mm.ttf", 8)
-  
-  maxPlayerCount = 4
-  maxLives = 10
-  maxETanks = 10
-  maxWTanks = 10
   
   require("requires")
   
@@ -264,45 +263,67 @@ function love.textinput(k)
 end
 
 function love.update(dt)
-  if love.keyboard and not (useConsole and console.state == 1) then
-    if (love.keyboard.isDown("ralt") or love.keyboard.isDown("lalt")) and love.keyboard.isDown("return") then
-      if not altEnterOnce then
-        megautils.setFullscreen(not megautils.getFullscreen())
-        local data = save.load("main.sav") or {}
-        data.fullscreen = megautils.getFullscreen()
-        save.save("main.sav", data)
+  if love.keyboard then
+    if not (useConsole and console.state == 1) then
+      if (love.keyboard.isDown("ralt") or love.keyboard.isDown("lalt")) and love.keyboard.isDown("return") then
+        if not altEnterOnce then
+          megautils.setFullscreen(not megautils.getFullscreen())
+          local data = save.load("main.sav") or {}
+          data.fullscreen = megautils.getFullscreen()
+          save.save("main.sav", data)
+        end
+        altEnterOnce = 10
       end
-      altEnterOnce = 10
-    end
-    
-    if altEnterOnce then
-      altEnterOnce = altEnterOnce - 1
-      if altEnterOnce == 0 then
-        altEnterOnce = false
+      
+      if altEnterOnce then
+        altEnterOnce = altEnterOnce - 1
+        if altEnterOnce == 0 then
+          altEnterOnce = false
+        end
+        return
       end
-      return
-    end
-    
-    for i=1, 9 do
-      local k = tostring(i)
-      if love.keyboard.isDown(k) or love.keyboard.isDown("kp" .. k) then
-        if view.w * i ~= love.graphics.getWidth() or
-          view.h * i ~= love.graphics.getHeight() then
-          if not scaleOnce then
-            megautils.setScale(i)
-            local data = save.load("main.sav") or {}
-            data.scale = megautils.getScale()
-            save.save("main.sav", data)
+      
+      for i=1, 9 do
+        local k = tostring(i)
+        if love.keyboard.isDown(k) or love.keyboard.isDown("kp" .. k) then
+          if view.w * i ~= love.graphics.getWidth() or
+            view.h * i ~= love.graphics.getHeight() then
+            if not scaleOnce then
+              megautils.setScale(i)
+              local data = save.load("main.sav") or {}
+              data.scale = megautils.getScale()
+              save.save("main.sav", data)
+            end
+            scaleOnce = 10
           end
-          scaleOnce = 10
+        end
+      end
+      
+      if scaleOnce then
+        scaleOnce = scaleOnce - 1
+        if scaleOnce == 0 then
+          scaleOnce = false
+        end
+        return
+      end
+    end
+    
+    if (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl")) then
+      if not contextOnce then
+        if love.keyboard.isDown("o") then
+          console.parse("contextsave quickContext")
+          contextOnce = 10
+        elseif love.keyboard.isDown("p") then
+          console.parse("contextopen quickContext")
+          contextOnce = 10
         end
       end
     end
     
-    if scaleOnce then
-      scaleOnce = scaleOnce - 1
-      if scaleOnce == 0 then
-        scaleOnce = false
+    if contextOnce then
+      contextOnce = contextOnce - 1
+      if contextOnce == 0 then
+        contextOnce = false
       end
       return
     end
@@ -461,14 +482,15 @@ function ser()
   local data = {
       serQueue = serQueue,
       deserQueue = deserQueue,
+      backgroundColor = {love.graphics.getBackgroundColor()},
       cscreen = cscreen.ser(),
       view = view.ser(),
+      megautils = megautils.ser(),
       state = states.ser(),
       entitySystem = entitySystem.ser(),
       loader = loader.ser(),
       music = mmMusic.ser(),
       control = control.ser(),
-      megautils = megautils.ser(),
       collision = collision.ser(),
       banner = banner and banner.ser(),
       banIDs = pickupEntity.banIDs,
@@ -493,12 +515,16 @@ end
 
 -- Load state
 function deser(from, dontChangeMusic)
+  love.audio.stop()
+  
   local t = binser.deserialize(from)
   
   serQueue = t.serQueue
   deserQueue = t.deserQueue
+  love.graphics.setBackgroundColor(unpack(t.backgroundColor))
   cscreen.deser(t.cscreen)
   view.deser(t.view)
+  megautils.deser(t.megautils)
   states.deser(t.state)
   entitySystem.deser(t.entitySystem)
   loader.deser(t.loader)
@@ -506,7 +532,6 @@ function deser(from, dontChangeMusic)
     mmMusic.deser(t.music)
   end
   control.deser(t.control)
-  megautils.deser(t.megautils)
   collision.deser(t.collision)
   if t.banner then
     banner.deser(t.banner)
@@ -527,4 +552,7 @@ function deser(from, dontChangeMusic)
   console.deser(t.console)
   basicEntity.id = t.basicEntity
   mapEntity.deser(t.mapEntity)
+  
+  collectgarbage()
+  collectgarbage()
 end

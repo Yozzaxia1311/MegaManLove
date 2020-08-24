@@ -1,16 +1,20 @@
-local quad = class:extend()
+quad = class:extend()
 
 binser.register(quad, "quad", function(o)
     return {
         quad={o.quad:getViewport()},
         flipX=o.flipX,
-        flipY=o.flipY
+        flipY=o.flipY,
+        fx=o.fx,
+        fy=o.fy
       }
   end, function(o)
     local result = quad(unpack(o.quad))
     
     result.flipX = o.flipX
     result.flipY = o.flipY
+    result.fx = o.fx
+    result.fy = o.fy
     
     return result
   end)
@@ -51,5 +55,3 @@ function quad:draw(image, x, y, r, sx, sy, ox, oy, kx, ky)
   
   love.graphics.draw(image, self.quad, x, y, r, sx, sy, ox, oy, kx, ky)
 end
-
-return quad

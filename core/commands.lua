@@ -2,6 +2,12 @@ convar["cheats"] = {
   helptext = "enable cheats",
   flags = {},
   value = 0,
+  fun = function(arg)
+      if numberSanitize(arg) == 1 then
+        console.print("Press Control + O to quick-save context")
+        console.print("Press Control + P to quick-load context")
+      end
+    end
 }
 convar["fullscreen"] = {
   helptext = "fullscreen mode",
@@ -370,7 +376,7 @@ concmd["states"] = {
 
 concmd["contextsave"] = {
   helptext = "save context",
-  flags = {},
+  flags = {"cheat"},
   fun = function(cmd)
       if not cmd[2] then return end
       serQueue = function(s)
@@ -382,7 +388,7 @@ concmd["contextsave"] = {
 
 concmd["contextopen"] = {
   helptext = "open context file",
-  flags = {},
+  flags = {"cheat"},
   fun = function(cmd)
       if not cmd[2] then return end
       if love.filesystem.getInfo(cmd[2] .. ".cntx") then
