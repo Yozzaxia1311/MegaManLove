@@ -6,6 +6,7 @@ convar["cheats"] = {
       if numberSanitize(arg) == 1 then
         console.print("Press Control + O to quick-save context")
         console.print("Press Control + P to quick-load context")
+        console.print("Press Control + R to start recording")
       end
     end
 }
@@ -376,7 +377,7 @@ concmd["contextsave"] = {
   fun = function(cmd)
       if not cmd[2] then return end
       serQueue = function(s)
-          save.save(cmd[2] .. ".cntx", s)
+          save.save(cmd[2] .. ".cntx", s, true)
         end
       console.print("Context saved")
     end
@@ -388,7 +389,7 @@ concmd["contextopen"] = {
   fun = function(cmd)
       if not cmd[2] then return end
       if love.filesystem.getInfo(cmd[2] .. ".cntx") then
-        deserQueue = save.load(cmd[2] .. ".cntx")
+        deserQueue = save.load(cmd[2] .. ".cntx", love.filesystem.getRealDirectory(cmd[2] .. ".cntx") == love.filesystem.getAppdataDirectory())
       else
         console.print("No such context file \"" .. cmd[2] .. "\"")
       end

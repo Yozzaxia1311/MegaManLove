@@ -312,10 +312,13 @@ function love.update(dt)
       if not contextOnce then
         if love.keyboard.isDown("o") then
           console.parse("contextsave quickContext")
-          contextOnce = 10
+          contextOnce = 2
         elseif love.keyboard.isDown("p") then
           console.parse("contextopen quickContext")
-          contextOnce = 10
+          contextOnce = 2
+        elseif love.keyboard.isDown("r") then
+          console.parse("rec")
+          contextOnce = 2
         end
       end
     end
@@ -505,6 +508,7 @@ function ser()
       gamepadCheck = gamepadCheck,
       globals = globals,
       convars = convar.getAllValues(),
+      rstate = love.math.getRandomState(),
       seed = love.math.getRandomSeed(),
       console = console.ser(),
       basicEntity = basicEntity.id,
@@ -549,6 +553,7 @@ function deser(from, dontChangeMusic)
   globals = t.globals
   convar.setAllValues(t.convars)
   love.math.setRandomSeed(t.seed)
+  love.math.setRandomState(t.rstate)
   console.deser(t.console)
   basicEntity.id = t.basicEntity
   mapEntity.deser(t.mapEntity)

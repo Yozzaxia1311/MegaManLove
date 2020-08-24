@@ -73,17 +73,110 @@ function table.convert1Dto2D(t, w)
   return tmp
 end
 
-function iterateDirs(func, path)
+function iterateDirs(func, path, noAppdata, special)
   local results = {}
   path = path or ""
+  
   for k, v in pairs(love.filesystem.getDirectoryItems(path)) do
-    if v:sub(1, 1) ~= "." and love.filesystem.getInfo(path .. (path ~= "" and "/" or path) .. v).type == "directory" then
-      results = table.merge({results, iterateDirs(func, path .. (path ~= "" and "/" or path) .. v)})
-    else
-      if func(v) then results[#results+1] = path .. (path ~= "" and "/" or path) .. v end
+    local p = path .. (path ~= "" and "/" or path) .. v
+    if not noAppdata or love.filesystem.getRealDirectory(p) ~= love.filesystem.getAppdataDirectory() then
+      local info = love.filesystem.getInfo(p)
+      local no = v:sub(1, 1) == "."
+      if not no and info.type == "directory" then
+        results = table.merge({results, iterateDirs(func, p, noAppdata, special)})
+      elseif not special or not no then
+        if not func or func(v) then results[#results+1] = p .. (special and info.modtime or "") end
+      end
     end
   end
+  
+  table.sort(results)
+  
   return results
+end
+
+function hash(data)
+  local temp = 0
+  local timer = 0
+  local hashd = ""
+  local t = iterateDirs(nil, nil, true, true)
+  local olds = love.math.getRandomState()
+  local old = love.math.getRandomSeed()
+  
+  love.math.setRandomSeed(#t * 2)
+  
+  for k, v in ipairs(t) do
+    for i=1, v:len() do
+      temp = temp + v:sub(i):byte()
+    end
+    timer = timer + 1
+    if timer > 10 then
+      hashd = hashd .. tostring(temp)
+      temp = love.math.random(10)
+      timer = 0
+    end
+  end
+  
+  local result = ""
+  
+  for i=1, data:len() do
+    local byte = data:byte(i)
+    
+    if math.between(byte, 32, 126) then
+      local w = i % hashd:len()+1
+      local r = love.math.random(hashd:sub(w, w):byte() * 100)
+      result = result .. string.char(math.wrap(byte + r, 32, 126))
+    else
+      result = result .. string.char(byte)
+    end
+  end
+  
+  love.math.setRandomSeed(old)
+  love.math.setRandomState(olds)
+  
+  return result
+end
+
+function fromHash(data)
+  local temp = 0
+  local timer = 0
+  local hashd = ""
+  local t = iterateDirs(nil, nil, true, true)
+  local olds = love.math.getRandomState()
+  local old = love.math.getRandomSeed()
+  
+  love.math.setRandomSeed(#t * 2)
+  
+  for k, v in ipairs(t) do
+    for i=1, v:len() do
+      temp = temp + v:sub(i):byte()
+    end
+    timer = timer + 1
+    if timer > 10 then
+      hashd = hashd .. tostring(temp)
+      temp = love.math.random(10)
+      timer = 0
+    end
+  end
+  
+  local result = ""
+  
+  for i=1, data:len() do
+    local byte = data:byte(i)
+    
+    if math.between(byte, 32, 126) then
+      local w = i % hashd:len()+1
+      local r = love.math.random(hashd:sub(w, w):byte() * 100)
+      result = result .. string.char(math.wrap(byte - r, 32, 126))
+    else
+      result = result .. string.char(byte)
+    end
+  end
+  
+  love.math.setRandomSeed(old)
+  love.math.setRandomState(olds)
+  
+  return result
 end
 
 function string:trimmed()

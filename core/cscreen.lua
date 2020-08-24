@@ -80,9 +80,11 @@ function CScreen.init(tw, th, l, r)
 	ry = th or ry
   if l and imglp ~= l then
     imgl = love.graphics.newImage(l)
+    imgl:setFilter("linear")
   end
   if r and imgrp ~= r then
     imgr = love.graphics.newImage(r)
+    imgr:setFilter("linear")
   end
   imglp = l
   imgrp = r

@@ -435,7 +435,7 @@ end
 
 function control.finishRecord(name)
   control.record.last = control.recPos
-  save.save(name, control.record)
+  save.save(name, control.record, true)
   
   control.resetRec()
 end
@@ -469,7 +469,7 @@ end
 
 function control.openRec(f)
   control.resetLoadedRec()
-  local file = save.load(f)
+  local file = save.load(f, love.filesystem.getRealDirectory(f) == love.filesystem.getAppdataDirectory())
   control.oldContext = ser()
   
   deser(file.context)
