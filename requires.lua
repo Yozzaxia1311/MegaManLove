@@ -1,4 +1,3 @@
-lualzw = require("core/lualzw")
 binser = require("core/binser")
 local x2l = require("core/xml2lua")
 xml2lua = x2l.parser(require("core/xmlhandler/tree"))
