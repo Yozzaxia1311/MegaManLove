@@ -17,20 +17,6 @@ function banner.deser(t)
   banner.colorTwo = t.two
 end
 
-binser.register(banner, "banner", function(o)
-    local result = {}
-    
-    banner.super.transfer(o, result)
-    
-    return result
-  end, function(o)
-    local result = banner()
-    
-    banner.super.transfer(o, result)
-    
-    return result
-  end)
-
 banner.colorOutline = {0, 0, 0}
 banner.colorOne = {0, 120, 248}
 banner.colorTwo = {0, 232, 216}
@@ -51,30 +37,12 @@ end
 
 function banner:draw()
   love.graphics.setColor(banner.colorOne[1]/255, banner.colorOne[2]/255, banner.colorOne[3]/255, 1)
-  self.quad:draw(self.tOne, self.transform.x, self.transform.y)
+  self.tOne:draw(self.quad, self.transform.x, self.transform.y)
   love.graphics.setColor(banner.colorTwo[1]/255, banner.colorTwo[2]/255, banner.colorTwo[3]/255, 1)
-  self.quad:draw(self.tTwo, self.transform.x, self.transform.y)
+  self.tTwo:draw(self.quad, self.transform.x, self.transform.y)
 end
 
 smallStar = basicEntity:extend()
-
-binser.register(smallStar, "smallStar", function(o)
-    local result = {}
-    
-    smallStar.super.transfer(o, result)
-    
-    result.velocity = o.velocity
-    
-    return result
-  end, function(o)
-    local result = smallStar()
-    
-    smallStar.super.transfer(o, result)
-    
-    result.velocity = o.velocity
-    
-    return result
-  end)
 
 function smallStar:new(x, y, angle, spd)
   smallStar.super.new(self)
@@ -94,28 +62,10 @@ function smallStar:update()
 end
 
 function smallStar:draw()
-  self.quad:draw(self.t, self.transform.x, self.transform.y)
+  self.t:draw(self.quad, self.transform.x, self.transform.y)
 end
 
 star = basicEntity:extend()
-
-binser.register(star, "star", function(o)
-    local result = {}
-    
-    star.super.transfer(o, result)
-    
-    result.velocity = o.velocity
-    
-    return result
-  end, function(o)
-    local result = star()
-    
-    star.super.transfer(o, result)
-    
-    result.velocity = o.velocity
-    
-    return result
-  end)
 
 function star:new(x, y, angle, spd)
   star.super.new(self)
@@ -135,28 +85,10 @@ function star:update()
 end
 
 function star:draw()
-  self.quad:draw(self.t, self.transform.x, self.transform.y)
+  self.t:draw(self.quad, self.transform.x, self.transform.y)
 end
 
 largeStar = basicEntity:extend()
-
-binser.register(largeStar, "largeStar", function(o)
-    local result = {}
-    
-    largeStar.super.transfer(o, result)
-    
-    result.velocity = o.velocity
-    
-    return result
-  end, function(o)
-    local result = largeStar()
-    
-    largeStar.super.transfer(o, result)
-    
-    result.velocity = o.velocity
-    
-    return result
-  end)
 
 function largeStar:new(x, y, angle, spd)
   largeStar.super.new(self)
@@ -176,5 +108,5 @@ function largeStar:update()
 end
 
 function largeStar:draw()
-  self.quad:draw(self.t, math.round(self.transform.x), math.round(self.transform.y))
+  self.t:draw(self.quad, math.round(self.transform.x), math.round(self.transform.y))
 end

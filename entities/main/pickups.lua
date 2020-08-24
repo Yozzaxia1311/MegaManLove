@@ -110,24 +110,6 @@ smallHealth = pickupEntity:extend()
 
 smallHealth.autoClean = false
 
-binser.register(smallHealth, "smallHealth", function(o)
-    local result = {}
-    
-    smallHealth.super.transfer(o, result)
-    
-    result.anim = o.anim
-    
-    return result
-  end, function(o)
-    local result = smallHealth()
-    
-    smallHealth.super.transfer(o, result)
-    
-    result.anim = o.anim
-    
-    return result
-  end)
-
 mapEntity.register("smallHealth", function(v, map)
   megautils.add(spawner, v.x, v.y, 8, 6, function()
       return not pickupEntity.isBanned(smallHealth, v.id, map.path)
@@ -158,38 +140,20 @@ function smallHealth:draw()
   if self.gravity < 0 then
     offy = -2
   end
-  self.anim:draw(self.t, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+  self.t:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
   if megaMan.mainPlayer then
     love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
-    self.anim:draw(self.tOutline, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.tOutline:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
   else
     love.graphics.setColor(0, 0, 0, 1)
-    self.anim:draw(self.tOutline, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.tOutline:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
   end
 end
 
 health = pickupEntity:extend()
 
 health.autoClean = false
-
-binser.register(health, "health", function(o)
-    local result = {}
-    
-    health.super.transfer(o, result)
-    
-    result.anim = o.anim
-    
-    return result
-  end, function(o)
-    local result = health()
-    
-    health.super.transfer(o, result)
-    
-    result.anim = o.anim
-    
-    return result
-  end)
 
 mapEntity.register("health", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 14, function()
@@ -221,38 +185,20 @@ function health:draw()
   if self.gravity < 0 then
     offy = -2
   end
-  self.anim:draw(self.t, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+  self.t:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
   if megaMan.mainPlayer then
     love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
-    self.anim:draw(self.tOutline, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.tOutline:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
   else
     love.graphics.setColor(0, 0, 0, 1)
-    self.anim:draw(self.tOutline, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.tOutline:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
   end
 end
 
 smallEnergy = pickupEntity:extend()
 
 smallEnergy.autoClean = false
-
-binser.register(smallEnergy, "smallEnergy", function(o)
-    local result = {}
-    
-    smallEnergy.super.transfer(o, result)
-    
-    result.anim = o.anim
-    
-    return result
-  end, function(o)
-    local result = smallEnergy()
-    
-    smallEnergy.super.transfer(o, result)
-    
-    result.anim = o.anim
-    
-    return result
-  end)
 
 mapEntity.register("smallEnergy", function(v, map)
   megautils.add(spawner, v.x, v.y, 8, 6, function()
@@ -288,44 +234,26 @@ function smallEnergy:draw()
   if megaMan.mainPlayer then
     love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255, megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
       megaMan.colorTwo[megaMan.mainPlayer.player][3]/255, 1)
-    self.anim:draw(self.texTwo, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texTwo:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
     love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
-    self.anim:draw(self.texOutline, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOutline:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
     love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255, megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOne[megaMan.mainPlayer.player][3]/255, 1)
-    self.anim:draw(self.texOne, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOne:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
   else
     love.graphics.setColor(0, 232/255, 216/255, 1)
-    self.anim:draw(self.texTwo, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texTwo:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
     love.graphics.setColor(0, 0, 0, 1)
-    self.anim:draw(self.texOutline, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOutline:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
     love.graphics.setColor(0, 120/255, 248/255, 1)
-    self.anim:draw(self.texOne, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOne:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
   end
 end
 
 energy = pickupEntity:extend()
 
 energy.autoClean = false
-
-binser.register(energy, "energy", function(o)
-    local result = {}
-    
-    energy.super.transfer(o, result)
-    
-    result.anim = o.anim
-    
-    return result
-  end, function(o)
-    local result = energy()
-    
-    energy.super.transfer(o, result)
-    
-    result.anim = o.anim
-    
-    return result
-  end)
 
 mapEntity.register("energy", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 10, function()
@@ -361,40 +289,26 @@ function energy:draw()
   if megaMan.mainPlayer then
     love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255, megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
       megaMan.colorTwo[megaMan.mainPlayer.player][3]/255, 1)
-    self.anim:draw(self.texTwo, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texTwo:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
     love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
-    self.anim:draw(self.texOutline, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOutline:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
     love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255, megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOne[megaMan.mainPlayer.player][3]/255, 1)
-    self.anim:draw(self.texOne, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOne:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
   else
     love.graphics.setColor(0, 232/255, 216/255, 1)
-    self.anim:draw(self.texTwo, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texTwo:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
     love.graphics.setColor(0, 0, 0, 1)
-    self.anim:draw(self.texOutline, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOutline:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
     love.graphics.setColor(0, 120/255, 248/255, 1)
-    self.anim:draw(self.texOne, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOne:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
   end
 end
 
 life = pickupEntity:extend()
 
 life.autoClean = false
-
-binser.register(life, "life", function(o)
-    local result = {}
-    
-    life.super.transfer(o, result)
-    
-    return result
-  end, function(o)
-    local result = life()
-    
-    life.super.transfer(o, result)
-    
-    return result
-  end)
 
 mapEntity.register("life", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 15, function()
@@ -428,53 +342,35 @@ function life:draw()
     self.quad.flipY = self.gravity < 0
     
     love.graphics.setColor(1, 1, 1, 1)
-    self.quad:draw(skin.texture, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37)
+    skin.texture:draw(self.quad, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37)
     love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
-    self.quad:draw(skin.outline, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37)
+    skin.texture:draw(self.quad, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37)
     love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255, megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOne[megaMan.mainPlayer.player][3]/255, 1)
-    self.quad:draw(skin.one, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37)
+    skin.one:draw(self.quad, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37)
     love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255, megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
       megaMan.colorTwo[megaMan.mainPlayer.player][3]/255, 1)
-    self.quad:draw(skin.two, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37)
+    skin.two:draw(self.quad, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37)
   else
     local skin = megaMan.getSkin(1)
     
     self.quad.flipY = self.gravity < 0
     
     love.graphics.setColor(1, 1, 1, 1)
-    self.quad:draw(skin.texture, math.floor(self.transform.x), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37)
+    skin.texture:draw(self.quad, math.floor(self.transform.x), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37)
     love.graphics.setColor(0, 0, 0, 1)
-    self.quad:draw(skin.outline, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37)
+    skin.outline:draw(self.quad, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37)
     love.graphics.setColor(0, 120/255, 248/255, 1)
-    self.quad:draw(skin.one, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37)
+    skin.one:draw(self.quad, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37)
     love.graphics.setColor(0, 232/255, 216/255, 1)
-    self.quad:draw(skin.two, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37)
+    skin.two:draw(self.quad, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37)
   end
 end
 
 eTank = pickupEntity:extend()
 
 eTank.autoClean = false
-
-binser.register(eTank, "eTank", function(o)
-    local result = {}
-    
-    eTank.super.transfer(o, result)
-    
-    result.anim = o.anim
-    
-    return result
-  end, function(o)
-    local result = eTank()
-    
-    eTank.super.transfer(o, result)
-    
-    result.anim = o.anim
-    
-    return result
-  end)
 
 mapEntity.register("eTank", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 15, function()
@@ -511,46 +407,28 @@ function eTank:draw()
     offy = -1
   end
   if megaMan.mainPlayer then
-    love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255, megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
-      megaMan.colorTwo[megaMan.mainPlayer.player][3]/255, 1)
-    self.anim:draw(self.texTwo, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
     love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
-    self.anim:draw(self.texOutline, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOutline:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255, megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
+      megaMan.colorTwo[megaMan.mainPlayer.player][3]/255, 1)
+    self.texTwo:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
     love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255, megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOne[megaMan.mainPlayer.player][3]/255, 1)
-    self.anim:draw(self.texOne, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOne:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
   else
-    love.graphics.setColor(0, 232/255, 216/255, 1)
-    self.anim:draw(self.texTwo, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
     love.graphics.setColor(0, 0, 0, 1)
-    self.anim:draw(self.texOutline, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOutline:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    love.graphics.setColor(0, 232/255, 216/255, 1)
+    self.texTwo:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
     love.graphics.setColor(0, 120/255, 248/255, 1)
-    self.anim:draw(self.texOne, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOne:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
   end
 end
 
 wTank = pickupEntity:extend()
 
 wTank.autoClean = false
-
-binser.register(wTank, "wTank", function(o)
-    local result = {}
-    
-    wTank.super.transfer(o, result)
-    
-    result.anim = o.anim
-    
-    return result
-  end, function(o)
-    local result = wTank()
-    
-    wTank.super.transfer(o, result)
-    
-    result.anim = o.anim
-    
-    return result
-  end)
 
 mapEntity.register("wTank", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 15, function()
@@ -587,20 +465,20 @@ function wTank:draw()
   if megaMan.mainPlayer then
     love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255, megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
       megaMan.colorTwo[megaMan.mainPlayer.player][3]/255, 1)
-    self.anim:draw(self.texTwo, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texTwo:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
     love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
-    self.anim:draw(self.texOutline, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOutline:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
     love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255, megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOne[megaMan.mainPlayer.player][3]/255, 1)
-    self.anim:draw(self.texOne, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOne:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
   else
     love.graphics.setColor(0, 232/255, 216/255, 1)
-    self.anim:draw(self.texTwo, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texTwo:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
     love.graphics.setColor(0, 0, 0, 1)
-    self.anim:draw(self.texOutline, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOutline:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
     love.graphics.setColor(0, 120/255, 248/255, 1)
-    self.anim:draw(self.texOne, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOne:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
   end
 end
 

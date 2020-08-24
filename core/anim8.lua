@@ -336,7 +336,7 @@ end
 function Animation:getFrameInfo(x, y, r, sx, sy, ox, oy, kx, ky)
   local frame = self.frames[self.position]
   if self.flipX or self.flipY then
-    r,sx,sy,ox,oy,kx,ky = r or 0, sx or 1, sy or 1, ox or 0, oy or 0, kx or 0, ky or 0
+    x,y,r,sx,sy,ox,oy,kx,ky = x or 0, y or 0, r or 0, sx or 1, sy or 1, ox or 0, oy or 0, kx or 0, ky or 0
     local _,_,w,h = frame:getViewport()
 
     if self.flipX then

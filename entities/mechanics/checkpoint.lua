@@ -2,22 +2,6 @@ checkpoint = basicEntity:extend()
 
 checkpoint.autoClean = false
 
-binser.register(checkpoint, "checkpoint", function(o)
-    local result = {}
-    
-    checkpoint.super.transfer(o, result)
-    
-    result.name = o.name
-    
-    return result
-  end, function(o)
-    local result = checkpoint(nil, nil, nil, nil, o.name)
-    
-    checkpoint.super.transfer(o, result)
-    
-    return result
-  end)
-
 mapEntity.register("checkpoint", function(v)
   megautils.add(checkpoint, v.x, v.y, v.width, v.height, v.properties.name)
 end, 0, true)
@@ -43,22 +27,6 @@ end
 collisionCheckpoint = basicEntity:extend()
 
 collisionCheckpoint.autoClean = false
-
-binser.register(collisionCheckpoint, "collisionCheckpoint", function(o)
-    local result = {}
-    
-    collisionCheckpoint.super.transfer(o, result)
-    
-    result.name = o.name
-    
-    return result
-  end, function(o)
-    local result = collisionCheckpoint(nil, nil, nil, nil, o.name)
-    
-    collisionCheckpoint.super.transfer(o, result)
-    
-    return result
-  end)
 
 mapEntity.register("collisionCheckpoint", function(v)
   megautils.add(collisionCheckpoint, v.x, v.y, v.width, v.height, v.properties.name)

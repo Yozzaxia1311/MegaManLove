@@ -2,30 +2,6 @@ spawner = basicEntity:extend()
 
 spawner.autoClean = false
 
-binser.register(spawner, "spawner", function(o)
-    local result = {}
-    
-    spawner.super.transfer(o, result)
-    
-    result.stuff = o.stuff
-    result.wasOutside = o.wasOutside
-    result.instance = o.instance
-    reuslt.cond = o.cond
-    
-    return result
-  end, function(o)
-    local result = spawner()
-    
-    spawner.super.transfer(o, result)
-    
-    result.stuff = o.stuff
-    result.wasOutside = o.wasOutside
-    result.instance = o.instance
-    reuslt.cond = o.cond
-    
-    return result
-  end)
-
 function spawner:new(x, y, w, h, cond, ...)
   spawner.super.new(self)
   self.transform.x = x or 0
@@ -57,32 +33,6 @@ end
 intervalSpawner = basicEntity:extend()
 
 intervalSpawner.autoClean = false
-
-binser.register(intervalSpawner, "intervalSpawner", function(o)
-    local result = {}
-    
-    intervalSpawner.super.transfer(o, result)
-    
-    result.stuff = o.stuff
-    result.time = o.time
-    result.timer = o.timer
-    result.instance = o.instance
-    reuslt.cond = o.cond
-    
-    return result
-  end, function(o)
-    local result = intervalSpawner()
-    
-    intervalSpawner.super.transfer(o, result)
-    
-    result.stuff = o.stuff
-    result.time = o.time
-    result.timer = o.timer
-    result.instance = o.instance
-    reuslt.cond = o.cond
-    
-    return result
-  end)
 
 function intervalSpawner:new(x, y, w, h, time, cond, ...)
   intervalSpawner.super.new(self)

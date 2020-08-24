@@ -54,9 +54,9 @@ function loader.load(path, nick, typ, parameters, lock)
         local img = love.image.newImageData(path)
         loader.tmp = {}
         img:mapPixel(loader.imgMap)
-        loader.locked[nick] = {data=loader.tmp, path=path, img=love.graphics.newImage(img), type=typ}
+        loader.locked[nick] = {data=loader.tmp, path=path, img=image(img), type=typ}
       else
-        loader.locked[nick] = {data=love.graphics.newImage(path), path=path, type=typ}
+        loader.locked[nick] = {data=image(path), path=path, type=typ}
       end
       
       loader.resources[nick] = nil
@@ -70,9 +70,9 @@ function loader.load(path, nick, typ, parameters, lock)
         local img = love.image.newImageData(path)
         loader.tmp = {}
         img:mapPixel(loader.imgMap)
-        loader.resources[nick] = {data=loader.tmp, path=path, img=love.graphics.newImage(img), type=typ}
+        loader.resources[nick] = {data=loader.tmp, path=path, img=image(img), type=typ}
       else
-        loader.resources[nick] = {data=love.graphics.newImage(path), path=path, type=typ}
+        loader.resources[nick] = {data=image(path), path=path, type=typ}
       end
       
       return loader.resources[nick]

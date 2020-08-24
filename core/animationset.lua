@@ -1,4 +1,4 @@
-animationSet = class:extend()
+local animationSet = class:extend()
 
 binser.register(animationSet, "animationSet", function(o)
     return {
@@ -94,10 +94,12 @@ function animationSet:update(dt)
   end
 end
 
-function animationSet:draw(texture, x, y, r, sx, sy, ox, oy, kx, ky)
+function animationSet:draw(image, x, y, r, sx, sy, ox, oy, kx, ky)
   if self.anims[self.current] then
     self.anims[self.current].flipX = self.flipX
     self.anims[self.current].flipY = self.flipY
-    self.anims[self.current]:draw(texture, x, y, r, sx, sy, ox, oy, kx, ky)
+    self.anims[self.current]:draw(image, x, y, r, sx, sy, ox, oy, kx, ky)
   end
 end
+
+return animationSet

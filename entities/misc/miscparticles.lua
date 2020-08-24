@@ -74,25 +74,6 @@ slideParticle = particle:extend()
 
 slideParticle.autoClean = false
 
-binser.register(slideParticle, "slideParticle", function(o)
-    local result = {}
-    
-    slideParticle.super.transfer(o, result)
-    
-    result.anim = o.anim
-    result.side = o.side
-    
-    return result
-  end, function(o)
-    local result = slideParticle(nil, nil, nil, o.side)
-    
-    slideParticle.super.transfer(o, result)
-    
-    result.anim = o.anim
-    
-    return result
-  end)
-
 function slideParticle:new(x, y, p, side)
   slideParticle.super.new(self, p)
   
@@ -122,30 +103,12 @@ function slideParticle:update()
 end
 
 function slideParticle:draw()
-  self.anim:draw(self.tex, math.floor(self.transform.x), math.floor(self.transform.y))
+  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y))
 end
 
 damageSteam = particle:extend()
 
 damageSteam.autoClean = false
-
-binser.register(damageSteam, "damageSteam", function(o)
-    local result = {}
-    
-    damageSteam.super.transfer(o, result)
-    
-    result.anim = o.anim
-    
-    return result
-  end, function(o)
-    local result = damageSteam()
-    
-    damageSteam.super.transfer(o, result)
-    
-    result.anim = o.anim
-    
-    return result
-  end)
 
 function damageSteam:new(x, y, p)
   damageSteam.super.new(self, p)
@@ -174,32 +137,12 @@ function damageSteam:update()
 end
 
 function damageSteam:draw()
-  self.anim:draw(self.tex, math.floor(self.transform.x), math.floor(self.transform.y))
+  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y))
 end
 
 airBubble = particle:extend()
 
 airBubble.autoClean = false
-
-binser.register(airBubble, "airBubble", function(o)
-    local result = {}
-    
-    airBubble.super.transfer(o, result)
-    
-    result.off = o.off
-    result.timer = o.timer
-    
-    return result
-  end, function(o)
-    local result = airBubble()
-    
-    airBubble.super.transfer(o, result)
-    
-    result.off = o.off
-    result.timer = o.timer
-    
-    return result
-  end)
 
 function airBubble:new(x, y, p)
   airBubble.super.new(self, p)
@@ -235,32 +178,12 @@ function airBubble:update(dt)
 end
 
 function airBubble:draw()
-  self.quad:draw(self.tex, math.floor(self.transform.x)-self.off, math.floor(self.transform.y))
+  self.tex:draw(self.quad, math.floor(self.transform.x)-self.off, math.floor(self.transform.y))
 end
 
 harm = particle:extend()
 
 harm.autoClean = false
-
-binser.register(harm, "harm", function(o)
-    local result = {}
-    
-    harm.super.transfer(o, result)
-    
-    result.timer = o.timer
-    result.maxTime = o.maxTime
-    
-    return result
-  end, function(o)
-    local result = harm()
-    
-    harm.super.transfer(o, result)
-    
-    result.timer = o.timer
-    result.maxTime = o.maxTime
-    
-    return result
-  end)
 
 function harm:new(p, time)
   harm.super.new(self, p)
@@ -289,30 +212,12 @@ function harm:update()
 end
 
 function harm:draw()
-  self.quad:draw(self.tex, math.floor(self.transform.x), math.floor(self.transform.y))
+  self.tex:draw(self.quad, math.floor(self.transform.x), math.floor(self.transform.y))
 end
 
 deathExplodeParticle = particle:extend()
 
 deathExplodeParticle.autoClean = false
-
-binser.register(deathExplodeParticle, "deathExplodeParticle", function(o)
-    local result = {}
-    
-    deathExplodeParticle.super.transfer(o, result)
-    
-    result.anim = o.anim
-    
-    return result
-  end, function(o)
-    local result = deathExplodeParticle()
-    
-    deathExplodeParticle.super.transfer(o, result)
-    
-    result.anim = o.anim
-    
-    return result
-  end)
 
 function deathExplodeParticle:new(x, y, p, angle, spd)
   deathExplodeParticle.super.new(self, p)
@@ -330,7 +235,7 @@ function deathExplodeParticle:update(dt)
 end
 
 function deathExplodeParticle:draw()
-  self.anim:draw(self.tex, math.floor(self.transform.x), math.floor(self.transform.y))
+  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y))
 end
 
 function deathExplodeParticle.createExplosion(x, y, p)
@@ -344,32 +249,6 @@ end
 absorbParticle = particle:extend()
 
 absorbParticle.autoClean = false
-
-binser.register(absorbParticle, "absorbParticle", function(o)
-    local result = {}
-    
-    absorbParticle.super.transfer(o, result)
-    
-    result.anim = o.anim
-    result.startX = o.startX
-    result.startY = o.startY
-    result.pos = o.pos
-    result.spd = o.spd
-    
-    return result
-  end, function(o)
-    local result = absorbParticle()
-    
-    absorbParticle.super.transfer(o, result)
-    
-    result.anim = o.anim
-    result.startX = o.startX
-    result.startY = o.startY
-    result.pos = o.pos
-    result.spd = o.spd
-    
-    return result
-  end)
 
 function absorbParticle:new(x, y, p, spd)
   absorbParticle.super.new(self, p)
@@ -400,7 +279,7 @@ function absorbParticle:update()
 end
 
 function absorbParticle:draw()
-  self.anim:draw(self.tex, math.floor(self.transform.x), math.floor(self.transform.y), 0, 1, 1, 12, 12)
+  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y), 0, 1, 1, 12, 12)
 end
 
 function absorbParticle.createAbsorbtion(towards, spd)
@@ -415,30 +294,6 @@ end
 absorb = particle:extend()
 
 absorb.autoClean = false
-
-binser.register(absorb, "absorb", function(o)
-    local result = {}
-    
-    absorb.super.transfer(o, result)
-    
-    result.timer = o.timer
-    result.times = o.times
-    result.maxTimes = o.maxTimes
-    result.spd = o.spd
-    
-    return result
-  end, function(o)
-    local result = absorb()
-    
-    absorb.super.transfer(o, result)
-    
-    result.timer = o.timer
-    result.times = o.times
-    result.maxTimes = o.maxTimes
-    result.spd = o.spd
-    
-    return result
-  end)
 
 function absorb:new(p, times, spd)
   absorb.super.new(self, p)
@@ -467,26 +322,6 @@ smallBlast = particle:extend()
 
 smallBlast.autoClean = false
 
-binser.register(smallBlast, "smallBlast", function(o)
-    local result = {}
-    
-    smallBlast.super.transfer(o, result)
-    
-    result.anim = o.anim
-    result.spd = o.spd
-    
-    return result
-  end, function(o)
-    local result = smallBlast()
-    
-    smallBlast.super.transfer(o, result)
-    
-    result.anim = o.anim
-    result.spd = o.spd
-    
-    return result
-  end)
-
 function smallBlast:new(x, y, p, spd)
   smallBlast.super.new(self, p)
   
@@ -513,36 +348,12 @@ function smallBlast:update()
 end
 
 function smallBlast:draw()
-  self.anim:draw(self.tex, math.floor(self.transform.x), math.floor(self.transform.y))
+  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y))
 end
 
 blast = particle:extend()
 
 blast.autoClean = false
-
-binser.register(blast, "blast", function(o)
-    local result = {}
-    
-    blast.super.transfer(o, result)
-    
-    result.deg = o.deg
-    result.timer = o.timer
-    result.times = o.times
-    result.max = o.max
-    
-    return result
-  end, function(o)
-    local result = blast()
-    
-    blast.super.transfer(o, result)
-    
-    result.deg = o.deg
-    result.timer = o.timer
-    result.times = o.times
-    result.max = o.max
-    
-    return result
-  end)
 
 function blast:new(x, y, p, times)
   blast.super.new(self, p)

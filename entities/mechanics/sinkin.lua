@@ -1,23 +1,5 @@
 sinkIn = basicEntity:extend()
 
-binser.register(sinkIn, "sinkIn", function(o)
-    local result = {}
-    
-    sinkIn.super.transfer(o, result)
-    
-    result.sink = o.sink
-    
-    return result
-  end, function(o)
-    local result = sinkIn()
-    
-    sinkIn.super.transfer(o, result)
-    
-    result.sink = o.sink
-    
-    return result
-  end)
-
 mapEntity.register("sinkIn", function(v)
   megautils.add(sinkIn, v.x, v.y, v.width, v.height, v.properties.speed)
 end)

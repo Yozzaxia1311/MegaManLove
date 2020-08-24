@@ -2,20 +2,6 @@ megautils.loadResource("assets/global/bosses/stickMan.png", "stickMan")
 
 stickMan = bossEntity:extend()
 
-binser.register(stickMan, "stickMan", function(o)
-    local result = {}
-    
-    stickMan.super.transfer(o, result)
-    
-    return result
-  end, function(o)
-    local result = stickMan()
-    
-    stickMan.super.transfer(o, result)
-    
-    return result
-  end)
-
 mapEntity.register("stickMan", function(v)
     megautils.add(spawner, v.x, v.y-8, 12, 24, nil, stickMan, v.x, v.y-8)
   end)
@@ -61,7 +47,7 @@ end
 function stickMan:draw()
   stickMan.super.draw(self)
   love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.draw(self.t, math.floor(self.transform.x)-4, math.floor(self.transform.y)-8)
+  self.t:draw(math.floor(self.transform.x)-4, math.floor(self.transform.y)-8)
 end
 
 return stickMan

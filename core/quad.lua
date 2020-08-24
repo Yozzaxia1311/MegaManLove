@@ -1,4 +1,4 @@
-quad = class:extend()
+local quad = class:extend()
 
 binser.register(quad, "quad", function(o)
     return {
@@ -29,11 +29,11 @@ function quad:setViewport(x, y, w, h)
   self.quad:setViewport(x, y, w, h, 1, 1)
 end
 
-function quad:draw(texture, x, y, r, sx, sy, ox, oy, kx, ky)
-  r,sx,sy,ox,oy,kx,ky = r or 0, sx or 1, sy or 1, ox or 0, oy or 0, kx or 0, ky or 0
+function quad:draw(image, x, y, r, sx, sy, ox, oy, kx, ky)
+  x,y,r,sx,sy,ox,oy,kx,ky = x or 0, y or 0, r or 0, sx or 1, sy or 1, ox or 0, oy or 0, kx or 0, ky or 0
   local vx, vy, vw, vh = self.quad:getViewport()
   
-  self.quad:setViewport(vx, vy, vw, vh, texture:getDimensions())
+  self.quad:setViewport(vx, vy, vw, vh, image:getDimensions())
   
   if self.flipX then
     sx = sx * -1
@@ -49,5 +49,7 @@ function quad:draw(texture, x, y, r, sx, sy, ox, oy, kx, ky)
     ky = ky * -1
   end
   
-  love.graphics.draw(texture, self.quad, x, y, r, sx, sy, ox, oy, kx, ky)
+  love.graphics.draw(image, self.quad, x, y, r, sx, sy, ox, oy, kx, ky)
 end
+
+return quad

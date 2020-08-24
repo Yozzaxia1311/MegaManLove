@@ -2,46 +2,6 @@ parallax = basicEntity:extend()
 
 parallax.autoClean = false
 
-binser.register(parallax, "parallax", function(o)
-    local result = {}
-    
-    parallax.super.transfer(o, result)
-    
-    result.animWidth = o.animWidth
-    result.animHeight = o.animHeight
-    result.anim = o.anim
-    result.spdMultX = o.spdMultX
-    result.spdMultY = o.spdMultY
-    result.velx = o.velx
-    result.vely = o.vely
-    result.ox = o.ox
-    result.oy = o.oy
-    result.wrapX = o.wrapX
-    result.wrapY = o.wrapY
-    result.bg = o.bg
-    result.offX = o.offX
-    result.offY = o.offY
-    
-    return result
-  end, function(o)
-    local result = parallax(nil, nil, nil, nil, o.bg, o.anim ~= nil, o.animWidth, o.animHeight)
-    
-    parallax.super.transfer(o, result)
-    
-    result.spdMultX = o.spdMultX
-    result.spdMultY = o.spdMultY
-    result.velx = o.velx
-    result.vely = o.vely
-    result.ox = o.ox
-    result.oy = o.oy
-    result.wrapX = o.wrapX
-    result.wrapY = o.wrapY
-    result.offX = o.offX
-    result.offY = o.offY
-    
-    return result
-  end)
-
 mapEntity.register("parallax", function(v)
     megautils.add(parallax, v.x, v.y, v.width, v.height, v.properties.image, v.properties.animate, v.properties.animSpeed,
       v.properties.animWidth, v.properties.animHeight, v.properties.speedMultX, v.properties.speedMultY,
@@ -123,9 +83,9 @@ function parallax:draw()
         for y=self.transform.y-imgh, self.transform.y+self.collisionShape.h, imgh do
           if rectOverlapsRect(x+self.offX, y+self.offY, imgw, imgh, view.x, view.y, view.w, view.h) then
             if self.anim then
-              self.anim:draw(self.tex, x+math.floor(self.offX), y+math.floor(self.offY))
+              self.tex:draw(self.anim, x+math.floor(self.offX), y+math.floor(self.offY))
             else
-              love.graphics.draw(self.tex, x+math.floor(self.offX), y+math.floor(self.offY))
+              self.tex:draw(x+math.floor(self.offX), y+math.floor(self.offY))
             end
           end
         end
@@ -139,9 +99,9 @@ function parallax:draw()
       for x=self.transform.x-imgw, self.transform.x+self.collisionShape.w, imgw do
         if rectOverlapsRect(x+self.offX, self.offY, imgw, imgh, view.x, view.y, view.w, view.h) then
           if self.anim then
-            self.anim:draw(self.tex, x+math.floor(self.offX), math.floor(self.offY))
+            self.tex:draw(self.anim, x+math.floor(self.offX), math.floor(self.offY))
           else
-            love.graphics.draw(self.tex, x+math.floor(self.offX), math.floor(self.offY))
+            self.tex:draw(x+math.floor(self.offX), math.floor(self.offY))
           end
         end
       end
@@ -154,9 +114,9 @@ function parallax:draw()
       for y=self.transform.y-imgh, self.transform.y+self.collisionShape.h, imgh do
         if rectOverlapsRect(self.offX, y+self.offY, imgw, imgh, view.x, view.y, view.w, view.h) then
           if self.anim then
-            self.anim:draw(self.tex, math.floor(self.offX), y+math.floor(self.offY))
+            self.tex:draw(self.anim, math.floor(self.offX), y+math.floor(self.offY))
           else
-            love.graphics.draw(self.tex, math.floor(self.offX), y+math.floor(self.offY))
+            self.tex:draw(math.floor(self.offX), y+math.floor(self.offY))
           end
         end
       end
@@ -169,9 +129,9 @@ function parallax:draw()
       for y=self.transform.y-imgh, self.transform.y+self.collisionShape.h, imgh do
         if rectOverlapsRect(self.offX, self.offY, imgw, imgh, view.x, view.y, view.w, view.h) then
           if self.anim then
-            self.anim:draw(self.tex, math.floor(self.offX), math.floor(self.offY))
+            self.tex:draw(self.anim, math.floor(self.offX), math.floor(self.offY))
           else
-            love.graphics.draw(self.tex, math.floor(self.offX), math.floor(self.offY))
+            self.tex:draw(math.floor(self.offX), math.floor(self.offY))
           end
         end
       end

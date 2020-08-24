@@ -12,6 +12,9 @@ if not isMobile and love.graphics then
   s:release()
 end
 
+serQueue = nil
+deserQueue = nil
+
 keyboardCheck = {}
 gamepadCheck = {}
 
@@ -358,100 +361,6 @@ function love.quit()
   end
 end
 
-function love.errorhandler(msg)
-  local utf8 = require("utf8")
-  
-  print((debug.traceback("Error: " .. tostring(msg), 1+2):gsub("\n[^\n]+$", "")))
-  
-  if not love.window or not love.graphics or not love.event or not view or not view.canvas or not cscreen then
-    return
-  end
-  
-  local trace = debug.traceback()
-  local sanitizedmsg = {}
-  local err = {}
-  
-  for char in msg:gmatch(utf8.charpattern) do
-    table.insert(sanitizedmsg, char)
-  end
-  sanitizedmsg = table.concat(sanitizedmsg)
-  
-  table.insert(err, "Error\n")
-  table.insert(err, sanitizedmsg)
-  
-  if #sanitizedmsg ~= #msg then
-    table.insert(err, "Invalid UTF-8 string in error message.")
-  end
-  
-  table.insert(err, "\n")
-  
-  for l in trace:gmatch("(.-)\n") do
-    if not l:match("boot.lua") then
-      l = l:gsub("stack traceback:", "Traceback\n")
-      table.insert(err, l)
-    end
-  end
-
-  local p = table.concat(err, "\n")
-
-  p = p:gsub("\t", "")
-  p = p:gsub("%[string \"(.-)\"%]", "%1")
-  
-  if not love.graphics.isCreated() or not love.window.isOpen() then
-    local success, status = pcall(love.window.setMode, 800, 600)
-    if not success or not status then
-      return
-    end
-  end
-  
-  love.graphics.setFont(mmFont)
-  
-  local old = view.canvas
-  local lc = love.graphics.newCanvas(love.graphics.getDimensions())
-  local pos = 32
-  
-  love.graphics.setCanvas(lc)
-  love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.draw(view.canvas)
-  love.graphics.setCanvas()
-  
-  if love.audio then love.audio.stop() end
-  
-  return function()
-    if love.event then
-      love.event.pump()
-      for name, a,b,c,d,e,f in love.event.poll() do
-        if name == "quit" then
-          if not love.quit or not love.quit() then
-            return a or 0
-          end
-        end
-        love.handlers[name](a,b,c,d,e,f)
-      end
-    end
-    
-    if love.graphics then
-      love.graphics.origin()
-      love.graphics.clear(0, 0, 0, 1)
-      love.graphics.setColor(1, 1, 1, 1)
-      cscreen.apply()
-      love.graphics.draw(lc)
-      cscreen.cease()
-      
-      love.graphics.origin()
-      love.graphics.setColor(89/255, 157/255, 220/255, 0.4)
-      love.graphics.rectangle("fill", 0, 0, love.graphics.getDimensions())
-      love.graphics.setColor(1, 1, 1, 1)
-      love.graphics.printf(p, pos, pos, love.graphics.getWidth() - pos)
-      love.graphics.present()
-    end
-    
-    if love.timer then
-      love.timer.sleep(0.05)
-    end
-  end
-end
-
 -- Love2D doesn't fire the resize event for several functions, so here's some hacks.
 local lf = love.window.setFullscreen
 local lsm = love.window.setMode
@@ -478,23 +387,26 @@ function love.run()
   if love.timer then love.timer.step() end
   return function()
       if serQueue then
-        serData = ser()
-        serQueue = false
+        local f = serQueue
+        serQueue = nil
+        f(ser())
       end
       
       if deserQueue then
-        deser(deserQueue)
+        local f = deserQueue
         deserQueue = nil
+        deser(f)
       end
       
       if control._openRecQ then
-        control.openRec(control._openRecQ)
+        local f = control._openRecQ
         control._openRecQ = nil
+        control.openRec(f)
       end
       
       if control._startRecQ then
-        control.startRec()
         control._startRecQ = false
+        control.startRec()
       end
       
       if love.event then
@@ -529,10 +441,6 @@ function love.run()
       control.anyPressedDuringRec = false
       cscreen.updateFade()
       
-      local t = ser()
-      deser(t)
-      error("Success!!")
-      
       lastPressed.type = nil
       lastPressed.input = nil
       lastPressed.name = nil
@@ -546,18 +454,17 @@ function love.run()
     end
 end
 
-serQueue = false
-deserQueue = nil
-
 -- Save state to memory
 function ser()
   local data = {
+      serQueue = serQueue,
+      deserQueue = deserQueue,
       cscreen = cscreen.ser(),
       view = view.ser(),
+      state = states.ser(),
       entitySystem = entitySystem.ser(),
       loader = loader.ser(),
       music = mmMusic.ser(),
-      state = states.ser(),
       control = control.ser(),
       megautils = megautils.ser(),
       collision = collision.ser(),
@@ -586,12 +493,14 @@ end
 function deser(from)
   local t = binser.deserialize(from)
   
+  serQueue = t.serQueue
+  deserQueue = t.deserQueue
   cscreen.deser(t.cscreen)
   view.deser(t.view)
+  states.deser(t.state)
   entitySystem.deser(t.entitySystem)
   loader.deser(t.loader)
   mmMusic.deser(t.music)
-  states.deser(t.state)
   control.deser(t.control)
   megautils.deser(t.megautils)
   collision.deser(t.collision)

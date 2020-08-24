@@ -35,11 +35,10 @@ function save.load(file)
   end
   local sv = love.filesystem.read(file)
   if not sv then
-    return nil
+    return
   end
   sv = lualzw.decompress(sv)
-  if not sv then
-    return nil
+  if sv then
+    return binser.deserialize(sv)
   end
-  return binser.deserialize(sv)
 end

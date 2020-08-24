@@ -5,54 +5,6 @@ bossDoor = basicEntity:extend()
 
 bossDoor.autoClean = false
 
-binser.register(bossDoor, "bossDoor", function(o)
-    local result = {}
-    
-    bossDoor.super.transfer(o, result)
-    
-    result.scrollx = o.scrollx
-    result.scrolly = o.scrolly
-    result.timer = o.timer
-    result.segments = o.segments
-    result.maxSegments = o.maxSegments
-    result.spd = o.spd
-    result.state = o.state
-    result.player = o.player
-    result.canWalkThrough = o.canWalkThrough
-    result.isLocked = o.isLocked
-    result.tileWidth = o.tileWidth
-    result.tileHeight = o.tileHeight
-    result.tileSpeed = o.tileSpeed
-    result.useMapTiles = o.useMapTiles
-    result.name = o.name
-    result.dir = o.dir
-    
-    return result
-  end, function(o)
-    local result = bossDoor()
-    
-    bossDoor.super.transfer(o, result)
-    
-    result.scrollx = o.scrollx
-    result.scrolly = o.scrolly
-    result.timer = o.timer
-    result.segments = o.segments
-    result.maxSegments = o.maxSegments
-    result.spd = o.spd
-    result.state = o.state
-    result.player = o.player
-    result.canWalkThrough = o.canWalkThrough
-    result.isLocked = o.isLocked
-    result.tileWidth = o.tileWidth
-    result.tileHeight = o.tileHeight
-    result.tileSpeed = o.tileSpeed
-    result.useMapTiles = o.useMapTiles
-    result.name = o.name
-    result.dir = o.dir
-    
-    return result
-  end)
-
 mapEntity.register("bossDoor", function(v)
   local seg = (v.properties.dir=="up" or v.properties.dir=="down") and 
     math.round(v.width/v.properties.tileWidth) or math.round(v.height/v.properties.tileHeight)
@@ -346,9 +298,9 @@ function bossDoor:draw()
   if self.useMapTiles or megautils.outside(self) then return end
   for i=1, self.segments do
     if self.dir == "left" or self.dir == "right" then
-      self.quad:draw(self.tex, self.transform.x, self.transform.y + (i*16) - 16)
+      self.tex:draw(self.quad, self.transform.x, self.transform.y + (i*16) - 16)
     else
-      self.quad:draw(self.tex, self.transform.x + (i*16), self.transform.y, math.rad(90))
+      self.tex:draw(self.quad, self.transform.x + (i*16), self.transform.y, math.rad(90))
     end
   end
 end

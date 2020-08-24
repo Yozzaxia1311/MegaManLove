@@ -9,32 +9,6 @@ megautils.loadResource("assets/misc/title.png", "title")
 
 title = basicEntity:extend()
 
-binser.register(title, "title", function(o)
-    local result = {}
-    
-    title.super.transfer(o, result)
-    
-    result.textTimer = o.textTimer
-    result.drawText = o.drawText
-    result.s = o.s
-    result.oneOff = o.oneOff
-    result.twoOff = o.twoOff
-    
-    return result
-  end, function(o)
-    local result = title()
-    
-    title.super.transfer(o, result)
-    
-    result.textTimer = o.textTimer
-    result.drawText = o.drawText
-    result.s = o.s
-    result.oneOff = o.oneOff
-    result.twoOff = o.twoOff
-    
-    return result
-  end)
-
 function title:new()
   title.super.new(self)
   self.tex = megautils.getResource("title")
@@ -103,8 +77,8 @@ function title:update()
 end
 
 function title:draw()
-  self.quad1:draw(self.tex, self.oneOff, self.transform.y)
-  self.quad2:draw(self.tex, self.twoOff, self.transform.y+115)
+  self.tex:draw(self.quad1, self.oneOff, self.transform.y)
+  self.tex:draw(self.quad2, self.twoOff, self.transform.y+115)
   if self.s == 3 then
     love.graphics.print(self.text, self.textPos, 208)
     if self.textTimer < 20 then

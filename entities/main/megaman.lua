@@ -2,268 +2,6 @@ megaMan = entity:extend()
 
 megaMan.autoClean = false
 
-binser.serialize(megaMan, "megaMan", function(o)
-    result = {}
-    
-    result.gravityType = o.gravityType
-    result.maxChargeTime = o.maxChargeTime
-    result.jumpSpeed = o.jumpSpeed
-    result.jumpDecel = o.jumpDecel
-    result.maxLeftSpeed = o.maxLeftSpeed
-    result.maxRightSpeed = o.maxRightSpeed
-    result.leftSpeed = o.leftSpeed
-    result.rightSpeed = o.rightSpeed
-    result.leftDecel = o.leftDecel
-    result.rightDecel = o.rightDecel
-    result.maxLeftAirSpeed = o.maxLeftAirSpeed
-    result.maxRightAirSpeed = o.maxRightAirSpeed
-    result.leftAirSpeed = o.leftAirSpeed
-    result.rightAirSpeed = o.rightAirSpeed
-    result.leftAirDecel = o.leftAirDecel
-    result.rightAirDecel = o.rightAirDecel
-    result.maxAirSpeed = o.maxAirSpeed
-    result.slideLeftSpeed = o.slideLeftSpeed
-    result.slideRightSpeed = o.slideRightSpeed
-    result.dashJumpMultiplier = o.dashJumpMultiplier
-    result.maxSlideTime = o.maxSlideTime
-    result.climbUpSpeed = o.climbUpSpeed
-    result.climbDownSpeed = o.climbDownSpeed
-    result.stepLeftSpeed = o.stepLeftSpeed
-    result.stepRightSpeed = o.stepRightSpeed
-    result.maxStepTime = o.maxStepTime
-    result.maxHitTime = o.maxHitTime
-    result.leftKnockBackSpeed = o.leftKnockBackSpeed
-    result.rightKnockBackSpeed = o.rightKnockBackSpeed
-    result.maxNormalBusterShots = o.maxNormalBusterShots
-    result.cameraOffsetX = o.cameraOffsetX
-    result.cameraOffsetY = o.cameraOffsetY
-    result.cameraWidth = o.cameraWidth
-    result.cameraHeight = o.cameraHeight
-    result.dropSpeed = o.dropSpeed
-    result.riseSpeed = o.riseSpeed
-    result.maxBubbleTime = o.maxBubbleTime
-    result.maxStandSolidJumpTime = o.maxStandSolidJumpTime
-    result.maxExtraJumps = o.maxExtraJumps
-    result.maxRapidShotTime = o.maxRapidShotTime
-    result.maxTrebleSpeed = o.maxTrebleSpeed
-    result.trebleDecel = o.trebleDecel
-    result.protoShieldLeftCollision = o.protoShieldLeftCollision
-    result.protoShieldRightCollision = o.protoShieldRightCollision
-    result.canJumpOutFromDash = o.canJumpOutFromDash
-    result.canBackOutFromDash = o.canBackOutFromDash
-    result.canSwitchWeapons = o.canSwitchWeapons
-    result.canStandSolid = o.canStandSolid
-    result.canPause = o.canPause
-    result.canDieFromSpikes = o.canDieFromSpikes
-    result.canDashShoot = o.canDashShoot
-    result.canDashJump = o.canDashJump
-    result.canDash = o.canDash
-    result.canShoot = o.canShoot
-    result.canChargeBuster = o.canChargeBuster
-    result.canWalk = o.canWalk
-    result.canJump = o.canJump
-    result.canClimb = o.canClimb
-    result.canHaveCameraFocus = o.canHaveCameraFocus
-    result.canHaveThreeWeaponIcons = o.canHaveThreeWeaponIcons
-    result.canBeInvincible = o.canBeInvincible
-    result.canGetCrushed = o.canGetCrushed
-    result.canStopJump = o.canStopJump
-    result.canStep = o.canStep
-    result.canIgnoreKnockback = o.canIgnoreKnockback
-    result.canProtoShield = o.canProtoShield
-    result.canHaveSmallSlide = o.canHaveSmallSlide
-    result.canControl = o.canControl
-    result.doWeaponGet = o.doWeaponGet
-    result.player = o.player
-    result.nextWeapon = o.nextWeapon
-    result.prevWeapon = o.prevWeapon
-    result.weaponSwitchTimer = o.weaponSwitchTimer
-    result.doAnimation = o.doAnimation
-    result.chargeTimer2 = o.chargeTimer2
-    result.chargeFrame = o.chargeFrame
-    result.chargeState = o.chargeState
-    result.chargeTimer = o.chargeTimer
-    result.step = o.step
-    result.hitTimer = o.hitTimer
-    result.climbTip = o.climbTip
-    result.ground = o.ground
-    result.climb = o.climb
-    result.slide = o.slide
-    result.drop = o.drop
-    result.rise = o.rise
-    result.stepTime = o.stepTime
-    result.shootFrames = o.shootFrames
-    result.stopOnShot = o.stopOnShot
-    result.slideTimer = o.slideTimer
-    result.dashJump = o.dashJump
-    result.dropLanded = o.dropLanded
-    result.bubbleTimer = o.bubbleTimer
-    result.runCheck = o.runCheck
-    result.standSolidJumpTimer = o.standSolidJumpTimer
-    result.extraJumps = o.extraJumps
-    result.rapidShotTime = o.rapidShotTime
-    result.treble = o.treble
-    result.trebleSine = o.trebleSine
-    result.trebleForce = o.trebleForce
-    result.protoShielding = o.protoShielding
-    result.doSplashing = o.doSplashing
-    result.teleportOffY = o.teleportOffY
-    result.teleporter = o.teleporter
-    result.protoIdle = o.protoIdle
-    result.protoWhistle = o.protoWhistle
-    result.shootOffsetXTable = o.shootOffsetXTable
-    result.shootOffsetYTable = o.shootOffsetYTable
-    result.shootX = o.shootX
-    result.shootY = o.shootY
-    result.dropAnimation = o.dropAnimation
-    result.dropLandAnimation = o.dropLandAnimation
-    result.idleAnimation = o.idleAnimation
-    result.nudgeAnimation = o.nudgeAnimation
-    result.jumpAnimation = o.jumpAnimation
-    result.runAnimation = o.runAnimation
-    result.climbAnimation = o.climbAnimation
-    result.climbTipAnimation = o.climbTipAnimation
-    result.hitAnimation = o.hitAnimation
-    result.dashAnimation = o.dashAnimation
-    result.trebleAnimation = o.trebleAnimation
-    result.anims = o.anims
-    result.ready = o.ready
-    result.side = o.side
-    result.currentLadder = o.currentLadder
-    
-    return result
-  end, function(o)
-    result = megaMan(nil, nil, nil, nil, nil, nil, nil, nil, false, nil)
-    
-    result.gravityType = o.gravityType
-    result.maxChargeTime = o.maxChargeTime
-    result.jumpSpeed = o.jumpSpeed
-    result.jumpDecel = o.jumpDecel
-    result.maxLeftSpeed = o.maxLeftSpeed
-    result.maxRightSpeed = o.maxRightSpeed
-    result.leftSpeed = o.leftSpeed
-    result.rightSpeed = o.rightSpeed
-    result.leftDecel = o.leftDecel
-    result.rightDecel = o.rightDecel
-    result.maxLeftAirSpeed = o.maxLeftAirSpeed
-    result.maxRightAirSpeed = o.maxRightAirSpeed
-    result.leftAirSpeed = o.leftAirSpeed
-    result.rightAirSpeed = o.rightAirSpeed
-    result.leftAirDecel = o.leftAirDecel
-    result.rightAirDecel = o.rightAirDecel
-    result.maxAirSpeed = o.maxAirSpeed
-    result.slideLeftSpeed = o.slideLeftSpeed
-    result.slideRightSpeed = o.slideRightSpeed
-    result.dashJumpMultiplier = o.dashJumpMultiplier
-    result.maxSlideTime = o.maxSlideTime
-    result.climbUpSpeed = o.climbUpSpeed
-    result.climbDownSpeed = o.climbDownSpeed
-    result.stepLeftSpeed = o.stepLeftSpeed
-    result.stepRightSpeed = o.stepRightSpeed
-    result.maxStepTime = o.maxStepTime
-    result.maxHitTime = o.maxHitTime
-    result.leftKnockBackSpeed = o.leftKnockBackSpeed
-    result.rightKnockBackSpeed = o.rightKnockBackSpeed
-    result.maxNormalBusterShots = o.maxNormalBusterShots
-    result.cameraOffsetX = o.cameraOffsetX
-    result.cameraOffsetY = o.cameraOffsetY
-    result.cameraWidth = o.cameraWidth
-    result.cameraHeight = o.cameraHeight
-    result.dropSpeed = o.dropSpeed
-    result.riseSpeed = o.riseSpeed
-    result.maxBubbleTime = o.maxBubbleTime
-    result.maxStandSolidJumpTime = o.maxStandSolidJumpTime
-    result.maxExtraJumps = o.maxExtraJumps
-    result.maxRapidShotTime = o.maxRapidShotTime
-    result.maxTrebleSpeed = o.maxTrebleSpeed
-    result.trebleDecel = o.trebleDecel
-    result.protoShieldLeftCollision = o.protoShieldLeftCollision
-    result.protoShieldRightCollision = o.protoShieldRightCollision
-    result.canJumpOutFromDash = o.canJumpOutFromDash
-    result.canBackOutFromDash = o.canBackOutFromDash
-    result.canSwitchWeapons = o.canSwitchWeapons
-    result.canStandSolid = o.canStandSolid
-    result.canPause = o.canPause
-    result.canDieFromSpikes = o.canDieFromSpikes
-    result.canDashShoot = o.canDashShoot
-    result.canDashJump = o.canDashJump
-    result.canDash = o.canDash
-    result.canShoot = o.canShoot
-    result.canChargeBuster = o.canChargeBuster
-    result.canWalk = o.canWalk
-    result.canJump = o.canJump
-    result.canClimb = o.canClimb
-    result.canHaveCameraFocus = o.canHaveCameraFocus
-    result.canHaveThreeWeaponIcons = o.canHaveThreeWeaponIcons
-    result.canBeInvincible = o.canBeInvincible
-    result.canGetCrushed = o.canGetCrushed
-    result.canStopJump = o.canStopJump
-    result.canStep = o.canStep
-    result.canIgnoreKnockback = o.canIgnoreKnockback
-    result.canProtoShield = o.canProtoShield
-    result.canHaveSmallSlide = o.canHaveSmallSlide
-    result.canControl = o.canControl
-    result.doWeaponGet = o.doWeaponGet
-    result.player = o.player
-    result.nextWeapon = o.nextWeapon
-    result.prevWeapon = o.prevWeapon
-    result.weaponSwitchTimer = o.weaponSwitchTimer
-    result.doAnimation = o.doAnimation
-    result.chargeTimer2 = o.chargeTimer2
-    result.chargeFrame = o.chargeFrame
-    result.chargeState = o.chargeState
-    result.chargeTimer = o.chargeTimer
-    result.step = o.step
-    result.hitTimer = o.hitTimer
-    result.climbTip = o.climbTip
-    result.ground = o.ground
-    result.climb = o.climb
-    result.slide = o.slide
-    result.drop = o.drop
-    result.rise = o.rise
-    result.stepTime = o.stepTime
-    result.shootFrames = o.shootFrames
-    result.stopOnShot = o.stopOnShot
-    result.slideTimer = o.slideTimer
-    result.dashJump = o.dashJump
-    result.dropLanded = o.dropLanded
-    result.bubbleTimer = o.bubbleTimer
-    result.runCheck = o.runCheck
-    result.standSolidJumpTimer = o.standSolidJumpTimer
-    result.extraJumps = o.extraJumps
-    result.rapidShotTime = o.rapidShotTime
-    result.treble = o.treble
-    result.trebleSine = o.trebleSine
-    result.trebleForce = o.trebleForce
-    result.protoShielding = o.protoShielding
-    result.doSplashing = o.doSplashing
-    result.teleportOffY = o.teleportOffY
-    result.teleporter = o.teleporter
-    result.protoIdle = o.protoIdle
-    result.protoWhistle = o.protoWhistle
-    result.shootOffsetXTable = o.shootOffsetXTable
-    result.shootOffsetYTable = o.shootOffsetYTable
-    result.shootX = o.shootX
-    result.shootY = o.shootY
-    result.dropAnimation = o.dropAnimation
-    result.dropLandAnimation = o.dropLandAnimation
-    result.idleAnimation = o.idleAnimation
-    result.nudgeAnimation = o.nudgeAnimation
-    result.jumpAnimation = o.jumpAnimation
-    result.runAnimation = o.runAnimation
-    result.climbAnimation = o.climbAnimation
-    result.climbTipAnimation = o.climbTipAnimation
-    result.hitAnimation = o.hitAnimation
-    result.dashAnimation = o.dashAnimation
-    result.trebleAnimation = o.trebleAnimation
-    result.anims = o.anims
-    result.ready = o.ready
-    result.side = o.side
-    result.currentLadder = o.currentLadder
-    
-    return result
-  end)
-
 function megaMan.ser()
   local skins = {}
   for k, v in pairs(megaMan.skins) do
@@ -344,10 +82,10 @@ function megaMan:setSkin(path)
           end
         end
       end
-      megaMan.skinCache[path] = {path, love.graphics.newImage((mount or path) .. "/player.png"),
-        love.graphics.newImage(path .. "/outline.png"),
-        love.graphics.newImage(path .. "/one.png"),
-        love.graphics.newImage(path .. "/two.png"), t, finfo.modtime}
+      megaMan.skinCache[path] = {path, image((mount or path) .. "/player.png"),
+        image(path .. "/outline.png"),
+        image(path .. "/one.png"),
+        image(path .. "/two.png"), t, finfo.modtime}
       if mount then
         love.graphics.unmount(path)
       end
@@ -2281,13 +2019,13 @@ function megaMan:draw()
   end
   
   love.graphics.setColor(1, 1, 1, 1)
-  self.anims:draw(self.texBase, roundx+offsetx, roundy+offsety+self.teleportOffY, 0, 1, 1, 32, 41)
+  self.texBase:draw(self.anims, roundx+offsetx, roundy+offsety+self.teleportOffY, 0, 1, 1, 32, 41)
   love.graphics.setColor(megaMan.colorOutline[self.player][1]/255, megaMan.colorOutline[self.player][2]/255, megaMan.colorOutline[self.player][3]/255, 1)
-  self.anims:draw(self.texOutline, roundx+offsetx, roundy+offsety+self.teleportOffY, 0, 1, 1, 32, 41)
+  self.texOutline:draw(self.anims, roundx+offsetx, roundy+offsety+self.teleportOffY, 0, 1, 1, 32, 41)
   love.graphics.setColor(megaMan.colorOne[self.player][1]/255, megaMan.colorOne[self.player][2]/255, megaMan.colorOne[self.player][3]/255, 1)
-  self.anims:draw(self.texOne, roundx+offsetx, roundy+offsety+self.teleportOffY, 0, 1, 1, 32, 41)
+  self.texOne:draw(self.anims, roundx+offsetx, roundy+offsety+self.teleportOffY, 0, 1, 1, 32, 41)
   love.graphics.setColor(megaMan.colorTwo[self.player][1]/255, megaMan.colorTwo[self.player][2]/255, megaMan.colorTwo[self.player][3]/255, 1)
-  self.anims:draw(self.texTwo, roundx+offsetx, roundy+offsety+self.teleportOffY, 0, 1, 1, 32, 41)
+  self.texTwo:draw(self.anims, roundx+offsetx, roundy+offsety+self.teleportOffY, 0, 1, 1, 32, 41)
   
   if self.weaponSwitchTimer ~= 70 then
     love.graphics.setColor(1, 1, 1, 1)

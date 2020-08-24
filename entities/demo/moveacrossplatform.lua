@@ -2,26 +2,6 @@ megautils.loadResource("assets/global/entities/moveAcrossPlatform.png", "moveAro
 
 moveAcrossPlatform = advancedEntity:extend()
 
-binser.register(moveAcrossPlatform, "moveAcrossPlatform", function(o)
-    local result = {}
-    
-    moveAcrossPlatform.super.transfer(o, result)
-    
-    result.state = o.state
-    result.tween = o.tween
-    
-    return result
-  end, function(o)
-    local result = moveAcrossPlatform()
-    
-    moveAcrossPlatform.super.transfer(o, result)
-    
-    result.state = o.state
-    result.tween = o.tween
-    
-    return result
-  end)
-
 mapEntity.register("moveAcrossPlatform", function(v)
     megautils.add(spawner, v.x-4, v.y-4, 40, 24, nil,
       moveAcrossPlatform, v.x, v.y, v.properties.toX, v.properties.toY)
@@ -56,5 +36,5 @@ function moveAcrossPlatform:update()
 end
 
 function moveAcrossPlatform:draw()
-  self.quad:draw(self.tex, math.floor(self.transform.x), math.floor(self.transform.y))
+  self.tex:draw(self.quad, math.floor(self.transform.x), math.floor(self.transform.y))
 end

@@ -2,28 +2,6 @@ megautils.loadResource("assets/global/entities/met.png", "met")
 
 met = advancedEntity:extend()
 
-binser.register(met, "met", function(o)
-    local result = {}
-    
-    met.super.transfer(o, result)
-    
-    result.c = o.c
-    result.s = o.s
-    result.timer = o.timer
-    
-    return result
-  end, function(o)
-    local result = met()
-    
-    met.super.transfer(o, result)
-    
-    result.c = o.c
-    result.s = o.s
-    result.timer = o.timer
-    
-    return result
-  end)
-
 mapEntity.register("met", function(v)
   megautils.add(spawner, v.x, v.y+2, 14, 14, nil, met, v.x, v.y+2)
 end)
@@ -104,24 +82,10 @@ function met:update(dt)
 end
 
 function met:draw()
-  self.quads[self.c]:draw(self.t, math.round(self.transform.x), math.round(self.transform.y))
+  self.t:draw(self.quads[self.c], math.round(self.transform.x), math.round(self.transform.y))
 end
 
 metBullet = weapon:extend()
-
-binser.register(metBullet, "metBullet", function(o)
-    local result = {}
-    
-    metBullet.super.transfer(o, result)
-    
-    return result
-  end, function(o)
-    local result = metBullet()
-    
-    metBullet.super.transfer(o, result)
-    
-    return result
-  end)
 
 function metBullet:new(x, y, p, vx, vy)
   metBullet.super.new(self, p, true)
@@ -141,5 +105,5 @@ function metBullet:new(x, y, p, vx, vy)
 end
 
 function metBullet:draw()
-  self.quad:draw(self.tex, math.floor(self.transform.x), math.floor(self.transform.y))
+  self.tex:draw(self.quad, math.floor(self.transform.x), math.floor(self.transform.y))
 end

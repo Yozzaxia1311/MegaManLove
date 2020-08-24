@@ -18,13 +18,12 @@ function states.deser(t)
   states.recordOnSwitch = t.recordOnSwitch
   states.openRecord = t.openRecord
   states.queue = t.queue
+  
+  states.set(states.current)
 end
 
 states.currentState = nil
 states.current = nil
-states.switched = false
-states.recordOnSwitch = false
-states.openRecord = nil
 states.queue = nil
 
 baseState = class:extend()
@@ -90,26 +89,6 @@ function states.set(n, before, after)
     end
   end
   
-  if states.openRecord then
-    control.resetRec()
-    control.record = 
-    nick = control.record.state
-    states.openRecord = nil
-    
-    lastPressed = nil
-    lastTextInput = nil
-    lastTouch = nil
-    keyboardCheck = {}
-    gamepadCheck = {}
-    megautils._q = {}
-    
-    control.demo = true
-    
-    control.oldContext = states.ser()
-    states.deser(control.record.context)
-    return
-  end
-  
   view.x, view.y = 0, 0
   states.switched = true
   
@@ -118,23 +97,6 @@ function states.set(n, before, after)
   end
   
   states.current = nick
-  
-  if states.recordOnSwitch then
-    lastPressed = nil
-    lastTextInput = nil
-    lastTouch = nil
-    keyboardCheck = {}
-    gamepadCheck = {}
-    megautils._q = {}
-    states.recordOnSwitch = false
-    control.updateDemoFunc = nil
-    control.drawDemoFunc = nil
-    control.resetRec()
-    control.recordInput = true
-    
-    control.record.context = states.ser()
-    control.record.state = sp
-  end
   
   if megautils.reloadState then
     for k, v in pairs(megautils.reloadStateFuncs) do

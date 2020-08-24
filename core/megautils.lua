@@ -84,7 +84,7 @@ function megautils.deser(t)
   megautils.shakeLength = result.shakeLength
     
   for k, v in ipairs(result._ranFiles) do
-    megautils.runFile(v)
+    megautils.runFile(v, true)
   end
 end
 
@@ -292,11 +292,17 @@ end
 
 megautils._ranFiles = {}
 
-function megautils.runFile(path)
-  if not table.contains(megautils._ranFiles, path) then
-    megautils._ranFiles[#megautils._ranFiles+1] = path
+function megautils.runFile(path, runOnce)
+  if runOnce then
+    if not table.contains(megautils._ranFiles, path) then
+      return love.filesystem.load(path)()
+    end
+  else
+    if not table.contains(megautils._ranFiles, path) then
+      megautils._ranFiles[#megautils._ranFiles+1] = path
+    end
+    return love.filesystem.load(path)()
   end
-  return love.filesystem.load(path)()
 end
 
 function megautils.resetGame(s, saveSfx, saveMusic)

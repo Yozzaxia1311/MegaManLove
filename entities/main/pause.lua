@@ -2,34 +2,6 @@ mmWeaponsMenu = basicEntity:extend()
 
 mmWeaponsMenu.autoClean = false
 
-binser.register(mmWeaponsMenu, "mmWeaponsMenu", function(o)
-    local result = {}
-    
-    mmWeaponsMenu.super.transfer(o, result)
-    
-    result.segment = o.segment
-    result.x = o.x
-    result.y = o.y
-    result.cur = o.cur
-    result.last = o.last
-    result.changing = o.changing
-    
-    return result
-  end, function(o)
-    local result = mmWeaponsMenu(o.player)
-    
-    mmWeaponsMenu.super.transfer(o, result)
-    
-    result.segment = o.segment
-    result.x = o.x
-    result.y = o.y
-    result.cur = o.cur
-    result.last = o.last
-    result.changing = o.changing
-    
-    return result
-  end)
-
 function mmWeaponsMenu.resources()
   megautils.loadResource("assets/misc/weaponSelect.png", "weaponSelectBG")
   megautils.loadResource("assets/sfx/pause.ogg", "pause")
@@ -369,7 +341,7 @@ end
 
 function mmWeaponsMenu:draw()
   love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.draw(self.bg, view.x, view.y)
+  self.bg:draw(view.x, view.y)
   
   local w = megaMan.weaponHandler[self.player.player]
   local skin = megaMan.getSkin(self.player.player)
@@ -387,26 +359,26 @@ function mmWeaponsMenu:draw()
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.print((megautils.hasInfiniteLives() and "inf" or tostring(megautils.getLives())), 224, 200)
   
-  self.headQuad:draw(skin.texture, tx, ty, 0, 1, 1, 31, 37)
-  self.playerQuad:draw(skin.texture, 156, 207, 0, 1, 1, 32, 41)
+  skin.texture:draw(self.headQuad, tx, ty, 0, 1, 1, 31, 37)
+  skin.texture:draw(self.playerQuad, 156, 207, 0, 1, 1, 32, 41)
   
   love.graphics.setColor(megaMan.colorOutline[self.player.player][1]/255, megaMan.colorOutline[self.player.player][2]/255,
     megaMan.colorOutline[self.player.player][3]/255, 1)
   
-  self.headQuad:draw(skin.outline, tx, ty, 0, 1, 1, 31, 37)
-  self.playerQuad:draw(skin.outline, 156, 207, 0, 1, 1, 32, 41)
+  skin.outline:draw(self.headQuad, tx, ty, 0, 1, 1, 31, 37)
+  skin.outline:draw(self.playerQuad, 156, 207, 0, 1, 1, 32, 41)
   
   love.graphics.setColor(megaMan.colorOne[self.player.player][1]/255, megaMan.colorOne[self.player.player][2]/255,
     megaMan.colorOne[self.player.player][3]/255, 1)
   
-  self.headQuad:draw(skin.one, tx, ty, 0, 1, 1, 31, 37)
-  self.playerQuad:draw(skin.one, 156, 207, 0, 1, 1, 32, 41)
+  skin.one:draw(self.headQuad, tx, ty, 0, 1, 1, 31, 37)
+  skin.one:draw(self.playerQuad, 156, 207, 0, 1, 1, 32, 41)
   
   love.graphics.setColor(megaMan.colorTwo[self.player.player][1]/255, megaMan.colorTwo[self.player.player][2]/255,
     megaMan.colorTwo[self.player.player][3]/255, 1)
   
-  self.headQuad:draw(skin.two, tx, ty, 0, 1, 1, 31, 37)
-  self.playerQuad:draw(skin.two, 156, 207, 0, 1, 1, 32, 41)
+  skin.two:draw(self.headQuad, tx, ty, 0, 1, 1, 31, 37)
+  skin.two:draw(self.playerQuad, 156, 207, 0, 1, 1, 32, 41)
   
   tx, ty = view.x+24, view.y+184
   
@@ -416,18 +388,18 @@ function mmWeaponsMenu:draw()
   
   if self.section == 0 then
     love.graphics.setColor(self.inactiveTankColor[1][1]/255, self.inactiveTankColor[1][2]/255, self.inactiveTankColor[1][3]/255, 1)
-    self.quadE:draw(self.texOutline, tx, ty)
+    self.texOutline:draw(self.quadE, tx, ty)
     love.graphics.setColor(self.inactiveTankColor[2][1]/255, self.inactiveTankColor[2][2]/255, self.inactiveTankColor[2][3]/255, 1)
-    self.quadE:draw(self.texOne, tx, ty)
+    self.texOne:draw(self.quadE, tx, ty)
     love.graphics.setColor(self.inactiveTankColor[3][1]/255, self.inactiveTankColor[3][2]/255, self.inactiveTankColor[3][3]/255, 1)
-    self.quadE:draw(self.texTwo, tx, ty)
+    self.texTwo:draw(self.quadE, tx, ty)
     
     love.graphics.setColor(self.inactiveTankColor[1][1]/255, self.inactiveTankColor[1][2]/255, self.inactiveTankColor[1][3]/255, 1)
-    self.quadW:draw(self.texOutline, tx2, ty)
+    self.texOutline:draw(self.quadW, tx2, ty)
     love.graphics.setColor(self.inactiveTankColor[2][1]/255, self.inactiveTankColor[2][2]/255, self.inactiveTankColor[2][3]/255, 1)
-    self.quadW:draw(self.texOne, tx2, ty)
+    self.texOne:draw(self.quadW, tx2, ty)
     love.graphics.setColor(self.inactiveTankColor[3][1]/255, self.inactiveTankColor[3][2]/255, self.inactiveTankColor[3][3]/255, 1)
-    self.quadW:draw(self.texTwo, tx2, ty)
+    self.texTwo:draw(self.quadW, tx2, ty)
     
     for k, v in pairs(self.fills) do
       for i, j in pairs(v) do
@@ -454,37 +426,37 @@ function mmWeaponsMenu:draw()
     if self.x == 1 then
       love.graphics.setColor(weapon.colors[w.weapons[self.cur]].outline[1]/255,
         weapon.colors[w.weapons[self.cur]].outline[2]/255, weapon.colors[w.weapons[self.cur]].outline[3]/255, 1)
-      self.quadE:draw(self.texOutline, tx, ty)
+      self.texOutline:draw(self.quadE, tx, ty)
       love.graphics.setColor(weapon.colors[w.weapons[self.cur]].one[1]/255,
         weapon.colors[w.weapons[self.cur]].one[2]/255, weapon.colors[w.weapons[self.cur]].one[3]/255, 1)
-      self.quadE:draw(self.texOne, tx, ty)
+      self.texOne:draw(self.quadE, tx, ty)
       love.graphics.setColor(weapon.colors[w.weapons[self.cur]].two[1]/255,
         weapon.colors[w.weapons[self.cur]].two[2]/255, weapon.colors[w.weapons[self.cur]].two[3]/255, 1)
-      self.quadE:draw(self.texTwo, tx, ty)
+      self.texTwo:draw(self.quadE, tx, ty)
       
       love.graphics.setColor(self.inactiveTankColor[1][1]/255, self.inactiveTankColor[1][2]/255, self.inactiveTankColor[1][3]/255, 1)
-      self.quadW:draw(self.texOutline, tx2, ty)
+      self.texOutline:draw(self.quadW, tx2, ty)
       love.graphics.setColor(self.inactiveTankColor[2][1]/255, self.inactiveTankColor[2][2]/255, self.inactiveTankColor[2][3]/255, 1)
-      self.quadW:draw(self.texOne, tx2, ty)
+      self.texOne:draw(self.quadW, tx2, ty)
       love.graphics.setColor(self.inactiveTankColor[3][1]/255, self.inactiveTankColor[3][2]/255, self.inactiveTankColor[3][3]/255, 1)
-      self.quadW:draw(self.texTwo, tx2, ty)
+      self.texTwo:draw(self.quadW, tx2, ty)
     elseif self.x == 2 then
       love.graphics.setColor(self.inactiveTankColor[1][1]/255, self.inactiveTankColor[1][2]/255, self.inactiveTankColor[1][3]/255, 1)
-      self.quadE:draw(self.texOutline, tx, ty)
+      self.texOutline:draw(self.quadE, tx, ty)
       love.graphics.setColor(self.inactiveTankColor[2][1]/255, self.inactiveTankColor[2][2]/255, self.inactiveTankColor[2][3]/255, 1)
-      self.quadE:draw(self.texOne, tx, ty)
+      self.texOne:draw(self.quadE, tx, ty)
       love.graphics.setColor(self.inactiveTankColor[3][1]/255, self.inactiveTankColor[3][2]/255, self.inactiveTankColor[3][3]/255, 1)
-      self.quadE:draw(self.texTwo, tx, ty)
+      self.texTwo:draw(self.quadE, tx, ty)
       
       love.graphics.setColor(weapon.colors[w.weapons[self.cur]].outline[1]/255,
         weapon.colors[w.weapons[self.cur]].outline[2]/255, weapon.colors[w.weapons[self.cur]].outline[3]/255, 1)
-      self.quadW:draw(self.texOutline, tx2, ty)
+      self.texOutline:draw(self.quadW, tx2, ty)
       love.graphics.setColor(weapon.colors[w.weapons[self.cur]].one[1]/255,
         weapon.colors[w.weapons[self.cur]].one[2]/255, weapon.colors[w.weapons[self.cur]].one[3]/255, 1)
-      self.quadW:draw(self.texOne, tx2, ty)
+      self.texOne:draw(self.quadW, tx2, ty)
       love.graphics.setColor(weapon.colors[w.weapons[self.cur]].two[1]/255,
         weapon.colors[w.weapons[self.cur]].two[2]/255, weapon.colors[w.weapons[self.cur]].two[3]/255, 1)
-      self.quadW:draw(self.texTwo, tx2, ty)
+      self.texTwo:draw(self.quadW, tx2, ty)
     end
   end
 end

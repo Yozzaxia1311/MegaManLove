@@ -9,32 +9,6 @@ end
 
 disclaimer = basicEntity:extend()
 
-binser.register(disclaimer, "disclaimer", function(o)
-    local result = {}
-    
-    disclaimer.super.transfer(o, result)
-    
-    result.timer = o.timer
-    result.alpha = o.alpha
-    result.otherTimer = o.otherTimer
-    result.check = o.check
-    result.cycler = o.cycler
-    
-    return result
-  end, function(o)
-    local result = disclaimer()
-    
-    disclaimer.super.transfer(o, result)
-    
-    result.timer = o.timer
-    result.alpha = o.alpha
-    result.otherTimer = o.otherTimer
-    result.check = o.check
-    result.cycler = o.cycler
-    
-    return result
-  end)
-
 function disclaimer:new()
   disclaimer.super.new(self)
   self.transform.x = 0
@@ -89,9 +63,9 @@ end
 
 function disclaimer:draw()
   love.graphics.setColor(self.colors[self.cycler][1]/255, self.colors[self.cycler][2]/255, self.colors[self.cycler][3]/255, 1)
-  love.graphics.draw(self.t, 40, 150)
-  love.graphics.draw(self.t, 120, 150)
-  love.graphics.draw(self.t, 200, 150)
+  self.t:draw(40, 150)
+  self.t:draw(120, 150)
+  self.t:draw(200, 150)
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.setFont(mmFont)
   love.graphics.printf(self.disclaimerText, 4, 16, 248, "center")

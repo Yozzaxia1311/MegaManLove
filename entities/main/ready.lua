@@ -2,30 +2,6 @@ ready = basicEntity:extend()
 
 ready.autoClean = false
 
-binser.register(ready, "ready", function(o)
-    local result = {}
-    
-    ready.super.transfer(o, result)
-    
-    result.blinkTimer = o.blinkTimer
-    result.maxBlinkTime = o.maxBlinkTime
-    result.blinkCount = o.blinkCount
-    result.blinks = o.blinks
-    result.text = o.text
-    
-    return result
-  end, function(o)
-    local result = ready(o.text, o.blinks)
-    
-    ready.super.transfer(o, result)
-    
-    result.blinkTimer = o.blinkTimer
-    result.maxBlinkTime = o.maxBlinkTime
-    result.blinkCount = o.blinkCount
-    
-    return result
-  end)
-
 function ready:new(text, blinks)
   ready.super.new(self)
   self:setLayer(9)

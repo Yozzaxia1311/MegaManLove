@@ -18,32 +18,6 @@ megautils.loadResource("assets/sfx/selected.ogg", "selected")
 
 menuSelect = basicEntity:extend()
 
-binser.register(menuSelect, "menuSelect", function(o)
-    local result = {}
-    
-    menuSelect.super.transfer(o, result)
-    
-    result.pick = o.pick
-    result.offY = o.offY
-    result.picked = o.picked
-    result.section = o.section
-    result.timer = o.timer
-    
-    return result
-  end, function(o)
-    local result = menuSelect()
-    
-    menuSelect.super.transfer(o, result)
-    
-    result.pick = o.pick
-    result.offY = o.offY
-    result.picked = o.picked
-    result.section = o.section
-    result.timer = o.timer
-    
-    return result
-  end)
-
 function menuSelect:new()
   menuSelect.super.new(self)
   self.transform.x = 88
@@ -166,7 +140,7 @@ end
 
 function menuSelect:draw()
   if self.section == 0 then
-    love.graphics.draw(self.tex, self.transform.x, self.transform.y)
+    self.tex:draw(self.transform.x, self.transform.y)
   end
   if self.section ~= 1 or self.timer > 10 then
     love.graphics.print(megautils.getScale(), 96, (18*8)-1)

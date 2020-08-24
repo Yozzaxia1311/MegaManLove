@@ -7,40 +7,6 @@ healthHandler = basicEntity:extend()
 
 healthHandler.autoClean = false
 
-binser.register(healthHandler, "healthHandler", function(o)
-    local result = {}
-    
-    healthHandler.super.transfer(o, result)
-    
-    result.colorOne = o.colorOne
-    result.colorTwo = o.colorTwo
-    result.colorOutline = o.colorOutline
-    result.segments = o.segments
-    result.side = o.side
-    result.health = o.health
-    result.renderedHealth = o.renderedHealth
-    result.rot = o.rot
-    result.player = o.player
-    
-    return result
-  end, function(o)
-    local result = healthHandler()
-    
-    healthHandler.super.transfer(o, result)
-    
-    result.colorOne = o.colorOne
-    result.colorTwo = o.colorTwo
-    result.colorOutline = o.colorOutline
-    result.segments = o.segments
-    result.side = o.side
-    result.health = o.health
-    result.renderedHealth = o.renderedHealth
-    result.rot = o.rot
-    result.player = o.player
-    
-    return result
-  end)
-
 healthHandler.playerTimers = {}
 for i=1, maxPlayerCount do
   healthHandler.playerTimers[i] = -2
@@ -197,15 +163,15 @@ function healthHandler:draw()
     love.graphics.setColor(self.colorOutline[1]/255, 
       self.colorOutline[2]/255,
       self.colorOutline[3]/255, 1)
-    self.quads[bit]:draw(self.barOutline, tx, ty, tr)
+    self.barOutline:draw(self.quads[bit], tx, ty, tr)
     love.graphics.setColor(self.colorOne[1]/255, 
       self.colorOne[2]/255,
       self.colorOne[3]/255, 1)
-    self.quads[bit]:draw(self.barOne, tx, ty, tr)
+    self.barOne:draw(self.quads[bit], tx, ty, tr)
     love.graphics.setColor(self.colorTwo[1]/255, 
       self.colorTwo[2]/255,
       self.colorTwo[3]/255, 1)
-    self.quads[bit]:draw(self.barTwo, tx, ty, tr)
+    self.barTwo:draw(self.quads[bit], tx, ty, tr)
   end
   if self.player and globals.playerCount > 1 then
     love.graphics.setColor(0, 0, 0, 1)
@@ -219,40 +185,6 @@ end
 weaponHandler = basicEntity:extend()
 
 weaponHandler.autoClean = false
-
-binser.register(weaponHandler, "weaponHandler", function(o)
-    local result = {}
-    
-    basicEntity.transfer(o, result)
-    
-    result.slotSize = o.slotSize
-    result.currentSlot = o.currentSlot
-    result.weapons = o.weapons
-    result.energy = o.energy
-    result.slots = o.slots
-    result.renderedWE = o.renderedWE
-    result.riseTimer = o.riseTimer
-    result.side = o.side
-    result.rot = o.rot
-    
-    return result
-  end, function(o)
-    local result = weaponHandler()
-    
-    basicEntity.transfer(o, result)
-    
-    result.slotSize = o.slotSize
-    result.currentSlot = o.currentSlot
-    result.weapons = o.weapons
-    result.energy = o.energy
-    result.slots = o.slots
-    result.renderedWE = o.renderedWE
-    result.riseTimer = o.riseTimer
-    result.side = o.side
-    result.rot = o.rot
-    
-    return result
-  end)
 
 function weaponHandler:new(side, r, slots)
   weaponHandler.super.new(self)
@@ -407,12 +339,12 @@ function weaponHandler:draw()
     love.graphics.setColor(0, 0, 0, 1)
     local tx, ty, tr = self.transform.x-(self.rot=="x" and (8*i)*self.side or 0), 
       self.transform.y-(self.rot=="y" and (8*i)*self.side or 0), math.rad(self.rot=="x" and 90 or 0)
-    self.quads[bit]:draw(self.barOutline, tx, ty, tr)
+    self.barOutline:draw(self.quads[bit], tx, ty, tr)
     love.graphics.setColor(weapon.colors[self.current].one[1]/255, weapon.colors[self.current].one[2]/255,
       weapon.colors[self.current].one[3]/255, 1)
-    self.quads[bit]:draw(self.barOne, tx, ty, tr)
+    self.barOne:draw(self.quads[bit], tx, ty, tr)
     love.graphics.setColor(weapon.colors[self.current].two[1]/255, weapon.colors[self.current].two[2]/255,
       weapon.colors[self.current].two[3]/255, 1)
-    self.quads[bit]:draw(self.barTwo, tx, ty, tr)
+    self.barTwo:draw(self.quads[bit], tx, ty, tr)
   end
 end

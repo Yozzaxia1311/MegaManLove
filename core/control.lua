@@ -420,14 +420,11 @@ function control.startRec()
   control.record.context = ser()
 end
 
-function control.finishRecord()
+function control.finishRecord(name)
   local result = control.record
   result.last = control.recPos
   result.context = control.record.context
-  if love.filesystem.getInfo(control.recordName .. ".rd") then
-    love.filesystem.remove(control.recordName .. ".rd")
-  end
-  save.save(control.recordName .. ".rd", result)
+  save.save(name, result)
   
   control.resetRec()
 end

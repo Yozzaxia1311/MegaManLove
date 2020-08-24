@@ -683,7 +683,7 @@ function basicEntity:drawCollision()
     love.graphics.rectangle("line", math.round(self.transform.x), math.round(self.transform.y),
       self.collisionShape.w, self.collisionShape.h)
   elseif self.collisionShape.type == 1 and self.collisionShape.image then
-    love.graphics.draw(self.collisionShape.image, math.round(self.transform.x), math.round(self.transform.y))
+    self.collisionShape.image:draw(math.round(self.transform.x), math.round(self.transform.y))
   elseif self.collisionShape.type == 2 then
     love.graphics.circle("line", math.round(self.transform.x), math.round(self.transform.y), self.collisionShape.r)
   end
@@ -868,28 +868,6 @@ function mapEntity.deser(t)
   mapEntity.ranFiles = t.ranFiles
   mapEntity.doSort = t.doSort
 end
-
-binser.register(mapEntity, "mapEntity", function(o)
-    local result = {}
-    
-    entity.transfer(o, result)
-    
-    result.map = o.map
-    result.path = o.path
-    result.layers = o.layers
-    
-    return result
-  end, function(o)
-      local result = mapEntity()
-      
-      entity.transfer(o, result)
-      
-      result.map = o.map
-      result.path = o.path
-      result.layers = o.layers
-      
-      return result
-    end)
 
 mapEntity.registered = {}
 mapEntity.ranFiles = {}

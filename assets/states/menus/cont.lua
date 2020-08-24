@@ -9,26 +9,6 @@ end
 
 contPanels = basicEntity:extend()
 
-binser.register(contPanels, "contPanels", function(o)
-    local result = {}
-    
-    contPanels.super.transfer(o, result)
-    
-    result.state = o.state
-    result.timer = o.timer
-    
-    return result
-  end, function(o)
-    local result = contPanels()
-    
-    contPanels.super.transfer(o, result)
-    
-    result.state = o.state
-    result.timer = o.timer
-    
-    return result
-  end)
-
 function contPanels:new()
   contPanels.super.new(self)
   self.tex = megautils.getResource("cont")
@@ -61,9 +41,9 @@ end
 
 function contPanels:draw()
   if self.state == 1 then
-    self.quadTwo:draw(self.tex, 48, 128)
+    self.tex:draw(self.quadTwo, 48, 128)
   end
-  self.quadOne:draw(self.tex, 40, 56)
+  self.tex:draw(self.quadOne, 40, 56)
 end
 
 contSelect = entity:extend()
@@ -106,7 +86,7 @@ function contSelect:update()
 end
 
 function contSelect:draw()
-  love.graphics.draw(self.tex, self.transform.x, self.transform.y)
+  self.tex:draw(self.transform.x, self.transform.y)
 end
 
 return continueState

@@ -1,19 +1,5 @@
 ice = basicEntity:extend()
 
-binser.register(ice, "ice", function(o)
-    local result = {}
-    
-    ice.super.transfer(o, result)
-    
-    return result
-  end, function(o)
-    local result = ice()
-    
-    ice.super.transfer(o, result)
-    
-    return result
-  end)
-
 mapEntity.register("ice", function(v)
   megautils.add(ice, v.x, v.y, v.width, v.height)
 end)

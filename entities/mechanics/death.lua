@@ -2,22 +2,6 @@ death = basicEntity:extend()
 
 death.autoClean = false
 
-binser.register(death, "death", function(o)
-    local result = {}
-    
-    death.super.transfer(o, result)
-    
-    result.damage = o.damage
-    
-    return result
-  end, function(o)
-    local result = death(nil, nil, nil, nil, o.damage)
-    
-    death.super.transfer(o, result)
-    
-    return result
-  end)
-
 mapEntity.register("death", function(v)
   megautils.add(death, v.x, v.y, v.width, v.height, v.properties.damage)
 end, 0, true)

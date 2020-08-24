@@ -2,34 +2,6 @@ fade = basicEntity:extend()
 
 fade.autoClean = false
 
-binser.register(fade, "fade", function(o)
-    local result = {}
-    
-    fade.super.transfer(o, result)
-    
-    result.alpha = o.alpha
-    result.fadeToColor = o.fadeToColor
-    result.gap = o.gap
-    result.after = o.after
-    result.timer = o.timer
-    result.color = o.color
-    
-    return result
-  end, function(o)
-    local result = fade()
-    
-    fade.super.transfer(o, result)
-    
-    result.alpha = o.alpha
-    result.fadeToColor = o.fadeToColor
-    result.gap = o.gap
-    result.after = o.after
-    result.timer = o.timer
-    result.color = o.color
-    
-    return result
-  end)
-
 function fade:new(fadeToColor, gap, color, after)
   fade.super.new(self)
   self.alpha = fadeToColor and 0 or 255

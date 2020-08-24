@@ -2,20 +2,6 @@ ladder = basicEntity:extend()
 
 ladder.autoClean = false
 
-binser.register(ladder, "ladder", function(o)
-    local result = {}
-    
-    ladder.super.transfer(o, result)
-    
-    return result
-  end, function(o)
-    local result = ladder()
-    
-    ladder.super.transfer(o, result)
-    
-    return result
-  end)
-
 mapEntity.register("ladder", function(v)
     megautils.add(ladder, v.x, v.y, v.width, v.height)
   end, 0, true)

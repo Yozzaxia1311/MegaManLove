@@ -5,26 +5,6 @@ splash = particle:extend()
 
 splash.autoClean = false
 
-binser.register(splash, "splash", function(o)
-    local result = {}
-    
-    splash.super.transfer(o, result)
-    
-    result.anim = o.anim
-    result.rot = o.rot
-    
-    return result
-  end, function(o)
-    local result = splash()
-    
-    splash.super.transfer(o, result)
-    
-    result.anim = o.anim
-    result.rot = o.rot
-    
-    return result
-  end)
-
 function splash:new(offx, offy, p, side)
   splash.super.new(self, p)
   self.offx = offx or 0
@@ -53,32 +33,12 @@ function splash:update()
 end
 
 function splash:draw()
-  self.anim:draw(self.tex, math.round(self.transform.x)+16, math.round(self.transform.y), self.rot, 1, 1, 16, 8)
+  self.tex:draw(self.anim, math.round(self.transform.x)+16, math.round(self.transform.y), self.rot, 1, 1, 16, 8)
 end
 
 water = basicEntity:extend()
 
 water.autoClean = false
-
-binser.register(water, "water", function(o)
-    local result = {}
-    
-    water.super.transfer(o, result)
-    
-    result.grav = o.grav
-    result.current = o.current
-    
-    return result
-  end, function(o)
-    local result = water()
-    
-    water.super.transfer(o, result)
-    
-    result.grav = o.grav
-    result.current = o.current
-    
-    return result
-  end)
 
 mapEntity.register("water", function(v)
   megautils.add(water, v.x, v.y, v.width, v.height, v.properties.grav)
@@ -154,24 +114,6 @@ end
 space = basicEntity:extend()
 
 space.autoClean = false
-
-binser.register(space, "space", function(o)
-    local result = {}
-    
-    space.super.transfer(o, result)
-    
-    result.grav = o.grav
-    
-    return result
-  end, function(o)
-    local result = space()
-    
-    space.super.transfer(o, result)
-    
-    result.grav = o.grav
-    
-    return result
-  end)
 
 mapEntity.register("space", function(v)
   megautils.add(space, v.x, v.y, v.width, v.height, v.properties.grav)
