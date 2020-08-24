@@ -419,9 +419,6 @@ function love.run()
       
       if serQueue then
         local f = serQueue
-        if type(serQueue) == "function" then
-          f = serQueue()
-        end
         serQueue = nil
         f(ser())
       end
