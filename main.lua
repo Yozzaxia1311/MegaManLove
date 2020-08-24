@@ -419,7 +419,6 @@ function love.run()
         local f = deserQueue
         deserQueue = nil
         deser(f)
-        print(1)
       end
       
       if control._openRecQ then
