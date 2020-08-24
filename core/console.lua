@@ -393,7 +393,7 @@ function console.update(dt)
       if console.wait > 0 then break end
     end
   end
-  while #console.lines > 50 do
+  while #console.lines > 25 do
     table.remove(console.lines, 1)
   end
 end

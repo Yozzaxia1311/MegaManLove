@@ -178,9 +178,10 @@ concmd["rec"] = {
   flags = {},
   fun = function(cmd)
       if control.recordInput then
-        console.print("Recording already in progress...")
+        console.print("Recording already in progress.")
       else
-        control.startRec()
+        control.startRecQ()
+        console.print("Recording...")
       end
     end
 }
@@ -200,7 +201,7 @@ concmd["recsave"] = {
   flags = {},
   fun = function(cmd)
       if not cmd[2] then return end
-      if not control.recordInput and table.length(control.record) > 0 then
+      if not control.recordInput and table.length(control.record.data) > 0 then
         control.finishRecord(cmd[2] .. ".rd")
         console.print("Recording saved")
       else
@@ -229,12 +230,7 @@ concmd["recopen"] = {
   fun = function(cmd)
       if not cmd[2] then return end
       if love.filesystem.getInfo(cmd[2] .. ".rd") then
-        console.close()
-        console.y = -math.huge
-        megautils.add(fade, true, nil, nil, function(s)
-            megautils.removeq(s)
-            control.openRecQ(cmd[2] .. ".rd")
-          end)
+        control.openRecQ(cmd[2] .. ".rd")
       else
         console.print("No such record file \"" .. cmd[2] .. "\"")
       end
