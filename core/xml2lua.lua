@@ -158,13 +158,13 @@ end
 -- @param xmlFilePath the path for the XML file to load
 -- @return the XML loaded file content
 function xml2lua.loadFile(xmlFilePath)
-    local f, e = io.open(xmlFilePath, "r")
+    local f = love.filesystem.read(xmlFilePath)
     if f then
         --Gets the entire file content and stores into a string
-        return f:read("*a")
+        return f
     end
     
-    error(e)
+    error("Could not read XML file \"" .. xmlFilePath .. "\"")
 end
 
 ---Gets an _attr element from a table that represents the attributes of an XML tag,
