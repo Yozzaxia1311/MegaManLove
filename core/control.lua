@@ -4,52 +4,139 @@ function control.defaultBindsTable()
   inputHandler.refreshGamepads()
   local joysticks = inputHandler.gamepads
   
-  local defaultInputBinds = {up={{"keyboard", "up"}, {"custom", "up"}},
-    down={{"keyboard", "down"}, {"custom", "down"}},
-    left={{"keyboard", "left"}, {"custom", "left"}},
-    right={{"keyboard", "right"}, {"custom", "right"}},
-    jump={{"keyboard", "z"}, {"custom", "jump"}},
-    shoot={{"keyboard", "x"}, {"custom", "shoot"}},
-    start={{"keyboard", "return"}, {"custom", "start"}},
-    select={{"keyboard", "rshift"}, {"custom", "select"}},
-    prev={{"keyboard", "a"}, {"custom", "prev"}},
-    next={{"keyboard", "s"}, {"custom", "next"}},
-    dash={{"keyboard", "c"}, {"custom", "dash"}}}
+  local defaultInputBinds = {up={{type="keyboard", input="up"}, {type="custom", input="up"}},
+    down={{type="keyboard", input="down"}, {type="custom", input="down"}},
+    left={{type="keyboard", input="left"}, {type="custom", input="left"}},
+    right={{type="keyboard", input="right"}, {type="custom", input="right"}},
+    jump={{type="keyboard", input="z"}, {type="custom", input="jump"}},
+    shoot={{type="keyboard", input="x"}, {type="custom", input="shoot"}},
+    start={{type="keyboard", input="return"}, {type="custom", input="start"}},
+    select={{type="keyboard", input="rshift"}, {type="custom", input="select"}},
+    prev={{type="keyboard", input="a"}, {type="custom", input="prev"}},
+    next={{type="keyboard", input="s"}, {type="custom", input="next"}},
+    dash={{type="keyboard", input="c"}, {type="custom", input="dash"}}}
   
   local defaultInputBindsExtra = {}
   
   if #joysticks > 0 then
-    local joyBinds = {up={"axis", "lefty-", joysticks[1]:getName()},
-    down={"axis", "lefty+", joysticks[1]:getName()},
-    left={"axis", "leftx-", joysticks[1]:getName()},
-    right={"axis", "leftx+", joysticks[1]:getName()},
-    jump={"gamepad", "a", joysticks[1]:getName()},
-    shoot={"gamepad", "x", joysticks[1]:getName()},
-    start={"gamepad", "start", joysticks[1]:getName()},
-    select={"gamepad", "back", joysticks[1]:getName()},
-    prev={"gamepad", "leftshoulder", joysticks[1]:getName()},
-    next={"gamepad", "rightshoulder", joysticks[1]:getName()},
-    dash={"gamepad", "b", joysticks[1]:getName()}}
+    local joyBinds = {up={type="axis", input="lefty-", name=joysticks[1]:getName()},
+    down={type="axis", input="lefty+", name=joysticks[1]:getName()},
+    left={type="axis", input="leftx-", name=joysticks[1]:getName()},
+    right={type="axis", input="leftx+", name=joysticks[1]:getName()},
+    jump={type="gamepad", input="a", name=joysticks[1]:getName()},
+    shoot={type="gamepad", input="x", name=joysticks[1]:getName()},
+    start={type="gamepad", input="start", name=joysticks[1]:getName()},
+    select={type="gamepad", input="back", name=joysticks[1]:getName()},
+    prev={type="gamepad", input="leftshoulder", name=joysticks[1]:getName()},
+    next={type="gamepad", input="rightshoulder", name=joysticks[1]:getName()},
+    dash={type="gamepad", input="b", name=joysticks[1]:getName()}}
     for k, v in pairs(defaultInputBinds) do
       defaultInputBinds[k] = table.merge({defaultInputBinds[k], {joyBinds[k]}})
     end
     for i=2, #joysticks do
-      defaultInputBindsExtra[i] = {up={"axis", "lefty-", joysticks[i]:getName()},
-      down={"axis", "lefty+", joysticks[i]:getName()},
-      left={"axis", "leftx-", joysticks[i]:getName()},
-      right={"axis", "leftx+", joysticks[i]:getName()},
-      jump={"gamepad", "a", joysticks[i]:getName()},
-      shoot={"gamepad", "x", joysticks[i]:getName()},
-      start={"gamepad", "start", joysticks[i]:getName()},
-      select={"gamepad", "back", joysticks[i]:getName()},
-      prev={"gamepad", "leftshoulder", joysticks[i]:getName()},
-      next={"gamepad", "rightshoulder", joysticks[i]:getName()},
-      dash={"gamepad", "b", joysticks[i]:getName()}}
+      defaultInputBindsExtra[i] = {up={type="axis", input="lefty-", name=joysticks[i]:getName()},
+      down={type="axis", input="lefty+", name=joysticks[i]:getName()},
+      left={type="axis", input="leftx-", name=joysticks[i]:getName()},
+      right={type="axis", input="leftx+", name=joysticks[i]:getName()},
+      jump={type="gamepad", input="a", name=joysticks[i]:getName()},
+      shoot={type="gamepad", input="x", name=joysticks[i]:getName()},
+      start={type="gamepad", input="start", name=joysticks[i]:getName()},
+      select={type="gamepad", input="back", name=joysticks[i]:getName()},
+      prev={type="gamepad", input="leftshoulder", name=joysticks[i]:getName()},
+      next={type="gamepad", input="rightshoulder", name=joysticks[i]:getName()},
+      dash={type="gamepad", input="b", name=joysticks[i]:getName()}}
     end
   end
   
   return defaultInputBinds, defaultInputBindsExtra
 end
+
+function control.ser()
+  return {
+      demo = control.demo,
+      anyPressed = control.anyPressed,
+      pressAnyway = control.pressAnyway,
+      anyPressedDuringRec = control.anyPressedDuringRec,
+      recPos = control.recPos,
+      record = control.record,
+      loadedRec = control.loadedRec,
+      loadedRecPos = control.loadedRecPos,
+      recordInput = control.recordInput,
+      keyPressedRec = control.keyPressedRec,
+      gamepadPressedRec = control.gamepadPressedRec,
+      gamepadAxisRec = control.gamepadAxisRec,
+      touchPressedRec = control.touchPressedRec,
+      textInputRec = control.textInputRec,
+      leftDown = control.leftDown,
+      leftPressed = control.leftPressed,
+      rightDown = control.rightDown,
+      rightPressed = control.rightPressed,
+      upDown = control.upDown,
+      upPressed = control.upPressed,
+      downDown = control.downDown,
+      downPressed = control.downPressed,
+      startDown = control.startDown,
+      startPressed = control.startPressed,
+      selectDown = control.selectDown,
+      selectPressed = control.selectPressed,
+      jumpDown = control.jumpDown,
+      jumpPressed = control.jumpPressed,
+      shootDown = control.shootDown,
+      shootPressed = control.shootPressed,
+      prevDown = control.prevDown,
+      prevPressed = control.prevPressed,
+      nextDown = control.nextDown,
+      nextPressed = control.nextPressed,
+      dashDown = control.dashDown,
+      dashPressed = control.dashPressed,
+      pressed = control.pressed,
+      _openRecQ = control._openRecQ
+    }
+end
+
+function control.deser(t)
+  control.demo = t.demo
+  control.anyPressed = t.anyPressed
+  control.pressAnyway = t.pressAnyway
+  control.anyPressedDuringRec = t.anyPressedDuringRec
+  control.recPos = t.recPos
+  control.record = t.record
+  control.recordInput = t.recordInput
+  control.loadedRec = t.loadedRec
+  control.loadedRecPos = t.loadedRecPos
+  control.keyPressedRec = t.keyPressedRec
+  control.gamepadPressedRec = t.gamepadPressedRec
+  control.gamepadAxisRec = t.gamepadAxisRec
+  control.touchPressedRec = t.touchPressedRec
+  control.textInputRec = t.textInputRec
+  control.leftDown = t.leftDown
+  control.leftPressed = t.leftPressed
+  control.rightDown = t.rightDown
+  control.rightPressed = t.rightPressed
+  control.upDown = t.upDown
+  control.upPressed = t.upPressed
+  control.downDown = t.downDown
+  control.downPressed = t.downPressed
+  control.startDown = t.startDown
+  control.startPressed = t.startPressed
+  control.selectDown = t.selectDown
+  control.selectPressed = t.selectPressed
+  control.jumpDown = t.jumpDown
+  control.jumpPressed = t.jumpPressed
+  control.shootDown = t.shootDown
+  control.shootPressed = t.shootPressed
+  control.prevDown = t.prevDown
+  control.prevPressed = t.prevPressed
+  control.nextDown = t.nextDown
+  control.nextPressed = t.nextPressed
+  control.dashDown = t.dashDown
+  control.dashPressed = t.dashPressed
+  control.pressed = t.pressed
+  control._openRecQ = t._openRecQ
+end
+
+control._startRecQ = false
+control._openRecQ = nil
 
 function control.init()
   control.leftDown = {}
@@ -104,7 +191,26 @@ function control.init()
   control.demo = false
   control.pressAnyway = false
   control.anyPressedDuringRec = false
-  control.resetRec()
+  control.anyPressed = false
+  control.record = {data = {}}
+  control.recPos = 1
+  control.loadedRec = {data = {}}
+  control.loadedRecPos = 1
+  
+  for i=1, maxPlayerCount do
+    control.pressed[i] = {}
+    control.pressed[i].left = true
+    control.pressed[i].right = true
+    control.pressed[i].up = true
+    control.pressed[i].down = true
+    control.pressed[i].jump = true
+    control.pressed[i].shoot = true
+    control.pressed[i].start = true
+    control.pressed[i].selec = true
+    control.pressed[i].prev = true
+    control.pressed[i].nex = true
+    control.pressed[i].dash = true
+  end
   
   local defaultInputBinds, defaultInputBindsExtra = control.defaultBindsTable()
   
@@ -308,6 +414,33 @@ function control.loadBinds()
 end
 
 function control.resetRec()
+  control.recPos = 1
+  control.record = {data = {}}
+  control.anyPressed = false
+  control.recordInput = false
+  control.updateDemoFunc = nil
+  control.drawDemoFunc = nil
+end
+
+function control.startRecQ(f)
+  control._startRecQ = f == nil or f
+end
+
+function control.startRec()
+  control.resetRec()
+  
+  control.record.context = ser()
+  control.recordInput = true
+end
+
+function control.finishRecord(name)
+  control.record.last = control.recPos
+  save.save(name, control.record)
+  
+  control.resetRec()
+end
+
+function control.resetLoadedRec()
   control.pressed = {}
   for i=1, maxPlayerCount do
     control.pressed[i] = {}
@@ -323,11 +456,29 @@ function control.resetRec()
     control.pressed[i].nex = true
     control.pressed[i].dash = true
   end
-  control.recPos = 1
-  control.record = {}
+  control.loadedRecPos = 1
+  control.loadedRecord = {data = {}}
   control.anyPressed = false
-  control.recordInput = false
   control.pressAnyway = false
+  control.demo = false
+end
+
+function control.openRecQ(f)
+  control._openRecQ = f
+end
+
+function control.openRec(f)
+  control.resetLoadedRec()
+  local file = save.load(f)
+  control.oldContext = ser()
+  
+  deser(file.context)
+  
+  control.recPos = 1
+  control.record = {data = {}}
+  control.recordInput = false
+  control.loadedRec = file
+  control.demo = true
 end
 
 function control.update()
@@ -362,33 +513,22 @@ function control.update()
     control.playRecord()
     local result = false
     result = control.updateDemo()
-    if control.recPos >= control.record.last then
+    if control.loadedRecPos >= control.loadedRec.last then
       result = true
     end
     if result then
-      control.demo = false
-      control.recPos = 1
-      control.record = {}
-      control.updateDemoFunc = nil
-      control.drawDemoFunc = nil
-      control.anyPressedDuringRec = false
-      globals = control.oldGlobals
-      convar = control.oldConvars
-      for k, v in pairs(control.oldSkins) do
-        megaMan.setSkin(k, v)
-      end
-      console.deser(control.oldConsole)
-      control.oldGlobals = nil
-      control.oldConvars = nil
-      control.oldSkins = nil
-      control.oldConsole = nil
-      megautils.reloadState = true
-      megautils.resetGameObjects = true
+      control.resetLoadedRec()
+      
       if control.returning then
         control.returning()
         control.returning = nil
       else
-        megautils.resetGame()
+        deserQueue = function()
+          control.demo = false
+          local c = control.oldContext
+          control.oldContext = nil
+          return c
+        end
       end
     end
   end
@@ -397,87 +537,67 @@ function control.update()
   end
 end
 
-function control.finishRecord()
-  control.recordInput = false
-  control.pressAnyway = false
-  local result = control.record
-  result.last = control.recPos
-  result.globals = control.record.globals
-  result.convars = control.record.convars
-  result.seed = control.record.seed
-  result.reload = control.record.reload
-  result.rgo = control.record.rgo
-  if love.filesystem.getInfo(control.recordName .. ".rd") then
-    love.filesystem.remove(control.recordName .. ".rd")
-  end
-  save.save(control.recordName .. ".rd", result)
-  print(control.record.last)
-  control.record = {}
-  control.recPos = 1
-  save.vfs = {}
-end
-
 function control.playRecord()
-  if control.record[control.recPos] then
+  if control.loadedRec.data[control.loadedRecPos] then
     for i=1, globals.playerCount do
-      control.leftDown[i] = control.record[control.recPos].ld and control.record[control.recPos].ld[i]
+      control.leftDown[i] = control.loadedRec.data[control.loadedRecPos].ld and control.loadedRec.data[control.loadedRecPos].ld[i]
       control.leftPressed[i] = control.leftDown[i] and control.pressed[i].left
       if control.leftPressed[i] then control.pressed[i].left = false end
-      control.rightDown[i] = control.record[control.recPos].rd and control.record[control.recPos].rd[i]
+      control.rightDown[i] = control.loadedRec.data[control.loadedRecPos].rd and control.loadedRec.data[control.loadedRecPos].rd[i]
       control.rightPressed[i] = control.rightDown[i] and control.pressed[i].right
       if control.rightPressed[i] then control.pressed[i].right = false end
-      control.upDown[i] = control.record[control.recPos].ud and control.record[control.recPos].ud[i]
+      control.upDown[i] = control.loadedRec.data[control.loadedRecPos].ud and control.loadedRec.data[control.loadedRecPos].ud[i]
       control.upPressed[i] = control.upDown[i] and control.pressed[i].up
       if control.upPressed[i] then control.pressed[i].up = false end
-      control.downDown[i] = control.record[control.recPos].dd and control.record[control.recPos].dd[i]
+      control.downDown[i] = control.loadedRec.data[control.loadedRecPos].dd and control.loadedRec.data[control.loadedRecPos].dd[i]
       control.downPressed[i] = control.downDown[i] and control.pressed[i].down
       if control.downPressed[i] then control.pressed[i].down = false end
-      control.startDown[i] = control.record[control.recPos].sd and control.record[control.recPos].sd[i]
+      control.startDown[i] = control.loadedRec.data[control.loadedRecPos].sd and control.loadedRec.data[control.loadedRecPos].sd[i]
       control.startPressed[i] = control.startDown[i] and control.pressed[i].start
       if control.startPressed[i] then control.pressed[i].start = false end
-      control.selectDown[i] = control.record[control.recPos].sld and control.record[control.recPos].sld[i]
+      control.selectDown[i] = control.loadedRec.data[control.loadedRecPos].sld and control.loadedRec.data[control.loadedRecPos].sld[i]
       control.selectPressed[i] = control.selectDown[i] and control.pressed[i].selec
       if control.selectPressed[i] then control.pressed[i].selec = false end
-      control.jumpDown[i] = control.record[control.recPos].jd and control.record[control.recPos].jd[i]
+      control.jumpDown[i] = control.loadedRec.data[control.loadedRecPos].jd and control.loadedRec.data[control.loadedRecPos].jd[i]
       control.jumpPressed[i] = control.jumpDown[i] and control.pressed[i].jump
       if control.jumpPressed[i] then control.pressed[i].jump = false end
-      control.shootDown[i] = control.record[control.recPos].shd and control.record[control.recPos].shd[i]
+      control.shootDown[i] = control.loadedRec.data[control.loadedRecPos].shd and control.loadedRec.data[control.loadedRecPos].shd[i]
       control.shootPressed[i] = control.shootDown[i] and control.pressed[i].shoot
       if control.shootPressed[i] then control.pressed[i].shoot = false end
-      control.prevDown[i] = control.record[control.recPos].pd and control.record[control.recPos].pd[i]
+      control.prevDown[i] = control.loadedRec.data[control.loadedRecPos].pd and control.loadedRec.data[control.loadedRecPos].pd[i]
       control.prevPressed[i] = control.prevDown[i] and control.pressed[i].prev
       if control.prevPressed[i] then control.pressed[i].prev = false end
-      control.nextDown[i] = control.record[control.recPos].nd and control.record[control.recPos].nd[i]
+      control.nextDown[i] = control.loadedRec.data[control.loadedRecPos].nd and control.loadedRec.data[control.loadedRecPos].nd[i]
       control.nextPressed[i] = control.nextDown[i] and control.pressed[i].nex
       if control.nextPressed[i] then control.pressed[i].nex = false end
-      control.dashDown[i] = control.record[control.recPos].dad and control.record[control.recPos].dad[i]
+      control.dashDown[i] = control.loadedRec.data[control.loadedRecPos].dad and control.loadedRec.data[control.loadedRecPos].dad[i]
       control.dashPressed[i] = control.dashDown[i] and control.pressed[i].dash
       if control.dashPressed[i] then control.pressed[i].dash = false end
     end
     control.pressAnyway = true
-    if control.record[control.recPos].kp then
-      for i=1, #control.record[control.recPos].kp do
-        love.keypressed(unpack(control.record[control.recPos].kp[i]))
+    if control.loadedRec.data[control.loadedRecPos].kp then
+      for i=1, #control.loadedRec.data[control.loadedRecPos].kp do
+        love.keypressed(unpack(control.loadedRec.data[control.loadedRecPos].kp[i]))
       end
     end
-    if control.record[control.recPos].gpp then
-      for i=1, #control.record[control.recPos].gpp do
-        love.gamepadpressed(unpack(control.record[control.recPos].gpp[i]))
+    if control.loadedRec.data[control.loadedRecPos].gpp then
+      for i=1, #control.loadedRec.data[control.loadedRecPos].gpp do
+        love.gamepadpressed(unpack(control.loadedRec.data[control.loadedRecPos].gpp[i]))
       end
     end
-    if control.record[control.recPos].gpa then
-      for i=1, #control.record[control.recPos].gpa do
-        love.keypressed(unpack(control.record[control.recPos].gpa[i]))
+    if control.loadedRec.data[control.loadedRecPos].gpa then
+      for i=1, #control.loadedRec.data[control.loadedRecPos].gpa do
+        love.keypressed(unpack(control.loadedRec.data[control.loadedRecPos].gpa[i]))
       end
     end
-    if control.record[control.recPos].tp then
-      for i=1, #control.record[control.recPos].tp do
-        love.touchpressed(unpack(control.record[control.recPos].tp[i]))
+    if control.loadedRec.data[control.loadedRecPos].tp then
+      for i=1, #control.loadedRec.data[control.loadedRecPos].tp do
+        love.touchpressed(unpack(control.loadedRec.data[control.loadedRecPos].tp[i]))
       end
     end
-    if control.record[control.recPos].ti then
-      for i=1, #control.record[control.recPos].ti do
-        love.textinput(control.record[control.recPos].ti[i])
+    if control.loadedRec.data[control.loadedRecPos].ti then
+      for i=1, #control.loadedRec.data[control.loadedRecPos].ti do
+        love.textinput(control.loadedRec.data[control.loadedRecPos].ti[i])
       end
     end
     control.pressAnyway = false
@@ -507,174 +627,145 @@ function control.playRecord()
       control.dashPressed[i] = false
     end
   end
-  control.recPos = control.recPos + 1
-end
-
-function control.updateDemo()
-  if control.updateDemoFunc then
-    return control.updateDemoFunc()
-  else
-    if control.demo then
-      return control.anyPressedDuringRec
-    else
-      return lastPressed and lastPressed[2] == "backspace"
-    end
-  end
-end
-
-function control.drawDemo()
-  if control.drawDemoFunc then
-    control.drawDemoFunc()
-  else
-    if control.demo and math.wrap(control.recPos, 0, 40) < 20 then
-      love.graphics.setColor(1, 1, 1, 1)
-      love.graphics.print("REPLAY", view.w - 64, view.h - 16)
-    elseif control.recordInput then
-      love.graphics.setColor(0, 0, 0, 0.4)
-      love.graphics.rectangle("fill", view.w-124, view.h-24, 126, 16)
-      love.graphics.setColor(1, 1, 1, 0.4)
-      love.graphics.print("RECORDING\n", view.w - 88, view.h - 24)
-      love.graphics.print("PRESS BACKSPACE TO END", view.w - 124, view.h - 16)
-    end
-  end
+  control.loadedRecPos = control.loadedRecPos + 1
 end
 
 function control.doRecording()
   for i=1, globals.playerCount do
     if control.leftDown[i] then
-      if control.record[control.recPos] == nil then
-        control.record[control.recPos] = {}
+      if control.record.data[control.recPos] == nil then
+        control.record.data[control.recPos] = {}
       end
-      if control.record[control.recPos].ld == nil then
-        control.record[control.recPos].ld = {}
+      if control.record.data[control.recPos].ld == nil then
+        control.record.data[control.recPos].ld = {}
       end
-      control.record[control.recPos].ld[i] = control.leftDown[i]
+      control.record.data[control.recPos].ld[i] = control.leftDown[i]
     end
     if control.rightDown[i] then
-      if control.record[control.recPos] == nil then
-        control.record[control.recPos] = {}
+      if control.record.data[control.recPos] == nil then
+        control.record.data[control.recPos] = {}
       end
-      if control.record[control.recPos].rd == nil then
-        control.record[control.recPos].rd = {}
+      if control.record.data[control.recPos].rd == nil then
+        control.record.data[control.recPos].rd = {}
       end
-      control.record[control.recPos].rd[i] = control.rightDown[i]
+      control.record.data[control.recPos].rd[i] = control.rightDown[i]
     end
     if control.upDown[i] then
-      if control.record[control.recPos] == nil then
-        control.record[control.recPos] = {}
+      if control.record.data[control.recPos] == nil then
+        control.record.data[control.recPos] = {}
       end
-      if control.record[control.recPos].ud == nil then
-        control.record[control.recPos].ud = {}
+      if control.record.data[control.recPos].ud == nil then
+        control.record.data[control.recPos].ud = {}
       end
-      control.record[control.recPos].ud[i] = control.upDown[i]
+      control.record.data[control.recPos].ud[i] = control.upDown[i]
     end
     if control.downDown[i] then
-      if control.record[control.recPos] == nil then
-        control.record[control.recPos] = {}
+      if control.record.data[control.recPos] == nil then
+        control.record.data[control.recPos] = {}
       end
-      if control.record[control.recPos].dd == nil then
-        control.record[control.recPos].dd = {}
+      if control.record.data[control.recPos].dd == nil then
+        control.record.data[control.recPos].dd = {}
       end
-      control.record[control.recPos].dd[i] = control.downDown[i]
+      control.record.data[control.recPos].dd[i] = control.downDown[i]
     end
     if control.startDown[i] then
-      if control.record[control.recPos] == nil then
-        control.record[control.recPos] = {}
+      if control.record.data[control.recPos] == nil then
+        control.record.data[control.recPos] = {}
       end
-      if control.record[control.recPos].sd == nil then
-        control.record[control.recPos].sd = {}
+      if control.record.data[control.recPos].sd == nil then
+        control.record.data[control.recPos].sd = {}
       end
-      control.record[control.recPos].sd[i] = control.startDown[i]
+      control.record.data[control.recPos].sd[i] = control.startDown[i]
     end
     if control.selectDown[i] then
-      if control.record[control.recPos] == nil then
-        control.record[control.recPos] = {}
+      if control.record.data[control.recPos] == nil then
+        control.record.data[control.recPos] = {}
       end
-      if control.record[control.recPos].sld == nil then
-        control.record[control.recPos].sld = {}
+      if control.record.data[control.recPos].sld == nil then
+        control.record.data[control.recPos].sld = {}
       end
-      control.record[control.recPos].sld[i] = control.selectDown[i]
+      control.record.data[control.recPos].sld[i] = control.selectDown[i]
     end
     if control.jumpDown[i] then
-      if control.record[control.recPos] == nil then
-        control.record[control.recPos] = {}
+      if control.record.data[control.recPos] == nil then
+        control.record.data[control.recPos] = {}
       end
-      if control.record[control.recPos].jd == nil then
-        control.record[control.recPos].jd = {}
+      if control.record.data[control.recPos].jd == nil then
+        control.record.data[control.recPos].jd = {}
       end
-      control.record[control.recPos].jd[i] = control.jumpDown[i]
+      control.record.data[control.recPos].jd[i] = control.jumpDown[i]
     end
     if control.shootDown[i] then
-      if control.record[control.recPos] == nil then
-        control.record[control.recPos] = {}
+      if control.record.data[control.recPos] == nil then
+        control.record.data[control.recPos] = {}
       end
-      if control.record[control.recPos].shd == nil then
-        control.record[control.recPos].shd = {}
+      if control.record.data[control.recPos].shd == nil then
+        control.record.data[control.recPos].shd = {}
       end
-      control.record[control.recPos].shd[i] = control.shootDown[i]
+      control.record.data[control.recPos].shd[i] = control.shootDown[i]
     end
     if control.prevDown[i] then
-      if control.record[control.recPos] == nil then
-        control.record[control.recPos] = {}
+      if control.record.data[control.recPos] == nil then
+        control.record.data[control.recPos] = {}
       end
-      if control.record[control.recPos].pd == nil then
-        control.record[control.recPos].pd = {}
+      if control.record.data[control.recPos].pd == nil then
+        control.record.data[control.recPos].pd = {}
       end
-      control.record[control.recPos].pd[i] = control.prevDown[i]
+      control.record.data[control.recPos].pd[i] = control.prevDown[i]
     end
     if control.nextDown[i] then
-      if control.record[control.recPos] == nil then
-        control.record[control.recPos] = {}
+      if control.record.data[control.recPos] == nil then
+        control.record.data[control.recPos] = {}
       end
-      if control.record[control.recPos].nd == nil then
-        control.record[control.recPos].nd = {}
+      if control.record.data[control.recPos].nd == nil then
+        control.record.data[control.recPos].nd = {}
       end
-      control.record[control.recPos].nd[i] = control.nextDown[i]
+      control.record.data[control.recPos].nd[i] = control.nextDown[i]
     end
     if control.dashDown[i] then
-      if control.record[control.recPos] == nil then
-        control.record[control.recPos] = {}
+      if control.record.data[control.recPos] == nil then
+        control.record.data[control.recPos] = {}
       end
-      if control.record[control.recPos].dad == nil then
-        control.record[control.recPos].dad = {}
+      if control.record.data[control.recPos].dad == nil then
+        control.record.data[control.recPos].dad = {}
       end
-      control.record[control.recPos].dad[i] = control.dashDown[i]
+      control.record.data[control.recPos].dad[i] = control.dashDown[i]
     end
   end
   
   if control.keyPressedRec then
-    if control.record[control.recPos] == nil then
-      control.record[control.recPos] = {}
+    if control.record.data[control.recPos] == nil then
+      control.record.data[control.recPos] = {}
     end
-    control.record[control.recPos].kp = control.keyPressedRec
+    control.record.data[control.recPos].kp = control.keyPressedRec
     control.keyPressedRec = nil
   end
   if control.gamepadPressedRec then
-    if control.record[control.recPos] == nil then
-      control.record[control.recPos] = {}
+    if control.record.data[control.recPos] == nil then
+      control.record.data[control.recPos] = {}
     end
-    control.record[control.recPos].gpp = control.gamepadPressedRec
+    control.record.data[control.recPos].gpp = control.gamepadPressedRec
     control.gamepadPressedRec = nil
   end
   if control.gamepadAxisRec then
-    if control.record[control.recPos] == nil then
-      control.record[control.recPos] = {}
+    if control.record.data[control.recPos] == nil then
+      control.record.data[control.recPos] = {}
     end
-    control.record[control.recPos].gpa = control.gamepadAxisRec
+    control.record.data[control.recPos].gpa = control.gamepadAxisRec
     control.gamepadAxisRec = nil
   end
   if control.touchPressedRec then
-    if control.record[control.recPos] == nil then
-      control.record[control.recPos] = {}
+    if control.record.data[control.recPos] == nil then
+      control.record.data[control.recPos] = {}
     end
-    control.record[control.recPos].tp = control.touchPressedRec
+    control.record.data[control.recPos].tp = control.touchPressedRec
     control.touchPressedRec = nil
   end
   if control.textInputRec then
-    if control.record[control.recPos] == nil then
-      control.record[control.recPos] = {}
+    if control.record.data[control.recPos] == nil then
+      control.record.data[control.recPos] = {}
     end
-    control.record[control.recPos].ti = control.textInputRec
+    control.record.data[control.recPos].ti = control.textInputRec
     control.textInputRec = nil
   end
   
@@ -684,6 +775,38 @@ function control.doRecording()
     console.parse("recend")
     if console.state == 0 then
       console.open()
+    end
+  end
+end
+
+function control.updateDemo()
+  if control.updateDemoFunc then
+    return control.updateDemoFunc()
+  else
+    if control.demo then
+      return control.anyPressedDuringRec
+    else
+      return lastPressed and lastPressed.input == "backspace"
+    end
+  end
+end
+
+function control.drawDemo()
+  if control.drawDemoFunc then
+    control.drawDemoFunc()
+  else
+    if control.demo then
+      love.graphics.setColor(0, 0, 0, 0.4)
+      love.graphics.rectangle("fill", view.w-144, view.h-24, 144, 16)
+      love.graphics.setColor(1, 1, 1, 0.4)
+      love.graphics.print("REPLAY", view.w - 64, view.h - 24)
+      love.graphics.print("ANY BUTTON TO END", view.w - 142, view.h - 16)
+    elseif control.recordInput then
+      love.graphics.setColor(0, 0, 0, 0.4)
+      love.graphics.rectangle("fill", view.w-134, view.h-24, 142, 16)
+      love.graphics.setColor(1, 1, 1, 0.4)
+      love.graphics.print("RECORDING", view.w - 88, view.h - 24)
+      love.graphics.print("BACKSPACE TO END", view.w - 132, view.h - 16)
     end
   end
 end

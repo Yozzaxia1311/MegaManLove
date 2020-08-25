@@ -7,6 +7,60 @@ weapon = entity:extend()
 
 weapon.autoClean = false
 
+function weapon.ser()
+  return {
+      removeGroups = weapon.removeGroups,
+      resources = weapon.resources,
+      colors = weapon.colors,
+      chargeColors = weapon.chargeColors,
+      chargeSounds = weapon.chargeSounds,
+      icons = weapon.icons,
+      segments = weapon.segments,
+      sevenWayAnim = weapon.sevenWayAnim,
+      _activeQuad = weapon._activeQuad,
+      _inactiveQuad = weapon._inactiveQuad
+    }
+end
+
+function weapon.deser(t)
+  weapon.removeGroups = t.removeGroups
+  weapon.resources = t.resources
+  weapon.colors = t.colors
+  weapon.chargeColors = t.chargeColors
+  weapon.chargeSounds = t.chargeSounds
+  weapon.icons = t.icons
+  weapon.segments = t.segments
+  weapon.sevenWayAnim = t.sevenWayAnim
+  weapon._activeQuad = t._activeQuad
+  weapon._inactiveQuad = t._inactiveQuad
+end
+
+function weapon.transfer(from, to)
+  weapon.super.transfer(from, to)
+  
+  to.autoHit = from.autoHit
+  to.sound = from.sound
+  to.soundOnDink = from.soundOnDink
+  to.damage = from.damage
+  to.flipWithUser = from.flipWithUser
+  to.weaponGroup = from.weaponGroup
+  to.removeWhenOutside = from.removeWhenOutside
+  to.autoCollision = from.autoCollision
+  to.autoGravity = from.autoGravity
+  to.doAutoCollisionBeforeUpdate = from.doAutoCollisionBeforeUpdate
+  to.doDink = from.doDink
+  to.applyAutoFace = from.applyAutoFace
+  to.dinkedBy = from.dinkedBy
+  to._didCol = from._didCol
+  to.dinked = from.dinked
+  to.user = from.user
+  to.damageType = from.damageType
+  to.damageTypeOnDink = from.damageTypeOnDink
+  to.pierceType = from.pierceType
+  to.isEnemyWeapon = from.isEnemyWeapon
+  to.side = from.side
+end
+
 weapon.DAMAGENONE = 0
 weapon.DAMAGEPLAYER = 1
 weapon.DAMAGEENEMY = 2
@@ -27,9 +81,9 @@ weapon._inactiveQuad = quad(16, 0, 16, 16)
 function weapon.drawIcon(p, on, x, y)
   local tex = megautils.getResource(weapon.icons[p])
   if on == nil or on then
-    weapon._activeQuad:draw(tex, x, y)
+    tex:draw(weapon._activeQuad, x, y)
   else
-    weapon._inactiveQuad:draw(tex, x, y)
+    tex:draw(weapon._inactiveQuad, x, y)
   end
 end
 
@@ -60,6 +114,7 @@ function weapon:new(p, enWeapon)
   self.pierceType = pierce.NOPIERCE
   self.isEnemyWeapon = false
   self.autoFace = -1
+  self.side = -1
   if enWeapon then
     self.isEnemyWeapon = true
     self.damageType = weapon.DAMAGEPLAYER
@@ -72,7 +127,7 @@ function weapon:added()
   if self.weaponGroup then
     self:addToGroup(self.weaponGroup)
     if self.user and megaMan.weaponHandler[self.user.player] then
-      self:addToGroup(self.weaponGroup .. megaMan.weaponHandler[self.user.player].id)
+      self:addToGroup(self.weaponGroup .. tostring(megaMan.weaponHandler[self.user.player].id))
     end
   end
   self:addToGroup("freezable")
@@ -300,7 +355,8 @@ function protoSemiBuster:new(x, y, p, dir, skin)
   self.transform.x = (x or 0) - 5
   self.transform.y = (y or 0) - 5
   self:setRectangleCollision(10, 10)
-  self.tex = megautils.getResource(skin)
+  self.skin = skin
+  self.tex = megautils.getResource(self.skin)
   self.quad = quad(0, 0, 10, 10)
   self.side = dir or 1
   self.velocity.velx = self.side * 5
@@ -310,7 +366,7 @@ function protoSemiBuster:new(x, y, p, dir, skin)
 end
 
 function protoSemiBuster:draw()
-  self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
+  self.tex:draw(self.quad, math.floor(self.transform.x), math.floor(self.transform.y))
 end
 
 protoChargedBuster = weapon:extend()
@@ -322,7 +378,8 @@ function protoChargedBuster:new(x, y, p, dir, skin)
   self.transform.x = (x or 0) - 14
   self.transform.y = (y or 0) - 4
   self:setRectangleCollision(29, 8)
-  self.tex = megautils.getResource(skin)
+  self.skin = skin
+  self.tex = megautils.getResource(self.skin)
   self.anim = megautils.newAnimation("protoBusterGrid", {"1-2", 1}, 1/20)
   self.side = dir or 1
   self.velocity.velx = self.side * 6
@@ -342,12 +399,8 @@ function protoChargedBuster:act()
 end
 
 function protoChargedBuster:draw()
-  self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y)-1)
+  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)-1)
 end
-
-bassBuster = weapon:extend()
-
-bassBuster.autoClean = false
 
 weapon.removeGroups["B.BUSTER"] = {"bassBuster"}
 
@@ -365,6 +418,10 @@ weapon.colors["B.BUSTER"] = {
   }
 
 weapon.sevenWayAnim["B.BUSTER"] = true
+
+bassBuster = weapon:extend()
+
+bassBuster.autoClean = false
 
 function bassBuster:new(x, y, p, dir, t)
   bassBuster.super.new(self, p)
@@ -395,12 +452,8 @@ function bassBuster:act()
 end
 
 function bassBuster:draw()
-  love.graphics.draw(self.tex, math.round(self.transform.x)-1, math.round(self.transform.y)-1)
+  self.tex:draw(math.floor(self.transform.x)-1, math.floor(self.transform.y)-1)
 end
-
-megaBuster = weapon:extend()
-
-megaBuster.autoClean = false
 
 weapon.removeGroups["M.BUSTER"] = {"megaBuster", "megaChargedBuster"}
 
@@ -460,6 +513,10 @@ weapon.chargeColors["M.BUSTER"] = {
     }
   }
 
+megaBuster = weapon:extend()
+
+megaBuster.autoClean = false
+
 function megaBuster:new(x, y, p, dir)
   megaBuster.super.new(self, p)
   
@@ -480,7 +537,7 @@ function megaBuster:new(x, y, p, dir)
 end
 
 function megaBuster:draw()
-  self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
+  self.tex:draw(self.quad, math.floor(self.transform.x), math.floor(self.transform.y))
 end
 
 megaSemiBuster = weapon:extend()
@@ -510,7 +567,7 @@ function megaSemiBuster:act()
 end
 
 function megaSemiBuster:draw()
-  self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y)-3)
+  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)-3)
 end
 
 megaChargedBuster = weapon:extend()
@@ -542,12 +599,8 @@ function megaChargedBuster:act()
 end
 
 function megaChargedBuster:draw()
-  self.anim:draw(self.tex, math.round(self.transform.x)+(self.side == 1 and -8 or 0), math.round(self.transform.y)-3)
+  self.tex:draw(self.anim, math.floor(self.transform.x)+(self.side == 1 and -8 or 0), math.floor(self.transform.y)-3)
 end
-
-trebleBoost = weapon:extend()
-
-trebleBoost.autoClean = false
 
 weapon.removeGroups["T. BOOST"] = {"trebleBoost", "bassBuster"}
 
@@ -568,6 +621,10 @@ weapon.colors["T. BOOST"] = {
     one = {128, 0, 240},
     two = {112, 112, 112}
   }
+
+trebleBoost = weapon:extend()
+
+trebleBoost.autoClean = false
 
 function trebleBoost:new(x, y, p, side)
   trebleBoost.super.new(self, p)
@@ -647,12 +704,8 @@ function trebleBoost:act()
 end
 
 function trebleBoost:draw()
-  self.anims:draw(self.tex, math.round(self.transform.x)-6, math.round(self.transform.y)-12+(self.gravity >= 0 and 0 or 11))
+  self.tex:draw(self.anims, math.floor(self.transform.x)-6, math.floor(self.transform.y)-12+(self.gravity >= 0 and 0 or 11))
 end
-
-rushJet = weapon:extend()
-
-rushJet.autoClean = false
 
 weapon.removeGroups["RUSH JET"] = {"rushJet", "megaBuster", "bassBuster"}
 
@@ -714,14 +767,18 @@ weapon.colors["TANGO JET"] = {
     two = {255, 255, 255}
   }
 
+rushJet = weapon:extend()
+
+rushJet.autoClean = false
+
 function rushJet:new(x, y, p, side, skin)
   rushJet.super.new(self, p)
   self.transform.x = (x or 0) - 14
   self.transform.y = view.y
   self.toY = (y or 0) - 4
   self:setRectangleCollision(27, 8)
-  self.tex = megautils.getResource(skin) or megautils.loadResource(skin, skin)
   self.skin = skin
+  self.tex = megautils.getResource(skin)
   self.anims = animationSet()
   self.anims:add("spawn", megautils.newAnimation("rushGrid", {1, 1}))
   self.anims:add("spawnLand", megautils.newAnimation("rushGrid", {2, 1, 1, 1, 3, 1}, 1/20))
@@ -831,15 +888,11 @@ end
 
 function rushJet:draw()
   if (self.anims.current == "spawn" or self.anims.current == "spawnLand") and self.user then
-    self.anims:draw(self.tex, math.round(self.transform.x)-4, math.round(self.transform.y)+(self.user.gravity >= 0 and -16 or -6))
+    self.tex:draw(self.anims, math.floor(self.transform.x)-4, math.floor(self.transform.y)+(self.user.gravity >= 0 and -16 or -6))
   else
-    self.anims:draw(self.tex, math.round(self.transform.x)-4, math.round(self.transform.y)-12)
+    self.tex:draw(self.anims, math.floor(self.transform.x)-4, math.floor(self.transform.y)-12)
   end
 end
-
-rushCoil = weapon:extend()
-
-rushCoil.autoClean = false
 
 weapon.removeGroups["RUSH C."] = {"rushCoil", "megaBuster", "bassBuster", "rollBuster"}
 
@@ -901,14 +954,18 @@ weapon.colors["TANGO C."] = {
     two = {255, 255, 255}
   }
 
+rushCoil = weapon:extend()
+
+rushCoil.autoClean = false
+
 function rushCoil:new(x, y, p, side, skin)
   rushCoil.super.new(self, p)
   self.transform.x = (x or 0) - 10
   self.transform.y = view.y-8
   self.toY = (y or 0) - 9
   self:setRectangleCollision(20, 19)
-  self.tex = megautils.getResource(skin)
   self.skin = skin
+  self.tex = megautils.getResource(skin)
   self.anims = animationSet()
   self.anims:add("spawn", megautils.newAnimation("rushGrid", {1, 1}))
   self.anims:add("spawnLand", megautils.newAnimation("rushGrid", {2, 1, 1, 1, 3, 1}, 1/20))
@@ -989,12 +1046,8 @@ function rushCoil:act(dt)
 end
 
 function rushCoil:draw()
-  self.anims:draw(self.tex, math.round(self.transform.x)-8, math.round(self.transform.y)-12+(self.gravity >= 0 and 0 or 11))
+  self.tex:draw(self.anims, math.floor(self.transform.x)-8, math.floor(self.transform.y)-12+(self.gravity >= 0 and 0 or 11))
 end
-
-stickWeapon = weapon:extend()
-
-stickWeapon.autoClean = false
 
 weapon.removeGroups["STICK W."] = {"stickWeapon"}
 
@@ -1011,6 +1064,10 @@ weapon.colors["STICK W."] = {
     two = {255, 255, 255}
   }
 
+stickWeapon = weapon:extend()
+
+stickWeapon.autoClean = false
+
 function stickWeapon:new(x, y, p, dir)
   stickWeapon.super.new(self, p)
   self.transform.x = (x or 0) - 4
@@ -1023,5 +1080,5 @@ function stickWeapon:new(x, y, p, dir)
 end
 
 function stickWeapon:draw()
-  love.graphics.draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
+  self.tex:draw(math.floor(self.transform.x), math.floor(self.transform.y))
 end

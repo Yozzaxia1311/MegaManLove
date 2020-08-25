@@ -12,7 +12,6 @@ function gravFlip:new(x, y, w, h, dir)
   self.transform.y = y
   self:setRectangleCollision(w, h)
   self.dir = dir or 1
-  self.doEffect = false
 end
 
 function gravFlip:added()

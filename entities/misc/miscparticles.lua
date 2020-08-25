@@ -7,6 +7,18 @@ particle = entity:extend()
 
 particle.autoClean = false
 
+function particle.transfer(from, to)
+  particle.super.transfer(from, to)
+  
+  to.user = from.user
+  to._didCol = from._didCol
+  to.autoCollision = from.autoCollision
+  to.autoGravity = from.autoGravity
+  to.removeWhenOutside = from.removeWhenOutside
+  to.doAutoCollisionBeforeUpdate = from.doAutoCollisionBeforeUpdate
+  to.flipWithUser = from.flipWithUser
+end
+
 function particle:new(user)
   particle.super.new(self)
   
@@ -91,7 +103,7 @@ function slideParticle:update()
 end
 
 function slideParticle:draw()
-  self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
+  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y))
 end
 
 damageSteam = particle:extend()
@@ -125,7 +137,7 @@ function damageSteam:update()
 end
 
 function damageSteam:draw()
-  self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
+  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y))
 end
 
 airBubble = particle:extend()
@@ -166,7 +178,7 @@ function airBubble:update(dt)
 end
 
 function airBubble:draw()
-  self.quad:draw(self.tex, math.round(self.transform.x)-self.off, math.round(self.transform.y))
+  self.tex:draw(self.quad, math.floor(self.transform.x)-self.off, math.floor(self.transform.y))
 end
 
 harm = particle:extend()
@@ -192,15 +204,15 @@ function harm:update()
   if not self.user or self.user.isRemoved or self.timer == self.maxTime then
     megautils.removeq(self)
   else
-    self.transform.x = math.round(self.user.transform.x)+math.round(self.user.collisionShape.w/2)-12
-    self.transform.y = math.round(self.user.transform.y)+math.round(self.user.collisionShape.h/2)-12
+    self.transform.x = math.floor(self.user.transform.x)+math.floor(self.user.collisionShape.w/2)-12
+    self.transform.y = math.floor(self.user.transform.y)+math.floor(self.user.collisionShape.h/2)-12
     self.timer = math.min(self.timer+1, self.maxTime)
     self.canDraw.global = not self.user.canDraw.flash
   end
 end
 
 function harm:draw()
-  self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
+  self.tex:draw(self.quad, math.floor(self.transform.x), math.floor(self.transform.y))
 end
 
 deathExplodeParticle = particle:extend()
@@ -214,8 +226,8 @@ function deathExplodeParticle:new(x, y, p, angle, spd)
   self:setRectangleCollision(24, 24)
   self.tex = megautils.getResource("particles")
   self.anim = megautils.newAnimation("deathExplodeParticleGrid", {"1-5", 1}, 1/10)
-  self.velocity.velx = megautils.calcX(angle)*spd
-  self.velocity.vely = megautils.calcY(angle)*spd
+  self.velocity.velx = megautils.calcX(angle or 0)*(spd or 1)
+  self.velocity.vely = megautils.calcY(angle or 0)*(spd or 1)
 end
 
 function deathExplodeParticle:update(dt)
@@ -223,7 +235,7 @@ function deathExplodeParticle:update(dt)
 end
 
 function deathExplodeParticle:draw()
-  self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
+  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y))
 end
 
 function deathExplodeParticle.createExplosion(x, y, p)
@@ -267,7 +279,7 @@ function absorbParticle:update()
 end
 
 function absorbParticle:draw()
-  self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y), 0, 1, 1, 12, 12)
+  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y), 0, 1, 1, 12, 12)
 end
 
 function absorbParticle.createAbsorbtion(towards, spd)
@@ -336,7 +348,7 @@ function smallBlast:update()
 end
 
 function smallBlast:draw()
-  self.anim:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
+  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y))
 end
 
 blast = particle:extend()

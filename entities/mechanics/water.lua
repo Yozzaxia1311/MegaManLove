@@ -33,7 +33,7 @@ function splash:update()
 end
 
 function splash:draw()
-  self.anim:draw(self.tex, math.round(self.transform.x)+16, math.round(self.transform.y), self.rot, 1, 1, 16, 8)
+  self.tex:draw(self.anim, math.round(self.transform.x)+16, math.round(self.transform.y), self.rot, 1, 1, 16, 8)
 end
 
 water = basicEntity:extend()
@@ -46,9 +46,9 @@ end)
 
 function water:new(x, y, w, h, grav)
   water.super.new(self)
-  self.transform.x = x
-  self.transform.y = y
-  self:setRectangleCollision(w, h)
+  self.transform.x = x or 0
+  self.transform.y = y or 0
+  self:setRectangleCollision(w or 16, h or 16)
   self.current = false
   self.grav = grav or 0.4
 end
@@ -121,9 +121,9 @@ end)
 
 function space:new(x, y, w, h, grav)
   space.super.new(self)
-  self.transform.x = x
-  self.transform.y = y
-  self:setRectangleCollision(w, h)
+  self.transform.x = x or 0
+  self.transform.y = y or 0
+  self:setRectangleCollision(w or 16, h or 16)
   self.grav = grav or 0.4
 end
 

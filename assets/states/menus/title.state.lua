@@ -1,10 +1,11 @@
 local titleState = state:extend()
 
 function titleState:begin()
-  megautils.loadResource("assets/misc/title.png", "title")
   megautils.add(title)
   megautils.setMusicLock(false)
 end
+
+megautils.loadResource("assets/misc/title.png", "title")
 
 title = basicEntity:extend()
 
@@ -51,6 +52,7 @@ function title:update()
     self.s = 3
   elseif self.s == 3 then
     --self.timer = self.timer + 1
+    self.textTimer = math.wrap(self.textTimer+1, 0, 40)
     if self.timer == 400 then
       states.openRecord = "assets/demo.rd"
       megautils.add(fade, true, nil, nil, function(s)
@@ -66,19 +68,17 @@ function title:update()
             end
           megautils.gotoState()
         end)
-    end
-    self.textTimer = math.wrap(self.textTimer+1, 0, 40)
-    if control.startPressed[1] then
+    elseif control.startPressed[1] then
       megautils.stopMusic()
       self.drawText = false
-      megautils.transitionToState("assets/states/menus/menu.state.tmx")
+      megautils.transitionToState(globals.menuState)
     end
   end
 end
 
 function title:draw()
-  self.quad1:draw(self.tex, self.oneOff, self.transform.y)
-  self.quad2:draw(self.tex, self.twoOff, self.transform.y+115)
+  self.tex:draw(self.quad1, self.oneOff, self.transform.y)
+  self.tex:draw(self.quad2, self.twoOff, self.transform.y+115)
   if self.s == 3 then
     love.graphics.print(self.text, self.textPos, 208)
     if self.textTimer < 20 then

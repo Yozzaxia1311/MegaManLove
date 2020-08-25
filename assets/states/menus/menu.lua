@@ -12,11 +12,11 @@ function menuState:begin()
   end
 end
 
-menuSelect = basicEntity:extend()
-
 megautils.loadResource("assets/misc/menuSelect.png", "menuSelect")
 megautils.loadResource("assets/sfx/cursorMove.ogg", "cursorMove")
 megautils.loadResource("assets/sfx/selected.ogg", "selected")
+
+menuSelect = basicEntity:extend()
 
 function menuSelect:new()
   menuSelect.super.new(self)
@@ -50,7 +50,7 @@ function menuSelect:update()
         self.picked = true
         self.section = -1
         megautils.stopMusic()
-        megautils.transitionToState("assets/states/menus/stageSelect.state.tmx")
+        megautils.transitionToState(globals.stageSelectState)
       elseif self.pick == 1 then
         local data = save.load("save.sav") or {}
         data.defeats = globals.defeats
@@ -91,7 +91,7 @@ function menuSelect:update()
         self.picked = true
         self.section = -1
         globals.lastStateName = megautils.getCurrentState()
-        megautils.transitionToState("assets/states/menus/rebind.state.lua")
+        megautils.transitionToState(globals.rebindState)
       elseif self.pick == 6 then
         self.section = 2
         self.timer = 0
@@ -100,7 +100,7 @@ function menuSelect:update()
         self.picked = true
         self.section = -1
         megautils.stopMusic()
-        megautils.transitionToState("assets/states/menus/title.state.lua")
+        megautils.transitionToState(globals.titleState)
       end
     end
     self.transform.y = self.offY + self.pick*16
@@ -140,7 +140,7 @@ end
 
 function menuSelect:draw()
   if self.section == 0 then
-    love.graphics.draw(self.tex, self.transform.x, self.transform.y)
+    self.tex:draw(self.transform.x, self.transform.y)
   end
   if self.section ~= 1 or self.timer > 10 then
     love.graphics.print(megautils.getScale(), 96, (18*8)-1)

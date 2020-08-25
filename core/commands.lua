@@ -2,6 +2,13 @@ convar["cheats"] = {
   helptext = "enable cheats",
   flags = {},
   value = 0,
+  fun = function(arg)
+      if numberSanitize(arg) == 1 then
+        console.print("Press Control + O to quick-save context")
+        console.print("Press Control + P to quick-load context")
+        console.print("Press Control + R to start recording")
+      end
+    end
 }
 convar["fullscreen"] = {
   helptext = "fullscreen mode",
@@ -171,12 +178,11 @@ concmd["rec"] = {
   helptext = "record after the state switches",
   flags = {},
   fun = function(cmd)
-      if states.recordOnSwitch then
-        states.recordOnSwitch = false
-        console.print("Recording disabled")
+      if control.recordInput then
+        console.print("Recording already in progress.")
       else
-        states.recordOnSwitch = true
-        console.print("Recording on state switch...")
+        control.startRecQ()
+        console.print("Recording...")
       end
     end
 }
@@ -196,9 +202,8 @@ concmd["recsave"] = {
   flags = {},
   fun = function(cmd)
       if not cmd[2] then return end
-      if not control.recordInput and table.length(control.record) > 0 then
-        control.recordName = cmd[2]
-        control.finishRecord()
+      if not control.recordInput and table.length(control.record.data) > 0 then
+        control.finishRecord(cmd[2] .. ".rd")
         console.print("Recording saved")
       else
         console.print("No recording ready to save")
@@ -212,7 +217,7 @@ concmd["recdel"] = {
   fun = function(cmd)
       if not cmd[2] then return end
       if not love.filesystem.getInfo(cmd[2] .. ".rd") then
-        console.print("No such record file \""..cmd[2].."\"")
+        console.print("No such record file \"" .. cmd[2] .. "\"")
       else
         love.filesystem.remove(cmd[2] .. ".rd")
         console.print("Recording deleted")
@@ -226,45 +231,11 @@ concmd["recopen"] = {
   fun = function(cmd)
       if not cmd[2] then return end
       if love.filesystem.getInfo(cmd[2] .. ".rd") then
-        states.openRecord = cmd[2] .. ".rd"
-        megautils.add(fade, true, nil, nil, function(s)
-            megautils.gotoState(nil, function()
-                megautils.stopMusic()
-                love.audio.stop()
-                control.updateDemoFunc = function()
-                    if console.state == 1 and control.recPos >= control.record.last then
-                      console.close()
-                      console.y = -math.huge
-                    end
-                    return control.anyPressedDuringRec
-                  end
-              end)
-          end)
-        console.close()
-        console.y = -math.huge
+        control.openRecQ(cmd[2] .. ".rd")
       else
-        console.print("No such record file \""..cmd[2].."\"")
+        console.print("No such record file \"" .. cmd[2] .. "\"")
       end
     end
-}
-
-concmd["defbinds"] = {
-  helptext = "load default input binds",
-  flags = {"client"},
-  fun = function(cmd)
-      control.defaultBinds()
-      console.print("Now using default input binds")
-    end
-}
-
-concmd["opendir"] = {
-  helptext = "open save directory",
-  flags = {"client"},
-  fun = function(cmd)
-    if not control.demo then
-      love.system.openURL(love.filesystem.getSaveDirectory())
-    end
-  end
 }
 
 concmd["recs"] = {
@@ -291,6 +262,25 @@ concmd["recs"] = {
         console.print(result[i]:sub(1, -4))
       end
     end
+}
+
+concmd["defbinds"] = {
+  helptext = "load default input binds",
+  flags = {"client"},
+  fun = function(cmd)
+      control.defaultBinds()
+      console.print("Now using default input binds")
+    end
+}
+
+concmd["opendir"] = {
+  helptext = "open save directory",
+  flags = {"client"},
+  fun = function(cmd)
+    if not control.demo then
+      love.system.openURL(love.filesystem.getSaveDirectory())
+    end
+  end
 }
 
 concmd["echo"] = {
@@ -336,6 +326,7 @@ concmd["state"] = {
       megautils.resetGameObjects = true
       megautils.reloadState = true
       if cmd[3] then globals.overrideCheckpoint = cmd[3] end
+      cscreen.setFade(1)
       megautils.gotoState(map)
     end
 }
@@ -349,6 +340,7 @@ concmd["resetstate"] = {
       megautils.resetGameObjects = true
       megautils.reloadState = true
       if cmd[2] then globals.overrideCheckpoint = cmd[2] end
+      cscreen.setFade(1)
       megautils.gotoState(megautils.getCurrentState())
     end
 }
@@ -375,6 +367,71 @@ concmd["states"] = {
       end
       for i=1, #result do
         console.print(result[i]:sub(1, -11))
+      end
+    end
+}
+
+concmd["contextsave"] = {
+  helptext = "save context",
+  flags = {"cheat"},
+  fun = function(cmd)
+      if not cmd[2] then return end
+      serQueue = function(s)
+          save.save(cmd[2] .. ".cntx", s)
+          console.print("Context saved")
+        end
+    end
+}
+
+concmd["contextopen"] = {
+  helptext = "open context file",
+  flags = {"cheat"},
+  fun = function(cmd)
+      if not cmd[2] then return end
+      if love.filesystem.getInfo(cmd[2] .. ".cntx") then
+        deserQueue = save.load(cmd[2] .. ".cntx")
+      else
+        console.print("No such context file \"" .. cmd[2] .. "\"")
+      end
+    end
+}
+
+concmd["contextdel"] = {
+  helptext = "delete context",
+  flags = {},
+  fun = function(cmd)
+      if not cmd[2] then return end
+      if not love.filesystem.getInfo(cmd[2] .. ".cntx") then
+        console.print("No such context file \"" .. cmd[2] .. "\"")
+      else
+        love.filesystem.remove(cmd[2] .. ".cntx")
+        console.print("Context deleted")
+      end
+    end
+}
+
+concmd["contexts"] = {
+  helptext = "gives a list of contexts (savestates)",
+  flags = {},
+  fun = function(cmd)
+      local check
+      if cmd[2] then
+        check = cmd[2]
+        if not love.filesystem.getInfo(check) then console.print("No such directory \""..cmd[2].."\"") return end
+      end
+      local result = iterateDirs(function(f)
+          return f:sub(-5) == ".cntx"
+        end, check)
+      if #result == 0 then
+        if check then
+          console.print("No contexts in directory \""..cmd[2].."\"")
+        else
+          console.print("No contexts exist")
+        end
+        return
+      end
+      for i=1, #result do
+        console.print(result[i]:sub(1, -6))
       end
     end
 }

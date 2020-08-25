@@ -219,6 +219,7 @@ end
 
 function Layer.spritelayer:_init(map)
   Layer.base._init(self, map)
+  
   self:_initAnimations()
   self._sprites = {
     map = {},
@@ -328,7 +329,7 @@ function Layer.spritelayer:draw()
       if self._sprites.map[y] and self._sprites.map[y][x] and self._sprites.quads[y] and self._sprites.quads[y][x] then
         local tileset = self._map:getTileset(self._sprites.map[y][x])
         if tileset.image then
-          love.graphics.draw(self._map._images[tileset.image], self._sprites.quads[y][x], x*self._map.tilewidth, y*self._map.tileheight)
+          self._map._images[tileset.image]:draw(self._sprites.quads[y][x], x*self._map.tilewidth, y*self._map.tileheight)
         end
       end
     end
@@ -342,7 +343,10 @@ Layer.tilelayer.__index = Layer.tilelayer
 
 function Layer.tilelayer:_init(map)
   Layer.spritelayer._init(self, map)
+  
   if self.encoding == "base64" then
+    error("LuaJIT FFI is not allowed; use CSV instead.")
+    
     assert(require "ffi", "Compressed maps require LuaJIT FFI.\nPlease Switch your interperator to LuaJIT or your Tile Layer Format to \"CSV\".")
     if self.chunks then
       for k, v in ipairs(self.chunks) do
@@ -496,6 +500,7 @@ Layer.objectgroup.__index = Layer.objectgroup
 
 function Layer.objectgroup:_init(map)
   Layer.spritelayer._init(self, map)
+  
   for _, object in ipairs(self.objects) do
     if object.gid and object.visible then
       self:_setSprite(object.x, object.y - object.height, object.gid, true)
@@ -508,7 +513,7 @@ Layer.imagelayer = setmetatable({}, Layer.base)
 Layer.imagelayer.__index = Layer.imagelayer
 
 function Layer.imagelayer:draw()
-  love.graphics.draw(self._map._images[self.image], self.offsetx, self.offsety)
+  self._map._images[self.image]:draw(self.offsetx, self.offsety)
 end
 
 -- Represents a layer group in an exported Tiled map.
@@ -517,9 +522,10 @@ Layer.group.__index = Layer.group
 
 function Layer.group:_init(map)
   Layer.base._init(self, map)
+  
   for _, layer in ipairs(self.layers) do
     setmetatable(layer, Layer[layer.type])
-    layer:_init(map)
+    layer:_init(self._map)
   end
   setmetatable(self.layers, getByNameMetatable)
 end
@@ -553,7 +559,7 @@ Map.__index = Map
 function Map:_loadImage(relativeImagePath)
   if self._images[relativeImagePath] then return end
   local imagePath = formatPath(self.dir .. relativeImagePath)
-  self._images[relativeImagePath] = love.graphics.newImage(imagePath)
+  self._images[relativeImagePath] = image(imagePath)
 end
 
 -- Loads all of the images used by the map.
@@ -588,7 +594,7 @@ end
 
 function Map:_init(path)
   self.dir = splitPath(path)
-  self.quadCache = {}
+  self._quadCache = {}
   self.tilesetCache = {}
   self.tileCache = {}
   self.path = path
@@ -617,15 +623,14 @@ function Map:_getTileQuad(gid, frame)
   local gridWidth = math.floor(tileset.imagewidth / (tileset.tilewidth + tileset.spacing))
   local x, y = indexToCoordinates(id + 1, gridWidth)
   id = id + tileset.firstgid
-  if not self.quadCache[id] then
-    self.quadCache[id] = love.graphics.newQuad(
+  if not self._quadCache[id] then
+    self._quadCache[id] = quad(
       x * (tileset.tilewidth + tileset.spacing),
       y * (tileset.tileheight + tileset.spacing),
-      tileset.tilewidth, tileset.tileheight,
-      tileset.imagewidth, tileset.imageheight
+      tileset.tilewidth, tileset.tileheight
     )
   end
-  return self.quadCache[id]
+  return self._quadCache[id]
 end
 
 -- Gets the quad of the tile with the given global ID.
@@ -706,7 +711,6 @@ function Map:drawBackground()
   if self.backgroundcolor then
     love.graphics.setColor(self.backgroundcolor[1], self.backgroundcolor[2], self.backgroundcolor[3], 1)
     love.graphics.rectangle("fill", view.x-1, view.y-1, view.w+1, view.h+1)
-    love.graphics.setColor(1, 1, 1, 1)
   end
 end
 
@@ -724,14 +728,26 @@ function Map:draw()
   end
 end
 
+function Map:release()
+  for k, v in pairs(self._quadCache) do
+    v:release()
+  end
+  self._quadCache = nil
+  
+  for k, v in pairs(self._images) do
+    v:release()
+  end
+  self._images = nil
+end
+
 local function finalXML2LuaTable(str, f)
-  str = string.gsub(str, "<layer", "<layer type=\"tilelayer\"")
-  str = string.gsub(str, "<objectgroup", "<layer type=\"objectgroup\"")
-  str = string.gsub(str, "<imagelayer", "<layer type=\"imagelayer\"")
-  str = string.gsub(str, "<group", "<layer type=\"group\"")
-  str = string.gsub(str, "</objectgroup", "</layer")
-  str = string.gsub(str, "</imagelayer", "</layer")
-  str = string.gsub(str, "</group", "</layer")
+  str = str:gsub("<layer", "<layer type=\"tilelayer\"")
+  str = str:gsub("<objectgroup", "<layer type=\"objectgroup\"")
+  str = str:gsub("<imagelayer", "<layer type=\"imagelayer\"")
+  str = str:gsub("<group", "<layer type=\"group\"")
+  str = str:gsub("</objectgroup", "</layer")
+  str = str:gsub("</imagelayer", "</layer")
+  str = str:gsub("</group", "</layer")
   
   local result = xml2lua:parse(str).map
   
@@ -1265,32 +1281,20 @@ local function finalXML2LuaTable(str, f)
   return result
 end
 
-cartographer.cache = {}
-
 -- Loads a Tiled map from a tmx file.
-function cartographer.load(path)
+function cartographer.load(path, noInitLayers)
   if not path then error('No map path provided', 2) end
+  
   local map
-  local i
-  for k, v in ipairs(cartographer.cache) do
-    if v[2] == path then
-      i = k
-      break
-    end
+  
+  if path:sub(path:len()-3, path:len()) == ".tmx" then
+    map = setmetatable(finalXML2LuaTable(love.filesystem.read(path), path), Map)
+  else
+    map = setmetatable(love.filesystem.load(path)(), Map)
   end
-  if not i then
-    if #cartographer.cache == mapCacheSize then
-      table.remove(cartographer.cache, 1)
-    end
-    if path:sub(path:len()-3, path:len()) == ".tmx" then
-      cartographer.cache[#cartographer.cache+1] = {finalXML2LuaTable(love.filesystem.read(path), path), path}
-    else
-      cartographer.cache[#cartographer.cache+1] = {love.filesystem.read(path)(), path}
-    end
-    i = #cartographer.cache
-  end
-  map = setmetatable(table.clone(cartographer.cache[i][1]), Map)
-  map:_init(path)
+  
+  map:_init(path, noInitLayers)
+  
   return map
 end
 

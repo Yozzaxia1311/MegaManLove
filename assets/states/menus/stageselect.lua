@@ -5,12 +5,12 @@ function stageSelectState:begin()
   love.graphics.setBackgroundColor(0, 0, 0, 1)
 end
 
-stageSelect = basicEntity:extend()
-
 megautils.loadResource("assets/misc/select.png", "mugshots")
 megautils.loadResource("assets/sfx/ascend.ogg", "selected")
 megautils.loadResource("assets/sfx/cursorMove.ogg", "cursorMove")
 megautils.loadResource(0, 0, 63, 62, 2, "megaManGrid")
+
+stageSelect = basicEntity:extend()
 
 function stageSelect:new()
   stageSelect.super.new(self)
@@ -56,8 +56,6 @@ function stageSelect:new()
   self.timer = 0
   self.oldX = self.transform.x
   self.oldY = self.transform.y
-  self.oldNewX = 0
-  self.oldNewY = 0
   self.x = 1
   self.y = 1
   self.transform.x = self.oldX + self.x*80
@@ -70,6 +68,10 @@ end
 
 function stageSelect:added()
   self:addToGroup("freezable")
+end
+
+function stageSelect:removed()
+  love.graphics.setBackgroundColor(0, 0, 0, 1)
 end
 
 function stageSelect:update()
@@ -169,7 +171,7 @@ function stageSelect:update()
     end
   elseif control.selectPressed[1] and not self.stop then
     self.stop = true
-    megautils.transitionToState("assets/states/menus/menu.state.tmx")
+    megautils.transitionToState(globals.menuState)
     megautils.stopMusic()
   else
     self.timer = math.wrap(self.timer+1, 0, 14)
@@ -181,37 +183,37 @@ end
 
 function stageSelect:draw()
   if not checkFalse(globals.defeats) then
-    self.anims:draw(megaMan.getSkin(1).texture, 32+(1*81), 32+(1*64), 0, 1, 1, 16, 15)
+    megaMan.getSkin(1).texture:draw(self.anims, 32+(1*81), 32+(1*64), 0, 1, 1, 16, 15)
     
     if false then -- For select slot 1, 1
-      self.quad11:draw(self.tex, 32+(0*81), 32+(0*64))
+      self.tex:draw(self.quad11, 32+(0*81), 32+(0*64))
     end
     if false then -- For select slot 2, 1
-      self.quad21:draw(self.tex, 32+(1*81), 32+(0*64))
+      self.tex:draw(self.quad21, 32+(1*81), 32+(0*64))
     end
     if false then -- For select slot 3, 1
-      self.quad31:draw(self.tex, 32+(2*81), 32+(0*64))
+      self.tex:draw(self.quad31, 32+(2*81), 32+(0*64))
     end
     if false then -- For select slot 1, 2
-      self.quad12:draw(self.tex, 32+(0*81), 32+(1*64))
+      self.tex:draw(self.quad12, 32+(0*81), 32+(1*64))
     end
     if not globals.defeats.stickMan then -- For select slot 3, 2
-      self.quad32:draw(self.tex, 32+(2*81), 32+(1*64))
+      self.tex:draw(self.quad32, 32+(2*81), 32+(1*64))
     end
     if false then -- For select slot 1, 3
-      self.quad13:draw(self.tex, 32+(0*81), 32+(3*64))
+      self.tex:draw(self.quad13, 32+(0*81), 32+(3*64))
     end
     if false then -- For select slot 2, 3
-      self.quad23:draw(self.tex, 32+(1*81), 32+(3*64))
+      self.tex:draw(self.quad23, 32+(1*81), 32+(3*64))
     end
     if false then -- For select slot 3, 3
-      self.quad33:draw(self.tex, 32+(2*81), 32+(3*64))
+      self.tex:draw(self.quad33, 32+(2*81), 32+(3*64))
     end
   else
-    self.wilyQuad:draw(self.tex, 32+(1*81), 32+(1*64))
+    self.tex:draw(self.wilyQuad, 32+(1*81), 32+(1*64))
   end
   if (self.blink and not self.stop) or self.selected then
-    self.blinkQuad:draw(self.tex, self.transform.x, self.transform.y)
+    self.tex:draw(self.blinkQuad, self.transform.x, self.transform.y)
   end
 end
 

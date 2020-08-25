@@ -37,10 +37,10 @@ end
 function disclaimer:update()
   if self.check then
     if control.startPressed[1] then
-      megautils.transitionToState("assets/states/menus/title.state.lua")
-    elseif lastPressed and lastPressed[2] == "escape" then
+      megautils.transitionToState(globals.titleState)
+    elseif lastPressed.input == "escape" then
       globals.sendBackToDisclaimer = true
-      megautils.transitionToState("assets/states/menus/rebind.state.lua")
+      megautils.transitionToState(globals.rebindState)
     end
   end
   self.timer = self.timer + 1
@@ -63,9 +63,9 @@ end
 
 function disclaimer:draw()
   love.graphics.setColor(self.colors[self.cycler][1]/255, self.colors[self.cycler][2]/255, self.colors[self.cycler][3]/255, 1)
-  love.graphics.draw(self.t, 40, 150)
-  love.graphics.draw(self.t, 120, 150)
-  love.graphics.draw(self.t, 200, 150)
+  self.t:draw(40, 150)
+  self.t:draw(120, 150)
+  self.t:draw(200, 150)
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.setFont(mmFont)
   love.graphics.printf(self.disclaimerText, 4, 16, 248, "center")

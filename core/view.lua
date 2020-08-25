@@ -1,5 +1,21 @@
 view = {}
 
+function view.ser()
+  return {
+      x=view.x,
+      y=view.y,
+      w=view.w,
+      h=view.h,
+      scale=view.scale
+    }
+end
+
+function view.deser(t)
+  view.init(t.w, t.h, t.scale)
+  view.x = t.x
+  view.y = t.y
+end
+
 function view.init(sw, sh, s)
   view.x = 0
   view.y = 0

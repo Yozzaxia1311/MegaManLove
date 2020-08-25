@@ -13,7 +13,8 @@ function parallax:new(x, y, w, h, bg, a, as, aw, ah, spdMultX, spdMultY, sx, sy,
   self.transform.x = x or 0
   self.transform.y = y or 0
   self:setRectangleCollision(w or 64, h or 64)
-  self.tex = megautils.loadResource(bg, bg)
+  self.bg = bg
+  self.tex = megautils.loadResource(self.bg, self.bg)
   if a then
     local frames = {}
     for y=1, math.floor(self.tex:getHeight()/ah) do
@@ -22,12 +23,12 @@ function parallax:new(x, y, w, h, bg, a, as, aw, ah, spdMultX, spdMultY, sx, sy,
         frames[#frames+1] = y
       end
     end
-    if not megautils.getResource(bg .. "Grid") then
-      megautils.loadResource(0, 0, aw, ah, bg .. "Grid")
+    if not megautils.getResource(self.bg .. "Grid") then
+      megautils.loadResource(0, 0, aw, ah, self.bg .. "Grid")
     end
     self.animWidth = aw
     self.animHeight = ah
-    self.anim = megautils.newAnimation(bg .. "Grid", frames, as or 0.5)
+    self.anim = megautils.newAnimation(self.bg .. "Grid", frames, as or 0.5)
   end
   self.spdMultX = spdMultX or 0.5
   self.spdMultY = spdMultY or 0.5
@@ -82,9 +83,9 @@ function parallax:draw()
         for y=self.transform.y-imgh, self.transform.y+self.collisionShape.h, imgh do
           if rectOverlapsRect(x+self.offX, y+self.offY, imgw, imgh, view.x, view.y, view.w, view.h) then
             if self.anim then
-              self.anim:draw(self.tex, x+math.floor(self.offX), y+math.floor(self.offY))
+              self.tex:draw(self.anim, x+math.floor(self.offX), y+math.floor(self.offY))
             else
-              love.graphics.draw(self.tex, x+math.floor(self.offX), y+math.floor(self.offY))
+              self.tex:draw(x+math.floor(self.offX), y+math.floor(self.offY))
             end
           end
         end
@@ -98,9 +99,9 @@ function parallax:draw()
       for x=self.transform.x-imgw, self.transform.x+self.collisionShape.w, imgw do
         if rectOverlapsRect(x+self.offX, self.offY, imgw, imgh, view.x, view.y, view.w, view.h) then
           if self.anim then
-            self.anim:draw(self.tex, x+math.floor(self.offX), math.floor(self.offY))
+            self.tex:draw(self.anim, x+math.floor(self.offX), math.floor(self.offY))
           else
-            love.graphics.draw(self.tex, x+math.floor(self.offX), math.floor(self.offY))
+            self.tex:draw(x+math.floor(self.offX), math.floor(self.offY))
           end
         end
       end
@@ -113,9 +114,9 @@ function parallax:draw()
       for y=self.transform.y-imgh, self.transform.y+self.collisionShape.h, imgh do
         if rectOverlapsRect(self.offX, y+self.offY, imgw, imgh, view.x, view.y, view.w, view.h) then
           if self.anim then
-            self.anim:draw(self.tex, math.floor(self.offX), y+math.floor(self.offY))
+            self.tex:draw(self.anim, math.floor(self.offX), y+math.floor(self.offY))
           else
-            love.graphics.draw(self.tex, math.floor(self.offX), y+math.floor(self.offY))
+            self.tex:draw(math.floor(self.offX), y+math.floor(self.offY))
           end
         end
       end
@@ -128,9 +129,9 @@ function parallax:draw()
       for y=self.transform.y-imgh, self.transform.y+self.collisionShape.h, imgh do
         if rectOverlapsRect(self.offX, self.offY, imgw, imgh, view.x, view.y, view.w, view.h) then
           if self.anim then
-            self.anim:draw(self.tex, math.floor(self.offX), math.floor(self.offY))
+            self.tex:draw(self.anim, math.floor(self.offX), math.floor(self.offY))
           else
-            love.graphics.draw(self.tex, math.floor(self.offX), math.floor(self.offY))
+            self.tex:draw(math.floor(self.offX), math.floor(self.offY))
           end
         end
       end

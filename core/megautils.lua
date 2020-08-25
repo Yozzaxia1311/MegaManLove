@@ -1,5 +1,95 @@
 megautils = {}
 
+function megautils.ser()
+  local result = {}
+  local callbacks = {
+      "reloadStateFuncs",
+      "cleanFuncs",
+      "resetGameObjectsFuncs",
+      "initEngineFuncs",
+      "addMapFuncs",
+      "removeMapFuncs",
+      "sectionChangeFuncs",
+      "difficultyChangeFuncs",
+      "postAddObjectsFuncs",
+      "skinChangeFuncs",
+      "playerCreatedFuncs",
+      "playerTransferFuncs",
+      "playerGroundFuncs",
+      "playerAirFuncs",
+      "playerSlideFuncs",
+      "playerClimbFuncs",
+      "playerKnockbackFuncs",
+      "playerTrebleFuncs",
+      "playerInteractedWithFuncs",
+      "playerDeathFuncs",
+      "playerAttemptWeaponFuncs",
+      "playerPauseFuncs",
+    }
+  
+  for k, v in ipairs(callbacks) do
+    result[k] = v
+  end
+  
+  result._q = megautils._q
+  result._ranFiles = megautils._ranFiles
+  result._frozen = megautils._frozen
+  result.shake = megautils.shake
+  result.shakeX = megautils.shakeX
+  result.shakeY = megautils.shakeY
+  result.shakeSide = megautils.shakeSide
+  result.shakeTimer = megautils.shakeTimer
+  result.maxShakeTime = megautils.maxShakeTime
+  result.shakeLength = megautils.shakeLength
+  
+  return result
+end
+
+function megautils.deser(t)
+  local callbacks = {
+      "reloadStateFuncs",
+      "cleanFuncs",
+      "resetGameObjectsFuncs",
+      "initEngineFuncs",
+      "addMapFuncs",
+      "removeMapFuncs",
+      "sectionChangeFuncs",
+      "difficultyChangeFuncs",
+      "postAddObjectsFuncs",
+      "skinChangeFuncs",
+      "playerCreatedFuncs",
+      "playerTransferFuncs",
+      "playerGroundFuncs",
+      "playerAirFuncs",
+      "playerSlideFuncs",
+      "playerClimbFuncs",
+      "playerKnockbackFuncs",
+      "playerTrebleFuncs",
+      "playerInteractedWithFuncs",
+      "playerDeathFuncs",
+      "playerAttemptWeaponFuncs",
+      "playerPauseFuncs",
+    }
+  
+  for k, v in ipairs(callbacks) do
+    megautils[k] = t[k]
+  end
+  
+  megautils._q = t._q
+  megautils._frozen = t._frozen
+  megautils.shake = t.shake
+  megautils.shakeX = t.shakeX
+  megautils.shakeY = t.shakeY
+  megautils.shakeSide = t.shakeSide
+  megautils.shakeTimer = t.shakeTimer
+  megautils.maxShakeTime = t.maxShakeTime
+  megautils.shakeLength = t.shakeLength
+    
+  for k, v in ipairs(t._ranFiles) do
+    megautils.runFile(v, true)
+  end
+end
+
 --Game / state callback functions.
 --[[
   Examples:
@@ -202,20 +292,18 @@ function megautils.disableConsole()
   useConsole = false
 end
 
-megautils._runFileOnce = {}
+megautils._ranFiles = {}
 
-function megautils.runFile(path, again)
-  if again then
-    return love.filesystem.load(path)()
-  elseif not megautils._runFileOnce[path] then
-    local ret = love.filesystem.load(path)()
-    megautils._runFileOnce[path] = ret or -42
-  end
-  
-  if megautils._runFileOnce[path] == -42 then
-    return
+function megautils.runFile(path, runOnce)
+  if runOnce then
+    if not table.contains(megautils._ranFiles, path) then
+      return love.filesystem.load(path)()
+    end
   else
-    return megautils._runFileOnce[path]
+    if not table.contains(megautils._ranFiles, path) then
+      megautils._ranFiles[#megautils._ranFiles+1] = path
+    end
+    return love.filesystem.load(path)()
   end
 end
 
@@ -230,7 +318,7 @@ function megautils.resetGame(s, saveSfx, saveMusic)
   megautils.resetGameObjects = true
   megautils.unload()
   initEngine()
-  states.set(s or "assets/states/menus/disclaimer.state.lua")
+  states.set(s or globals.disclaimerState)
 end
 
 function megautils.getResource(nick)
@@ -351,50 +439,44 @@ function megautils.newAnimation(gnick, a, t, eFunc)
   return anim8.newAnimation(megautils.getResource(gnick)(unpack(a)), t or 1, eFunc)
 end
 
-megautils._curM = nil
-megautils._lockM = false
-megautils._musicQueue = nil
-
-function megautils.checkMusicQueue()
-  if megautils._musicQueue then
-    megautils._playMusic(unpack(megautils._musicQueue))
-    megautils._musicQueue = nil
-  end
+function megautils.setMusicLock(w)
+  mmMusic.setLock(w)
 end
 
-function megautils.setMusicLock(w)
-  megautils._lockM = w
+function megautils.isMusicLocked()
+  return mmMusic.locked
 end
 
 function megautils.getCurrentMusic()
-  return megautils._curM
+  return mmMusic.music
 end
 
 function megautils.playMusic(...)
-  megautils._musicQueue = {...}
-end
-
-function megautils._playMusic(path, loop, lp, lep, vol)
-  if megautils._lockM or (megautils._curM and megautils._curM.id == path and not megautils._curM:stopped()) then return end
-  
-  megautils.stopMusic()
-  
-  megautils._curM = mmMusic(love.audio.newSource(path, "stream"))
-  megautils._curM.id = path
-  megautils._curM.playedVol = vol
-  megautils._curM:play(loop, lp, lep, vol)
+  mmMusic.playq(...)
 end
 
 function megautils.stopMusic()
-  if not megautils._lockM then
-    if megautils._musicQueue then
-      megautils._musicQueue = nil
-    end
-    if megautils._curM then
-      megautils._curM:pause()
-      megautils._curM = nil
-    end
-  end
+  mmMusic.stop()
+end
+
+function megautils.musicIsStopped()
+  return mmMusic.stopped()
+end
+
+function megautils.pauseMusic()
+  mmMusic.pause()
+end
+
+function megautils.unpauseMusic()
+  mmMusic.unpause()
+end
+
+function megautils.setMusicLooping(w)
+  mmMusic.setLooping(w)
+end
+
+function megautils.musicIsLooping()
+  return mmMusic.isLooping()
 end
 
 function megautils.playSound(p, l, v, stack)
@@ -418,6 +500,9 @@ function megautils.playSoundFromFile(p, l, v, stack)
     s:stop()
   end
   if not s or megautils._curS.id ~= p then
+    if s then
+      s:release()
+    end
     s = love.audio.newSource(p, "static")
   end
   s:setLooping(l == true)
@@ -452,13 +537,6 @@ function megautils.stopAllSounds()
   end
 end
 
-function megautils.update(self, dt)
-  if megautils._curM then
-    megautils._curM:update()
-  end
-  self.system:update(dt)
-end
-
 function megautils.unload()
   for k, v in pairs(megautils.cleanFuncs) do
     if type(v) == "function" then
@@ -469,8 +547,7 @@ function megautils.unload()
   end
   megautils.cleanCallbacks()
   megautils.unloadAllResources()
-  cartographer.cache = {}
-  megautils._runFileOnce = {}
+  megautils._ranFiles = {}
   megautils._frozen = {}
 end
 
@@ -486,8 +563,8 @@ function megautils.getCurrentState()
   return states.current
 end
 
-function megautils.transitionToState(s, before, after)
-  local tmp = megautils.add(fade, true, nil, nil, function(se)
+function megautils.transitionToState(s, before, after, gap)
+  local tmp = megautils.add(fade, true, gap, nil, function(se)
       megautils.gotoState(s, before, after)
     end)
 end
@@ -526,6 +603,10 @@ end
 
 function megautils.state()
   return states.currentState
+end
+
+function megautils.entityFromID(id)
+  return states.currentState.system:entityFromID(id)
 end
 
 function megautils.add(o, ...)

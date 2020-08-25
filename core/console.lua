@@ -20,6 +20,7 @@ console = {
   lines = {},
   inputList = {},
   aliases = {},
+  font = love.graphics.newFont()
 }
 
 function console.ser()
@@ -30,15 +31,15 @@ function console.ser()
     inputCycle=console.inputCycle,
     state=console.state,
     wait=console.wait,
-    waitBuffer=table.clone(console.waitBuffer),
+    waitBuffer=console.waitBuffer,
     x=console.x,
     y=console.y,
     w=console.w,
     h=console.h,
-    ignoreKeys=table.clone(console.ignoreKeys),
-    lines=table.clone(console.lines),
-    inputList=table.clone(console.inputList),
-    aliases=table.clone(console.aliases)
+    ignoreKeys=console.ignoreKeys,
+    lines=console.lines,
+    inputList=console.inputList,
+    aliases=console.aliases
   }
 end
 
@@ -392,7 +393,7 @@ function console.update(dt)
       if console.wait > 0 then break end
     end
   end
-  while #console.lines > 50 do
+  while #console.lines > 25 do
     table.remove(console.lines, 1)
   end
 end
@@ -426,7 +427,7 @@ function console.draw()
   local oldFont = love.graphics.getFont()
   local lineMax = math.floor(6.67*console.scale)
 
-  love.graphics.setFont(consoleFont)
+  love.graphics.setFont(console.font)
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.setColor(0, 0, 0, 0.95)
   love.graphics.rectangle("fill", console.x, console.y, console.w, console.h)

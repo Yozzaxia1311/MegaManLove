@@ -1,26 +1,39 @@
-splash = love.graphics.newImage("assets/misc/splash.bmp")
+-- Engine globals.
+splash = "assets/misc/splash.bmp"
+borderLeft = "assets/misc/borderLeft.png"
+borderRight = "assets/misc/borderRight.png"
 isMobile = love.system.getOS() == "Android" or love.system.getOS() == "iOS"
+deadZone = 0.8
+defaultFPS = 60
+defaultFramerate = 1/defaultFPS
+mapCacheSize = 2
+extraSkinCacheSize = 1 -- Increase this if you're using a lot of skins at once outside the boundaries of `maxPlayerCount`
+clampSkinShootOffsets = true
+useConsole = love.keyboard
+mmFont = love.graphics.newFont("assets/misc/mm.ttf", 8)
+maxPlayerCount = 4
+maxLives = 10
+maxETanks = 10
+maxWTanks = 10
 
 -- Splash screen
-if not isMobile and love.graphics and love.graphics.isActive() then
-  local s = splash
+if not isMobile and love.graphics then
+  local s = love.graphics.newImage(splash)
   love.graphics.clear(0, 0, 0, 1)
   love.graphics.draw(s, (love.graphics.getWidth()/2)-(s:getWidth()/2), (love.graphics.getHeight()/2)-(s:getHeight()/2))
   love.graphics.present()
+  s:release()
 end
 
-io.stdout:setvbuf("no")
-collectgarbage("setpause", 100)
-
-borderLeft = love.graphics.newImage("assets/misc/borderLeft.jpg")
-borderRight = love.graphics.newImage("assets/misc/borderRight.jpg")
+serQueue = nil
+deserQueue = nil
 
 keyboardCheck = {}
 gamepadCheck = {}
 
-lastPressed = nil
+lastPressed = {type=nil, input=nil, name=nil}
+lastTouch = {x=nil, y=nil, id=nil, pressure=nil, dx=nil, dy=nil}
 lastTextInput = nil
-lastTouch = nil
 
 -- Initializes the whole game to its base state.
 function initEngine()
@@ -30,9 +43,8 @@ function initEngine()
   inputHandler.init()
   control.init()
   globals = {}
-  love.filesystem.load("requires.lua")()
   view.init(256, 224, 1)
-  cscreen.init(view.w*view.scale, view.h*view.scale, true, borderLeft, borderRight)
+  cscreen.init(view.w*view.scale, view.h*view.scale, borderLeft, borderRight)
   
   megautils.runFile("core/commands.lua")
   
@@ -41,8 +53,13 @@ function initEngine()
   globals.lifeSegments = 7
   globals.startingLives = 2
   globals.playerCount = 1
+  globals.disclaimerState = "assets/states/menus/disclaimer.state.lua"
   globals.bossIntroState = "assets/states/menus/bossintro.state.lua"
   globals.weaponGetState = "assets/states/menus/weaponget.state.lua"
+  globals.rebindState = "assets/states/menus/rebind.state.lua"
+  globals.titleState = "assets/states/menus/title.state.lua"
+  globals.menuState = "assets/states/menus/menu.state.tmx"
+  globals.stageSelectState = "assets/states/menus/stageSelect.state.tmx"
   
   megautils.difficultyChangeFuncs.startingLives = {func=function(d)
       globals.startingLives = (d == "easy") and 3 or 2
@@ -59,7 +76,9 @@ function initEngine()
       v.func()
     end
   end
+  
   megautils.unloadAllResources()
+  
   for k, v in pairs(megautils.initEngineFuncs) do
     if type(v) == "function" then
       v()
@@ -69,31 +88,15 @@ function initEngine()
   end
   
   megautils.setDifficulty("normal")
+  
+  megautils.runFile("init.lua")
 end
 
 function love.load()
   love.keyboard.setKeyRepeat(true)
   love.graphics.setDefaultFilter("nearest", "nearest")
   
-  -- Engine globals.
-  consoleFont = love.graphics.getFont() -- Needs to be preserved
-  altEnterOnce = false
-  scaleOnce = false
-  deadZone = 0.8
-  defaultFPS = 60
-  defaultFramerate = 1/defaultFPS
-  mapCacheSize = 2
-  extraSkinCacheSize = 1 -- Increase this if you're using a lot of skins at once outside the boundaries of `maxPlayerCount`
-  clampSkinShootOffsets = true
-  useConsole = love.keyboard
-  mmFont = love.graphics.newFont("assets/misc/mm.ttf", 8)
-  
-  maxPlayerCount = 4
-  maxLives = 10
-  maxETanks = 10
-  maxWTanks = 10
-  
-  love.filesystem.load("requirelibs.lua")()
+  require("requires")
   
   console.init()
   initEngine()
@@ -106,8 +109,13 @@ function love.load()
     megautils.setScale(data.scale)
   end
   
-  megautils.gotoState("assets/states/menus/disclaimer.state.lua")
+  megautils.gotoState(globals.disclaimerState)
   console.parse("exec autoexec")
+  
+  io = nil -- Prevents the worst case scenerio involving external context files. Be careful, a bad context file could still wipe your save directory
+  require = nil
+  dofile = nil
+  loadfile = nil
 end
 
 function love.resize(w, h)
@@ -127,10 +135,13 @@ function love.joystickremoved(j)
 end
 
 function love.keypressed(k, s, r)
-  if control and control.demo and not control.pressAnyway then return end
+  if control.demo and not control.pressAnyway then
+    control.anyPressedDuringRec = true
+    return
+  end
   
   -- keypressed event must be hijacked for console to work
-	if useConsole and console and console.state == 1 then
+	if useConsole and console.state == 1 then
 		if (k == "backspace") then
 			console.backspace()
 		end
@@ -147,16 +158,14 @@ function love.keypressed(k, s, r)
 	end
   
   if not keyboardCheck[k] then
-    lastPressed = {"keyboard", k}
+    lastPressed.type = "keyboard"
+    lastPressed.input = k
   end
   keyboardCheck[k] = 5
   
   control.anyPressed = true
-  if control.demo and not control.pressAnyway then
-    control.anyPressedDuringRec = true
-  end
   
-  if control and control.recordInput then
+  if control.recordInput then
     if not control.keyPressedRec then
       control.keyPressedRec = {}
     end
@@ -165,20 +174,22 @@ function love.keypressed(k, s, r)
 end
 
 function love.gamepadpressed(j, b)
-  if control and control.demo and not control.pressAnyway then return end
-  if useConsole and console and console.state == 1 then return end
+  if control.demo and not control.pressAnyway then
+    control.anyPressedDuringRec = true
+    return
+  end
+  if useConsole and console.state == 1 then return end
   
   if not gamepadCheck[b] then
-    lastPressed = {"gamepad", b, j:getName()}
+    lastPressed.type = "gamepad"
+    lastPressed.input = b
+    lastPressed.name = j:getName()
   end
   gamepadCheck[b] = 5
   
   control.anyPressed = true
-  if control.demo and not control.pressAnyway then
-    control.anyPressedDuringRec = true
-  end
   
-  if control and control.recordInput then
+  if control.recordInput then
     if not control.gamepadPressedRec then
       control.gamepadPressedRec = {}
     end
@@ -187,8 +198,8 @@ function love.gamepadpressed(j, b)
 end
 
 function love.gamepadaxis(j, b, v)
-  if control and control.demo and not control.pressAnyway then return end
-  if useConsole and console and console.state == 1 then return end
+  if control.demo and not control.pressAnyway then return end
+  if useConsole and console.state == 1 then return end
   
   if not math.between(v, -deadZone, deadZone) then
     if not gamepadCheck[b] then
@@ -200,13 +211,15 @@ function love.gamepadaxis(j, b, v)
           globals.axisTmp.y = {"axis", b .. (v > 0 and "+" or "-"), v, j:getName()}
         end
       else
-        lastPressed = {"axis", b .. (v > 0 and "+" or "-"), j:getName()}
+        lastPressed.type = "axis"
+        lastPressed.input = b .. (v > 0 and "+" or "-")
+        lastPressed.name = j:getName()
       end
     end
     gamepadCheck[b] = 10
   end
   
-  if control and control.recordInput then
+  if control.recordInput then
     if not control.gamepadAxisRec then
       control.gamepadAxisRec = {}
     end
@@ -215,12 +228,20 @@ function love.gamepadaxis(j, b, v)
 end
 
 function love.touchpressed(id, x, y, dx, dy, pressure)
-  if control and control.demo and not control.pressAnyway then return end
-  if useConsole and console and console.state == 1 then return end
+  if control.demo and not control.pressAnyway then
+    control.anyPressedDuringRec = true
+    return
+  end
+  if useConsole and console.state == 1 then return end
   
-  lastTouch = {x, y, id, pressure, dx, dy}
+  lastTouch.x = x
+  lastTouc.y = y
+  lastTouch.id = id
+  lastTouch.pressure = pressure
+  lastTouch.dx = dx
+  lastTouch.dy = dy
   
-  if control and control.recordInput then
+  if control.recordInput then
     if not control.touchPressedRec then
       control.touchPressedRec = {}
     end
@@ -243,50 +264,6 @@ function love.textinput(k)
 end
 
 function love.update(dt)
-  if love.keyboard and not (useConsole and console.state == 1) then
-    if (love.keyboard.isDown("ralt") or love.keyboard.isDown("lalt")) and love.keyboard.isDown("return") then
-      if not altEnterOnce then
-        megautils.setFullscreen(not megautils.getFullscreen())
-        local data = save.load("main.sav") or {}
-        data.fullscreen = megautils.getFullscreen()
-        save.save("main.sav", data)
-      end
-      altEnterOnce = 10
-    end
-    
-    if altEnterOnce then
-      altEnterOnce = altEnterOnce - 1
-      if altEnterOnce == 0 then
-        altEnterOnce = false
-      end
-      return
-    end
-    
-    for i=1, 9 do
-      local k = tostring(i)
-      if love.keyboard.isDown(k) or love.keyboard.isDown("kp" .. k) then
-        if view.w * i ~= love.graphics.getWidth() or
-          view.h * i ~= love.graphics.getHeight() then
-          if not scaleOnce then
-            megautils.setScale(i)
-            local data = save.load("main.sav") or {}
-            data.scale = megautils.getScale()
-            save.save("main.sav", data)
-          end
-          scaleOnce = 10
-        end
-      end
-    end
-    
-    if scaleOnce then
-      scaleOnce = scaleOnce - 1
-      if scaleOnce == 0 then
-        scaleOnce = false
-      end
-      return
-    end
-  end
-  
   local doAgain = true
   
   while doAgain do
@@ -298,6 +275,8 @@ function love.update(dt)
     control.flush()
     doAgain = states.switched
   end
+  
+  mmMusic.update()
   
   if love.joystick then
     if globals.axisTmp then
@@ -333,6 +312,13 @@ function love.draw()
   if useConsole then console.draw() end
 end
 
+function love.quit()
+  if mmMusic and mmMusic.thread:isRunning() then
+    mmMusic.stop()
+    mmMusic.thread:wait()
+  end
+end
+
 -- Love2D doesn't fire the resize event for several functions, so here's some hacks.
 local lf = love.window.setFullscreen
 local lsm = love.window.setMode
@@ -358,6 +344,110 @@ function love.run()
   if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
   if love.timer then love.timer.step() end
   return function()
+      if love.keyboard and console and save and megautils then
+        local didIt = false
+        
+        if not (useConsole and console.state == 1) then
+          if not love.keyboard.isDown("return") then
+            altEnterOnce = false
+          elseif (love.keyboard.isDown("ralt") or love.keyboard.isDown("lalt")) and love.keyboard.isDown("return") then
+            if not altEnterOnce then
+              megautils.setFullscreen(not megautils.getFullscreen())
+              local data = save.load("main.sav") or {}
+              data.fullscreen = megautils.getFullscreen()
+              save.save("main.sav", data)
+              didIt = true
+            end
+            altEnterOnce = true
+          end
+          
+          for i=1, 9 do
+            local k = tostring(i)
+            if love.keyboard.isDown(k) or love.keyboard.isDown("kp" .. k) then
+              if view.w * i ~= love.graphics.getWidth() or
+                view.h * i ~= love.graphics.getHeight() then
+                local last = megautils.getScale()
+                megautils.setScale(i)
+                if i ~= last then
+                  local data = save.load("main.sav") or {}
+                  data.scale = megautils.getScale()
+                  save.save("main.sav", data)
+                  didIt = true
+                end
+              end
+            end
+          end
+        end
+        
+        if not love.keyboard.isDown("o") and not love.keyboard.isDown("p") and not love.keyboard.isDown("r") then
+          contextOnce = false
+        elseif (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl")) then
+          if love.keyboard.isDown("o") then
+            if not contextOnce then
+              console.parse("contextsave quickContext")
+              didIt = true
+            end
+            contextOnce = true
+          elseif love.keyboard.isDown("p") then
+            if not contextOnce then
+              console.parse("contextopen quickContext")
+              didIt = true
+            end
+            contextOnce = true
+          elseif love.keyboard.isDown("r") then
+            if not contextOnce then
+              console.parse("rec")
+              didIt = true
+            end
+            contextOnce = true
+          end
+        end
+        
+        if didIt then
+          if love.graphics then
+            love.graphics.origin()
+            love.graphics.clear(0, 0, 0, 1)
+            if view and view.canvas then
+              love.graphics.push()
+              cscreen.apply()
+              love.graphics.draw(view.canvas)
+              cscreen.cease()
+              love.graphics.pop()
+              if useConsole then console.draw() end
+            end
+            love.graphics.present()
+          end
+          
+          return
+        end
+      end
+      
+      if serQueue then
+        local f = serQueue
+        serQueue = nil
+        f(ser())
+      end
+      
+      if deserQueue then
+        local f = deserQueue
+        if type(deserQueue) == "function" then
+          f = deserQueue()
+        end
+        deserQueue = nil
+        deser(f)
+      end
+      
+      if control._openRecQ then
+        local f = control._openRecQ
+        control._openRecQ = nil
+        control.openRec(f)
+      end
+      
+      if control._startRecQ then
+        control._startRecQ = false
+        control.startRec()
+      end
+      
       if love.event then
         love.event.pump()
         for name, a,b,c,d,e,f in love.event.poll() do
@@ -381,12 +471,106 @@ function love.run()
         if delta < fps then love.timer.sleep(fps - delta) end
         bu = love.timer.getTime()
       end
+      
       megautils.checkQueue()
       states.checkQueue()
-      megautils.checkMusicQueue()
+      mmMusic.checkQueue()
       console.doWait()
-      lastPressed = nil
+      control.anyPressed = false
+      control.anyPressedDuringRec = false
+      cscreen.updateFade()
+      
+      lastPressed.type = nil
+      lastPressed.input = nil
+      lastPressed.name = nil
+      lastTouch.x = nil
+      lastTouch.y = nil
+      lastTouch.id = nil
+      lastTouch.pressure = nil
+      lastTouch.dx = nil
+      lastTouch.dy = nil
       lastTextInput = nil
-      lastTouch = nil
     end
+end
+
+-- Save state to memory
+function ser()
+  local data = {
+      serQueue = serQueue,
+      deserQueue = deserQueue,
+      backgroundColor = {love.graphics.getBackgroundColor()},
+      cscreen = cscreen.ser(),
+      view = view.ser(),
+      megautils = megautils.ser(),
+      state = states.ser(),
+      entitySystem = entitySystem.ser(),
+      loader = loader.ser(),
+      music = mmMusic.ser(),
+      control = control.ser(),
+      collision = collision.ser(),
+      banner = banner and banner.ser(),
+      banIDs = pickupEntity.banIDs,
+      weapon = weapon.ser(),
+      camera = camera.main and camera.main,
+      fade = fade.main and fade.main,
+      megaMan = megaMan.ser(),
+      lastPressed = lastPressed,
+      lastTextInput = lastTextInput,
+      lastTouch = lastTouch,
+      keyboardCheck = keyboardCheck,
+      gamepadCheck = gamepadCheck,
+      globals = globals,
+      convars = convar.getAllValues(),
+      rstate = love.math.getRandomState(),
+      seed = love.math.getRandomSeed(),
+      console = console.ser(),
+      basicEntity = basicEntity.id,
+      mapEntity = mapEntity.ser()
+    }
+  return binser.serialize(data)
+end
+
+-- Load state
+function deser(from, dontChangeMusic)
+  love.audio.stop()
+  
+  local t = binser.deserialize(from)
+  
+  serQueue = t.serQueue
+  deserQueue = t.deserQueue
+  love.graphics.setBackgroundColor(unpack(t.backgroundColor))
+  cscreen.deser(t.cscreen)
+  view.deser(t.view)
+  megautils.deser(t.megautils)
+  states.deser(t.state)
+  entitySystem.deser(t.entitySystem)
+  loader.deser(t.loader)
+  if not dontChangeMusic then
+    mmMusic.deser(t.music)
+  end
+  control.deser(t.control)
+  collision.deser(t.collision)
+  if t.banner then
+    banner.deser(t.banner)
+  end
+  pickupEntity.banIDs = t.banIDs
+  weapon.deser(t.weapon)
+  camera.main = t.camera
+  fade.main = t.fade
+  megaMan.deser(t.megaMan)
+  lastPressed = t.lastPressed
+  lastTextInput = t.lastTextInput
+  lastTouch = t.lastTouch
+  keyboardCheck = t.keyboardCheck
+  gamepadCheck = t.gamepadCheck
+  globals = t.globals
+  convar.setAllValues(t.convars)
+  love.math.setRandomSeed(t.seed)
+  love.math.setRandomState(t.rstate)
+  console.deser(t.console)
+  basicEntity.id = t.basicEntity
+  mapEntity.deser(t.mapEntity)
+  
+  collectgarbage()
+  collectgarbage()
 end

@@ -1,5 +1,23 @@
 animationSet = class:extend()
 
+binser.register(animationSet, "animationSet", function(o)
+    return {
+        flipX=o.flipX,
+        flipY=o.flipY,
+        anims=o.anims,
+        current=o.current
+      }
+  end, function(o)
+    local result = animationSet()
+    
+    result.flipX = o.flipX
+    result.flipY = o.flipY
+    result.anims = o.anims
+    result.current = o.current
+    
+    return result
+  end)
+
 function animationSet:new()
   self.flipX = false
   self.flipY = false
@@ -76,10 +94,10 @@ function animationSet:update(dt)
   end
 end
 
-function animationSet:draw(texture, x, y, r, sx, sy, ox, oy, kx, ky)
+function animationSet:draw(image, x, y, r, sx, sy, ox, oy, kx, ky)
   if self.anims[self.current] then
     self.anims[self.current].flipX = self.flipX
     self.anims[self.current].flipY = self.flipY
-    self.anims[self.current]:draw(texture, x, y, r, sx, sy, ox, oy, kx, ky)
+    self.anims[self.current]:draw(image, x, y, r, sx, sy, ox, oy, kx, ky)
   end
 end

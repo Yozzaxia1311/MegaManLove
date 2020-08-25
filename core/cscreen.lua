@@ -28,65 +28,107 @@ misrepresented as being the original software.
 --]]
 
 local CScreen = {}
+
 local rx, ry, ctr = 800, 600, true
 local rxv, ryv, fsv, fsvr = 800, 600, 1.0, 1.0
 local tx, ty, rwf, rhf = 0, 0, 800, 600
-local cr, cg, cb, ca = 60/255, 188/255, 255, 1
-local ir, ig, ib, ia = 1, 1, 1, 1
-local imgl, imgr
+local cr, cg, cb = 60/255, 188/255, 1
+local ir, ig, ib = 1, 1, 1
+local imgl, imgr, imglp, imgrp
+local fadeAlpha, toFade = 0, 1
+
+function CScreen.ser()
+  return {
+      rx=rx,
+      ry=ry,
+      rxv=rxv,
+      ryv=ryv,
+      fsv=fsv,
+      fsvr=fsvr,
+      tx=tx,
+      ty=ty,
+      rwf=rwf,
+      rhf=rhf,
+      cr=cr,
+      cg=cg,
+      cb=cb,
+      ir=ir,
+      ig=ig,
+      ib=ib,
+      imglp=imglp,
+      imgrp=imgrp,
+      fadeAlpha=fadeAlpha,
+      toFade=toFade
+    }
+end
+
+function CScreen.deser(t)
+  CScreen.init(t.rx, t.ry, t.imglp, t.imgrp)
+  cr=t.cr
+  cg=t.cg
+  cb=t.cb
+  ir=t.ir
+  ig=t.ig
+  ib=t.ib
+  fadeAlpha=t.fadeAlpha
+  toFade=t.toFade
+end
 
 -- Initializes CScreen with the initial size values
-function CScreen.init(tw, th, cntr, imgle, imgri)
-	rx = tw or 800
-	ry = th or 600
-	ctr = cntr or false
-  imgl = imgle
-  imgr = imgri
+function CScreen.init(tw, th, l, r)
+	rx = tw or rx
+	ry = th or ry
+  if l and imglp ~= l then
+    imgl = love.graphics.newImage(l)
+    imgl:setFilter("linear")
+  end
+  if r and imgrp ~= r then
+    imgr = love.graphics.newImage(r)
+    imgr:setFilter("linear")
+  end
+  imglp = l
+  imgrp = r
 	CScreen.update(love.graphics.getWidth(), love.graphics.getHeight())
 end
 
 -- Draws letterbox borders
 function CScreen.cease()
-	if ctr then
-		local pr, pg, pb, pa = love.graphics.getColor()
-		love.graphics.scale(fsvr, fsvr)
+  local pr, pg, pb, pa = love.graphics.getColor()
+  love.graphics.scale(fsvr, fsvr)
 
-		if tx ~= 0 then
-      if imgl then
-        love.graphics.setColor(ir, ig, ib, ia)
-        love.graphics.setScissor(0, 0, tx, rhf)
-        local ratio = math.max(tx/imgl:getWidth(), rhf/imgl:getHeight())
-        love.graphics.draw(imgl, 0, rhf/2, 0, ratio, ratio, imgl:getWidth(), imgl:getHeight()/2)
-        love.graphics.setScissor()
-      else
-        love.graphics.setColor(cr, cg, cb, ca)
-        love.graphics.rectangle("fill", -tx, 0, tx, rhf)
-      end
-      if imgr then
-        love.graphics.setColor(ir, ig, ib, ia)
-        love.graphics.setScissor(rxv+tx, 0, tx, rhf)
-        local ratio = math.max(tx/imgr:getWidth(), rhf/imgr:getHeight())
-        love.graphics.draw(imgr, rxv, rhf/2, 0, ratio, ratio, 0, imgr:getHeight()/2)
-        love.graphics.setScissor()
-      else
-        love.graphics.setColor(cr, cg, cb, ca)
-        love.graphics.rectangle("fill", rxv, 0, tx, rhf)
-      end
-		elseif ty ~= 0 then
-      love.graphics.setColor(cr, cg, cb, ca)
-			love.graphics.rectangle("fill", 0, -ty, rwf, ty)
-			love.graphics.rectangle("fill", 0, ryv, rwf, ty)
-		end
+  if tx ~= 0 then
+    if imgl then
+      love.graphics.setColor(ir, ig, ib, fadeAlpha)
+      love.graphics.setScissor(0, 0, tx, rhf)
+      local ratio = math.max(tx/imgl:getWidth(), rhf/imgl:getHeight())
+      love.graphics.draw(imgl, 0, rhf/2, 0, ratio, ratio, imgl:getWidth(), imgl:getHeight()/2)
+      love.graphics.setScissor()
+    else
+      love.graphics.setColor(cr, cg, cb, fadeAlpha)
+      love.graphics.rectangle("fill", -tx, 0, tx, rhf)
+    end
+    if imgr then
+      love.graphics.setColor(ir, ig, ib, fadeAlpha)
+      love.graphics.setScissor(rxv+tx, 0, tx, rhf)
+      local ratio = math.max(tx/imgr:getWidth(), rhf/imgr:getHeight())
+      love.graphics.draw(imgr, rxv, rhf/2, 0, ratio, ratio, 0, imgr:getHeight()/2)
+      love.graphics.setScissor()
+    else
+      love.graphics.setColor(cr, cg, cb, fadeAlpha)
+      love.graphics.rectangle("fill", rxv, 0, tx, rhf)
+    end
+  elseif ty ~= 0 then
+    love.graphics.setColor(cr, cg, cb, fadeAlpha)
+    love.graphics.rectangle("fill", 0, -ty, rwf, ty)
+    love.graphics.rectangle("fill", 0, ryv, rwf, ty)
+  end
 
-		love.graphics.setColor(pr, pg, pb, pa)
-	end
+  love.graphics.setColor(pr, pg, pb, pa)
 end
 
 -- Scales and centers all graphics properly
 function CScreen.apply()
-	if ctr then
-		love.graphics.translate(tx, ty)
-	end
+  love.graphics.translate(tx, ty)
 	love.graphics.scale(fsv, fsv)
 end
 
@@ -97,10 +139,10 @@ function CScreen.update(w, h)
 	fsv = math.min(sx, sy)
 	fsvr = 1 / fsv
 	-- Centering
-	if ctr and fsv == sx then -- Vertically
+	if fsv == sx then -- Vertically
 		tx = 0
 		ty = (h / 2) - (ry * fsv / 2)
-	elseif ctr and fsv == sy then -- Horizontally
+	elseif fsv == sy then -- Horizontally
 		ty = 0
 		tx = (w / 2) - (rx * fsv / 2)
 	end
@@ -117,21 +159,33 @@ function CScreen.project(x, y)
 end
 
 -- Change letterbox color
-function CScreen.setColor(r, g, b, a)
+function CScreen.setColor(r, g, b)
 	cr = r
 	cg = g
 	cb = b
-	ca = a
   ir = r
   ig = g
   ib = b
-  ia = a
 end
 
 -- Change image borders
 function CScreen.setImageBorders(l, r)
-  imgl = l
-  imgr = r
+  imgl = love.graphics.newImage(l) or imgl
+  imgr = love.graphics.newImage(r) or imgr
+  imglp = l
+  imgrp = r
+end
+
+function CScreen.setFade(to)
+  toFade = to
+end
+
+function CScreen.getFade()
+  return fadeAlpha
+end
+
+function CScreen.updateFade()
+  fadeAlpha = math.approach(fadeAlpha, toFade, 0.01)
 end
 
 -- Return the table for use

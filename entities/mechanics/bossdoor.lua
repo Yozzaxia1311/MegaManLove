@@ -298,9 +298,9 @@ function bossDoor:draw()
   if self.useMapTiles or megautils.outside(self) then return end
   for i=1, self.segments do
     if self.dir == "left" or self.dir == "right" then
-      self.quad:draw(self.tex, self.transform.x, self.transform.y + (i*16) - 16)
+      self.tex:draw(self.quad, self.transform.x, self.transform.y + (i*16) - 16)
     else
-      self.quad:draw(self.tex, self.transform.x + (i*16), self.transform.y, math.rad(90))
+      self.tex:draw(self.quad, self.transform.x + (i*16), self.transform.y, math.rad(90))
     end
   end
 end

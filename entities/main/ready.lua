@@ -5,7 +5,6 @@ ready.autoClean = false
 function ready:new(text, blinks)
   ready.super.new(self)
   self:setLayer(9)
-  self.once = false
   self.canDraw.global = false
   self.blinkTimer = 0
   self.maxBlinkTime = 6

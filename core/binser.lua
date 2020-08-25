@@ -470,7 +470,7 @@ local function newbinser()
     end
 
     local function serialize_to_file(path, mode, ...)
-        local file, err = io.open(path, mode)
+        local file, err = love.filesystem.newFile(path, mode)
         assert(file, err)
         local visited = {[NEXT] = 1, [CTORSTACK] = {}}
         local accum = make_file_writer(file)
@@ -484,11 +484,11 @@ local function newbinser()
     end
 
     local function writeFile(path, ...)
-        return serialize_to_file(path, "wb", ...)
+        return serialize_to_file(path, "w", ...)
     end
 
     local function appendFile(path, ...)
-        return serialize_to_file(path, "ab", ...)
+        return serialize_to_file(path, "a", ...)
     end
 
     local function deserialize(str, index)
@@ -509,7 +509,7 @@ local function newbinser()
                 break
             end
         end
-        return vals, len
+        return unpack(vals), len
     end
 
     local function deserializeN(str, n, index)
@@ -538,10 +538,8 @@ local function newbinser()
     end
 
     local function readFile(path)
-        local file, err = io.open(path, "rb")
-        assert(file, err)
-        local str = file:read("*all")
-        file:close()
+        local str = love.filesystem.read(path)
+        assert(str, "Could not read file \"" .. path .. "\"")
         return deserialize(str)
     end
 

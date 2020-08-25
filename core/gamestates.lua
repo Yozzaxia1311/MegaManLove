@@ -1,10 +1,27 @@
 states = {}
 
+function states.ser()
+  return {
+      currentState = states.currentState,
+      current = states.current,
+      switched = states.switched,
+      recordOnSwitch = states.recordOnSwitch,
+      openRecord = states.openRecord,
+      queue = states.queue
+    }
+end
+
+function states.deser(t)
+  states.currentState = t.currentState
+  states.current = t.current
+  states.switched = t.switched
+  states.recordOnSwitch = t.recordOnSwitch
+  states.openRecord = t.openRecord
+  states.queue = t.queue
+end
+
 states.currentState = nil
 states.current = nil
-states.switched = false
-states.recordOnSwitch = false
-states.openRecord = nil
 states.queue = nil
 
 baseState = class:extend()
@@ -19,7 +36,7 @@ function baseState:init() end
 state = baseState:extend()
 
 function state:update(dt)
-  megautils.update(self, dt)
+  self.system:update(dt)
 end
 function state:draw()
   self.system:draw()
@@ -29,6 +46,7 @@ function state:unload()
 end
 
 function states.set(n, before, after)
+  states.switched = false
   if before then before() end
   
   local nick = n
@@ -52,7 +70,6 @@ function states.set(n, before, after)
         
         mapArgs.mPath = p.musicPath and p.musicPath ~= "" and p.musicPath
         mapArgs.mLoopPoint = (p.musicLoopPoint and p.musicLoopPoint ~= 0) and p.musicLoopPoint
-        mapArgs.mLoopEndPoint = (p.musicLoopEndPoint and p.musicLoopEndPoint ~= 0) and p.musicLoopEndPoint
         mapArgs.mLoop = p.musicLoop == nil or p.musicLoop
         mapArgs.mVolume = p.musicVolume or 1
         
@@ -70,62 +87,14 @@ function states.set(n, before, after)
     end
   end
   
-  if states.openRecord then
-    control.resetRec()
-    control.record = save.load(states.openRecord)
-    nick = control.record.state
-    states.openRecord = nil
-    control.oldGlobals = globals
-    globals = control.record.globals
-    control.oldConvars = convar
-    convar.setAllValues(control.record.convars)
-    love.math.setRandomSeed(control.record.seed)
-    megautils.reloadState = control.record.reload
-    megautils.resetGameObjects = control.record.rgo
-    control.oldSkins = {}
-    for k, v in pairs(megaMan.skins) do
-      control.oldSkins[k] = v.path
-    end
-    for k, v in pairs(control.record.skins) do
-      megaMan.setSkin(k, v)
-    end
-    control.oldConsole = console.ser()
-    console.deser(control.record.console)
-    lastPressed = nil
-    lastTextInput = nil
-    lastTouch = nil
-    keyboardCheck = {}
-    gamepadCheck = {}
-    megautils._q = {}
-    control.demo = true
-    states.set(nick, before, after)
-    return
+  view.x, view.y = 0, 0
+  states.switched = true
+  
+  if not states.currentChunk or states.current ~= sp then
+    states.currentChunk = love.filesystem.load(sp)
   end
   
-  if states.recordOnSwitch then
-    lastPressed = nil
-    lastTextInput = nil
-    lastTouch = nil
-    keyboardCheck = {}
-    gamepadCheck = {}
-    megautils._q = {}
-    states.recordOnSwitch = false
-    control.updateDemoFunc = nil
-    control.drawDemoFunc = nil
-    control.resetRec()
-    control.recordInput = true
-    control.record.globals = table.clone(globals)
-    control.record.convars = convar.getAllValues()
-    control.record.state = sp
-    control.record.seed = love.math.getRandomSeed()
-    control.record.reload = megautils.reloadState
-    control.record.rgo = megautils.resetGameObjects
-    control.record.skins = {}
-    for k, v in pairs(megaMan.skins) do
-      control.record.skins[k] = v.path
-    end
-    control.record.console = console.ser()
-  end
+  states.current = nick
   
   if megautils.reloadState then
     for k, v in pairs(megautils.reloadStateFuncs) do
@@ -137,16 +106,8 @@ function states.set(n, before, after)
     end
   end
   
-  if not states.currentChunk or states.current ~= sp then
-    states.currentChunk = love.filesystem.load(sp)
-  end
-  
-  view.x, view.y = 0, 0
-  
-  states.current = nick
   states.currentState = states.currentChunk()
   states.currentState.system = entitySystem()
-  states.switched = true
   
   if after then after() end
   
@@ -171,7 +132,7 @@ function states.set(n, before, after)
     end
     
     if mapArgs.mPath then
-      megautils.playMusic(mapArgs.mPath, mapArgs.mLoop, mapArgs.mLoopPoint, mapArgs.mLoopEndPoint, mapArgs.mVolume)
+      megautils.playMusic(mapArgs.mPath, mapArgs.mVolume)
     end
   end
   
@@ -184,8 +145,9 @@ end
 
 function states.checkQueue()
   if states.queue then
-    states.set(states.queue[1], states.queue[2], states.queue[3])
+    local q = states.queue
     states.queue = nil
+    states.set(q[1], q[2], q[3])
   end
 end
 

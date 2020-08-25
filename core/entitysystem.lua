@@ -1,5 +1,17 @@
 entitySystem = class:extend()
 
+function entitySystem.ser()
+  return {
+      drawCollision = entitySystem.drawCollision,
+      doDrawFlicker = entitySystem.doDrawFlicker
+    }
+end
+
+function entitySystem.deser(t)
+  entitySystem.drawCollision = t.drawCollision
+  entitySystem.doDrawFlicker = t.doDrawFlicker
+end
+
 entitySystem.drawCollision = false
 entitySystem.doDrawFlicker = true
 
@@ -56,6 +68,24 @@ function entitySystem:sortLayers()
   end
 end
 
+function entitySystem:entityFromID(id)
+  for i=1, #self.all do
+    local v = self.all[i]
+    if v.id == id then
+      return v
+    end
+  end
+end
+
+function entitySystem:getLayer(l)
+  for i=1, #self.entities do
+    local v = self.entities[i]
+    if v.layer == l then
+      return v
+    end
+  end
+end
+
 function entitySystem:add(c, ...)
   local e = self:getRecycled(c, ...)
   if not e.static then
@@ -64,15 +94,12 @@ function entitySystem:add(c, ...)
       local v = self.entities[i]
       if v.layer == e.layer then
         v.data[#v.data+1] = e
-        e.actualLayer = v
         done = true
         break
       end
     end
     if not done then
       self.entities[#self.entities+1] = {layer=e.layer, data={e}, flicker=true}
-      e.actualLayer = self.entities[#self.entities]
-      e.layer = e.actualLayer.layer
       self.doSort = true
     end
     self.updates[#self.updates+1] = e
@@ -104,15 +131,12 @@ function entitySystem:adde(e)
       local v = self.entities[i]
       if v.layer == e.layer then
         v.data[#v.data+1] = e
-        e.actualLayer = v
         done = true
         break
       end
     end
     if not done then
       self.entities[#self.entities+1] = {layer=e.layer, data={e}, flicker=true}
-      e.actualLayer = self.entities[#self.entities]
-      e.layer = e.actualLayer.layer
       self.doSort = true
     end
     self.updates[#self.updates+1] = e
@@ -172,9 +196,10 @@ end
 
 function entitySystem:makeStatic(e)
   table.quickremovevaluearray(self.updates, e)
-  table.quickremovevaluearray(e.actualLayer.data, e)
-  if #e.actualLayer.data == 0 then
-    table.removevaluearray(self.entities, e.actualLayer)
+  local al = self:getLayer(e.layer)
+  table.quickremovevaluearray(al.data, e)
+  if #al.data == 0 then
+    table.removevaluearray(self.entities, al)
   end
   self.static[#self.static+1] = e
   e.static = true
@@ -189,15 +214,12 @@ function entitySystem:revertFromStatic(e)
       local v = self.entities[i]
       if v.layer == e.layer then
         v.data[#v.data+1] = e
-        e.actualLayer = v
         done = true
         break
       end
     end
     if not done then
       self.entities[#self.entities+1] = {layer=e.layer, data={e}, flicker=true}
-      e.actualLayer = self.entities[#self.entities]
-      e.layer = e.actualLayer.layer
       self.doSort = true
     end
     self.updates[#self.updates+1] = e
@@ -208,9 +230,10 @@ end
 
 function entitySystem:setLayer(e, l)
   if l and e.layer ~= l then
-    table.quickremovevaluearray(e.actualLayer.data, e)
-    if #e.actualLayer.data == 0 then
-      table.removevaluearray(self.entities, e.actualLayer)
+    local al = self:getLayer(e.layer)
+    table.quickremovevaluearray(al.data, e)
+    if #al.data == 0 then
+      table.removevaluearray(self.entities, al)
     end
     e.layer = l
     local done = false
@@ -218,15 +241,12 @@ function entitySystem:setLayer(e, l)
       local v = self.entities[i]
       if v.layer == e.layer then
         v.data[#v.data+1] = e
-        e.actualLayer = v
         done = true
         break
       end
     end
     if not done then
       self.entities[#self.entities+1] = {layer=e.layer, data={e}, flicker=true}
-      e.actualLayer = self.entities[#self.entities]
-      e.layer = e.actualLayer.layer
       self.doSort = true
     end
   end
@@ -246,16 +266,15 @@ function entitySystem:remove(e)
   e.isRemoved = true
   e:removed()
   e:removeFromAllGroups()
+  local al = self:getLayer(e.layer)
   if e.static then
     table.quickremovevaluearray(self.static, e)
-    e.static = false
-    e:staticToggled()
   else
-    table.quickremovevaluearray(e.actualLayer.data, e)
+    table.quickremovevaluearray(al.data, e)
     table.quickremovevaluearray(self.updates, e)
   end
-  if #e.actualLayer.data == 0 then
-    table.removevaluearray(self.entities, e.actualLayer)
+  if #al.data == 0 then
+    table.removevaluearray(self.entities, al)
   end
   table.quickremovevaluearray(self.all, e)
   table.quickremovevaluearray(self.beginQueue, e)
@@ -303,6 +322,7 @@ function entitySystem:draw()
       local v = self.entities[i].data[k]
       if checkFalse(v.canDraw) and not v.isRemoved and v.draw then
         love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.setFont(mmFont)
         v:draw()
       end
     end
@@ -384,6 +404,15 @@ end
 
 velocity = class:extend()
 
+binser.register(velocity, "velocity", function(o)
+    return {velx = o.velx, vely = o.vely}
+  end, function(o)
+    local result = velocity()
+    result.velx = o.velx
+    result.vely = o.vely
+    return result
+  end)
+
 function velocity:new()
   self.velx = 0
   self.vely = 0
@@ -432,6 +461,41 @@ function basicEntity:__tostring()
   return "Entity"
 end
 
+function basicEntity.transfer(from, to)
+  to.transform = table.clone(from.transform)
+  to.canUpdate = table.clone(from.canUpdate)
+  to.canDraw = table.clone(from.canDraw)
+  to.isRemoved = from.isRemoved
+  to.isAdded = from.isAdded
+  to.layer = from.layer
+  to.iFrames = from.iFrames
+  to.changeHealth = from.changeHealth
+  to.recycle = from.recycle
+  to.recycling = from.recycling
+  to.id = from.id
+  to.previousX = from.previousX
+  to.previousY = from.previousY
+  to.epX = from.epX
+  to.epY = from.epY
+  to.exclusivelySolidFor = table.clone(from.exclusivelySolidFor)
+  to.excludeSolidFor = table.clone(from.excludeSolidFor)
+  to.spawnEarlyDuringTransition = from.spawnEarlyDuringTransition
+  to.despawnLateDuringTransition = from.despawnLateDuringTransition
+  to.death = from.death
+  to.ladder = from.ladder
+  if from.collisionShape then
+    if from.collisionShape.type == 0 then
+      to:setRectangleCollision(from.collisionShape.w, from.collisionShape.h)
+    elseif from.collisionShape.type == 1 then
+      to:setImageCollision(from.collisionShape.resource)
+    elseif from.collisionShape.type == 2 then
+      to:setCircleCollision(from.collisionShape.r)
+    end
+  end
+end
+
+basicEntity.id = 0
+
 function basicEntity:new()
   if not self.recycling then
     self.transform = {}
@@ -448,6 +512,8 @@ function basicEntity:new()
   self.changeHealth = 0
   self.canUpdate = {global=true}
   self.canDraw = {global=true}
+  self.id = basicEntity.id
+  basicEntity.id = basicEntity.id + 1
 end
 
 function basicEntity:determineIFrames(o)
@@ -512,28 +578,31 @@ function basicEntity:setRectangleCollision(w, h)
   self.collisionShape.h = h
 end
 
+function basicEntity:setImageCollision(resource)
+  local res = megautils.getResourceTable(resource)
+  
+  self.collisionShape.resource = resource
+  
+  if res.img then
+    self.collisionShape.type = 1
+    self.collisionShape.data = res.data
+    self.collisionShape.image = res.img
+    self.collisionShape.w = #self.collisionShape.data[1]
+    self.collisionShape.h = #self.collisionShape.data
+  else
+    self.collisionShape.type = 1
+    self.collisionShape.data = res.data
+    self.collisionShape.w = #self.collisionShape.data[1]
+    self.collisionShape.h = #self.collisionShape.data
+  end
+end
+
 function basicEntity:setCircleCollision(r)
   self.collisionShape = {}
   self.collisionShape.type = 2
   self.collisionShape.r = r
   self.collisionShape.w = r
   self.collisionShape.h = r
-end
-
-function basicEntity:setImageCollision(data)
-  self.collisionShape = {}
-  if data and type(data[2]) == "string" then
-    self.collisionShape.type = 1
-    self.collisionShape.data = data[1]
-    self.collisionShape.image = data[3]
-    self.collisionShape.w = #self.collisionShape.data[1]
-    self.collisionShape.h = #self.collisionShape.data
-  else
-    self.collisionShape.type = 1
-    self.collisionShape.data = data
-    self.collisionShape.w = #self.collisionShape.data[1]
-    self.collisionShape.h = #self.collisionShape.data
-  end
 end
 
 function basicEntity:collision(e, x, y, notme)
@@ -585,7 +654,7 @@ function basicEntity:drawCollision()
     love.graphics.rectangle("line", math.round(self.transform.x), math.round(self.transform.y),
       self.collisionShape.w, self.collisionShape.h)
   elseif self.collisionShape.type == 1 and self.collisionShape.image then
-    love.graphics.draw(self.collisionShape.image, math.round(self.transform.x), math.round(self.transform.y))
+    self.collisionShape.image:draw(math.round(self.transform.x), math.round(self.transform.y))
   elseif self.collisionShape.type == 2 then
     love.graphics.circle("line", math.round(self.transform.x), math.round(self.transform.y), self.collisionShape.r)
   end
@@ -631,11 +700,36 @@ megautils.cleanFuncs.autoCleaner = {func=function()
         _G[k] = nil
       end
     end
+    basicEntity.id = 0
   end, autoClean=false}
 
 entity = basicEntity:extend()
 
 entity.autoClean = false
+
+function entity.transfer(from, to)
+  entity.super.transfer(from, to)
+  
+  to.gravityMultipliers = table.clone(from.gravityMultipliers)
+  to.velocity = from.velocity
+  to.solidType = from.solidType
+  to.normalGravity = from.normalGravity
+  to.gravity = from.gravity
+  to.doShake = from.doShake
+  to.maxShakeTime = from.maxShakeTime
+  to.blockCollision = table.clone(from.blockCollision)
+  to.ground = from.ground
+  to.snapToGround = from.snapToGround
+  to.xColl = from.xColl
+  to.yColl = from.yColl
+  to.shakeX = from.shakeX
+  to.shakeY = from.shakeY
+  to.shakeTime = from.shakeTime
+  to.shakeSide = from.shakeSide
+  to.moveByMoveX = from.moveByMoveY
+  to.canBeInvincible = table.clone(from.canBeInvincible)
+  to.canStandSolid = table.clone(from.canStandSolid)
+end
 
 function entity:new()
   entity.super.new(self)
@@ -732,6 +826,20 @@ mapEntity = basicEntity:extend()
 
 mapEntity.autoClean = false
 
+function mapEntity.ser()
+  return {
+      registered = mapEntity.registered,
+      ranFiles = mapEntity.ranFiles,
+      doSort = mapEntity.doSort
+    }
+end
+
+function mapEntity.deser(t)
+  mapEntity.registered = t.registered
+  mapEntity.ranFiles = t.ranFiles
+  mapEntity.doSort = t.doSort
+end
+
 mapEntity.registered = {}
 mapEntity.ranFiles = {}
 mapEntity.doSort = false
@@ -778,6 +886,7 @@ function mapEntity:removed()
       megautils.remove(v)
     end
   end
+  
   for k, v in pairs(megautils.removeMapFuncs) do
     if type(v) == "function" then
       v(self)
@@ -785,6 +894,8 @@ function mapEntity:removed()
       v.func(self)
     end
   end
+  
+  self.map:release()
 end
 
 function mapEntity:recursiveChecker(tab, index, name)
@@ -953,6 +1064,48 @@ advancedEntity = entity:extend()
 
 advancedEntity.autoClean = false
 
+function advancedEntity.transfer(from, to)
+  advancedEntity.super.transfer(from, to)
+  
+  to.explosionType = from.explosionType
+  to.removeOnDeath = from.removeOnDeath
+  to.dropItem = from.dropItem
+  to.health = from.health
+  to.soundOnHit = from.soundOnHit
+  to.soundOnDeath = from.soundOnDeath
+  to.autoHitPlayer = from.autoHitPlayer
+  to.damage = from.damage
+  to.hurtable = from.hurtable
+  to.flipWithPlayer = from.flipWithPlayer
+  if type(from.defeatSlot) == "table" then
+    to.defeatSlot = table.clone(from.defeatSlot)
+  else
+    to.defeatSlot = from.defeatSlot
+  end
+  if type(from.defeatSlotValue) == "table" then
+    to.defeatSlotValue = table.clone(from.defeatSlotValue)
+  else
+    to.defeatSlotValue = from.defeatSlotValue
+  end
+  to.removeWhenOutside = from.removeWhenOutside
+  to.removeHealthBarWithSelf = from.removeHealthBarWithSelf
+  to.barRelativeToView = from.barRelativeToView
+  to.barOffsetX = from.barOffsetX
+  to.barOffsetY = from.barOffsetY
+  to.applyAutoFace = from.applyAutoFace
+  to.pierceType = from.pierceType
+  to.autoCollision = from.autoCollision
+  to.autoGravity = from.autoGravity
+  to.doAutoCollisionBeforeUpdate = from.doAutoCollisionBeforeUpdate
+  to.autoCrush = from.autoCrush
+  to.dead = from.dead
+  to.closest = from.closest
+  to._didCol = from._didCol
+  to.healthHandler = from.healthHandler
+  to.autoFace = from.autoFace
+  to.side = from.side
+end
+
 advancedEntity.SMALLBLAST = 1
 advancedEntity.BIGBLAST = 2
 advancedEntity.DEATHBLAST = 3
@@ -979,7 +1132,7 @@ function advancedEntity:new()
     self.barOffsetX = (view.w - 24)
     self.barOffsetY = 80
     self.applyAutoFace = true
-    self.pierceType = pierce.NOPIERCE
+    self.pierceType = pierce.PIERCE
     self.autoCollision = true
     self.autoGravity = true
     self.doAutoCollisionBeforeUpdate = false
@@ -1001,6 +1154,7 @@ function advancedEntity:added()
   self:addToGroup("collision")
   self:addToGroup("handledBySection")
   self:addToGroup("interactable")
+  self:addToGroup("advancedEntity")
 end
 
 function advancedEntity:useHealthBar(oneColor, twoColor, outlineColor, add)
@@ -1014,18 +1168,19 @@ function advancedEntity:useHealthBar(oneColor, twoColor, outlineColor, add)
   self.healthHandler:instantUpdate(self.health)
   self.health = nil
   if camera.main then
-    camera.main.funcs[self] = function(s)
-        self.healthHandler.transform.x = (self.barRelativeToView and view.x or 0) + self.barOffsetX
-        self.healthHandler.transform.y = (self.barRelativeToView and view.y or 0) + self.barOffsetY
+    camera.main.funcs["advancedEntity"] = function(s)
+        if megautils.groups().advancedEntity then
+          for k, v in ipairs(megautils.groups().advancedEntity) do
+            v.healthHandler.transform.x = (v.barRelativeToView and view.x or 0) + v.barOffsetX
+            v.healthHandler.transform.y = (v.barRelativeToView and view.y or 0) + v.barOffsetY
+          end
+        end
       end
   end
 end
 
 function advancedEntity:removed()
   if self.removeHealthBarWithSelf and self.healthHandler then
-    if camera.main then
-      camera.main.funcs[self] = nil
-    end
     if not self.healthHandler.isRemoved then
       megautils.remove(self.healthHandler)
     end
@@ -1095,13 +1250,6 @@ function advancedEntity:afterUpdate()
   if self.removeWhenOutside and megautils.outside(self) then
     megautils.removeq(self)
   end
-end
-
-function advancedEntity:determineIFrames(o)
-  if megaMan.allPlayers and table.contains(megaMan.allPlayers, o) then
-    return 80
-  end
-  return 2
 end
 
 function advancedEntity:interactedWith(o, c)
@@ -1201,39 +1349,77 @@ bossEntity = advancedEntity:extend()
 
 bossEntity.autoClean = false
 
+function bossEntity.transfer(from, to)
+  bossEntity.super.transfer(from, to)
+  
+  to.state = from.state
+  to._subState = from._subState
+  to.skipBoss = from.skipBoss
+  to.skipBossState = from.skipBossState
+  to.doIntro = from.doIntro
+  to.strikePose = from.strikePose
+  to.continueAfterDeath = from.continueAfterDeath
+  to.afterDeathState = from.afterDeathState
+  to.weaponGetMenuState = from.weaponGetMenuState
+  to.doBossIntro = from.doBossIntro
+  to.bossIntroText = from.bossIntroText
+  to.weaponGetText = from.weaponGetText
+  to.stageState = from.stageState
+  to.bossIntroWaitTime = from.bossIntroWaitTime
+  to.weaponGetBehaviour = from.weaponGetBehaviour
+  to.skipStart = from.skipStart
+  to.musicPath = from.musicPath
+  to.musicLoop = from.musicLoop
+  to.musicLoopPoint = from.musicLoopPoint
+  to.musicLoopEndPoint = from.musicLoopEndPoint
+  to.musicVolume = from.musicVolume
+  to.musicBIPath = from.musicBIPath
+  to.musicBIVolume = from.musicBIVolume
+  to.ds = from.ds
+  to.screen = from.screen
+  if from.screen then
+    to.screen = megautils.entityFromID(from.screen.id)
+  end
+  to.dOff = from.dOff
+  to.oldY = from.oldY
+  to._timer = from._timer
+  to._textPos = from._textPos
+  to._textTimer = from._textTimer
+  to._halfWidth = from._halfWidth
+end
+
 function bossEntity:new()
   bossEntity.super.new(self)
   self.soundOnDeath = "assets/sfx/dieExplode.ogg"
   self.dropItem = false
-  self.state = 0
-  self._subState = 0
+  self.explosionType = advancedEntity.DEATHBLAST
   self.canDraw.global = false
   self.canBeInvincible.intro = true
+  self.defeatSlot = nil
+  self.flipWithPlayer = false
+  self.removeWhenOutside = false
+  self.autoCollision = false
+  self.autoGravity = false
+  self.removeHealthBarWithSelf = false
+  self.state = 0
+  self._subState = 0
   self.skipBoss = false
-  self.skipBossState = "assets/states/menus/menu.state.tmx"
+  self.skipBossState = globals.menuState
   self.doIntro = true
   self.strikePose = true
   self.continueAfterDeath = false
-  self.afterDeathState = weaponGetState
-  self.weaponGetMenuState = "assets/states/menus/menu.state.tmx"
-  self.defeatSlot = nil
+  self.afterDeathState = globals.weaponGetState
+  self.weaponGetMenuState = globals.menuState
   self.doBossIntro = megautils.getCurrentState() == globals.bossIntroState
-  self.autoCollision = false
-  self.autoGravity = false
   self.bossIntroText = nil
   self.weaponGetText = "WEAPON GET... (NAME HERE)"
   self.stageState = nil
   self.bossIntroWaitTime = 400
-  self.removeHealthBarWithSelf = false
-  self.weaponGetBehaviour = function(m)
+  self.weaponGetBehaviour = function(s)
       return true
     end
-  self.explosionType = advancedEntity.DEATHBLAST
-  self.soundOnDeath = "assets/sfx/dieExplode.ogg"
-  self.flipWithPlayer = false
-  self.removeWhenOutside = false
   self.skipStart = false
-  self:setMusic("assets/sfx/music/boss.wav", true, 162898, 444759)
+  self:setMusic("assets/sfx/music/boss.ogg")
   self:setBossIntroMusic("assets/sfx/music/stageStart.ogg")
 end
 
@@ -1241,11 +1427,10 @@ function bossEntity:useHealthBar(oneColor, twoColor, outlineColor, add)
   bossEntity.super.useHealthBar(self, oneColor, twoColor, outlineColor, add or add ~= nil)
 end
 
-function bossEntity:setMusic(p, l, lp, lep, v)
+function bossEntity:setMusic(p, l, lp, v)
   self.musicPath = p
   self.musicLoop = l == nil or l
   self.musicLoopPoint = lp
-  self.musicLoopEndPoint = lep
   self.musicVolume = v or 1
 end
 
@@ -1340,7 +1525,7 @@ function bossEntity:start()
     if not table.contains(result, false) then
       self._subState = 2
       if self.musicPath then
-        megautils.playMusic(self.musicPath, self.musicLoop, self.musicLoopPoint, self.musicLoopEndPoint, self.musicVolume)
+        megautils.playMusic(self.musicPath, self.musicVolume)
       end
     end
   elseif self._subState == 2 then
@@ -1394,11 +1579,9 @@ function bossEntity:bossIntro()
     self._textPos = 0
     self._textTimer = 0
     self._subState = 1
-    self._textObj = love.graphics.newText(mmFont, self.bossIntroText)
-    self._halfWidth = self._textObj:getWidth()/2
-    self._textObj:set("")
+    self._halfWidth = love.graphics.newText(mmFont, self.bossIntroText):getWidth()/2
     if self.musicBIPath then
-      megautils.playMusic(self.musicBIPath, false, nil, nil, self.musicBIVolume)
+      megautils.playMusic(self.musicBIPath, self.musicBIVolume)
     end
   elseif self._subState == 1 then
     self.transform.y = math.min(self.transform.y+10, math.floor(view.h/2)-(self.collisionShape.h/2))
@@ -1447,9 +1630,7 @@ function bossEntity:update()
 end
 
 function bossEntity:draw()
-  if self.doBossIntro and self.bossIntroText and self._textObj then
-    love.graphics.setFont(mmFont)
-    self._textObj:set(self.bossIntroText:sub(0, self._textPos or 0))
-    love.graphics.draw(self._textObj, (view.w/2)-self._halfWidth, 142)
+  if self.doBossIntro and self.bossIntroText then
+    love.graphics.print(self.bossIntroText:sub(0, self._textPos or 0), (view.w/2)-self._halfWidth, 142)
   end
 end

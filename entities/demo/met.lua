@@ -8,8 +8,8 @@ end)
 
 function met:new(x, y)
   met.super.new(self)
-  self.transform.y = y
-  self.transform.x = x
+  self.transform.x = x or 0
+  self.transform.y = y or 0
   self:setRectangleCollision(14, 14)
   self.t = megautils.getResource("met")
   self.c = "safe"
@@ -82,7 +82,7 @@ function met:update(dt)
 end
 
 function met:draw()
-  self.quads[self.c]:draw(self.t, math.round(self.transform.x), math.round(self.transform.y))
+  self.t:draw(self.quads[self.c], math.round(self.transform.x), math.round(self.transform.y))
 end
 
 metBullet = weapon:extend()
@@ -99,11 +99,11 @@ function metBullet:new(x, y, p, vx, vy)
   
   self.transform.x = x or 0
   self.transform.y = y or 0
-  self.velocity.velx = vx
-  self.velocity.vely = vy
+  self.velocity.velx = vx or 0
+  self.velocity.vely = vy or 0
   self.damage = megautils.diffValue(-2, {easy=-1, normal=-2, hard=-3})
 end
 
 function metBullet:draw()
-  self.quad:draw(self.tex, math.round(self.transform.x), math.round(self.transform.y))
+  self.tex:draw(self.quad, math.floor(self.transform.x), math.floor(self.transform.y))
 end

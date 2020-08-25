@@ -17,8 +17,6 @@ megautils.resetGameObjectsFuncs.barHandler = {func=function()
     for i=1, maxPlayerCount do
       healthHandler.playerTimers[i] = -2
     end
-    
-    weaponHandler.id = 0
   end, autoClean=false}
 
 function healthHandler:new(colorOne, colorTwo, colorOutline, side, r, segments, player)
@@ -26,9 +24,9 @@ function healthHandler:new(colorOne, colorTwo, colorOutline, side, r, segments, 
   self.barOne = megautils.getResource("barOne")
   self.barTwo = megautils.getResource("barTwo")
   self.barOutline = megautils.getResource("barOutline")
-  self.colorOne = colorOne
-  self.colorTwo = colorTwo
-  self.colorOutline = colorOutline
+  self.colorOne = colorOne or {252, 224, 168}
+  self.colorTwo = colorTwo or {255, 255, 255}
+  self.colorOutline = {0, 0, 0}
   self.quads = {}
   self.quads[0] = quad(0, 48, 8, 8)
   self.quads[1] = quad(8, 48, 8, 8)
@@ -165,15 +163,15 @@ function healthHandler:draw()
     love.graphics.setColor(self.colorOutline[1]/255, 
       self.colorOutline[2]/255,
       self.colorOutline[3]/255, 1)
-    self.quads[bit]:draw(self.barOutline, tx, ty, tr)
+    self.barOutline:draw(self.quads[bit], tx, ty, tr)
     love.graphics.setColor(self.colorOne[1]/255, 
       self.colorOne[2]/255,
       self.colorOne[3]/255, 1)
-    self.quads[bit]:draw(self.barOne, tx, ty, tr)
+    self.barOne:draw(self.quads[bit], tx, ty, tr)
     love.graphics.setColor(self.colorTwo[1]/255, 
       self.colorTwo[2]/255,
       self.colorTwo[3]/255, 1)
-    self.quads[bit]:draw(self.barTwo, tx, ty, tr)
+    self.barTwo:draw(self.quads[bit], tx, ty, tr)
   end
   if self.player and globals.playerCount > 1 then
     love.graphics.setColor(0, 0, 0, 1)
@@ -187,8 +185,6 @@ end
 weaponHandler = basicEntity:extend()
 
 weaponHandler.autoClean = false
-
-weaponHandler.id = 0
 
 function weaponHandler:new(side, r, slots)
   weaponHandler.super.new(self)
@@ -211,8 +207,6 @@ function weaponHandler:new(side, r, slots)
   self.riseTimer = 4
   self.side = side or 1
   self.rot = r or "y"
-  self.id = tostring(weaponHandler.id)
-  weaponHandler.id = weaponHandler.id + 1
 end
 
 function weaponHandler:added()
@@ -258,8 +252,8 @@ end
 function weaponHandler:removeWeaponShots()
   if weapon.removeGroups[self.current] then
     for _, i in ipairs(weapon.removeGroups[self.current]) do
-      if megautils.groups()[i .. self.id] then
-        for _, v in ipairs(megautils.groups()[i .. self.id]) do
+      if megautils.groups()[i .. tostring(self.id)] then
+        for _, v in ipairs(megautils.groups()[i .. tostring(self.id)]) do
           megautils.removeq(v)
         end
       end
@@ -288,7 +282,7 @@ end
 
 function weaponHandler:updateCurrent(newWE)
   if self.current then
-    if newWE > self.energy[self.currentSlot] and self.energy[self.currentSlot] < 4*self.segments[self.currentSlot] then
+    if newWE > self.energy[self.currentSlot] and self.energy[self.currentSlot] < 4*weapon.segments[self.currentSlot] then
       megautils.freeze({self}, "wb")
       self.energy[self.currentSlot] = math.min(newWE, 4*(weapon.segments[self.current] or 7))
       self.riseTimer = 0
@@ -308,7 +302,7 @@ end
 
 function weaponHandler:update(dt)
   if self.current and self.energy[self.currentSlot] and weapon.segments[self.current] then
-    self.energy[self.currentSlot] = math.clamp(self.energy[self.currentSlot], 0, self.segments[self.currentSlot]*4)
+    self.energy[self.currentSlot] = math.clamp(self.energy[self.currentSlot], 0, weapon.segments[self.currentSlot]*4)
     if self.renderedWE[self.currentSlot] < self.energy[self.currentSlot] then
       self.riseTimer = math.min(self.riseTimer+1, 4)
       if self.riseTimer == 4 then
@@ -345,12 +339,12 @@ function weaponHandler:draw()
     love.graphics.setColor(0, 0, 0, 1)
     local tx, ty, tr = self.transform.x-(self.rot=="x" and (8*i)*self.side or 0), 
       self.transform.y-(self.rot=="y" and (8*i)*self.side or 0), math.rad(self.rot=="x" and 90 or 0)
-    self.quads[bit]:draw(self.barOutline, tx, ty, tr)
+    self.barOutline:draw(self.quads[bit], tx, ty, tr)
     love.graphics.setColor(weapon.colors[self.current].one[1]/255, weapon.colors[self.current].one[2]/255,
       weapon.colors[self.current].one[3]/255, 1)
-    self.quads[bit]:draw(self.barOne, tx, ty, tr)
+    self.barOne:draw(self.quads[bit], tx, ty, tr)
     love.graphics.setColor(weapon.colors[self.current].two[1]/255, weapon.colors[self.current].two[2]/255,
       weapon.colors[self.current].two[3]/255, 1)
-    self.quads[bit]:draw(self.barTwo, tx, ty, tr)
+    self.barTwo:draw(self.quads[bit], tx, ty, tr)
   end
 end

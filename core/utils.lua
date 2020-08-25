@@ -1,3 +1,18 @@
+local function cloneFunc(fn)
+  local dumped = string.dump(fn)
+  local cloned = loadstring(dumped)
+  local i = 1
+  while true do
+    local name = debug.getupvalue(fn, i)
+    if not name then
+      break
+    end
+    debug.upvaluejoin(cloned, i, fn, i)
+    i = i + 1
+  end
+  return cloned
+end
+
 function toboolean(v)
   if type(v) == "string" then
     if v == "true" then
@@ -58,21 +73,37 @@ function table.convert1Dto2D(t, w)
   return tmp
 end
 
-function iterateDirs(func, path)
+function iterateDirs(func, path, noAppdata, special)
   local results = {}
   path = path or ""
+  
   for k, v in pairs(love.filesystem.getDirectoryItems(path)) do
-    if v:sub(1, 1) ~= "." and love.filesystem.getInfo(path .. (path ~= "" and "/" or path) .. v).type == "directory" then
-      results = table.merge({results, iterateDirs(func, path .. (path ~= "" and "/" or path) .. v)})
-    else
-      if func(v) then results[#results+1] = path .. (path ~= "" and "/" or path) .. v end
+    local p = path .. (path ~= "" and "/" or path) .. v
+    if not noAppdata or love.filesystem.getRealDirectory(p) ~= love.filesystem.getAppdataDirectory() then
+      local info = love.filesystem.getInfo(p)
+      local no = v:sub(1, 1) == "."
+      if not no and info.type == "directory" then
+        results = table.merge({results, iterateDirs(func, p, noAppdata, special)})
+      elseif not special or not no then
+        if not func or func(v) then results[#results+1] = p .. (special and info.modtime or "") end
+      end
     end
   end
+  
+  table.sort(results)
+  
   return results
 end
 
 function string:trimmed()
   return self:match("^%s*(.-)%s*$")
+end
+
+function string:replaceIndex(i, s)
+  local st = self:sub(1, i-1)
+  local en = self:sub(i+1, self:len())
+  
+  return st .. s .. en
 end
 
 function string:split(inSplitPattern, outResults)

@@ -20,7 +20,7 @@ function contPanels:new()
     self.mq = megautils._musicQueue
     megautils.stopMusic()
   end
-  megautils.playMusic("assets/sfx/music/gameOver.ogg", false)
+  megautils.playMusic("assets/sfx/music/gameOver.ogg")
 end
 
 function contPanels:added()
@@ -41,9 +41,9 @@ end
 
 function contPanels:draw()
   if self.state == 1 then
-    self.quadTwo:draw(self.tex, 48, 128)
+    self.tex:draw(self.quadTwo, 48, 128)
   end
-  self.quadOne:draw(self.tex, 40, 56)
+  self.tex:draw(self.quadOne, 40, 56)
 end
 
 contSelect = entity:extend()
@@ -79,14 +79,14 @@ function contSelect:update()
     elseif self.pick == 0 then
       self.picked = true
       self.canDraw.global = false
-      megautils.transitionToState("assets/states/menus/menu.state.tmx")
+      megautils.transitionToState(globals.menuState)
     end
   end
   self.transform.y = self.offY + self.pick*16
 end
 
 function contSelect:draw()
-  love.graphics.draw(self.tex, self.transform.x, self.transform.y)
+  self.tex:draw(self.transform.x, self.transform.y)
 end
 
 return continueState
