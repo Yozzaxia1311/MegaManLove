@@ -1250,6 +1250,8 @@ function advancedEntity:afterUpdate()
 end
 
 function advancedEntity:interactedWith(o, c)
+  if self.dead then return end
+  
   local doDink = self:determineDink(o)
   
   if checkTrue(self.canBeInvincible) or doDink or not self.hurtable then
