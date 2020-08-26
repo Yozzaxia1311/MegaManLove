@@ -297,6 +297,7 @@ megautils._ranFiles = {}
 function megautils.runFile(path, runOnce)
   if runOnce then
     if not table.contains(megautils._ranFiles, path) then
+      megautils._ranFiles[#megautils._ranFiles+1] = path
       return love.filesystem.load(path)()
     end
   else
