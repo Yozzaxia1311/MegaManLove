@@ -829,14 +829,12 @@ mapEntity.autoClean = false
 function mapEntity.ser()
   return {
       registered = mapEntity.registered,
-      ranFiles = mapEntity.ranFiles,
       doSort = mapEntity.doSort
     }
 end
 
 function mapEntity.deser(t)
   mapEntity.registered = t.registered
-  mapEntity.ranFiles = t.ranFiles
   mapEntity.doSort = t.doSort
 end
 
@@ -1027,9 +1025,8 @@ function mapEntity.add(ol, map)
   for i=1, #mapEntity.registered do
     local layer = mapEntity.registered[i]
     for k, v in ipairs(ol) do
-      if v.properties.run and not table.contains(mapEntity.ranFiles, v.properties.run) then
-        megautils.runFile(v.properties.run)
-        mapEntity.ranFiles[#mapEntity.ranFiles+1] = v.properties.run
+      if v.properties.run then
+        megautils.runFile(v.properties.run, true)
       end
       for j=1, #layer.data do
         if layer.data[j].name == v.name then
