@@ -75,7 +75,7 @@ function stageSelect:removed()
 end
 
 function stageSelect:update()
-  self.anims:update(defaultFramerate)
+  self.anims:update(1/60)
   
   local oldx, oldy = self.x, self.y
   

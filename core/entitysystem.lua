@@ -944,7 +944,7 @@ function mapEntity:addObjects()
 end
 
 function mapEntity:update()
-  self.map:update(defaultFramerate)
+  self.map:update(1/60)
 end
 
 function mapEntity:draw()

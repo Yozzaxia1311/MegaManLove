@@ -391,11 +391,11 @@ function protoChargedBuster:new(x, y, p, dir, skin)
 end
 
 function protoChargedBuster:dinking()
-  self.anim:update(defaultFramerate)
+  self.anim:update(1/60)
 end
 
 function protoChargedBuster:act()
-  self.anim:update(defaultFramerate)
+  self.anim:update(1/60)
 end
 
 function protoChargedBuster:draw()
@@ -559,11 +559,11 @@ function megaSemiBuster:new(x, y, p, dir)
 end
 
 function megaSemiBuster:dinking()
-  self.anim:update(defaultFramerate)
+  self.anim:update(1/60)
 end
 
 function megaSemiBuster:act()
-  self.anim:update(defaultFramerate)
+  self.anim:update(1/60)
 end
 
 function megaSemiBuster:draw()
@@ -591,11 +591,11 @@ function megaChargedBuster:new(x, y, p, dir)
 end
 
 function megaChargedBuster:dinking()
-  self.anim:update(defaultFramerate)
+  self.anim:update(1/60)
 end
 
 function megaChargedBuster:act()
-  self.anim:update(defaultFramerate)
+  self.anim:update(1/60)
 end
 
 function megaChargedBuster:draw()
@@ -654,7 +654,7 @@ function trebleBoost:added()
 end
 
 function trebleBoost:act()
-  self.anims:update(defaultFramerate)
+  self.anims:update(1/60)
   if self.s == -1 then
     self:moveBy(0, 8)
   elseif self.s == 0 then
@@ -800,7 +800,7 @@ function rushJet:added()
 end
 
 function rushJet:act(dt)
-  self.anims:update(defaultFramerate)
+  self.anims:update(1/60)
   if self.s == -1 then
     self:moveBy(0, 8)
   elseif self.s == 0 then
@@ -986,7 +986,7 @@ function rushCoil:added()
 end
 
 function rushCoil:act(dt)
-  self.anims:update(defaultFramerate)
+  self.anims:update(1/60)
   if self.s == -1 then
     self:moveBy(0, 8)
   elseif self.s == 0 then

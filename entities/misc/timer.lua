@@ -85,7 +85,7 @@ function timer.absorbCutscene(func, music)
             megaMan.mainPlayer.anims:set("jump")
           end
           megaMan.mainPlayer.side = (megaMan.mainPlayer.transform.x > s.to and -1 or 1)
-          megaMan.mainPlayer.anims:update(defaultFramerate)
+          megaMan.mainPlayer.anims:update(1/60)
           megaMan.mainPlayer.velocity.velx = 0
           s.timer = 0
         end
@@ -118,7 +118,7 @@ function timer.absorbCutscene(func, music)
         else
           megaMan.mainPlayer.anims:set("idle")
         end
-        megaMan.mainPlayer.anims:update(defaultFramerate)
+        megaMan.mainPlayer.anims:update(1/60)
         collision.doGrav(megaMan.mainPlayer)
         megaMan.mainPlayer:phys()
         if not megaMan.mainPlayer.ground then

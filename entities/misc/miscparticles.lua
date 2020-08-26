@@ -96,7 +96,7 @@ function slideParticle:new(x, y, p, side)
 end
 
 function slideParticle:update()
-  self.anim:update(defaultFramerate)
+  self.anim:update(1/60)
   if self.anim:looped() then
     megautils.removeq(self)
   end
@@ -130,7 +130,7 @@ function damageSteam:new(x, y, p)
 end
 
 function damageSteam:update()
-  self.anim:update(defaultFramerate)
+  self.anim:update(1/60)
   if self.anim:looped() then
     megautils.removeq(self)
   end
@@ -231,7 +231,7 @@ function deathExplodeParticle:new(x, y, p, angle, spd)
 end
 
 function deathExplodeParticle:update(dt)
-  self.anim:update(defaultFramerate)
+  self.anim:update(1/60)
 end
 
 function deathExplodeParticle:draw()
@@ -275,7 +275,7 @@ function absorbParticle:update()
   if not self.user or self.pos == 1 or self.user.isRemoved then
     megautils.removeq(self)
   end
-  self.anim:update(defaultFramerate)
+  self.anim:update(1/60)
 end
 
 function absorbParticle:draw()
@@ -341,7 +341,7 @@ function smallBlast:new(x, y, p, spd)
 end
 
 function smallBlast:update()
-  self.anim:update(defaultFramerate)
+  self.anim:update(1/60)
   if self.anim:looped() then
     megautils.removeq(self)
   end

@@ -29,7 +29,7 @@ function moveAcrossPlatform:update()
       end
     end
   elseif self.state == 1 then
-    self.tween:update(defaultFramerate)
+    self.tween:update(1/60)
     self.transform.x = math.round(self.transform.x)
     self.transform.y = math.round(self.transform.y)
   end

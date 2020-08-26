@@ -22,7 +22,7 @@ function splash:new(offx, offy, p, side)
 end
 
 function splash:update()
-  self.anim:update(defaultFramerate)
+  self.anim:update(1/60)
   if self.user then
     self.transform.x = self.user.transform.x + self.offx
     self.transform.y = self.user.transform.y + self.offy

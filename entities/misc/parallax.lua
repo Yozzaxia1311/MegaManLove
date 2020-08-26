@@ -52,7 +52,7 @@ end
 function parallax:update()
   local imgw, imgh
   if self.anim then
-    self.anim:update(defaultFramerate)
+    self.anim:update(1/60)
     imgw = self.animWidth
     imgh = self.animHeight
   else

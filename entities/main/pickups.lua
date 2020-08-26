@@ -132,7 +132,7 @@ end
 
 function smallHealth:update()
   smallHealth.super.update(self)
-  self.anim:update(defaultFramerate)
+  self.anim:update(1/60)
 end
 
 function smallHealth:draw()
@@ -177,7 +177,7 @@ end
 
 function health:update()
   health.super.update(self)
-  self.anim:update(defaultFramerate)
+  self.anim:update(1/60)
 end
 
 function health:draw()
@@ -223,7 +223,7 @@ end
 
 function smallEnergy:update()
   smallEnergy.super.update(self)
-  self.anim:update(defaultFramerate)
+  self.anim:update(1/60)
 end
 
 function smallEnergy:draw()
@@ -278,7 +278,7 @@ end
 
 function energy:update()
   energy.super.update(self)
-  self.anim:update(defaultFramerate)
+  self.anim:update(1/60)
 end
 
 function energy:draw()
@@ -398,7 +398,7 @@ end
 
 function eTank:update()
   eTank.super.update(self)
-  self.anim:update(defaultFramerate)
+  self.anim:update(1/60)
 end
 
 function eTank:draw()
@@ -454,7 +454,7 @@ end
 
 function wTank:update(dt)
   wTank.super.update(self)
-  self.anim:update(defaultFramerate)
+  self.anim:update(1/60)
 end
 
 function wTank:draw()

@@ -1817,7 +1817,7 @@ function megaMan:animate(getDataOnly)
     else
       self.anims.flipX = false
     end
-    self.anims:update(defaultFramerate)
+    self.anims:update(1/60)
   else
     return newAnim, newFrame, newTime, pause, resume
   end
@@ -1935,7 +1935,7 @@ function megaMan:update()
         megautils.transitionToState(self._wgs)
       end
     end
-    self.anims:update(defaultFramerate)
+    self.anims:update(1/60)
   else
     if not megaMan.once then
       megaMan.once = true
@@ -1957,7 +1957,7 @@ function megaMan:update()
           v.func(self)
         end
       end
-      if self.cameraTween:update(defaultFramerate) then
+      if self.cameraTween:update(1/60) then
         self:die()
         megautils.unfreeze(nil, "dying")
         return
