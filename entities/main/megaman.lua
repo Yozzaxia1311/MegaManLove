@@ -614,11 +614,11 @@ function megaMan:regBox()
 end
 
 function megaMan:basicSlideBox()
-  self:setRectangleCollision(11, checkFalse(self.canHaveSmallSlide) and 21 or 14)
+  self:setRectangleCollision(11, checkFalse(self.canHaveSmallSlide) and 14 or 21)
 end
 
 function megaMan:slideBox()
-  self:setRectangleCollision(17, checkFalse(self.canHaveSmallSlide) and 21 or 14)
+  self:setRectangleCollision(17, checkFalse(self.canHaveSmallSlide) and 14 or 21)
 end
 
 function megaMan:checkRegBox(ox, oy)
