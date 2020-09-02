@@ -1003,10 +1003,12 @@ function megaMan:interactedWith(o, c)
     self.changeHealth = 0
   else
     self.changeHealth = self:weaponTable(o) or c
-    if self.changeHealth < 0 and self.iFrames <= 0 then
-      self.iFrames = o:determineIFrames(self)
-    else
-      return
+    if self.changeHealth < 0 then
+      if self.iFrames <= 0 then
+        self.iFrames = o:determineIFrames(self)
+      else
+        return
+      end
     end
   end
   for k, v in pairs(megautils.playerInteractedWithFuncs) do
