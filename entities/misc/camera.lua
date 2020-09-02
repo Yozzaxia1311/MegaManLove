@@ -241,10 +241,10 @@ function camera:doView(spdx, spdy, without)
   if #megaMan.allPlayers <= 1 then
     local o = megaMan.allPlayers[1]
     if self.doScrollX then
-      self.transform.x = math.round(o.transform.x) - (self.collisionShape.w/2) + (o.collisionShape.w/2) + o:camOffX()
+      self.transform.x = math.floor(o.transform.x) - math.round(self.collisionShape.w/2) + math.round(o.collisionShape.w/2) + o:camOffX()
     end
     if self.doScrollY then
-      self.transform.y = math.round(o.transform.y) - (self.collisionShape.h/2) + (o.collisionShape.h/2) + o:camOffY()
+      self.transform.y = math.floor(o.transform.y) - math.round(self.collisionShape.h/2) + math.round(o.collisionShape.h/2) + o:camOffY()
     end
   else
     local avx, avy = 0, 0
