@@ -371,13 +371,13 @@ binser.register(Tween_mt, "tween", function(o)
     result.subject = o.subject
     result.target = o.target
     result.easing = o.easing
-    reuslt.clock = o.clock
+    result.clock = o.clock
     
     return result
   end, function(o)
     local result = tween.new(o.duration, o.subject, o.target, o.easing)
     
-    reuslt.clock = o.clock
+    result.clock = o.clock
     
     return result
   end)
