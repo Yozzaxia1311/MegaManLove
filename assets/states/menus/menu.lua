@@ -8,7 +8,7 @@ function menuState:begin()
     :addToGroup("freezable")
   if globals.wgsToMenu then
     globals.wgsToMenu = nil
-    megautils._musicQueue = nil
+    mmMusic._queue = nil
   end
 end
 

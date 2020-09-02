@@ -16,8 +16,8 @@ function contPanels:new()
   self.quadTwo = quad(0, 48, 160, 56)
   self.state = 0
   self.timer = 0
-  if megautils._musicQueue then
-    self.mq = megautils._musicQueue
+  if mmMusic._queue then
+    self.mq = mmMusic._queue
     megautils.stopMusic()
   end
   megautils.playMusic("assets/sfx/music/gameOver.ogg")

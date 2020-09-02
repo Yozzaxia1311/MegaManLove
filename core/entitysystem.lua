@@ -1138,13 +1138,13 @@ function advancedEntity:new()
     self.autoGravity = true
     self.doAutoCollisionBeforeUpdate = false
     self.autoCrush = true
+    self.blockCollision.global = true
   end
   
   self.dead = false
   self.closest = nil
   self._didCol = false
   self.healthHandler = nil
-  self.blockCollision.global = true
   self.autoFace = -1
   self.side = -1
 end

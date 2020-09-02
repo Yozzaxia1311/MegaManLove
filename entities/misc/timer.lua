@@ -38,7 +38,6 @@ function timer.winCutscene(func)
         else
           megaMan.mainPlayer.anims:set("jump")
         end
-        megaMan.mainPlayer.anims.flipX = megaMan.mainPlayer.side == 1
       end
       megautils.removePlayerShots()
     elseif s.state == 1 then
@@ -94,10 +93,6 @@ function timer.absorbCutscene(func, music)
       elseif s.state == 1 then
         s.timer = math.min(s.timer+1, 300)
         if s.timer == 300 then
-          if not s.once then
-            s.once = true
-            megaMan.mainPlayer.anims.flipX = megaMan.mainPlayer.side == 1
-          end
           megaMan.mainPlayer.velocity.velx = 1.3 * megaMan.mainPlayer.side
           if megaMan.mainPlayer.ground then
             megaMan.mainPlayer.anims:set("run")

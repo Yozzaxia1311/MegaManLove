@@ -339,32 +339,32 @@ function life:draw()
   if megaMan.mainPlayer then
     local skin = megaMan.getSkin(megaMan.mainPlayer.player)
     
-    self.quad.flipY = self.gravity < 0
+    local fy = self.gravity < 0
     
     love.graphics.setColor(1, 1, 1, 1)
-    skin.texture:draw(self.quad, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37)
+    skin.texture:draw(self.quad, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
     love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
-    skin.outline:draw(self.quad, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37)
+    skin.outline:draw(self.quad, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
     love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255, megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOne[megaMan.mainPlayer.player][3]/255, 1)
-    skin.one:draw(self.quad, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37)
+    skin.one:draw(self.quad, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
     love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255, megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
       megaMan.colorTwo[megaMan.mainPlayer.player][3]/255, 1)
-    skin.two:draw(self.quad, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37)
+    skin.two:draw(self.quad, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
   else
     local skin = megaMan.getSkin(1)
     
-    self.quad.flipY = self.gravity < 0
+    local fy = self.gravity < 0
     
     love.graphics.setColor(1, 1, 1, 1)
-    skin.texture:draw(self.quad, math.floor(self.transform.x), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37)
+    skin.texture:draw(self.quad, math.floor(self.transform.x), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
     love.graphics.setColor(0, 0, 0, 1)
-    skin.outline:draw(self.quad, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37)
+    skin.outline:draw(self.quad, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
     love.graphics.setColor(0, 120/255, 248/255, 1)
-    skin.one:draw(self.quad, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37)
+    skin.one:draw(self.quad, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
     love.graphics.setColor(0, 232/255, 216/255, 1)
-    skin.two:draw(self.quad, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37)
+    skin.two:draw(self.quad, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
   end
 end
 

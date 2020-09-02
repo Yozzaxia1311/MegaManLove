@@ -182,9 +182,7 @@ binser.register(Animationmt, "animation", function(o)
         timer=o.timer,
         position=o.position,
         status=o.status,
-        _looped=o._looped,
-        flipX=o.flipX,
-        flipY=o.flipY
+        _looped=o._looped
       }
   end, function(o)
     local result = anim8.newAnimation(o.frames, o.durations, o.onLoop)
@@ -193,8 +191,6 @@ binser.register(Animationmt, "animation", function(o)
     result.position = o.position
     result.status = o.status
     result._looped = o._looped
-    result.flipX = o.flipX
-    result.flipY = o.flipY
     
     return result
   end)
@@ -222,9 +218,7 @@ local function newAnimation(frames, durations, onLoop)
       timer          = 0,
       position       = 1,
       status         = "playing",
-      _looped        = false,
-      flipX       = false,
-      flipY       = false
+      _looped        = false
     },
     Animationmt
   )
@@ -249,18 +243,7 @@ end
 
 function Animation:clone()
   local newAnim = newAnimation(self.frames, self.durations, self.onLoop)
-  newAnim.flipX, newAnim.flipY = self.flipX, self.flipY
   return newAnim
-end
-
-function Animation:flipH()
-  self.flipX = not self.flipX
-  return self
-end
-
-function Animation:flipV()
-  self.flipY = not self.flipY
-  return self
 end
 
 local function seekFrameIndex(intervals, timer)
@@ -328,29 +311,12 @@ function Animation:resume()
   self.status = "playing"
 end
 
-function Animation:draw(image, x, y, r, sx, sy, ox, oy, kx, ky)
+function Animation:draw(image, x, y, r, sx, sy, ox, oy, kx, ky, flipx, flipy)
   local frame = self.frames[self.position]
-  local lfx, lfy = frame.flipX, frame.flipY
   local vx, vy, vw, vh = frame:getViewport()
   frame:setViewport(vx, vy, vw, vh, image:getDimensions())
   
-  if self.flipX then
-    frame.flipX = not frame.flipX
-  end
-  if self.flipY then
-    frame.flipY = not frame.flipY
-  end
-  
-  frame:draw(image, x, y, r, sx, sy, ox, oy, kx, ky)
-  
-  frame.flipX = lfx
-  frame.flipY = lfy
-end
-
-function Animation:getFrameInfo(x, y, r, sx, sy, ox, oy, kx, ky)
-  
-  
-  return frame, x, y, r, sx, sy, ox, oy, kx, ky
+  frame:draw(image, x, y, r, sx, sy, ox, oy, kx, ky, flipx, flipy)
 end
 
 function Animation:getDimensions()

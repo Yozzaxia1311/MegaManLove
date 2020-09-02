@@ -125,14 +125,14 @@ function states.set(n, before, after)
   end
   
   if map then
+    if mapArgs.mPath then
+      megautils.playMusic(mapArgs.mPath, mapArgs.mVolume)
+    end
+    
     states.currentState.system:adde(map):addObjects()
     
     if mapArgs.fadeIn then
       states.currentState.system:add(fade, false):setAfter(fade.remove)
-    end
-    
-    if mapArgs.mPath then
-      megautils.playMusic(mapArgs.mPath, mapArgs.mVolume)
     end
   end
   

@@ -133,6 +133,7 @@ function mmMusic.stop()
   if mmMusic.thread:isRunning() then
     mmMusic.threadChannel:push("stop")
   end
+  mmMusic._queue = nil
 end
 
 function mmMusic._threadStopped()

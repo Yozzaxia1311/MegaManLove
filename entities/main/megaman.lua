@@ -478,8 +478,8 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   elseif (dr == nil or dr) and not self.teleporter and megaMan.mainPlayer == self then
     if self.protoWhistle then
       self.ready = megautils.add(ready, nil, 32)
-      if megautils._musicQueue then
-        self.mq = megautils._musicQueue
+      if mmMusic._queue then
+        self.mq = mmMusic._queue
         megautils.stopMusic()
       end
       megautils.playSoundFromFile((self.protoWhistle == true) and "assets/sfx/protoReady.ogg" or self.protoWhistle)
@@ -517,7 +517,7 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
       end
     end
   end
-  self.anims.flipX = self.side ~= 1
+  
   self.anims:set(self.drop and "spawn" or "idle")
   
   for k, v in pairs(megautils.playerCreatedFuncs) do
@@ -1261,7 +1261,9 @@ function megaMan:code(dt)
           self.velocity.vely = self.climbDownSpeed
         end
       end
-      self.velocity.vely = self.velocity.vely + self.currentLadder.velocity.vely
+      if self.currentLadder.velocity then
+        self.velocity.vely = self.velocity.vely + self.currentLadder.velocity.vely
+      end
     end
     for k, v in pairs(megautils.playerClimbFuncs) do
       if type(v) == "function" then
@@ -1812,11 +1814,6 @@ function megaMan:animate(getDataOnly)
       self.anims:resume()
     end
     
-    if self.anims.current ~= self.climbAnimation.regular and self.anims.current ~= self.climbTipAnimation.regular then
-      self.anims.flipX = self.side ~= 1
-    else
-      self.anims.flipX = false
-    end
     self.anims:update(1/60)
   else
     return newAnim, newFrame, newTime, pause, resume
@@ -2011,21 +2008,26 @@ function megaMan:draw()
   
   local offsetx, offsety = math.round(self.collisionShape.w/2), self.collisionShape.h
   local roundx, roundy = math.floor(self.transform.x), math.floor(self.transform.y)
+  local fx, fy = self.side ~= 1, self.gravity < 0
   
-  self.anims.flipY = self.gravity < 0
-  
-  if self.anims.current ~= "climb" and table.contains(self.climbAnimation, self.anims.current) and not self.anims.flipX then
-    offsetx = offsetx - 1
+  if table.contains(self.climbAnimation, self.anims.current) then
+    if self.anims.current == self.climbAnimation.regular or self.anims.current == self.climbTipAnimation.regular then
+      fx = false
+    end
+    
+    if not (not fx and self.anims.current ~= "climb") then
+      offsetx = offsetx + 1
+    end
   end
   
   love.graphics.setColor(1, 1, 1, 1)
-  self.texBase:draw(self.anims, roundx+offsetx, roundy+offsety+self.teleportOffY, 0, 1, 1, 32, 41)
+  self.texBase:draw(self.anims, roundx+offsetx, roundy+offsety+self.teleportOffY, 0, 1, 1, 32, 41, nil, nil, fx, fy)
   love.graphics.setColor(megaMan.colorOutline[self.player][1]/255, megaMan.colorOutline[self.player][2]/255, megaMan.colorOutline[self.player][3]/255, 1)
-  self.texOutline:draw(self.anims, roundx+offsetx, roundy+offsety+self.teleportOffY, 0, 1, 1, 32, 41)
+  self.texOutline:draw(self.anims, roundx+offsetx, roundy+offsety+self.teleportOffY, 0, 1, 1, 32, 41, nil, nil, fx, fy)
   love.graphics.setColor(megaMan.colorOne[self.player][1]/255, megaMan.colorOne[self.player][2]/255, megaMan.colorOne[self.player][3]/255, 1)
-  self.texOne:draw(self.anims, roundx+offsetx, roundy+offsety+self.teleportOffY, 0, 1, 1, 32, 41)
+  self.texOne:draw(self.anims, roundx+offsetx, roundy+offsety+self.teleportOffY, 0, 1, 1, 32, 41, nil, nil, fx, fy)
   love.graphics.setColor(megaMan.colorTwo[self.player][1]/255, megaMan.colorTwo[self.player][2]/255, megaMan.colorTwo[self.player][3]/255, 1)
-  self.texTwo:draw(self.anims, roundx+offsetx, roundy+offsety+self.teleportOffY, 0, 1, 1, 32, 41)
+  self.texTwo:draw(self.anims, roundx+offsetx, roundy+offsety+self.teleportOffY, 0, 1, 1, 32, 41, nil, nil, fx, fy)
   
   if self.weaponSwitchTimer ~= 70 then
     love.graphics.setColor(1, 1, 1, 1)

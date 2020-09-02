@@ -381,7 +381,6 @@ function protoChargedBuster:new(x, y, p, dir, skin)
   self.anim = megautils.newAnimation("protoBusterGrid", {"1-2", 1}, 1/20)
   self.side = dir or 1
   self.velocity.velx = self.side * 6
-  self.anim.flipX = self.side ~= 1
   self.pierceType = pierce.PIERCEIFKILLING
   self.sound = "protoCharged"
   self.weaponGroup = "protoChargedBuster"
@@ -397,7 +396,8 @@ function protoChargedBuster:act()
 end
 
 function protoChargedBuster:draw()
-  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)-1)
+  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)-1,
+    nil, nil, nil, nil, nil, nil, nil, self.side ~= 1)
 end
 
 weapon.removeGroups["B.BUSTER"] = {"bassBuster"}
@@ -551,7 +551,6 @@ function megaSemiBuster:new(x, y, p, dir)
   self.anim = megautils.newAnimation("smallChargeGrid", {"1-2", 1}, 1/12)
   self.side = dir or 1
   self.velocity.velx = self.side * 5
-  self.anim.flipX = self.side ~= 1
   self.sound = "semiCharged"
   self.weaponGroup = "megaBuster"
 end
@@ -565,7 +564,8 @@ function megaSemiBuster:act()
 end
 
 function megaSemiBuster:draw()
-  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)-3)
+  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)-3,
+    nil, nil, nil, nil, nil, nil, nil, self.side ~= 1)
 end
 
 megaChargedBuster = weapon:extend()
@@ -581,7 +581,6 @@ function megaChargedBuster:new(x, y, p, dir)
   self.anim = megautils.newAnimation("chargeGrid", {"1-4", 1}, 1/20)
   self.side = dir or 1
   self.velocity.velx = self.side * 5.5
-  self.anim.flipX = self.side ~= 1
   self.pierceType = pierce.PIERCEIFKILLING
   self.sound = "charged"
   self.weaponGroup = "megaChargedBuster"
@@ -597,7 +596,8 @@ function megaChargedBuster:act()
 end
 
 function megaChargedBuster:draw()
-  self.tex:draw(self.anim, math.floor(self.transform.x)+(self.side == 1 and -8 or 0), math.floor(self.transform.y)-3)
+  self.tex:draw(self.anim, math.floor(self.transform.x)+(self.side == 1 and -8 or 0), math.floor(self.transform.y)-3,
+    nil, nil, nil, nil, nil, nil, nil, self.side ~= 1)
 end
 
 weapon.removeGroups["T. BOOST"] = {"trebleBoost", "bassBuster"}
@@ -696,13 +696,11 @@ function trebleBoost:act()
       megautils.removeq(self)
     end
   end
-  
-  self.anims.flipX = self.side == 1
-  self.anims.flipY = self.gravity < 0
 end
 
 function trebleBoost:draw()
-  self.tex:draw(self.anims, math.floor(self.transform.x)-6, math.floor(self.transform.y)-12+(self.gravity >= 0 and 0 or 11))
+  self.tex:draw(self.anims, math.floor(self.transform.x)-6, math.floor(self.transform.y)-12+(self.gravity >= 0 and 0 or 11),
+    nil, nil, nil, nil, nil, nil, nil, self.side == 1, self.gravity < 0)
 end
 
 weapon.removeGroups["RUSH JET"] = {"rushJet", "megaBuster", "bassBuster"}
@@ -873,9 +871,6 @@ function rushJet:act(dt)
       self.velocity.vely = -8
     end
   end
-  
-  self.anims.flipX = self.side ~= 1
-  self.anims.flipY = self.gravity < 0
 end
 
 function rushJet:removed()
@@ -888,7 +883,8 @@ function rushJet:draw()
   if (self.anims.current == "spawn" or self.anims.current == "spawnLand") and self.user then
     self.tex:draw(self.anims, math.floor(self.transform.x)-4, math.floor(self.transform.y)+(self.user.gravity >= 0 and -16 or -6))
   else
-    self.tex:draw(self.anims, math.floor(self.transform.x)-4, math.floor(self.transform.y)-12)
+    self.tex:draw(self.anims, math.floor(self.transform.x)-4, math.floor(self.transform.y)-12,
+    nil, nil, nil, nil, nil, nil, nil, self.side ~= 1, self.gravity < 0)
   end
 end
 
@@ -975,7 +971,6 @@ function rushCoil:new(x, y, p, side, skin)
   self.weaponGroup = "rushCoil"
   self.sound = nil
   self.doDink = false
-  self.anims.flipX = self.side ~= 1
 end
 
 function rushCoil:added()
@@ -1039,12 +1034,11 @@ function rushCoil:act(dt)
       self.velocity.vely = -8
     end
   end
-  
-  self.anims.flipY = self.gravity < 0
 end
 
 function rushCoil:draw()
-  self.tex:draw(self.anims, math.floor(self.transform.x)-8, math.floor(self.transform.y)-12+(self.gravity >= 0 and 0 or 11))
+  self.tex:draw(self.anims, math.floor(self.transform.x)-8, math.floor(self.transform.y)-12+(self.gravity >= 0 and 0 or 11),
+    nil, nil, nil, nil, nil, nil, nil, self.side ~= 1, self.gravity < 0)
 end
 
 weapon.removeGroups["STICK W."] = {"stickWeapon"}

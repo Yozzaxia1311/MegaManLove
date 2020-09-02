@@ -90,9 +90,6 @@ function slideParticle:new(x, y, p, side)
     self.autoCollision = false
     self.recycle = true
   end
-  
-  self.anim.flipX = self.side == 1
-  self.anim.flipY = self.gravity < 0
 end
 
 function slideParticle:update()
@@ -103,7 +100,8 @@ function slideParticle:update()
 end
 
 function slideParticle:draw()
-  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y))
+  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y),
+    nil, nil, nil, nil, nil, nil, nil, self.side == 1, self.gravity < 0)
 end
 
 damageSteam = particle:extend()
@@ -125,8 +123,6 @@ function damageSteam:new(x, y, p)
     self.autoCollision = false
     self.recycle = true
   end
-  
-  self.anim.flipY = self.gravity < 0
 end
 
 function damageSteam:update()
@@ -137,7 +133,8 @@ function damageSteam:update()
 end
 
 function damageSteam:draw()
-  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y))
+  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y),
+    nil, nil, nil, nil, nil, nil, nil, nil, self.gravity < 0)
 end
 
 airBubble = particle:extend()

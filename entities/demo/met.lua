@@ -77,12 +77,11 @@ function met:update(dt)
       self.s = 0
     end
   end
-  self.quads[self.c].flipX = self.side == 1
-  self.quads[self.c].flipY = self.gravity < 0
 end
 
 function met:draw()
-  self.t:draw(self.quads[self.c], math.round(self.transform.x), math.round(self.transform.y))
+  self.t:draw(self.quads[self.c], math.floor(self.transform.x), math.floor(self.transform.y),
+    nil, nil, nil, nil, nil, nil, nil, self.side == 1, self.gravity < 0)
 end
 
 metBullet = weapon:extend()
