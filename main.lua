@@ -502,6 +502,7 @@ function ser()
       megautils = megautils.ser(),
       state = states.ser(),
       entitySystem = entitySystem.ser(),
+      section = section.ser(),
       loader = loader.ser(),
       music = mmMusic.ser(),
       control = control.ser(),
@@ -542,6 +543,7 @@ function deser(from, dontChangeMusic)
   megautils.deser(t.megautils)
   states.deser(t.state)
   entitySystem.deser(t.entitySystem)
+  section.deser(t.section)
   loader.deser(t.loader)
   if not dontChangeMusic then
     mmMusic.deser(t.music)
