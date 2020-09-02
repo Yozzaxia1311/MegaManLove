@@ -5,7 +5,6 @@ borderRight = "assets/misc/borderRight.png"
 isMobile = love.system.getOS() == "Android" or love.system.getOS() == "iOS"
 deadZone = 0.8
 defaultFPS = 60
-mapCacheSize = 2
 extraSkinCacheSize = 1 -- Increase this if you're using a lot of skins at once outside the boundaries of `maxPlayerCount`
 clampSkinShootOffsets = true
 useConsole = love.keyboard
