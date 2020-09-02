@@ -359,26 +359,28 @@ function mmWeaponsMenu:draw()
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.print((megautils.hasInfiniteLives() and "inf" or tostring(megautils.getLives())), 224, 200)
   
+  local px, py = view.x+156, view.y+207
+  
   skin.texture:draw(self.headQuad, tx, ty, 0, 1, 1, 31, 37)
-  skin.texture:draw(self.playerQuad, 156, 207, 0, 1, 1, 32, 41)
+  skin.texture:draw(self.playerQuad, px, py, 0, 1, 1, 32, 41)
   
   love.graphics.setColor(megaMan.colorOutline[self.player.player][1]/255, megaMan.colorOutline[self.player.player][2]/255,
     megaMan.colorOutline[self.player.player][3]/255, 1)
   
   skin.outline:draw(self.headQuad, tx, ty, 0, 1, 1, 31, 37)
-  skin.outline:draw(self.playerQuad, 156, 207, 0, 1, 1, 32, 41)
+  skin.outline:draw(self.playerQuad, px, py, 0, 1, 1, 32, 41)
   
   love.graphics.setColor(megaMan.colorOne[self.player.player][1]/255, megaMan.colorOne[self.player.player][2]/255,
     megaMan.colorOne[self.player.player][3]/255, 1)
   
   skin.one:draw(self.headQuad, tx, ty, 0, 1, 1, 31, 37)
-  skin.one:draw(self.playerQuad, 156, 207, 0, 1, 1, 32, 41)
+  skin.one:draw(self.playerQuad, px, py, 0, 1, 1, 32, 41)
   
   love.graphics.setColor(megaMan.colorTwo[self.player.player][1]/255, megaMan.colorTwo[self.player.player][2]/255,
     megaMan.colorTwo[self.player.player][3]/255, 1)
   
   skin.two:draw(self.headQuad, tx, ty, 0, 1, 1, 31, 37)
-  skin.two:draw(self.playerQuad, 156, 207, 0, 1, 1, 32, 41)
+  skin.two:draw(self.playerQuad, px, py, 0, 1, 1, 32, 41)
   
   tx, ty = view.x+24, view.y+184
   
