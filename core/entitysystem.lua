@@ -1057,6 +1057,10 @@ pierce.NOPIERCE = 0
 pierce.PIERCE = 1
 pierce.PIERCEIFKILLING = 2
 
+megautils.loadResource("assets/sfx/enemyHit.ogg", "enemyHit", true)
+megautils.loadResource("assets/sfx/enemyExplode.ogg", "enemyExplode", true)
+megautils.loadResource("assets/sfx/hugeExplode.ogg", "enemyHugeExplode", true)
+
 advancedEntity = entity:extend()
 
 advancedEntity.autoClean = false

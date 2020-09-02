@@ -1,5 +1,3 @@
-megautils.loadResource("assets/sfx/enemyHit.ogg", "enemyHit", true)
-megautils.loadResource("assets/sfx/enemyExplode.ogg", "enemyExplode", true)
 megautils.loadResource("assets/sfx/buster.ogg", "buster", true)
 megautils.loadResource("assets/sfx/reflect.ogg", "dink", true)
 

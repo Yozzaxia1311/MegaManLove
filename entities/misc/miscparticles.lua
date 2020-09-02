@@ -355,7 +355,7 @@ blast = particle:extend()
 
 blast.autoClean = false
 
-function blast:new(x, y, p, times)
+function blast:new(x, y, p, hurt, damage, times)
   blast.super.new(self, p)
   self.transform.x = x or 0
   self.transform.y = y or 0
@@ -364,6 +364,8 @@ function blast:new(x, y, p, times)
   self.times = 0
   self.max = times or 4
   self.autoCollision = false
+  self.hurt = hurt == true
+  self.damage = damage or -2
 end
 
 function blast:added()
@@ -371,16 +373,31 @@ function blast:added()
   megautils.add(smallBlast, self.transform.x, self.transform.y, self.user)
 end
 
+function blast:check()
+  if megaMan.allPlayers then
+    local ox, oy = self.transform.x, self.transform.y
+    self.transform.x = self.transform.x + 12 - 24
+    self.transform.y = self.transform.y + 12 - 24
+    self:setRectangleCollision(48, 48)
+    self:interact(self:collisionTable(megaMan.allPlayers), self.damage)
+    self.collisionShape = nil
+    self.transform.x, self.transform.y = ox, oy
+  end
+end
+
 function blast:update(dt)
   self.timer = math.min(self.timer+1, 5)
   if self.timer == 5 then
     self.timer = 0
     megautils.add(smallBlast, megautils.circlePathX(self.transform.x, self.deg, 20), 
-        megautils.circlePathY(self.transform.y, self.deg, 20), self.user)
+      megautils.circlePathY(self.transform.y, self.deg, 20), self.user)
     megautils.add(smallBlast, megautils.circlePathX(self.transform.x, self.deg-180, 20), 
-        megautils.circlePathY(self.transform.y, self.deg-180, 20), self.user)
+      megautils.circlePathY(self.transform.y, self.deg-180, 20), self.user)
     self.deg = math.wrap(self.deg+360/6, 0, 360)
     self.times = self.times + 1
+  end
+  if self.hurt then
+    self:check()
   end
   if self.times == self.max then
     megautils.removeq(self)
