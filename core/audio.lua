@@ -133,6 +133,8 @@ function mmMusic.stop()
   if mmMusic.thread:isRunning() then
     mmMusic.threadChannel:push("stop")
   end
+  
+  mmMusic.curID = nil
   mmMusic._queue = nil
 end
 
@@ -320,11 +322,9 @@ function mmMusic.update()
       elseif value == "tell" then
         mmMusic.mTell = mmMusic.mainChannel:pop()
       elseif value == "stop" then
-        mmMusic.curID = nil
         mmMusic.loopPoint = 0
         mmMusic.time = 0
         mmMusic.mTell = 0
-        mmMusic._queue = nil
         mmMusic.stopping = true
       end
     else

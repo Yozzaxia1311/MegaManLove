@@ -69,8 +69,6 @@ function states.set(n, before, after)
         end
         
         mapArgs.mPath = p.musicPath and p.musicPath ~= "" and p.musicPath
-        mapArgs.mLoopPoint = (p.musicLoopPoint and p.musicLoopPoint ~= 0) and p.musicLoopPoint
-        mapArgs.mLoop = p.musicLoop == nil or p.musicLoop
         mapArgs.mVolume = p.musicVolume or 1
         
         mapArgs.fadeIn = p.fadeIn == nil or p.fadeIn
