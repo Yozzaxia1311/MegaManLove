@@ -698,6 +698,42 @@ end
 
 megautils._frozen = {}
 
+function megautils.freezeq(e, name)
+  megautils.queue(function()
+      if megautils.groups().freezable then
+        for k, v in pairs(megautils.groups().freezable) do
+          if not e or not table.contains(e, v) then
+            megautils._frozen[#megautils._frozen+1] = v
+            if name then
+              v.canUpdate[name] = false
+            else
+              v.canUpdate.global = false
+            end
+          end
+        end
+      end
+    end)
+end
+
+function megautils.unfreezeq(e, name)
+  megautils.queue(function()
+      if megautils.groups().freezable then
+        for k, v in pairs(megautils.groups().freezable) do
+          if not e or not table.contains(e, v) then
+            if name then
+              v.canUpdate[name] = true
+            else
+              v.canUpdate.global = true
+            end
+            if not checkTrue(v.canUpdate) then
+              table.removevalue(megautils._frozen, v)
+            end
+          end
+        end
+      end
+    end)
+end
+
 function megautils.freeze(e, name)
   if megautils.groups().freezable then
     for k, v in pairs(megautils.groups().freezable) do
@@ -712,6 +748,7 @@ function megautils.freeze(e, name)
     end
   end
 end
+
 function megautils.unfreeze(e, name)
   if megautils.groups().freezable then
     for k, v in pairs(megautils.groups().freezable) do

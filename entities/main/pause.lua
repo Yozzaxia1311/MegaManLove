@@ -10,7 +10,7 @@ function mmWeaponsMenu.resources()
 end
   
 function mmWeaponsMenu.pause(self)
-  megautils.freeze(nil, "pause")
+  megautils.freezeq(nil, "pause")
   megautils.add(fade, true, nil, nil, function(s)
       for k, v in pairs(megautils.playerPauseFuncs) do
         if type(v) == "function" then
@@ -23,6 +23,11 @@ function mmWeaponsMenu.pause(self)
       local ff = megautils.add(fade, false, nil, nil, fade.remove)
       megautils.removeq(s)
     end)
+  
+  if camera.main then
+    camera.main:doView()
+  end
+  
   megautils.playSound("pause")
 end
 
@@ -117,7 +122,7 @@ end
 
 function mmWeaponsMenu:removed()
   mmWeaponsMenu.main = nil
-  megautils.unfreeze(nil, "pause")
+  megautils.unfreezeq(nil, "pause")
   for k, v in pairs(self.fills) do
     for i, j in pairs(v) do
       if j.wid ~= 0 then
@@ -357,7 +362,7 @@ function mmWeaponsMenu:draw()
   h.transform.x, h.transform.y = x, y
   
   love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.print((megautils.hasInfiniteLives() and "inf" or tostring(megautils.getLives())), 224, 200)
+  love.graphics.print((megautils.hasInfiniteLives() and "inf" or tostring(megautils.getLives())), view.x+224, view.y+200)
   
   local px, py = view.x+156, view.y+207
   
