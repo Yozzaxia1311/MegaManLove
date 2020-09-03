@@ -201,13 +201,13 @@ function stageSelect:draw()
       self.tex:draw(self.quad32, 32+(2*81), 32+(1*64))
     end
     if false then -- For select slot 1, 3
-      self.tex:draw(self.quad13, 32+(0*81), 32+(3*64))
+      self.tex:draw(self.quad13, 32+(0*81), 32+(2*64))
     end
     if false then -- For select slot 2, 3
-      self.tex:draw(self.quad23, 32+(1*81), 32+(3*64))
+      self.tex:draw(self.quad23, 32+(1*81), 32+(2*64))
     end
     if false then -- For select slot 3, 3
-      self.tex:draw(self.quad33, 32+(2*81), 32+(3*64))
+      self.tex:draw(self.quad33, 32+(2*81), 32+(2*64))
     end
   else
     self.tex:draw(self.wilyQuad, 32+(1*81), 32+(1*64))
