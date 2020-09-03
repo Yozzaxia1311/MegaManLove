@@ -1078,10 +1078,10 @@ end
 function megaMan:crushed(other)
   if not other.dontKillWhenCrushing then
     for k, v in pairs(self.canBeInvincible) do
-      self.canBeInvincible[k2] = false
+      self.canBeInvincible[k] = false
     end
     self.iFrames = 0
-    self:interact(self, -99999, true)
+    other:interact(self, -99999, true)
   end
 end
 
