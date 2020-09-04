@@ -644,6 +644,7 @@ function trebleBoost:new(x, y, p, side)
   self.applyAutoFace = true
   self.weaponGroup = "trebleBoost"
   self.doDink = false
+  self.damage = 0
 end
 
 function trebleBoost:added()
@@ -788,6 +789,7 @@ function rushJet:new(x, y, p, side, skin)
   self.sound = nil
   self.weaponGroup = "rushJet"
   self.doDink = false
+  self.damage = 0
 end
 
 function rushJet:added()
@@ -971,6 +973,7 @@ function rushCoil:new(x, y, p, side, skin)
   self.weaponGroup = "rushCoil"
   self.sound = nil
   self.doDink = false
+  self.damage = 0
 end
 
 function rushCoil:added()
