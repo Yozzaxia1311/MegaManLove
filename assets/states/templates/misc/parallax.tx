@@ -5,7 +5,7 @@
    <property name="animHeight" type="int" value="16"/>
    <property name="animSpeed" type="float" value="0.5"/>
    <property name="animWidth" type="int" value="16"/>
-   <property name="animate" type="bool" value="true"/>
+   <property name="animate" type="bool" value="false"/>
    <property name="image" value="image/path/here"/>
    <property name="layer" type="int" value="-110"/>
    <property name="speedMultX" type="float" value="0.5"/>
