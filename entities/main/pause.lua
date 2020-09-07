@@ -11,6 +11,7 @@ end
   
 function mmWeaponsMenu.pause(self)
   megautils.freezeq(nil, "pause")
+  
   megautils.add(fade, true, nil, nil, function(s)
       for k, v in pairs(megautils.playerPauseFuncs) do
         if type(v) == "function" then
@@ -19,6 +20,7 @@ function mmWeaponsMenu.pause(self)
           v.func(self)
         end
       end
+      
       megautils.add(mmWeaponsMenu, self)
       local ff = megautils.add(fade, false, nil, nil, fade.remove)
       megautils.removeq(s)
@@ -138,6 +140,12 @@ function mmWeaponsMenu:removed()
     megaMan.colorOne[self.player.player] = self.last[3]
     megaMan.colorTwo[self.player.player] = self.last[4]
   end
+  
+  if not self.ff or self.ff.isRemoved then
+    for k, v in ipairs(megautils.state().system.all) do
+      v.canDraw.pause = nil
+    end
+  end
 end
 
 function mmWeaponsMenu:update(dt)
@@ -184,10 +192,23 @@ function mmWeaponsMenu:update(dt)
       h.colorTwo = weapon.colors[w.weapons[self.list[self.y][self.x]]].two
     end
     if control.startPressed[self.player.player] then
-      local ff = megautils.add(fade, true, nil, nil, function(s)
+      megautils.add(fade, true, nil, nil, function(s)
           megautils.removeq(self)
           megautils.removeq(s)
-          megautils.add(fade, false, nil, nil, fade.remove)
+          
+          for k, v in ipairs(megautils.state().system.all) do
+            if not v.visibleDuringPause then
+              v.canDraw.pause = false
+            end
+          end
+          
+          self.ff = megautils.add(fade, false, nil, nil, function(ss)
+              for k, v in ipairs(megautils.state().system.all) do
+                v.canDraw.pause = nil
+              end
+              
+              megautils.removeq(ss)
+            end)
         end)
       megautils.playSound("selected")
       return

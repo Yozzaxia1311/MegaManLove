@@ -850,6 +850,7 @@ function mapEntity:new(map, x, y)
   self.path = self.map.path
   self.layers = {}
   self:setLayer(-200)
+  self.visibleDuringPause = true
 end
 
 function mapEntity:begin()
@@ -866,6 +867,7 @@ function mapEntity:begin()
         end)
       self.layers[#self.layers].l = v
       self.layers[#self.layers]:setLayer(v.properties.layer or (i-100))
+      self.layers[#self.layers].visibleDuringPause = true
     end
   end
   
