@@ -146,13 +146,13 @@ concmd["setskin"] = {
   helptext = "sets the skin for a player",
   flags = {},
   fun = function(cmd)
-      if not cmd[2] or not cmd[3] then return end
-      local player = numberSanitize(cmd[2])
-      local path = cmd[3]
+      if not cmd[2] then return end
+      local path = cmd[2]
+      local player = tonumber(cmd[3])
       local dir, file = love.filesystem.getInfo(path), love.filesystem.getInfo(path .. ".zip")
       if dir or file then
         if dir then
-          if #megaMan.allPlayers > 0 then
+          if not player and #megaMan.allPlayers > 0 then
             for k, v in ipairs(megaMan.allPlayers) do
               v:setSkin(path)
             end
@@ -160,7 +160,7 @@ concmd["setskin"] = {
             megaMan.setSkin(player, path)
           end
         else
-          if #megaMan.allPlayer > 0 then
+          if not player and #megaMan.allPlayer > 0 then
             for k, v in ipairs(megaMan.allPlayers) do
               v:setSkin(path .. ".zip")
             end

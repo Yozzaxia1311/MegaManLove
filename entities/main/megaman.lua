@@ -1388,6 +1388,7 @@ function megaMan:code(dt)
           self.step = true
           self.stepTime = 0
         end
+        self.velocity:slowX(self.side == -1 and self.leftDecel or self.rightDecel)
       elseif self.runCheck then
         self.side = control.leftDown[self.player] and -1 or 1
         self.velocity.velx = self.velocity.velx + (self.side == -1 and self.leftSpeed or self.rightSpeed)
