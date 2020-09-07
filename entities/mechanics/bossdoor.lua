@@ -45,6 +45,7 @@ function bossDoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt, n, tw, th, ts)
     self.name = nil
   end
   self:setDirection(dir)
+  self.visibleDuringPause = true
 end
 
 function bossDoor:added()

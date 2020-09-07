@@ -43,6 +43,7 @@ function parallax:new(x, y, w, h, bg, a, as, aw, ah, spdMultX, spdMultY, sx, sy,
   self.spawnEarlyDuringTransition = true
   self.despawnLateDuringTransition = true
   self:setLayer(l or -110)
+  self.visibleDuringPause = true
 end
 
 function parallax:added()
