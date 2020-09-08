@@ -27,51 +27,6 @@ local cartographer = {
 	]]
 }
 
--- splits a path into directory, file (with filename), and just filename
--- i really only need the directory
--- https://stackoverflow.com/a/12191225
-local function splitPath(path)
-  return string.match(path, '(.-)([^\\/]-%.?([^%.\\/]*))$')
-end
-
--- joins two paths together into a reasonable path that Lua can use.
--- handles going up a directory using ..
--- https://github.com/karai17/Simple-Tiled-Implementation/blob/master/sti/utils.lua#L5
-local function formatPath(path)
-  local npGen1, npGen2 = '[^SEP]+SEP%.%.SEP?', 'SEP+%.?SEP'
-  local npPat1, npPat2 = npGen1:gsub('SEP', '/'), npGen2:gsub('SEP', '/')
-  local k
-  repeat path, k = path:gsub(npPat2, '/') until k == 0
-  repeat path, k = path:gsub(npPat1, '') until k == 0
-  if path == '' then path = '.' end
-  return path
-end
-
--- Decompress tile layer data
--- https://github.com/karai17/Simple-Tiled-Implementation/blob/master/sti/utils.lua#L67
-local function getDecompressedData(data)
-  local ffi = require("ffi")
-  local d = {}
-  local decoded = ffi.cast("uint32_t*", data)
-  
-  for i = 0, (data:len() / ffi.sizeof("uint32_t")) - 1 do
-    table.insert(d, tonumber(decoded[i]))
-  end
-  
-  return d
-end
-
--- given a grid with w items per row, return the column and row of the nth item
--- (going from left to right, top to bottom)
--- https://stackoverflow.com/a/9816217
-local function indexToCoordinates(n, w)
-  return (n - 1) % w, math.floor((n - 1) / w)
-end
-
-local function coordinatesToIndex(x, y, w)
-  return x + w * y + 1
-end
-
 local getByNameMetatable = {
   __index = function(self, key)
     for _, item in ipairs(self) do
@@ -359,7 +314,7 @@ function Layer.tilelayer:_init(map)
           elseif self.compression == "zlib" then
             data = love.data.decompress("string", "zlib", data)
           end
-          v.data = getDecompressedData(data)
+          v.data = self._map:getDecompressedData(data)
         end
       end
     else
@@ -371,7 +326,7 @@ function Layer.tilelayer:_init(map)
       elseif self.compression == "zlib" then
         data = love.data.decompress("string", "zlib", data)
       end
-      self.data = getDecompressedData(data)
+      self.data = self._map:getDecompressedData(data)
     end
   end
   for _, gid, gridX, gridY, _, _ in self:getTiles() do
@@ -417,11 +372,11 @@ function Layer.tilelayer:getTileAtGridPosition(x, y)
       and y >= chunk.y
       and y < chunk.y + chunk.height
       if pointInChunk then
-        gid = chunk.data[coordinatesToIndex(x - chunk.x, y - chunk.y, chunk.width)]
+        gid = chunk.data[self._map:coordinatesToIndex(x - chunk.x, y - chunk.y, chunk.width)]
       end
     end
   else
-    gid = self.data[coordinatesToIndex(x, y, self.width)]
+    gid = self.data[self._map:coordinatesToIndex(x, y, self.width)]
   end
   gid = gid and (gid - 1) or -1
   return gid
@@ -437,12 +392,12 @@ function Layer.tilelayer:setTileAtGridPosition(x, y, id, tileset)
       and y >= chunk.y
       and y < chunk.y + chunk.height
       if pointInChunk then
-        local index = coordinatesToIndex(x - chunk.x, y - chunk.y, chunk.width)
+        local index = self._map:coordinatesToIndex(x - chunk.x, y - chunk.y, chunk.width)
         chunk.data[index] = gid
       end
     end
   else
-    self.data[coordinatesToIndex(x, y, self.width)] = gid
+    self.data[self._map:coordinatesToIndex(x, y, self.width)] = gid
   end
   self:_setSprite(x, y, gid)
 end
@@ -465,7 +420,7 @@ function Layer.tilelayer:_getTileAtIndex(index)
     for _, chunk in ipairs(self.chunks) do
       if index <= #chunk.data then
         local gid = chunk.data[index]
-        local gridX, gridY = indexToCoordinates(index, chunk.width)
+        local gridX, gridY = self._map:indexToCoordinates(index, chunk.width)
         gridX, gridY = gridX + chunk.x, gridY + chunk.y
         local pixelX, pixelY = self:gridToPixel(gridX, gridY)
         return gid, gridX, gridY, pixelX, pixelY
@@ -475,7 +430,7 @@ function Layer.tilelayer:_getTileAtIndex(index)
     end
   elseif self.data[index] then
     local gid = self.data[index]
-    local gridX, gridY = indexToCoordinates(index, self.width)
+    local gridX, gridY = self._map:indexToCoordinates(index, self.width)
     local pixelX, pixelY = self:gridToPixel(gridX, gridY)
     return gid, gridX, gridY, pixelX, pixelY
   end
@@ -558,7 +513,15 @@ Map.__index = Map
 -- path to the image.
 function Map:_loadImage(relativeImagePath)
   if self._images[relativeImagePath] then return end
-  local imagePath = formatPath(self.dir .. relativeImagePath)
+  
+  local imagePath = self.dir .. relativeImagePath
+  local npGen1, npGen2 = '[^SEP]+SEP%.%.SEP?', 'SEP+%.?SEP'
+  local npPat1, npPat2 = npGen1:gsub('SEP', '/'), npGen2:gsub('SEP', '/')
+  local k
+  repeat imagePath, k = imagePath:gsub(npPat2, '/') until k == 0
+  repeat imagePath, k = imagePath:gsub(npPat1, '') until k == 0
+  if imagePath == '' then imagePath = '.' end
+  
   self._images[relativeImagePath] = image(imagePath)
 end
 
@@ -593,7 +556,7 @@ function Map:_initLayers()
 end
 
 function Map:_init(path)
-  self.dir = splitPath(path)
+  self.dir = path:match('(.-)([^\\/]-%.?([^%.\\/]*))$')
   self._quadCache = {}
   self.tilesetCache = {}
   self.tileCache = {}
@@ -606,6 +569,31 @@ function Map:_init(path)
   self:_loadImages()
   setmetatable(self.tilesets, getByNameMetatable)
   self:_initLayers()
+end
+
+function Map:coordinatesToIndex(x, y, w)
+  return x + w * y + 1
+end
+
+-- given a grid with w items per row, return the column and row of the nth item
+-- (going from left to right, top to bottom)
+-- https://stackoverflow.com/a/9816217
+function Map:indexToCoordinates(n, w)
+  return (n - 1) % w, math.floor((n - 1) / w)
+end
+
+-- Decompress tile layer data
+-- https://github.com/karai17/Simple-Tiled-Implementation/blob/master/sti/utils.lua#L67
+function Map:getDecompressedData(data)
+  local ffi = require("ffi")
+  local d = {}
+  local decoded = ffi.cast("uint32_t*", data)
+  
+  for i = 0, (data:len() / ffi.sizeof("uint32_t")) - 1 do
+    table.insert(d, tonumber(decoded[i]))
+  end
+  
+  return d
 end
 
 -- Gets the quad of the tile with the given global ID.
@@ -621,7 +609,7 @@ function Map:_getTileQuad(gid, frame)
   end
   local image = self._images[tileset.image]
   local gridWidth = math.floor(tileset.imagewidth / (tileset.tilewidth + tileset.spacing))
-  local x, y = indexToCoordinates(id + 1, gridWidth)
+  local x, y = self:indexToCoordinates(id + 1, gridWidth)
   id = id + tileset.firstgid
   if not self._quadCache[id] then
     self._quadCache[id] = quad(
