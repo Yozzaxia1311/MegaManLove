@@ -964,9 +964,11 @@ function megautils.diffValue(def, t)
 end
 
 function megautils.removeEnemyShots()
-  if megautils.groups().enemyShot then
-    for k, v in ipairs(megautils.groups().enemyShot) do
-      megautils.removeq(v)
+  if megautils.state().system.all then
+    for k, v in ipairs(megautils.state().system.all) do
+      if v.isEnemyWeapon then
+        megautils.removeq(v)
+      end
     end
   end
 end
