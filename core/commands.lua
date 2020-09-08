@@ -505,9 +505,12 @@ concmd["kill"] = {
   helptext = "kill all players",
   flags = {},
   fun = function(cmd)
-      for i=1, #megaMan.allPlayers do
-        megaMan.allPlayers[i].iFrames = 0
-        megaMan.allPlayers[i]:interact(megaMan.allPlayers[i], -9999, nil)
+      for k, v in ipairs(megaMan.allPlayers) do
+        v.iFrames = 0
+        for i, j in pairs(v.canBeInvincible) do
+          v.canBeInvincible[i] = false
+        end
+        v:interact(v, -99999, true)
       end
     end
 }

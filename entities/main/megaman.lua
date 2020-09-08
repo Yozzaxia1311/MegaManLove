@@ -998,12 +998,12 @@ end
 
 function megaMan:interactedWith(o, c)
   if not checkFalse(self.canControl) or megautils.isInvincible() or megautils.isNoClip() then return end
-  if self.protoShielding and not o.dinked and o.dink and self:checkProtoShield(o, self.side) then
+  if self.protoShielding and not o.dinked and o.dink and self:checkProtoShield(o, self.side) and o ~= self then
     o:dink(self)
     v.pierceType = pierce.NOPIERCE
     return
   end
-  if c < 0 and checkTrue(self.canBeInvincible) then
+  if c < 0 and checkTrue(self.canBeInvincible) and o ~= self then
     self.changeHealth = 0
   else
     self.changeHealth = self:weaponTable(o) or c

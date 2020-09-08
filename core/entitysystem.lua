@@ -527,8 +527,8 @@ function basicEntity:interact(t, h, single)
   if single then
     t:interactedWith(self, h)
   else
-    for i=1, #t do
-      t[i]:interactedWith(self, h)
+    for k, v in pairs(t) do
+      v:interactedWith(self, h)
     end
   end
 end
