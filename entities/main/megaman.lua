@@ -1908,9 +1908,9 @@ function megaMan:update()
       self._timer = self._timer + 1
       self:switchWeapon((self._timer % 16 > 8) and self._w2 or self._w1)
       local w = megaMan.weaponHandler[self.player]
-      banner.colorOutline = weapon.colors.outline[w.current]
-      banner.colorOne = weapon.colors.one[w.current]
-      banner.colorTwo = weapon.colors.two[w.current]
+      banner.colorOutline = weapon.colors[w.current].outline
+      banner.colorOne = weapon.colors[w.current].one
+      banner.colorTwo = weapon.colors[w.current].two
       if self._timer > 100 and w.current == self._w2 then
         self._timer = 0
         self._subState = 2
@@ -2043,6 +2043,7 @@ function megaMan:draw()
   end
   
   if self.doWeaponGet and self._text then
+    love.graphics.setColor(1, 1, 1, 1)
     love.graphics.print(self._text:sub(0, self._textPos or 0), (view.w/2)-self._halfWidth, 142)
   end
   --self:drawCollision()
