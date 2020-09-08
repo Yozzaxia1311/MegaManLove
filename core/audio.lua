@@ -132,6 +132,7 @@ end
 function mmMusic.stop()
   if mmMusic.thread:isRunning() then
     mmMusic.threadChannel:push("stop")
+    mmMusic.thread:wait()
   end
   
   mmMusic.curID = nil

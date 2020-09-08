@@ -1420,6 +1420,7 @@ function bossEntity:new()
   self.weaponGetText = "WEAPON GET... (NAME HERE)"
   self.stageState = nil
   self.bossIntroWaitTime = 400
+  self.health = 28
   self.weaponGetBehaviour = function(s)
       return true
     end
@@ -1432,10 +1433,8 @@ function bossEntity:useHealthBar(oneColor, twoColor, outlineColor, add)
   bossEntity.super.useHealthBar(self, oneColor, twoColor, outlineColor, add or add ~= nil)
 end
 
-function bossEntity:setMusic(p, l, lp, v)
+function bossEntity:setMusic(p, v)
   self.musicPath = p
-  self.musicLoop = l == nil or l
-  self.musicLoopPoint = lp
   self.musicVolume = v or 1
 end
 
@@ -1502,13 +1501,12 @@ function bossEntity:start()
         self._subState = -1
       end
     elseif megaMan.allPlayers then
-      megautils.autoFace(self, megaMan.allPlayers)
       for k, v in ipairs(megaMan.allPlayers) do
         v.canControl.boss = false
         v.canBeInvincible.intro = true
         v.velocity.velx = 0
         v:resetStates()
-        megautils.autoFace(v, self, true)
+        v.side = megautils.side(v, self, true)
       end
       self._subState = 1
     end
@@ -1628,7 +1626,7 @@ function bossEntity:update()
       if not self.healthHandler.isAdded then
         megautils.adde(self.healthHandler)
       end
-    else
+    elseif self.didIntro then
       self:act()
     end
   end
