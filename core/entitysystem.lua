@@ -1514,7 +1514,8 @@ function bossEntity:start()
     local result = {}
     for k, v in ipairs(megaMan.allPlayers) do
       if not v.drop and not v.rise then
-        v:phys()
+        collision.doGrav(v)
+        collision.doCollision(v)
         if v.ground then
           result[k] = true
           v.anims:set("idle")

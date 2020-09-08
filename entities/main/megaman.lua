@@ -1119,7 +1119,7 @@ function megaMan:code(dt)
         self.velocity.vely = -2*m
       end
     end
-    self:phys()
+    collision.doCollision(self)
     self:attemptWeaponUsage()
   elseif self.treble then
     self.hitTimer = math.min(self.hitTimer+1, self.maxHitTime)
@@ -1179,7 +1179,7 @@ function megaMan:code(dt)
         v.func(self)
       end
     end
-    self:phys()
+    collision.doCollision(self)
     if megaMan.weaponHandler[self.player].current ~= "T. BOOST" or
       (megaMan.weaponHandler[self.player].current == "T. BOOST" and
       megaMan.weaponHandler[self.player].energy[megaMan.weaponHandler[self.player].currentSlot] <= 0) then
@@ -1200,7 +1200,7 @@ function megaMan:code(dt)
         v.func(self)
       end
     end
-    self:phys()
+    collision.doCollision(self)
     if control.shootDown[self.player] then
       self:charge()
     else
@@ -1278,7 +1278,7 @@ function megaMan:code(dt)
     if self.shootFrames ~= 0 then
       self.velocity.vely = 0      
     end
-    self:phys()
+    collision.doCollision(self)
     self.currentLadder = self:checkLadder()
     if not self.currentLadder then
       self.climb = false
@@ -1364,7 +1364,7 @@ function megaMan:code(dt)
         v.func(self)
       end
     end
-    self:phys()
+    collision.doCollision(self)
     local cd = checkFalse(self.canDashShoot)
     if not cd and control.shootDown[self.player] then
       self:charge()
@@ -1442,7 +1442,7 @@ function megaMan:code(dt)
         v.func(self)
       end
     end
-    self:phys()
+    collision.doCollision(self)
     if not self.ground then
       self.standSolidJumpTimer = -1
     end
@@ -1486,7 +1486,7 @@ function megaMan:code(dt)
         v.func(self)
       end
     end
-    self:phys()
+    collision.doCollision(self)
     if self.died then return end
     if self.ground then
       self.dashJump = false
@@ -1603,11 +1603,7 @@ function megaMan:grav()
   elseif self.gravityType == 1 then
     self.velocity:slowY(self.gravity)
   end
-end
-
-function megaMan:phys()
   self.velocity.vely = self.gravity >= 0 and math.min(self.maxAirSpeed, self.velocity.vely) or math.max(-self.maxAirSpeed, self.velocity.vely)
-  collision.doCollision(self)
 end
 
 function megaMan:attemptWeaponSwitch()

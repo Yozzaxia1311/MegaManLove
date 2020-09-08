@@ -42,7 +42,7 @@ function timer.winCutscene(func)
       megautils.removePlayerShots()
     elseif s.state == 1 then
       collision.doGrav(megaMan.mainPlayer)
-      megaMan.mainPlayer:phys()
+      collision.doCollision(megaMan.mainPlayer)
       if megaMan.mainPlayer.ground then
         megaMan.mainPlayer.anims:set("idle")
       else
@@ -115,7 +115,7 @@ function timer.absorbCutscene(func, music)
         end
         megaMan.mainPlayer.anims:update(1/60)
         collision.doGrav(megaMan.mainPlayer)
-        megaMan.mainPlayer:phys()
+        collision.doCollision(megaMan.mainPlayer)
         if not megaMan.mainPlayer.ground then
           megaMan.mainPlayer.anims:set("jump")
         end
@@ -135,7 +135,7 @@ function timer.absorbCutscene(func, music)
         end
       elseif s.state == 4 then
         collision.doGrav(megaMan.mainPlayer)
-        megaMan.mainPlayer:phys()
+        collision.doCollision(megaMan.mainPlayer)
         if megaMan.mainPlayer.ground or ((megaMan.mainPlayer.gravity >= 0 and
           megaMan.mainPlayer.transform.y > s.cg) or (megaMan.mainPlayer.gravity < 0 and megaMan.mainPlayer.transform.y < s.cg)) then
           megaMan.mainPlayer.rise = true
