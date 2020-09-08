@@ -40,6 +40,19 @@ megaMan.allPlayers = {}
 megaMan.skins = {}
 megaMan.skinCache = {}
 
+function megaMan.resources()
+   mmWeaponsMenu.resources()
+  
+  megautils.loadResource("assets/sfx/mmLand.ogg", "land")
+  megautils.loadResource("assets/sfx/mmHurt.ogg", "hurt")
+  megautils.loadResource("assets/sfx/mmStart.ogg", "start")
+  megautils.loadResource("assets/sfx/mmHeal.ogg", "heal")
+  megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
+  megautils.loadResource("assets/sfx/switch.ogg", "switch")
+  megautils.loadResource("assets/sfx/treble.ogg", "trebleStart")
+  megautils.loadResource(0, 0, 63, 62, 2, "megaManGrid")
+end
+
 function megaMan:setSkin(path)
   local player = (type(self) == "number") and self or self.player
   
@@ -137,20 +150,10 @@ megautils.resetGameObjectsFuncs.megaMan = {func=function()
     megaMan.allPlayers = {}
     megaMan.once = nil
     megautils.setLives((megautils.getLives() > globals.startingLives) and megautils.getLives() or globals.startingLives)
-    
     globals.checkpoint = globals.overrideCheckpoint or "start"
     globals.overrideCheckpoint = nil
     
-    mmWeaponsMenu.resources()
-    
-    megautils.loadResource("assets/sfx/mmLand.ogg", "land")
-    megautils.loadResource("assets/sfx/mmHurt.ogg", "hurt")
-    megautils.loadResource("assets/sfx/mmStart.ogg", "start")
-    megautils.loadResource("assets/sfx/mmHeal.ogg", "heal")
-    megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource("assets/sfx/switch.ogg", "switch")
-    megautils.loadResource("assets/sfx/treble.ogg", "trebleStart")
-    megautils.loadResource(0, 0, 63, 62, 2, "megaManGrid")
+    megaMan.resources()
     
     for i=1, globals.playerCount do
       megaMan.weaponHandler[i] = weaponHandler(nil, nil, 10)
@@ -365,6 +368,7 @@ function megaMan:syncPlayerSkin()
 end
 
 function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
+  megaMan.resources()
   megaMan.super.new(self)
   self.doWeaponGet = megautils.getCurrentState() == globals.weaponGetState
   self.transform.x = x or 0
@@ -1904,9 +1908,9 @@ function megaMan:update()
       self._timer = self._timer + 1
       self:switchWeapon((self._timer % 16 > 8) and self._w2 or self._w1)
       local w = megaMan.weaponHandler[self.player]
-      banner.colorOutline = w.colorOutline[w.currentSlot]
-      banner.colorOne = w.colorOne[w.currentSlot]
-      banner.colorTwo = w.colorTwo[w.currentSlot]
+      banner.colorOutline = weapon.colors.outline[w.current]
+      banner.colorOne = weapon.colors.one[w.current]
+      banner.colorTwo = weapon.colors.two[w.current]
       if self._timer > 100 and w.current == self._w2 then
         self._timer = 0
         self._subState = 2
