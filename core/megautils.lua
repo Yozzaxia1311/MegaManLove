@@ -659,9 +659,9 @@ end
 
 function megautils.revivePlayer(p)
   megaMan.weaponHandler[p]:switch(0)
-  megaMan.colorOutline[p] = megaMan.weaponHandler[p].colorOutline[0]
-  megaMan.colorOne[p] = megaMan.weaponHandler[p].colorOne[0]
-  megaMan.colorTwo[p] = megaMan.weaponHandler[p].colorTwo[0]
+  megaMan.colorOutline[p] = weapon.colors[megaMan.weaponHandler[p].current].outline
+  megaMan.colorOne[p] = weapon.colors[megaMan.weaponHandler[p].current].one
+  megaMan.colorTwo[p] = weapon.colors[megaMan.weaponHandler[p].current].two
 end
 
 function megautils.registerPlayer(e)

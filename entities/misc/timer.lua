@@ -59,8 +59,6 @@ function timer.winCutscene(func)
       s.timer = math.min(s.timer+1, 80)
       if s.timer == 80 then
         s.state = -1
-        banner.colorOne = megaMan.weaponHandler[1].colorOne[0]
-        banner.colorTwo = megaMan.weaponHandler[1].colorTwo[0]
         megautils.add(fade, true, nil, nil, func)
       end
     end

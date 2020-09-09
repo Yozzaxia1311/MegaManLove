@@ -39,6 +39,11 @@ megaMan.mainPlayer = nil
 megaMan.allPlayers = {}
 megaMan.skins = {}
 megaMan.skinCache = {}
+megaMan.colorOutline = {}
+megaMan.colorOne = {}
+megaMan.colorTwo = {}
+megaMan.weaponHandler = {}
+megaMan.allPlayers = {}
 
 function megaMan.resources()
    mmWeaponsMenu.resources()
@@ -410,7 +415,6 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   self.trebleForce = velocity()
   self.protoShielding = false
   self.doSplashing = not self.drop
-  self.teleportOffY = 0
   self.teleporter = tp
   self.protoIdle = false
   self.protoWhistle = false
@@ -479,7 +483,7 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
     self.transform.y = -self.collisionShape.h
     self.transform.x = math.floor(view.w/2)-(self.collisionShape.w/2)
     self.canDraw.global = false
-  elseif (dr == nil or dr) and not self.teleporter and megaMan.mainPlayer == self then
+  elseif (dr == nil or dr) and not self.teleporter and megaMan.mainPlayer == self and not megaMan.once then
     if self.protoWhistle then
       self.ready = megautils.add(ready, nil, 32)
       if mmMusic._queue then
@@ -1897,11 +1901,7 @@ function megaMan:update()
         self._subState = (type(self._wgv) == "table") and 1 or 2
         if self._subState == 1 then
           megaMan.weaponHandler[self.player]:register(self._wgv.weaponSlot or 1,
-            self._wgv.weaponName or "WEAPON",
-            {self._wgv.activeQuad or quad(16, 32, 16, 16), self._wgv.inactiveQuad or quad(32, 32, 16, 16)},
-            self._wgv.oneColor or {255, 255, 255},
-            self._wgv.twoColor or {188, 188, 188},
-            self._wgv.outlineColor or {0, 0, 0})
+            self._wgv.weaponName or "WEAPON")
         end
       end
     elseif self._subState == 1 then
@@ -1940,10 +1940,10 @@ function megaMan:update()
     if not megaMan.once then
       megaMan.once = true
     end
-    if self.ready then
-      if self.ready.isRemoved then
+    if self.ready or (megaMan.mainPlayer and megaMan.mainPlayer.ready) then
+      if megaMan.mainPlayer == self and self.ready.isRemoved then
         self.ready = nil
-        self.teleportOffY = self.drop and (view.y-self.transform.y) or 0
+        self.teleportOffY = (not self.teleporter and self.drop) and (view.y-self.transform.y) or 0
         if self.mq then
           megautils.playMusic(unpack(self.mq))
           self.mq = nil
@@ -1969,6 +1969,9 @@ function megaMan:update()
     else
       self.runCheck = false
       if self.rise then
+        if not self.teleportOffY then
+          self.teleportOffY = 0
+        end
         if self.dropLanded then
           self.dropLanded = not self.anims:looped()
           if not self.dropLanded then
@@ -1979,12 +1982,16 @@ function megaMan:update()
           self.teleportOffY = self.teleportOffY+self.riseSpeed
         end
       elseif self.drop then
+        if not self.teleportOffY then
+          self.teleportOffY = (not self.teleporter and self.drop) and (view.y-self.transform.y) or 0
+        end
         self.teleportOffY = math.min(self.teleportOffY+self.dropSpeed, 0)
         if self.teleportOffY == 0 then
           self.dropLanded = true
           if self.anims:looped() then
             self.drop = false
             self.doSplashing = true
+            self.teleportOffY = nil
             megautils.playSound("start")
           end
         end
@@ -2009,7 +2016,7 @@ end
 function megaMan:draw()
   if megaMan.mainPlayer and megaMan.mainPlayer.ready then return end
   
-  local offsetx, offsety = math.round(self.collisionShape.w/2), self.collisionShape.h
+  local offsetx, offsety = math.round(self.collisionShape.w/2), self.collisionShape.h + (self.teleportOffY or 0)
   local roundx, roundy = math.floor(self.transform.x), math.floor(self.transform.y)
   local fx, fy = self.side ~= 1, self.gravity < 0
   
@@ -2024,13 +2031,13 @@ function megaMan:draw()
   end
   
   love.graphics.setColor(1, 1, 1, 1)
-  self.texBase:draw(self.anims, roundx+offsetx, roundy+offsety+self.teleportOffY, 0, 1, 1, 32, 41, nil, nil, fx, fy)
+  self.texBase:draw(self.anims, roundx+offsetx, roundy+offsety, 0, 1, 1, 32, 41, nil, nil, fx, fy)
   love.graphics.setColor(megaMan.colorOutline[self.player][1]/255, megaMan.colorOutline[self.player][2]/255, megaMan.colorOutline[self.player][3]/255, 1)
-  self.texOutline:draw(self.anims, roundx+offsetx, roundy+offsety+self.teleportOffY, 0, 1, 1, 32, 41, nil, nil, fx, fy)
+  self.texOutline:draw(self.anims, roundx+offsetx, roundy+offsety, 0, 1, 1, 32, 41, nil, nil, fx, fy)
   love.graphics.setColor(megaMan.colorOne[self.player][1]/255, megaMan.colorOne[self.player][2]/255, megaMan.colorOne[self.player][3]/255, 1)
-  self.texOne:draw(self.anims, roundx+offsetx, roundy+offsety+self.teleportOffY, 0, 1, 1, 32, 41, nil, nil, fx, fy)
+  self.texOne:draw(self.anims, roundx+offsetx, roundy+offsety, 0, 1, 1, 32, 41, nil, nil, fx, fy)
   love.graphics.setColor(megaMan.colorTwo[self.player][1]/255, megaMan.colorTwo[self.player][2]/255, megaMan.colorTwo[self.player][3]/255, 1)
-  self.texTwo:draw(self.anims, roundx+offsetx, roundy+offsety+self.teleportOffY, 0, 1, 1, 32, 41, nil, nil, fx, fy)
+  self.texTwo:draw(self.anims, roundx+offsetx, roundy+offsety, 0, 1, 1, 32, 41, nil, nil, fx, fy)
   
   if self.weaponSwitchTimer ~= 70 then
     love.graphics.setColor(1, 1, 1, 1)
