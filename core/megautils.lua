@@ -885,11 +885,11 @@ function megautils.side(e, to, single)
   return side, closest
 end
 
-function megautils.pointEntityVelAtEntity(e, to)
+function megautils.pointEntityVelAtEntity(e, to, spd, spdy)
   local cx, cy = megautils.center(e)
   local cx2, cy2 = megautils.center(to)
   local p = megautils.calcPath(cx, cy, cx2, cy2)
-  return megautils.calcX(p), megautils.calcY(p)
+  return megautils.calcX(p)*(spd or 1), megautils.calcY(p)*(spdy or spd or 1)
 end
 
 function megautils.pointEntityAtEntity(e, to)
@@ -898,10 +898,10 @@ function megautils.pointEntityAtEntity(e, to)
   return megautils.calcPath(cx, cy, cx2, cy2)
 end
 
-function megautils.pointEntityVelAtPoint(e, x, y)
+function megautils.pointEntityVelAtPoint(e, x, y, spd, spdy)
   local cx, cy = megautils.center(e)
   local p = megautils.calcPath(cx, cy, x, y)
-  return megautils.calcX(p), megautils.calcY(p)
+  return megautils.calcX(p)*(spd or 1), megautils.calcY(p)*(spdy or spd or 1)
 end
 
 function megautils.pointEntityAtPoint(e, x, y)
@@ -909,9 +909,9 @@ function megautils.pointEntityAtPoint(e, x, y)
   return megautils.calcPath(cx, cy, x, y)
 end
 
-function megautils.createVelFromPoints(x, y, x2, y2)
+function megautils.createVelFromPoints(x, y, x2, y2, spd, spdy)
   local p = megautils.calcPath(x, y, x2, y2)
-  return megautils.calcX(p), megautils.calcY(p)
+  return megautils.calcX(p)*(spd or 1), megautils.calcY(p)*(spdy or spd or 1)
 end
 
 function megautils.createAngleFromPoints(x, y, x2, y2)
