@@ -37,7 +37,7 @@ function pickupEntity:new(despawn, gd, fwp, id, path)
   self:setRectangleCollision(16, 16)
   self.timer = 0
   self.blockCollision.global = true
-  self.fwp = fwp
+  self.fwp = fwp == nil or fwp
   self.gravDir = gd or 1
   self.mapID = id
   if self.mapID == -1 then

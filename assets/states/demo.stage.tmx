@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="16" height="14" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#ffaaff" nextlayerid="6" nextobjectid="50">
+<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="16" height="14" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#ffaaff" nextlayerid="6" nextobjectid="55">
  <properties>
   <property name="fadeIn" type="bool" value="true"/>
   <property name="musicPath" value="assets/sfx/music/demo.ogg"/>
@@ -30,13 +30,13 @@
    <chunk x="16" y="0" width="16" height="16">
 1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,
 1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,
+0,0,0,0,0,0,0,0,0,0,0,16,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,16,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,16,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,16,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,
 1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
@@ -79,7 +79,7 @@
    <object id="48" template="templates/collision/solid.tx" x="640" y="-16" width="16" height="112"/>
   </objectgroup>
   <objectgroup id="5" name="entities">
-   <object id="5" template="templates/player/player.tx" x="120" y="144"/>
+   <object id="5" template="templates/player/player.tx" x="112" y="144"/>
    <object id="42" template="templates/mechanics/gravFlip.tx" x="80" y="32" width="16" height="128">
     <properties>
      <property name="dir" type="int" value="-1"/>
@@ -89,6 +89,19 @@
     <properties>
      <property name="toX" type="int" value="390"/>
      <property name="toY" type="int" value="49"/>
+    </properties>
+   </object>
+   <object id="50" template="templates/demo/met.tx" x="240" y="144"/>
+   <object id="51" template="templates/demo/met.tx" x="480" y="144"/>
+   <object id="52" template="templates/mechanics/gravFlip.tx" x="432" y="32" width="16" height="128">
+    <properties>
+     <property name="dir" type="int" value="1"/>
+    </properties>
+   </object>
+   <object id="53" template="templates/demo/moveAcrossPlatform.tx" x="512" y="128">
+    <properties>
+     <property name="toX" type="int" value="560"/>
+     <property name="toY" type="int" value="96"/>
     </properties>
    </object>
   </objectgroup>

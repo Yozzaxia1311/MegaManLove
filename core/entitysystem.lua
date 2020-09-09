@@ -1309,7 +1309,7 @@ function advancedEntity:interactedWith(o, c)
       end
       if item then
         item.transform.x = self.transform.x+(self.collisionShape.w/2)-(item.collisionShape.w/2)
-        item.transform.y = self.transform.y+(self.collisionShape.h/2)-(item.collisionShape.h/2) - 8
+        item.transform.y = self.transform.y+(self.collisionShape.h/2)-(item.collisionShape.h/2) + (self.gravity >= 0 and -8 or 8)
       end
     end
     if self.removeOnDeath then
