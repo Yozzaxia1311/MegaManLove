@@ -839,7 +839,6 @@ function mapEntity.deser(t)
 end
 
 mapEntity.registered = {}
-mapEntity.ranFiles = {}
 mapEntity.doSort = false
 
 function mapEntity:new(map, x, y)
@@ -1050,7 +1049,6 @@ megautils.cleanFuncs.mapEntity = {func=function()
           end
         end
       end, -1)
-    mapEntity.ranFiles = {}
   end, autoClean=false}
 
 pierce = {}
