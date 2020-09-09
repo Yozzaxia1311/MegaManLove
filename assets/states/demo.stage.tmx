@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="16" height="14" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#ffaaff" nextlayerid="6" nextobjectid="50">
+ <properties>
+  <property name="fadeIn" type="bool" value="true"/>
+  <property name="musicPath" value="assets/sfx/music/demo.ogg"/>
+  <property name="musicVolume" type="float" value="1"/>
+  <property name="state" value=""/>
+ </properties>
+ <tileset firstgid="1" source="tilesets/demoTileset.tsx"/>
+ <layer id="1" name="layout" width="16" height="14">
+  <data encoding="csv">
+   <chunk x="0" y="0" width="16" height="16">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,1,0,0,16,0,0,0,0,0,0,0,0,0,0,
+0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,1,0,0,16,0,0,0,0,0,0,0,0,0,0,
+0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,1,0,0,16,0,0,0,0,0,0,0,0,0,0,
+0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,1,0,0,16,0,0,0,0,0,0,0,0,0,0,
+0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</chunk>
+   <chunk x="16" y="0" width="16" height="16">
+1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,
+1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,
+1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
+1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
+1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</chunk>
+   <chunk x="32" y="0" width="16" height="16">
+0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,
+1,1,1,1,1,1,0,0,1,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
+0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,
+0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,
+1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</chunk>
+  </data>
+ </layer>
+ <group id="2" name="objs">
+  <objectgroup id="3" name="sections">
+   <object id="2" template="templates/sections/section.tx" x="0" y="0" width="672" height="224"/>
+  </objectgroup>
+  <objectgroup id="4" name="collision">
+   <object id="3" template="templates/collision/solid.tx" x="48" y="160" width="224" height="64"/>
+   <object id="43" template="templates/collision/solid.tx" x="48" y="-16" width="224" height="48"/>
+   <object id="44" template="templates/collision/solid.tx" x="32" y="32" width="16" height="128"/>
+   <object id="45" template="templates/collision/solid.tx" x="384" y="160" width="208" height="64"/>
+   <object id="46" template="templates/collision/solid.tx" x="592" y="96" width="48" height="64"/>
+   <object id="47" template="templates/collision/solid.tx" x="432" y="-16" width="176" height="48"/>
+   <object id="48" template="templates/collision/solid.tx" x="640" y="-16" width="16" height="112"/>
+  </objectgroup>
+  <objectgroup id="5" name="entities">
+   <object id="5" template="templates/player/player.tx" x="120" y="144"/>
+   <object id="42" template="templates/mechanics/gravFlip.tx" x="80" y="32" width="16" height="128">
+    <properties>
+     <property name="dir" type="int" value="-1"/>
+    </properties>
+   </object>
+   <object id="49" template="templates/demo/moveAcrossPlatform.tx" x="224" y="48">
+    <properties>
+     <property name="toX" type="int" value="390"/>
+     <property name="toY" type="int" value="49"/>
+    </properties>
+   </object>
+  </objectgroup>
+ </group>
+</map>

@@ -2016,9 +2016,10 @@ end
 function megaMan:draw()
   if megaMan.mainPlayer and megaMan.mainPlayer.ready then return end
   
-  local offsetx, offsety = math.round(self.collisionShape.w/2), self.collisionShape.h + (self.teleportOffY or 0)
+  local offsetx, offsety = math.round(self.collisionShape.w/2), (self.gravity >= 0 and self.collisionShape.h or 0) + (self.teleportOffY or 0)
   local roundx, roundy = math.floor(self.transform.x), math.floor(self.transform.y)
-  local fx, fy = self.side ~= 1, self.gravity < 0
+  local fx = self.side ~= 1
+  local sy = self.gravity >= 0 and 1 or -1
   
   if table.contains(self.climbAnimation, self.anims.current) then
     if self.anims.current == self.climbAnimation.regular or self.anims.current == self.climbTipAnimation.regular then
@@ -2031,13 +2032,13 @@ function megaMan:draw()
   end
   
   love.graphics.setColor(1, 1, 1, 1)
-  self.texBase:draw(self.anims, roundx+offsetx, roundy+offsety, 0, 1, 1, 32, 41, nil, nil, fx, fy)
+  self.texBase:draw(self.anims, roundx+offsetx, roundy+offsety, 0, 1, sy, 32, 41, nil, nil, fx)
   love.graphics.setColor(megaMan.colorOutline[self.player][1]/255, megaMan.colorOutline[self.player][2]/255, megaMan.colorOutline[self.player][3]/255, 1)
-  self.texOutline:draw(self.anims, roundx+offsetx, roundy+offsety, 0, 1, 1, 32, 41, nil, nil, fx, fy)
+  self.texOutline:draw(self.anims, roundx+offsetx, roundy+offsety, 0, 1, sy, 32, 41, nil, nil, fx)
   love.graphics.setColor(megaMan.colorOne[self.player][1]/255, megaMan.colorOne[self.player][2]/255, megaMan.colorOne[self.player][3]/255, 1)
-  self.texOne:draw(self.anims, roundx+offsetx, roundy+offsety, 0, 1, 1, 32, 41, nil, nil, fx, fy)
+  self.texOne:draw(self.anims, roundx+offsetx, roundy+offsety, 0, 1, sy, 32, 41, nil, nil, fx)
   love.graphics.setColor(megaMan.colorTwo[self.player][1]/255, megaMan.colorTwo[self.player][2]/255, megaMan.colorTwo[self.player][3]/255, 1)
-  self.texTwo:draw(self.anims, roundx+offsetx, roundy+offsety, 0, 1, 1, 32, 41, nil, nil, fx, fy)
+  self.texTwo:draw(self.anims, roundx+offsetx, roundy+offsety, 0, 1, sy, 32, 41, nil, nil, fx)
   
   if self.weaponSwitchTimer ~= 70 then
     love.graphics.setColor(1, 1, 1, 1)

@@ -19,7 +19,7 @@ function stickMan:new(x, y)
   
   -- Boss intro exclusive.
   self.bossIntroText = "STICK MAN"
-  self.stageState = "assets/states/templates/templateStage.stage.tmx"
+  self.stageState = "assets/states/demo.stage.tmx"
   
   -- Weapon get exclusive.
   self.weaponGetText = "WEAPON GET... STICK WEAPON!"
