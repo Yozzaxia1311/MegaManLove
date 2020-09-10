@@ -1423,6 +1423,9 @@ function bossEntity:new()
       return true
     end
   self.skipStart = false
+  self.replayMusicWhenContinuing = true
+  self.lastMusic = mmMusic.curID
+  self.lastVol = mmMusic.vol
   self:setMusic("assets/sfx/music/boss.ogg")
   self:setBossIntroMusic("assets/sfx/music/stageStart.ogg")
 end
@@ -1564,6 +1567,11 @@ function bossEntity:die(o)
         megautils.gotoState(self.afterDeathState)
       end)
     megautils.stopMusic()
+  else
+    if self.replayMusicWhenContinuing and not self._onceReplay then
+      self._onceReplay = true
+      megautils.playMusic(self.lastMusic, self.lastVol)
+    end
   end
 end
 
