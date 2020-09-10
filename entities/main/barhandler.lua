@@ -130,12 +130,14 @@ function healthHandler:draw()
         if healthHandler.playerTimers[i] == -1 then
           love.graphics.setColor(0, 0, 0, 1)
           love.graphics.rectangle("fill", self.transform.x, self.transform.y+(i*8), 32, 8)
-          love.graphics.setColor(1, 1, 1, 1)
           if megautils.getLives() <= 0 then
+            love.graphics.setColor(1, 0.2, 0.2, 1)
             love.graphics.print("p" .. tostring(i) .. " x", self.transform.x, self.transform.y+(i*8))
           else
-            love.graphics.print("p" .. tostring(i) .. " `", self.transform.x, self.transform.y+(i*8))
+            love.graphics.setColor(0.2, 1, 0.2, 1)
+            love.graphics.print("p" .. tostring(i) .. " o", self.transform.x, self.transform.y+(i*8))
           end
+          love.graphics.setColor(1, 1, 1, 1)
         elseif healthHandler.playerTimers[i] > -1 then
           love.graphics.setColor(0, 0, 0, 1)
           love.graphics.rectangle("fill", self.transform.x, self.transform.y+(i*8), 32, 8)
