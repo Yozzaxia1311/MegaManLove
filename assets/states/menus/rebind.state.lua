@@ -22,10 +22,6 @@ function rebinder:new()
   inputHandler.refreshGamepads()
 end
 
-function rebinder:added()
-  self:addToGroup("freezable")
-end
-
 function rebinder:update()
   if lastPressed.input == "escape" and not self.done then
     megautils.add(fade, true, nil, nil, function(s)

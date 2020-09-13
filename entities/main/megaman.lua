@@ -174,12 +174,6 @@ megautils.resetGameObjectsFuncs.megaMan = {func=function()
     megaMan.individualLanded = {}
   end, autoClean=false}
 
-megautils.postAddObjectsFuncs.megaMan = {func=function()
-    if megaMan.mainPlayer and megaMan.mainPlayer.ready then
-      megautils.freeze(nil, "ready")
-    end
-  end, autoClean=false}
-
 megautils.difficultyChangeFuncs.megaMan = {func=function(d)
     for k, v in ipairs(megaMan.allPlayers) do
       if d == "easy" then
@@ -538,7 +532,6 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
 end
 
 function megaMan:added()
-  self:addToGroup("freezable")
   self:addToGroup("submergable")
   self:addToGroup("collision")
 end
@@ -1030,7 +1023,8 @@ function megaMan:interactedWith(o, c)
   if self.changeHealth < 0 then
     if self.healthHandler.health <= 0 and not self.dead then
       self.dead = true
-      megautils.freeze({self}, "dying")
+      self.noFreeze = true
+      megautils.freeze("dying")
       if camera.main then
         if #megaMan.allPlayers == 1 then
           self.cameraTween = timer((((self.gravity >= 0 and self.transform.y < view.y+view.h) or
@@ -1959,7 +1953,7 @@ function megaMan:update()
       end
       if self.cameraTween:update(1/60) then
         self:die()
-        megautils.unfreeze(nil, "dying")
+        megautils.unfreeze("dying")
         return
       end
       if camera.main then

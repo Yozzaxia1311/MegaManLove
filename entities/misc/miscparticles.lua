@@ -36,7 +36,6 @@ function particle:new(user)
 end
 
 function particle:added()
-  self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
   self:addToGroup("collision")
 end

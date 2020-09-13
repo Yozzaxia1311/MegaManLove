@@ -57,7 +57,6 @@ function pickupEntity:new(despawn, gd, fwp, id, path)
 end
 
 function pickupEntity:added()
-  self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
   self:addToGroup("collision")
   if self.despawn then

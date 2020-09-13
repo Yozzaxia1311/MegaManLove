@@ -66,10 +66,6 @@ function stageSelect:new()
   self.selectBlink = 0
 end
 
-function stageSelect:added()
-  self:addToGroup("freezable")
-end
-
 function stageSelect:removed()
   love.graphics.setBackgroundColor(0, 0, 0, 1)
 end

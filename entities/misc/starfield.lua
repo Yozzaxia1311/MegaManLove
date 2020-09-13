@@ -29,6 +29,7 @@ function banner:new()
   self.tOne = megautils.getResource("starFieldOne")
   self.quad = quad(0, 0, 256, 103)
   self:setLayer(0)
+  self.noFreeze = true
 end
 
 function banner:update(dt)
@@ -54,6 +55,7 @@ function smallStar:new(x, y, angle, spd)
   self.velocity.velx = megautils.calcX(angle or 0) * (spd or 1)
   self.velocity.vely = megautils.calcY(angle or 0) * (spd or 1)
   self:setLayer(-1)
+  self.noFreeze = true
 end
 
 function smallStar:update()
@@ -77,6 +79,7 @@ function star:new(x, y, angle, spd)
   self.velocity.velx = megautils.calcX(angle or 0) * (spd or 1)
   self.velocity.vely = megautils.calcY(angle or 0) * (spd or 1)
   self:setLayer(-1)
+  self.noFreeze = true
 end
 
 function star:update()
@@ -100,6 +103,7 @@ function largeStar:new(x, y, angle, spd)
   self.velocity.velx = megautils.calcX(angle or 0) * (spd or 1)
   self.velocity.vely = megautils.calcY(angle or 0) * (spd or 1)
   self:setLayer(-1)
+  self.noFreeze = true
 end
 
 function largeStar:update()

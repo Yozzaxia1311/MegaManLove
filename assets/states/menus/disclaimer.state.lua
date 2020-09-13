@@ -30,10 +30,6 @@ function disclaimer:new()
     "\nPress Escape here to rebind"
 end
 
-function disclaimer:added()
-  self:addToGroup("freezable")
-end
-
 function disclaimer:update()
   if self.check then
     if control.startPressed[1] then

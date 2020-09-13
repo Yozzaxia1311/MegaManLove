@@ -46,6 +46,7 @@ function bossDoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt, n, tw, th, ts)
   end
   self:setDirection(dir)
   self.visibleDuringPause = true
+  self.noFreeze = {"trans"}
 end
 
 function bossDoor:added()
@@ -151,8 +152,9 @@ function bossDoor:update()
           for j=1, #megaMan.allPlayers do
             megaMan.allPlayers[j].canControl.trans = false
             megaMan.allPlayers[j].doAnimation = false
+            megaMan.allPlayers[j].noFreeze = true
           end
-          megautils.freeze(megaMan.allPlayers)
+          megautils.freeze("trans")
           if megautils.groups().removeOnTransition then
             for k, v in pairs(megautils.groups().removeOnTransition) do
               megautils.removeq(v)
@@ -280,11 +282,12 @@ function bossDoor:update()
       megautils.state().system.cameraUpdate = function()
         camera.main:updateBounds()
         camera.main.tweenFinished = false
-        megautils.unfreeze(megaMan.allPlayers)
         for i=1, #megaMan.allPlayers do
-          megaMan.allPlayers[i].canControl.trans = true
+          megaMan.allPlayers[i].canControl.trans = nil
           megaMan.allPlayers[i].doAnimation = true
+          megaMan.allPlayers[i].noFreeze = nil
         end
+        megautils.unfreeze("trans")
         camera.main.once = false
         camera.main.transition = false
         camera.main.preTrans = false

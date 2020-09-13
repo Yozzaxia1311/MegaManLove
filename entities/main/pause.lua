@@ -10,7 +10,7 @@ function mmWeaponsMenu.resources()
 end
   
 function mmWeaponsMenu.pause(self)
-  megautils.freezeq(nil, "pause")
+  megautils.freeze("pause")
   
   megautils.add(fade, true, nil, nil, function(s)
       for k, v in pairs(megautils.playerPauseFuncs) do
@@ -45,6 +45,7 @@ function mmWeaponsMenu:new(p)
   self.headQuad = quad(203, 398, 63, 62)
   self.playerQuad = quad(2, 2, 63, 62)
   self.player = p
+  self.noFreeze = {"pause", "hb"}
   w = megaMan.weaponHandler[self.player.player]
   self.section = 0
   self.dOutline, self.dOne, self.dTwo = {0, 0, 0}, {124, 124, 124}, {188, 188, 188}
@@ -78,7 +79,7 @@ function mmWeaponsMenu:new(p)
           h.colorTwo = self.player.healthHandler.colorTwo
         else
           h.segments = weapon.segments[w.weapons[self.list[y][x]]] or 7
-          h.health = w.energy[self.list[y][x]]
+          h:instantUpdate(w.energy[self.list[y][x]])
         end
         h.side = -1
         h.transform.x = view.x+(64+(x*112)-112)
@@ -99,15 +100,15 @@ function mmWeaponsMenu:new(p)
   self.cur = w.currentSlot
   self.last = {w.currentSlot, megaMan.colorOutline[self.player.player], megaMan.colorOne[self.player.player], megaMan.colorTwo[self.player.player]}
   self.inactiveTankColor = {{0, 0, 0}, {188, 188, 188}, {255, 255, 255}}
-  local trig = megautils.add(trigger, function(s, dt)
+  self.trig = megautils.add(trigger, function(s, dt)
     for k, v in pairs(s.fills) do
       for i, j in pairs(v) do
         j:update(dt)
       end
     end
   end)
-  trig.fills = self.fills
-  trig:removeFromGroup("freezable")
+  self.trig.fills = self.fills
+  self.trig.noFreeze = {"pause", "hb"}
   megaMan.colorOutline[self.player.player] = weapon.colors[w.weapons[self.list[self.y][self.x]]].outline
   megaMan.colorOne[self.player.player] = weapon.colors[w.weapons[self.list[self.y][self.x]]].one
   megaMan.colorTwo[self.player.player] = weapon.colors[w.weapons[self.list[self.y][self.x]]].two
@@ -118,13 +119,9 @@ function mmWeaponsMenu:new(p)
   mmWeaponsMenu.main = self
 end
 
-function mmWeaponsMenu:added()
-  self:addToGroup("freezable")
-end
-
 function mmWeaponsMenu:removed()
   mmWeaponsMenu.main = nil
-  megautils.unfreezeq(nil, "pause")
+  megautils.unfreeze("pause")
   for k, v in pairs(self.fills) do
     for i, j in pairs(v) do
       if j.wid ~= 0 then
@@ -146,12 +143,16 @@ function mmWeaponsMenu:removed()
       v.canDraw.pause = nil
     end
   end
+  
+  if self.trig then
+    megautils.remove(self.trig)
+  end
 end
 
 function mmWeaponsMenu:update(dt)
   local w = megaMan.weaponHandler[self.player.player]
   if self.changing then
-    if self.changing == "health" and self.fills[1][1].health == self.player.healthHandler.segments * 4 then
+    if self.changing == "health" and self.fills[1][1].renderedHealth == self.player.healthHandler.segments * 4 then
       self.x = 1
       self.y = 1
       self.section = 0
@@ -160,7 +161,7 @@ function mmWeaponsMenu:update(dt)
       local res = true
       for k, v in pairs(self.fills) do
         for i, j in pairs(v) do
-          if j.wid ~= 0 and j.health ~= w.segments[j.wid] * 4 then
+          if j.wid ~= 0 and j.renderedHealth ~= (weapon.segments[w.weapons[j.wid]] or 7) * 4 then
             res = false
           end
         end
@@ -174,6 +175,7 @@ function mmWeaponsMenu:update(dt)
     end
     return
   end
+  
   if self.section == 0 then
     local olx, oly = self.x, self.y
     for k, v in pairs(self.fills) do
@@ -210,6 +212,7 @@ function mmWeaponsMenu:update(dt)
               megautils.removeq(ss)
             end)
         end)
+      self.changing = "leaving"
       megautils.playSound("selected")
       return
     elseif control.rightPressed[self.player.player] then
@@ -328,7 +331,7 @@ function mmWeaponsMenu:update(dt)
         for k, v in pairs(self.fills) do
           for i, j in pairs(v) do
             if j.wid ~= 0 then
-              j:updateThis(w.segments[j.wid] * 4)
+              j:updateThis((weapon.segments[w.weapons[j.wid]] or 7) * 4)
             end
           end
         end

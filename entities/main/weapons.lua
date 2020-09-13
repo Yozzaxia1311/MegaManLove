@@ -128,7 +128,6 @@ function weapon:added()
       self:addToGroup(self.weaponGroup .. tostring(megaMan.weaponHandler[self.user.player].id))
     end
   end
-  self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
   self:addToGroup("collision")
   self:addToGroup("weapon")
@@ -160,22 +159,24 @@ function weapon:determineIFrames(o)
 end
 
 function weapon:dink(e)
-  if self.isEnemyWeapon then
-    self.velocity.velx = -self.velocity.velx
-    self.velocity.vely = -self.velocity.vely
-  else
-    self.velocity.velx = self.velocity.velx >= 0 and -4 or 4
-    self.velocity.vely = (self.gravity >= 0) and -4 or 4
-  end
-  self.dinked = true
-  self.dinkedBy = e
-  self.blockCollision.global = false
-  self.damageType = self.damageTypeOnDink
-  if self.soundOnDink then
-    if megautils.getResource(self.soundOnDink) then
-      megautils.playSound(self.soundOnDink)
+  if self.doDink then
+    if self.isEnemyWeapon then
+      self.velocity.velx = -self.velocity.velx
+      self.velocity.vely = -self.velocity.vely
     else
-      megautils.playSoundFromFile(self.soundOnDink)
+      self.velocity.velx = self.velocity.velx >= 0 and -4 or 4
+      self.velocity.vely = (self.gravity >= 0) and -4 or 4
+    end
+    self.dinked = true
+    self.dinkedBy = e
+    self.blockCollision.global = false
+    self.damageType = self.damageTypeOnDink
+    if self.soundOnDink then
+      if megautils.getResource(self.soundOnDink) then
+        megautils.playSound(self.soundOnDink)
+      else
+        megautils.playSoundFromFile(self.soundOnDink)
+      end
     end
   end
 end
@@ -851,12 +852,15 @@ function rushJet:act(dt)
         self.playerOn = true
       end
     end
-    if self.xColl ~= 0 or
+    if megaMan.weaponHandler[self.user.player].energy[megaMan.weaponHandler[self.user.player].currentSlot] == 0 or self.xColl ~= 0 or
       (self.playerOn and self.user and collision.checkSolid(self.user, 0, self.user.gravity >= 0 and -4 or 4)) then
       if self.playerOn then self.user.canWalk.rj = true end
       self.anims:set("spawnLand")
+      self.blockCollision.global = false
       self.s = 4
       self.solidType = collision.NONE
+      self.velocity.velx = 0
+      self.velocity.vely = 0
       megautils.playSound("ascend")
     end
     self.timer = math.min(self.timer+1, 60)

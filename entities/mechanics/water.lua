@@ -56,7 +56,6 @@ end
 function water:added()
   self:addToGroup("handledBySections")
   self:addToGroup("water")
-  self:addToGroup("freezable")
 end
 
 function water:removed()
@@ -130,7 +129,6 @@ end
 function space:added()
   self:addToGroup("handledBySections")
   self:addToGroup("space")
-  self:addToGroup("freezable")
 end
 
 function space:removed()

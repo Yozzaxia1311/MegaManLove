@@ -12,6 +12,11 @@ function ready:new(text, blinks)
   self.blinks = blinks or 12
   self.text = text or "READY"
   self.width = self.text:len() * 8
+  self.noFreeze = true
+end
+
+function ready:added()
+  megautils.freeze("ready")
 end
 
 function ready:update(dt)
@@ -21,7 +26,7 @@ function ready:update(dt)
     self.blinkCount = self.blinkCount + 1
     self.canDraw.global = not self.canDraw.global
     if self.blinkCount == self.blinks then
-      megautils.unfreeze(nil, "ready")
+      megautils.unfreeze("ready")
       megautils.removeq(self)
     end
   end

@@ -15,7 +15,6 @@ end
 
 function spawner:added()
   self:addToGroup("handledBySections")
-  self:addToGroup("freezable")
   self.instance = nil
   self.wasOutside = true
 end
@@ -48,7 +47,6 @@ end
 
 function intervalSpawner:added()
   self:addToGroup("handledBySections")
-  self:addToGroup("freezable")
 end
 
 function intervalSpawner:update(dt)

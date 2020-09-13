@@ -11,10 +11,11 @@ function fade:new(fadeToColor, gap, color, after)
   self.timer = 0
   self.color = color or {0, 0, 0}
   self:setLayer(11)
+  self.noFreeze = true
 end
 
 function fade:begin()
-  megautils.freeze()
+  megautils.freeze("fade")
   fade.main = self
 end
 
@@ -28,11 +29,9 @@ function fade:update(dt)
   if ((self.alpha == 255 and self.fadeToColor) or (self.alpha == 0 and not self.fadeToColor)) then
     if self.timer == self.gap and not self.once2 then
       self.once2 = true
-      megautils.unfreezeq()
+      megautils.unfreeze("fade")
       self.after(self)
     end
-  else
-    megautils.freezeq()
   end
   if self.timer == self.gap then
     self.timer = 0

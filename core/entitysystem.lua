@@ -25,8 +25,17 @@ function entitySystem:new()
   self.removeQueue = {}
   self.beginQueue = {}
   self.recycle = {}
+  self.frozen = {}
   self.doSort = false
   self.inLoop = false
+end
+
+function entitySystem:freeze(n)
+  self.frozen[n or "global"] = true
+end
+
+function entitySystem:unfreeze(n)
+  self.frozen[n or "global"] = nil
 end
 
 function entitySystem:emptyRecycling(c, num)
@@ -308,6 +317,7 @@ function entitySystem:clear()
   self.static = {}
   self.addQueue = {}
   self.removeQueue = {}
+  self.frozen = {}
   self.cameraUpdate = nil
   self.doSort = false
   self.beginQueue = {}
@@ -342,57 +352,72 @@ function entitySystem:update(dt)
     self.beginQueue[1]:begin()
     table.remove(self.beginQueue, 1)
   end
+  
   self.inLoop = true
+  
   for i=1, #self.updates do
     if states.switched then
       return
     end
     local t = self.updates[i]
-    t.previousX = t.transform.x
-    t.previousY = t.transform.y
-    t.epX = t.previousX
-    t.epY = t.previousY
-    if not t.isRemoved and t.beforeUpdate and checkFalse(t.canUpdate) then
-      t:beforeUpdate(dt)
+    if (type(t.noFreeze) == "table" and table.contains(t.noFreeze, self.frozen)) or t.noFreeze or not checkTrue(self.frozen) then
+      t.previousX = t.transform.x
+      t.previousY = t.transform.y
+      t.epX = t.previousX
+      t.epY = t.previousY
+      if not t.isRemoved and t.beforeUpdate and checkFalse(t.canUpdate) then
+        t:beforeUpdate(dt)
+      end
     end
   end
+  
   for i=1, #self.updates do
     if states.switched then
       return
     end
     local t = self.updates[i]
-    if not t.isRemoved and t.update and checkFalse(t.canUpdate) then
+    if ((type(t.noFreeze) == "table" and table.contains(t.noFreeze, self.frozen)) or t.noFreeze or not checkTrue(self.frozen)) and
+      not t.isRemoved and t.update and checkFalse(t.canUpdate) then
       t:update(dt)
     end
   end
+  
   for i=1, #self.updates do
     if states.switched then
       return
     end
     local t = self.updates[i]
-    if not t.isRemoved and t.afterUpdate and checkFalse(t.canUpdate) then
+    if ((type(t.noFreeze) == "table" and table.contains(t.noFreeze, self.frozen)) or t.noFreeze or not checkTrue(self.frozen)) and
+      not t.isRemoved and t.afterUpdate and checkFalse(t.canUpdate) then
       t:afterUpdate(dt)
     end
   end
+  
   self.inLoop = false
+  
   if states.switched then
     return
   end
+  
   if self.cameraUpdate then
     self.cameraUpdate(self)
   end
+  
   for i=#self.removeQueue, 1, -1 do
     self:remove(self.removeQueue[i])
     self.removeQueue[i] = nil
   end
+  
   for i=#self.addQueue, 1, -1 do
     self:adde(self.addQueue[i])
     self.addQueue[i] = nil
   end
+  
   if self.doSort then
     self.doSort = false
     self:sortLayers()
   end
+  
   if entitySystem.doDrawFlicker then
     for i=1, #self.entities do
       if self.entities[i].flicker and #self.entities[i].data > 1 then
@@ -483,6 +508,7 @@ function basicEntity.transfer(from, to)
   to.despawnLateDuringTransition = from.despawnLateDuringTransition
   to.death = from.death
   to.ladder = from.ladder
+  to.noFrozen = from.noFrozen
   if from.collisionShape then
     if from.collisionShape.type == 0 then
       to:setRectangleCollision(from.collisionShape.w, from.collisionShape.h)
@@ -853,7 +879,6 @@ function mapEntity:new(map, x, y)
 end
 
 function mapEntity:begin()
-  self:addToGroup("freezable")
   self:addToGroup("map")
   
   for i=1, #self.map.layers do
@@ -1150,7 +1175,6 @@ function advancedEntity:new()
 end
 
 function advancedEntity:added()
-  self:addToGroup("freezable")
   self:addToGroup("removeOnTransition")
   self:addToGroup("collision")
   self:addToGroup("handledBySection")

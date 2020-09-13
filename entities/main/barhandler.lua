@@ -40,15 +40,12 @@ function healthHandler:new(colorOne, colorTwo, colorOutline, side, r, segments, 
   self.riseTimer = 4
   self.rot = r or "y"
   self.player = player
-end
-
-function healthHandler:added()
-  self:addToGroup("freezable")
+  self.noFreeze = {"hb"}
 end
 
 function healthHandler:updateThis(newHealth)
   if newHealth > self.health and self.health < 4*self.segments then
-    megautils.freeze({self}, "hb")
+    megautils.freeze("hb")
     self.health = math.min(newHealth, 4*self.segments)
     self.riseTimer = 0
   elseif newHealth < self.health then
@@ -70,7 +67,7 @@ function healthHandler:update(dt)
       self.renderedHealth = math.approach(self.renderedHealth, self.health, 1)
       megautils.playSound("heal")
       if self.renderedHealth == self.health then
-        megautils.unfreeze({self}, "hb")
+        megautils.unfreeze("hb")
         self.rise = 0
         megautils.stopSound("heal")
       end
@@ -108,7 +105,7 @@ function healthHandler:update(dt)
 end
 
 function healthHandler:removed()
-  megautils.unfreeze(nil, "hb")
+  megautils.unfreeze("hb")
 end
 
 function healthHandler:draw()
@@ -209,10 +206,7 @@ function weaponHandler:new(side, r, slots)
   self.riseTimer = 4
   self.side = side or 1
   self.rot = r or "y"
-end
-
-function weaponHandler:added()
-  self:addToGroup("freezable")
+  self.noFreeze = {"wb"}
 end
 
 function weaponHandler:reinit()
@@ -285,7 +279,7 @@ end
 function weaponHandler:updateCurrent(newWE)
   if self.current and self.energy[self.currentSlot] then
     if newWE > self.energy[self.currentSlot] and self.energy[self.currentSlot] < 4*(weapon.segments[self.current] or 7) then
-      megautils.freeze({self}, "wb")
+      megautils.freeze("wb")
       self.energy[self.currentSlot] = math.min(newWE, 4*(weapon.segments[self.current] or 7))
       self.riseTimer = 0
     elseif newWE < self.energy[self.currentSlot] then
@@ -312,7 +306,7 @@ function weaponHandler:update(dt)
         self.riseTimer = 0
         megautils.playSound("heal")
         if self.renderedWE[self.currentSlot] == self.energy[self.currentSlot] then
-          megautils.unfreeze({self}, "wb")
+          megautils.unfreeze("wb")
           megautils.stopSound("heal")
         end
       end
@@ -321,7 +315,7 @@ function weaponHandler:update(dt)
 end
 
 function weaponHandler:removed()
-  megautils.unfreeze(nil, "wb")
+  megautils.unfreeze("wb")
 end
 
 function weaponHandler:draw()

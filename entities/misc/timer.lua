@@ -9,10 +9,6 @@ function timer:new(time, func)
   self.func = func
 end
 
-function timer:added()
-  self:addToGroup("freezable")
-end
-
 function timer:update(dt)
   self.time = math.min(self.time+1, self.max)
   if self.time == self.max then

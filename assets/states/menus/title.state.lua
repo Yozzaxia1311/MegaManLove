@@ -25,10 +25,6 @@ function title:new()
   self.twoOff = -256
 end
 
-function title:added()
-  self:addToGroup("freezable")
-end
-
 function title:update()
   if self.s < 2 and (control.startPressed[1] or control.jumpPressed[1]) then
     self.s = 3

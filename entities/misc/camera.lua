@@ -87,10 +87,11 @@ function camera:updateCam(spdx, spdy)
         end
       end
       if self.freeze then
-        megautils.freeze(megaMan.allPlayers)
         for k, v in pairs(megaMan.allPlayers) do
           v.canControl.trans = false
+          v.noFreeze = true
         end
+        megautils.freeze("trans")
       end 
       if self.player then
         local sx, sy, sw, sh
@@ -203,10 +204,11 @@ function camera:updateCam(spdx, spdy)
             megautils.state().system.cameraUpdate = nil
           end
           if camera.main.freeze then
-            megautils.unfreeze(megaMan.allPlayers)
             for k, v in pairs(megaMan.allPlayers) do
-              v.canControl.trans = true
+              v.canControl.trans = nil
+              v.noFreeze = nil
             end
+            megautils.unfreeze("trans")
           end
           if camera.main.player and camera.main.player.onMovingFloor then
             camera.main.player.onMovingFloor.dontRemoveOnTransition = camera.main.player.onMovingFloor._oldDontRemoveOnTransition

@@ -3,9 +3,7 @@ local menuState = state:extend()
 function menuState:begin()
   megautils.add(menuSelect)
   megautils.add(parallax, 0, 0, view.w, view.h, "assets/states/menus/menuParallax.png", nil, nil, nil, nil, 1, 1, 0.4, 0.4, true, true)
-    :addToGroup("freezable")
   megautils.add(parallax, 0, -32, view.w, view.h+32, "assets/states/menus/menuParallax.png", nil, nil, nil, nil, 1, 1, -0.4, 0.4, true, true)
-    :addToGroup("freezable")
   if globals.wgsToMenu then
     globals.wgsToMenu = nil
     mmMusic._queue = nil
@@ -28,10 +26,6 @@ function menuSelect:new()
   self.picked = false
   self.section = 0
   self.timer = 20
-end
-
-function menuSelect:added()
-  self:addToGroup("freezable")
 end
 
 function menuSelect:update()

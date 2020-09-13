@@ -23,10 +23,6 @@ function contPanels:new()
   megautils.playMusic("assets/sfx/music/gameOver.ogg")
 end
 
-function contPanels:added()
-  self:addToGroup("freezable")
-end
-
 function contPanels:update()
   self.timer = math.min(self.timer+1, 199)
   if self.timer == 198 then

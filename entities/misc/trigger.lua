@@ -8,10 +8,6 @@ function trigger:new(call, drawCall)
   self.drawCall = drawCall
 end
 
-function trigger:added()
-  self:addToGroup("freezable")
-end
-
 function trigger:update(dt)
   if self.call then self.call(self, dt) end
 end

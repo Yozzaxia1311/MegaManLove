@@ -33,7 +33,6 @@ function megautils.ser()
   
   result._q = megautils._q
   result._ranFiles = megautils._ranFiles
-  result._frozen = megautils._frozen
   result.shake = megautils.shake
   result.shakeX = megautils.shakeX
   result.shakeY = megautils.shakeY
@@ -76,7 +75,6 @@ function megautils.deser(t)
   end
   
   megautils._q = t._q
-  megautils._frozen = t._frozen
   megautils.shake = t.shake
   megautils.shakeX = t.shakeX
   megautils.shakeY = t.shakeY
@@ -696,74 +694,12 @@ function megautils.unregisterPlayer(e)
   end
 end
 
-megautils._frozen = {}
-
-function megautils.freezeq(e, name)
-  megautils.queue(function()
-      if megautils.groups().freezable then
-        for k, v in pairs(megautils.groups().freezable) do
-          if not e or not table.contains(e, v) then
-            megautils._frozen[#megautils._frozen+1] = v
-            if name then
-              v.canUpdate[name] = false
-            else
-              v.canUpdate.global = false
-            end
-          end
-        end
-      end
-    end)
+function megautils.freeze(name)
+  megautils.state().system:freeze(name)
 end
 
-function megautils.unfreezeq(e, name)
-  megautils.queue(function()
-      if megautils.groups().freezable then
-        for k, v in pairs(megautils.groups().freezable) do
-          if not e or not table.contains(e, v) then
-            if name then
-              v.canUpdate[name] = true
-            else
-              v.canUpdate.global = true
-            end
-            if not checkTrue(v.canUpdate) then
-              table.removevalue(megautils._frozen, v)
-            end
-          end
-        end
-      end
-    end)
-end
-
-function megautils.freeze(e, name)
-  if megautils.groups().freezable then
-    for k, v in pairs(megautils.groups().freezable) do
-      if not e or not table.contains(e, v) then
-        megautils._frozen[#megautils._frozen+1] = v
-        if name then
-          v.canUpdate[name] = false
-        else
-          v.canUpdate.global = false
-        end
-      end
-    end
-  end
-end
-
-function megautils.unfreeze(e, name)
-  if megautils.groups().freezable then
-    for k, v in pairs(megautils.groups().freezable) do
-      if not e or not table.contains(e, v) then
-        if name then
-          v.canUpdate[name] = true
-        else
-          v.canUpdate.global = true
-        end
-        if not checkTrue(v.canUpdate) then
-          table.removevalue(megautils._frozen, v)
-        end
-      end
-    end
-  end
+function megautils.unfreeze(name)
+  megautils.state().system:unfreeze(name)
 end
 
 function megautils.outside(o, ex, ey)

@@ -15,7 +15,6 @@ end
 
 function sinkIn:added()
   self:addToGroup("handledBySections")
-  self:addToGroup("freezable")
   self:addToGroup("collision")
 end
 
