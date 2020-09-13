@@ -31,11 +31,13 @@ function entitySystem:new()
 end
 
 function entitySystem:freeze(n)
-  self.frozen[n or "global"] = true
+  if not table.contains(self.frozen, n or "global") then
+    self.frozen[#self.frozen+1] = n or "global"
+  end
 end
 
 function entitySystem:unfreeze(n)
-  self.frozen[n or "global"] = nil
+  table.removevalue(self.frozen, n or "global")
 end
 
 function entitySystem:emptyRecycling(c, num)
@@ -360,7 +362,7 @@ function entitySystem:update(dt)
       return
     end
     local t = self.updates[i]
-    if t.noFreeze == true or not checkTrue(self.frozen) or (type(t.noFreeze) == "table" and table.contains(t.noFreeze, self.frozen)) then
+    if (type(t.noFreeze) == "table" and table.intersects(t.noFreeze, self.frozen)) or t.noFreeze == true or not checkTrue(self.frozen) then
       t.previousX = t.transform.x
       t.previousY = t.transform.y
       t.epX = t.previousX
@@ -376,7 +378,7 @@ function entitySystem:update(dt)
       return
     end
     local t = self.updates[i]
-    if (t.noFreeze == true or not checkTrue(self.frozen) or (type(t.noFreeze) == "table" and table.contains(t.noFreeze, self.frozen))) and
+    if ((type(t.noFreeze) == "table" and table.intersects(t.noFreeze, self.frozen)) or t.noFreeze == true or not checkTrue(self.frozen)) and
       not t.isRemoved and t.update and checkFalse(t.canUpdate) then
       t:update(dt)
     end
@@ -387,7 +389,7 @@ function entitySystem:update(dt)
       return
     end
     local t = self.updates[i]
-    if (t.noFreeze == true or not checkTrue(self.frozen) or (type(t.noFreeze) == "table" and table.contains(t.noFreeze, self.frozen))) and
+    if ((type(t.noFreeze) == "table" and table.intersects(t.noFreeze, self.frozen)) or t.noFreeze or not checkTrue(self.frozen)) and
       not t.isRemoved and t.afterUpdate and checkFalse(t.canUpdate) then
       t:afterUpdate(dt)
     end

@@ -53,6 +53,17 @@ function checkFalse(w)
   return true
 end
 
+function table.intersects(t, t2)
+  for _, v in pairs(t) do
+    for _, v2 in pairs(t2) do
+      if v == v2 then
+        return true
+      end
+    end
+  end
+  return false
+end
+
 function table.convert2Dto1D(t)
   local tmp = {}
   for y=1, table.length(t) do
