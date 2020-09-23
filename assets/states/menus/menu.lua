@@ -46,17 +46,6 @@ function menuSelect:update()
         megautils.stopMusic()
         megautils.transitionToState(globals.stageSelectState)
       elseif self.pick == 1 then
-        local data = save.load("save.sav") or {}
-        data.defeats = globals.defeats
-        data.infiniteLives = megautils.hasInfiniteLives()
-        data.lives = megautils.getLives()
-        data.lifeSegments = globals.lifeSegments
-        data.eTanks = megautils.getETanks()
-        data.wTanks = megautils.getWTanks()
-        data.player = megautils.getAllPlayers()
-        save.save("save.sav", data)
-        megautils.playSound("selected")
-      elseif self.pick == 2 then
         local data = save.load("save.sav")
         if data then
           globals.defeats = data.defeats
@@ -66,12 +55,21 @@ function menuSelect:update()
           megautils.setETanks(data.eTanks)
           megautils.setWTanks(data.wTanks)
           for k, v in ipairs(data.player) do
-            megautils.setPlayer(k, v)
+            megaMan.setSkin(k, v)
           end
         end
         megautils.playSound("selected")
-        
-        
+      elseif self.pick == 2 then
+        local data = save.load("save.sav") or {}
+        data.defeats = globals.defeats
+        data.infiniteLives = megautils.hasInfiniteLives()
+        data.lives = megautils.getLives()
+        data.lifeSegments = globals.lifeSegments
+        data.eTanks = megautils.getETanks()
+        data.wTanks = megautils.getWTanks()
+        data.player = megaMan.skins
+        save.save("save.sav", data)
+        megautils.playSound("selected")
       elseif self.pick == 3 then
         megautils.setFullscreen(not megautils.getFullscreen())
         local data = save.load("main.sav") or {}
