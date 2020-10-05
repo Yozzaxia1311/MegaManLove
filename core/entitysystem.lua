@@ -37,7 +37,7 @@ function entitySystem:freeze(n)
 end
 
 function entitySystem:unfreeze(n)
-  table.removevalue(self.frozen, n or "global")
+  table.quickremovevaluearray(self.frozen, n or "global")
 end
 
 function entitySystem:emptyRecycling(c, num)
