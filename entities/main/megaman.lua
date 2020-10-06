@@ -1847,7 +1847,7 @@ function megaMan:die()
           megautils.reloadState = true
           megautils.resetGameObjects = true
           globals.gameOverContinueState = megautils.getCurrentState()
-          megautils.gotoState("assets/states/menus/gameover.state.lua")
+          megautils.gotoState(globals.gameOverState)
         else
           megautils.reloadState = true
           megautils.resetGameObjects = false

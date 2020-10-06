@@ -104,6 +104,10 @@ function states.set(n, before, after)
     end
   end
   
+  if not states.currentChunk then
+    error("State does not exist: \"" .. tostring(states.current) .. "\"")
+  end
+  
   states.currentState = states.currentChunk()
   states.currentState.system = entitySystem()
   

@@ -58,6 +58,7 @@ function initEngine()
   globals.titleState = "assets/states/menus/title.state.lua"
   globals.menuState = "assets/states/menus/menu.state.tmx"
   globals.stageSelectState = "assets/states/menus/stageSelect.state.tmx"
+  globals.gameOverState = "assets/states/menus/cont.state.tmx"
   
   megautils.difficultyChangeFuncs.startingLives = {func=function(d)
       globals.startingLives = (d == "easy") and 3 or 2

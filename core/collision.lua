@@ -475,7 +475,7 @@ function collision.generalCollision(self, noSlope)
           (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
           (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) and v.solidType == collision.ONEWAY and
           (not v.ladder or v:collisionNumber(megautils.groups().ladder, 0, -cgrav, true) == 0) then
-            table.removevaluearray(solid, v)
+            table.quickremovevaluearray(solid, v)
             if not v:collision(self) then
               solid[#solid+1] = v
             end
