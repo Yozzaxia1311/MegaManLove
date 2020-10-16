@@ -146,7 +146,6 @@ function weapon:added()
 end
 
 function weapon:grav()
-  if self.ground then return end
   self.velocity.vely = self.velocity.vely+self.gravity
   self.velocity:clampY(7)
 end

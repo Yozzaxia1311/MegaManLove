@@ -23,7 +23,7 @@ collision.maxSlope = 1
 function collision.doGrav(self, noSlope)
   noSlope = noSlope or collision.noSlope
   collision.checkGround(self, false, noSlope)
-  if self.grav then self:grav() end
+  if not self.ground and self.grav then self:grav() end
 end
 
 function collision.doCollision(self, noSlope)
@@ -35,6 +35,7 @@ function collision.doCollision(self, noSlope)
     self.transform.x = self.transform.x + self.velocity.velx
     self.transform.y = self.transform.y + self.velocity.vely
   end
+  collision.checkGround(self, false, noSlope)
   collision.entityPlatform(self)
   collision.checkGround(self, false, noSlope)
   collision.checkDeath(self, lvx, lvy + (self.ground and math.sign(self.gravity) or 0))
@@ -161,14 +162,12 @@ function collision.entityPlatform(self)
                 collision.checkDeath(v, 0, math.sign(v.gravity))
               end
               
-              if resolid == collision.SOLID or (resolid == collision.ONEWAY and (epDir*(v.gravity >= 0 and 1 or -1))>0 and
-                (not self.ladder or self:collisionNumber(megautils.groups().ladder, 0, v.gravity < 0 and 1 or -1, true) == 0)) then
-                if v:collision(self) then
-                  v.transform.y = math.round(v.transform.y)
-                  v.transform.y = v.transform.y - epDir
-                end
-                local rpts = math.max(32, math.abs(self.collisionShape.h)*2)
-                for i=0, rpts do
+              if (resolid == collision.SOLID or (resolid == collision.ONEWAY and (epDir*(v.gravity >= 0 and 1 or -1))>0 and
+                (not self.ladder or self:collisionNumber(megautils.groups().ladder, 0, v.gravity < 0 and 1 or -1, true) == 0))) and
+                v:collision(self) then
+                v.transform.y = math.round(v.transform.y - epDir)
+                
+                for i=0, math.max(32, math.abs(self.collisionShape.h)*2) do
                   if v:collision(self) then
                     v.transform.y = v.transform.y - epDir
                   else
@@ -236,8 +235,7 @@ function collision.entityPlatform(self)
                 xypre = v.transform.x
                 v.transform.x = math.round(v.transform.x)
                 v.transform.x = v.transform.x + myxspeed + math.sign(epDir)
-                local rpts = math.max(32, math.abs(self.collisionShape.w)*2)
-                for i=0, rpts do
+                for i=0, math.max(32, math.abs(self.collisionShape.w)*2) do
                   if v:collision(self) then
                     v.transform.x = v.transform.x - epDir
                   else
@@ -331,7 +329,6 @@ function collision.checkGround(self, checkAnyway, noSlope)
   local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
   local slp = math.ceil(math.abs(self.velocity.velx)) + 1
   local all = megautils.groups().collision
-  local lx, ly, lg = self.transform.x, self.transform.y, self.ground
   
   if possible then
     for i=1, #all do
@@ -499,6 +496,7 @@ function collision.generalCollision(self, noSlope)
       end
       
       self.yColl = self.velocity.vely
+      
       if self.velocity.vely * cgrav > 0 then
         self.ground = true
       end
