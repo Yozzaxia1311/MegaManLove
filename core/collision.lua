@@ -167,7 +167,7 @@ function collision.entityPlatform(self)
                 v:collision(self) then
                 v.transform.y = math.round(v.transform.y - epDir)
                 
-                for i=0, math.max(32, math.abs(self.collisionShape.h)*2) do
+                for i=0, 128 do
                   if v:collision(self) then
                     v.transform.y = v.transform.y - epDir
                   else
@@ -235,7 +235,7 @@ function collision.entityPlatform(self)
                 xypre = v.transform.x
                 v.transform.x = math.round(v.transform.x)
                 v.transform.x = v.transform.x + myxspeed + math.sign(epDir)
-                for i=0, math.max(32, math.abs(self.collisionShape.w)*2) do
+                for i=0, 128 do
                   if v:collision(self) then
                     v.transform.x = v.transform.x - epDir
                   else
@@ -348,9 +348,9 @@ function collision.checkGround(self, checkAnyway, noSlope)
   end
   
   if self:collisionNumber(solid) == 0 then
-    local i = cgrav
+    local i = 0
     while math.abs(i) <= slp do
-      if self:collisionNumber(solid, 0, i + cgrav) == 0 then
+      if self:collisionNumber(solid, 0, i + cgrav) == 0 or (self.velocity.vely * cgrav < 0 and self:collisionNumber(solid, 0, -cgrav) == 0) then
         self.ground = false
         self.onMovingFloor = nil
         self.inStandSolid = nil
@@ -427,7 +427,7 @@ function collision.generalCollision(self, noSlope)
       self.xColl = -math.sign(self.velocity.velx)
       self.transform.x = math.round(self.transform.x-self.xColl)
       
-      for ii=0, math.max(32, math.abs(self.velocity.velx) * 4) do
+      for ii=0, 128 do
         if self:collisionNumber(solid) ~= 0 then
           self.transform.x = self.transform.x + self.xColl
         else
@@ -487,7 +487,7 @@ function collision.generalCollision(self, noSlope)
       self.yColl = -math.sign(self.velocity.vely)
       self.transform.y = math.round(self.transform.y-self.yColl)
       
-      for i=0, math.max(32, math.abs(self.velocity.vely) * 4) do
+      for i=0, 128 do
         if self:collisionNumber(solid) ~= 0 then
           self.transform.y = self.transform.y + self.yColl
         else
