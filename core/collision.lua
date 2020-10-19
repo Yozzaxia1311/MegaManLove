@@ -233,8 +233,8 @@ function collision.entityPlatform(self)
               
               if not epIsOnPlat and v:collision(self) then
                 xypre = v.transform.x
-                v.transform.x = math.round(v.transform.x)
-                v.transform.x = v.transform.x + myxspeed + math.sign(epDir)
+                
+                v.transform.x = math.round(v.transform.x + myxspeed + epDir)
                 for i=0, 128 do
                   if v:collision(self) then
                     v.transform.x = v.transform.x - epDir
