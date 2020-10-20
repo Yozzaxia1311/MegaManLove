@@ -223,7 +223,7 @@ function megautils.isShowingEntityCount()
   return convar.getNumber("showentitycount") == 1
 end
 
-function megautils.infiniteLives(what)
+function megautils.setInfiniteLives(what)
   convar.setValue("infinitelives", what == 1, false)
 end
 
@@ -231,7 +231,7 @@ function megautils.hasInfiniteLives()
   return convar.getNumber("infinitelives") == 1
 end
 
-function megautils.invincible(what)
+function megautils.setInvincible(what)
   convar.setValue("inv", what == 1, false)
 end
 
@@ -239,7 +239,7 @@ function megautils.isInvincible()
   return convar.getNumber("inv") == 1
 end
 
-function megautils.noClip(what)
+function megautils.setNoClip(what)
   convar.setValue("noclip", what == 1, false)
 end
 
@@ -277,6 +277,14 @@ end
 
 function megautils.setDifficulty(d)
   convar.setValue("diff", d or convar.getString("diff"), true)
+end
+
+function megautils.setCheating(w)
+  convar.setValue("cheats", what == 1, false)
+end
+
+function megautils.isCheating()
+  return convar.getNumber("cheats") == 1
 end
 
 function megautils.enableConsole()

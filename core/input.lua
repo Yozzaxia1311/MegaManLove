@@ -32,7 +32,8 @@ function inputHandler.down(k)
   local result = false
   for i=1, #inputHandler.keys[k] do
     if inputHandler.keys[k][i].type == "keyboard" then
-      result = love.keyboard.isDown(inputHandler.keys[k][i].input)
+      local v = inputHandler.keys[k][i].input
+      result = love.keyboard.isDown(v) and not pressingHardInputs(v)
     elseif inputHandler.keys[k][i].type == "gamepad" then
       for _, v in ipairs(inputHandler.gamepads) do
         if inputHandler.keys[k][i].name == v:getName() and v:isGamepadDown(inputHandler.keys[k][i].input) then

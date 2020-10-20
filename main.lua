@@ -33,6 +33,11 @@ lastPressed = {type=nil, input=nil, name=nil}
 lastTouch = {x=nil, y=nil, id=nil, pressure=nil, dx=nil, dy=nil}
 lastTextInput = nil
 
+altEnterOnce = false
+scaleOnce = {false, false, false, false, false, false, false, false, false}
+contextOnce = false
+
+
 -- Initializes the whole game to its base state.
 function initEngine()
   keyboardCheck = {}
@@ -134,6 +139,7 @@ function love.joystickremoved(j)
 end
 
 function love.keypressed(k, s, r)
+  if pressingHardInputs(k) and not control.pressAnyway then return end
   if control.demo and not control.pressAnyway then
     control.anyPressedDuringRec = true
     return
@@ -249,8 +255,9 @@ function love.touchpressed(id, x, y, dx, dy, pressure)
 end
 
 function love.textinput(k)
-  if control and control.demo and not control.pressAnyway then return end
-  if useConsole and console then console.doInput(k) end
+  if pressingHardInputs(k) and not control.pressAnyway then return end
+  if control.demo and not control.pressAnyway then return end
+  if useConsole then console.doInput(k) end
   
   lastTextInput = k
   
@@ -338,14 +345,47 @@ function love.window.updateMode(w, h, f)
   love.resize(love.graphics.getDimensions())
 end
 
+function pressingHardInputs(k)
+  if megautils then
+    local isHardKey = false
+    local checkMod = 0
+    
+    if k == "return" then
+      isHardKey = true
+      checkMod = 1
+    elseif (k == "o" or k == "p" or k == "r") and megautils.isCheating() then
+      isHardKey = true
+      checkMod = 2
+    elseif k == "ralt" or k == "lalt" then
+      isHardKey = true
+      checkMod = -1
+    elseif (k == "rctrl" or k == "lctrl") and megautils.isCheating() then
+      isHardKey = true
+      checkMod = -2
+    end
+    
+    for i=1, 9 do
+      if (i == k or ("kp" .. i == k)) then
+        isHardKey = true
+      end
+    end
+
+    return isHardKey and love.keyboard.isDown(k) and (checkMod == 0 or (checkMod == 1 and
+      (love.keyboard.isDown("ralt") or love.keyboard.isDown("lalt"))) or
+      (checkMod == 2 and (love.keyboard.isDown("rctrl") or love.keyboard.isDown("lctrl"))) or
+      (checkMod == -1 and love.keyboard.isDown("return")) or
+      (checkMod == -2 and (love.keyboard.isDown("o") or love.keyboard.isDown("p") or love.keyboard.isDown("r"))))
+  end
+  
+  return false
+end
+
 function love.run()
   local bu = love.timer.getTime()
   if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
   if love.timer then love.timer.step() end
   return function()
       if love.keyboard and console and save and megautils then
-        local didIt = false
-        
         if not (useConsole and console.state == 1) then
           if not love.keyboard.isDown("return") then
             altEnterOnce = false
@@ -355,7 +395,6 @@ function love.run()
               local data = save.load("main.sav") or {}
               data.fullscreen = megautils.getFullscreen()
               save.save("main.sav", data)
-              didIt = true
             end
             altEnterOnce = true
           end
@@ -368,12 +407,16 @@ function love.run()
                 local last = megautils.getScale()
                 megautils.setScale(i)
                 if i ~= last then
-                  local data = save.load("main.sav") or {}
-                  data.scale = megautils.getScale()
-                  save.save("main.sav", data)
-                  didIt = true
+                  if not scaleOnce[i] then
+                    local data = save.load("main.sav") or {}
+                    data.scale = megautils.getScale()
+                    save.save("main.sav", data)
+                  end
+                  scaleOnce[i] = true
                 end
               end
+            else
+              scaleOnce[i] = false
             end
           end
         end
@@ -384,40 +427,19 @@ function love.run()
           if love.keyboard.isDown("o") then
             if not contextOnce then
               console.parse("contextsave quickContext")
-              didIt = true
             end
             contextOnce = true
           elseif love.keyboard.isDown("p") then
             if not contextOnce then
               console.parse("contextopen quickContext")
-              didIt = true
             end
             contextOnce = true
           elseif love.keyboard.isDown("r") then
             if not contextOnce then
               console.parse("rec")
-              didIt = true
             end
             contextOnce = true
           end
-        end
-        
-        if didIt then
-          if love.graphics then
-            love.graphics.origin()
-            love.graphics.clear(0, 0, 0, 1)
-            if view and view.canvas then
-              love.graphics.push()
-              cscreen.apply()
-              love.graphics.draw(view.canvas)
-              cscreen.cease()
-              love.graphics.pop()
-              if useConsole then console.draw() end
-            end
-            love.graphics.present()
-          end
-          
-          return
         end
       end
       

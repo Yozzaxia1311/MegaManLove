@@ -49,7 +49,7 @@ function menuSelect:update()
         local data = save.load("save.sav")
         if data then
           globals.defeats = data.defeats
-          megautils.infiniteLives(data.infiniteLives)
+          megautils.setInfiniteLives(data.infiniteLives)
           megautils.setLives(data.lives)
           globals.lifeSegments = data.lifeSegments
           megautils.setETanks(data.eTanks)
