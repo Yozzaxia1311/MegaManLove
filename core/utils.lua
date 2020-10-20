@@ -1,18 +1,3 @@
-local function cloneFunc(fn)
-  local dumped = string.dump(fn)
-  local cloned = loadstring(dumped)
-  local i = 1
-  while true do
-    local name = debug.getupvalue(fn, i)
-    if not name then
-      break
-    end
-    debug.upvaluejoin(cloned, i, fn, i)
-    i = i + 1
-  end
-  return cloned
-end
-
 function toboolean(v)
   if type(v) == "string" then
     if v == "true" then
@@ -24,12 +9,6 @@ function toboolean(v)
     return v > 0
   elseif type(v) == "boolean" then
     return v
-  end
-end
-
-function booleanToString(v)
-  if type(v) == "boolean" then
-    return v and "true" or "false"
   end
 end
 
@@ -68,7 +47,7 @@ function table.convert2Dto1D(t)
   local tmp = {}
   for y=1, table.length(t) do
     for x=1, table.length(t[y]) do
-      tmp[table.length(tmp)+1] = t[y][x]
+      tmp[table.length(tmp) + 1] = t[y][x]
     end
   end
   return tmp
@@ -77,7 +56,7 @@ end
 function table.convert1Dto2D(t, w)
   local tmp = {}
   for i=1, #t do
-    local x, y = math.wrap(i, 1, w), math.ceil(i/w)
+    local x, y = math.wrap(i, 1, w), math.ceil(i / w)
     if tmp[y] == nil then tmp[y] = {} end
     tmp[y][x] = t[i]
   end
@@ -111,8 +90,8 @@ function string:trimmed()
 end
 
 function string:replaceIndex(i, s)
-  local st = self:sub(1, i-1)
-  local en = self:sub(i+1, self:len())
+  local st = self:sub(1, i - 1)
+  local en = self:sub(i + 1, self:len())
   
   return st .. s .. en
 end
@@ -124,7 +103,7 @@ function string:split(inSplitPattern, outResults)
   local theStart = 1
   local theSplitStart, theSplitEnd = string.find(self, inSplitPattern, theStart)
   while theSplitStart do
-    table.insert(outResults, string.sub(self, theStart, theSplitStart-1))
+    table.insert(outResults, string.sub(self, theStart, theSplitStart - 1))
     theStart = theSplitEnd + 1
     theSplitStart, theSplitEnd = string.find(self, inSplitPattern, theStart)
   end
@@ -136,7 +115,7 @@ function table.merge(tables)
   local result = {}
   for k, v in pairs(tables) do
     for i, j in pairs(v) do
-      result[#result+1] = j
+      result[#result + 1] = j
     end
   end
   return result
@@ -155,12 +134,12 @@ function math.even(n)
 end
 
 function math.dist2d(x, y, x2, y2)
-  return math.sqrt(math.pow(x-x2, 2)+math.pow(y-y2, 2))
+  return math.sqrt(((x - x2) ^ 2) + ((y - y2) ^ 2))
 end
 
 function math.approach(v, to, am)
   if v < to then 
-		v = math.min(v + am, to)
+    v = math.min(v + am, to)
   elseif v > to then
     v = math.max(v - am, to)
   end
@@ -175,8 +154,8 @@ function math.clamp(val, min, max)
   end
 end
 
-function math.roundDecimal(num, numDecimalPlaces)
-  local mult = 10^(numDecimalPlaces or 0)
+function math.roundDecimal(num, decimalPlaces)
+  local mult = 10 ^ (decimalPlaces or 0)
   return math.floor(num * mult + 0.5) / mult
 end
 
@@ -189,9 +168,9 @@ function math.lerp(a,b,t)
 end
 
 function math.sign(x)
-  if x<0 then
+  if x < 0 then
     return -1
-  elseif x>0 then
+  elseif x > 0 then
     return 1
   else
     return 0
@@ -206,13 +185,9 @@ function math.round(x)
   end
 end
 
-function math.randomboolean()
-  return love.math.random(0, 1) == 0
-end
-
 function math.wrap(v, min, max)
   local range = max - min + 1
-  v = ((v-min) % range)
+  v = ((v - min) % range)
   if v < 0 then
     return max + 1 + v
   else
@@ -263,14 +238,6 @@ function table.containskey(t, ke)
     if k == ke then return true end
   end
   return false
-end
-
-function table.stringtonumbervalues(t)
-  local result = {}
-  for k, v in pairs(t) do
-    result[k] = type(v) ~= "number" and tonumber(v) or v
-  end
-  return result
 end
 
 function table.removevalue(t, va)

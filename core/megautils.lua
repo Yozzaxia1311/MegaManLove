@@ -770,13 +770,13 @@ function megautils.dropItem(x, y)
       return megautils.add(wTank, x, y, true)
     end
   elseif math.between(rnd, 50, 362) then
-    if math.randomboolean() then
+    if love.math.random(0, 1) == 0 then
       return megautils.add(health, x, y, true)
     else
       return megautils.add(energy, x, y, true)
     end
   elseif math.between(rnd, 370, 995) then
-    if math.randomboolean() then
+    if love.math.random(0, 1) == 0 then
       return megautils.add(smallHealth, x, y, true)
     else
       return megautils.add(smallEnergy, x, y, true)
@@ -791,11 +791,7 @@ end
 function megautils.dist(e, e2)
   local cx, cy = megautils.center(e)
   local cx2, cy2 = megautils.center(e2)
-  local path = megautils.calcPath(cx2, cy2, cx, cy)
-  return math.dist2d(megautils.circlePathX(cx, path, e.collisionShape.w/2),
-    megautils.circlePathY(cy, path, e.collisionShape.h/2),
-    megautils.circlePathX(cx2, path, e2.collisionShape.w/2),
-    megautils.circlePathY(cy2, path, e2.collisionShape.h/2))
+  return math.dist2d(cx, cy, cx2, cy2)
 end
 
 function megautils.closest(e, group, single)

@@ -691,8 +691,9 @@ end
 function basicEntity:collisionTable(t, x, y, notme, func)
   local result = {}
   if not t then return result end
-  for k=1, #t do
-    if self:collision(t[k], x, y, notme) and (func == nil or func(t[k])) then
+  for i=1, #t do
+    local v = t[i]
+    if self:collision(v, x, y, notme) and (func == nil or func(v)) then
       result[#result+1] = v
     end
   end
@@ -702,8 +703,8 @@ end
 function basicEntity:collisionNumber(t, x, y, notme, func)
   local result = 0
   if not t then return result end
-  for k=1, #t do
-    if self:collision(t[k], x, y, notme) and (func == nil or func(t[k])) then
+  for i=1, #t do
+    if self:collision(t[i], x, y, notme) and (func == nil or func(t[i])) then
       result = result + 1
     end
   end
