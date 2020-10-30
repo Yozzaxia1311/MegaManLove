@@ -165,11 +165,12 @@ function collision.entityPlatform(self)
               if (resolid == collision.SOLID or (resolid == collision.ONEWAY and (epDir*(v.gravity >= 0 and 1 or -1))>0 and
                 (not self.ladder or self:collisionNumber(megautils.groups().ladder, 0, v.gravity < 0 and 1 or -1, true) == 0))) and
                 v:collision(self) then
-                v.transform.y = math.round(v.transform.y - epDir)
+                local step = epDir * 0.5
+                v.transform.y = math.round(v.transform.y) - step
                 
-                for i=0, 128 do
+                for i=1, 256 do
                   if v:collision(self) then
-                    v.transform.y = v.transform.y - epDir
+                    v.transform.y = v.transform.y - step
                   else
                     break
                   end
@@ -235,9 +236,11 @@ function collision.entityPlatform(self)
                 xypre = v.transform.x
                 
                 v.transform.x = math.round(v.transform.x + myxspeed + epDir)
-                for i=0, 128 do
+                local step = epDir * 0.5
+                
+                for i=1, 256 do
                   if v:collision(self) then
-                    v.transform.x = v.transform.x - epDir
+                    v.transform.x = v.transform.x - step
                   else
                     break
                   end
@@ -427,7 +430,7 @@ function collision.generalCollision(self, noSlope)
       self.xColl = -math.sign(self.velocity.velx)
       self.transform.x = math.round(self.transform.x-self.xColl)
       
-      for ii=0, 128 do
+      for ii=1, 128 do
         if self:collisionNumber(solid) ~= 0 then
           self.transform.x = self.transform.x + self.xColl
         else
@@ -487,7 +490,7 @@ function collision.generalCollision(self, noSlope)
       self.yColl = -math.sign(self.velocity.vely)
       self.transform.y = math.round(self.transform.y-self.yColl)
       
-      for i=0, 128 do
+      for i=1, 128 do
         if self:collisionNumber(solid) ~= 0 then
           self.transform.y = self.transform.y + self.yColl
         else
