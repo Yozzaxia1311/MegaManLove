@@ -53,7 +53,7 @@ function states.set(n, before, after)
   local isStage = nick and (nick:sub(-10) == ".stage.lua" or nick:sub(-10) == ".stage.tmx")
   local map
   local mapArgs = {}
-  local sp = "assets/states/blank.lua"
+  local sp = "|???|"
   
   if nick then
     if nick:sub(-10) == ".state.tmx" or nick:sub(-10) == ".stage.tmx" then
@@ -89,13 +89,17 @@ function states.set(n, before, after)
   states.switched = true
   
   if not states.currentChunk or states.current ~= sp then
-    states.currentChunk = love.filesystem.load(sp)
+    if sp == "|???|" then
+      states.currentChunk = state:extend()
+    else
+      states.currentChunk = love.filesystem.load(sp)
+    end
   end
   
   states.current = nick
   
   if megautils.reloadState then
-    for k, v in pairs(megautils.reloadStateFuncs) do
+    for _, v in pairs(megautils.reloadStateFuncs) do
       if type(v) == "function" then
         v()
       else
@@ -115,7 +119,7 @@ function states.set(n, before, after)
   
   if megautils.reloadState and megautils.resetGameObjects then
     if isStage then
-      for k, v in pairs(megautils.resetGameObjectsFuncs) do
+      for _, v in pairs(megautils.resetGameObjectsFuncs) do
         if type(v) == "function" then
           v()
         else

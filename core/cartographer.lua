@@ -304,7 +304,7 @@ function Layer.tilelayer:_init(map)
     
     assert(require "ffi", "Compressed maps require LuaJIT FFI.\nPlease Switch your interperator to LuaJIT or your Tile Layer Format to \"CSV\".")
     if self.chunks then
-      for k, v in ipairs(self.chunks) do
+      for _, v in ipairs(self.chunks) do
         if v.data then
           local data = love.data.decode("string", "base64", v.data)
           if self.compression == "zstd" then
@@ -717,12 +717,12 @@ function Map:draw()
 end
 
 function Map:release()
-  for k, v in pairs(self._quadCache) do
+  for _, v in pairs(self._quadCache) do
     v:release()
   end
   self._quadCache = nil
   
-  for k, v in pairs(self._images) do
+  for _, v in pairs(self._images) do
     v:release()
   end
   self._images = nil
@@ -852,7 +852,7 @@ local function finalXML2LuaTable(str, f)
       if ts.image then
         if v.source then
           tmp = ts.image
-          local tmp2 = string.split(v.source, "/")
+          local tmp2 = v.source:split("/")
           ts.image = v.source:sub(0, -tmp2[#tmp2]:len()-1) .. tmp.source
           ts.imagewidth = tonumber(tmp.width)
           ts.imageheight = tonumber(tmp.height)
@@ -949,7 +949,7 @@ local function finalXML2LuaTable(str, f)
           end
           
           if p.terrain then
-            p.terrain = string.split(p.terrain, ",")
+            p.terrain = p.terrain:split(",")
             for o2, p2 in pairs(p.terrain) do
               p.terrain[o2] = tonumber(p.terrain[o2]) or -1
             end
@@ -986,7 +986,7 @@ local function finalXML2LuaTable(str, f)
       if not (type(tab.layer[1]) == "table" and type(tab.layer[2]) == "table") then
         tab.layer = {tab.layer}
       end
-      for k, v in pairs(tab.layer) do
+      for _, v in pairs(tab.layer) do
         if v.type == "tilelayer" then
           v.x = tonumber(v.x) or 0
           v.y = tonumber(v.y) or 0
@@ -1031,12 +1031,12 @@ local function finalXML2LuaTable(str, f)
 
                 if v.encoding  == "csv" then
                   for i, j in pairs(v.chunks) do
-                    local full = string.split(j.data, "\r\n")
+                    local full = j.data:split("\r\n")
                     j.data = ""
                     for o, p in ipairs(full) do
                       j.data = j.data .. p
                     end
-                    j.data = string.split(j.data, ",")
+                    j.data = j.data:split(",")
                     for o, p in ipairs(j.data) do
                       j.data[o] = tonumber(p)
                     end
@@ -1048,7 +1048,7 @@ local function finalXML2LuaTable(str, f)
               end
             else
               if v.encoding == "csv" then
-                local full = string.split(v.data[1], "\r\n")
+                local full = v.data[1]:split("\r\n")
                 v.data[1] = ""
                 for i, j in ipairs(full) do
                   v.data[1] = v.data[1] .. j
@@ -1056,7 +1056,7 @@ local function finalXML2LuaTable(str, f)
               end
               v.data = v.data[1]
               if v.encoding == "csv" then
-                v.data = string.split(v.data, ",")
+                v.data = v.data:split(",")
                 for i, j in ipairs(v.data) do
                   v.data[i] = tonumber(j)
                 end
@@ -1146,10 +1146,10 @@ local function finalXML2LuaTable(str, f)
                 j.tmpPolyline = j.polyline
                 j.shape = "polyline"
                 
-                j.polyline = string.split(j.polyline.points, " ")
+                j.polyline = j.polyline.points:split(" ")
                 local ptmp = {}
                 for o, p in pairs(j.polyline) do
-                  ptmp[o] = string.split(p, ",")
+                  ptmp[o] = p:split(",")
                   for o2, p2 in pairs(ptmp[o]) do
                     ptmp[o][o2] = tonumber(p2)
                   end
@@ -1159,10 +1159,10 @@ local function finalXML2LuaTable(str, f)
                 j.tmpPolygon = j.polygon
                 j.shape = "polygon"
                 
-                j.polygon = string.split(j.polygon.points, " ")
+                j.polygon = j.polygon.points:split(" ")
                 local ptmp = {}
                 for o, p in pairs(j.polygon) do
-                  ptmp[o] = string.split(p, ",")
+                  ptmp[o] = p:split(",")
                   for o2, p2 in pairs(ptmp[o]) do
                     ptmp[o][o2] = tonumber(p2)
                   end

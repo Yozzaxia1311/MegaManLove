@@ -1,10 +1,10 @@
 local disclaimerState = state:extend()
 
 function disclaimerState:begin()
-  megautils.stopMusic()
   megautils.loadResource("assets/misc/disclaimerFace.png", "face")
   megautils.add(disclaimer)
   megautils.add(fade, false, nil, nil, fade.remove)
+  megautils.stopMusic()
 end
 
 disclaimer = basicEntity:extend()

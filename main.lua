@@ -28,6 +28,7 @@ deserQueue = nil
 
 keyboardCheck = {}
 gamepadCheck = {}
+doCheckDelay = false
 
 lastPressed = {type=nil, input=nil, name=nil}
 lastTouch = {x=nil, y=nil, id=nil, pressure=nil, dx=nil, dy=nil}
@@ -42,6 +43,7 @@ contextOnce = false
 function initEngine()
   keyboardCheck = {}
   gamepadCheck = {}
+  doCheckDelay = false
   love.graphics.setFont(mmFont)
   inputHandler.init()
   control.init()
@@ -73,7 +75,7 @@ function initEngine()
   globals.defeats = {}
   globals.defeats.stickMan = false
   
-  for k, v in pairs(megautils.cleanFuncs) do
+  for _, v in pairs(megautils.cleanFuncs) do
     if type(v) == "function" then
       v()
     else
@@ -83,7 +85,7 @@ function initEngine()
   
   megautils.unloadAllResources()
   
-  for k, v in pairs(megautils.initEngineFuncs) do
+  for _, v in pairs(megautils.initEngineFuncs) do
     if type(v) == "function" then
       v()
     else
@@ -146,23 +148,32 @@ function love.keypressed(k, s, r)
   end
   
   -- keypressed event must be hijacked for console to work
-	if useConsole and console.state == 1 then
-		if (k == "backspace") then
-			console.backspace()
-		end
-		if (k == "return") then
-			console.send()
-		end
-		if (k == "up" or k == "down") then
-			console.cycle(k)
-		end
-		if (k == "tab" and #console.input > 0 and #console.getCompletion(console.input) > 0) then
-			console.complete()
-		end
-    return
+	if useConsole then
+    if k == "`" then
+      if console.state == 0 then
+        console.open()
+      elseif console.state == 1 then
+        console.close()
+      end
+      return
+    elseif console.state == 1 then
+      if k == "backspace" then
+        console.backspace()
+      end
+      if k == "return" then
+        console.send()
+      end
+      if k == "up" or k == "down" then
+        console.cycle(k)
+      end
+      if k == "tab" and #console.input > 0 and #console.getCompletion(console.input) > 0 then
+        console.complete()
+      end
+      return
+    end
 	end
   
-  if not keyboardCheck[k] then
+  if not doCheckDelay or not keyboardCheck[k] then
     lastPressed.type = "keyboard"
     lastPressed.input = k
   end
@@ -185,7 +196,7 @@ function love.gamepadpressed(j, b)
   end
   if useConsole and console.state == 1 then return end
   
-  if not gamepadCheck[b] then
+  if not doCheckDelay or not gamepadCheck[b] then
     lastPressed.type = "gamepad"
     lastPressed.input = b
     lastPressed.name = j:getName()
@@ -207,7 +218,7 @@ function love.gamepadaxis(j, b, v)
   if useConsole and console.state == 1 then return end
   
   if not math.between(v, -deadZone, deadZone) then
-    if not gamepadCheck[b] then
+    if not doCheckDelay or not gamepadCheck[b] then
       if (b == "leftx" or b == "lefty" or b == "rightx" or b == "righty") then
         globals.axisTmp = {}
         if b == "leftx" or b == "rightx" then
@@ -294,7 +305,7 @@ function love.update(dt)
       end
       globals.axisTmp = nil
     end
-    for k, v in pairs(gamepadCheck) do
+    for k, _ in pairs(gamepadCheck) do
       gamepadCheck[k] = gamepadCheck[k] - 1
       if gamepadCheck[k] < 0 then
         gamepadCheck[k] = nil
@@ -302,7 +313,7 @@ function love.update(dt)
     end
   end
   if love.keyboard then
-    for k, v in pairs(keyboardCheck) do
+    for k, _ in pairs(keyboardCheck) do
       keyboardCheck[k] = keyboardCheck[k] - 1
       if keyboardCheck[k] < 0 then
         keyboardCheck[k] = nil
@@ -545,6 +556,7 @@ function ser()
       lastTouch = lastTouch,
       keyboardCheck = keyboardCheck,
       gamepadCheck = gamepadCheck,
+      doCheckDelay = doCheckDelay,
       globals = globals,
       convars = convar.getAllValues(),
       rstate = love.math.getRandomState(),
@@ -553,6 +565,7 @@ function ser()
       basicEntity = basicEntity.id,
       mapEntity = mapEntity.ser()
     }
+  
   return binser.serialize(data)
 end
 
@@ -590,6 +603,7 @@ function deser(from, dontChangeMusic)
   lastTouch = t.lastTouch
   keyboardCheck = t.keyboardCheck
   gamepadCheck = t.gamepadCheck
+  doCheckDelay = t.doCheckDelay
   globals = t.globals
   convar.setAllValues(t.convars)
   love.math.setRandomSeed(t.seed)

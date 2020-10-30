@@ -22,7 +22,7 @@ function gravFlip:update(dt)
   local tmp = self:collisionTable(megaMan.allPlayers)
   if #tmp ~= 0 then
     local ds = false
-    for k, v in ipairs(tmp) do
+    for _, v in ipairs(tmp) do
       if v.gravityMultipliers.gravityFlip ~= self.dir then
         v:setGravityMultiplier("gravityFlip", self.dir)
         ds = true

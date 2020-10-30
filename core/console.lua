@@ -110,7 +110,7 @@ end
 
 function convar.getFlag(str, f)
   if not convar.isValid(str) then return end
-  for k, v in pairs(convar[str].flags) do
+  for _, v in pairs(convar[str].flags) do
     if v == f then
       return true
     end
@@ -120,7 +120,7 @@ end
 
 function concmd.getFlag(str, f)
   if not concmd.isValid(str) then return end
-  for k, v in pairs(concmd[str].flags) do
+  for _, v in pairs(concmd[str].flags) do
     if v == f then
       return true
     end
@@ -218,15 +218,15 @@ function console.printConvar(str)
   -- nice space padding
   local flagstr = " "
   console.print("\""..str.."\" is \""..tostring(convar.getValue(str)).."\"")
-  for k, v in pairs(convar[str].flags) do
-    flagstr = flagstr..v..", "
+  for _, v in pairs(convar[str].flags) do
+    flagstr = flagstr .. v .. ", "
   end
   if #flagstr > 1 then
     flagstr = flagstr:sub(1, -3)
   end
   console.print(flagstr)
   if convar[str].helptext and #convar[str].helptext > 0 then
-    console.print(" - "..convar[str].helptext)
+    console.print(" - " .. convar[str].helptext)
   end
 end
 
@@ -247,7 +247,7 @@ function console.parse(str, noalias)
     if quote then
       word = word.." "
     end
-    word = word..arg
+    word = word .. arg
     wstart = string.sub(arg, 1, 1)
     wend = string.sub(arg, #arg, -1)
     --console.print("wstart "..wstart)
@@ -318,22 +318,14 @@ function console.parse(str, noalias)
       return
     end
   end
-  console.print("Unknown command: "..cmd[1])
+  console.print("Unknown command: " .. cmd[1])
   if nstr then console.parse(nstr) end
 end
 
 function console.doInput(k)
-  if k == '`' or k == '~' then
-    if console.state == 0 then
-      console.open()
-    elseif console.state == 1 then
-      console.close()
-    end
-    return
-  end
   if console.state == 0 then return end
   if console.ignoreKeys[k] then return end
-  console.input = console.input..k
+  console.input = console.input .. k
 end
 
 function console.cycle(k)
@@ -402,16 +394,16 @@ function console.getCompletion(str)
   -- todo: make them alphabetized instead of prioritized via type
   -- bye bye pattern matching errors
   if str:find('[', nil, true) ~= nil then return "" end
-  for k, v in pairs(convar) do
+  for k, _ in pairs(convar) do
     if convar.isValid(k) then
-      if k:find('^'..str) ~= nil then
+      if k:find('^' .. str) ~= nil then
         return k
       end
     end
   end
-  for k, v in pairs(concmd) do
+  for k, _ in pairs(concmd) do
     if concmd.isValid(k) then
-      if k:find('^'..str) ~= nil then
+      if k:find('^' .. str) ~= nil then
         return k
       end
     end

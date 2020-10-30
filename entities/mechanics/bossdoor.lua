@@ -156,14 +156,14 @@ function bossDoor:update()
           end
           megautils.freeze("trans")
           if megautils.groups().removeOnTransition then
-            for k, v in pairs(megautils.groups().removeOnTransition) do
+            for _, v in pairs(megautils.groups().removeOnTransition) do
               megautils.removeq(v)
             end
           end
           if self.useMapTiles then
             self.tileList = {}
             if megautils.groups().map then
-              for k, v in ipairs(megautils.groups().map) do
+              for _, v in ipairs(megautils.groups().map) do
                 local layer = v:getLayerByName(self.useMapTiles)
                 if layer then
                   local oldx
@@ -200,7 +200,7 @@ function bossDoor:update()
         self.segments = math.max(self.segments-1, 0)
         if self.useMapTiles then
           if megautils.groups().map then
-            for k, v in ipairs(megautils.groups().map) do
+            for _, v in ipairs(megautils.groups().map) do
               local layer = v:getLayerByName(self.useMapTiles)
               if layer then
                 layer:setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and
@@ -248,7 +248,7 @@ function bossDoor:update()
         self.segments = math.min(self.segments+1, self.maxSegments)
         if self.useMapTiles then
           if megautils.groups().map then
-            for k, v in ipairs(megautils.groups().map) do
+            for _, v in ipairs(megautils.groups().map) do
               local layer = v:getLayerByName(self.useMapTiles)
               if layer and self.tileList[v] then
                 layer

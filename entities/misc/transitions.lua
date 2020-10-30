@@ -236,7 +236,7 @@ function sectionPrioritySetter:check()
   local count = 0
   local sx, sy, sw, sh = self.transform.x, self.transform.y, self.collisionShape.w, self.collisionShape.h
   
-  for k, v in ipairs(megaMan.allPlayers) do
+  for _, v in ipairs(megaMan.allPlayers) do
     local x, y, w, h = v.transform.x, v.transform.y, v.collisionShape.w, v.collisionShape.h
     if pointOverlapsRect(x, y, sx, sy, sw, sh) and pointOverlapsRect(x+w, y, sx, sy, sw, sh) and
       pointOverlapsRect(x+w, y+h, sx, sy, sw, sh) and pointOverlapsRect(x, y+h, sx, sy, sw, sh) then
@@ -276,7 +276,7 @@ end
 
 function sectionPrioritySetterXBorder:getSide()
   local same = 0
-  for k, v in ipairs(megaMan.allPlayers) do
+  for _, v in ipairs(megaMan.allPlayers) do
     if v.transform.x+(v.collisionShape.w/2) > self.transform.x+16 and
       math.between(v.transform.y, self.transform.y, self.transform.y+self.collisionShape.h-v.collisionShape.h) then
       same = same + 1
@@ -320,7 +320,7 @@ end
 
 function sectionPrioritySetterYBorder:getSide()
   local same = 0
-  for k, v in ipairs(megaMan.allPlayers) do
+  for _, v in ipairs(megaMan.allPlayers) do
     if v.transform.y+(v.collisionShape.h/2) > self.transform.y+16 and
       math.between(v.transform.x, self.transform.x, self.transform.x+self.collisionShape.w-v.collisionShape.w) then
       same = same + 1

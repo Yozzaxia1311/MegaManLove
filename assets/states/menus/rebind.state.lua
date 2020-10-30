@@ -1,14 +1,22 @@
 local rebindState = state:extend()
 
 function rebindState:begin()
+  doCheckDelay = true
   megautils.add(rebinder)
   megautils.add(fade, false, nil, nil, fade.remove)
+end
+
+function rebindState:switching()
+  doCheckDelay = false
 end
 
 rebinder = basicEntity:extend()
 
 function rebinder:new()
-  lastPressed = nil
+  lastPressed.type = nil
+  lastPressed.input = nil
+  lastPressed.name = nil
+  
   rebinder.super.new(self)
   self.transform.x = 32
   self.transform.y = 112
@@ -31,8 +39,7 @@ function rebinder:update()
     return
   end
   if lastPressed.input and not self.done then
-    self.data.controls[self.keysToSet[self.currentKey]+self.step] = {lastPressed}
-    lastPressed = nil
+    self.data.controls[self.keysToSet[self.currentKey]+self.step] = {table.clone(lastPressed)}
     
     if self.currentKey == table.length(self.keysToSet) then
       if (self.step/11)+1 == globals.playerCount then

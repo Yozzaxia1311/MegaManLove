@@ -13,7 +13,7 @@ function mmWeaponsMenu.pause(self)
   megautils.freeze("pause")
   
   megautils.add(fade, true, nil, nil, function(s)
-      for k, v in pairs(megautils.playerPauseFuncs) do
+      for _, v in pairs(megautils.playerPauseFuncs) do
         if type(v) == "function" then
           v(self)
         else
@@ -101,8 +101,8 @@ function mmWeaponsMenu:new(p)
   self.last = {w.currentSlot, megaMan.colorOutline[self.player.player], megaMan.colorOne[self.player.player], megaMan.colorTwo[self.player.player]}
   self.inactiveTankColor = {{0, 0, 0}, {188, 188, 188}, {255, 255, 255}}
   self.trig = megautils.add(trigger, function(s, dt)
-    for k, v in pairs(s.fills) do
-      for i, j in pairs(v) do
+    for _, v in pairs(s.fills) do
+      for _, j in pairs(v) do
         j:update(dt)
       end
     end
@@ -122,8 +122,8 @@ end
 function mmWeaponsMenu:removed()
   mmWeaponsMenu.main = nil
   megautils.unfreeze("pause")
-  for k, v in pairs(self.fills) do
-    for i, j in pairs(v) do
+  for _, v in pairs(self.fills) do
+    for _, j in pairs(v) do
       if j.wid ~= 0 then
         megaMan.weaponHandler[self.player.player]:instantUpdate(j.health, j.wid)
       else
@@ -139,7 +139,7 @@ function mmWeaponsMenu:removed()
   end
   
   if not self.ff or self.ff.isRemoved then
-    for k, v in ipairs(megautils.state().system.all) do
+    for _, v in ipairs(megautils.state().system.all) do
       v.canDraw.pause = nil
     end
   end
@@ -159,8 +159,8 @@ function mmWeaponsMenu:update(dt)
       self.changing = nil
     elseif self.changing == "weapons" then
       local res = true
-      for k, v in pairs(self.fills) do
-        for i, j in pairs(v) do
+      for _, v in pairs(self.fills) do
+        for _, j in pairs(v) do
           if j.wid ~= 0 and j.renderedHealth ~= (weapon.segments[w.weapons[j.wid]] or 7) * 4 then
             res = false
           end
@@ -178,8 +178,8 @@ function mmWeaponsMenu:update(dt)
   
   if self.section == 0 then
     local olx, oly = self.x, self.y
-    for k, v in pairs(self.fills) do
-      for i, j in pairs(v) do
+    for _, v in pairs(self.fills) do
+      for _, j in pairs(v) do
         j.colorOne = {124, 124, 124}
         j.colorTwo = {188, 188, 188}
       end
@@ -198,14 +198,14 @@ function mmWeaponsMenu:update(dt)
           megautils.removeq(self)
           megautils.removeq(s)
           
-          for k, v in ipairs(megautils.state().system.all) do
+          for _, v in ipairs(megautils.state().system.all) do
             if not v.visibleDuringPause then
               v.canDraw.pause = false
             end
           end
           
           self.ff = megautils.add(fade, false, nil, nil, function(ss)
-              for k, v in ipairs(megautils.state().system.all) do
+              for _, v in ipairs(megautils.state().system.all) do
                 v.canDraw.pause = nil
               end
               
@@ -328,8 +328,8 @@ function mmWeaponsMenu:update(dt)
         megautils.setETanks(math.max(megautils.getETanks()-1, 0))
       elseif self.x == 2 and megautils.getWTanks() > 0 then
         local frz = false
-        for k, v in pairs(self.fills) do
-          for i, j in pairs(v) do
+        for _, v in pairs(self.fills) do
+          for _, j in pairs(v) do
             if j.wid ~= 0 then
               j:updateThis((weapon.segments[w.weapons[j.wid]] or 7) * 4)
             end
@@ -359,8 +359,8 @@ function mmWeaponsMenu:update(dt)
     if olx ~= self.x or oly ~= self.y then
       megautils.playSound("cursorMove")
     end
-    for k, v in pairs(self.fills) do
-      for i, j in pairs(v) do
+    for _, v in pairs(self.fills) do
+      for _, j in pairs(v) do
         j.colorOne = {124, 124, 124}
         j.colorTwo = {188, 188, 188}
       end
@@ -432,8 +432,8 @@ function mmWeaponsMenu:draw()
     love.graphics.setColor(self.inactiveTankColor[3][1]/255, self.inactiveTankColor[3][2]/255, self.inactiveTankColor[3][3]/255, 1)
     self.texTwo:draw(self.quadW, tx2, ty)
     
-    for k, v in pairs(self.fills) do
-      for i, j in pairs(v) do
+    for _, v in pairs(self.fills) do
+      for _, j in pairs(v) do
         j:draw()
         love.graphics.setColor(1, 1, 1, 1)
         if self.x == j.gridX and self.y == j.gridY then
@@ -445,8 +445,8 @@ function mmWeaponsMenu:draw()
       end
     end
   else
-    for k, v in pairs(self.fills) do
-      for i, j in pairs(v) do
+    for _, v in pairs(self.fills) do
+      for _, j in pairs(v) do
         j:draw()
         love.graphics.setColor(1, 1, 1, 1)
         weapon.drawIcon(w.weapons[j.wid], false, view.x+(j.icoX), view.y+(j.icoY))

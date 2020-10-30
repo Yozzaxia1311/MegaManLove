@@ -168,7 +168,7 @@ function collision.entityPlatform(self)
                 local step = epDir * 0.5
                 v.transform.y = math.round(v.transform.y) - step
                 
-                for i=1, 256 do
+                for _=1, 256 do
                   if v:collision(self) then
                     v.transform.y = v.transform.y - step
                   else
@@ -238,7 +238,7 @@ function collision.entityPlatform(self)
                 v.transform.x = math.round(v.transform.x + myxspeed + epDir)
                 local step = epDir * 0.5
                 
-                for i=1, 256 do
+                for _=1, 256 do
                   if v:collision(self) then
                     v.transform.x = v.transform.x - step
                   else
@@ -430,7 +430,7 @@ function collision.generalCollision(self, noSlope)
       self.xColl = -math.sign(self.velocity.velx)
       self.transform.x = math.round(self.transform.x-self.xColl)
       
-      for ii=1, 128 do
+      for _=1, 128 do
         if self:collisionNumber(solid) ~= 0 then
           self.transform.x = self.transform.x + self.xColl
         else
@@ -490,7 +490,7 @@ function collision.generalCollision(self, noSlope)
       self.yColl = -math.sign(self.velocity.vely)
       self.transform.y = math.round(self.transform.y-self.yColl)
       
-      for i=1, 128 do
+      for _=1, 128 do
         if self:collisionNumber(solid) ~= 0 then
           self.transform.y = self.transform.y + self.yColl
         else

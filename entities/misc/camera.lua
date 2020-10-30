@@ -80,14 +80,14 @@ function camera:updateCam(spdx, spdy)
       camera.main:updateFuncs()
     elseif not self.once then
       if megautils.groups().removeOnTransition then
-        for k, v in pairs(megautils.groups().removeOnTransition) do
+        for _, v in pairs(megautils.groups().removeOnTransition) do
           if not v.dontRemoveOnTransition then
             megautils.removeq(v)
           end
         end
       end
       if self.freeze then
-        for k, v in pairs(megaMan.allPlayers) do
+        for _, v in pairs(megaMan.allPlayers) do
           v.canControl.trans = false
           v.noFreeze = true
         end
@@ -170,7 +170,7 @@ function camera:updateCam(spdx, spdy)
         self.transform.y = ny
         self:updateBounds(true)
         if self.bounds then
-          for k, v in ipairs(self.bounds.group) do
+          for _, v in ipairs(self.bounds.group) do
             if v.spawnEarlyDuringTransition and not v.isAdded and not megautils.inAddQueue(v) then
               megautils.adde(v)
             end
@@ -204,7 +204,7 @@ function camera:updateCam(spdx, spdy)
             megautils.state().system.cameraUpdate = nil
           end
           if camera.main.freeze then
-            for k, v in pairs(megaMan.allPlayers) do
+            for _, v in pairs(megaMan.allPlayers) do
               v.canControl.trans = nil
               v.noFreeze = nil
             end
@@ -282,7 +282,7 @@ function camera:doView(spdx, spdy, without)
   self.approachY = math.approach(self.approachY, self.transform.y, spdy or 8)
   
   if self.despawnLateBounds and self.approachX == self.transform.x and self.approachY == self.transform.y then
-    for k, v in ipairs(self.despawnLateBounds.group) do
+    for _, v in ipairs(self.despawnLateBounds.group) do
       if self.bounds and not table.contains(self.bounds.group, v) then
         if v.despawnLateDuringTransition and not v.isRemoved and not megautils.inRemoveQueue(v) then
           megautils.removeq(v)
@@ -298,7 +298,7 @@ function camera:doView(spdx, spdy, without)
 end
 
 function camera:updateFuncs()
-  for k, v in pairs(self.funcs) do
+  for _, v in pairs(self.funcs) do
     v(self)
   end
 end
@@ -355,7 +355,7 @@ function camera:updateBounds(noBounds)
           self.despawnLateBounds = self.bounds
         end
         bounds:activate(self.bounds and self.bounds.group)
-        for k, v in pairs(megautils.sectionChangeFuncs) do
+        for _, v in pairs(megautils.sectionChangeFuncs) do
           if type(v) == "function" then
             v()
           else
@@ -406,7 +406,7 @@ mapEntity.register("section", function(v)
 
 mapEntity.register("section", function(v)
     if #section.init ~= 0 then
-      for k, v in ipairs(section.init) do
+      for _, v in ipairs(section.init) do
         v:initSection()
       end
       section.init = {}
@@ -428,7 +428,7 @@ function section:new(x, y, w, h, n)
 end
 
 function section:activate(ignore)
-  for k, v in ipairs(self.group) do
+  for _, v in ipairs(self.group) do
     if not v.isAdded and not megautils.inAddQueue(v) and
       (not ignore or not table.contains(ignore, v)) then
       megautils.adde(v)
@@ -437,7 +437,7 @@ function section:activate(ignore)
 end
 
 function section:deactivate(ignore)
-  for k, v in ipairs(self.group) do
+  for _, v in ipairs(self.group) do
     if not v.isRemoved and not v.dontRemoveOnSectionChange and not megautils.inRemoveQueue(v) and
       (not ignore or not table.contains(ignore, v)) then
       megautils.removeq(v)
@@ -446,7 +446,7 @@ function section:deactivate(ignore)
 end
 
 function section:initSection()
-  for k, v in ipairs(self.group) do
+  for _, v in ipairs(self.group) do
     if not v.isRemoved then
       megautils.stopRemoveQueue(v)
       megautils.remove(v)
@@ -462,7 +462,7 @@ function section.getSections(xx, yy, ww, hh)
   for x=cx, cx2 do
     for y=cy, cy2 do
       if section.hash[x] and section.hash[x][y] and not table.contains(result, section.hash[x][y]) then
-        for k, v in ipairs(section.hash[x][y]) do
+        for _, v in ipairs(section.hash[x][y]) do
           if not table.contains(result, v) then
             result[#result+1] = v
           end
@@ -476,7 +476,7 @@ end
 
 function section.removeSection(s)
   s:deactivate()
-  for k, v in ipairs(s.cells) do
+  for _, v in ipairs(s.cells) do
     if section.hash[v.x][v.y] then
       table.quickremovevaluearray(section.hash[v.x][v.y], s)
       if #section.hash[v.x][v.y] == 0 then
@@ -513,7 +513,7 @@ function section.iterate(func)
     for y, _ in pairs(section.hash[x]) do
       if section.hash[x][y] then
         for _, s in pairs(section.hash[x][y]) do
-          for k, v in pairs(s.group) do
+          for _, v in pairs(s.group) do
             func(v)
           end
         end
@@ -537,7 +537,7 @@ end
 function section.addEntity(e)
   if e then
     local b = sections.getSections(e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h)
-    for k, v in ipairs(b) do
+    for _, v in ipairs(b) do
       if not e.actualSectionGroups then
         e.actualSectionGroups = {}
       end

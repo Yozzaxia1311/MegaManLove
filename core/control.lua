@@ -30,7 +30,7 @@ function control.defaultBindsTable()
     prev={type="gamepad", input="leftshoulder", name=joysticks[1]:getName()},
     next={type="gamepad", input="rightshoulder", name=joysticks[1]:getName()},
     dash={type="gamepad", input="b", name=joysticks[1]:getName()}}
-    for k, v in pairs(defaultInputBinds) do
+    for k, _ in pairs(defaultInputBinds) do
       defaultInputBinds[k] = table.merge({defaultInputBinds[k], {joyBinds[k]}})
     end
     for i=2, #joysticks do

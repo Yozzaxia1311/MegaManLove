@@ -61,7 +61,7 @@ end
 function water:removed()
   if megautils.groups().submergable and self.current then
     self:removeFromAllGroups()
-    for k, v in ipairs(megautils.groups().submergable) do
+    for _, v in ipairs(megautils.groups().submergable) do
       if v:collisionNumber(megautils.groups().water) == 0 then
         v:setGravityMultiplier("water", nil)
         self.current = false
@@ -72,7 +72,7 @@ end
 
 function water:update()
   if megautils.groups().submergable then
-    for k, v in ipairs(megautils.groups().submergable) do
+    for _, v in ipairs(megautils.groups().submergable) do
       if v:collision(self) and not v.gravityMultipliers.water then
         self.current = true
         v:setGravityMultiplier("water", self.grav)
@@ -134,7 +134,7 @@ end
 function space:removed()
   if megautils.groups().submergable then
     self:removeFromAllGroups()
-    for k, v in ipairs(megautils.groups().submergable) do
+    for _, v in ipairs(megautils.groups().submergable) do
       if v.gravityMultipliers.space and v:collisionNumber(megautils.groups().space) == 0 then
         v:setGravityMultiplier("space", nil)
       end
@@ -144,7 +144,7 @@ end
 
 function space:update()
   if megautils.groups().submergable then
-    for k, v in ipairs(megautils.groups().submergable) do
+    for _, v in ipairs(megautils.groups().submergable) do
       if v:collision(self) and v.gravityMultipliers.space ~= self.grav then
         v:setGravityMultiplier("space", self.grav)
       else

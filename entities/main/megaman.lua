@@ -118,7 +118,7 @@ function megaMan:setSkin(path)
     self:syncPlayerSkin()
   end
   
-  for k, v in pairs(megautils.skinChangeFuncs) do
+  for _, v in pairs(megautils.skinChangeFuncs) do
     v(player, path, self)
     if type(v) == "function" then
       v(player, path, self)
@@ -164,7 +164,7 @@ megautils.resetGameObjectsFuncs.megaMan = {func=function()
       megaMan.weaponHandler[i] = weaponHandler(nil, nil, 10)
       megaMan.registerWeapons(i)
       
-      for k, v in pairs(globals.defeats) do
+      for _, v in pairs(globals.defeats) do
         if type(v) == "table" then
           megaMan.weaponHandler[i]:register(v.weaponSlot or 1, v.weaponName or "WEAPON")
         end
@@ -175,7 +175,7 @@ megautils.resetGameObjectsFuncs.megaMan = {func=function()
   end, autoClean=false}
 
 megautils.difficultyChangeFuncs.megaMan = {func=function(d)
-    for k, v in ipairs(megaMan.allPlayers) do
+    for _, v in ipairs(megaMan.allPlayers) do
       if d == "easy" then
         v.jumpAnimation.ps = "jumpProtoShield2"
         v.protoShieldLeftCollision = {x=-7, y=0, w=8, h=20, goy=2}
@@ -223,7 +223,7 @@ mapEntity.register("player", function(v)
         end
       else
         for i=1, globals.playerCount do
-          if not table.contains(v.properties.individual, i) then
+          if not table.contains(megaMan.individualLanded, i) then
             megautils.add(megaMan, v.x+2, v.y+((g >= 0) and -5 or 0),
               v.properties.side, v.properties.drop, i, v.properties.gravMult, v.properties.gravFlip, v.properties.control,
               v.properties.doReady, v.properties.teleporter)
@@ -522,7 +522,7 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   
   self.anims:set(self.drop and "spawn" or "idle")
   
-  for k, v in pairs(megautils.playerCreatedFuncs) do
+  for _, v in pairs(megautils.playerCreatedFuncs) do
     if type(v) == "function" then
       v(self)
     else
@@ -569,7 +569,7 @@ function megaMan:transferState(to)
   to.side = self.side
   to.gravityMultipliers = table.clone(self.gravityMultipliers)
   to.gravity = self.gravity
-  for k, v in pairs(megautils.playerTransferFuncs) do
+  for _, v in pairs(megautils.playerTransferFuncs) do
     if type(v) == "function" then
       v(self, to)
     else
@@ -673,7 +673,7 @@ function megaMan:checkLadder(x, y, tip)
   local result = self:collisionTable(collision.getLadders(), x, y)
   local highest = result[1]
   if highest then
-    for k, v in ipairs(result) do
+    for _, v in ipairs(result) do
       if self.gravity >= 0 and (v.transform.y > highest.transform.y) or (v.transform.y < highest.transform.y) then
         highest = v
       end
@@ -910,7 +910,7 @@ function megaMan:attemptWeaponUsage()
   if control.shootDown[self.player] and checkFalse(self.canChargeBuster) then
     self:charge()
   end
-  for k, v in pairs(megautils.playerAttemptWeaponFuncs) do
+  for _, v in pairs(megautils.playerAttemptWeaponFuncs) do
     if type(v) == "function" then
       v(self, shots)
     else
@@ -1012,7 +1012,7 @@ function megaMan:interactedWith(o, c)
       end
     end
   end
-  for k, v in pairs(megautils.playerInteractedWithFuncs) do
+  for _, v in pairs(megautils.playerInteractedWithFuncs) do
     if type(v) == "function" then
       v(self, o)
     else
@@ -1079,7 +1079,7 @@ end
 
 function megaMan:crushed(other)
   if not other.dontKillWhenCrushing then
-    for k, v in pairs(self.canBeInvincible) do
+    for k, _ in pairs(self.canBeInvincible) do
       self.canBeInvincible[k] = false
     end
     self.iFrames = 0
@@ -1089,7 +1089,7 @@ end
 
 function megaMan:code(dt)
   if checkFalse(self.blockCollision) and megautils.groups().bossDoor then
-    for k, v in ipairs(megautils.groups().bossDoor) do
+    for _, v in ipairs(megautils.groups().bossDoor) do
       v.lastSolid = v.solidType
       v.solidType = v.canWalkThrough and 0 or 1
     end
@@ -1174,7 +1174,7 @@ function megaMan:code(dt)
       
       self:attemptWeaponUsage()
     end
-    for k, v in pairs(megautils.playerTrebleFuncs) do
+    for _, v in pairs(megautils.playerTrebleFuncs) do
       if type(v) == "function" then
         v(self)
       else
@@ -1195,7 +1195,7 @@ function megaMan:code(dt)
   elseif self.hitTimer ~= self.maxHitTime then
     collision.doGrav(self)
     self.hitTimer = math.min(self.hitTimer+1, self.maxHitTime)
-    for k, v in pairs(megautils.playerKnockbackFuncs) do
+    for _, v in pairs(megautils.playerKnockbackFuncs) do
       if type(v) == "function" then
         v(self)
       else
@@ -1269,7 +1269,7 @@ function megaMan:code(dt)
         self.velocity.vely = self.velocity.vely + self.currentLadder.velocity.vely
       end
     end
-    for k, v in pairs(megautils.playerClimbFuncs) do
+    for _, v in pairs(megautils.playerClimbFuncs) do
       if type(v) == "function" then
         v(self)
       else
@@ -1359,7 +1359,7 @@ function megaMan:code(dt)
       end
     end
     if not self.slide and not jumped then self.velocity.vely = 0 end
-    for k, v in pairs(megautils.playerSlideFuncs) do
+    for _, v in pairs(megautils.playerSlideFuncs) do
       if type(v) == "function" then
         v(self)
       else
@@ -1437,7 +1437,7 @@ function megaMan:code(dt)
       self.standSolidJumpTimer = 0
     end
     self.velocity.velx = math.clamp(self.velocity.velx, self.maxLeftSpeed, self.maxRightSpeed)
-    for k, v in pairs(megautils.playerGroundFuncs) do
+    for _, v in pairs(megautils.playerGroundFuncs) do
       if type(v) == "function" then
         v(self)
       else
@@ -1481,7 +1481,7 @@ function megaMan:code(dt)
       ((self.gravity < 0 and self.velocity.vely > 0) or (self.gravity >= 0 and self.velocity.vely < 0)) then
       self.velocity:slowY(self.jumpDecel)
     end
-    for k, v in pairs(megautils.playerAirFuncs) do
+    for _, v in pairs(megautils.playerAirFuncs) do
       if type(v) == "function" then
         v(self)
       else
@@ -1502,7 +1502,7 @@ function megaMan:code(dt)
     self:attemptWeaponUsage()
   end
   if megautils.groups().enemyWeapon then
-    for k, v in ipairs(megautils.groups().enemyWeapon) do
+    for _, v in ipairs(megautils.groups().enemyWeapon) do
       if self.protoShielding and not v.dinked and v.dink and self:checkProtoShield(v, self.side) then
         v:dink(self)
         v.pierceType = pierce.NOPIERCE
@@ -1524,7 +1524,7 @@ function megaMan:code(dt)
   if ((self.gravity >= 0 and self.transform.y >= view.y+view.h) or (self.gravity < 0 and self.transform.y+self.collisionShape.h <= view.y)) or 
     (checkFalse(self.blockCollision) and checkTrue(self.canGetCrushed) and collision.checkSolid(self)) then
     self.iFrames = 0
-    for k, v in pairs(self.canBeInvincible) do
+    for k, _ in pairs(self.canBeInvincible) do
       self.canBeInvincible[k] = false
     end
     self:interact(self, -99999, true)
@@ -1541,7 +1541,7 @@ function megaMan:code(dt)
   end
   
   if megautils.groups().bossDoor then
-    for k, v in ipairs(megautils.groups().bossDoor) do
+    for _, v in ipairs(megautils.groups().bossDoor) do
       v.solidType = v.lastSolid
     end
   end
@@ -1943,7 +1943,7 @@ function megaMan:update()
         end
       end
     elseif self.dead then
-      for k, v in pairs(megautils.playerDeathFuncs) do
+      for _, v in pairs(megautils.playerDeathFuncs) do
         if type(v) == "function" then
           v(self)
         else

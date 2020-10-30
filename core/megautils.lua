@@ -70,7 +70,7 @@ function megautils.deser(t)
       "playerPauseFuncs",
     }
   
-  for k, v in ipairs(callbacks) do
+  for k, _ in ipairs(callbacks) do
     megautils[k] = t[k]
   end
   
@@ -83,7 +83,7 @@ function megautils.deser(t)
   megautils.maxShakeTime = t.maxShakeTime
   megautils.shakeLength = t.shakeLength
     
-  for k, v in ipairs(t._ranFiles) do
+  for _, v in ipairs(t._ranFiles) do
     megautils.runFile(v, true)
   end
 end
@@ -374,15 +374,6 @@ function megautils.setResourceLock(nick, w)
   end
 end
 
-local function checkExt(ext, list)
-  for k, v in ipairs(list) do
-    if ext:lower() == v then
-      return true
-    end
-  end
-  return false
-end
-
 function megautils.loadResource(...)
   local args = {...}
   if #args == 0 then error("megautils.load takes at least two arguments") end
@@ -393,6 +384,15 @@ function megautils.loadResource(...)
   if type(path) == "string" then
     t = path:split("%.")
     t = t[#t]
+  end
+  
+  local function checkExt(ext, list)
+    for _, v in ipairs(list) do
+      if ext:lower() == v then
+        return true
+      end
+    end
+    return false
   end
   
   if type(args[1]) == "number" and type(args[2]) == "number" then
@@ -529,14 +529,14 @@ function megautils.stopSound(s)
 end
 
 function megautils.stopAllSounds()
-  for k, v in pairs(loader.resources) do
-    if v.type and v:type() == "Source" then
-      v:stop()
+  for _, v in pairs(loader.resources) do
+    if v.type == "sound" then
+      v.data:stop()
     end
   end
-  for k, v in pairs(loader.locked) do
-    if v.type and v:type() == "Source" then
-      v:stop()
+  for _, v in pairs(loader.locked) do
+    if v.type == "sound" then
+      v.data:stop()
     end
   end
   if megautils._curS.sfx then
@@ -545,7 +545,7 @@ function megautils.stopAllSounds()
 end
 
 function megautils.unload()
-  for k, v in pairs(megautils.cleanFuncs) do
+  for _, v in pairs(megautils.cleanFuncs) do
     if type(v) == "function" then
       v()
     else
@@ -886,7 +886,7 @@ function megautils.arcXVel(yvel, grav, x, y, tox, toy)
 end
 
 function megautils.diff(...)
-  for k, v in pairs({...}) do
+  for _, v in pairs({...}) do
     if v == convar.getString("diff") then
       return true
     end
@@ -905,7 +905,7 @@ end
 
 function megautils.removeEnemyShots()
   if megautils.state().system.all then
-    for k, v in ipairs(megautils.state().system.all) do
+    for _, v in ipairs(megautils.state().system.all) do
       if v.isEnemyWeapon then
         megautils.removeq(v)
       end
@@ -915,7 +915,7 @@ end
 
 function megautils.removePlayerShots()
   if megaMan.allPlayers and megaMan.weaponHandler then
-    for k, v in ipairs(megaMan.allPlayers) do
+    for _, v in ipairs(megaMan.allPlayers) do
       megaMan.weaponHandler[v.player]:removeWeaponShots()
     end
   end

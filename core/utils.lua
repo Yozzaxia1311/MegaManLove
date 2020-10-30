@@ -14,7 +14,7 @@ end
 
 function checkTrue(w)
   if w then
-    for k, v in pairs(w) do
+    for _, v in pairs(w) do
       if v then return true end
     end
   end
@@ -23,7 +23,7 @@ end
 
 function checkFalse(w)
   if w then
-    for k, v in pairs(w) do
+    for _, v in pairs(w) do
       if not v then return false end
     end
   else
@@ -63,19 +63,23 @@ function table.convert1Dto2D(t, w)
   return tmp
 end
 
-function iterateDirs(func, path, noAppdata, special)
+function iterateDirs(func, path, noAppdata)
   local results = {}
+  
   path = path or ""
   
-  for k, v in pairs(love.filesystem.getDirectoryItems(path)) do
+  for _, v in pairs(love.filesystem.getDirectoryItems(path)) do
     local p = path .. (path ~= "" and "/" or path) .. v
+    
     if not noAppdata or love.filesystem.getRealDirectory(p) ~= love.filesystem.getAppdataDirectory() then
       local info = love.filesystem.getInfo(p)
-      local no = v:sub(1, 1) == "."
-      if not no and info.type == "directory" then
-        results = table.merge({results, iterateDirs(func, p, noAppdata, special)})
-      elseif not special or not no then
-        if not func or func(v) then results[#results+1] = p .. (special and info.modtime or "") end
+      
+      if v:sub(1, 1) ~= "." then
+        if not no and info.type == "directory" then
+          results = table.merge({results, iterateDirs(func, p, noAppdata)})
+        elseif not func or func(v) then
+          results[#results+1] = p
+        end
       end
     end
   end
@@ -100,24 +104,30 @@ function string:split(inSplitPattern, outResults)
   if not outResults then
     outResults = {}
   end
+  
   local theStart = 1
   local theSplitStart, theSplitEnd = string.find(self, inSplitPattern, theStart)
+  
   while theSplitStart do
     table.insert(outResults, string.sub(self, theStart, theSplitStart - 1))
     theStart = theSplitEnd + 1
     theSplitStart, theSplitEnd = string.find(self, inSplitPattern, theStart)
   end
+  
   table.insert(outResults, string.sub(self, theStart))
+  
   return outResults
 end
 
 function table.merge(tables)
   local result = {}
-  for k, v in pairs(tables) do
-    for i, j in pairs(v) do
+  
+  for _, v in pairs(tables) do
+    for _, j in pairs(v) do
       result[#result + 1] = j
     end
   end
+  
   return result
 end
 
@@ -126,6 +136,7 @@ function table.shuffle(t)
     local j = love.math.random(i)
     t[i], t[j] = t[j], t[i]
   end
+  
   return t
 end
 
@@ -139,10 +150,11 @@ end
 
 function math.approach(v, to, am)
   if v < to then 
-    v = math.min(v + am, to)
+    return math.min(v + am, to)
   elseif v > to then
-    v = math.max(v - am, to)
+    return math.max(v - am, to)
   end
+  
   return v
 end
 
@@ -164,7 +176,7 @@ function math.between(val, min, max)
 end
 
 function math.lerp(a,b,t)
-  return (1-t)*a + t*b
+  return (1-t) * a + t * b
 end
 
 function math.sign(x)
@@ -172,34 +184,36 @@ function math.sign(x)
     return -1
   elseif x > 0 then
     return 1
-  else
-    return 0
   end
+  
+  return 0
 end
 
 function math.round(x)
-  if x-math.floor(x) >= 0.5 then
+  if x - math.floor(x) >= 0.5 then
     return math.ceil(x)
-  else
-    return math.floor(x)
   end
+  
+  return math.floor(x)
 end
 
 function math.wrap(v, min, max)
-  local range = max - min + 1
-  v = ((v - min) % range)
-  if v < 0 then
-    return max + 1 + v
-  else
-    return min + v
+  local wr = ((v - min) % (max - min + 1))
+  
+  if wr < 0 then
+    return max + 1 + wr
   end
+  
+  return min + wr
 end
 
 function table.contains(t, va)
-  if type(t) ~= "table" then return false end
-  for k, v in pairs(t) do
-    if v == va then return true end
+  for _, v in pairs(t) do
+    if v == va then
+      return true
+    end
   end
+  
   return false
 end
 
@@ -207,42 +221,55 @@ function table.clone(t, shallow, cache)
   if type(t) ~= 'table' then
     return t
   end
+  
   local new = {}
+  
   if shallow then
-    for key, value in pairs(t) do
-      new[key] = value
+    for k, v in pairs(t) do
+      new[k] = v
     end
+    
     return new
   end
+  
   table.copycache = cache or {}
+  
   if table.copycache[t] then
     return table.copycache[t]
   end
-  table.copycache[t] = New
-  for key, value in pairs(t) do
-    new[table.clone(key, nil, table.copycache)] = table.clone(value, nil, table.copycache)
+  
+  table.copycache[t] = new
+  
+  for k, v in pairs(t) do
+    new[table.clone(k, nil, table.copycache)] = table.clone(v, nil, table.copycache)
   end
+  
   return new
 end
 
 function table.length(t)
   local n = 0
-  for k, v in pairs(t) do
+  
+  for _, _ in pairs(t) do
     n = n + 1
   end
+  
   return n
 end
 
-function table.containskey(t, ke)
-  for k, v in pairs(t or {}) do
-    if k == ke then return true end
+function table.containskey(t, key)
+  for k, _ in pairs(t) do
+    if k == key then
+      return true
+    end
   end
+  
   return false
 end
 
-function table.removevalue(t, va)
+function table.removevalue(t, value)
   for k, v in pairs(t) do
-    if v == va then
+    if v == value then
       t[k] = nil
     end
   end
@@ -250,6 +277,7 @@ end
 
 function table.removevaluearray(t, va)
   if t[#t] == va then t[#t] = nil return end
+  
   for i=1, #t do
     if t[i] == va then
       table.remove(t, i)
@@ -260,10 +288,12 @@ end
 
 function table.quickremovevaluearray(t, va)
   if t[#t] == va then t[#t] = nil return end
+  
   for i=1, #t do
     if t[i] == va then
       t[i] = t[#t]
       t[#t] = nil
+      
       return
     end
   end

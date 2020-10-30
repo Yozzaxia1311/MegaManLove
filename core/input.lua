@@ -117,7 +117,7 @@ function inputHandler.anyDown()
   if console and console.state == 1 then
     return false
   end
-  for k, v in pairs(inputHandler.keys) do
+  for k, _ in pairs(inputHandler.keys) do
     if inputHandler.down(k) then
       return true
     end
@@ -126,7 +126,7 @@ function inputHandler.anyDown()
 end
 
 function inputHandler.flush()
-  for k, v in pairs(inputHandler.pressedTable) do
+  for k, _ in pairs(inputHandler.pressedTable) do
     if not inputHandler.down(k) then
       inputHandler.pressedTable[k] = nil
     end

@@ -91,7 +91,7 @@ convar["diff"] = {
   flags = {"cheat"},
   value = "normal",
   fun = function(arg)
-      for k, v in pairs(megautils.difficultyChangeFuncs) do
+      for _, v in pairs(megautils.difficultyChangeFuncs) do
         if type(v) == "function" then
           v(arg, convar.getValue("diff"))
         else
@@ -153,7 +153,7 @@ concmd["setskin"] = {
       if dir or file then
         if dir then
           if not player and #megaMan.allPlayers > 0 then
-            for k, v in ipairs(megaMan.allPlayers) do
+            for _, v in ipairs(megaMan.allPlayers) do
               v:setSkin(path)
             end
           else
@@ -161,7 +161,7 @@ concmd["setskin"] = {
           end
         else
           if not player and #megaMan.allPlayer > 0 then
-            for k, v in ipairs(megaMan.allPlayers) do
+            for _, v in ipairs(megaMan.allPlayers) do
               v:setSkin(path .. ".zip")
             end
           else
@@ -505,7 +505,7 @@ concmd["kill"] = {
   helptext = "kill all players",
   flags = {},
   fun = function(cmd)
-      for k, v in ipairs(megaMan.allPlayers) do
+      for _, v in ipairs(megaMan.allPlayers) do
         v.iFrames = 0
         for i, j in pairs(v.canBeInvincible) do
           v.canBeInvincible[i] = false
@@ -614,7 +614,7 @@ concmd["findcvar"] = {
       local result = {}
       local cut = 1
       local step = 0
-      for k, v in pairs(convar) do
+      for k, _ in pairs(convar) do
         if convar.isValid(k) then
           if not result[cut] then result[cut] = "" end
           result[cut] = result[cut] .. (result[cut] == "" and "" or ", ") .. k
@@ -625,12 +625,12 @@ concmd["findcvar"] = {
           end
         end
       end
-      for k, v in ipairs(result) do
+      for k, _ in ipairs(result) do
         if k ~= #result then
           result[k] = result[k] .. ","
         end
       end
-      for k, v in ipairs(result) do
+      for _, v in ipairs(result) do
         console.print(v)
       end
     end
@@ -643,7 +643,7 @@ concmd["findcmd"] = {
       local result = {}
       local cut = 1
       local step = 0
-      for k, v in pairs(concmd) do
+      for k, _ in pairs(concmd) do
         if concmd.isValid(k) then
           if not result[cut] then result[cut] = "" end
           result[cut] = result[cut] .. (result[cut] == "" and "" or ", ") .. k
@@ -654,12 +654,12 @@ concmd["findcmd"] = {
           end
         end
       end
-      for k, v in ipairs(result) do
+      for k, _ in ipairs(result) do
         if k ~= #result then
           result[k] = result[k] .. ","
         end
       end
-      for k, v in ipairs(result) do
+      for _, v in ipairs(result) do
         console.print(v)
       end
     end

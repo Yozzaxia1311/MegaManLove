@@ -200,7 +200,7 @@ function entitySystem:removeFromGroup(e, g)
 end
 
 function entitySystem:removeFromAllGroups(e)
-  for k, v in pairs(self.groups) do
+  for k, _ in pairs(self.groups) do
     self:removeFromGroup(e, k)
   end
 end
@@ -555,7 +555,7 @@ function basicEntity:interact(t, h, single)
   if single then
     t:interactedWith(self, h)
   else
-    for k, v in pairs(t) do
+    for _, v in pairs(t) do
       v:interactedWith(self, h)
     end
   end
@@ -815,7 +815,7 @@ end
 
 function entity:calcGrav()
   self.gravity = self.normalGravity
-  for k, v in pairs(self.gravityMultipliers) do
+  for _, v in pairs(self.gravityMultipliers) do
     self.gravity = self.gravity*v
   end
 end
@@ -896,7 +896,7 @@ function mapEntity:begin()
     end
   end
   
-  for k, v in pairs(megautils.addMapFuncs) do
+  for _, v in pairs(megautils.addMapFuncs) do
     if type(v) == "function" then
       v(self)
     else
@@ -906,13 +906,11 @@ function mapEntity:begin()
 end
 
 function mapEntity:removed()
-  for k, v in ipairs(self.layers) do
-    if not v.isRemoved then
-      megautils.remove(v)
-    end
+  for _, v in ipairs(self.layers) do
+    megautils.remove(v)
   end
   
-  for k, v in pairs(megautils.removeMapFuncs) do
+  for _, v in pairs(megautils.removeMapFuncs) do
     if type(v) == "function" then
       v(self)
     else
@@ -925,7 +923,7 @@ end
 
 function mapEntity:recursiveChecker(tab, index, name)
   if tab and tab.layers then
-    for k, v in pairs(tab.layers) do
+    for _, v in pairs(tab.layers) do
       if v[index] == name then
         return v
       elseif v.type == "group" then
@@ -939,9 +937,9 @@ function mapEntity:recursiveObjectFinder(tab, otab)
   if not otab then
     otab = {}
   end
-  for k, v in pairs(tab.layers) do
+  for _, v in pairs(tab.layers) do
     if v.type == "objectgroup" then
-      for i, j in pairs(v.objects) do
+      for _, j in pairs(v.objects) do
         otab[#otab+1] = j
       end
     elseif v.type == "group" then
@@ -961,7 +959,7 @@ end
 
 function mapEntity:addObjects()
   mapEntity.add(self:recursiveObjectFinder(self.map), self.map)
-  for k, v in pairs(megautils.postAddObjectsFuncs) do
+  for _, v in pairs(megautils.postAddObjectsFuncs) do
     if type(v) == "function" then
       v(self)
     else
@@ -1051,7 +1049,7 @@ function mapEntity.add(ol, map)
   end
   for i=1, #mapEntity.registered do
     local layer = mapEntity.registered[i]
-    for k, v in ipairs(ol) do
+    for _, v in ipairs(ol) do
       if v.properties.run then
         megautils.runFile(v.properties.run, true)
       end
@@ -1194,9 +1192,9 @@ function advancedEntity:useHealthBar(oneColor, twoColor, outlineColor, add)
   self.healthHandler:instantUpdate(self.health)
   self.health = nil
   if camera.main then
-    camera.main.funcs["advancedEntity"] = function(s)
+    camera.main.funcs.advancedEntity = function(s)
         if megautils.groups().advancedEntity then
-          for k, v in ipairs(megautils.groups().advancedEntity) do
+          for _, v in ipairs(megautils.groups().advancedEntity) do
             v.healthHandler.transform.x = (v.barRelativeToView and view.x or 0) + v.barOffsetX
             v.healthHandler.transform.y = (v.barRelativeToView and view.y or 0) + v.barOffsetY
           end
@@ -1222,7 +1220,7 @@ function advancedEntity:crushed(o)
   if self.autoCrush and self.hurtable then
     local oldInv, oldIF = table.clone(self.canBeInvincible), self.iFrames
     self.iFrames = 0
-    for k, v in pairs(self.canBeInvincible) do
+    for k, _ in pairs(self.canBeInvincible) do
       self.canBeInvincible[k] = false
     end
     o:interact(self, -99999, true)
@@ -1526,7 +1524,7 @@ function bossEntity:start()
         self._subState = -1
       end
     elseif megaMan.allPlayers then
-      for k, v in ipairs(megaMan.allPlayers) do
+      for _, v in ipairs(megaMan.allPlayers) do
         v.canControl.boss = false
         v.canBeInvincible.intro = true
         v.velocity.velx = 0
@@ -1565,7 +1563,7 @@ function bossEntity:start()
     if not self.strikePose or self:pose() then
       self._subState = nil
       if megaMan.allPlayers then
-        for k, v in ipairs(megaMan.allPlayers) do
+        for _, v in ipairs(megaMan.allPlayers) do
           v.canControl.boss = nil
           v.canBeInvincible.intro = nil
         end

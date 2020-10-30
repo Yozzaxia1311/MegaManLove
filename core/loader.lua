@@ -149,7 +149,7 @@ function loader.getTable(nick)
 end
 
 function loader.clear()
-  for k, v in pairs(loader.resources) do
+  for k, _ in pairs(loader.resources) do
     loader.unload(k)
   end
 end
