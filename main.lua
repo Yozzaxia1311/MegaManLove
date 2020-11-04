@@ -58,6 +58,7 @@ function initEngine()
   globals.lifeSegments = 7
   globals.startingLives = 2
   globals.playerCount = 1
+  globals.defeats = {}
   globals.disclaimerState = "assets/states/menus/disclaimer.state.lua"
   globals.bossIntroState = "assets/states/menus/bossintro.state.lua"
   globals.weaponGetState = "assets/states/menus/weaponget.state.lua"
@@ -70,10 +71,6 @@ function initEngine()
   megautils.difficultyChangeFuncs.startingLives = {func=function(d)
       globals.startingLives = (d == "easy") and 3 or 2
     end, autoClean=false}
-  
-  -- `globals.defeats` tells who you've defeated. Fill this in appropriatly. Your `bossEntity` should be configured to fill this in.
-  globals.defeats = {}
-  globals.defeats.stickMan = false
   
   for _, v in pairs(megautils.cleanFuncs) do
     if type(v) == "function" then
