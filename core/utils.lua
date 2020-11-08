@@ -106,15 +106,15 @@ function string:split(inSplitPattern, outResults)
   end
   
   local theStart = 1
-  local theSplitStart, theSplitEnd = string.find(self, inSplitPattern, theStart)
+  local theSplitStart, theSplitEnd = self:find(inSplitPattern, theStart)
   
   while theSplitStart do
-    table.insert(outResults, string.sub(self, theStart, theSplitStart - 1))
+    table.insert(outResults, self:sub(theStart, theSplitStart - 1))
     theStart = theSplitEnd + 1
-    theSplitStart, theSplitEnd = string.find(self, inSplitPattern, theStart)
+    theSplitStart, theSplitEnd = self:find(inSplitPattern, theStart)
   end
   
-  table.insert(outResults, string.sub(self, theStart))
+  table.insert(outResults, self:sub(theStart))
   
   return outResults
 end
