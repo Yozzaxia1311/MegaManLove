@@ -176,7 +176,7 @@ function math.between(val, min, max)
 end
 
 function math.lerp(a,b,t)
-  return (1-t) * a + t * b
+  return (1 - t) * a + t * b
 end
 
 function math.sign(x)
@@ -190,11 +190,7 @@ function math.sign(x)
 end
 
 function math.round(x)
-  if x - math.floor(x) >= 0.5 then
-    return math.ceil(x)
-  end
-  
-  return math.floor(x)
+  return math.floor(x + 0.5)
 end
 
 function math.wrap(v, min, max)
