@@ -64,6 +64,18 @@ function stageSelect:new()
   self.stop = false
   self.selected = false
   self.selectBlink = 0
+  
+  self.slots = {}
+  for i = 1, 9 do
+    local v = globals.robotMasterEntities[i]
+    if v then
+      if type(v) == "function" then
+        self.slots[i] = v
+      else
+        self.slots[i] = megautils.runFile(v)()
+      end
+    end
+  end
 end
 
 function stageSelect:removed()
@@ -145,20 +157,49 @@ function stageSelect:update()
       end
       if self.selectBlink == 12 then
         self.selected = false
-        if self.x == 2 and self.y == 1 then
-          if globals.defeats.stickMan then
-            megautils.transitionToState("assets/states/stages/demo.stage.tmx")
+        local pick = 1
+        
+        if self.x == 0 and self.y == 0 then
+          pick = 1
+        elseif self.x == 1 and self.y == 0 then
+          pick = 2
+        elseif self.x == 2 and self.y == 0 then
+          pick = 3
+        elseif self.x == 0 and self.y == 1 then
+          pick = 4
+        elseif self.x == 1 and self.y == 1 then
+          pick = 5
+        elseif self.x == 2 and self.y == 1 then
+          pick = 6
+        elseif self.x == 0 and self.y == 2 then
+          pick = 7
+        elseif self.x == 1 and self.y == 2 then
+          pick = 8
+        elseif self.x == 2 and self.y == 2 then
+          pick = 9
+        end
+        
+        if not self.slots[pick] then
+          error("Slot " .. tostring(self.x) .. ", " .. tostring(self.y) .. " doesn't lead anywhere.")
+        end
+        
+        if type(self.slots[pick]) == "function" then
+          megautils.add(fade, true, nil, nil, function(f)
+              f._func()
+              megautils.removeq(f)
+            end)._func = self.slots[pick]
+        else
+          if globals.defeats[self.slots[pick].defeatSlot] then
+            megautils.transitionToState(self.slots[pick].stageState)
           else
-            globals.bossIntroBoss = "entities/demo/stickman.lua"
+            globals.bossIntroBoss = globals.robotMasterEntities[pick]
             megautils.transitionToState("assets/states/menus/bossintro.state.lua")
           end
-        else
-          error("Slot " .. tostring(self.x) .. ", " .. tostring(self.y) .. " doesn't lead anywhere.")
         end
       end
     end
   elseif (control.startPressed[1] or control.jumpPressed[1]) and not self.stop then
-    if self.x ~= 1 or self.y ~= 1 then
+    if self.x ~= 1 or self.y ~= 1 or self:checkRequirements() then
       self.stop = true
       self.selected = true
       self.timer = 0
@@ -177,8 +218,22 @@ function stageSelect:update()
   end
 end
 
+function stageSelect:checkRequirements()
+  for _, v in pairs(globals.defeatRequirementsForWily) do
+    if not globals.defeats[v] then
+      return false
+    end
+  end
+  
+  return true
+end
+
+function stageSelect:checkRequirement()
+  
+end
+
 function stageSelect:draw()
-  if not checkFalse(globals.defeats) then
+  if not self:checkRequirements() then
     megaMan.getSkin(1).texture:draw(self.anims, 32+(1*81), 32+(1*64), 0, 1, 1, 16, 15)
     
     if false then -- For select slot 1, 1

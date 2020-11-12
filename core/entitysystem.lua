@@ -118,6 +118,7 @@ function entitySystem:add(c, ...)
   self.all[#self.all+1] = e
   e.isRemoved = false
   e.isAdded = true
+  e.justAddedIn = true
   e:added()
   if self.inLoop then
     e:begin()
@@ -155,6 +156,7 @@ function entitySystem:adde(e)
   self.all[#self.all+1] = e
   e.isRemoved = false
   e.isAdded = true
+  e.justAddedIn = true
   e:added()
   if self.inLoop then
     e:begin()
@@ -290,6 +292,7 @@ function entitySystem:remove(e)
   table.quickremovevaluearray(self.all, e)
   table.quickremovevaluearray(self.beginQueue, e)
   e.isAdded = false
+  e.justAddedIn = false
   if e.recycle then
     if not self.recycle[e.__index] then
       self.recycle[e.__index] = {e}
@@ -361,14 +364,14 @@ function entitySystem:update(dt)
     if states.switched then
       return
     end
-    local t = self.updates[i]
-    if (type(t.noFreeze) == "table" and table.intersects(t.noFreeze, self.frozen)) or t.noFreeze == true or not checkTrue(self.frozen) then
-      t.previousX = t.transform.x
-      t.previousY = t.transform.y
-      t.epX = t.previousX
-      t.epY = t.previousY
-      if not t.isRemoved and t.beforeUpdate and checkFalse(t.canUpdate) then
-        t:beforeUpdate(dt)
+    local v = self.updates[i]
+    if (type(v.noFreeze) == "table" and table.intersects(v.noFreeze, self.frozen)) or v.noFreeze == true or not checkTrue(self.frozen) then
+      v.previousX = v.transform.x
+      v.previousY = v.transform.y
+      v.epX = v.previousX
+      v.epY = v.previousY
+      if not v.isRemoved and v.beforeUpdate and checkFalse(v.canUpdate) then
+        v:beforeUpdate(dt)
       end
     end
   end
@@ -377,10 +380,10 @@ function entitySystem:update(dt)
     if states.switched then
       return
     end
-    local t = self.updates[i]
-    if ((type(t.noFreeze) == "table" and table.intersects(t.noFreeze, self.frozen)) or t.noFreeze == true or not checkTrue(self.frozen)) and
-      not t.isRemoved and t.update and checkFalse(t.canUpdate) then
-      t:update(dt)
+    local v = self.updates[i]
+    if ((type(v.noFreeze) == "table" and table.intersects(v.noFreeze, self.frozen)) or v.noFreeze == true or not checkTrue(self.frozen)) and
+      not v.isRemoved and v.update and checkFalse(v.canUpdate) then
+      v:update(dt)
     end
   end
   
@@ -388,11 +391,12 @@ function entitySystem:update(dt)
     if states.switched then
       return
     end
-    local t = self.updates[i]
-    if ((type(t.noFreeze) == "table" and table.intersects(t.noFreeze, self.frozen)) or t.noFreeze or not checkTrue(self.frozen)) and
-      not t.isRemoved and t.afterUpdate and checkFalse(t.canUpdate) then
-      t:afterUpdate(dt)
+    local v = self.updates[i]
+    if ((type(v.noFreeze) == "table" and table.intersects(v.noFreeze, self.frozen)) or v.noFreeze or not checkTrue(self.frozen)) and
+      not v.isRemoved and v.afterUpdate and checkFalse(v.canUpdate) then
+      v:afterUpdate(dt)
     end
+    v.justAddedIn = false
   end
   
   self.inLoop = false
@@ -488,40 +492,6 @@ function basicEntity:__tostring()
   return "Entity"
 end
 
-function basicEntity.transfer(from, to)
-  to.transform = table.clone(from.transform)
-  to.canUpdate = table.clone(from.canUpdate)
-  to.canDraw = table.clone(from.canDraw)
-  to.isRemoved = from.isRemoved
-  to.isAdded = from.isAdded
-  to.layer = from.layer
-  to.iFrames = from.iFrames
-  to.changeHealth = from.changeHealth
-  to.recycle = from.recycle
-  to.recycling = from.recycling
-  to.id = from.id
-  to.previousX = from.previousX
-  to.previousY = from.previousY
-  to.epX = from.epX
-  to.epY = from.epY
-  to.exclusivelySolidFor = table.clone(from.exclusivelySolidFor)
-  to.excludeSolidFor = table.clone(from.excludeSolidFor)
-  to.spawnEarlyDuringTransition = from.spawnEarlyDuringTransition
-  to.despawnLateDuringTransition = from.despawnLateDuringTransition
-  to.death = from.death
-  to.ladder = from.ladder
-  to.noFrozen = from.noFrozen
-  if from.collisionShape then
-    if from.collisionShape.type == 0 then
-      to:setRectangleCollision(from.collisionShape.w, from.collisionShape.h)
-    elseif from.collisionShape.type == 1 then
-      to:setImageCollision(from.collisionShape.resource)
-    elseif from.collisionShape.type == 2 then
-      to:setCircleCollision(from.collisionShape.r)
-    end
-  end
-end
-
 basicEntity.id = 0
 
 function basicEntity:new()
@@ -609,6 +579,7 @@ end
 function basicEntity:setImageCollision(resource)
   local res = megautils.getResourceTable(resource)
   
+  self.collisionShape = {}
   self.collisionShape.resource = resource
   
   if res.img then
@@ -734,30 +705,6 @@ entity = basicEntity:extend()
 
 entity.autoClean = false
 
-function entity.transfer(from, to)
-  entity.super.transfer(from, to)
-  
-  to.gravityMultipliers = table.clone(from.gravityMultipliers)
-  to.velocity = from.velocity
-  to.solidType = from.solidType
-  to.normalGravity = from.normalGravity
-  to.gravity = from.gravity
-  to.doShake = from.doShake
-  to.maxShakeTime = from.maxShakeTime
-  to.blockCollision = table.clone(from.blockCollision)
-  to.ground = from.ground
-  to.snapToGround = from.snapToGround
-  to.xColl = from.xColl
-  to.yColl = from.yColl
-  to.shakeX = from.shakeX
-  to.shakeY = from.shakeY
-  to.shakeTime = from.shakeTime
-  to.shakeSide = from.shakeSide
-  to.moveByMoveX = from.moveByMoveY
-  to.canBeInvincible = table.clone(from.canBeInvincible)
-  to.canStandSolid = table.clone(from.canStandSolid)
-end
-
 function entity:new()
   entity.super.new(self)
   
@@ -805,6 +752,13 @@ function entity:moveBy(xx, yy, round)
   self.transform.y = self.transform.y + y
 end
 
+function entity:calcGrav()
+  self.gravity = self.normalGravity
+  for _, v in pairs(self.gravityMultipliers) do
+    self.gravity = self.gravity * v
+  end
+end
+
 function entity:setGravityMultiplier(name, to)
   local old = self.gravityMultipliers[name]
   self.gravityMultipliers[name] = to
@@ -812,15 +766,6 @@ function entity:setGravityMultiplier(name, to)
     self:calcGrav()
   end
 end
-
-function entity:calcGrav()
-  self.gravity = self.normalGravity
-  for _, v in pairs(self.gravityMultipliers) do
-    self.gravity = self.gravity*v
-  end
-end
-
-function entity:grav() end
 
 function entity:updateShake()
   if self.doShake then
@@ -1089,54 +1034,13 @@ advancedEntity = entity:extend()
 
 advancedEntity.autoClean = false
 
-function advancedEntity.transfer(from, to)
-  advancedEntity.super.transfer(from, to)
-  
-  to.explosionType = from.explosionType
-  to.removeOnDeath = from.removeOnDeath
-  to.dropItem = from.dropItem
-  to.health = from.health
-  to.soundOnHit = from.soundOnHit
-  to.soundOnDeath = from.soundOnDeath
-  to.autoHitPlayer = from.autoHitPlayer
-  to.damage = from.damage
-  to.hurtable = from.hurtable
-  to.flipWithPlayer = from.flipWithPlayer
-  if type(from.defeatSlot) == "table" then
-    to.defeatSlot = table.clone(from.defeatSlot)
-  else
-    to.defeatSlot = from.defeatSlot
-  end
-  if type(from.defeatSlotValue) == "table" then
-    to.defeatSlotValue = table.clone(from.defeatSlotValue)
-  else
-    to.defeatSlotValue = from.defeatSlotValue
-  end
-  to.removeWhenOutside = from.removeWhenOutside
-  to.removeHealthBarWithSelf = from.removeHealthBarWithSelf
-  to.barRelativeToView = from.barRelativeToView
-  to.barOffsetX = from.barOffsetX
-  to.barOffsetY = from.barOffsetY
-  to.applyAutoFace = from.applyAutoFace
-  to.pierceType = from.pierceType
-  to.autoCollision = from.autoCollision
-  to.autoGravity = from.autoGravity
-  to.doAutoCollisionBeforeUpdate = from.doAutoCollisionBeforeUpdate
-  to.autoCrush = from.autoCrush
-  to.dead = from.dead
-  to.closest = from.closest
-  to._didCol = from._didCol
-  to.healthHandler = from.healthHandler
-  to.autoFace = from.autoFace
-  to.side = from.side
-end
-
 advancedEntity.SMALLBLAST = 1
 advancedEntity.BIGBLAST = 2
 advancedEntity.DEATHBLAST = 3
 
 function advancedEntity:new()
   advancedEntity.super.new(self)
+  
   if not self.recycling then
     self:setRectangleCollision(16, 16)
     self.explosionType = advancedEntity.SMALLBLAST
@@ -1163,6 +1067,7 @@ function advancedEntity:new()
     self.doAutoCollisionBeforeUpdate = false
     self.autoCrush = true
     self.blockCollision.global = true
+    self.maxFallingSpeed = 7
   end
   
   self.dead = false
@@ -1213,7 +1118,7 @@ end
 
 function advancedEntity:grav()
   self.velocity.vely = self.velocity.vely+self.gravity
-  self.velocity:clampY(7)
+  self.velocity:clampY(self.maxFallingSpeed)
 end
 
 function advancedEntity:crushed(o)
@@ -1374,45 +1279,6 @@ bossEntity = advancedEntity:extend()
 
 bossEntity.autoClean = false
 
-function bossEntity.transfer(from, to)
-  bossEntity.super.transfer(from, to)
-  
-  to.state = from.state
-  to._subState = from._subState
-  to.skipBoss = from.skipBoss
-  to.skipBossState = from.skipBossState
-  to.doIntro = from.doIntro
-  to.strikePose = from.strikePose
-  to.continueAfterDeath = from.continueAfterDeath
-  to.afterDeathState = from.afterDeathState
-  to.weaponGetMenuState = from.weaponGetMenuState
-  to.doBossIntro = from.doBossIntro
-  to.bossIntroText = from.bossIntroText
-  to.weaponGetText = from.weaponGetText
-  to.stageState = from.stageState
-  to.bossIntroWaitTime = from.bossIntroWaitTime
-  to.weaponGetBehaviour = from.weaponGetBehaviour
-  to.skipStart = from.skipStart
-  to.musicPath = from.musicPath
-  to.musicLoop = from.musicLoop
-  to.musicLoopPoint = from.musicLoopPoint
-  to.musicLoopEndPoint = from.musicLoopEndPoint
-  to.musicVolume = from.musicVolume
-  to.musicBIPath = from.musicBIPath
-  to.musicBIVolume = from.musicBIVolume
-  to.ds = from.ds
-  to.screen = from.screen
-  if from.screen then
-    to.screen = megautils.entityFromID(from.screen.id)
-  end
-  to.dOff = from.dOff
-  to.oldY = from.oldY
-  to._timer = from._timer
-  to._textPos = from._textPos
-  to._textTimer = from._textTimer
-  to._halfWidth = from._halfWidth
-end
-
 function bossEntity:new()
   bossEntity.super.new(self)
   self.soundOnDeath = "assets/sfx/dieExplode.ogg"
@@ -1428,7 +1294,7 @@ function bossEntity:new()
   self.removeHealthBarWithSelf = false
   self.state = 0
   self._subState = 0
-  self.skipBoss = false
+  self.skipBoss = nil
   self.skipBossState = globals.menuState
   self.doIntro = true
   self.strikePose = true

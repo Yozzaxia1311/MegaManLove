@@ -18,7 +18,7 @@ function bossDoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt, n, tw, th, ts)
   bossDoor.super.new(self)
   self.transform.x = x or 0
   self.transform.y = y or 0
-  self:setLayer(0)
+  self:setLayer(-1)
   self.tex = megautils.getResource("bossDoor")
   self.scrollx = scrollx
   self.scrolly = scrolly

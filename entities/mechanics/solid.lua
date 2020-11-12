@@ -42,7 +42,7 @@ slope = basicEntity:extend()
 slope.autoClean = false
 
 mapEntity.register("slope", function(v)
-  megautils.add(slope, v.x, v.y, megautils.getResourceTable(v.properties.mask))
+  megautils.add(slope, v.x, v.y, v.properties.mask)
 end, 0, true)
 
 function slope:new(x, y, mask)

@@ -1,4 +1,5 @@
 megautils.loadResource("assets/global/bosses/stickMan.png", "stickMan")
+megautils.loadResource(0, 0, 21, 32, "stickManGrid")
 
 stickMan = bossEntity:extend()
 
@@ -12,9 +13,9 @@ function stickMan:new(x, y)
   self.transform.x = x or 0
   self:setRectangleCollision(12, 24)
   self.t = megautils.getResource("stickMan")
-  self.canDraw.global = false
-  self.gravity = 0
-  self.health = 1
+  self.anims = animationSet()
+  self.anims:add("idle", megautils.newAnimation("stickManGrid", {1, 1}))
+  self.anims:add("pose", megautils.newAnimation("stickManGrid", {2, 1, 1, 1, 3, 1, 1, 1, 2, 1, 1, 1, 3, 1}, 1/10, "pauseAtEnd"))
   self:useHealthBar({128, 128, 128}, {255, 255, 255})
   
   -- Boss intro exclusive.
@@ -24,7 +25,27 @@ function stickMan:new(x, y)
   -- Weapon get exclusive.
   self.weaponGetText = "WEAPON GET... STICK WEAPON!"
   self.weaponGetBehaviour = function(m)
-      return true
+      if not m._stickTimer then
+        m._stickTimer = 0
+      end
+      
+      m._stickTimer = m._stickTimer + 1
+      m.shootFrames = math.max(m.shootFrames - 1, 0)
+      
+      if m._stickTimer == 240 then
+        return true
+      elseif m._stickTimer % 60 == 0 then
+        m.shootFrames = 14
+        m:useShootAnimation()
+        megautils.add(stickWeapon, m.transform.x+m:shootOffX(), 
+          m.transform.y+m:shootOffY(), m, m.side)
+      end
+      
+      if m.shootFrames ~= 0 then
+        m.anims:set(m.idleAnimation.shoot)
+      else
+        m.anims:set(m.idleAnimation.regular)
+      end
     end
   self.defeatSlot = "stickMan"
   self.defeatSlotValue = {weaponSlot=1, weaponName="STICK W."}
@@ -44,10 +65,27 @@ function stickMan:determineDink(o)
   return o:is(megaSemiBuster)
 end
 
+function stickMan:pose()
+  self.anims:update(1/60)
+  if self.anims.current ~= "pose" then
+    self.anims:set("pose")
+  end
+  if self.anims:looped() then
+    return true
+  end
+end
+
+function stickMan:act()
+  self.anims:update(1/60)
+  if self.state == 0 then
+    self.anims:set("idle")
+    self.state = 1
+  end
+end
+
 function stickMan:draw()
   stickMan.super.draw(self)
-  love.graphics.setColor(1, 1, 1, 1)
-  self.t:draw(math.floor(self.transform.x)-4, math.floor(self.transform.y)-8)
+  self.t:draw(self.anims, math.floor(self.transform.x)-4, math.floor(self.transform.y)-8)
 end
 
 return stickMan

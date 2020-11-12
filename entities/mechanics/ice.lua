@@ -57,18 +57,10 @@ function ice.gFunc(s)
   end
 end
 
-megautils.resetGameObjectsFuncs.ice = function()
+megautils.postAddObjectsFuncs.ice = function()
     megautils.playerGroundFuncs.ice = ice.gFunc
     megautils.playerKnockbackFuncs.ice = ice.gFunc
     megautils.playerAirFuncs.ice = ice.elseFunc
     megautils.playerClimbFuncs.ice = ice.elseFunc
     megautils.playerTrebleFuncs.ice = ice.elseFunc
-  end
-
-megautils.cleanFuncs.ice = function()
-    megautils.playerGroundFuncs.ice = nil
-    megautils.playerKnockbackFuncs.ice = nil
-    megautils.playerAirFuncs.ice = nil
-    megautils.playerClimbFuncs.ice = nil
-    megautils.playerTrebleFuncs.ice = nil
   end

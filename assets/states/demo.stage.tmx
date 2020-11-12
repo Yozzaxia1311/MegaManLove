@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="16" height="14" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#ffaaff" nextlayerid="6" nextobjectid="65">
+<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="16" height="14" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#ffaaff" nextlayerid="6" nextobjectid="184">
  <properties>
   <property name="fadeIn" type="bool" value="true"/>
   <property name="musicPath" value="assets/sfx/music/demo.ogg"/>
@@ -35,15 +35,51 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,13,13,0,1,1,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
-0,13,13,0,0,0,0,0,1,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
-0,0,0,13,13,0,0,0,1,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
-1,1,1,1,1,1,5,0,1,0,0,0,0,0,0,0,
-0,0,0,0,0,1,5,0,1,0,0,0,0,0,0,0,
-0,0,0,0,0,1,5,0,1,0,0,0,0,0,0,0
+0,0,0,0,0,13,13,0,1,1,1,1,1,1,0,0,
+0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,
+0,13,13,0,0,0,0,0,1,0,0,0,0,1,0,0,
+0,0,0,0,0,0,0,0,1,0,0,0,0,1,14,14,
+0,0,0,13,13,0,0,0,1,0,0,0,0,1,0,0,
+0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,
+1,1,1,1,1,1,5,0,1,0,0,0,0,1,0,0,
+0,0,0,0,0,1,5,0,1,0,0,0,0,1,0,0,
+0,0,0,0,0,1,5,0,1,0,0,0,0,1,0,0
+</chunk>
+   <chunk x="48" y="-16" width="16" height="16">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,16,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,16,0,
+0,1,1,0,0,0,1,1,1,1,1,1,1,1,1,10,
+0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,
+0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,
+14,1,1,14,14,14,1,0,0,0,0,0,0,0,0,0,
+0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,
+0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,
+0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0
+</chunk>
+   <chunk x="64" y="-16" width="16" height="16">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,17,18,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,17,18,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,25,0,0,0,0,0,0,0,0,0,
+11,0,0,0,0,0,0,25,0,0,0,0,0,0,0,0,
+0,10,11,0,0,0,0,0,1,0,0,0,0,0,0,0,
+0,0,0,3,0,0,0,0,1,0,0,0,0,0,0,0,
+0,0,0,0,3,0,13,13,1,0,0,0,0,0,0,0,
+0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,
+0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,
+0,0,0,0,1,16,0,16,1,0,0,0,0,0,0,0,
+0,0,0,0,26,0,0,0,1,0,0,0,0,0,0,0,
+0,0,0,26,0,0,6,7,0,0,0,0,0,0,0,0
 </chunk>
    <chunk x="0" y="0" width="16" height="16">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -60,8 +96,8 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0
 </chunk>
    <chunk x="16" y="0" width="16" height="16">
 1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,
@@ -96,6 +132,258 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,1,0,1,16,0,16,0,0,0,0,0,0,
+0,0,0,0,1,0,1,0,16,0,0,0,0,0,0,0
+</chunk>
+   <chunk x="48" y="0" width="16" height="16">
+0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,1,0,0,0,0,0,0,0,21,22,
+0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,
+0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,
+0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,
+0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,
+0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,
+0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,
+0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</chunk>
+   <chunk x="64" y="0" width="16" height="16">
+0,0,26,0,6,7,0,0,0,0,0,0,0,0,0,0,
+21,22,0,2,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</chunk>
+   <chunk x="0" y="16" width="16" height="16">
+0,0,1,0,0,0,14,14,14,14,14,0,0,0,0,0,
+0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,1,0,0,0,0,0,12,12,12,12,12,12,12,12,
+0,0,1,0,0,0,0,0,1,1,1,1,1,1,1,0,
+0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,
+0,0,1,12,12,12,12,0,0,0,0,0,0,0,1,0,
+0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,
+0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,
+0,0,0,0,0,0,1,12,12,12,9,9,9,9,1,0,
+0,0,0,0,0,0,0,0,0,1,9,9,9,9,1,0,
+0,0,0,0,0,0,0,0,0,1,9,9,9,9,1,0,
+0,0,0,0,0,0,0,0,0,1,9,9,9,9,1,0,
+0,0,0,0,0,0,0,0,0,1,9,9,9,9,1,0,
+0,1,1,1,1,1,1,1,1,1,9,9,9,9,1,0,
+0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,
+0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0
+</chunk>
+   <chunk x="16" y="16" width="16" height="16">
+0,0,9,9,9,9,9,0,0,0,0,0,0,0,0,0,
+0,0,9,16,16,16,9,0,0,0,0,0,0,0,0,0,
+12,12,16,16,16,16,9,0,0,0,0,0,1,1,1,5,
+0,1,9,9,9,16,9,0,0,0,0,0,1,0,1,5,
+0,1,0,0,0,9,16,9,9,0,0,0,1,0,1,5,
+0,1,0,0,0,9,16,16,9,0,0,0,1,0,1,5,
+0,1,0,0,0,9,16,16,9,0,0,0,1,0,1,5,
+0,1,0,0,0,9,16,16,9,0,0,0,1,0,1,5,
+0,1,0,0,0,9,16,16,9,0,0,0,1,0,1,5,
+0,1,0,0,0,9,16,16,9,0,0,0,1,0,1,5,
+0,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,
+0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,
+0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,8,
+0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,8
+</chunk>
+   <chunk x="32" y="16" width="16" height="16">
+0,0,0,0,1,0,1,16,0,16,0,0,0,0,0,0,
+0,0,0,0,1,0,1,0,16,0,0,0,0,0,0,0,
+9,9,9,9,1,0,1,16,0,16,0,0,0,0,0,0,
+16,16,16,16,1,0,1,0,16,0,1,1,1,1,9,9,
+16,16,16,16,1,0,1,16,0,16,1,0,0,1,16,16,
+16,16,16,16,1,0,1,0,16,0,1,0,0,1,16,16,
+16,16,16,16,1,0,1,16,0,16,1,0,0,1,16,16,
+9,9,9,9,1,1,1,0,16,0,1,0,0,1,16,16,
+0,0,0,0,0,0,0,16,0,16,1,0,0,1,1,1,
+0,0,0,0,0,0,0,0,16,0,1,0,0,0,0,0,
+1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,
+8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,
+8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0
+</chunk>
+   <chunk x="48" y="16" width="16" height="16">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+9,9,9,9,9,9,9,9,9,1,1,1,1,1,1,1,
+16,16,16,16,16,16,16,16,16,1,0,0,0,0,0,0,
+16,16,16,16,16,16,16,16,16,1,0,0,0,0,0,0,
+16,16,16,16,16,16,16,16,16,1,0,0,0,0,0,0,
+16,16,16,16,16,16,16,16,16,1,0,0,0,0,0,0,
+1,1,16,16,16,1,1,1,1,1,0,0,0,0,0,0,
+0,1,16,16,16,1,0,0,0,0,0,0,0,0,0,0,
+0,1,16,16,16,1,0,0,0,0,0,0,0,0,0,0,
+0,1,16,16,16,1,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</chunk>
+   <chunk x="64" y="16" width="16" height="16">
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</chunk>
+   <chunk x="0" y="32" width="16" height="16">
+0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,
+0,1,0,13,13,13,0,0,0,0,0,0,0,0,1,0,
+0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,
+0,1,0,13,13,13,0,0,0,0,0,0,0,0,0,0,
+0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,1,0,13,13,13,0,0,0,0,0,0,0,0,0,0,
+0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</chunk>
+   <chunk x="16" y="32" width="16" height="16">
+0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,8,
+0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,8,
+1,1,0,0,0,1,1,1,1,1,0,0,0,0,0,8,
+0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,8,
+0,0,0,0,1,1,0,0,0,1,1,1,1,1,1,1,
+0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,
+1,1,1,1,1,1,0,1,0,1,1,1,1,1,1,1,
+0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,
+0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,
+0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0
+</chunk>
+   <chunk x="32" y="32" width="16" height="16">
+8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,
+8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,
+8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,
+8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,
+8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,
+1,1,1,1,1,0,0,1,1,1,1,1,0,0,1,0,
+0,0,0,0,1,0,0,1,0,0,0,1,0,0,1,0,
+0,0,0,0,1,4,4,1,0,0,0,1,0,0,1,0,
+0,0,0,0,1,4,4,1,0,0,0,1,0,0,1,0,
+1,1,1,1,1,0,0,1,0,0,0,1,0,0,1,1,
+0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,
+0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,
+0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,
+0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0
+</chunk>
+   <chunk x="48" y="32" width="16" height="16">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0
+</chunk>
+   <chunk x="16" y="48" width="16" height="16">
+0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</chunk>
+   <chunk x="32" y="48" width="16" height="16">
+0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,
+0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,
+0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,
+0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,
+0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,
+0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,
+1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</chunk>
+   <chunk x="48" y="48" width="16" height="16">
+0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
+1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </chunk>
@@ -115,7 +403,44 @@
      <property name="checkLadder" type="bool" value="true"/>
     </properties>
    </object>
-   <object id="64" template="templates/sections/section.tx" x="672" y="-224"/>
+   <object id="64" template="templates/sections/section.tx" x="672" y="-224" width="512" height="224"/>
+   <object id="67" template="templates/sections/section.tx" x="928" y="-224" width="256" height="448"/>
+   <object id="68" template="templates/sections/section.tx" x="256" y="224" width="800" height="224"/>
+   <object id="116" template="templates/sections/down.tx" x="928" y="208" width="96" height="16"/>
+   <object id="117" template="templates/sections/right.tx" x="656" y="-224" width="16" height="80"/>
+   <object id="118" template="templates/sections/left.tx" x="672" y="-224" width="16" height="80"/>
+   <object id="119" template="templates/sections/section.tx" x="0" y="224"/>
+   <object id="120" template="templates/sections/section.tx" x="0" y="448"/>
+   <object id="135" template="templates/sections/left.tx" x="256" y="224" width="16" height="64"/>
+   <object id="138" template="templates/sections/down.tx" x="160" y="432" width="64" height="16"/>
+   <object id="150" template="templates/sections/section.tx" x="256" y="448"/>
+   <object id="151" template="templates/sections/section.tx" x="512" y="448"/>
+   <object id="152" template="templates/sections/section.tx" x="400" y="672"/>
+   <object id="153" template="templates/sections/section.tx" x="672" y="672"/>
+   <object id="163" template="templates/sections/bossDoor.tx" x="240" y="560" width="32" height="64"/>
+   <object id="164" template="templates/sections/bossDoor.tx" x="496" y="608" width="32" height="16">
+    <properties>
+     <property name="tileLayer" value="layout"/>
+    </properties>
+   </object>
+   <object id="165" template="templates/sections/bossDoor.tx" x="496" y="480" width="32" height="96">
+    <properties>
+     <property name="tileLayer" value="layout"/>
+    </properties>
+   </object>
+   <object id="166" template="templates/sections/bossDoor.tx" x="592" y="656">
+    <properties>
+     <property name="dir" value="down"/>
+     <property name="tileLayer" value="layout"/>
+    </properties>
+   </object>
+   <object id="167" template="templates/sections/bossDoor.tx" x="704" y="656">
+    <properties>
+     <property name="dir" value="down"/>
+    </properties>
+   </object>
+   <object id="168" template="templates/demo/stickMan.tx" x="464" y="848"/>
+   <object id="169" template="templates/demo/stickMan.tx" x="848" y="848"/>
   </objectgroup>
   <objectgroup id="4" name="collision">
    <object id="3" template="templates/collision/solid.tx" x="48" y="160" width="224" height="64"/>
@@ -124,12 +449,79 @@
    <object id="45" template="templates/collision/solid.tx" x="352" y="160" width="240" height="64"/>
    <object id="46" template="templates/collision/solid.tx" x="592" y="96" width="48" height="64"/>
    <object id="47" template="templates/collision/solid.tx" x="432" y="-48" width="176" height="80"/>
-   <object id="48" template="templates/collision/solid.tx" x="640" y="-144" width="32" height="240"/>
+   <object id="48" template="templates/collision/solid.tx" x="640" y="-144" width="96" height="240"/>
    <object id="57" template="templates/collision/oneway.tx" x="528" y="-112" width="32" height="8"/>
    <object id="58" template="templates/collision/oneway.tx" x="560" y="-80" width="32" height="8"/>
    <object id="59" template="templates/collision/oneway.tx" x="592" y="-144" width="32" height="8"/>
    <object id="60" template="templates/collision/solid.tx" x="448" y="-240" width="16" height="192"/>
    <object id="61" template="templates/collision/ladder.tx" x="608" y="-48" width="16" height="144"/>
+   <object id="69" template="templates/collision/solid.tx" x="448" y="288" width="48" height="128"/>
+   <object id="70" template="templates/collision/solid.tx" x="224" y="304" width="64" height="256"/>
+   <object id="71" template="templates/collision/solid.tx" x="288" y="416" width="384" height="16"/>
+   <object id="74" template="templates/mechanics/water.tx" x="288" y="256" width="80" height="64"/>
+   <object id="75" template="templates/mechanics/water.tx" x="336" y="320" width="64" height="96"/>
+   <object id="76" template="templates/mechanics/water.tx" x="496" y="288" width="80" height="96"/>
+   <object id="77" template="templates/mechanics/water.tx" x="736" y="304" width="176" height="144"/>
+   <object id="79" template="templates/mechanics/space.tx" x="624" y="224" width="48" height="192"/>
+   <object id="80" template="templates/collision/ladder.tx" x="496" y="288" width="16" height="128"/>
+   <object id="81" template="templates/collision/solid.tx" x="576" y="208" width="48" height="176"/>
+   <object id="82" template="templates/collision/solid.tx" x="672" y="304" width="64" height="80"/>
+   <object id="83" template="templates/collision/solid.tx" x="672" y="384" width="128" height="64"/>
+   <object id="84" template="templates/collision/solid.tx" x="848" y="384" width="64" height="64"/>
+   <object id="85" template="templates/collision/solid.tx" x="912" y="304" width="112" height="80"/>
+   <object id="86" template="templates/collision/solid.tx" x="1024" y="80" width="16" height="224"/>
+   <object id="87" template="templates/collision/solid.tx" x="928" y="48" width="64" height="112"/>
+   <object id="88" template="templates/collision/solid.tx" x="784" y="-144" width="32" height="64"/>
+   <object id="89" template="templates/collision/solid.tx" x="864" y="-144" width="144" height="64"/>
+   <object id="90" template="templates/collision/solid.tx" x="992" y="-240" width="64" height="48"/>
+   <object id="91" template="templates/collision/solid.tx" x="1152" y="-128" width="16" height="112"/>
+   <object id="92" template="templates/collision/solid.tx" x="1088" y="-80" width="16" height="48"/>
+   <object id="93" template="templates/collision/slopeLeft.tx" x="1072" y="-112"/>
+   <object id="94" template="templates/collision/slopeLeft.tx" x="1088" y="-96"/>
+   <object id="95" template="templates/collision/slopeRight.tx" x="1024" y="64"/>
+   <object id="96" template="templates/collision/slopeRight.tx" x="1040" y="48"/>
+   <object id="97" template="templates/collision/slopeRight.tx" x="1056" y="32"/>
+   <object id="98" template="templates/collision/slopeRight.tx" x="1072" y="16"/>
+   <object id="99" template="templates/collision/slopeLeftInvert.tx" x="1088" y="-32"/>
+   <object id="100" template="templates/collision/slopeLeftInvert.tx" x="1072" y="-16"/>
+   <object id="101" template="templates/collision/slopeLeftInvert.tx" x="1056" y="0"/>
+   <object id="104" template="templates/collision/slopeRightLong.tx" x="1088" y="0"/>
+   <object id="105" template="templates/collision/slopeRightLong.tx" x="1120" y="-16"/>
+   <object id="106" template="templates/collision/slopeLeftLong.tx" x="1008" y="-144"/>
+   <object id="107" template="templates/collision/slopeLeftLong.tx" x="1040" y="-128"/>
+   <object id="108" template="templates/collision/slopeLeftLongInvert.tx" x="1024" y="16"/>
+   <object id="109" template="templates/collision/slopeLeftLongInvert.tx" x="992" y="32"/>
+   <object id="110" template="templates/collision/slopeRightLongInvert.tx" x="1056" y="-192"/>
+   <object id="112" template="templates/collision/slopeRightLongInvert.tx" x="1088" y="-176"/>
+   <object id="115" template="templates/mechanics/death.tx" x="736" y="-96" width="128" height="16"/>
+   <object id="121" template="templates/collision/solid.tx" x="128" y="304" width="96" height="16"/>
+   <object id="122" template="templates/collision/solid.tx" x="32" y="208" width="16" height="128"/>
+   <object id="123" template="templates/collision/solid.tx" x="96" y="352" width="16" height="32"/>
+   <object id="124" template="templates/collision/solid.tx" x="32" y="400" width="128" height="80"/>
+   <object id="125" template="templates/collision/solid.tx" x="16" y="480" width="16" height="144"/>
+   <object id="126" template="templates/collision/solid.tx" x="32" y="624" width="320" height="48"/>
+   <object id="127" template="templates/collision/oneway.tx" x="48" y="528" width="48" height="8"/>
+   <object id="128" template="templates/collision/oneway.tx" x="48" y="560" width="48" height="8"/>
+   <object id="129" template="templates/collision/oneway.tx" x="48" y="592" width="48" height="8"/>
+   <object id="130" template="templates/mechanics/sinkIn.tx" x="160" y="384" width="64" height="96"/>
+   <object id="131" template="templates/mechanics/ice.tx" x="128" y="288" width="160" height="16"/>
+   <object id="132" template="templates/mechanics/ice.tx" x="48" y="336" width="64" height="16"/>
+   <object id="133" template="templates/mechanics/ice.tx" x="112" y="384" width="48" height="16"/>
+   <object id="134" template="templates/mechanics/death.tx" x="96" y="256" width="80" height="16"/>
+   <object id="154" template="templates/collision/solid.tx" x="368" y="624" width="16" height="48"/>
+   <object id="155" template="templates/collision/solid.tx" x="336" y="544" width="80" height="64"/>
+   <object id="156" template="templates/collision/solid.tx" x="416" y="576" width="112" height="32"/>
+   <object id="157" template="templates/collision/solid.tx" x="400" y="624" width="192" height="80"/>
+   <object id="158" template="templates/collision/solid.tx" x="416" y="704" width="16" height="160"/>
+   <object id="159" template="templates/collision/solid.tx" x="432" y="864" width="464" height="16"/>
+   <object id="160" template="templates/collision/solid.tx" x="624" y="624" width="80" height="240"/>
+   <object id="161" template="templates/collision/solid.tx" x="736" y="448" width="160" height="256"/>
+   <object id="162" template="templates/collision/solid.tx" x="480" y="432" width="256" height="48"/>
+   <object id="170" template="templates/collision/solid.tx" x="896" y="704" width="16" height="160"/>
+   <object id="177" template="templates/collision/solid.tx" x="320" y="576" width="16" height="16"/>
+   <object id="181" template="templates/collision/slopeRightInvert.tx" x="1120" y="-160"/>
+   <object id="182" template="templates/collision/slopeRightInvert.tx" x="1136" y="-144"/>
+   <object id="183" template="templates/collision/oneway.tx" x="1120" y="-96" width="32" height="8"/>
   </objectgroup>
   <objectgroup id="5" name="entities">
    <object id="5" template="templates/player/player.tx" x="112" y="144"/>
@@ -155,6 +547,55 @@
     <properties>
      <property name="toX" type="int" value="560"/>
      <property name="toY" type="int" value="96"/>
+    </properties>
+   </object>
+   <object id="65" template="templates/demo/met.tx" x="880" y="-160"/>
+   <object id="66" template="templates/demo/met.tx" x="592" y="-160"/>
+   <object id="113" template="templates/player/checkpoint.tx" x="688" y="-208">
+    <properties>
+     <property name="name" value="one"/>
+    </properties>
+   </object>
+   <object id="114" template="templates/player/player.tx" x="704" y="-160">
+    <properties>
+     <property name="checkpoint" value="one"/>
+    </properties>
+   </object>
+   <object id="139" template="templates/player/eTank.tx" x="48" y="512"/>
+   <object id="140" template="templates/player/life.tx" x="64" y="512"/>
+   <object id="141" template="templates/player/wTank.tx" x="80" y="512"/>
+   <object id="142" template="templates/player/health.tx" x="56" y="544"/>
+   <object id="143" template="templates/player/smallHealth.tx" x="48" y="576"/>
+   <object id="144" template="templates/player/energy.tx" x="72" y="544"/>
+   <object id="145" template="templates/player/smallEnergy.tx" x="80" y="576"/>
+   <object id="173" template="templates/player/player.tx" x="144" y="608">
+    <properties>
+     <property name="checkpoint" value="two"/>
+    </properties>
+   </object>
+   <object id="174" template="templates/player/player.tx" x="368" y="528">
+    <properties>
+     <property name="checkpoint" value="boss"/>
+    </properties>
+   </object>
+   <object id="175" template="templates/player/checkpoint.tx" x="144" y="544">
+    <properties>
+     <property name="name" value="two"/>
+    </properties>
+   </object>
+   <object id="176" template="templates/player/checkpoint.tx" x="368" y="496">
+    <properties>
+     <property name="name" value="boss"/>
+    </properties>
+   </object>
+   <object id="178" template="templates/mechanics/gravFlip.tx" x="992" y="-192" width="16" height="48">
+    <properties>
+     <property name="dir" type="int" value="-1"/>
+    </properties>
+   </object>
+   <object id="179" template="templates/mechanics/gravFlip.tx" x="1104" y="-48" width="48" height="16">
+    <properties>
+     <property name="dir" type="int" value="1"/>
     </properties>
    </object>
   </objectgroup>

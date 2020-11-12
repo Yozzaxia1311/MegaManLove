@@ -5,15 +5,14 @@ splash = particle:extend()
 
 splash.autoClean = false
 
-function splash:new(offx, offy, p, side)
+function splash:new(offx, offy, p, rot)
   splash.super.new(self, p)
   self.offx = offx or 0
   self.offy = offy or 0
-  self.side = side or -1
   self:setRectangleCollision(32, 28)
   self.tex = megautils.getResource("particles")
   self.anim = megautils.newAnimation("splashGrid", {"1-4", 1}, 1/8)
-  self.rot = math.rad(self.side==-1 and 0 or 180)
+  self.rot = math.rad(rot or 0)
   if self.user then
     self.transform.x = self.user.transform.x + self.offx
     self.transform.y = self.user.transform.y + self.offy
@@ -33,7 +32,7 @@ function splash:update()
 end
 
 function splash:draw()
-  self.tex:draw(self.anim, math.round(self.transform.x)+16, math.round(self.transform.y), self.rot, 1, 1, 16, 8)
+  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y), self.rot, 1, 1, 16, 16)
 end
 
 water = basicEntity:extend()
@@ -49,7 +48,6 @@ function water:new(x, y, w, h, grav)
   self.transform.x = x or 0
   self.transform.y = y or 0
   self:setRectangleCollision(w or 16, h or 16)
-  self.current = false
   self.grav = grav or 0.4
 end
 
@@ -58,13 +56,22 @@ function water:added()
   self:addToGroup("water")
 end
 
+function water:begin()
+  if megautils.groups().submergable then
+    for _, v in ipairs(self:collisionTable(megautils.groups().submergable)) do
+      v:setGravityMultiplier("water", self.grav)
+      v.inWater = self
+    end
+  end
+end
+
 function water:removed()
-  if megautils.groups().submergable and self.current then
+  if megautils.groups().submergable then
     self:removeFromAllGroups()
     for _, v in ipairs(megautils.groups().submergable) do
-      if v:collisionNumber(megautils.groups().water) == 0 then
+      if v.gravityMultipliers.water and v:collisionNumber(megautils.groups().water) == 0 then
         v:setGravityMultiplier("water", nil)
-        self.current = false
+        v.inWater = false
       end
     end
   end
@@ -73,38 +80,98 @@ end
 function water:update()
   if megautils.groups().submergable then
     for _, v in ipairs(megautils.groups().submergable) do
-      if v:collision(self) and not v.gravityMultipliers.water then
-        self.current = true
+      if v:collision(self) then
+        if not v.inWater and not v.justAddedIn then
+          local cx, cy = megautils.center(self)
+          local vcx, vcy = megautils.center(v)
+          local dir = 1
+          
+          if cx == vcx then
+            dir = 2
+          elseif cy ~= vcy then
+            local slope = (vcy - cy) / (vcx - cx)
+            local hw = self.collisionShape.w / 2
+            local hh = self.collisionShape.h / 2
+            local hsw = slope * hw
+            local hsh = hh / slope
+            
+            if -hh <= hsw and hsw <= hh then
+              if cx < vcx then
+                dir = 4
+              elseif cx > vcx then
+                dir = 3
+              end
+            elseif -hw <= hsh and hsh <= hw then
+              if cy < vcy then
+                dir = 2
+              elseif cy > vcy then
+                dir = 1
+              end
+            end
+          end
+          
+          if dir == 1 then
+            megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2), 0, self, 0)
+            megautils.playSound("splash")
+          elseif dir == 2 then
+            megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2), self.collisionShape.h, self, 180)
+            megautils.playSound("splash")
+          elseif dir == 3 then
+            megautils.add(splash, 0, (v.transform.y-self.transform.y)+(v.collisionShape.h/2), self, 270)
+            megautils.playSound("splash")
+          elseif dir == 4 then
+            megautils.add(splash, self.collisionShape.w, (v.transform.y-self.transform.y)+(v.collisionShape.h/2), self, 90)
+            megautils.playSound("splash")
+          end
+        end
+        
+        v.inWater = self
         v:setGravityMultiplier("water", self.grav)
-        if v.doSplashing == nil or v.doSplashing then
-          if v.transform.y-v.velocity.vely <= self.transform.y then
-            megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2)-16, -8, self, -1)
-            megautils.playSound("splash")
-          elseif v.transform.y-v.velocity.vely >= self.transform.y+self.collisionShape.h then
-            megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2)-16, 
-              self.collisionShape.h+8, self, 1)
-            megautils.playSound("splash")
+      elseif v.inWater == self and v:collisionNumber(megautils.groups().water) == 0 then
+        local cx, cy = megautils.center(self)
+        local vcx, vcy = megautils.center(v)
+        local dir = 1
+        
+        if cx == vcx then
+          dir = 2
+        elseif cy ~= vcy then
+          local slope = (vcy - cy) / (vcx - cx)
+          local hw = self.collisionShape.w / 2
+          local hh = self.collisionShape.h / 2
+          local hsw = slope * hw
+          local hsh = hh / slope
+          
+          if -hh <= hsw and hsw <= hh then
+            if cx < vcx then
+              dir = 4
+            elseif cx > vcx then
+              dir = 3
+            end
+          elseif -hw <= hsh and hsh <= hw then
+            if cy < vcy then
+              dir = 2
+            elseif cy > vcy then
+              dir = 1
+            end
           end
         end
-      elseif self.current and v.gravityMultipliers.water and v:collisionNumber(megautils.groups().water) == 0 then
+        
+        if dir == 1 then
+          megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2), 0, self, 0)
+          megautils.playSound("splash")
+        elseif dir == 2 then
+          megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2), self.collisionShape.h, self, 180)
+          megautils.playSound("splash")
+        elseif dir == 3 then
+          megautils.add(splash, 0, (v.transform.y-self.transform.y)+(v.collisionShape.h/2), self, 270)
+          megautils.playSound("splash")
+        elseif dir == 4 then
+          megautils.add(splash, self.collisionShape.w, (v.transform.y-self.transform.y)+(v.collisionShape.h/2), self, 90)
+          megautils.playSound("splash")
+        end
+        
+        v.inWater = false
         v:setGravityMultiplier("water", nil)
-        if v.doSplashing == nil or v.doSplashing then
-          if v.transform.y < self.transform.y then
-            megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2)-16, -8, self, -1)
-            megautils.playSound("splash")
-          elseif v.transform.y > self.transform.y+self.collisionShape.h then
-            megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2)-16, 
-              self.collisionShape.h+8, self, 1)
-            megautils.playSound("splash")
-          end
-        end
-        self.current = false
-      end
-      if not self.current and v.gravityMultipliers.water and v:collision(self) then
-        for k, i in ipairs(megautils.groups().water) do
-          i.current = false
-        end
-        self.current = true
       end
     end
   end
@@ -145,9 +212,9 @@ end
 function space:update()
   if megautils.groups().submergable then
     for _, v in ipairs(megautils.groups().submergable) do
-      if v:collision(self) and v.gravityMultipliers.space ~= self.grav then
+      if v:collision(self) then
         v:setGravityMultiplier("space", self.grav)
-      else
+      elseif v:collisionNumber(megautils.groups().space) == 0 then
         v:setGravityMultiplier("space", nil)
       end
     end

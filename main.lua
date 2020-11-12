@@ -58,7 +58,6 @@ function initEngine()
   globals.lifeSegments = 7
   globals.startingLives = 2
   globals.playerCount = 1
-  globals.defeats = {}
   globals.disclaimerState = "assets/states/menus/disclaimer.state.lua"
   globals.bossIntroState = "assets/states/menus/bossintro.state.lua"
   globals.weaponGetState = "assets/states/menus/weaponget.state.lua"
@@ -67,6 +66,24 @@ function initEngine()
   globals.menuState = "assets/states/menus/menu.state.tmx"
   globals.stageSelectState = "assets/states/menus/stageSelect.state.tmx"
   globals.gameOverState = "assets/states/menus/cont.state.tmx"
+  
+  globals.defeats = {}
+  globals.defeatRequirementsForWily = {
+      "stickMan"
+    }
+  
+  -- [RM 1] [RM 2] [RM 3]
+  -- [RM 4] [Wily] [RM 5]
+  -- [RM 6] [RM 7] [RM 8]
+  local wilyIntro = function()
+      error("Placeholder for Wily")
+      --megautils.gotoState("WILY INTRO HERE")
+    end
+  globals.robotMasterEntities = {
+      nil, nil, nil,
+      nil, wilyIntro, "entities/demo/stickman.lua",
+      nil, nil, nil
+    }
   
   megautils.difficultyChangeFuncs.startingLives = {func=function(d)
       globals.startingLives = (d == "easy") and 3 or 2

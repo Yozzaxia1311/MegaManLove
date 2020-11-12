@@ -33,32 +33,6 @@ function weapon.deser(t)
   weapon._inactiveQuad = t._inactiveQuad
 end
 
-function weapon.transfer(from, to)
-  weapon.super.transfer(from, to)
-  
-  to.autoHit = from.autoHit
-  to.sound = from.sound
-  to.soundOnDink = from.soundOnDink
-  to.damage = from.damage
-  to.flipWithUser = from.flipWithUser
-  to.weaponGroup = from.weaponGroup
-  to.removeWhenOutside = from.removeWhenOutside
-  to.autoCollision = from.autoCollision
-  to.autoGravity = from.autoGravity
-  to.doAutoCollisionBeforeUpdate = from.doAutoCollisionBeforeUpdate
-  to.doDink = from.doDink
-  to.applyAutoFace = from.applyAutoFace
-  to.dinkedBy = from.dinkedBy
-  to._didCol = from._didCol
-  to.dinked = from.dinked
-  to.user = from.user
-  to.damageType = from.damageType
-  to.damageTypeOnDink = from.damageTypeOnDink
-  to.pierceType = from.pierceType
-  to.isEnemyWeapon = from.isEnemyWeapon
-  to.side = from.side
-end
-
 weapon.DAMAGENONE = 0
 weapon.DAMAGEPLAYER = 1
 weapon.DAMAGEENEMY = 2
@@ -185,7 +159,7 @@ function weapon:dinking(e, dt) end
 function weapon:act(dt) end
 
 function weapon:beforeUpdate()
-  if self.flipWithUser and self.user then
+  if self.flipWithUser and self.user and self.user.gravityMultipliers then
     self:setGravityMultiplier("flipWithUser", self.user.gravityMultipliers.gravityFlip or 1)
   end
   if self.autoGravity then
@@ -1058,8 +1032,8 @@ weapon.icons["STICK W."] = "stickWeaponIcon"
 
 weapon.colors["STICK W."] = {
     outline = {0, 0, 0},
-    one = {0, 168, 0},
-    two = {255, 255, 255}
+    one = {180, 180, 180},
+    two = {127, 127, 127}
   }
 
 stickWeapon = weapon:extend()

@@ -12,20 +12,6 @@ pickupEntity = entity:extend()
 
 pickupEntity.autoClean = false
 
-function pickupEntity.transfer(from, to)
-  pickupEntity.super.transfer(from, to)
-  
-  to.timer = from.timer
-  to.fwp = from.fwp
-  to.gravDir = from.gravDir
-  to.mapID = from.mapID
-  to.despawn = from.despawn
-  to.path = from.path
-  to.removeWhenOutside = from.removeWhenOutside
-  to.autoCollision = from.autoCollision
-  to.autoGravity = from.autoGravity
-end
-
 pickupEntity.banIDs = {}
 
 function pickupEntity.isBanned(i, id, path)
@@ -109,9 +95,9 @@ smallHealth = pickupEntity:extend()
 smallHealth.autoClean = false
 
 mapEntity.register("smallHealth", function(v, map)
-  megautils.add(spawner, v.x, v.y, 8, 6, function()
+  megautils.add(spawner, v.x+4, v.y, 8, 6, function()
       return not pickupEntity.isBanned(smallHealth, v.id, map.path)
-    end, smallHealth, v.x+10, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
+    end, smallHealth, v.x+4, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
 
 function smallHealth:new(x, y, despawn, gd, fwp, id, path)
@@ -199,9 +185,9 @@ smallEnergy = pickupEntity:extend()
 smallEnergy.autoClean = false
 
 mapEntity.register("smallEnergy", function(v, map)
-  megautils.add(spawner, v.x, v.y, 8, 6, function()
+  megautils.add(spawner, v.x+4, v.y, 8, 6, function()
       return not pickupEntity.isBanned(smallEnergy, v.id, map.path)
-    end, smallEnergy, v.x, v.y+10, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
+    end, smallEnergy, v.x+4, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
 
 function smallEnergy:new(x, y, despawn, gd, fwp, id, path)

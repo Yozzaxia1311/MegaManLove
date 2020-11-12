@@ -329,6 +329,7 @@ function collision.checkGround(self, checkAnyway, noSlope)
   noSlope = noSlope or collision.noSlope
   
   local solid = {}
+  local solidExceptStandIns = {}
   local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
   local slp = math.ceil(math.abs(self.velocity.velx)) + 1
   local all = megautils.groups().collision
@@ -343,6 +344,7 @@ function collision.checkGround(self, checkAnyway, noSlope)
           not v:collision(self, 0, cgrav) and (v.solidType ~= collision.ONEWAY or (v:collision(self, 0, -cgrav * slp) and
           (not v.ladder or v:collisionNumber(megautils.groups().ladder, 0, -cgrav, true) == 0))) then
           solid[#solid+1] = v
+          solidExceptStandIns[#solidExceptStandIns+1] = v
         elseif v.solidType == collision.STANDIN then
           solid[#solid+1] = v
         end
@@ -359,9 +361,9 @@ function collision.checkGround(self, checkAnyway, noSlope)
         self.inStandSolid = nil
       elseif self.velocity.vely * cgrav >= 0 then
         self.ground = true
-        if self.snapToGround then
+        if self.snapToGround and self:collisionNumber(solidExceptStandIns, 0, i + cgrav) ~= 0 then
           self.transform.y = math.round(self.transform.y+cgrav) + (i - cgrav)
-          while self:collisionNumber(solid) ~= 0 do
+          while self:collisionNumber(solidExceptStandIns) ~= 0 do
             self.transform.y = self.transform.y - cgrav
           end
         end

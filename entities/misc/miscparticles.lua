@@ -7,18 +7,6 @@ particle = entity:extend()
 
 particle.autoClean = false
 
-function particle.transfer(from, to)
-  particle.super.transfer(from, to)
-  
-  to.user = from.user
-  to._didCol = from._didCol
-  to.autoCollision = from.autoCollision
-  to.autoGravity = from.autoGravity
-  to.removeWhenOutside = from.removeWhenOutside
-  to.doAutoCollisionBeforeUpdate = from.doAutoCollisionBeforeUpdate
-  to.flipWithUser = from.flipWithUser
-end
-
 function particle:new(user)
   particle.super.new(self)
   
@@ -46,7 +34,7 @@ function particle:grav()
 end
 
 function particle:beforeUpdate()
-  if self.flipWithUser and self.user then
+  if self.flipWithUser and self.user and self.user.gravityMultipliers then
     self:setGravityMultiplier("flipWithUser", self.user.gravityMultipliers.gravityFlip or 1)
   end
   if self.autoGravity then
@@ -142,18 +130,19 @@ airBubble.autoClean = false
 function airBubble:new(x, y, p)
   airBubble.super.new(self, p)
   
-  self.transform.x = x or 0
-  self.transform.y = y or 0
-  self.off = 0
-  self.timer = 0
-  
   if not self.recycling then
     self:setRectangleCollision(2, 8)
     self.tex = megautils.getResource("particles")
     self.quad = quad(104, 28, 4, 4)
-    self.velocity.velx = -1
     self.recycle = true
   end
+  
+  self.transform.x = x or 0
+  self.transform.y = y or 0
+  
+  self.off = 0
+  self.timer = 0
+  self.velocity.vely = -1
 end
 
 function airBubble:check()

@@ -54,7 +54,7 @@ function menuSelect:update()
           globals.lifeSegments = data.lifeSegments
           megautils.setETanks(data.eTanks)
           megautils.setWTanks(data.wTanks)
-          for k, v in ipairs(data.player) do
+          for k, v in ipairs(data.players) do
             megaMan.setSkin(k, v)
           end
         end
@@ -67,7 +67,10 @@ function menuSelect:update()
         data.lifeSegments = globals.lifeSegments
         data.eTanks = megautils.getETanks()
         data.wTanks = megautils.getWTanks()
-        data.player = megaMan.skins
+        data.players = {}
+        for k, v in ipairs(megaMan.skins) do
+          data.players[k] = v.path
+        end
         save.save("save.sav", data)
         megautils.playSound("selected")
       elseif self.pick == 3 then
