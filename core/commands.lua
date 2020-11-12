@@ -321,8 +321,8 @@ concmd["state"] = {
         map = cmd[2] .. ".stage.tmx"
       end
       if not map then console.print("No such state \""..cmd[2].."\"") return end
-      love.audio.stop()
       megautils.stopMusic()
+      love.audio.stop()
       megautils.resetGameObjects = true
       megautils.reloadState = true
       if cmd[3] then globals.overrideCheckpoint = cmd[3] end
@@ -335,8 +335,8 @@ concmd["resetstate"] = {
   helptext = "reset current state",
   flags = {"cheat"},
   fun = function(cmd)
-      love.audio.stop()
       megautils.stopMusic()
+      love.audio.stop()
       megautils.resetGameObjects = true
       megautils.reloadState = true
       if cmd[2] then globals.overrideCheckpoint = cmd[2] end

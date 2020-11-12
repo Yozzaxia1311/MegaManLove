@@ -321,6 +321,9 @@ function megautils.resetGame(s, saveSfx, saveMusic)
   if not saveMusic then
     megautils.stopMusic()
   end
+  if not saveSfx and not saveMusic then
+    love.audio.stop()
+  end
   megautils.reloadState = true
   megautils.resetGameObjects = true
   megautils.unload()
