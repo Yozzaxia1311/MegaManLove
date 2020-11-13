@@ -2,7 +2,7 @@
 If you make a contribution towards this engine, add your name to the list below.
 
 ## Programming
-Yozzaxia1311
+[Yozzaxia1311](https://github.com/Yozzaxia1311)
 
 [kikito](https://github.com/kikito) ([anim8](https://github.com/kikito/anim8) and [tween.lua](https://github.com/kikito/tween.lua))
 
@@ -26,4 +26,4 @@ Yozzaxia1311
 ## Assets
 [Sprites Inc.](http://sprites-inc.co.uk/) (graphic rips)
 
-Yozzaxia1311
+[Yozzaxia1311](https://github.com/Yozzaxia1311)
