@@ -71,19 +71,28 @@ convar["noclip"] = {
 convar["etanks"] = {
   helptext = "e-tanks in possession",
   flags = {"cheat"},
-  value = 0
+  value = 0,
+  fun = function(arg)
+      convar.setValue("etanks", math.min(numberSanitize(arg), maxETanks), false)
+    end
 }
 
 convar["wtanks"] = {
   helptext = "w-tanks in possession",
   flags = {"cheat"},
-  value = 0
+  value = 0,
+  fun = function(arg)
+      convar.setValue("wtanks", math.min(numberSanitize(arg), maxWTanks), false)
+    end
 }
 
 convar["lives"] = {
   helptext = "number of lives",
   flags = {"cheat"},
-  value = 2
+  value = 2,
+  fun = function(arg)
+      convar.setValue("lives", math.min(numberSanitize(arg), maxLives), false)
+    end
 }
 
 convar["diff"] = {
