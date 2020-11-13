@@ -381,6 +381,8 @@ function pressingHardInputs(k)
     elseif (k == "o" or k == "p" or k == "r") and megautils.isCheating() then
       isHardKey = true
       checkMod = 2
+    elseif k == "backspace" and control.recordInput then
+      isHardKey = true
     elseif k == "ralt" or k == "lalt" then
       isHardKey = true
       checkMod = -1
