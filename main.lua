@@ -72,13 +72,14 @@ function initEngine()
       "stickMan"
     }
   
-  -- [RM 1] [RM 2] [RM 3]
-  -- [RM 4] [Wily] [RM 5]
-  -- [RM 6] [RM 7] [RM 8]
   local wilyIntro = function()
       error("Placeholder for Wily")
       --megautils.gotoState("WILY INTRO HERE")
     end
+  
+  -- [RM 1] [RM 2] [RM 3]
+  -- [RM 4] [Wily] [RM 5]
+  -- [RM 6] [RM 7] [RM 8]
   globals.robotMasterEntities = { -- Every value in this list should either be a function, or a `.lua` file that returns an entity.
       nil, nil, nil,
       nil, wilyIntro, "entities/demo/stickman.lua",
