@@ -17,7 +17,7 @@ function stageSelect:new()
   self.transform.x = 24
   self.transform.y = 24
   
-  self.blinkQuad = quad(0, 96, 48, 48)
+  self.blinkQuad = quad(0, 32, 48, 48)
   
   self.anims = animationSet()
   self.anims:add("0-0", megautils.newAnimation("megaManGrid", {6, 6}))
@@ -39,18 +39,7 @@ function stageSelect:new()
     self.anims:set("1-1")
   end
   
-  self.wilyQuad = quad(32, 32, 32, 32)
-  
-  self.quad11 = quad(0, 0, 32, 32)
-  self.quad21 = quad(32, 0, 32, 32)
-  self.quad31 = quad(64, 0, 32, 32)
-  
-  self.quad12 = quad(0, 32, 32, 32)
-  self.quad32 = quad(64, 32, 32, 32)
-  
-  self.quad13 = quad(0, 64, 32, 32)
-  self.quad23 = quad(32, 64, 32, 32)
-  self.quad33 = quad(64, 64, 32, 32)
+  self.wilyQuad = quad(0, 0, 32, 32)
   
   self.tex = megautils.getResource("mugshots")
   self.timer = 0
@@ -66,6 +55,7 @@ function stageSelect:new()
   self.selectBlink = 0
   
   self.slots = {}
+  self.images = {}
   for i = 1, 9 do
     local v = globals.robotMasterEntities[i]
     if v then
@@ -73,6 +63,9 @@ function stageSelect:new()
         self.slots[i] = v
       else
         self.slots[i] = megautils.runFile(v)()
+        if self.slots[i].mugshotPath then
+          self.images[i] = image(self.slots[i].mugshotPath)
+        end
       end
     end
   end
@@ -80,6 +73,11 @@ end
 
 function stageSelect:removed()
   love.graphics.setBackgroundColor(0, 0, 0, 1)
+  for i=1, 9 do
+    if self.images[i] then
+      self.images[i]:release()
+    end
+  end
 end
 
 function stageSelect:update()
@@ -236,29 +234,35 @@ function stageSelect:draw()
   if not self:checkRequirements() then
     megaMan.getSkin(1).texture:draw(self.anims, 32+(1*81), 32+(1*64), 0, 1, 1, 16, 15)
     
-    if false then -- For select slot 1, 1
-      self.tex:draw(self.quad11, 32+(0*81), 32+(0*64))
-    end
-    if false then -- For select slot 2, 1
-      self.tex:draw(self.quad21, 32+(1*81), 32+(0*64))
-    end
-    if false then -- For select slot 3, 1
-      self.tex:draw(self.quad31, 32+(2*81), 32+(0*64))
-    end
-    if false then -- For select slot 1, 2
-      self.tex:draw(self.quad12, 32+(0*81), 32+(1*64))
-    end
-    if not globals.defeats.stickMan then -- For select slot 3, 2
-      self.tex:draw(self.quad32, 32+(2*81), 32+(1*64))
-    end
-    if false then -- For select slot 1, 3
-      self.tex:draw(self.quad13, 32+(0*81), 32+(2*64))
-    end
-    if false then -- For select slot 2, 3
-      self.tex:draw(self.quad23, 32+(1*81), 32+(2*64))
-    end
-    if false then -- For select slot 3, 3
-      self.tex:draw(self.quad33, 32+(2*81), 32+(2*64))
+    for x=0, 2 do
+      for y=0, 2 do
+        local i = 1
+        
+        if x == 0 and y == 0 then
+          i = 1
+        elseif x == 1 and y == 0 then
+          i = 2
+        elseif x == 2 and y == 0 then
+          i = 3
+        elseif x == 0 and y == 1 then
+          i = 4
+        elseif x == 1 and y == 1 then
+          i = 5
+        elseif x == 2 and y == 1 then
+          i = 6
+        elseif x == 0 and y == 2 then
+          i = 7
+        elseif x == 1 and y == 2 then
+          i = 8
+        elseif x == 2 and y == 2 then
+          i = 9
+        end
+        
+        if i ~= 5 and globals.robotMasterEntities[i] and self.slots[i] and
+          self.images[i] and not globals.defeats[self.slots[i].defeatSlot] then
+          self.images[i]:draw(32+(x*81), 32+(y*64))
+        end
+      end
     end
   else
     self.tex:draw(self.wilyQuad, 32+(1*81), 32+(1*64))

@@ -18,6 +18,9 @@ function stickMan:new(x, y)
   self.anims:add("pose", megautils.newAnimation("stickManGrid", {2, 1, 1, 1, 3, 1, 1, 1, 2, 1, 1, 1, 3, 1}, 1/10, "pauseAtEnd"))
   self:useHealthBar({128, 128, 128}, {255, 255, 255})
   
+  -- Stage select exclusive
+  self.mugshotPath = "assets/global/bosses/stickManMug.png"
+  
   -- Boss intro exclusive.
   self.bossIntroText = "STICK MAN"
   self.stageState = "assets/states/demo.stage.tmx"

@@ -25,6 +25,7 @@ end
 
 function image:release()
   self.image:release()
+  self.image = nil
 end
 
 function image:draw(x, y, r, sx, sy, ox, oy, kx, ky, flipx, flipy, what)

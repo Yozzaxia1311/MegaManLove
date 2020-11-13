@@ -1305,6 +1305,7 @@ function bossEntity:new()
   self.bossIntroText = nil
   self.weaponGetText = "WEAPON GET... (NAME HERE)"
   self.stageState = nil
+  self.mugshotPath = nil
   self.bossIntroWaitTime = 400
   self.health = 28
   self.weaponGetBehaviour = function(s)
