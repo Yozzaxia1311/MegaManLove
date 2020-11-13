@@ -66,7 +66,8 @@ function initEngine()
   globals.stageSelectState = "assets/states/menus/stageSelect.state.tmx"
   globals.gameOverState = "assets/states/menus/cont.state.tmx"
   
-  globals.defeats = {}
+  globals.defeats = {} -- This should be filled out automatically by bossEntity
+  
   globals.defeatRequirementsForWily = {
       "stickMan"
     }
@@ -78,7 +79,7 @@ function initEngine()
       error("Placeholder for Wily")
       --megautils.gotoState("WILY INTRO HERE")
     end
-  globals.robotMasterEntities = {
+  globals.robotMasterEntities = { -- Every value in this list should either be a function, or a `.lua` file that returns an entity.
       nil, nil, nil,
       nil, wilyIntro, "entities/demo/stickman.lua",
       nil, nil, nil
