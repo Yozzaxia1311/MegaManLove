@@ -271,7 +271,7 @@ function love.touchpressed(id, x, y, dx, dy, pressure)
   if useConsole and console.state == 1 then return end
   
   lastTouch.x = x
-  lastTouc.y = y
+  lastTouch.y = y
   lastTouch.id = id
   lastTouch.pressure = pressure
   lastTouch.dx = dx
