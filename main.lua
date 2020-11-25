@@ -122,21 +122,26 @@ function love.load()
   console.init()
   initEngine()
   
-  local data = save.load("main.sav") or {}
-  if data.fullscreen then
-    megautils.setFullscreen(true)
-  end
-  if data.scale then
-    megautils.setScale(data.scale)
+  local data = save.load("main.sav")
+  if data then
+    if data.fullscreen then
+      megautils.setFullscreen(true)
+    end
+    if data.scale then
+      megautils.setScale(data.scale)
+    end
+  else
+    save.save("main.sav", {})
   end
   
   megautils.gotoState(globals.disclaimerState)
-  console.parse("exec autoexec")
   
   io = nil -- Prevents the worst case scenerio involving external context files. Be careful, a bad context file could still wipe your save directory
   require = nil
   dofile = nil
   loadfile = nil
+  
+  console.parse("exec autoexec")
 end
 
 function love.resize(w, h)
