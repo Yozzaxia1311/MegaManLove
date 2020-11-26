@@ -474,6 +474,7 @@ function collision.generalCollision(self, noSlope)
             if yStep > yTolerance then
               yStep = 1
               xStep = math.min(xStep + 1, dst)
+              yTolerance = math.ceil(dst - xStep) * collision.maxSlope
             else
               yStep = yStep + 1
             end
