@@ -450,10 +450,10 @@ function collision.generalCollision(self, noSlope)
         if math.sign(self.xColl) == math.sign(xsl) then
           local yStep = 1
           local xStep = 0
-          local dst = math.min(math.abs(xsl), 128)
-          local yTolerance = math.ceil(math.abs(xsl)) * collision.maxSlope
+          local dst = math.abs(xsl)
+          local yTolerance = math.ceil(dst) * collision.maxSlope
           
-          while true do
+          while xStep ~= dst do
             if self:collisionNumber(solid, xsl - xStep, -yStep) == 0 then
               self.transform.x = self.transform.x + xsl - xStep
               self.transform.y = self.transform.y - yStep
@@ -472,10 +472,6 @@ function collision.generalCollision(self, noSlope)
               break
             end
             if yStep > yTolerance then
-              if xStep == dst then
-                break
-              end
-              
               yStep = 1
               xStep = math.min(xStep + 1, dst)
             else
