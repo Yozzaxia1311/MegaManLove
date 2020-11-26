@@ -149,7 +149,7 @@ function collision.entityPlatform(self)
           end
           
           if not v:collision(self) then
-            local epIsPassenger = v:collision(self, 0, (v.gravity >= 0 and 1 or -1)*((v.ground and v.snapToGround) and 1 or 0))
+            local epIsPassenger = v:collision(self, 0, (v.gravity >= 0 and 1 or -1) * ((v.ground and v.snapToGround) and 1 or 0))
             local epWillCollide = self:collision(v, 0, myyspeed)
             
             if epIsPassenger or epWillCollide then
@@ -162,7 +162,7 @@ function collision.entityPlatform(self)
                 collision.checkDeath(v, 0, math.sign(v.gravity))
               end
               
-              if (resolid == collision.SOLID or (resolid == collision.ONEWAY and (epDir*(v.gravity >= 0 and 1 or -1))>0 and
+              if (resolid == collision.SOLID or (resolid == collision.ONEWAY and (epDir * (v.gravity >= 0 and 1 or -1))>0 and
                 (not self.ladder or self:collisionNumber(megautils.groups().ladder, 0, v.gravity < 0 and 1 or -1, true) == 0))) and
                 v:collision(self) then
                 local step = epDir * 0.5
@@ -219,10 +219,10 @@ function collision.entityPlatform(self)
           
           if not v:collision(self) then
             local epIsOnPlat = false
-            local epDir = math.sign((self.transform.x + (self.collisionShape.w/2)) -
-              (v.transform.x + (v.collisionShape.w/2)))
+            local epDir = math.sign((self.transform.x + (self.collisionShape.w / 2)) -
+              (v.transform.x + (v.collisionShape.w / 2)))
             
-            if v:collision(self, 0, (v.gravity >= 0 and 1 or -1)*(v.ground and 1 or 0)) then
+            if v:collision(self, 0, (v.gravity >= 0 and 1 or -1) * (v.ground and 1 or 0)) then
               collision.shiftObject(v, myxspeed, 0, true)
               collision.checkDeath(v, 0, math.sign(v.gravity))
               epIsOnPlat = true
@@ -362,7 +362,7 @@ function collision.checkGround(self, checkAnyway, noSlope)
       elseif self.velocity.vely * cgrav >= 0 then
         self.ground = true
         if self.snapToGround and self:collisionNumber(solidExceptStandIns, 0, i + cgrav) ~= 0 then
-          self.transform.y = math.round(self.transform.y+cgrav) + (i - cgrav)
+          self.transform.y = math.round(self.transform.y + cgrav) + (i - cgrav)
           while self:collisionNumber(solidExceptStandIns) ~= 0 do
             self.transform.y = self.transform.y - cgrav
           end
@@ -408,8 +408,10 @@ function collision.generalCollision(self, noSlope)
   end
   
   if self.velocity.velx ~= 0 then
+    local slp = 0
+    
     if possible then
-      local slp = math.ceil(math.abs(self.velocity.velx)) * collision.maxSlope * cgrav
+      slp = math.ceil(math.abs(self.velocity.velx)) * collision.maxSlope * cgrav
       if not noSlope and slp ~= 0 then
         for i=1, #all do
           local v = all[i]
@@ -430,7 +432,7 @@ function collision.generalCollision(self, noSlope)
     
     if possible and self:collisionNumber(solid) ~= 0 then
       self.xColl = -math.sign(self.velocity.velx)
-      self.transform.x = math.round(self.transform.x-self.xColl)
+      self.transform.x = math.round(self.transform.x - self.xColl)
       
       for _=1, 128 do
         if self:collisionNumber(solid) ~= 0 then
@@ -446,22 +448,31 @@ function collision.generalCollision(self, noSlope)
       if not noSlope and self.xColl ~= 0 and slp ~= 0 then
         local xsl = self.xColl - (self.transform.x - xprev)
         if math.sign(self.xColl) == math.sign(xsl) then
-          local iii=1
-          while iii <= math.ceil(math.abs(xsl)) * collision.maxSlope do
-            if self:collisionNumber(solid, xsl, -iii) == 0 then
-              self.transform.x = self.transform.x + xsl
-              self.transform.y = self.transform.y - iii
+          local yStep = 1
+          local xStep = 0
+          local dst = math.min(math.abs(xsl), 128)
+          local yTolerance = math.ceil(math.abs(xsl)) * collision.maxSlope
+          
+          while xStep ~= dst do
+            if self:collisionNumber(solid, xsl - xStep, -yStep) == 0 then
+              self.transform.x = self.transform.x + xsl - xStep
+              self.transform.y = self.transform.y - yStep
               self.velocity.velx = self.xColl
               self.xColl = 0
               break
-            elseif self:collisionNumber(solid, xsl, iii) == 0 then
-              self.transform.x = self.transform.x + xsl
-              self.transform.y = self.transform.y + iii
+            elseif self:collisionNumber(solid, xsl - xStep, yStep) == 0 then
+              self.transform.x = self.transform.x + xsl - xStep
+              self.transform.y = self.transform.y + yStep
               self.velocity.velx = self.xColl
               self.xColl = 0
               break
             end
-            iii = iii + 1
+            if yStep > yTolerance then
+              yStep = 1
+              xStep = math.min(xStep + 1, dst)
+            else
+              yStep = yStep + 1
+            end
           end
         end
       end
@@ -490,7 +501,7 @@ function collision.generalCollision(self, noSlope)
     
     if possible and self:collisionNumber(solid) ~= 0 then
       self.yColl = -math.sign(self.velocity.vely)
-      self.transform.y = math.round(self.transform.y-self.yColl)
+      self.transform.y = math.round(self.transform.y - self.yColl)
       
       for _=1, 128 do
         if self:collisionNumber(solid) ~= 0 then
