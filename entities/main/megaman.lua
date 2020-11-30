@@ -412,6 +412,8 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   self.teleporter = tp
   self.protoIdle = false
   self.protoWhistle = false
+  self.slideXColl = 0
+  self.standSolidJumpTimer = -1
   self.shootOffsetXTable = {}
   self.shootOffsetYTable = {}
   self.shootX = 50
@@ -594,9 +596,11 @@ function megaMan:resetStates()
   self.canBeInvincible.treble = false
   self.extraJumps = 0
   self.shootFrames = 0
+  self.standSolidJumpTimer = -1
   if self.slide then
     self:slideToReg()
     self.slide = false
+    self.slideXColl = 0
   end
   self:useShootAnimation()
   self:animate()
@@ -1090,7 +1094,7 @@ end
 function megaMan:code(dt)
   if checkFalse(self.blockCollision) and megautils.groups().bossDoor then
     for _, v in ipairs(megautils.groups().bossDoor) do
-      v.lastSolid = v.solidType
+      v._LST = v.solidType
       v.solidType = v.canWalkThrough and 0 or 1
     end
   end
@@ -1328,10 +1332,11 @@ function megaMan:code(dt)
       if self.slideTimer == self.maxSlideTime and not rb and (self.ground or sb) then
         self.slide = false
         self:slideToReg()
-      elseif not rb and self.xColl ~= 0 then
+      elseif not rb and self.slideXColl ~= 0 then
         self.slide = false
         self.slideTimer = self.maxSlideTime
         self:slideToReg()
+        self.standSolidJumpTimer = -1
       elseif checkFalse(self.canJump) and checkFalse(self.canJumpOutFromDash) and
         control.jumpPressed[self.player] and not rb
         and (self.ground or sb) and not control.downDown[self.player] then
@@ -1367,6 +1372,7 @@ function megaMan:code(dt)
       end
     end
     collision.doCollision(self)
+    self.slideXColl = self.xColl
     local cd = checkFalse(self.canDashShoot)
     if not cd and control.shootDown[self.player] then
       self:charge()
@@ -1376,6 +1382,10 @@ function megaMan:code(dt)
       self:charge(true)
     end
     self:attemptClimb()
+    
+    if not self.slide then
+      self.slideXColl = 0
+    end
   elseif self.ground then
     collision.doGrav(self)
     if checkFalse(self.canWalk) and not (self.stopOnShot and self.shootFrames ~= 0) then
@@ -1542,7 +1552,8 @@ function megaMan:code(dt)
   
   if megautils.groups().bossDoor then
     for _, v in ipairs(megautils.groups().bossDoor) do
-      v.solidType = v.lastSolid
+      v.solidType = v._LST
+      v._LST = nil
     end
   end
 end

@@ -79,15 +79,6 @@ function entitySystem:sortLayers()
   end
 end
 
-function entitySystem:entityFromID(id)
-  for i=1, #self.all do
-    local v = self.all[i]
-    if v.id == id then
-      return v
-    end
-  end
-end
-
 function entitySystem:getLayer(l)
   for i=1, #self.entities do
     local v = self.entities[i]
@@ -492,8 +483,6 @@ function basicEntity:__tostring()
   return "Entity"
 end
 
-basicEntity.id = 0
-
 function basicEntity:new()
   if not self.recycling then
     self.transform = {}
@@ -510,8 +499,6 @@ function basicEntity:new()
   self.changeHealth = 0
   self.canUpdate = {global=true}
   self.canDraw = {global=true}
-  self.id = basicEntity.id
-  basicEntity.id = basicEntity.id + 1
 end
 
 function basicEntity:determineIFrames(o)
@@ -725,7 +712,7 @@ function entity:new()
   self.canDraw.flash = true
   self.blockCollision = {global=false}
   self.ground = false
-  self.snapToGround = true
+  self.snapToMovingFloor = true
   self.xColl = 0
   self.yColl = 0
   self.shakeX = 0
@@ -822,6 +809,7 @@ function mapEntity:new(map, x, y)
   self.layers = {}
   self:setLayer(-200)
   self.visibleDuringPause = true
+  self.didDrawRange = false
 end
 
 function mapEntity:begin()
@@ -914,13 +902,19 @@ function mapEntity:addObjects()
 end
 
 function mapEntity:update()
+  self.didDrawRange = true
+  self.map:setDrawRange(view.x - self.transform.x, view.y - self.transform.y, view.w, view.h)
   self.map:update(1/60)
 end
 
 function mapEntity:draw()
   love.graphics.push()
   love.graphics.translate(-self.transform.x, -self.transform.y)
-  self.map:setDrawRange(view.x, view.y, view.w, view.h)
+  if not self.didDrawRange then
+    self.map:setDrawRange(view.x - self.transform.x, view.y - self.transform.y, view.w, view.h)
+  else
+    self.didDrawRange = false
+  end
   self.map:drawBackground()
   love.graphics.pop()
 end

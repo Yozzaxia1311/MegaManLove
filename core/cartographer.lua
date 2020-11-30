@@ -186,42 +186,10 @@ function Layer.spritelayer:_init(map)
 end
 
 function Layer.spritelayer:setDrawRange(x, y, w, h)
-  local update = self._sprites.drawRange.x ~= x or self._sprites.drawRange.y ~= y or self._sprites.drawRange.w ~= w or self._sprites.drawRange.h ~= h
-  
   self._sprites.drawRange.x = x or self._sprites.drawRange.x
   self._sprites.drawRange.y = y or self._sprites.drawRange.y
   self._sprites.drawRange.w = w or self._sprites.drawRange.w
   self._sprites.drawRange.h = h or self._sprites.drawRange.h
-  
-  if update then
-    local ty = math.ceil(self._sprites.drawRange.y/self._map.tileheight)-1
-    local th = math.floor(self._sprites.drawRange.h/self._map.tileheight)+1
-    local tx = math.ceil(self._sprites.drawRange.x/self._map.tilewidth)-1
-    local tw = math.floor(self._sprites.drawRange.w/self._map.tilewidth)+1
-    for gid, animation in pairs(self._animations) do
-      local tileset = self._map:getTileset(gid)
-      if tileset.image then
-        if #self._sprites.offGridQuads ~= 0 then
-          for y, ytable in pairs(self._sprites.offGridQuads) do
-            for x, _ in pairs(ytable) do
-              if self._sprites.offGridMap[y] and self._sprites.offGridMap[y][x] then
-                local quad = self._map:_getTileQuad(self._sprites.offGridMap[y][x], animation.currentFrame)
-                self._sprites.offGridQuads[y][x] = quad
-              end
-            end
-          end
-        end
-        for y=ty, ty+th do
-          for x=tx, tx+tw do
-            if self._sprites.map[y] and self._sprites.map[y][x] == gid and self._sprites.quads[y] and self._sprites.quads[y][x] then
-              local quad = self._map:_getTileQuad(gid, animation.currentFrame)
-              self._sprites.quads[y][x] = quad
-            end
-          end
-        end
-      end
-    end
-  end
 end
 
 function Layer.spritelayer:_updateAnimations(dt)

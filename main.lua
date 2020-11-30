@@ -584,7 +584,6 @@ function ser()
       rstate = love.math.getRandomState(),
       seed = love.math.getRandomSeed(),
       console = console.ser(),
-      basicEntity = basicEntity.id,
       mapEntity = mapEntity.ser()
     }
   
@@ -631,7 +630,6 @@ function deser(from, dontChangeMusic)
   love.math.setRandomSeed(t.seed)
   love.math.setRandomState(t.rstate)
   console.deser(t.console)
-  basicEntity.id = t.basicEntity
   mapEntity.deser(t.mapEntity)
   
   collectgarbage()

@@ -615,10 +615,6 @@ function megautils.state()
   return states.currentState
 end
 
-function megautils.entityFromID(id)
-  return states.currentState.system:entityFromID(id)
-end
-
 function megautils.add(o, ...)
   return states.currentState.system:add(o, ...)
 end
