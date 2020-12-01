@@ -26,7 +26,7 @@ function collision.doGrav(self, noSlope)
 end
 
 function collision.doCollision(self, noSlope)
-  local lvx, lvy = self.velocity.velx, self.velocity.vely
+  local lvx, lvy, lx, ly = self.velocity.velx, self.velocity.vely, self.transform.x, self.transform.y
   local nslp = noSlope or collision.noSlope
   if checkFalse(self.blockCollision) then
     collision.generalCollision(self, nslp)
@@ -37,7 +37,7 @@ function collision.doCollision(self, noSlope)
   collision.checkGround(self, false, nslp)
   collision.entityPlatform(self)
   collision.checkGround(self, false, nslp)
-  collision.checkDeath(self, lvx, lvy + (self.ground and math.sign(self.gravity) or 0))
+  collision.checkDeath(self, lvx - (self.transform.x - lx), (lvy - (self.transform.y - ly)) + (self.ground and math.sign(self.gravity) or 0))
 end
 
 function collision.getTable(self, dx, dy, noSlope)
