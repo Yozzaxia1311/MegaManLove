@@ -490,6 +490,7 @@ function basicEntity:new()
     self.layer = 1
     self.isRemoved = true
     self.isAdded = false
+    self.suggestedIFrameForInteracted = nil
     self.recycle = false
   end
   
@@ -502,10 +503,7 @@ function basicEntity:new()
 end
 
 function basicEntity:determineIFrames(o)
-  if megaMan.allPlayers and table.contains(megaMan.allPlayers, o) then
-    return 80
-  end
-  return 2
+  return o.suggestedIFrameForInteracted or 2
 end
 
 function basicEntity:interact(t, h, single)
@@ -1196,7 +1194,7 @@ function advancedEntity:interactedWith(o, c)
       megautils.removeq(o)
     end
     if self.iFrames <= 0 then
-      self.iFrames = o:determineIFrames(self)
+      self.iFrames = self:determineIFrames(o)
     else
       return
     end

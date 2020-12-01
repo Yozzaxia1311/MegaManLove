@@ -26,7 +26,8 @@ function collision.doGrav(self, noSlope)
 end
 
 function collision.doCollision(self, noSlope)
-  local lvx, lvy, lx, ly = self.velocity.velx, self.velocity.vely, self.transform.x, self.transform.y
+  local lvx, lvy, lx, ly, lg =
+    self.velocity.velx, self.velocity.vely, self.transform.x, self.transform.y, self.ground
   local nslp = noSlope or collision.noSlope
   if checkFalse(self.blockCollision) then
     collision.generalCollision(self, nslp)
@@ -37,7 +38,7 @@ function collision.doCollision(self, noSlope)
   collision.checkGround(self, false, nslp)
   collision.entityPlatform(self)
   collision.checkGround(self, false, nslp)
-  collision.checkDeath(self, lvx - (self.transform.x - lx), (lvy - (self.transform.y - ly)) + (self.ground and math.sign(self.gravity) or 0))
+  collision.checkDeath(self, lvx - (self.transform.x - lx), (lvy - (self.transform.y - ly)) + (self.ground and math.sign(self.gravity) or 0), lg)
 end
 
 function collision.getTable(self, dx, dy, noSlope)
@@ -549,9 +550,9 @@ function collision.generalCollision(self, noSlope)
   end
 end
 
-function collision.checkDeath(self, x, y)
+function collision.checkDeath(self, x, y, dg)
   local all = megautils.groups().collision
-  local possible = self.iFrames == 0 and self.collisionShape and checkFalse(self.blockCollision) and all
+  local possible = self.collisionShape and checkFalse(self.blockCollision) and all
   
   if possible then
     local death = {}
@@ -563,12 +564,13 @@ function collision.checkDeath(self, x, y)
       end
     end
     
-    local lx, ly, lg, lxc, lyc, lsd, lmf = 
+    local deathSolid
+    local lx, ly, lg, lxc, lyc, lss, lmf = 
       self.transform.x, self.transform.y, self.ground, self.xColl, self.yColl, self.inStandSolid, self.onMovingFloor
     
     for i=1, #death do
       local v = death[i]
-      v._LST = v.solidType
+      v._LSTDeathCheck = v.solidType
       v.solidType = collision.NONE
     end
     
@@ -576,15 +578,24 @@ function collision.checkDeath(self, x, y)
     
     for i=1, #death do
       local v = death[i]
-      v.solidType = v._LST
-      v._LST = nil
-      if self:collision(v) then
-        collision.performDeath(self, v)
+      v.solidType = v._LSTDeathCheck
+      v._LSTDeathCheck = nil
+      
+      if not deathSolid and self:collision(v) then
+        deathSolid = v
       end
     end
     
+    if deathSolid then
+      if dg ~= nil then
+        lg = dg
+      end
+      
+      collision.performDeath(self, deathSolid)
+    end
+    
     self.transform.x, self.transform.y, self.ground, self.xColl, self.yColl, self.inStandSolid, self.onMovingFloor =
-      lx, ly, lg, lxc, lyc, lsd, lmf
+      lx, ly, lg, lxc, lyc, lss, lmf
   end
 end
 

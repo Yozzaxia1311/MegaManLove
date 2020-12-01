@@ -997,6 +997,10 @@ function megaMan:weaponTable(o)
   end
 end
 
+function megaMan:determineIFrames(o)
+  return o.suggestedIFrameForInteracted or 80
+end
+
 function megaMan:interactedWith(o, c)
   if not checkFalse(self.canControl) or megautils.isInvincible() or megautils.isNoClip() then return end
   if self.protoShielding and not o.dinked and o.dink and self:checkProtoShield(o, self.side) and o ~= self then
@@ -1010,7 +1014,7 @@ function megaMan:interactedWith(o, c)
     self.changeHealth = self:weaponTable(o) or c
     if self.changeHealth < 0 then
       if self.iFrames <= 0 then
-        self.iFrames = o:determineIFrames(self)
+        self.iFrames = self:determineIFrames(o)
       else
         return
       end
