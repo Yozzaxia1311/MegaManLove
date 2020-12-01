@@ -587,15 +587,18 @@ function collision.checkDeath(self, x, y, dg)
     end
     
     if deathSolid then
+      self.transform.x, self.transform.y, self.ground, self.xColl, self.yColl, self.inStandSolid, self.onMovingFloor =
+        lx, ly, lg, lxc, lyc, lss, lmf
+      
       if dg ~= nil then
-        lg = dg
+        self.ground = dg
       end
       
       collision.performDeath(self, deathSolid)
+    else
+      self.transform.x, self.transform.y, self.ground, self.xColl, self.yColl, self.inStandSolid, self.onMovingFloor =
+        lx, ly, lg, lxc, lyc, lss, lmf
     end
-    
-    self.transform.x, self.transform.y, self.ground, self.xColl, self.yColl, self.inStandSolid, self.onMovingFloor =
-      lx, ly, lg, lxc, lyc, lss, lmf
   end
 end
 
