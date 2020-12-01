@@ -1456,9 +1456,12 @@ function bossEntity:die(o)
   end
 end
 
+function bossEntity:determineIFrames(o)
+  return o.suggestedIFrameForInteracted or 50
+end
+
 function bossEntity:hit(o)
   megautils.add(harm, self, 50)
-  self.iFrames = 50
 end
 
 function bossEntity:bossIntro()

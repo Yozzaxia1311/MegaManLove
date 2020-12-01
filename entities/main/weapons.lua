@@ -124,13 +124,6 @@ function weapon:grav()
   self.velocity:clampY(7)
 end
 
-function weapon:determineIFrames(o)
-  if megaMan.allPlayers and table.contains(megaMan.allPlayers, o) then
-    return 80
-  end
-  return 2
-end
-
 function weapon:dink(e)
   if self.doDink then
     if self.isEnemyWeapon then
