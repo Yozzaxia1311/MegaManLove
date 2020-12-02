@@ -937,3 +937,11 @@ function megautils.rectStencil(x, y, w, h)
     love.graphics.rectangle("fill", _stenx, _steny, _stenw, _stenh)
   end
 end
+
+function megautils.getClassString(c)
+  for k, v in pairs(_G)
+    if v == c then
+      return k
+    end
+  end
+end
