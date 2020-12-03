@@ -939,6 +939,10 @@ function megautils.rectStencil(x, y, w, h)
 end
 
 function megautils.getClassString(c)
+  if type(c) ~= "Entity" then
+    return type(c)
+  end
+  
   for k, v in pairs(_G)
     if v == c then
       return k
