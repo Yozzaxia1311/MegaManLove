@@ -1073,7 +1073,7 @@ end
 function advancedEntity:added()
   self:addToGroup("removeOnTransition")
   self:addToGroup("collision")
-  self:addToGroup("handledBySection")
+  self:addToGroup("handledBySections")
   self:addToGroup("interactable")
   self:addToGroup("advancedEntity")
 end
