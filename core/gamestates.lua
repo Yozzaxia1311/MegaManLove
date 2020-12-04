@@ -78,11 +78,10 @@ function states.set(n, before, after)
     end
   end
   
-  if states.currentState then
-    states.currentState:switching()
-    if megautils.reloadState and megautils.resetGameObjects then
-      states.currentState:unload()
-    end
+  local lastState = states.currentState
+  
+  if lastState then
+    lastState:switching()
   end
   
   view.x, view.y = 0, 0
@@ -127,6 +126,11 @@ function states.set(n, before, after)
         end
       end
     end
+    
+    if lastState then
+      lastState:unload()
+    end
+    
     states.currentState:init()
   end
   
