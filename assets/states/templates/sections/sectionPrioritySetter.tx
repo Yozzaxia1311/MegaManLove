@@ -2,7 +2,7 @@
 <template>
  <object name="sectionPrioritySetter" width="16" height="16">
   <properties>
-   <property name="name" value="sectionNameHere"/>
+   <property name="toSection" value="sectionNameOrBlank"/>
   </properties>
  </object>
 </template>

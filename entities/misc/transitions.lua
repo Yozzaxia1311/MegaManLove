@@ -246,6 +246,9 @@ function sectionPrioritySetter:new(x, y, w, h, name)
   self.transform.x = x or 0
   self.transform.y = y or 0
   self.name = name
+  if self.name == "" then
+    self.name = nil
+  end
 end
 
 function sectionPrioritySetter:added()
@@ -254,7 +257,7 @@ end
 
 function sectionPrioritySetter:check()
   local count = 0
-  local sx, sy, sw, sh = self.transform.x, self.transform.y, self.collisionShape.w, self.collisionShape.h
+  local sx, sy, sw, sh = self.transform.x-1, self.transform.y-1, self.collisionShape.w+2, self.collisionShape.h+2
   
   for _, v in ipairs(megaMan.allPlayers) do
     local x, y, w, h = v.transform.x, v.transform.y, v.collisionShape.w, v.collisionShape.h
@@ -269,7 +272,7 @@ end
 
 function sectionPrioritySetter:update(dt)
   if camera.main and not camera.main.transition and self.name ~= camera.main.curBoundName and self:check() == #megaMan.allPlayers then
-    camera.main.curBoundName = self.name == "" and nil or self.name
+    camera.main.curBoundName = self.name
   end
 end
 
@@ -287,7 +290,13 @@ function sectionPrioritySetterXBorder:new(x, y, h, lname, rname)
   self.transform.x = x or 0
   self.transform.y = y or 0
   self.lname = lname
+  if self.lname == "" then
+    self.lname = nil
+  end
   self.rname = rname
+  if self.rname == "" then
+    self.rname = nil
+  end
 end
 
 function sectionPrioritySetterXBorder:added()
@@ -331,7 +340,13 @@ function sectionPrioritySetterYBorder:new(x, y, w, uname, dname)
   self.transform.x = x or 0
   self.transform.y = y or 0
   self.uname = uname
+  if self.uname == "" then
+    self.name = nil
+  end
   self.dname = dname
+  if self.dname == "" then
+    self.name = nil
+  end
 end
 
 function sectionPrioritySetterYBorder:added()
@@ -375,7 +390,13 @@ function sectionPrioritySetterArea:new(x, y, w, h, name, name2)
   self.transform.x = x or 0
   self.transform.y = y or 0
   self.inName = name
+  if self.inName == "" then
+    self.inName = nil
+  end
   self.outName = name2
+  if self.outName == "" then
+    self.outName = nil
+  end
 end
 
 function sectionPrioritySetterArea:added()
@@ -389,9 +410,9 @@ function sectionPrioritySetterArea:check()
   for i=1, #megaMan.allPlayers do
     checker[i] = megaMan.allPlayers[i]
   end
-  for i, j in ipairs(megautils.groups().sectionPriorityArea) do
+  for _, j in ipairs(megautils.groups().sectionPriorityArea) do
     if self.inName == j.inName then
-      local sx, sy, sw, sh = j.transform.x, j.transform.y, j.collisionShape.w, j.collisionShape.h
+      local sx, sy, sw, sh = j.transform.x-1, j.transform.y-1, j.collisionShape.w+2, j.collisionShape.h+2
       
       for k, v in pairs(checker) do
         local x, y, w, h = v.transform.x, v.transform.y, v.collisionShape.w, v.collisionShape.h
