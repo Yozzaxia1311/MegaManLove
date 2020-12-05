@@ -180,7 +180,6 @@ function camera:updateCam(spdx, spdy)
         self.scrollx, self.scrolly, self.scrollw, self.scrollh, self.bounds = lsx, lsy, lsw, lsh, lb
       end
       
-      self.toSection = nil
       if self.player.onMovingFloor then
         self.flx = self.player.onMovingFloor.transform.x - self.player.transform.x
         self.player.onMovingFloor._oldDontRemoveOnTransition = self.player.onMovingFloor.dontRemoveOnTransition
@@ -196,6 +195,8 @@ function camera:updateCam(spdx, spdy)
         if camera.main.tween:update(1/60) then
           camera.main.tweenFinished = true
           if not camera.main.dontUpdateSections then
+            camera.main.curBoundName = camera.main.toSection.name
+            camera.main.toSection = nil
             camera.main:updateBounds()
             camera.main.transition = false
             camera.main.once = false

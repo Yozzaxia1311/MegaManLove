@@ -69,11 +69,16 @@ function bossDoor:left()
   camera.main.player = self.player
   camera.main.speed = self.spd
   local s = self:collisionTable(section.getSections(self.transform.x-self.tileWidth, self.transform.y,
-    self.collisionShape.w, self.collisionShape.h), -self.tileWidth, 0)[1]
+    self.collisionShape.w, self.collisionShape.h), -self.tileWidth, 0)
+  for _, v in ipairs(s) do
+    if v.name == self.name then
+      s = v
+      break
+    end
+  end
   camera.main.toSection = s
   camera.main.transform.x = self.transform.x+self.tileWidth
   camera.main.transX = camera.main.transform.x-camera.main.player.collisionShape.w-28
-  camera.main.curBoundName = self.name
   camera.main.dontUpdateSections = true
   camera.main.freeze = false
 end
@@ -86,11 +91,16 @@ function bossDoor:right()
   camera.main.player = self.player
   camera.main.speed = self.spd
   local s = self:collisionTable(section.getSections(self.transform.x+self.tileWidth, self.transform.y,
-    self.collisionShape.w, self.collisionShape.h), self.tileWidth, 0)[1]
+    self.collisionShape.w, self.collisionShape.h), self.tileWidth, 0)
+  for _, v in ipairs(s) do
+    if v.name == self.name then
+      s = v
+      break
+    end
+  end
   camera.main.toSection = s
   camera.main.transform.x = self.transform.x+self.tileWidth-camera.main.collisionShape.w
   camera.main.transX = camera.main.transform.x+camera.main.collisionShape.w+28
-  camera.main.curBoundName = self.name
   camera.main.dontUpdateSections = true
   camera.main.freeze = false
 end
@@ -103,11 +113,16 @@ function bossDoor:up()
   camera.main.player = self.player
   camera.main.speed = self.spd
   local s = self:collisionTable(section.getSections(self.transform.x, self.transform.y-self.tileHeight,
-    self.collisionShape.w, self.collisionShape.h), 0, -self.tileHeight)[1]
+    self.collisionShape.w, self.collisionShape.h), 0, -self.tileHeight)
+  for _, v in ipairs(s) do
+    if v.name == self.name then
+      s = v
+      break
+    end
+  end
   camera.main.toSection = s
   camera.main.transform.y = self.transform.y+self.tileHeight
   camera.main.transY = camera.main.transform.y-camera.main.player.collisionShape.h-28
-  camera.main.curBoundName = self.name
   camera.main.dontUpdateSections = true
   camera.main.freeze = false
 end
@@ -120,11 +135,16 @@ function bossDoor:down()
   camera.main.player = self.player
   camera.main.speed = self.spd
   local s = self:collisionTable(section.getSections(self.transform.x, self.transform.y+self.tileHeight,
-    self.collisionShape.w, self.collisionShape.h), 0, self.tileHeight)[1]
+    self.collisionShape.w, self.collisionShape.h), 0, self.tileHeight)
+  for _, v in ipairs(s) do
+    if v.name == self.name then
+      s = v
+      break
+    end
+  end
   camera.main.toSection = s
   camera.main.transform.y = self.transform.y+self.tileHeight-camera.main.collisionShape.h
   camera.main.transY = camera.main.transform.y+camera.main.collisionShape.h+28
-  camera.main.curBoundName = self.name
   camera.main.dontUpdateSections = true
   camera.main.freeze = false
 end
@@ -280,6 +300,8 @@ function bossDoor:update()
       camera.main.freeze = true
       camera.main.dontUpdateSections = false
       megautils.state().system.cameraUpdate = function()
+        camera.main.curBoundName = camera.main.toSection.name
+        camera.main.toSection = nil
         camera.main:updateBounds()
         camera.main.tweenFinished = false
         for i=1, #megaMan.allPlayers do
