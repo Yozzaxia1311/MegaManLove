@@ -1512,6 +1512,7 @@ function bossEntity:update()
       self.didIntro = true
       self.autoCollision.intro = nil
       self.autoGravity.intro = nil
+      self.canBeInvincible.intro = nil
       self.canDraw.intro = nil
       
       if self.healthHandler then
