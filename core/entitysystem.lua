@@ -1300,6 +1300,7 @@ function bossEntity:new()
   self.mugshotPath = nil
   self.bossIntroWaitTime = 400
   self.health = 28
+  self.lockBossDoors = true
   self.weaponGetBehaviour = function(s)
       return true
     end
@@ -1446,6 +1447,9 @@ function bossEntity:die(o)
       end)
     megautils.stopMusic()
   else
+    for _, v in ipairs(megautils.groups().bossDoor) do
+      v.isLocked.boss = nil
+    end
     if self.replayMusicWhenContinuing and not self._onceReplay then
       self._onceReplay = true
       megautils.playMusic(self.lastMusic, self.lastVol)
@@ -1503,9 +1507,16 @@ function bossEntity:update()
   if self.doBossIntro then
     self:bossIntro()
   else
-    if not self.didMusic and self.musicPath then
-      self.didMusic = true
-      megautils.playMusic(self.musicPath, self.musicVolume)
+    if not self.didOnce then
+      self.didOnce = true
+      if self.lockBossDoors and megautils.groups().bossDoor then
+        for _, v in ipairs(megautils.groups().bossDoor) do
+          v.isLocked.boss = true
+        end
+      end
+      if self.musicPath then
+        megautils.playMusic(self.musicPath, self.musicVolume)
+      end
     end
     if not self.didIntro and (self.skipStart or self:start()) then
       self._subState = nil
