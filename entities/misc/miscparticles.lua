@@ -15,8 +15,8 @@ function particle:new(user)
   
   if not self.recycling then
     self:setRectangleCollision(8, 8)
-    self.autoCollision = true
-    self.autoGravity = false
+    self.autoCollision = {global = true}
+    self.autoGravity = {global = false}
     self.removeWhenOutside = true
     self.doAutoCollisionBeforeUpdate = true
     self.flipWithUser = true
@@ -37,18 +37,18 @@ function particle:beforeUpdate()
   if self.flipWithUser and self.user and self.user.gravityMultipliers then
     self:setGravityMultiplier("flipWithUser", self.user.gravityMultipliers.gravityFlip or 1)
   end
-  if self.autoGravity then
+  if checkFalse(self.autoGravity) then
     collision.doGrav(self)
   end
   self._didCol = false
-  if self.autoCollision and self.doAutoCollisionBeforeUpdate then
+  if self.doAutoCollisionBeforeUpdate and checkFalse(self.autoCollision) then
     collision.doCollision(self)
     self._didCol = true
   end
 end
 
 function particle:afterUpdate()
-  if self.autoCollision and not self.doAutoCollisionBeforeUpdate and not self._didCol then
+  if not self.doAutoCollisionBeforeUpdate and checkFalse(self.autoCollision) and not self._didCol then
     collision.doCollision(self)
   end
   if self.removeWhenOutside and megautils.outside(self) then
@@ -73,7 +73,7 @@ function slideParticle:new(x, y, p, side)
     self:setRectangleCollision(8, 8)
     self.tex = megautils.getResource("particles")
     self.anim = megautils.newAnimation("slideParticleGrid", {"1-3", 1}, 1/10)
-    self.autoCollision = false
+    self.autoCollision.global = false
     self.recycle = true
   end
 end
@@ -106,7 +106,7 @@ function damageSteam:new(x, y, p)
     self:setRectangleCollision(5, 8)
     self.tex = megautils.getResource("particles")
     self.anim = megautils.newAnimation("damageSteamGrid", {"1-3", 1}, 1/8)
-    self.autoCollision = false
+    self.autoCollision.global = false
     self.recycle = true
   end
 end
@@ -181,7 +181,7 @@ function harm:new(p, time)
   self.quad = quad(0, 22, 24, 24)
   self.timer = 0
   self.maxTime = time or 32
-  self.autoCollision = false
+  self.autoCollision.global = false
 end
 
 function harm:update()
@@ -245,7 +245,7 @@ function absorbParticle:new(x, y, p, spd)
   self.startY = y
   self.pos = 0
   self.spd = spd or 0.02
-  self.autoCollision = false
+  self.autoCollision.global = false
   self.removeWhenOutside = false
 end
 
@@ -285,7 +285,7 @@ function absorb:new(p, times, spd)
   self.times = 0
   self.maxTimes = times or 3
   self.spd = spd or 0.02
-  self.autoCollision = false
+  self.autoCollision.global = false
   self.removeWhenOutside = false
 end
 
@@ -319,7 +319,7 @@ function smallBlast:new(x, y, p, spd)
     self:setRectangleCollision(24, 24)
     self.tex = megautils.getResource("particles")
     self.anim = megautils.newAnimation("deathExplodeParticleGrid", {"1-5", 1}, self.spd)
-    self.autoCollision = false
+    self.autoCollision.global = false
     self.recycle = true
   end
 end
@@ -347,7 +347,7 @@ function blast:new(x, y, p, hurt, damage, times)
   self.timer = 0
   self.times = 0
   self.max = times or 4
-  self.autoCollision = false
+  self.autoCollision.global = false
   self.hurt = hurt == true
   self.damage = damage or -2
 end

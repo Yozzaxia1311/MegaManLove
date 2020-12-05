@@ -1054,8 +1054,8 @@ function advancedEntity:new()
     self.barOffsetY = 80
     self.applyAutoFace = true
     self.pierceType = pierce.PIERCE
-    self.autoCollision = true
-    self.autoGravity = true
+    self.autoCollision = {global = true}
+    self.autoGravity = {global = true}
     self.doAutoCollisionBeforeUpdate = false
     self.autoCrush = true
     self.blockCollision.global = true
@@ -1141,11 +1141,11 @@ function advancedEntity:beforeUpdate()
   if self.flipWithPlayer and megaMan.mainPlayer then
     self:setGravityMultiplier("flipWithPlayer", megaMan.mainPlayer.gravityMultipliers.gravityFlip or 1)
   end
-  if self.autoGravity then
+  if checkFalse(self.autoGravity) then
     collision.doGrav(self)
   end
   self._didCol = false
-  if self.autoCollision and self.doAutoCollisionBeforeUpdate then
+  if self.doAutoCollisionBeforeUpdate and checkFalse(self.autoCollision) then
     collision.doCollision(self)
     self._didCol = true
   end
@@ -1161,7 +1161,7 @@ function advancedEntity:beforeUpdate()
 end
 
 function advancedEntity:afterUpdate()
-  if self.autoCollision and not self.doAutoCollisionBeforeUpdate and not self._didCol then
+  if not self.doAutoCollisionBeforeUpdate and checkFalse(self.autoCollision) and not self._didCol then
     collision.doCollision(self)
   end
   if self.autoHitPlayer then
@@ -1276,13 +1276,13 @@ function bossEntity:new()
   self.soundOnDeath = "assets/sfx/dieExplode.ogg"
   self.dropItem = false
   self.explosionType = advancedEntity.DEATHBLAST
-  self.canDraw.global = false
+  self.canDraw.intro = false
   self.canBeInvincible.intro = true
+  self.autoCollision.intro = false
+  self.autoGravity.intro = false
   self.defeatSlot = nil
   self.flipWithPlayer = false
   self.removeWhenOutside = false
-  self.autoCollision = false
-  self.autoGravity = false
   self.removeHealthBarWithSelf = false
   self.state = 0
   self._subState = 0
@@ -1337,7 +1337,7 @@ function bossEntity:intro()
     self.dOff = view.y-self.transform.y
     self.oldY = self.transform.y
   elseif self.ds == 1 then
-    self.canDraw.global = true
+    self.canDraw.intro = nil
     self.screen.o = math.min(self.screen.o+0.05, 0.4)
     self.dOff = math.min(self.dOff+1, 0)
     self.transform.y = self.oldY + self.dOff
@@ -1410,9 +1410,6 @@ function bossEntity:start()
     end
     if not table.contains(result, false) then
       self._subState = 2
-      if self.musicPath then
-        megautils.playMusic(self.musicPath, self.musicVolume)
-      end
     end
   elseif self._subState == 2 then
     if not self.doIntro or self:intro() then
@@ -1468,7 +1465,7 @@ function bossEntity:bossIntro()
   if self._subState == 0 then
     self.transform.x = math.floor(view.w/2)-(self.collisionShape.w/2)
     self.transform.y = -self.collisionShape.h
-    self.canDraw.global = true
+    self.canDraw.intro = nil
     self._timer = 0
     self._textPos = 0
     self._textTimer = 0
@@ -1506,16 +1503,24 @@ function bossEntity:update()
   if self.doBossIntro then
     self:bossIntro()
   else
+    if not self.didMusic and self.musicPath then
+      self.didMusic = true
+      megautils.playMusic(self.musicPath, self.musicVolume)
+    end
     if not self.didIntro and (self.skipStart or self:start()) then
       self._subState = nil
       self.didIntro = true
-      local h = self.healthHandler.health
-      self.healthHandler:instantUpdate(0)
-      self.healthHandler:updateThis(h)
-      self.autoCollision = true
-      self.autoGravity = true
-      if not self.healthHandler.isAdded then
-        megautils.adde(self.healthHandler)
+      self.autoCollision.intro = nil
+      self.autoGravity.intro = nil
+      self.canDraw.intro = nil
+      
+      if self.healthHandler then
+        self.healthHandler:instantUpdate(0)
+        self.healthHandler:updateThis(self.healthHandler.health)
+      
+        if not self.healthHandler.isAdded then
+          megautils.adde(self.healthHandler)
+        end
       end
     elseif self.didIntro then
       self:act()

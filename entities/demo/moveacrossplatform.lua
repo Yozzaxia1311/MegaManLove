@@ -18,7 +18,7 @@ function moveAcrossPlatform:new(x, y, toX, toY)
   self.tween = tween.new(1, self.transform, {x=toX or (self.transform.x+32), y=toY or (self.transform.y-32)}, "inOutBack")
   self.state = 0
   self.hurtable = false
-  self.autoGravity = false
+  self.autoGravity.global = false
 end
 
 function moveAcrossPlatform:update()

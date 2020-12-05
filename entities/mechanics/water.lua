@@ -17,7 +17,7 @@ function splash:new(offx, offy, p, rot)
     self.transform.x = self.user.transform.x + self.offx
     self.transform.y = self.user.transform.y + self.offy
   end
-  self.autoCollision = false
+  self.autoCollision.global = false
 end
 
 function splash:update()

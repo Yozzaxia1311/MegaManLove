@@ -87,11 +87,13 @@ function states.set(n, before, after)
   view.x, view.y = 0, 0
   states.switched = true
   
-  if not states.currentChunk or states.current ~= sp then
+  local nextState = states.currentChunk
+  
+  if not nextState or states.current ~= sp then
     if sp == "|???|" then
-      states.currentChunk = state:extend()
+      nextState = state:extend()
     else
-      states.currentChunk = love.filesystem.load(sp)
+      nextState = love.filesystem.load(sp)
     end
   end
   
@@ -107,14 +109,9 @@ function states.set(n, before, after)
     end
   end
   
-  if not states.currentChunk then
+  if not nextState then
     error("State does not exist: \"" .. tostring(states.current) .. "\"")
   end
-  
-  states.currentState = states.currentChunk()
-  states.currentState.system = entitySystem()
-  
-  if after then after() end
   
   if megautils.reloadState and megautils.resetGameObjects then
     if isStage then
@@ -131,7 +128,17 @@ function states.set(n, before, after)
       lastState:unload()
     end
     
+    states.currentState = nextState()
+    states.currentState.system = entitySystem()
+    
+    if after then after() end
+    
     states.currentState:init()
+  else
+    states.currentState = nextState()
+    states.currentState.system = entitySystem()
+    
+    if after then after() end
   end
   
   if map then

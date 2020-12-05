@@ -70,8 +70,8 @@ function weapon:new(p, enWeapon)
     self.flipWithUser = true
     self.weaponGroup = nil
     self.removeWhenOutside = true
-    self.autoCollision = true
-    self.autoGravity = false
+    self.autoCollision = {global = true}
+    self.autoGravity = {global = false}
     self.doAutoCollisionBeforeUpdate = true
     self.doDink = true
     self.applyAutoFace = false
@@ -155,11 +155,11 @@ function weapon:beforeUpdate()
   if self.flipWithUser and self.user and self.user.gravityMultipliers then
     self:setGravityMultiplier("flipWithUser", self.user.gravityMultipliers.gravityFlip or 1)
   end
-  if self.autoGravity then
+  if checkFalse(self.autoGravity) then
     collision.doGrav(self)
   end
   self._didCol = false
-  if self.autoCollision and self.doAutoCollisionBeforeUpdate then
+  if self.doAutoCollisionBeforeUpdate and checkFalse(self.autoCollision) then
     collision.doCollision(self)
     self._didCol = true
   end
@@ -187,7 +187,7 @@ function weapon:afterUpdate()
       self:interact(self:collisionTable(megaMan.allPlayers), self.damage)
     end
   end
-  if self.autoCollision and not self.doAutoCollisionBeforeUpdate and not self._didCol then
+  if not self.doAutoCollisionBeforeUpdate and checkFalse(self.autoCollision) and not self._didCol then
     collision.doCollision(self)
   end
   if self.removeWhenOutside and megautils.outside(self) then
@@ -630,7 +630,7 @@ function trebleBoost:act()
         self.s = 1
         self.velocity.vely = 8
         self.blockCollision.global = true
-        self.autoGravity = true
+        self.autoGravity.global = true
       else
         self.s = -1
       end
@@ -961,7 +961,7 @@ function rushCoil:act(dt)
       if not collision.checkSolid(self) then
         self.s = 1
         self.velocity.vely = 8
-        self.autoGravity = true
+        self.autoGravity.global = true
         self.blockCollision.global = true
       else
         self.s = -1
@@ -996,7 +996,7 @@ function rushCoil:act(dt)
     if self.timer == 40 then
       self.s = 5
       self.anims:set("spawnLand")
-      self.autoGravity = false
+      self.autoGravity.global = false
       self.blockCollision.global = false
       megautils.playSound("ascend")
     end
