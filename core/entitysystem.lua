@@ -1379,11 +1379,7 @@ function bossEntity:act() end
 
 function bossEntity:start()
   if self._subState == 0 then
-    if (self.skipBoss == nil and self.defeatSlot and globals.defeats[self.defeatSlot]) or self.skipBoss then
-      if self:skip() then
-        self._subState = -1
-      end
-    elseif megaMan.allPlayers then
+    if megaMan.allPlayers then
       for _, v in ipairs(megaMan.allPlayers) do
         v.canControl.boss = false
         v.canBeInvincible.intro = true
@@ -1509,13 +1505,20 @@ function bossEntity:update()
   else
     if not self.didOnce then
       self.didOnce = true
-      if self.lockBossDoors and megautils.groups().bossDoor then
-        for _, v in ipairs(megautils.groups().bossDoor) do
-          v.isLocked.boss = true
+      if (self.skipBoss == nil and self.defeatSlot and globals.defeats[self.defeatSlot]) or self.skipBoss then
+        if self:skip() then
+          self.skipStart = true
+          return
         end
-      end
-      if self.musicPath then
-        megautils.playMusic(self.musicPath, self.musicVolume)
+      else
+        if self.lockBossDoors and megautils.groups().bossDoor then
+          for _, v in ipairs(megautils.groups().bossDoor) do
+            v.isLocked.boss = true
+          end
+        end
+        if self.musicPath then
+          megautils.playMusic(self.musicPath, self.musicVolume)
+        end
       end
     end
     if not self.didIntro and (self.skipStart or self:start()) then
