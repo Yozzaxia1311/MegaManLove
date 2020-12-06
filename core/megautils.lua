@@ -457,6 +457,14 @@ function megautils.isMusicLocked()
   return mmMusic.locked
 end
 
+function megautils.setMusicVolume(v)
+  mmMusic.setVolume(v)
+end
+
+function megautils.getMusicVolume()
+  return mmMusic.getVolume()
+end
+
 function megautils.getCurrentMusic()
   return mmMusic.music
 end
