@@ -1484,6 +1484,8 @@ end
 
 function bossEntity:bossIntro()
   if self._subState == 0 then
+    self.autoCollision.intro = false
+    self.autoGravity.intro = false
     self.transform.x = math.floor(view.w/2)-(self.collisionShape.w/2)
     self.transform.y = -self.collisionShape.h
     self._timer = 0
