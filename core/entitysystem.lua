@@ -1312,6 +1312,9 @@ function bossEntity:added()
   bossEntity.super.added(self)
   
   self.canDraw.firstFrame = false
+  self.canBeInvincible.firstFrame = true
+  self.autoCollision.firstFrame = false
+  self.autoGravity.firstFrame = false
 end
 
 function bossEntity:useHealthBar(oneColor, twoColor, outlineColor, add)
@@ -1556,6 +1559,9 @@ function bossEntity:update()
     end
   end
   self.canDraw.firstFrame = nil
+  self.canBeInvincible.firstFrame = nil
+  self.autoCollision.firstFrame = nil
+  self.autoGravity.firstFrame = nil
 end
 
 function bossEntity:draw()
