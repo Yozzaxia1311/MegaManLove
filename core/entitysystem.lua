@@ -1276,10 +1276,6 @@ function bossEntity:new()
   self.soundOnDeath = "assets/sfx/dieExplode.ogg"
   self.dropItem = false
   self.explosionType = advancedEntity.DEATHBLAST
-  self.canDraw.intro = false
-  self.canBeInvincible.intro = true
-  self.autoCollision.intro = false
-  self.autoGravity.intro = false
   self.defeatSlot = nil
   self.flipWithPlayer = false
   self.removeWhenOutside = false
@@ -1312,6 +1308,12 @@ function bossEntity:new()
   self:setBossIntroMusic("assets/sfx/music/stageStart.ogg")
 end
 
+function bossEntity:added()
+  bossEntity.super.added(self)
+  
+  self.canDraw.firstFrame = false
+end
+
 function bossEntity:useHealthBar(oneColor, twoColor, outlineColor, add)
   bossEntity.super.useHealthBar(self, oneColor, twoColor, outlineColor, add or add ~= nil)
 end
@@ -1329,16 +1331,16 @@ end
 function bossEntity:intro()
   if not self.ds then
     self.screen = megautils.add(trigger, nil, function(s)
-      love.graphics.setColor(0, 0, 0, s.o)
-      love.graphics.rectangle("fill", view.x-1, view.y-1, view.w+2, view.h+2)
-    end)
+        love.graphics.setColor(0, 0, 0, s.o)
+        love.graphics.rectangle("fill", view.x-1, view.y-1, view.w+2, view.h+2)
+      end)
     self.screen.o = 0
     self.screen:setLayer(0)
     self.ds = 1
     self.dOff = view.y-self.transform.y
     self.oldY = self.transform.y
+    self.transform.y = self.oldY + self.dOff
   elseif self.ds == 1 then
-    self.canDraw.intro = nil
     self.screen.o = math.min(self.screen.o+0.05, 0.4)
     self.dOff = math.min(self.dOff+1, 0)
     self.transform.y = self.oldY + self.dOff
@@ -1389,6 +1391,13 @@ function bossEntity:start()
       end
       self._subState = 1
     end
+    
+    self.canDraw.intro = false
+    self.canBeInvincible.intro = true
+    self.autoCollision.intro = false
+    self.autoGravity.intro = false
+    
+    megautils.stopMusic()
   elseif self._subState == 1 then
     local result = {}
     for k, v in ipairs(megaMan.allPlayers) do
@@ -1407,6 +1416,11 @@ function bossEntity:start()
     end
     if not table.contains(result, false) then
       self._subState = 2
+      megautils.playMusic(self.musicPath, self.musicVolume)
+      self.canDraw.intro = nil
+      if not self.doIntro or self:intro() then
+        self._subState = 3
+      end
     end
   elseif self._subState == 2 then
     if not self.doIntro or self:intro() then
@@ -1421,6 +1435,8 @@ function bossEntity:start()
           v.canBeInvincible.intro = nil
         end
         self.canBeInvincible.intro = nil
+        self.autoCollision.intro = nil
+        self.autoGravity.intro = nil
       end
       return true
     end
@@ -1467,7 +1483,6 @@ function bossEntity:bossIntro()
   if self._subState == 0 then
     self.transform.x = math.floor(view.w/2)-(self.collisionShape.w/2)
     self.transform.y = -self.collisionShape.h
-    self.canDraw.intro = nil
     self._timer = 0
     self._textPos = 0
     self._textTimer = 0
@@ -1526,14 +1541,11 @@ function bossEntity:update()
     if not self.didIntro and (self.skipStart or self:start()) then
       self._subState = nil
       self.didIntro = true
-      self.autoCollision.intro = nil
-      self.autoGravity.intro = nil
-      self.canBeInvincible.intro = nil
-      self.canDraw.intro = nil
       
       if self.healthHandler then
+        local lh = self.healthHandler.health
         self.healthHandler:instantUpdate(0)
-        self.healthHandler:updateThis(self.healthHandler.health)
+        self.healthHandler:updateThis(lh)
       
         if not self.healthHandler.isAdded then
           megautils.adde(self.healthHandler)
@@ -1543,10 +1555,11 @@ function bossEntity:update()
       self:act()
     end
   end
+  self.canDraw.firstFrame = nil
 end
 
 function bossEntity:draw()
-  if self.doBossIntro and self.bossIntroText then
+  if self.doBossIntro and self.bossIntroText and self._halfWidth then
     love.graphics.print(self.bossIntroText:sub(0, self._textPos or 0), (view.w/2)-self._halfWidth, 142)
   end
 end
