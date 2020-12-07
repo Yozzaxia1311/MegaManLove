@@ -1443,8 +1443,10 @@ function bossEntity:die(o)
       end)
     megautils.stopMusic()
   else
-    for _, v in ipairs(megautils.groups().bossDoor) do
-      v.isLocked.boss = nil
+    if megautils.groups().bossDoor then
+      for _, v in ipairs(megautils.groups().bossDoor) do
+        v.isLocked.boss = nil
+      end
     end
     if self.replayMusicWhenContinuing and not self._onceReplay then
       self._onceReplay = true
