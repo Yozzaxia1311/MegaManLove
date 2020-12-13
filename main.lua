@@ -376,6 +376,13 @@ function love.window.updateMode(w, h, f)
   love.resize(love.graphics.getDimensions())
 end
 
+local lt = love.timer
+local lk = love.keyboard
+local le = love.event
+local lu = love.update
+local lg = love.graphics
+local ld = love.draw
+
 function pressingHardInputs(k)
   if megautils then
     local isHardKey = false
@@ -403,11 +410,11 @@ function pressingHardInputs(k)
       end
     end
 
-    return isHardKey and love.keyboard.isDown(k) and (checkMod == 0 or (checkMod == 1 and
-      (love.keyboard.isDown("ralt") or love.keyboard.isDown("lalt"))) or
-      (checkMod == 2 and (love.keyboard.isDown("rctrl") or love.keyboard.isDown("lctrl"))) or
-      (checkMod == -1 and love.keyboard.isDown("return")) or
-      (checkMod == -2 and (love.keyboard.isDown("o") or love.keyboard.isDown("p") or love.keyboard.isDown("r"))))
+    return isHardKey and lk.isDown(k) and (checkMod == 0 or (checkMod == 1 and
+      (lk.isDown("ralt") or lk.isDown("lalt"))) or
+      (checkMod == 2 and (lk.isDown("rctrl") or lk.isDown("lctrl"))) or
+      (checkMod == -1 and lk.isDown("return")) or
+      (checkMod == -2 and (lk.isDown("o") or lk.isDown("p") or lk.isDown("r"))))
   end
   
   return false
@@ -415,14 +422,16 @@ end
 
 function love.run()
   local bu = love.timer.getTime()
+  
   if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
-  if love.timer then love.timer.step() end
+  if lt then lt.step() end
+  
   return function()
-      if love.keyboard and console and save and megautils then
+      if lk and console and save and megautils then
         if not (useConsole and console.state == 1) then
-          if not love.keyboard.isDown("return") then
+          if not lk.isDown("return") then
             altEnterOnce = false
-          elseif (love.keyboard.isDown("ralt") or love.keyboard.isDown("lalt")) and love.keyboard.isDown("return") then
+          elseif (lk.isDown("ralt") or lk.isDown("lalt")) and lk.isDown("return") then
             if not altEnterOnce then
               megautils.setFullscreen(not megautils.getFullscreen())
               local data = save.load("main.sav") or {}
@@ -454,20 +463,20 @@ function love.run()
           end
         end
         
-        if not love.keyboard.isDown("o") and not love.keyboard.isDown("p") and not love.keyboard.isDown("r") then
+        if not lk.isDown("o") and not lk.isDown("p") and not lk.isDown("r") then
           contextOnce = false
-        elseif (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl")) then
-          if love.keyboard.isDown("o") then
+        elseif (lk.isDown("lctrl") or lk.isDown("rctrl")) then
+          if lk.isDown("o") then
             if not contextOnce then
               console.parse("contextsave quickContext")
             end
             contextOnce = true
-          elseif love.keyboard.isDown("p") then
+          elseif lk.isDown("p") then
             if not contextOnce then
               console.parse("contextopen quickContext")
             end
             contextOnce = true
-          elseif love.keyboard.isDown("r") then
+          elseif lk.isDown("r") then
             if not contextOnce then
               console.parse("rec")
             end
@@ -502,10 +511,10 @@ function love.run()
         control.startRec()
       end
       
-      if love.event then
-        love.event.pump()
+      if le then
+        le.pump()
         
-        for name, a,b,c,d,e,f in love.event.poll() do
+        for name, a,b,c,d,e,f in le.poll() do
           if name == "quit" then
             if not love.quit or not love.quit() then
               return a or 0
@@ -515,19 +524,19 @@ function love.run()
         end
       end
       
-      if love.update then love.update(love.timer and love.timer.step()) end
+      if lu then lu(lt and lt.step()) end
       
-      if love.graphics and love.graphics.isActive() then
-        love.graphics.origin()
-        love.graphics.clear(love.graphics.getBackgroundColor())
-        if love.draw then love.draw() end
-        love.graphics.present()
+      if lg and lg.isActive() then
+        lg.origin()
+        lg.clear(lg.getBackgroundColor())
+        if ld then ld() end
+        lg.present()
       end
       
-      if love.timer then
-        local delta, fps = love.timer.getTime() - bu, 1/megautils.getFPS()
-        if delta < fps then love.timer.sleep(fps - delta) end
-        bu = love.timer.getTime()
+      if lt then
+        local delta, fps = lt.getTime() - bu, 1/megautils.getFPS()
+        if delta < fps then lt.sleep(fps - delta) end
+        bu = lt.getTime()
       end
       
       megautils.checkQueue()
