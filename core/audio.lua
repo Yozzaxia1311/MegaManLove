@@ -110,10 +110,8 @@ mmMusic.thread = love.thread.newThread([[
 
 function mmMusic._threadSetVolume(v)
   if mmMusic.music and not mmMusic.locked and v then
-    mmMusic.music:setVolume(math.clamp(v, 0, 1))
     mmMusic.vol = math.clamp(v, 0, 1)
-    mmMusic.mainChannel:push("vol")
-    mmMusic.mainChannel:push(mmMusic.vol)
+    mmMusic.music:setVolume(mmMusic.vol)
   end
 end
 
