@@ -94,10 +94,11 @@ function camera:updateCam(spdx, spdy)
         megautils.freeze("trans")
       end 
       if self.player then
-        local sx, sy, sw, sh
+        local sx, sy, sw, sh, sn
         local nx, ny = self.transform.x, self.transform.y
         if self.toSection then
-          sx, sy, sw, sh = self.toSection.transform.x, self.toSection.transform.y, self.toSection.collisionShape.w, self.toSection.collisionShape.h
+          sx, sy, sw, sh, sn = self.toSection.transform.x, self.toSection.transform.y, self.toSection.collisionShape.w, self.toSection.collisionShape.h,
+            self.toSection.name
         end
         if self.transitionDirection == "right" then
           if self.doScrollY then
@@ -165,9 +166,10 @@ function camera:updateCam(spdx, spdy)
           end
         end
         local lx, ly = self.transform.x, self.transform.y
-        local lsx, lsy, lsw, lsh, lb = self.scrollx, self.scrolly, self.scrollw, self.scrollh, self.bounds
+        local lsx, lsy, lsw, lsh, lb, lbn = self.scrollx, self.scrolly, self.scrollw, self.scrollh, self.bounds, self.curBoundName
         self.transform.x = nx
         self.transform.y = ny
+        self.curBoundName = sn
         self:updateBounds(true)
         if self.bounds then
           for _, v in ipairs(self.bounds.group) do
@@ -177,7 +179,7 @@ function camera:updateCam(spdx, spdy)
           end
         end
         self.transform.x, self.transform.y = lx, ly
-        self.scrollx, self.scrolly, self.scrollw, self.scrollh, self.bounds = lsx, lsy, lsw, lsh, lb
+        self.scrollx, self.scrolly, self.scrollw, self.scrollh, self.bounds, self.curBoundName = lsx, lsy, lsw, lsh, lb, lbn
       end
       
       if self.player.onMovingFloor then
