@@ -208,7 +208,7 @@ function megautils.getFPS()
 end
 
 function megautils.showFPS(what)
-  convar.setValue("showfps", what == 1, false)
+  convar.setValue("showfps", what and 1 or 0, false)
 end
 
 function megautils.isShowingFPS()
@@ -216,7 +216,7 @@ function megautils.isShowingFPS()
 end
 
 function megautils.showEntityCount(what)
-  convar.setValue("showentitycount", what == 1, false)
+  convar.setValue("showentitycount", what and 1 or 0, false)
 end
 
 function megautils.isShowingEntityCount()
@@ -224,7 +224,7 @@ function megautils.isShowingEntityCount()
 end
 
 function megautils.setInfiniteLives(what)
-  convar.setValue("infinitelives", what == 1, false)
+  convar.setValue("infinitelives", what and 1 or 0, false)
 end
 
 function megautils.hasInfiniteLives()
@@ -232,7 +232,7 @@ function megautils.hasInfiniteLives()
 end
 
 function megautils.setInvincible(what)
-  convar.setValue("inv", what == 1, false)
+  convar.setValue("inv", what and 1 or 0, false)
 end
 
 function megautils.isInvincible()
@@ -240,7 +240,7 @@ function megautils.isInvincible()
 end
 
 function megautils.setNoClip(what)
-  convar.setValue("noclip", what == 1, false)
+  convar.setValue("noclip", what and 1 or 0, false)
 end
 
 function megautils.isNoClip()
@@ -279,8 +279,8 @@ function megautils.setDifficulty(d)
   convar.setValue("diff", d or convar.getString("diff"), true)
 end
 
-function megautils.setCheating(w)
-  convar.setValue("cheats", what == 1, false)
+function megautils.setCheating(what)
+  convar.setValue("cheats", what and 1 or 0, false)
 end
 
 function megautils.isCheating()
