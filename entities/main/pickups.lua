@@ -34,6 +34,7 @@ function pickupEntity:new(despawn, gd, fwp, id, path)
   self.removeWhenOutside = self.despawn
   self.autoCollision = {global = true}
   self.autoGravity = {global = true}
+  self.noSlope = false
   if gd or self.fwp then
     self:setGravityMultiplier("flipWithPlayer",  megaMan.mainPlayer and megaMan.mainPlayer.gravityMultipliers.gravityFlip or self.gravDir)
   end
@@ -62,10 +63,10 @@ function pickupEntity:afterUpdate()
     self:setGravityMultiplier("flipWithPlayer", megaMan.mainPlayer and megaMan.mainPlayer.gravityMultipliers.gravityFlip or self.gravDir)
   end
   if checkFalse(self.autoGravity) then
-    collision.doGrav(self)
+    collision.doGrav(self, self.noSlope)
   end
   if checkFalse(self.autoCollision) then
-    collision.doCollision(self)
+    collision.doCollision(self, self.noSlope)
   end
   for i=1, globals.playerCount do
     local p = megaMan.allPlayers[i]

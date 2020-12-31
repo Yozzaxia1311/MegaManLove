@@ -20,6 +20,7 @@ function particle:new(user)
     self.removeWhenOutside = true
     self.doAutoCollisionBeforeUpdate = true
     self.flipWithUser = true
+    self.noSlope = false
   end
 end
 
@@ -38,18 +39,18 @@ function particle:beforeUpdate()
     self:setGravityMultiplier("flipWithUser", self.user.gravityMultipliers.gravityFlip or 1)
   end
   if checkFalse(self.autoGravity) then
-    collision.doGrav(self)
+    collision.doGrav(self, self.noSlope)
   end
   self._didCol = false
   if self.doAutoCollisionBeforeUpdate and checkFalse(self.autoCollision) then
-    collision.doCollision(self)
+    collision.doCollision(self, self.noSlope)
     self._didCol = true
   end
 end
 
 function particle:afterUpdate()
   if not self.doAutoCollisionBeforeUpdate and checkFalse(self.autoCollision) and not self._didCol then
-    collision.doCollision(self)
+    collision.doCollision(self, self.noSlope)
   end
   if self.removeWhenOutside and megautils.outside(self) then
     megautils.removeq(self)

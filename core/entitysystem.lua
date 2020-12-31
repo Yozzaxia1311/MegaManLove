@@ -1060,6 +1060,7 @@ function advancedEntity:new()
     self.autoCrush = true
     self.blockCollision.global = true
     self.maxFallingSpeed = 7
+    self.noSlope = false
   end
   
   self.dead = false
@@ -1142,11 +1143,11 @@ function advancedEntity:beforeUpdate()
     self:setGravityMultiplier("flipWithPlayer", megaMan.mainPlayer.gravityMultipliers.gravityFlip or 1)
   end
   if checkFalse(self.autoGravity) then
-    collision.doGrav(self)
+    collision.doGrav(self, self.noSlope)
   end
   self._didCol = false
   if self.doAutoCollisionBeforeUpdate and checkFalse(self.autoCollision) then
-    collision.doCollision(self)
+    collision.doCollision(self, self.noSlope)
     self._didCol = true
   end
   local s, n = megautils.side(self, megaMan.allPlayers)
@@ -1162,7 +1163,7 @@ end
 
 function advancedEntity:afterUpdate()
   if not self.doAutoCollisionBeforeUpdate and checkFalse(self.autoCollision) and not self._didCol then
-    collision.doCollision(self)
+    collision.doCollision(self, self.noSlope)
   end
   if self.autoHitPlayer then
     self:interact(self:collisionTable(megaMan.allPlayers), self.damage)
