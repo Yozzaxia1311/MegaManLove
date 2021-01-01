@@ -683,7 +683,6 @@ megautils.cleanFuncs.autoCleaner = {func=function()
         _G[k] = nil
       end
     end
-    basicEntity.id = 0
   end, autoClean=false}
 
 entity = basicEntity:extend()
