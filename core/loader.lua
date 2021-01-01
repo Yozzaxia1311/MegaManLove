@@ -33,14 +33,6 @@ end
 loader.resources = {}
 loader.locked = {}
 
-function loader.imgMap(x, y, r, g, b, a)
-  if not loader.tmp[y+1] then
-    loader.tmp[y+1] = {}
-  end
-  loader.tmp[y+1][x+1] = (a > 0) and 1 or 0
-  return r, g, b, a
-end
-
 function loader.load(path, nick, typ, parameters, lock)
   if not nick then
     error("Specify nickname for resource \"" .. path .. "\".")
@@ -51,10 +43,8 @@ function loader.load(path, nick, typ, parameters, lock)
   if typ == "texture" then
     if lock then
       if parameters and parameters[1] then
-        local img = love.image.newImageData(path)
-        loader.tmp = {}
-        img:mapPixel(loader.imgMap)
-        loader.locked[nick] = {data=loader.tmp, path=path, img=image(img), type=typ}
+        local imgData = imageData(path)
+        loader.locked[nick] = {data=imgData, path=path, img=imgData:toImage(), type=typ, parameters=parameters}
       else
         loader.locked[nick] = {data=image(path), path=path, type=typ}
       end
@@ -67,10 +57,8 @@ function loader.load(path, nick, typ, parameters, lock)
         error("Cannot overwrite a locked resource.")
       end
       if parameters and parameters[1] then
-        local img = love.image.newImageData(path)
-        loader.tmp = {}
-        img:mapPixel(loader.imgMap)
-        loader.resources[nick] = {data=loader.tmp, path=path, img=image(img), type=typ}
+        local imgData = imageData(path)
+        loader.resources[nick] = {data=imgData, path=path, img=imgData:toImage(), type=typ, parameters=parameters}
       else
         loader.resources[nick] = {data=image(path), path=path, type=typ}
       end

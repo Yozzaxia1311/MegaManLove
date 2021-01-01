@@ -1,3 +1,47 @@
+imageData = class:extend()
+
+binser.register(imageData, "imageData", function(o)
+    return o.path
+  end, function(o)
+    return imageData(o)
+  end)
+
+function imageData:new(path)
+  self.path = path
+  self.imageData = love.image.newImageData(self.path)
+end
+
+function imageData:toImage()
+  local img = image(self.imageData)
+  img.path = self.path
+  return img
+end
+
+function imageData:getWidth()
+  return self.imageData:getWidth()
+end
+
+function imageData:getHeight()
+  return self.imageData:getHeight()
+end
+
+function imageData:getDimensions()
+  return self.imageData:getDimensions()
+end
+
+function imageData:getPixel(x, y)
+  return self.imageData:getPixel(x, y)
+end
+
+function imageData:setPixel(x, y, r, g, b, a)
+  return self.imageData:setPixel(x, y, r, g, b, a)
+end
+
+function imageData:release()
+  self.imageData:release()
+  self.imageData = nil
+end
+
 image = class:extend()
 
 binser.register(image, "image", function(o)

@@ -571,13 +571,13 @@ function basicEntity:setImageCollision(resource)
     self.collisionShape.type = 1
     self.collisionShape.data = res.data
     self.collisionShape.image = res.img
-    self.collisionShape.w = #self.collisionShape.data[1]
-    self.collisionShape.h = #self.collisionShape.data
+    self.collisionShape.w = self.collisionShape.data:getWidth()
+    self.collisionShape.h = self.collisionShape.data:getHeight()
   else
     self.collisionShape.type = 1
     self.collisionShape.data = res.data
-    self.collisionShape.w = #self.collisionShape.data[1]
-    self.collisionShape.h = #self.collisionShape.data
+    self.collisionShape.w = self.collisionShape.data:getWidth()
+    self.collisionShape.h = self.collisionShape.data:getHeight()
   end
 end
 

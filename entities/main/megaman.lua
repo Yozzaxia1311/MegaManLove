@@ -1035,6 +1035,10 @@ function megaMan:interactedWith(o, c)
       megautils.freeze("dying")
       if camera.main then
         if #megaMan.allPlayers == 1 then
+          if checkFalse(self.canHaveCameraFocus) and
+            not self.drop and not self.rise and self.collisionShape then
+            camera.main:updateCam()
+          end
           self.cameraTween = timer((((self.gravity >= 0 and self.transform.y < view.y+view.h) or
             (self.gravity < 0 and self.transform.y+self.collisionShape.h > view.y)) and 28 or 0))
           megautils.stopMusic()
@@ -1879,6 +1883,7 @@ function megaMan:die()
   self.canDraw.global = false
   self.canControl.global = false
   self.died = true
+  
   megautils.unregisterPlayer(self)
   megautils.removeq(self)
   megautils.playSoundFromFile("assets/sfx/dieExplode.ogg")

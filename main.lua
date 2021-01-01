@@ -136,11 +136,6 @@ function love.load()
   
   megautils.gotoState(globals.disclaimerState)
   
-  io = nil -- Prevents the worst case scenerio involving external context files. Be careful, a bad context file could still wipe your save directory
-  require = nil
-  dofile = nil
-  loadfile = nil
-  
   console.parse("exec autoexec")
 end
 
