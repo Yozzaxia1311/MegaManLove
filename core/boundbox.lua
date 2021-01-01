@@ -33,7 +33,7 @@ function circleOverlapsRect(x1, y1, r1, x2, y2, w2, h2)
 end
 
 function imageOverlapsRect(x, y, w, h, data, x2, y2, w2, h2)
-  if rectOverlapsRect(x2, y2, w2, h2, x, y, w, h) then
+  if rectOverlapsRect(x, y, w, h, x2, y2, w2, h2) then
     local neww, newh = w-1, h-1
     for xi=math.clamp(math.floor(x2-x), 0, neww), math.clamp(math.ceil(x2-x)+w2, 0, neww) do
       for yi=math.clamp(math.floor(y2-y), 0, newh), math.clamp(math.ceil(y2-y)+h2, 0, newh) do
@@ -64,7 +64,7 @@ function imageOverlapsCircle(x, y, w, h, data, x2, y2, r2)
 end
 
 function imageOverlapsImage(x, y, w, h, data, x2, y2, w2, h2, data2)
-  if rectOverlapsRect(x2, y2, w2, h2, x, y, w, h) then
+  if rectOverlapsRect(x, y, w, h, x2, y2, w2, h2) then
     local neww, newh = w-1, h-1
     local neww2, newh2 = w2-1, h2-1
     
