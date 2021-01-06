@@ -39,6 +39,12 @@ end
 
 function camera:added()
   view.x, view.y = self.transform.x, self.transform.y
+  if megautils.groups().camera then
+    for _, v in ipairs(megautils.groups().camera) do
+      megautils.removeq(v)
+    end
+  end
+  self:addToGroup("camera")
   camera.main = self
 end
 
