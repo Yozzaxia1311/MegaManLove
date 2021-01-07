@@ -50,7 +50,7 @@ function slope:new(x, y, mask)
   slope.super.new(self)
   self.transform.x = x or 0
   self.transform.y = y or 0
-  self:setImageCollision(mask)
+  self:setImageCollision(mask or "slopeLeft")
   self.solidType = collision.SOLID
 end
 
