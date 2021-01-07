@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="16" height="14" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#ffaaff" nextlayerid="6" nextobjectid="190">
+<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="16" height="14" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#ffaaff" nextlayerid="6" nextobjectid="192">
  <properties>
   <property name="fadeIn" type="bool" value="true"/>
   <property name="musicPath" value="assets/sfx/music/demo.ogg"/>
@@ -50,9 +50,9 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,16,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,16,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,1,1,0,0,0,1,1,1,1,1,1,1,1,1,10,
 0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,
 0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,
@@ -71,12 +71,12 @@
 0,0,17,18,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,17,18,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,25,0,0,0,0,0,0,0,0,0,
-11,0,0,0,0,0,0,25,0,0,0,0,0,0,0,0,
-0,10,11,0,0,0,0,0,1,0,0,0,0,0,0,0,
+11,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,
+0,10,11,0,0,0,0,25,0,0,0,0,0,0,0,0,
 0,0,0,3,0,0,0,0,1,0,0,0,0,0,0,0,
-0,0,0,0,3,0,13,13,1,0,0,0,0,0,0,0,
-0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,
-0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,
+0,0,0,0,3,0,0,0,1,0,0,0,0,0,0,0,
+0,0,0,0,1,0,13,13,1,0,0,0,0,0,0,0,
+0,0,0,0,1,16,0,16,1,0,0,0,0,0,0,0,
 0,0,0,0,26,0,0,0,1,0,0,0,0,0,0,0,
 0,0,0,26,0,0,0,0,1,0,0,0,0,0,0,0,
 0,0,26,0,0,0,6,7,0,0,0,0,0,0,0,0
@@ -144,7 +144,7 @@
 0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,
 0,0,0,0,0,0,1,0,0,0,0,1,0,0,1,1,
 0,0,0,0,0,0,1,0,0,0,0,1,1,1,1,0,
-0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,
+0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -474,7 +474,7 @@
    <object id="88" template="templates/collision/solid.tx" x="784" y="-144" width="32" height="64"/>
    <object id="89" template="templates/collision/solid.tx" x="864" y="-144" width="144" height="64"/>
    <object id="90" template="templates/collision/solid.tx" x="992" y="-240" width="64" height="48"/>
-   <object id="91" template="templates/collision/solid.tx" x="1152" y="-128" width="16" height="112"/>
+   <object id="91" template="templates/collision/solid.tx" x="1152" y="-112" width="16" height="96"/>
    <object id="92" template="templates/collision/solid.tx" x="1088" y="-80" width="16" height="32"/>
    <object id="93" template="templates/collision/slopeLeft.tx" x="1072" y="-112"/>
    <object id="94" template="templates/collision/slopeLeft.tx" x="1088" y="-96"/>
@@ -518,14 +518,15 @@
    <object id="170" template="templates/collision/solid.tx" x="896" y="704" width="16" height="160"/>
    <object id="177" template="templates/collision/solid.tx" x="320" y="576" width="16" height="16"/>
    <object id="181" template="templates/collision/slopeRightInvert.tx" x="1120" y="-160"/>
-   <object id="182" template="templates/collision/slopeRightInvert.tx" x="1136" y="-144"/>
-   <object id="183" template="templates/collision/oneway.tx" x="1120" y="-96" width="32" height="8"/>
+   <object id="183" template="templates/collision/oneway.tx" x="1120" y="-80" width="32" height="8"/>
    <object id="184" template="templates/collision/solid.tx" x="1056" y="64" width="16" height="112"/>
    <object id="185" template="templates/collision/solid.tx" x="960" y="16" width="32" height="16"/>
    <object id="186" template="templates/collision/solid.tx" x="960" y="112" width="32" height="48"/>
    <object id="187" template="templates/collision/solid.tx" x="992" y="96" width="48" height="64"/>
    <object id="188" template="templates/collision/solid.tx" x="976" y="48" width="80" height="16"/>
    <object id="189" template="templates/collision/solid.tx" x="976" y="64" width="32" height="16"/>
+   <object id="190" template="templates/collision/slopeRightInvert.tx" x="1136" y="-128"/>
+   <object id="191" template="templates/collision/solid.tx" x="1136" y="-144" width="16" height="16"/>
   </objectgroup>
   <objectgroup id="5" name="entities">
    <object id="5" template="templates/player/player.tx" x="112" y="144"/>
@@ -592,7 +593,7 @@
      <property name="name" value="boss"/>
     </properties>
    </object>
-   <object id="178" template="templates/mechanics/gravFlip.tx" x="992" y="-192" width="16" height="48">
+   <object id="178" template="templates/mechanics/gravFlip.tx" x="1104" y="-64" width="48" height="16">
     <properties>
      <property name="dir" type="int" value="-1"/>
     </properties>
