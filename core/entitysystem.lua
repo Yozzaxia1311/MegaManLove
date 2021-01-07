@@ -1183,7 +1183,8 @@ end
 
 function mapEntity:update()
   self.didDrawRange = true
-  self.map:setDrawRange(view.x - self.transform.x, view.y - self.transform.y, view.w, view.h)
+  self.map:setDrawRange((view.x - self.transform.x) - self.map.tilewidth, (view.y - self.transform.y) - self.map.tileheight,
+    view.w + (self.map.tilewidth * 2), view.h + (self.map.tileheight * 2))
   self.map:update(1/60)
 end
 
@@ -1191,7 +1192,8 @@ function mapEntity:draw()
   love.graphics.push()
   love.graphics.translate(-self.transform.x, -self.transform.y)
   if not self.didDrawRange then
-    self.map:setDrawRange(view.x - self.transform.x, view.y - self.transform.y, view.w, view.h)
+    self.map:setDrawRange((view.x - self.transform.x) - self.map.tilewidth, (view.y - self.transform.y) - self.map.tileheight,
+      view.w + (self.map.tilewidth * 2), view.h + (self.map.tileheight * 2))
   else
     self.didDrawRange = false
   end
