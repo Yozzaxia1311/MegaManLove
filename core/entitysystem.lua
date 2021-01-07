@@ -38,8 +38,8 @@ function entitySystem:updateHashForEntity(e)
   if e.collisionShape and not e.noHash then
     local xx, yy, ww, hh = e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h
     local hs = entitySystem.hashSize
-    local cx, cy = math.floor((xx - 1) / hs), math.floor((yy - 1) / hs)
-    local cx2, cy2 = math.floor((xx + ww + 1) / hs), math.floor((yy + hh + 1) / hs)
+    local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
+    local cx2, cy2 = math.floor((xx + ww + 2) / hs), math.floor((yy + hh + 2) / hs)
     
     for x = cx, cx2 do
       for y = cy, cy2 do
@@ -105,8 +105,8 @@ end
 
 function entitySystem:getSurroundingEntities(xx, yy, ww, hh)
   local hs = entitySystem.hashSize
-  local cx, cy = math.floor((xx - 1) / hs), math.floor((yy - 1) / hs)
-  local cx2, cy2 = math.floor((xx + ww + 1) / hs), math.floor((yy + hh + 1) / hs)
+  local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
+  local cx2, cy2 = math.floor((xx + ww + 2) / hs), math.floor((yy + hh + 2) / hs)
   
   local result
   
@@ -937,7 +937,7 @@ function basicEntity:getSurroundingEntities(dxx, dyy)
     local xx, yy, ww, hh = self.transform.x - math.min(dx, 0), self.transform.y - math.min(dy, 0),
       self.collisionShape.w + math.max(dx, 0), self.collisionShape.h + math.max(dy, 0)
     
-    return megautils.getSurroundingEntities(self.transform.x, self.transform.y, self.collisionShape.w, self.collisionShape.h, dx, dy)
+    return megautils.getSurroundingEntities(self.transform.x, self.transform.y, self.collisionShape.w, self.collisionShape.h)
   end
   
   local result = self.currentHashes[1] and {unpack(self.currentHashes[1].data)} or {}
