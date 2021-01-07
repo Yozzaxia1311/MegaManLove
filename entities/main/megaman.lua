@@ -157,6 +157,8 @@ megautils.resetGameObjectsFuncs.megaMan = {func=function()
     megautils.setLives((megautils.getLives() > globals.startingLives) and megautils.getLives() or globals.startingLives)
     globals.checkpoint = globals.overrideCheckpoint or "start"
     globals.overrideCheckpoint = nil
+    globals.playerCount = globals.overridePlayerCount or globals.playerCount
+    globals.overridePlayerCount = nil
     
     megaMan.resources()
     
@@ -558,20 +560,30 @@ function megaMan:useThrowAnimation()
 end
 
 function megaMan:transferState(to)
+  self.dontUpdateHash = true
   to.ground = self.ground
-  to.slide = self.slide
   to.climb = self.climb
   to.currentLadder = self.currentLadder
-  if self.playerName == "bass" then
-    self.transform.y = to.transform.y - (self.gravity >= 0 and (self.collisionShape.h - to.collisionShape.h) or 0)
-  end
-  if self.slideTimer ~= self.maxSlideTime then
-    to.slideTimer = to.maxSlideTime - 2
-  end
-  to.collisionShape = self.collisionShape
   to.side = self.side
   to.gravityMultipliers = table.clone(self.gravityMultipliers)
   to.gravity = self.gravity
+  to.transform.x = self.transform.x
+  to.transform.y = self.transform.y
+  if self.slide and not to.slide then
+    if checkFalse(to.canDash) then
+      to.slideTimer = to.maxSlideTime
+      to:slideBox()
+      to.slide = true
+    else
+      to.tempShortBox = true
+      to:shortBox()
+    end
+  elseif not self.slide and to.slide then
+    to.slideTimer = to.maxSlideTime
+    to:regBox()
+    to.slide = false
+  end
+  self.dontUpdateHash = false
   for _, v in pairs(megautils.playerTransferFuncs) do
     if type(v) == "function" then
       v(self, to)
@@ -627,17 +639,24 @@ function megaMan:slideBox()
   self:setRectangleCollision(17, checkFalse(self.canHaveSmallSlide) and 14 or 21)
 end
 
+function megaMan:shortBox()
+  self:setRectangleCollision(11, 14)
+end
+
 function megaMan:checkRegBox(ox, oy)
+  self.dontUpdateHash = true
   local w, h, oly = self.collisionShape.w, self.collisionShape.h, self.transform.y
   self:regBox()
   self.transform.y = self.transform.y + (self.gravity < 0 and 0 or h-self.collisionShape.h)
   local result = collision.checkSolid(self, ox, oy)
   self.transform.y = oly
   self:setRectangleCollision(w, h)
+  self.dontUpdateHash = false
   return result
 end
 
 function megaMan:checkSlideBox(ox, oy)
+  self.dontUpdateHash = true
   local w, h, olx, oly = self.collisionShape.w, self.collisionShape.h, self.transform.x, self.transform.y
   self:slideBox()
   self.transform.x = self.transform.x + (w-self.collisionShape.w)/2
@@ -646,35 +665,40 @@ function megaMan:checkSlideBox(ox, oy)
   self.transform.x = olx
   self.transform.y = oly
   self:setRectangleCollision(w, h)
+  self.dontUpdateHash = false
   return result
 end
 
 function megaMan:checkBasicSlideBox(ox, oy)
+  self.dontUpdateHash = true
   local w, h, oly = self.collisionShape.w, self.collisionShape.h, self.transform.y
   self:basicSlideBox()
   self.transform.y = self.transform.y + (self.gravity < 0 and 0 or h-self.collisionShape.h)
   local result = collision.checkSolid(self, ox, oy)
   self.transform.y = oly
   self:setRectangleCollision(w, h)
+  self.dontUpdateHash = false
   return result
 end
 
 function megaMan:regToSlide()
-  local w, h = self.collisionShape.w, self.collisionShape.h
+  local h = self.collisionShape.h
   self:basicSlideBox()
   self.transform.y = self.transform.y + (self.gravity < 0 and 0 or h-self.collisionShape.h)
 end
 
 function megaMan:slideToReg()
-  local w, h = self.collisionShape.w, self.collisionShape.h
+  local h = self.collisionShape.h
   self:regBox()
   self.transform.y = self.transform.y + (self.gravity < 0 and 0 or h-self.collisionShape.h)
 end
 
 function megaMan:checkLadder(x, y, tip)
+  self.dontUpdateHash = true
   local w, h, ox = self.collisionShape.w, self.collisionShape.h, self.transform.x
   self:setRectangleCollision(1, tip and 1 or h)
   self.transform.x = self.transform.x + (w/2)
+  self:updateHash(true, true)
   local result = self:collisionTable(collision.getLadders(self:getSurroundingEntities()), x, y)
   local highest = result[1]
   if highest then
@@ -686,6 +710,7 @@ function megaMan:checkLadder(x, y, tip)
   end
   self:setRectangleCollision(w, h)
   self.transform.x = ox
+  self.dontUpdateHash = false
   return highest
 end
 
@@ -967,6 +992,7 @@ function megaMan:attemptClimb()
 end
 
 function megaMan:checkProtoShield(e, side)
+  self.dontUpdateHash = true
   local x, y = self.transform.x, self.transform.y
   local w, h = self.collisionShape.w, self.collisionShape.h
   
@@ -988,6 +1014,7 @@ function megaMan:checkProtoShield(e, side)
   self.transform.y = y
   self.collisionShape.w = w
   self.collisionShape.h = h
+  self.dontUpdateHash = false
   
   return result
 end
@@ -1322,18 +1349,21 @@ function megaMan:code(dt)
       local w = self.collisionShape.w
       self:regBox()
       self.slideTimer = self.maxSlideTime
+      local cgrav = self.gravity >= 0 and 1 or -1
+      self.dontUpdateHash = true
       if self:checkRegBox() then
         while collision.checkSolid(self) do
-          self.transform.y = self.transform.y + math.sign(self.gravity)
+          self.transform.y = self.transform.y + cgrav
         end
       else
         if collision.checkSolid(self) then
-          self.transform.y = math.round(self.transform.y + math.sign(self.gravity))
+          self.transform.y = math.round(self.transform.y + cgrav)
           while collision.checkSolid(self) do
-            self.transform.y = self.transform.y - math.sign(self.gravity)
+            self.transform.y = self.transform.y - cgrav
           end
         end
       end
+      self.dontUpdateHash = false
     else
       self.slideTimer = math.min(self.slideTimer+1, self.maxSlideTime)
       local rb = self:checkRegBox()
@@ -1351,7 +1381,7 @@ function megaMan:code(dt)
         and (self.ground or sb) and not control.downDown[self.player] then
         self.slide = false
         jumped = true
-        self.velocity.vely = self.jumpSpeed * (self.gravity < 0 and -1 or 1)
+        self.velocity.vely = self.jumpSpeed * (self.gravity >= 0 and 1 or -1)
         self.ground = false
         self.slideTimer = self.maxSlideTime
         self.hitTimer = self.maxHitTime
@@ -1362,10 +1392,13 @@ function megaMan:code(dt)
         self.slideTimer = self.maxSlideTime
         self.hitTimer = self.maxHitTime
         local w = self.collisionShape.w
+        local cgrav = self.gravity >= 0 and 1 or -1
         self:regBox()
+        self.dontUpdateHash = true
         while collision.checkSolid(self) do
-          self.transform.y = self.transform.y + 1
+          self.transform.y = self.transform.y + cgrav
         end
+        self.dontUpdateHash = false
       elseif checkFalse(self.canBackOutFromDash) and lastSide ~= self.side and not rb then
         self.slide = false
         self.slideTimer = self.maxSlideTime
@@ -1437,11 +1470,11 @@ function megaMan:code(dt)
     elseif checkFalse(self.canJump) and self.inStandSolid and control.jumpDown[self.player] and
       self.standSolidJumpTimer ~= self.maxStandSolidJumpTime and
       self.standSolidJumpTimer ~= -1 then
-      self.velocity.vely = self.jumpSpeed * (self.gravity < 0 and -1 or 1)
+      self.velocity.vely = self.jumpSpeed * (self.gravity >= 0 and 1 or -1)
       self.standSolidJumpTimer = math.min(self.standSolidJumpTimer+1, self.maxStandSolidJumpTime)
     elseif checkFalse(self.canJump) and control.jumpPressed[self.player] and
       not (control[self.gravity >= 0 and "downDown" or "upDown"][self.player] and self:checkBasicSlideBox(self.side, 0)) then
-      self.velocity.vely = self.jumpSpeed * (self.gravity < 0 and -1 or 1)
+      self.velocity.vely = self.jumpSpeed * (self.gravity >= 0 and 1 or -1)
       self.protoShielding = checkFalse(self.canProtoShield)
       self.ground = false
     else
@@ -1464,6 +1497,12 @@ function megaMan:code(dt)
       end
     end
     collision.doCollision(self)
+    
+    if self.tempShortBox and not self:checkRegBox() then
+      self.tempShortBox = nil
+      self:slideToReg()
+    end
+    
     if not self.ground then
       self.standSolidJumpTimer = -1
     end
@@ -1508,7 +1547,14 @@ function megaMan:code(dt)
       end
     end
     collision.doCollision(self)
+    
     if self.died then return end
+    
+    if self.tempShortBox and not self:checkRegBox() then
+      self.tempShortBox = nil
+      self:slideToReg()
+    end
+    
     if self.ground then
       self.dashJump = false
       self.canStopJump.global = true

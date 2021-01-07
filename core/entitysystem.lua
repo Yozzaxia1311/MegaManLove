@@ -913,14 +913,14 @@ function basicEntity:collisionNumber(t, x, y, notme, func)
   return result
 end
 
-function basicEntity:updateHash(doAnyway)
+function basicEntity:updateHash(doAnyway, butEnforceBoundCheck)
   if (doAnyway or (not self.dontUpdateHash and self.isAdded)) and self.collisionShape then
     local xx, yy, ww, hh = self.transform.x, self.transform.y, self.collisionShape.w, self.collisionShape.h
     local hs = entitySystem.hashSize
-    local cx, cy = math.floor((xx - 1) / hs), math.floor((yy - 1) / hs)
-    local cx2, cy2 = math.floor((xx + ww + 1) / hs), math.floor((yy + hh + 1) / hs)
+    local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
+    local cx2, cy2 = math.floor((xx + ww + 2) / hs), math.floor((yy + hh + 2) / hs)
     
-    if doAnyway or self.lastHashX ~= cx or self.lastHashY ~= cy or self.lastHashX2 ~= cx2 or self.lastHashY2 ~= cy2 then
+    if (doAnyway and not butEnforceBoundCheck) or self.lastHashX ~= cx or self.lastHashY ~= cy or self.lastHashX2 ~= cx2 or self.lastHashY2 ~= cy2 then
       self.lastHashX = cx
       self.lastHashY = cy
       self.lastHashX2 = cx2

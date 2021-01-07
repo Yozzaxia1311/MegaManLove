@@ -49,11 +49,7 @@ function collision.getTable(self, dx, dy, noSlope)
     local ys = dy or 0
     local solid = {}
     local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
-    
-    local lduh = self.dontUpdateHash
-    self.dontUpdateHash = false
-    self:updateHash()
-    self.dontUpdateHash = lduh
+    self:updateHash(true, true)
     local all = self:getSurroundingEntities(xs, ys)
     local ladders = collision.getLadders(all)
     
@@ -94,11 +90,7 @@ function collision.checkSolid(self, dx, dy, noSlope)
     local ys = dy or 0
     local solid = {}
     local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
-    
-    local lduh = self.dontUpdateHash
-    self.dontUpdateHash = false
-    self:updateHash()
-    self.dontUpdateHash = lduh
+    self:updateHash(true, true)
     local all = self:getSurroundingEntities(xs, ys)
     local ladders = collision.getLadders(all)
     
@@ -133,7 +125,7 @@ function collision.entityPlatform(self)
   if self.transform.x ~= self.epX or self.transform.y ~= self.epY then
     local lduh = self.dontUpdateHash
     self.dontUpdateHash = true
-    self:updateHash(true)
+    self:updateHash(true, true)
     
     local resolid = self.solidType
     local xypre
@@ -331,7 +323,7 @@ end
 function collision.checkGround(self, checkAnyway, noSlope)
   local lduh = self.dontUpdateHash
   self.dontUpdateHash = true
-  self:updateHash(true)
+  self:updateHash(true, true)
   
   local possible = self.collisionShape and checkFalse(self.blockCollision)
   
@@ -415,7 +407,7 @@ end
 function collision.generalCollision(self, noSlope)
   local lduh = self.dontUpdateHash
   self.dontUpdateHash = true
-  self:updateHash(true)
+  self:updateHash(true, true)
   
   local nslp = noSlope or collision.noSlope
   
@@ -596,7 +588,7 @@ end
 function collision.checkDeath(self, x, y, dg)
   local lduh = self.dontUpdateHash
   self.dontUpdateHash = true
-  self:updateHash(true)
+  self:updateHash(true, true)
   
   local all = self:getSurroundingEntities(x, y)
   local possible = self.collisionShape and checkFalse(self.blockCollision) and #all ~= 0
