@@ -70,7 +70,7 @@ function entitySystem:updateHashForEntity(e)
             self.hashes[v.x][v.y] = nil
             self._HS[v.x] = self._HS[v.x] - 1
             
-            if self._HS[v.x] == 0 then
+            if self._HS[v.x] <= 0 then
               self.hashes[v.x] = nil
               self._HS[v.x] = nil
             end
@@ -90,7 +90,7 @@ function entitySystem:updateHashForEntity(e)
             self.hashes[v.x][v.y] = nil
             self._HS[v.x] = self._HS[v.x] - 1
             
-            if self._HS[v.x] == 0 then
+            if self._HS[v.x] <= 0 then
               self.hashes[v.x] = nil
               self._HS[v.x] = nil
             end
@@ -443,7 +443,7 @@ function entitySystem:remove(e)
         self.hashes[v.x][v.y] = nil
         self._HS[v.x] = self._HS[v.x] - 1
         
-        if table.length(self.hashes[v.x]) == 0 then
+        if self._HS[v.x] <= 0 then
           self.hashes[v.x] = nil
           self._HS[v.x] = nil
         end
