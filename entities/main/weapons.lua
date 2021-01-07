@@ -97,6 +97,8 @@ function weapon:new(p, enWeapon)
 end
 
 function weapon:added()
+  weapon.super.added(self)
+  
   if self.weaponGroup then
     self:addToGroup(self.weaponGroup)
     if self.user and megaMan.weaponHandler[self.user.player] then
@@ -104,7 +106,6 @@ function weapon:added()
     end
   end
   self:addToGroup("removeOnTransition")
-  self:addToGroup("collision")
   self:addToGroup("weapon")
   if self.isEnemyWeapon then
     self:addToGroup("enemyWeapon")
@@ -617,6 +618,7 @@ end
 
 function trebleBoost:added()
   trebleBoost.super.added(self)
+  
   self:addToGroup("submergable")
 end
 
@@ -762,6 +764,7 @@ end
 
 function rushJet:added()
   rushJet.super.added(self)
+  
   self:addToGroup("submergable")
 end
 
@@ -949,6 +952,7 @@ end
 
 function rushCoil:added()
   rushCoil.super.added(self)
+  
   self:addToGroup("submergable")
 end
 

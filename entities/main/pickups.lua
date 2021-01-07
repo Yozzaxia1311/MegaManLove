@@ -44,8 +44,9 @@ function pickupEntity:new(despawn, gd, fwp, id, path)
 end
 
 function pickupEntity:added()
+  pickupEntity.super.added(self)
+  
   self:addToGroup("removeOnTransition")
-  self:addToGroup("collision")
   if self.despawn then
     self:addToGroup("handledBySections")
   end

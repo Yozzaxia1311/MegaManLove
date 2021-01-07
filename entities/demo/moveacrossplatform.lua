@@ -3,7 +3,7 @@ megautils.loadResource("assets/global/entities/moveAcrossPlatform.png", "moveAro
 moveAcrossPlatform = advancedEntity:extend()
 
 mapEntity.register("moveAcrossPlatform", function(v)
-    megautils.add(spawner, v.x-4, v.y-4, 40, 24, nil,
+    megautils.add(spawner, v.x, v.y, 32, 16, nil,
       moveAcrossPlatform, v.x, v.y, v.properties.toX, v.properties.toY)
   end)
 

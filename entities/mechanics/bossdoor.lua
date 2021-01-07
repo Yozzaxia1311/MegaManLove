@@ -50,9 +50,10 @@ function bossDoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt, n, tw, th, ts)
 end
 
 function bossDoor:added()
+  bossDoor.super.added(self)
+  
   self:addToGroup("bossDoor")
   self:addToGroup("handledBySections")
-  self:addToGroup("collision")
 end
 
 function bossDoor:setDirection(dir)

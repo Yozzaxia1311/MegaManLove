@@ -2,6 +2,8 @@ megautils.loadResource("assets/sfx/gravityFlip.ogg", "gravityFlip")
 
 gravFlip = basicEntity:extend()
 
+gravFlip.noHash = true
+
 mapEntity.register("gravFlip", function(v)
     megautils.add(gravFlip, v.x, v.y, v.width, v.height, v.properties.dir)
   end)
@@ -15,6 +17,8 @@ function gravFlip:new(x, y, w, h, dir)
 end
 
 function gravFlip:added()
+  gravFlip.super.added(self)
+  
   self:addToGroup("handledBySections")
 end
 

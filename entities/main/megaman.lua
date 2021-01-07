@@ -534,8 +534,9 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
 end
 
 function megaMan:added()
+  megaMan.super.added(self)
+  
   self:addToGroup("submergable")
-  self:addToGroup("collision")
 end
 
 function megaMan:useShootAnimation()
@@ -674,7 +675,7 @@ function megaMan:checkLadder(x, y, tip)
   local w, h, ox = self.collisionShape.w, self.collisionShape.h, self.transform.x
   self:setRectangleCollision(1, tip and 1 or h)
   self.transform.x = self.transform.x + (w/2)
-  local result = self:collisionTable(collision.getLadders(), x, y)
+  local result = self:collisionTable(collision.getLadders(self:getSurroundingEntities()), x, y)
   local highest = result[1]
   if highest then
     for _, v in ipairs(result) do

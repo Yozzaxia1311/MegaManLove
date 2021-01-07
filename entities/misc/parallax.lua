@@ -1,6 +1,7 @@
 parallax = basicEntity:extend()
 
 parallax.autoClean = false
+parallax.noHash = true
 
 mapEntity.register("parallax", function(v)
     megautils.add(parallax, v.x, v.y, v.width, v.height, v.properties.image, v.properties.animate, v.properties.animSpeed,
@@ -50,6 +51,8 @@ function parallax:new(x, y, w, h, bg, a, as, aw, ah, spdMultX, spdMultY, sx, sy,
 end
 
 function parallax:added()
+  parallax.super.added(self)
+  
   self:addToGroup("handledBySections")
 end
 

@@ -1,6 +1,7 @@
 ready = basicEntity:extend()
 
 ready.autoClean = false
+ready.noHash = true
 
 function ready:new(text, blinks)
   ready.super.new(self)
@@ -16,6 +17,8 @@ function ready:new(text, blinks)
 end
 
 function ready:added()
+  ready.super.added(self)
+  
   megautils.freeze("ready")
 end
 

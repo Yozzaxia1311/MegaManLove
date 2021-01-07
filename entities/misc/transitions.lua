@@ -1,6 +1,7 @@
 right = basicEntity:extend()
 
 right.autoClean = false
+right.noHash = true
 
 mapEntity.register("right", function(v)
   megautils.add(right, v.x, v.y, v.height,
@@ -24,6 +25,8 @@ function right:new(x, y, h, scrollx, scrolly, spd, p, n)
 end
 
 function right:added()
+  right.super.added(self)
+  
   self:addToGroup("handledBySections")
 end
 
@@ -62,6 +65,7 @@ end
 left = basicEntity:extend()
 
 left.autoClean = false
+left.noHash = true
 
 mapEntity.register("left", function(v)
   megautils.add(left, v.x, v.y, v.height,
@@ -85,6 +89,8 @@ function left:new(x, y, h, scrollx, scrolly, spd, p, n)
 end
 
 function left:added()
+  left.super.added(self)
+  
   self:addToGroup("handledBySections")
 end
 
@@ -123,6 +129,7 @@ end
 down = basicEntity:extend()
 
 down.autoClean = false
+down.noHash = true
 
 mapEntity.register("down", function(v)
   megautils.add(down, v.x, v.y, v.width,
@@ -148,6 +155,8 @@ function down:new(x, y, w, scrollx, scrolly, spd, p, n, cl)
 end
 
 function down:added()
+  down.super.added(self)
+  
   self:addToGroup("handledBySections")
 end
 
@@ -187,6 +196,7 @@ end
 up = basicEntity:extend()
 
 up.autoClean = false
+up.noHash = true
 
 mapEntity.register("up", function(v)
   megautils.add(up, v.x, v.y, v.width,
@@ -212,6 +222,8 @@ function up:new(x, y, w, scrollx, scrolly, spd, p, n, cl)
 end
 
 function up:added()
+  up.super.added(self)
+  
   self:addToGroup("handledBySections")
 end
 
@@ -251,6 +263,7 @@ end
 sectionPrioritySetter = basicEntity:extend()
 
 sectionPrioritySetter.autoClean = false
+sectionPrioritySetter.noHash = true
 
 mapEntity.register("sectionPrioritySetter", function(v)
   megautils.add(sectionPrioritySetter, v.x, v.y, v.width, v.height, v.properties.toSection)
@@ -268,6 +281,8 @@ function sectionPrioritySetter:new(x, y, w, h, name)
 end
 
 function sectionPrioritySetter:added()
+  sectionPrioritySetter.super.added(self)
+  
   self:addToGroup("handledBySections")
 end
 
@@ -295,6 +310,7 @@ end
 sectionPrioritySetterXBorder = basicEntity:extend()
 
 sectionPrioritySetterXBorder.autoClean = false
+sectionPrioritySetterXBorder.noHash = true
 
 mapEntity.register("sectionPrioritySetterXBorder", function(v)
   megautils.add(sectionPrioritySetterXBorder, v.x, v.y, v.height, v.properties.lname, v.properties.rname)
@@ -316,6 +332,8 @@ function sectionPrioritySetterXBorder:new(x, y, h, lname, rname)
 end
 
 function sectionPrioritySetterXBorder:added()
+  sectionPrioritySetterXBorder.super.added(self)
+  
   self:addToGroup("handledBySections")
 end
 
@@ -345,6 +363,7 @@ end
 sectionPrioritySetterYBorder = basicEntity:extend()
 
 sectionPrioritySetterYBorder.autoClean = false
+sectionPrioritySetterYBorder.noHash = true
 
 mapEntity.register("sectionPrioritySetterYBorder", function(v)
   megautils.add(sectionPrioritySetterYBorder, v.x, v.y, v.width, v.properties.uname, v.properties.dname)
@@ -366,6 +385,8 @@ function sectionPrioritySetterYBorder:new(x, y, w, uname, dname)
 end
 
 function sectionPrioritySetterYBorder:added()
+  sectionPrioritySetterYBorder.super.added(self)
+  
   self:addToGroup("handledBySections")
 end
 
@@ -395,6 +416,7 @@ end
 sectionPrioritySetterArea = basicEntity:extend()
 
 sectionPrioritySetterArea.autoClean = false
+sectionPrioritySetterArea.noHash = true
 
 mapEntity.register("sectionPrioritySetterArea", function(v)
   megautils.add(sectionPrioritySetterArea, v.x, v.y, v.width, v.height, v.properties.inname, v.properties.outname)
@@ -416,6 +438,8 @@ function sectionPrioritySetterArea:new(x, y, w, h, name, name2)
 end
 
 function sectionPrioritySetterArea:added()
+  sectionPrioritySetterArea.super.added(self)
+  
   self:addToGroup("handledBySections")
   self:addToGroup("sectionPriorityArea")
 end

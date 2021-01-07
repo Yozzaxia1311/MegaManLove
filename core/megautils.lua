@@ -639,6 +639,10 @@ function megautils.addeq(o)
   return states.currentState.system:addeq(o)
 end
 
+function megautils.getAllEntities()
+  return megautils.state().system.all
+end
+
 function megautils.getRecycled(o, ...)
   return states.currentState.system:getRecycled(o, ...)
 end
@@ -707,6 +711,10 @@ function megautils.unregisterPlayer(e)
   if megaMan.mainPlayer == e then
     megaMan.mainPlayer = megaMan.allPlayers[1]
   end
+end
+
+function megautils.getSurroundingEntities(x, y, w, h, dx, dy)
+  return megautils.state().system:getSurroundingEntities(x, y, w, h, dx, dy)
 end
 
 function megautils.freeze(name)
@@ -943,5 +951,13 @@ function megautils.rectStencil(x, y, w, h)
     _stenh = h
   else
     love.graphics.rectangle("fill", _stenx, _steny, _stenw, _stenh)
+  end
+end
+
+function megautils.getClassName(e)
+  for k, v in pairs(_G) do
+    if e.__index == v then
+      return k
+    end
   end
 end

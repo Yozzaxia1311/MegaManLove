@@ -42,15 +42,20 @@ function collision.doCollision(self, noSlope)
 end
 
 function collision.getTable(self, dx, dy, noSlope)
-  if self.collisionShape and megautils.groups().collision then
+  if self.collisionShape then
     local nslp = noSlope or collision.noSlope
     
     local xs = dx or 0
     local ys = dy or 0
     local solid = {}
-    local ladders = collision.getLadders()
     local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
-    local all = megautils.groups().collision
+    
+    local lduh = self.dontUpdateHash
+    self.dontUpdateHash = false
+    self:updateHash()
+    self.dontUpdateHash = lduh
+    local all = self:getSurroundingEntities(xs, ys)
+    local ladders = collision.getLadders(all)
     
     for i=1, #all do
       local v = all[i]
@@ -82,15 +87,20 @@ function collision.getTable(self, dx, dy, noSlope)
 end
 
 function collision.checkSolid(self, dx, dy, noSlope)
-  if self.collisionShape and megautils.groups().collision then
+  if self.collisionShape then
     local nslp = noSlope or collision.noSlope
     
     local xs = dx or 0
     local ys = dy or 0
     local solid = {}
-    local ladders = collision.getLadders()
     local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
-    local all = megautils.groups().collision
+    
+    local lduh = self.dontUpdateHash
+    self.dontUpdateHash = false
+    self:updateHash()
+    self.dontUpdateHash = lduh
+    local all = self:getSurroundingEntities(xs, ys)
+    local ladders = collision.getLadders(all)
     
     for i=1, #all do
       local v = all[i]
@@ -121,14 +131,18 @@ end
 
 function collision.entityPlatform(self)
   if self.transform.x ~= self.epX or self.transform.y ~= self.epY then
+    local lduh = self.dontUpdateHash
+    self.dontUpdateHash = true
+    self:updateHash(true)
+    
     local resolid = self.solidType
     local xypre
     local epCanCrush = true
     local myyspeed = self.transform.y - self.epY
     local myxspeed = self.transform.x - self.epX
-    local all = megautils.groups().collision
-    local ladders = collision.getLadders()
-    local possible = resolid ~= 0 and self.collisionShape and all
+    local all = self:getSurroundingEntities(myxspeed, myyspeed)
+    local ladders = collision.getLadders(all)
+    local possible = resolid ~= 0 and self.collisionShape and #all ~= 0
     
     self.solidType = collision.NONE
     self.transform.x = self.epX
@@ -162,12 +176,13 @@ function collision.entityPlatform(self)
               end
               
               if (resolid == collision.SOLID or (resolid == collision.ONEWAY and (epDir * (v.gravity >= 0 and 1 or -1))>0 and
+                math.sign(v.transform.y - self.transform.y) == -cgrav and
                 (not self.ladder or self:collisionNumber(ladders, 0, v.gravity < 0 and 1 or -1, true) == 0))) and
                 v:collision(self) then
                 local step = epDir * 0.5
                 v.transform.y = math.round(v.transform.y) - step
                 
-                for _=1, 256 do
+                while true do
                   if v:collision(self) then
                     v.transform.y = v.transform.y - step
                   else
@@ -185,7 +200,9 @@ function collision.entityPlatform(self)
                 if epCanCrush and v:collision(self) then
                   local crushing = self.crushing and self:crushing(v)
                   if v.crushed and (crushing == nil or crushing) then
+                    self.dontUpdateHash = lduh
                     v:crushed(self)
+                    self.dontUpdateHash = true
                   end
                 end
               end
@@ -238,7 +255,7 @@ function collision.entityPlatform(self)
                 v.transform.x = math.round(v.transform.x + myxspeed + epDir)
                 local step = epDir * 0.5
                 
-                for _=1, 256 do
+                while true do
                   if v:collision(self) then
                     v.transform.x = v.transform.x - step
                   else
@@ -254,7 +271,9 @@ function collision.entityPlatform(self)
                 if epCanCrush and v:collision(self) then
                   local crushing = self.crushing and self:crushing(v)
                   if v.crushed and (crushing == nil or crushing) then
+                    self.dontUpdateHash = lduh
                     v:crushed(self)
+                    self.dontUpdateHash = true
                   end
                 end
               end
@@ -277,6 +296,8 @@ function collision.entityPlatform(self)
     
     self.epX = self.transform.x
     self.epY = self.transform.y
+    
+    self.dontUpdateHash = lduh
   end
 end
 
@@ -308,7 +329,11 @@ function collision.shiftObject(self, dx, dy, checkforcol, ep, noSlope)
 end
 
 function collision.checkGround(self, checkAnyway, noSlope)
-  local possible = self.collisionShape and checkFalse(self.blockCollision) and megautils.groups().collision
+  local lduh = self.dontUpdateHash
+  self.dontUpdateHash = true
+  self:updateHash(true)
+  
+  local possible = self.collisionShape and checkFalse(self.blockCollision)
   
   if not possible then
     self.ground = false
@@ -323,10 +348,10 @@ function collision.checkGround(self, checkAnyway, noSlope)
   end
   
   local solid = {}
-  local ladders = collision.getLadders()
   local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
   local slp = (noSlope or collision.noSlope) and 1 or ((math.ceil(math.abs(self.velocity.velx)) * collision.maxSlope) + 2)
-  local all = megautils.groups().collision
+  local all = self:getSurroundingEntities(self.velocity.velx, self.velocity.vely)
+  local ladders = collision.getLadders(all)
   
   if possible then
     for i=1, #all do
@@ -336,6 +361,7 @@ function collision.checkGround(self, checkAnyway, noSlope)
         (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) then
         if (v.solidType == collision.SOLID or v.solidType == collision.ONEWAY) and
           not v:collision(self, 0, cgrav) and (v.solidType ~= collision.ONEWAY or (v:collision(self, 0, -cgrav * slp) and
+          math.sign(self.transform.y - v.transform.y) == -cgrav and
           (not v.ladder or v:collisionNumber(ladders, 0, -cgrav, true) == 0))) then
           solid[#solid + 1] = v
         elseif v.solidType == collision.STANDIN then
@@ -382,9 +408,15 @@ function collision.checkGround(self, checkAnyway, noSlope)
       end
     end
   end
+  
+  self.dontUpdateHash = lduh
 end
 
 function collision.generalCollision(self, noSlope)
+  local lduh = self.dontUpdateHash
+  self.dontUpdateHash = true
+  self:updateHash(true)
+  
   local nslp = noSlope or collision.noSlope
   
   self.xColl = 0
@@ -393,10 +425,10 @@ function collision.generalCollision(self, noSlope)
   local xprev = self.transform.x
   local solid = {}
   local stand = {}
-  local ladders = collision.getLadders()
   local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
-  local all = megautils.groups().collision
-  local possible = self.collisionShape and checkFalse(self.blockCollision) and all
+  local all = self:getSurroundingEntities(self.velocity.velx, self.velocity.vely)
+  local ladders = collision.getLadders(all)
+  local possible = self.collisionShape and checkFalse(self.blockCollision) and #all ~= 0
     
   if possible then
     for i=1, #all do
@@ -420,6 +452,7 @@ function collision.generalCollision(self, noSlope)
     
     if possible then
       slp = math.ceil(math.abs(self.velocity.velx)) * collision.maxSlope
+      
       if not nslp and slp ~= 0 then
         for i=1, #all do
           local v = all[i]
@@ -439,14 +472,16 @@ function collision.generalCollision(self, noSlope)
     self.transform.x = self.transform.x + self.velocity.velx
     
     if possible and self:collisionNumber(solid) ~= 0 then
-      local s = -math.sign(self.velocity.velx)
-      self.transform.x = math.round(self.transform.x - s)
+      local s = math.sign(self.velocity.velx)
+      local step = 1
+      self.transform.x = math.round(self.transform.x + s)
       
-      for _=1, 128 do
-        if self:collisionNumber(solid) ~= 0 then
-          self.transform.x = self.transform.x + s
-        else
+      while true do
+        if self:collisionNumber(solid, step * -s, 0) == 0 then
+          self.transform.x = self.transform.x + (step * -s)
           break
+        else
+          step = step + 1
         end
       end
       
@@ -495,13 +530,17 @@ function collision.generalCollision(self, noSlope)
   if self.velocity.vely ~= 0 then
     if possible then
       if self.velocity.vely * cgrav > 0 then
+        self.dontUpdateHash = false
+        all = self:getSurroundingEntities(self.velocity.velx, self.velocity.vely)
+        self.dontUpdateHash = true
+        
         for i=1, #all do
           local v = all[i]
           if v ~= self and v.collisionShape and
           (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
           (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) and v.solidType == collision.ONEWAY and
           (not v.ladder or v:collisionNumber(ladders, 0, -cgrav, true) == 0) then
-            if not v:collision(self) then
+            if not v:collision(self) and math.sign(self.transform.y - v.transform.y) == -cgrav then
               solid[#solid+1] = v
             else
               table.removevaluearray(solid, v)
@@ -514,14 +553,16 @@ function collision.generalCollision(self, noSlope)
     self.transform.y = self.transform.y + self.velocity.vely
     
     if possible and self:collisionNumber(solid) ~= 0 then
-      local s = -math.sign(self.velocity.vely)
-      self.transform.y = math.round(self.transform.y - s)
+      local s = math.sign(self.velocity.vely)
+      local step = 1
+      self.transform.y = math.round(self.transform.y + s)
       
-      for _=1, 128 do
-        if self:collisionNumber(solid) ~= 0 then
-          self.transform.y = self.transform.y + s
-        else
+      while true do
+        if self:collisionNumber(solid, 0, step * -s) == 0 then
+          self.transform.y = self.transform.y + (step * -s)
           break
+        else
+          step = step + 1
         end
       end
       
@@ -548,11 +589,17 @@ function collision.generalCollision(self, noSlope)
       end
     end
   end
+  
+  self.dontUpdateHash = lduh
 end
 
 function collision.checkDeath(self, x, y, dg)
-  local all = megautils.groups().collision
-  local possible = self.collisionShape and checkFalse(self.blockCollision) and all
+  local lduh = self.dontUpdateHash
+  self.dontUpdateHash = true
+  self:updateHash(true)
+  
+  local all = self:getSurroundingEntities(x, y)
+  local possible = self.collisionShape and checkFalse(self.blockCollision) and #all ~= 0
   
   if possible then
     local death = {}
@@ -600,6 +647,8 @@ function collision.checkDeath(self, x, y, dg)
         lx, ly, lg, lxc, lyc, lss, lmf
     end
   end
+  
+  self.dontUpdateHash = lduh
 end
 
 function collision.performDeath(self, death)
@@ -608,16 +657,14 @@ function collision.performDeath(self, death)
   end
 end
 
-function collision.getLadders()
+function collision.getLadders(t)
   local result = {}
-  local all = megautils.groups().collision
+  local all = t or megautils.getAllEntities()
   
-  if all then
-    for i=1, #all do
-      local v = all[i]
-      if v.ladder then
-        result[#result+1] = v
-      end
+  for i=1, #all do
+    local v = all[i]
+    if v.ladder then
+      result[#result+1] = v
     end
   end
   

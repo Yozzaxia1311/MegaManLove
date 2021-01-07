@@ -268,7 +268,7 @@ function Layer.tilelayer:_init(map)
   Layer.spritelayer._init(self, map)
   
   if self.encoding == "base64" then
-    error("LuaJIT FFI is not allowed; use CSV instead.")
+    --error("LuaJIT FFI is not allowed; use CSV instead.")
     
     assert(require "ffi", "Compressed maps require LuaJIT FFI.\nPlease Switch your interperator to LuaJIT or your Tile Layer Format to \"CSV\".")
     if self.chunks then

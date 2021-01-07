@@ -1,6 +1,7 @@
 camera = basicEntity:extend()
 
 camera.autoClean = false
+camera.noHash = true
 
 megautils.reloadStateFuncs.camera = {func=function()
     camera.main = nil
@@ -38,6 +39,8 @@ function camera:new(x, y, doScrollX, doScrollY)
 end
 
 function camera:added()
+  camera.super.added(self)
+  
   view.x, view.y = self.transform.x, self.transform.y
   if megautils.groups().camera then
     for _, v in ipairs(megautils.groups().camera) do
@@ -512,7 +515,7 @@ function section.addSection(s)
         section.hash[x][y] = {}
       end
       section.hash[x][y][#section.hash[x][y]+1] = s
-      s.cells[#s.cells+1] = {["x"]=x, ["y"]=y}
+      s.cells[#s.cells+1] = {x=x, y=y}
     end
   end
 end

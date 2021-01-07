@@ -16,6 +16,7 @@ function ladder:new(x, y, w, h)
 end
 
 function ladder:added()
+  ladder.super.added(self)
+  
   self:addToGroup("handledBySections")
-  self:addToGroup("collision")
 end

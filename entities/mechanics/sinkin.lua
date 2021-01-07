@@ -14,8 +14,9 @@ function sinkIn:new(x, y, w, h, s)
 end
 
 function sinkIn:added()
+  sinkIn.super.added(self)
+  
   self:addToGroup("handledBySections")
-  self:addToGroup("collision")
 end
 
 function sinkIn:update(dt)

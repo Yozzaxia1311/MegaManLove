@@ -25,8 +25,9 @@ function particle:new(user)
 end
 
 function particle:added()
+  particle.super.added(self)
+  
   self:addToGroup("removeOnTransition")
-  self:addToGroup("collision")
 end
 
 function particle:grav()
@@ -355,6 +356,7 @@ end
 
 function blast:added()
   blast.super.added(self)
+  
   megautils.add(smallBlast, self.transform.x, self.transform.y, self.user)
 end
 
