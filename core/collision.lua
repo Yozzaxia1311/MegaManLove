@@ -188,8 +188,9 @@ function collision.entityPlatform(self)
                 if epCanCrush and v:collision(self) then
                   local crushing = self.crushing and self:crushing(v)
                   if v.crushed and (crushing == nil or crushing) then
-                    self:updateHash()
+                    if not self.invisibleToHash then self:updateHash() end
                     v:crushed(self)
+                    if not v.invisibleToHash then v:updateHash() end
                   end
                 end
               end
@@ -258,8 +259,9 @@ function collision.entityPlatform(self)
                 if epCanCrush and v:collision(self) then
                   local crushing = self.crushing and self:crushing(v)
                   if v.crushed and (crushing == nil or crushing) then
-                    self:updateHash()
+                    if not self.invisibleToHash then self:updateHash() end
                     v:crushed(self)
+                    if not v.invisibleToHash then v:updateHash() end
                   end
                 end
               end
