@@ -651,7 +651,31 @@ function megautils.emptyRecycling(c, num)
   states.currentState.system:emptyRecycling(c, num)
 end
 
-function megautils.groups()
+megautils._gMeta = {}
+
+function megautils._gMeta:__index(groupName)
+  local result = {}
+  local iter = rawget(self, "_SV_")
+  
+  for i = 1, #iter do
+    if table.contains(iter[i].groupNames, groupName) then
+      result[#result + 1] = iter[i]
+    end
+  end
+  
+  if #result ~= 0 then
+    return result
+  end
+end
+
+function megautils.groups(t)
+  if t then
+    local result = {_SV_ = t}
+    setmetatable(result, megautils._gMeta)
+    
+    return result
+  end
+  
   return states.currentState.system.groups
 end
 

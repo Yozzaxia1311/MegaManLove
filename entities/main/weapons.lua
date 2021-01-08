@@ -183,7 +183,7 @@ end
 function weapon:afterUpdate()
   if self.autoHit then
     if self.damageType == weapon.DAMAGEENEMY or self.damageType == weapon.DAMAGEBOTH then
-      self:interact(self:collisionTable(megautils.groups().interactable), self.damage)
+      self:interact(self:collisionTable(megautils.groups(self:getSurroundingEntities()).interactable), self.damage)
     end
     if self.damageType == weapon.DAMAGEPLAYER or self.damageType == weapon.DAMAGEBOTH then
       self:interact(self:collisionTable(megaMan.allPlayers), self.damage)

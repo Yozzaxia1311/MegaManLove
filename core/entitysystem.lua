@@ -312,11 +312,14 @@ function entitySystem:addToGroup(e, g)
   
   if not table.contains(self.groups[g], e) then
     self.groups[g][#self.groups[g]+1] = e
+    e.groupNames[#e.groupNames + 1] = g
   end
 end
 
 function entitySystem:removeFromGroup(e, g)
   table.quickremovevaluearray(self.groups[g], e)
+  table.quickremovevaluearray(e.groupNames, g)
+  
   if #self.groups[g] == 0 then
     self.groups[g] = nil
   end
@@ -751,6 +754,7 @@ function basicEntity:new()
   end
   
   self.currentHashes = {}
+  self.groupNames = {}
   self.transform.x = 0
   self.transform.y = 0
   self.iFrames = 0
