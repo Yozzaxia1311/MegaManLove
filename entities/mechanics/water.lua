@@ -14,8 +14,8 @@ function splash:new(offx, offy, p, rot)
   self.anim = megautils.newAnimation("splashGrid", {"1-4", 1}, 1/8)
   self.rot = math.rad(rot or 0)
   if self.user then
-    self.transform.x = self.user.transform.x + self.offx
-    self.transform.y = self.user.transform.y + self.offy
+    self.x = self.user.x + self.offx
+    self.y = self.user.y + self.offy
   end
   self.autoCollision.global = false
 end
@@ -23,8 +23,8 @@ end
 function splash:update()
   self.anim:update(1/60)
   if self.user then
-    self.transform.x = self.user.transform.x + self.offx
-    self.transform.y = self.user.transform.y + self.offy
+    self.x = self.user.x + self.offx
+    self.y = self.user.y + self.offy
   end
   if not self.user or self.user.isRemoved or self.anim:looped() then
     megautils.removeq(self)
@@ -32,7 +32,7 @@ function splash:update()
 end
 
 function splash:draw()
-  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y), self.rot, 1, 1, 16, 16)
+  self.tex:draw(self.anim, math.floor(self.x), math.floor(self.y), self.rot, 1, 1, 16, 16)
 end
 
 water = basicEntity:extend()
@@ -45,8 +45,8 @@ end)
 
 function water:new(x, y, w, h, grav)
   water.super.new(self)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self:setRectangleCollision(w or 16, h or 16)
   self.grav = grav or 0.4
 end
@@ -113,16 +113,16 @@ function water:update()
           end
           
           if dir == 1 then
-            megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2), 0, self, 0)
+            megautils.add(splash, (v.x-self.x)+(v.collisionShape.w/2), 0, self, 0)
             megautils.playSound("splash")
           elseif dir == 2 then
-            megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2), self.collisionShape.h, self, 180)
+            megautils.add(splash, (v.x-self.x)+(v.collisionShape.w/2), self.collisionShape.h, self, 180)
             megautils.playSound("splash")
           elseif dir == 3 then
-            megautils.add(splash, 0, (v.transform.y-self.transform.y)+(v.collisionShape.h/2), self, 270)
+            megautils.add(splash, 0, (v.y-self.y)+(v.collisionShape.h/2), self, 270)
             megautils.playSound("splash")
           elseif dir == 4 then
-            megautils.add(splash, self.collisionShape.w, (v.transform.y-self.transform.y)+(v.collisionShape.h/2), self, 90)
+            megautils.add(splash, self.collisionShape.w, (v.y-self.y)+(v.collisionShape.h/2), self, 90)
             megautils.playSound("splash")
           end
         end
@@ -159,16 +159,16 @@ function water:update()
         end
         
         if dir == 1 then
-          megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2), 0, self, 0)
+          megautils.add(splash, (v.x-self.x)+(v.collisionShape.w/2), 0, self, 0)
           megautils.playSound("splash")
         elseif dir == 2 then
-          megautils.add(splash, (v.transform.x-self.transform.x)+(v.collisionShape.w/2), self.collisionShape.h, self, 180)
+          megautils.add(splash, (v.x-self.x)+(v.collisionShape.w/2), self.collisionShape.h, self, 180)
           megautils.playSound("splash")
         elseif dir == 3 then
-          megautils.add(splash, 0, (v.transform.y-self.transform.y)+(v.collisionShape.h/2), self, 270)
+          megautils.add(splash, 0, (v.y-self.y)+(v.collisionShape.h/2), self, 270)
           megautils.playSound("splash")
         elseif dir == 4 then
-          megautils.add(splash, self.collisionShape.w, (v.transform.y-self.transform.y)+(v.collisionShape.h/2), self, 90)
+          megautils.add(splash, self.collisionShape.w, (v.y-self.y)+(v.collisionShape.h/2), self, 90)
           megautils.playSound("splash")
         end
         
@@ -189,8 +189,8 @@ end)
 
 function space:new(x, y, w, h, grav)
   space.super.new(self)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self:setRectangleCollision(w or 16, h or 16)
   self.grav = grav or 0.4
 end

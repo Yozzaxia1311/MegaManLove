@@ -16,8 +16,8 @@ end, 0, true)
 
 function bossDoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt, n, tw, th, ts)
   bossDoor.super.new(self)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self:setLayer(-1)
   self.tex = megautils.getResource("bossDoor")
   self.scrollx = scrollx
@@ -69,7 +69,7 @@ function bossDoor:left()
   camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
   camera.main.player = self.player
   camera.main.speed = self.spd
-  local s = self:collisionTable(section.getSections(self.transform.x-self.tileWidth, self.transform.y,
+  local s = self:collisionTable(section.getSections(self.x-self.tileWidth, self.y,
     self.collisionShape.w, self.collisionShape.h), -self.tileWidth, 0)
   for _, v in ipairs(s) do
     if v.name == self.name then
@@ -78,8 +78,8 @@ function bossDoor:left()
     end
   end
   camera.main.toSection = s
-  camera.main.transform.x = self.transform.x+self.tileWidth
-  camera.main.transX = camera.main.transform.x-camera.main.player.collisionShape.w-28
+  camera.main.x = self.x+self.tileWidth
+  camera.main.transX = camera.main.x-camera.main.player.collisionShape.w-28
   camera.main.dontUpdateSections = true
   camera.main.freeze = false
 end
@@ -91,7 +91,7 @@ function bossDoor:right()
   camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
   camera.main.player = self.player
   camera.main.speed = self.spd
-  local s = self:collisionTable(section.getSections(self.transform.x+self.tileWidth, self.transform.y,
+  local s = self:collisionTable(section.getSections(self.x+self.tileWidth, self.y,
     self.collisionShape.w, self.collisionShape.h), self.tileWidth, 0)
   for _, v in ipairs(s) do
     if v.name == self.name then
@@ -100,8 +100,8 @@ function bossDoor:right()
     end
   end
   camera.main.toSection = s
-  camera.main.transform.x = self.transform.x+self.tileWidth-camera.main.collisionShape.w
-  camera.main.transX = camera.main.transform.x+camera.main.collisionShape.w+28
+  camera.main.x = self.x+self.tileWidth-camera.main.collisionShape.w
+  camera.main.transX = camera.main.x+camera.main.collisionShape.w+28
   camera.main.dontUpdateSections = true
   camera.main.freeze = false
 end
@@ -113,7 +113,7 @@ function bossDoor:up()
   camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
   camera.main.player = self.player
   camera.main.speed = self.spd
-  local s = self:collisionTable(section.getSections(self.transform.x, self.transform.y-self.tileHeight,
+  local s = self:collisionTable(section.getSections(self.x, self.y-self.tileHeight,
     self.collisionShape.w, self.collisionShape.h), 0, -self.tileHeight)
   for _, v in ipairs(s) do
     if v.name == self.name then
@@ -122,8 +122,8 @@ function bossDoor:up()
     end
   end
   camera.main.toSection = s
-  camera.main.transform.y = self.transform.y+self.tileHeight
-  camera.main.transY = camera.main.transform.y-camera.main.player.collisionShape.h-28
+  camera.main.y = self.y+self.tileHeight
+  camera.main.transY = camera.main.y-camera.main.player.collisionShape.h-28
   camera.main.dontUpdateSections = true
   camera.main.freeze = false
 end
@@ -135,7 +135,7 @@ function bossDoor:down()
   camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
   camera.main.player = self.player
   camera.main.speed = self.spd
-  local s = self:collisionTable(section.getSections(self.transform.x, self.transform.y+self.tileHeight,
+  local s = self:collisionTable(section.getSections(self.x, self.y+self.tileHeight,
     self.collisionShape.w, self.collisionShape.h), 0, self.tileHeight)
   for _, v in ipairs(s) do
     if v.name == self.name then
@@ -144,20 +144,20 @@ function bossDoor:down()
     end
   end
   camera.main.toSection = s
-  camera.main.transform.y = self.transform.y+self.tileHeight-camera.main.collisionShape.h
-  camera.main.transY = camera.main.transform.y+camera.main.collisionShape.h+28
+  camera.main.y = self.y+self.tileHeight-camera.main.collisionShape.h
+  camera.main.transY = camera.main.y+camera.main.collisionShape.h+28
   camera.main.dontUpdateSections = true
   camera.main.freeze = false
 end
 
 function bossDoor:update()
-  if not megaMan.mainPlayer or not camera.main or not rectOverlapsRect(self.transform.x, self.transform.y, self.collisionShape.w,
+  if not megaMan.mainPlayer or not camera.main or not rectOverlapsRect(self.x, self.y, self.collisionShape.w,
     self.collisionShape.h, camera.main.scrollx, camera.main.scrolly,
     camera.main.scrollw, camera.main.scrollh) then return end
-  if ((self.transform.x < camera.main.scrollx and self.dir == "left") or
-    (self.transform.x+self.collisionShape.w > camera.main.scrollx+camera.main.scrollw and self.dir == "right") or
-    (self.transform.y < camera.main.scrolly and self.dir == "up") or
-    (self.transform.y+self.collisionShape.h > camera.main.scrolly+camera.main.scrollh and self.dir == "down")) then
+  if ((self.x < camera.main.scrollx and self.dir == "left") or
+    (self.x+self.collisionShape.w > camera.main.scrollx+camera.main.scrollw and self.dir == "right") or
+    (self.y < camera.main.scrolly and self.dir == "up") or
+    (self.y+self.collisionShape.h > camera.main.scrolly+camera.main.scrollh and self.dir == "down")) then
     self.canWalkThrough = not checkTrue(self.isLocked)
   else
     self.canWalkThrough = false
@@ -193,8 +193,8 @@ function bossDoor:update()
                   for x=1, (self.dir=="right" or self.dir=="left") and (2*self.tileWidth) or (self.maxSegments*self.tileHeight) do
                     self.tileList[v][x] = {}
                     for y=1, (self.dir=="right" or self.dir=="left") and (self.maxSegments*self.tileWidth) or (2*self.tileHeight) do
-                      local gid = layer:getTileAtPixelPosition(self.transform.x+(x*self.tileWidth)-self.tileWidth,
-                        self.transform.y+(y*self.tileHeight)-self.tileHeight)
+                      local gid = layer:getTileAtPixelPosition(self.x+(x*self.tileWidth)-self.tileWidth,
+                        self.y+(y*self.tileHeight)-self.tileHeight)
                       if gid >= 0 and (oldx ~= math.floor((x/self.tileWidth)*self.tileWidth) or
                         oldy ~= math.floor((y/self.tileHeight)*self.tileHeight)) then
                         oldx = math.floor((x/self.tileWidth)*self.tileWidth)
@@ -225,13 +225,13 @@ function bossDoor:update()
               local layer = v:getLayerByName(self.useMapTiles)
               if layer then
                 layer:setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and
-                  self.transform.x or (self.transform.x+(self.segments*self.tileWidth)),
+                  self.x or (self.x+(self.segments*self.tileWidth)),
                   (self.dir=="right" or self.dir=="left") and
-                  (self.transform.y+((self.segments)*self.tileHeight)) or self.transform.y, -1)
+                  (self.y+((self.segments)*self.tileHeight)) or self.y, -1)
                 layer:setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and
-                  self.transform.x+self.tileWidth or self.transform.x+(self.segments*self.tileWidth),
+                  self.x+self.tileWidth or self.x+(self.segments*self.tileWidth),
                   (self.dir=="right" or self.dir=="left") and
-                  self.transform.y+((self.segments)*self.tileHeight) or self.transform.y+self.tileHeight, -1)
+                  self.y+((self.segments)*self.tileHeight) or self.y+self.tileHeight, -1)
               end
             end
           end
@@ -274,17 +274,17 @@ function bossDoor:update()
               if layer and self.tileList[v] then
                 layer
                   :setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and
-                    self.transform.x or self.transform.x+(self.segments*self.tileWidth)-self.tileWidth,
+                    self.x or self.x+(self.segments*self.tileWidth)-self.tileWidth,
                     (self.dir=="right" or self.dir=="left") and
-                    self.transform.y+(self.segments*self.tileHeight)-self.tileHeight or self.transform.y,
+                    self.y+(self.segments*self.tileHeight)-self.tileHeight or self.y,
                     self.tileList[v]
                     [(self.dir=="right" or self.dir=="left") and 1 or self.segments]
                     [(self.dir=="right" or self.dir=="left") and self.segments or 1])
                 layer
                   :setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and
-                    self.transform.x+16 or self.transform.x+(self.segments*self.tileWidth)-self.tileWidth,
+                    self.x+16 or self.x+(self.segments*self.tileWidth)-self.tileWidth,
                     (self.dir=="right" or self.dir=="left") and
-                    self.transform.y+(self.segments*self.tileHeight)-self.tileHeight or self.transform.y+self.tileHeight,
+                    self.y+(self.segments*self.tileHeight)-self.tileHeight or self.y+self.tileHeight,
                     self.tileList[v]
                     [(self.dir=="right" or self.dir=="left") and 2 or self.segments]
                     [(self.dir=="right" or self.dir=="left") and self.segments or 2])
@@ -325,9 +325,9 @@ function bossDoor:draw()
   if self.useMapTiles or megautils.outside(self) then return end
   for i=1, self.segments do
     if self.dir == "left" or self.dir == "right" then
-      self.tex:draw(self.quad, self.transform.x, self.transform.y + (i*16) - 16)
+      self.tex:draw(self.quad, self.x, self.y + (i*16) - 16)
     else
-      self.tex:draw(self.quad, self.transform.x + (i*16), self.transform.y, math.rad(90))
+      self.tex:draw(self.quad, self.x + (i*16), self.y, math.rad(90))
     end
   end
 end

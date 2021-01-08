@@ -104,8 +104,8 @@ end, 0, true)
 
 function smallHealth:new(x, y, despawn, gd, fwp, id, path)
   smallHealth.super.new(self, despawn, gd, fwp, id, path)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self:setRectangleCollision(8, 6)
   self.t = megautils.getResource("particles")
   self.tOutline = megautils.getResource("particlesOutline")
@@ -126,14 +126,14 @@ function smallHealth:draw()
   if self.gravity < 0 then
     offy = -2
   end
-  self.t:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+  self.t:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
   if megaMan.mainPlayer then
     love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
-    self.tOutline:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.tOutline:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
   else
     love.graphics.setColor(0, 0, 0, 1)
-    self.tOutline:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.tOutline:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
   end
 end
 
@@ -149,8 +149,8 @@ end, 0, true)
 
 function health:new(x, y, despawn, gd, fwp, id, path)
   health.super.new(self, despawn, gd, fwp, id, path)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self:setRectangleCollision(16, 14)
   self.t = megautils.getResource("particles")
   self.tOutline = megautils.getResource("particlesOutline")
@@ -171,14 +171,14 @@ function health:draw()
   if self.gravity < 0 then
     offy = -2
   end
-  self.t:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+  self.t:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
   if megaMan.mainPlayer then
     love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
-    self.tOutline:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.tOutline:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
   else
     love.graphics.setColor(0, 0, 0, 1)
-    self.tOutline:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.tOutline:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
   end
 end
 
@@ -194,8 +194,8 @@ end, 0, true)
 
 function smallEnergy:new(x, y, despawn, gd, fwp, id, path)
   smallEnergy.super.new(self, despawn, gd, fwp, id, path)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self:setRectangleCollision(8, 6)
   self.anim = megautils.newAnimation("smallEnergyGrid", {"1-2", 1}, 1/8)
   self.texOutline = megautils.getResource("particlesOutline")
@@ -220,20 +220,20 @@ function smallEnergy:draw()
   if megaMan.mainPlayer then
     love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255, megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
       megaMan.colorTwo[megaMan.mainPlayer.player][3]/255, 1)
-    self.texTwo:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texTwo:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
     love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
-    self.texOutline:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOutline:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
     love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255, megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOne[megaMan.mainPlayer.player][3]/255, 1)
-    self.texOne:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOne:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
   else
     love.graphics.setColor(0, 232/255, 216/255, 1)
-    self.texTwo:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texTwo:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
     love.graphics.setColor(0, 0, 0, 1)
-    self.texOutline:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOutline:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
     love.graphics.setColor(0, 120/255, 248/255, 1)
-    self.texOne:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOne:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
   end
 end
 
@@ -249,8 +249,8 @@ end, 0, true)
 
 function energy:new(x, y, despawn, gd, fwp, id, path)
   energy.super.new(self, despawn, gd, fwp, id, path)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self:setRectangleCollision(16, 10)
   self.anim = megautils.newAnimation("energyGrid", {"1-2", 1}, 1/8)
   self.texOutline = megautils.getResource("particlesOutline")
@@ -275,20 +275,20 @@ function energy:draw()
   if megaMan.mainPlayer then
     love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255, megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
       megaMan.colorTwo[megaMan.mainPlayer.player][3]/255, 1)
-    self.texTwo:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texTwo:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
     love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
-    self.texOutline:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOutline:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
     love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255, megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOne[megaMan.mainPlayer.player][3]/255, 1)
-    self.texOne:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOne:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
   else
     love.graphics.setColor(0, 232/255, 216/255, 1)
-    self.texTwo:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texTwo:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
     love.graphics.setColor(0, 0, 0, 1)
-    self.texOutline:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOutline:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
     love.graphics.setColor(0, 120/255, 248/255, 1)
-    self.texOne:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOne:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
   end
 end
 
@@ -304,8 +304,8 @@ end, 0, true)
 
 function life:new(x, y, despawn, gd, fwp, id, path)
   life.super.new(self, despawn, gd, fwp, id, path)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self:setRectangleCollision(16, 15)
   self.quad = quad(203, 398, 63, 62)
 end
@@ -328,29 +328,29 @@ function life:draw()
     local fy = self.gravity < 0
     
     love.graphics.setColor(1, 1, 1, 1)
-    skin.texture:draw(self.quad, math.floor(self.transform.x)+ox, math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
+    skin.texture:draw(self.quad, math.floor(self.x)+ox, math.floor(self.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
     love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
-    skin.outline:draw(self.quad, math.floor(self.transform.x)+ox, math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
+    skin.outline:draw(self.quad, math.floor(self.x)+ox, math.floor(self.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
     love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255, megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOne[megaMan.mainPlayer.player][3]/255, 1)
-    skin.one:draw(self.quad, math.floor(self.transform.x)+ox, math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
+    skin.one:draw(self.quad, math.floor(self.x)+ox, math.floor(self.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
     love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255, megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
       megaMan.colorTwo[megaMan.mainPlayer.player][3]/255, 1)
-    skin.two:draw(self.quad, math.floor(self.transform.x)+ox, math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
+    skin.two:draw(self.quad, math.floor(self.x)+ox, math.floor(self.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
   else
     local skin = megaMan.getSkin(1)
     
     local fy = self.gravity < 0
     
     love.graphics.setColor(1, 1, 1, 1)
-    skin.texture:draw(self.quad, math.floor(self.transform.x)+ox, math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
+    skin.texture:draw(self.quad, math.floor(self.x)+ox, math.floor(self.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
     love.graphics.setColor(0, 0, 0, 1)
-    skin.outline:draw(self.quad, math.floor(self.transform.x)+ox, math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
+    skin.outline:draw(self.quad, math.floor(self.x)+ox, math.floor(self.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
     love.graphics.setColor(0, 120/255, 248/255, 1)
-    skin.one:draw(self.quad, math.floor(self.transform.x)+ox, math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
+    skin.one:draw(self.quad, math.floor(self.x)+ox, math.floor(self.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
     love.graphics.setColor(0, 232/255, 216/255, 1)
-    skin.two:draw(self.quad, math.floor(self.transform.x)+ox, math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
+    skin.two:draw(self.quad, math.floor(self.x)+ox, math.floor(self.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
   end
 end
 
@@ -368,8 +368,8 @@ eTank.banIds = {}
 
 function eTank:new(x, y, despawn, gd, fwp, id, path)
   eTank.super.new(self, despawn, gd, fwp, id, path)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self:setRectangleCollision(16, 15)
   self.anim = megautils.newAnimation("tankGrid", {1, 1, 2, 2}, 1/8)
   self.texOutline = megautils.getResource("particlesOutline")
@@ -395,20 +395,20 @@ function eTank:draw()
   if megaMan.mainPlayer then
     love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
-    self.texOutline:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOutline:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
     love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255, megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
       megaMan.colorTwo[megaMan.mainPlayer.player][3]/255, 1)
-    self.texTwo:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texTwo:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
     love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255, megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOne[megaMan.mainPlayer.player][3]/255, 1)
-    self.texOne:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOne:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
   else
     love.graphics.setColor(0, 0, 0, 1)
-    self.texOutline:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOutline:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
     love.graphics.setColor(0, 232/255, 216/255, 1)
-    self.texTwo:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texTwo:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
     love.graphics.setColor(0, 120/255, 248/255, 1)
-    self.texOne:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOne:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
   end
 end
 
@@ -424,8 +424,8 @@ end, 0, true)
 
 function wTank:new(x, y, despawn, gd, fwp, id, path)
   wTank.super.new(self, despawn, gd, fwp, id, path)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self:setRectangleCollision(16, 15)
   self.anim = megautils.newAnimation("tankGrid", {2, 2, 2, 1}, 1/8)
   self.texOutline = megautils.getResource("particlesOutline")
@@ -451,20 +451,20 @@ function wTank:draw()
   if megaMan.mainPlayer then
     love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255, megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
       megaMan.colorTwo[megaMan.mainPlayer.player][3]/255, 1)
-    self.texTwo:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texTwo:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
     love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
-    self.texOutline:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOutline:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
     love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255, megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOne[megaMan.mainPlayer.player][3]/255, 1)
-    self.texOne:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOne:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
   else
     love.graphics.setColor(0, 232/255, 216/255, 1)
-    self.texTwo:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texTwo:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
     love.graphics.setColor(0, 0, 0, 1)
-    self.texOutline:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOutline:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
     love.graphics.setColor(0, 120/255, 248/255, 1)
-    self.texOne:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)+offy)
+    self.texOne:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
   end
 end
 

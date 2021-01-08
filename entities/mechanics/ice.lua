@@ -6,8 +6,8 @@ end)
 
 function ice:new(x, y, w, h)
   ice.super.new(self)
-  self.transform.y = y
-  self.transform.x = x
+  self.y = y
+  self.x = x
   self:setRectangleCollision(w, h)
   self.solidType = collision.SOLID
 end

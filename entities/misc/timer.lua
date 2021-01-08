@@ -88,7 +88,7 @@ function timer.absorbCutscene(func, music)
         if s.timer == 300 then
           if not s.once then
             s.once = true
-            megaMan.mainPlayer.side = (megaMan.mainPlayer.transform.x > s.to and -1 or 1)
+            megaMan.mainPlayer.side = (megaMan.mainPlayer.x > s.to and -1 or 1)
           end
           megaMan.mainPlayer.velocity.velx = 1.3 * megaMan.mainPlayer.side
           if megaMan.mainPlayer.ground then
@@ -96,15 +96,15 @@ function timer.absorbCutscene(func, music)
           elseif collision.checkSolid(self, megaMan.mainPlayer.side, 0) then
             megaMan.mainPlayer.velocity.vely = megaMan.mainPlayer.jumpSpeed * (megaMan.mainPlayer.gravity >= 0 and 1 or -1)
           end
-          if megaMan.mainPlayer.ground and ((megaMan.mainPlayer.side == -1 and megaMan.mainPlayer.transform.x < s.to) or
-            (megaMan.mainPlayer.side == 1 and megaMan.mainPlayer.transform.x > s.to)) then
+          if megaMan.mainPlayer.ground and ((megaMan.mainPlayer.side == -1 and megaMan.mainPlayer.x < s.to) or
+            (megaMan.mainPlayer.side == 1 and megaMan.mainPlayer.x > s.to)) then
             s.state = 2
             s.timer = 0
             megaMan.mainPlayer.velocity.velx = 0
             megaMan.mainPlayer.velocity.vely = megaMan.mainPlayer.jumpSpeed * (megaMan.mainPlayer.gravity >= 0 and 1 or -1)
             megaMan.mainPlayer.ground = false
             megaMan.mainPlayer.anims:set("jump")
-            s.cg = megaMan.mainPlayer.transform.y
+            s.cg = megaMan.mainPlayer.y
             return
           end
         else
@@ -134,7 +134,7 @@ function timer.absorbCutscene(func, music)
         collision.doGrav(megaMan.mainPlayer)
         collision.doCollision(megaMan.mainPlayer)
         if megaMan.mainPlayer.ground or ((megaMan.mainPlayer.gravity >= 0 and
-          megaMan.mainPlayer.transform.y > s.cg) or (megaMan.mainPlayer.gravity < 0 and megaMan.mainPlayer.transform.y < s.cg)) then
+          megaMan.mainPlayer.y > s.cg) or (megaMan.mainPlayer.gravity < 0 and megaMan.mainPlayer.y < s.cg)) then
           megaMan.mainPlayer.rise = true
           megaMan.mainPlayer.doAnimation = true
           s.state = 5

@@ -8,8 +8,8 @@ end)
 
 function met:new(x, y)
   met.super.new(self)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self:setRectangleCollision(14, 14)
   self.t = megautils.getResource("met")
   self.c = "safe"
@@ -47,8 +47,8 @@ end
 
 function met:update(dt)
   if self.s == 0 then
-    if self.closest and math.between(self.closest.transform.x, 
-      self.transform.x - 120, self.transform.x + 120) then
+    if self.closest and math.between(self.closest.x, 
+      self.x - 120, self.x + 120) then
       self.timer = math.min(self.timer+1, 80)
     else
       self.timer = 0
@@ -64,9 +64,9 @@ function met:update(dt)
     if self.timer == 20 then
       self.timer = 0
       self.s = 2
-      megautils.add(metBullet, self.transform.x+4, self.transform.y+4, self, self.side*megautils.calcX(45)*2, -megautils.calcY(45)*2)
-      megautils.add(metBullet, self.transform.x+4, self.transform.y+4, self, self.side*megautils.calcX(45)*2, megautils.calcY(45)*2)
-      megautils.add(metBullet, self.transform.x+4, self.transform.y+4, self, self.side*2, 0)
+      megautils.add(metBullet, self.x+4, self.y+4, self, self.side*megautils.calcX(45)*2, -megautils.calcY(45)*2)
+      megautils.add(metBullet, self.x+4, self.y+4, self, self.side*megautils.calcX(45)*2, megautils.calcY(45)*2)
+      megautils.add(metBullet, self.x+4, self.y+4, self, self.side*2, 0)
     end
   elseif self.s == 2 then
     self.timer = math.min(self.timer+1, 20)
@@ -80,7 +80,7 @@ function met:update(dt)
 end
 
 function met:draw()
-  self.t:draw(self.quads[self.c], math.floor(self.transform.x), math.floor(self.transform.y),
+  self.t:draw(self.quads[self.c], math.floor(self.x), math.floor(self.y),
     nil, nil, nil, nil, nil, nil, nil, self.side == 1, self.gravity < 0)
 end
 
@@ -96,13 +96,13 @@ function metBullet:new(x, y, p, vx, vy)
     self.recycle = true
   end
   
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self.velocity.velx = vx or 0
   self.velocity.vely = vy or 0
   self.damage = megautils.diffValue(-2, {easy=-1, normal=-2, hard=-3})
 end
 
 function metBullet:draw()
-  self.tex:draw(self.quad, math.floor(self.transform.x), math.floor(self.transform.y))
+  self.tex:draw(self.quad, math.floor(self.x), math.floor(self.y))
 end

@@ -9,8 +9,8 @@ mapEntity.register("stickMan", function(v)
 
 function stickMan:new(x, y)
   stickMan.super.new(self)
-  self.transform.y = y or 0
-  self.transform.x = x or 0
+  self.y = y or 0
+  self.x = x or 0
   self:setRectangleCollision(12, 24)
   self.t = megautils.getResource("stickMan")
   self.anims = animationSet()
@@ -40,8 +40,8 @@ function stickMan:new(x, y)
       elseif m._stickTimer % 60 == 0 then
         m.shootFrames = 14
         m:useShootAnimation()
-        megautils.add(stickWeapon, m.transform.x+m:shootOffX(), 
-          m.transform.y+m:shootOffY(), m, m.side)
+        megautils.add(stickWeapon, m.x+m:shootOffX(), 
+          m.y+m:shootOffY(), m, m.side)
       end
       
       if m.shootFrames ~= 0 then
@@ -88,7 +88,7 @@ end
 
 function stickMan:draw()
   stickMan.super.draw(self)
-  self.t:draw(self.anims, math.floor(self.transform.x)-4, math.floor(self.transform.y)-8)
+  self.t:draw(self.anims, math.floor(self.x)-4, math.floor(self.y)-8)
 end
 
 return stickMan

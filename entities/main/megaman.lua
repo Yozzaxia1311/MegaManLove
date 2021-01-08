@@ -372,8 +372,8 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   megaMan.resources()
   megaMan.super.new(self)
   self.doWeaponGet = megautils.getCurrentState() == globals.weaponGetState
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self.player = p or 1
   megautils.registerPlayer(self)
   megaMan.properties(self, g, gf, c)
@@ -478,8 +478,8 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   if self.doWeaponGet then
     self.canControl.global = false
     self.drop = false
-    self.transform.y = -self.collisionShape.h
-    self.transform.x = math.floor(view.w/2)-(self.collisionShape.w/2)
+    self.y = -self.collisionShape.h
+    self.x = math.floor(view.w/2)-(self.collisionShape.w/2)
     self.canDraw.global = false
   elseif (dr == nil or dr) and not self.teleporter and megaMan.mainPlayer == self and not megaMan.once then
     if self.protoWhistle then
@@ -514,10 +514,10 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
           if player then
             player.healthHandler.canDraw.global = not player.drop
             megaMan.weaponHandler[player.player].canDraw.global = not player.drop
-            player.healthHandler.transform.x = view.x+24 + (i*32)
-            player.healthHandler.transform.y = view.y+80
-            megaMan.weaponHandler[player.player].transform.x = view.x+32 + (i*32)
-            megaMan.weaponHandler[player.player].transform.y = view.y+80
+            player.healthHandler.x = view.x+24 + (i*32)
+            player.healthHandler.y = view.y+80
+            megaMan.weaponHandler[player.player].x = view.x+32 + (i*32)
+            megaMan.weaponHandler[player.player].y = view.y+80
           end
         end
       end
@@ -567,8 +567,8 @@ function megaMan:transferState(to)
   to.side = self.side
   to.gravityMultipliers = table.clone(self.gravityMultipliers)
   to.gravity = self.gravity
-  to.transform.x = self.transform.x
-  to.transform.y = self.transform.y
+  to.x = self.x
+  to.y = self.y
   if self.slide and not to.slide then
     if checkFalse(to.canDash) then
       to.slideTimer = to.maxSlideTime
@@ -645,11 +645,11 @@ end
 
 function megaMan:checkRegBox(ox, oy)
   self.dontUpdateHash = true
-  local w, h, oly = self.collisionShape.w, self.collisionShape.h, self.transform.y
+  local w, h, oly = self.collisionShape.w, self.collisionShape.h, self.y
   self:regBox()
-  self.transform.y = self.transform.y + (self.gravity < 0 and 0 or h-self.collisionShape.h)
+  self.y = self.y + (self.gravity < 0 and 0 or h-self.collisionShape.h)
   local result = collision.checkSolid(self, ox, oy)
-  self.transform.y = oly
+  self.y = oly
   self:setRectangleCollision(w, h)
   self.dontUpdateHash = false
   return result
@@ -657,13 +657,13 @@ end
 
 function megaMan:checkSlideBox(ox, oy)
   self.dontUpdateHash = true
-  local w, h, olx, oly = self.collisionShape.w, self.collisionShape.h, self.transform.x, self.transform.y
+  local w, h, olx, oly = self.collisionShape.w, self.collisionShape.h, self.x, self.y
   self:slideBox()
-  self.transform.x = self.transform.x + (w-self.collisionShape.w)/2
-  self.transform.y = self.transform.y + (self.gravity < 0 and 0 or h-self.collisionShape.h)
+  self.x = self.x + (w-self.collisionShape.w)/2
+  self.y = self.y + (self.gravity < 0 and 0 or h-self.collisionShape.h)
   local result = collision.checkSolid(self, ox, oy)
-  self.transform.x = olx
-  self.transform.y = oly
+  self.x = olx
+  self.y = oly
   self:setRectangleCollision(w, h)
   self.dontUpdateHash = false
   return result
@@ -671,11 +671,11 @@ end
 
 function megaMan:checkBasicSlideBox(ox, oy)
   self.dontUpdateHash = true
-  local w, h, oly = self.collisionShape.w, self.collisionShape.h, self.transform.y
+  local w, h, oly = self.collisionShape.w, self.collisionShape.h, self.y
   self:basicSlideBox()
-  self.transform.y = self.transform.y + (self.gravity < 0 and 0 or h-self.collisionShape.h)
+  self.y = self.y + (self.gravity < 0 and 0 or h-self.collisionShape.h)
   local result = collision.checkSolid(self, ox, oy)
-  self.transform.y = oly
+  self.y = oly
   self:setRectangleCollision(w, h)
   self.dontUpdateHash = false
   return result
@@ -684,32 +684,32 @@ end
 function megaMan:regToSlide()
   local h = self.collisionShape.h
   self:basicSlideBox()
-  self.transform.y = self.transform.y + (self.gravity < 0 and 0 or h-self.collisionShape.h)
+  self.y = self.y + (self.gravity < 0 and 0 or h-self.collisionShape.h)
 end
 
 function megaMan:slideToReg()
   local h = self.collisionShape.h
   self:regBox()
-  self.transform.y = self.transform.y + (self.gravity < 0 and 0 or h-self.collisionShape.h)
+  self.y = self.y + (self.gravity < 0 and 0 or h-self.collisionShape.h)
 end
 
 function megaMan:checkLadder(x, y, tip)
   self.dontUpdateHash = true
-  local w, h, ox = self.collisionShape.w, self.collisionShape.h, self.transform.x
+  local w, h, ox = self.collisionShape.w, self.collisionShape.h, self.x
   self:setRectangleCollision(1, tip and 1 or h)
-  self.transform.x = self.transform.x + (w/2)
+  self.x = self.x + (w/2)
   self:updateHash(true, true)
   local result = self:collisionTable(collision.getLadders(self:getSurroundingEntities()), x, y)
   local highest = result[1]
   if highest then
     for _, v in ipairs(result) do
-      if self.gravity >= 0 and (v.transform.y > highest.transform.y) or (v.transform.y < highest.transform.y) then
+      if self.gravity >= 0 and (v.y > highest.y) or (v.y < highest.y) then
         highest = v
       end
     end
   end
   self:setRectangleCollision(w, h)
-  self.transform.x = ox
+  self.x = ox
   self.dontUpdateHash = false
   return highest
 end
@@ -794,7 +794,7 @@ function megaMan:attemptWeaponUsage()
               end
             end
           end
-          shots[#shots+1] = megautils.add(bassBuster, self.transform.x+self:shootOffX(tx), self.transform.y+self:shootOffY(ty), self, dir)
+          shots[#shots+1] = megautils.add(bassBuster, self.x+self:shootOffX(tx), self.y+self:shootOffY(ty), self, dir)
         end
       end
     end
@@ -807,52 +807,52 @@ function megaMan:attemptWeaponUsage()
       if w.current == "RUSH C." and self:checkWeaponEnergy("RUSH C.") and self:numberOfShots("rushCoil") < 1 then
         self.shootFrames = 14
         self:useShootAnimation()
-        shots[#shots+1] = megautils.add(rushCoil, self.transform.x+self:shootOffX(16), self.transform.y+self:shootOffY(-16), self, self.side, "rush")
+        shots[#shots+1] = megautils.add(rushCoil, self.x+self:shootOffX(16), self.y+self:shootOffY(-16), self, self.side, "rush")
       elseif w.current == "RUSH JET" and self:checkWeaponEnergy("RUSH JET") and self:numberOfShots("rushJet") < 1 then
         self.shootFrames = 14
         self:useShootAnimation()
-        shots[#shots+1] = megautils.add(rushJet, self.transform.x+self:shootOffX(16), self.transform.y+self:shootOffY(), self, self.side, "rush")
+        shots[#shots+1] = megautils.add(rushJet, self.x+self:shootOffX(16), self.y+self:shootOffY(), self, self.side, "rush")
       else
         self.shootFrames = 14
         self:resetCharge()
         self:useShootAnimation()
-        shots[#shots+1] = megautils.add(megaBuster, self.transform.x+self:shootOffX(), self.transform.y+self:shootOffY(), self, self.side)
+        shots[#shots+1] = megautils.add(megaBuster, self.x+self:shootOffX(), self.y+self:shootOffY(), self, self.side)
       end
     elseif (w.current == "P.BUSTER" or w.current == "PROTO JET" or w.current == "PROTO C.")
       and self:numberOfShots("megaBuster") < 3 and self:numberOfShots("protoChargedBuster") == 0 then
       if w.current == "PROTO C." and self:checkWeaponEnergy("PROTO C.") and self:numberOfShots("rushCoil") < 1 then
         self.shootFrames = 14
         self:useShootAnimation()
-        shots[#shots+1] = megautils.add(rushCoil, self.transform.x+self:shootOffX(16),
-          self.transform.y+self:shootOffY(-16), self, self.side, "protoRush")
+        shots[#shots+1] = megautils.add(rushCoil, self.x+self:shootOffX(16),
+          self.y+self:shootOffY(-16), self, self.side, "protoRush")
       elseif w.current == "PROTO JET" and self:checkWeaponEnergy("PROTO JET") and self:numberOfShots("rushJet") < 1 then
         self.shootFrames = 14
         self:useShootAnimation()
-        shots[#shots+1] = megautils.add(rushJet, self.transform.x+self:shootOffX(16),
-          self.transform.y+self:shootOffY(), self, self.side, "protoRush")
+        shots[#shots+1] = megautils.add(rushJet, self.x+self:shootOffX(16),
+          self.y+self:shootOffY(), self, self.side, "protoRush")
       else
         self.shootFrames = 14
         self:resetCharge()
         self:useShootAnimation()
-        shots[#shots+1] = megautils.add(megaBuster, self.transform.x+self:shootOffX(), self.transform.y+self:shootOffY(), self, self.side)
+        shots[#shots+1] = megautils.add(megaBuster, self.x+self:shootOffX(), self.y+self:shootOffY(), self, self.side)
       end
     elseif (w.current == "R.BUSTER" or w.current == "TANGO JET" or w.current == "TANGO C.")
       and self:numberOfShots("megaBuster") < 3 and self:numberOfShots("protoChargedBuster") == 0 then
       if w.current == "TANGO C." and self:checkWeaponEnergy("TANGO C.") and self:numberOfShots("rushCoil") < 1 then
         self.shootFrames = 14
         self:useShootAnimation()
-        shots[#shots+1] = megautils.add(rushCoil, self.transform.x+self:shootOffX(16),
-          self.transform.y+self:shootOffY(-16), self, self.side, "tango")
+        shots[#shots+1] = megautils.add(rushCoil, self.x+self:shootOffX(16),
+          self.y+self:shootOffY(-16), self, self.side, "tango")
       elseif w.current == "TANGO JET" and self:checkWeaponEnergy("TANGO JET") and self:numberOfShots("rushJet") < 1 then
         self.shootFrames = 14
         self:useShootAnimation()
-        shots[#shots+1] = megautils.add(rushJet, self.transform.x+self:shootOffX(16),
-          self.transform.y+self:shootOffY(), self, self.side, "tango")
+        shots[#shots+1] = megautils.add(rushJet, self.x+self:shootOffX(16),
+          self.y+self:shootOffY(), self, self.side, "tango")
       else
         self.shootFrames = 14
         self:resetCharge()
         self:useShootAnimation()
-        shots[#shots+1] = megautils.add(megaBuster, self.transform.x+self:shootOffX(), self.transform.y+self:shootOffY(), self, self.side)
+        shots[#shots+1] = megautils.add(megaBuster, self.x+self:shootOffX(), self.y+self:shootOffY(), self, self.side)
       end
     elseif w.current == "T. BOOST" and self:checkWeaponEnergy("T. BOOST") then
       if self.treble == 3 then
@@ -861,11 +861,11 @@ function megaMan:attemptWeaponUsage()
           self:resetCharge()
           self:useShootAnimation()
           local ox, oy = self:shootOffX(), self:shootOffY()
-          shots[#shots+1] = megautils.add(bassBuster, self.transform.x+ox, self.transform.y+oy,
+          shots[#shots+1] = megautils.add(bassBuster, self.x+ox, self.y+oy,
             self, self.side==1 and 0 or 180, true)
-          shots[#shots+1] = megautils.add(bassBuster, self.transform.x+ox, self.transform.y+oy,
+          shots[#shots+1] = megautils.add(bassBuster, self.x+ox, self.y+oy,
             self, self.side==1 and 45 or 180+45, true)
-          shots[#shots+1] = megautils.add(bassBuster, self.transform.x+ox, self.transform.y+oy,
+          shots[#shots+1] = megautils.add(bassBuster, self.x+ox, self.y+oy,
             self, self.side==1 and -45 or 180-45, true)
           megautils.playSound("buster")
         end
@@ -873,16 +873,16 @@ function megaMan:attemptWeaponUsage()
         self.shootFrames = 14
         self:resetCharge()
         self:useShootAnimation()
-        shots[#shots+1] = megautils.add(trebleBoost, self.transform.x+self:shootOffX(16), 
-          self.transform.y+self:shootOffY(-16), self, self.side)
+        shots[#shots+1] = megautils.add(trebleBoost, self.x+self:shootOffX(16), 
+          self.y+self:shootOffY(-16), self, self.side)
       end
     elseif w.current == "STICK W." and self:checkWeaponEnergy("STICK W.") and
       self:numberOfShots("stickWeapon") < 1 then
       self.shootFrames = 14
       self:resetCharge()
       self:useShootAnimation()
-      shots[#shots+1] = megautils.add(stickWeapon, self.transform.x+self:shootOffX(), 
-        self.transform.y+self:shootOffY(), self, self.side)
+      shots[#shots+1] = megautils.add(stickWeapon, self.x+self:shootOffX(), 
+        self.y+self:shootOffY(), self, self.side)
       w:updateCurrent(w.energy[w.currentSlot] - 1)
     end
   end
@@ -892,14 +892,14 @@ function megaMan:attemptWeaponUsage()
         self.shootFrames = 14
         self:resetCharge()
         self:useShootAnimation()
-        shots[#shots+1] = megautils.add(megaSemiBuster, self.transform.x+self:shootOffX(2), 
-          self.transform.y+self:shootOffY(), self, self.side)
+        shots[#shots+1] = megautils.add(megaSemiBuster, self.x+self:shootOffX(2), 
+          self.y+self:shootOffY(), self, self.side)
       elseif self.chargeState == 2 and self:numberOfShots("megaChargedBuster") < 1 then
         self.shootFrames = 14
         self:resetCharge()
         self:useShootAnimation()
-        shots[#shots+1] = megautils.add(megaChargedBuster, self.transform.x+self:shootOffX(4), 
-          self.transform.y+self:shootOffY(), self, self.side)
+        shots[#shots+1] = megautils.add(megaChargedBuster, self.x+self:shootOffX(4), 
+          self.y+self:shootOffY(), self, self.side)
       else
         self:resetCharge()
       end
@@ -908,14 +908,14 @@ function megaMan:attemptWeaponUsage()
         self.shootFrames = 14
         self:resetCharge()
         self:useShootAnimation()
-        shots[#shots+1] = megautils.add(protoSemiBuster, self.transform.x+self:shootOffX(2), 
-          self.transform.y+self:shootOffY(), self, self.side, "protoBuster")
+        shots[#shots+1] = megautils.add(protoSemiBuster, self.x+self:shootOffX(2), 
+          self.y+self:shootOffY(), self, self.side, "protoBuster")
       elseif self.chargeState == 2 and self:numberOfShots("protoChargedBuster") < 1 then
         self.shootFrames = 14
         self:resetCharge()
         self:useShootAnimation()
-        shots[#shots+1] = megautils.add(protoChargedBuster, self.transform.x+self:shootOffX(8), 
-          self.transform.y+self:shootOffY(), self, self.side, "protoBuster")
+        shots[#shots+1] = megautils.add(protoChargedBuster, self.x+self:shootOffX(8), 
+          self.y+self:shootOffY(), self, self.side, "protoBuster")
       else
         self:resetCharge()
       end
@@ -924,14 +924,14 @@ function megaMan:attemptWeaponUsage()
         self.shootFrames = 14
         self:resetCharge()
         self:useShootAnimation()
-        shots[#shots+1] = megautils.add(protoSemiBuster, self.transform.x+self:shootOffX(2), 
-          self.transform.y+self:shootOffY(), self, self.side, "rollBuster")
+        shots[#shots+1] = megautils.add(protoSemiBuster, self.x+self:shootOffX(2), 
+          self.y+self:shootOffY(), self, self.side, "rollBuster")
       elseif self.chargeState == 2 and self:numberOfShots("protoChargedBuster") < 1 then
         self.shootFrames = 14
         self:resetCharge()
         self:useShootAnimation()
-        shots[#shots+1] = megautils.add(protoChargedBuster, self.transform.x+self:shootOffX(8), 
-          self.transform.y+self:shootOffY(), self, self.side, "rollBuster")
+        shots[#shots+1] = megautils.add(protoChargedBuster, self.x+self:shootOffX(8), 
+          self.y+self:shootOffY(), self, self.side, "rollBuster")
       else
         self:resetCharge()
       end
@@ -973,7 +973,7 @@ function megaMan:attemptClimb()
       self:slideToReg()
     end
     if downDown and self.ground and not self:collision(self.currentLadder) then
-      self.transform.y = self.transform.y + (self.gravity >= 0 and (math.round(self.collisionShape.h*0.3)) or (-math.round(self.collisionShape.h*0.3)))
+      self.y = self.y + (self.gravity >= 0 and (math.round(self.collisionShape.h*0.3)) or (-math.round(self.collisionShape.h*0.3)))
     end
     self.velocity.vely = 0
     self.velocity.velx = 0
@@ -986,32 +986,32 @@ function megaMan:attemptClimb()
     self.climbTip = self.currentLadder and
       not self:checkLadder(0, (self.gravity >= 0) and (self.collisionShape.h * 0.4) or (self.collisionShape.h * 0.6), true)
       and not self:checkLadder(0, self.gravity >= 0 and -1 or self.collisionShape.h, true)
-    self.transform.x = self.currentLadder.transform.x+(self.currentLadder.collisionShape.w/2)-
+    self.x = self.currentLadder.x+(self.currentLadder.collisionShape.w/2)-
       ((self.collisionShape.w)/2)
   end
 end
 
 function megaMan:checkProtoShield(e, side)
   self.dontUpdateHash = true
-  local x, y = self.transform.x, self.transform.y
+  local x, y = self.x, self.y
   local w, h = self.collisionShape.w, self.collisionShape.h
   
   if side == -1 then
-    self.transform.x = x+self.protoShieldLeftCollision.x
-    self.transform.y = y+self.protoShieldLeftCollision.y+(self.gravity >= 0 and 0 or self.protoShieldLeftCollision.goy)
+    self.x = x+self.protoShieldLeftCollision.x
+    self.y = y+self.protoShieldLeftCollision.y+(self.gravity >= 0 and 0 or self.protoShieldLeftCollision.goy)
     self.collisionShape.w = self.protoShieldLeftCollision.w
     self.collisionShape.h = self.protoShieldLeftCollision.h
   else
-    self.transform.x = x+self.protoShieldRightCollision.x
-    self.transform.y = y+self.protoShieldRightCollision.y+(self.gravity >= 0 and 0 or self.protoShieldRightCollision.goy)
+    self.x = x+self.protoShieldRightCollision.x
+    self.y = y+self.protoShieldRightCollision.y+(self.gravity >= 0 and 0 or self.protoShieldRightCollision.goy)
     self.collisionShape.w = self.protoShieldRightCollision.w
     self.collisionShape.h = self.protoShieldRightCollision.h
   end
   
   local result = self:collision(e)
   
-  self.transform.x = x
-  self.transform.y = y
+  self.x = x
+  self.y = y
   self.collisionShape.w = w
   self.collisionShape.h = h
   self.dontUpdateHash = false
@@ -1067,18 +1067,18 @@ function megaMan:interactedWith(o, c)
             not self.drop and not self.rise and self.collisionShape then
             camera.main:updateCam()
           end
-          self.cameraTween = timer((((self.gravity >= 0 and self.transform.y < view.y+view.h) or
-            (self.gravity < 0 and self.transform.y+self.collisionShape.h > view.y)) and 28 or 0))
+          self.cameraTween = timer((((self.gravity >= 0 and self.y < view.y+view.h) or
+            (self.gravity < 0 and self.y+self.collisionShape.h > view.y)) and 28 or 0))
           megautils.stopMusic()
         else
           local dx, dy
-          local ox, oy = camera.main.transform.x, camera.main.transform.y
+          local ox, oy = camera.main.x, camera.main.y
           camera.main:doView(nil, nil, self)
-          dx = camera.main.transform.x
-          dy = camera.main.transform.y
-          camera.main.transform.x = ox
-          camera.main.transform.y = oy
-          self.cameraTween = tween.new(0.4, camera.main.transform, {x=dx, y=dy})
+          dx = camera.main.x
+          dy = camera.main.y
+          camera.main.x = ox
+          camera.main.y = oy
+          self.cameraTween = tween.new(0.4, camera.main, {x=dx, y=dy})
         end
       else
         self.cameraTween = true
@@ -1103,12 +1103,12 @@ function megaMan:interactedWith(o, c)
       self.climb = false
       self.dashJump = false
       megautils.add(harm, self)
-      megautils.add(damageSteam, self.transform.x+(self.collisionShape.w/2)-2.5-11,
-        self.transform.y+(self.gravity >= 0 and -8 or self.collisionShape.h), self)
-      megautils.add(damageSteam, self.transform.x+(self.collisionShape.w/2)-2.5,
-        self.transform.y+(self.gravity >= 0 and -8 or self.collisionShape.h), self)
-      megautils.add(damageSteam, self.transform.x+(self.collisionShape.w/2)-2.5+11,
-        self.transform.y+(self.gravity >= 0 and -8 or self.collisionShape.h), self)
+      megautils.add(damageSteam, self.x+(self.collisionShape.w/2)-2.5-11,
+        self.y+(self.gravity >= 0 and -8 or self.collisionShape.h), self)
+      megautils.add(damageSteam, self.x+(self.collisionShape.w/2)-2.5,
+        self.y+(self.gravity >= 0 and -8 or self.collisionShape.h), self)
+      megautils.add(damageSteam, self.x+(self.collisionShape.w/2)-2.5+11,
+        self.y+(self.gravity >= 0 and -8 or self.collisionShape.h), self)
       if o.pierceType == pierce.NOPIERCE or o.pierceType == pierce.PIERCEIFKILLING then
         megautils.removeq(o)
       end
@@ -1269,14 +1269,14 @@ function megaMan:code(dt)
     
     if not self.currentLadder or self.ground or
       (control.jumpPressed[self.player] and not (downDown or upDown)) or
-      self.transform.x <= view.x-(self.collisionShape.w/2)+2 or
-      self.transform.x >= (view.x+view.w)-(self.collisionShape.w/2)-2 then
+      self.x <= view.x-(self.collisionShape.w/2)+2 or
+      self.x >= (view.x+view.w)-(self.collisionShape.w/2)-2 then
       self.climb = false
-    elseif upDown and ((self.gravity >= 0 and self.transform.y+(self.collisionShape.h*0.8) < self.currentLadder.transform.y) or 
-      (self.gravity < 0 and self.transform.y+(self.collisionShape.h*0.2) > self.currentLadder.transform.y+self.currentLadder.collisionShape.h)) and
+    elseif upDown and ((self.gravity >= 0 and self.y+(self.collisionShape.h*0.8) < self.currentLadder.y) or 
+      (self.gravity < 0 and self.y+(self.collisionShape.h*0.2) > self.currentLadder.y+self.currentLadder.collisionShape.h)) and
       not tipc then
         self.velocity.vely = 0
-        self.transform.y = math.round(self.transform.y)
+        self.y = math.round(self.y)
         local hit = false
         while self:collision(self.currentLadder) do
           collision.shiftObject(self, 0, self.gravity >= 0 and -1 or 1, true)
@@ -1297,7 +1297,7 @@ function megaMan:code(dt)
           self.side = 1
         end
       end
-      self.transform.x = self.currentLadder.transform.x+(self.currentLadder.collisionShape.w/2)-(self.collisionShape.w/2)
+      self.x = self.currentLadder.x+(self.currentLadder.collisionShape.w/2)-(self.collisionShape.w/2)
       if (control.upDown[self.player] or control.downDown[self.player]) and self.shootFrames == 0 then
         if control.upDown[self.player] then
           self.velocity.vely = self.climbUpSpeed
@@ -1353,13 +1353,13 @@ function megaMan:code(dt)
       self.dontUpdateHash = true
       if self:checkRegBox() then
         while collision.checkSolid(self) do
-          self.transform.y = self.transform.y + cgrav
+          self.y = self.y + cgrav
         end
       else
         if collision.checkSolid(self) then
-          self.transform.y = math.round(self.transform.y + cgrav)
+          self.y = math.round(self.y + cgrav)
           while collision.checkSolid(self) do
-            self.transform.y = self.transform.y - cgrav
+            self.y = self.y - cgrav
           end
         end
       end
@@ -1396,7 +1396,7 @@ function megaMan:code(dt)
         self:regBox()
         self.dontUpdateHash = true
         while collision.checkSolid(self) do
-          self.transform.y = self.transform.y + cgrav
+          self.y = self.y + cgrav
         end
         self.dontUpdateHash = false
       elseif checkFalse(self.canBackOutFromDash) and lastSide ~= self.side and not rb then
@@ -1465,8 +1465,8 @@ function megaMan:code(dt)
       self.slide = true
       self:regToSlide()
       self.slideTimer = 0
-      megautils.add(slideParticle, self.transform.x+(self.side==-1 and self.collisionShape.w-8 or 0),
-        self.transform.y+(self.gravity >= 0 and self.collisionShape.h-6 or -2), self, self.side)
+      megautils.add(slideParticle, self.x+(self.side==-1 and self.collisionShape.w-8 or 0),
+        self.y+(self.gravity >= 0 and self.collisionShape.h-6 or -2), self, self.side)
     elseif checkFalse(self.canJump) and self.inStandSolid and control.jumpDown[self.player] and
       self.standSolidJumpTimer ~= self.maxStandSolidJumpTime and
       self.standSolidJumpTimer ~= -1 then
@@ -1578,15 +1578,15 @@ function megaMan:code(dt)
     self.bubbleTimer = math.min(self.bubbleTimer+1, self.maxBubbleTime)
     if self.bubbleTimer == self.maxBubbleTime then
       self.bubbleTimer = 0
-      megautils.add(airBubble, self.transform.x+(self.side==-1 and -4 or self.collisionShape.w), self.transform.y+4, self)
+      megautils.add(airBubble, self.x+(self.side==-1 and -4 or self.collisionShape.w), self.y+4, self)
     end
   end
-  self.transform.x = math.clamp(self.transform.x, view.x+(-self.collisionShape.w/2)+2,
+  self.x = math.clamp(self.x, view.x+(-self.collisionShape.w/2)+2,
     (view.x+view.w)+(-self.collisionShape.w/2)-2)
-  self.transform.y = math.clamp(self.transform.y, view.y-(self.collisionShape.h*1.4),
+  self.y = math.clamp(self.y, view.y-(self.collisionShape.h*1.4),
     view.y+view.h+4)
   self.shootFrames = math.max(self.shootFrames-1, 0)
-  if ((self.gravity >= 0 and self.transform.y >= view.y+view.h) or (self.gravity < 0 and self.transform.y+self.collisionShape.h <= view.y)) or 
+  if ((self.gravity >= 0 and self.y >= view.y+view.h) or (self.gravity < 0 and self.y+self.collisionShape.h <= view.y)) or 
     (checkFalse(self.blockCollision) and checkTrue(self.canGetCrushed) and collision.checkSolid(self)) then
     self.iFrames = 0
     for k, _ in pairs(self.canBeInvincible) do
@@ -1887,9 +1887,9 @@ function megaMan:animate(getDataOnly)
 end
 
 function megaMan:die()
-  if ((self.gravity >= 0 and self.transform.y < view.y+view.h) or (self.gravity < 0 and self.transform.y+self.collisionShape.h > view.y)) then
-    deathExplodeParticle.createExplosion(self.transform.x+((self.collisionShape.w/2)-12),
-      self.transform.y+((self.collisionShape.h/2)-12))
+  if ((self.gravity >= 0 and self.y < view.y+view.h) or (self.gravity < 0 and self.y+self.collisionShape.h > view.y)) then
+    deathExplodeParticle.createExplosion(self.x+((self.collisionShape.w/2)-12),
+      self.y+((self.collisionShape.h/2)-12))
   end
   
   if self.healthHandler.health ~= 0 then
@@ -1956,8 +1956,8 @@ function megaMan:update()
       self._w2 = self._wgv and self._wgv.weaponName
       self.canDraw.global = true
     elseif self._subState == 0 then
-      self.transform.y = math.min(self.transform.y + 10, math.floor(view.h/2)-(self.collisionShape.h/2))
-      if self.transform.y == math.floor(view.h/2)-(self.collisionShape.h/2) then
+      self.y = math.min(self.y + 10, math.floor(view.h/2)-(self.collisionShape.h/2))
+      if self.y == math.floor(view.h/2)-(self.collisionShape.h/2) then
         self._subState = (type(self._wgv) == "table") and 1 or 2
         if self._subState == 1 then
           megaMan.weaponHandler[self.player]:register(self._wgv.weaponSlot or 1,
@@ -2003,7 +2003,7 @@ function megaMan:update()
     if self.ready or (megaMan.mainPlayer and megaMan.mainPlayer.ready) then
       if megaMan.mainPlayer == self and self.ready.isRemoved then
         self.ready = nil
-        self.teleportOffY = (not self.teleporter and self.drop) and (view.y-self.transform.y) or 0
+        self.teleportOffY = (not self.teleporter and self.drop) and (view.y-self.y) or 0
         if self.mq then
           megautils.playMusic(unpack(self.mq))
           self.mq = nil
@@ -2023,7 +2023,7 @@ function megaMan:update()
         return
       end
       if camera.main then
-        view.x, view.y = math.round(camera.main.transform.x), math.round(camera.main.transform.y)
+        view.x, view.y = math.round(camera.main.x), math.round(camera.main.y)
         camera.main:updateFuncs()
       end
     else
@@ -2043,7 +2043,7 @@ function megaMan:update()
         end
       elseif self.drop then
         if not self.teleportOffY then
-          self.teleportOffY = (not self.teleporter and self.drop) and (view.y-self.transform.y) or 0
+          self.teleportOffY = (not self.teleporter and self.drop) and (view.y-self.y) or 0
         end
         self.teleportOffY = math.min(self.teleportOffY+self.dropSpeed, 0)
         if self.teleportOffY == 0 then
@@ -2077,7 +2077,7 @@ function megaMan:draw()
   if megaMan.mainPlayer and megaMan.mainPlayer.ready then return end
   
   local offsetx, offsety = math.round(self.collisionShape.w/2), (self.gravity >= 0 and self.collisionShape.h or 0) + (self.teleportOffY or 0)
-  local roundx, roundy = math.floor(self.transform.x), math.floor(self.transform.y)
+  local roundx, roundy = math.floor(self.x), math.floor(self.y)
   local fx = self.side ~= 1
   local sy = self.gravity >= 0 and 1 or -1
   

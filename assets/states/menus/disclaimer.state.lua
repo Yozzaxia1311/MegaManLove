@@ -11,8 +11,8 @@ disclaimer = basicEntity:extend()
 
 function disclaimer:new()
   disclaimer.super.new(self)
-  self.transform.x = 0
-  self.transform.y = 0
+  self.x = 0
+  self.y = 0
   self.t = megautils.getResource("face")
   self.timer = 0
   self.alpha = 0

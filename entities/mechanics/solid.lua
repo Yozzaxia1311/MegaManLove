@@ -8,8 +8,8 @@ end, 0, true)
 
 function solid:new(x, y, w, h)
   solid.super.new(self)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self:setRectangleCollision(w or 16, h or 16)
   self.solidType = collision.SOLID
 end
@@ -48,8 +48,8 @@ end, 0, true)
 
 function slope:new(x, y, mask)
   slope.super.new(self)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self:setImageCollision(mask or "slopeLeft")
   self.solidType = collision.SOLID
 end

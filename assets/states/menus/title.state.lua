@@ -73,8 +73,8 @@ function title:update()
 end
 
 function title:draw()
-  self.tex:draw(self.quad1, self.oneOff, self.transform.y)
-  self.tex:draw(self.quad2, self.twoOff, self.transform.y+115)
+  self.tex:draw(self.quad1, self.oneOff, self.y)
+  self.tex:draw(self.quad2, self.twoOff, self.y+115)
   if self.s == 3 then
     love.graphics.print(self.text, self.textPos, 208)
     if self.textTimer < 20 then

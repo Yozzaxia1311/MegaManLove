@@ -8,8 +8,8 @@ end, 0, true)
 
 function death:new(x, y, w, h, damage)
   death.super.new(self, true)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self:setRectangleCollision(w or 16, h or 16)
   self.damage = damage or -99999
   self.damage = -math.abs(self.damage)

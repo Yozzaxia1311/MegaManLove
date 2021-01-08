@@ -8,8 +8,8 @@ end, 0, true)
 
 function checkpoint:new(x, y, w, h, c)
   checkpoint.super.new(self)
-  self.transform.y = y
-  self.transform.x = x
+  self.y = y
+  self.x = x
   self:setRectangleCollision(w, h)
   self.name = c
 end
@@ -36,8 +36,8 @@ end, 0, true)
 
 function collisionCheckpoint:new(x, y, w, h, c)
   collisionCheckpoint.super.new(self)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self:setRectangleCollision(w or 16, h or 16)
   self.name = c
 end

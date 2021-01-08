@@ -10,12 +10,12 @@ mapEntity.register("moveAcrossPlatform", function(v)
 function moveAcrossPlatform:new(x, y, toX, toY)
   moveAcrossPlatform.super.new(self)
   self.solidType = collision.SOLID
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self:setRectangleCollision(32, 16)
   self.tex = megautils.getResource("moveArossPlatform")
   self.quad = quad(0, 0, 32, 16)
-  self.tween = tween.new(1, self.transform, {x=toX or (self.transform.x+32), y=toY or (self.transform.y-32)}, "inOutBack")
+  self.tween = tween.new(1, self, {x=toX or (self.x+32), y=toY or (self.y-32)}, "inOutBack")
   self.state = 0
   self.hurtable = false
   self.autoGravity.global = false
@@ -31,11 +31,11 @@ function moveAcrossPlatform:update()
     end
   elseif self.state == 1 then
     self.tween:update(1/60)
-    self.transform.x = math.round(self.transform.x)
-    self.transform.y = math.round(self.transform.y)
+    self.x = math.round(self.x)
+    self.y = math.round(self.y)
   end
 end
 
 function moveAcrossPlatform:draw()
-  self.tex:draw(self.quad, math.floor(self.transform.x), math.floor(self.transform.y))
+  self.tex:draw(self.quad, math.floor(self.x), math.floor(self.y))
 end

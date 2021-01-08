@@ -18,11 +18,11 @@ menuSelect = basicEntity:extend()
 
 function menuSelect:new()
   menuSelect.super.new(self)
-  self.transform.x = 88
-  self.transform.y = 10*8
+  self.x = 88
+  self.y = 10*8
   self.tex = megautils.getResource("menuSelect")
   self.pick = 0
-  self.offY = self.transform.y
+  self.offY = self.y
   self.picked = false
   self.section = 0
   self.timer = 20
@@ -98,7 +98,7 @@ function menuSelect:update()
         megautils.transitionToState(globals.titleState)
       end
     end
-    self.transform.y = self.offY + self.pick*16
+    self.y = self.offY + self.pick*16
   elseif self.section == 1 then
     self.timer = math.wrap(self.timer+1, 0, 20)
     local old = megautils.getScale()
@@ -135,7 +135,7 @@ end
 
 function menuSelect:draw()
   if self.section == 0 then
-    self.tex:draw(self.transform.x, self.transform.y)
+    self.tex:draw(self.x, self.y)
   end
   if self.section ~= 1 or self.timer > 10 then
     love.graphics.print(megautils.getScale(), 96, (18*8)-1)

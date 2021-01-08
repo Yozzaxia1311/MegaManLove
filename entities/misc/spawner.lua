@@ -4,8 +4,8 @@ spawner.autoClean = false
 
 function spawner:new(x, y, w, h, cond, ...)
   spawner.super.new(self)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self:setRectangleCollision(w or 16, h or 16)
   self.stuff = {...}
   self.wasOutside = true
@@ -38,8 +38,8 @@ intervalSpawner.autoClean = false
 
 function intervalSpawner:new(x, y, w, h, time, cond, ...)
   intervalSpawner.super.new(self)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self:setRectangleCollision(w or 16, h or 16)
   self.stuff = {...}
   self.cond = cond

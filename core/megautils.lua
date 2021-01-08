@@ -751,14 +751,14 @@ end
 
 function megautils.outside(o, ex, ey)
   return o.collisionShape and not rectOverlapsRect(view.x-(ex or 0), view.y-(ey or 0), view.w+((ex or 0)*2), view.h+((ey or 0)*2), 
-    o.transform.x, o.transform.y, o.collisionShape.w, o.collisionShape.h)
+    o.x, o.y, o.collisionShape.w, o.collisionShape.h)
 end
 
 function megautils.outsideSection(o, ex, ey)
   return camera.main and camera.main.bounds and
     not rectOverlapsRect(camera.main.scrollx-(ex or 0), camera.main.scrolly-(ey or 0),
       camera.main.scrollw+((ex or 0)*2), camera.main.scrollh+((ey or 0)*2),
-      o.transform.x, o.transform.y, o.collisionShape.w, o.collisionShape.h)
+      o.x, o.y, o.collisionShape.w, o.collisionShape.h)
 end
 
 megautils.shake = false
@@ -824,7 +824,7 @@ function megautils.dropItem(x, y)
 end
 
 function megautils.center(e)
-  return e.transform.x+e.collisionShape.w/2, e.transform.y+e.collisionShape.h/2
+  return e.x+e.collisionShape.w/2, e.y+e.collisionShape.h/2
 end
 
 function megautils.dist(e, e2)
@@ -853,11 +853,11 @@ function megautils.side(e, to, single)
   local closest = megautils.closest(e, to, single)
   local side
   if closest then
-    if closest.transform.x+closest.collisionShape.w/2 >
-      e.transform.x+e.collisionShape.w/2 then
+    if closest.x+closest.collisionShape.w/2 >
+      e.x+e.collisionShape.w/2 then
       side = 1
-    elseif closest.transform.x+closest.collisionShape.w/2 <
-      e.transform.x+e.collisionShape.w/2 then
+    elseif closest.x+closest.collisionShape.w/2 <
+      e.x+e.collisionShape.w/2 then
       side = -1
     end
   end

@@ -46,11 +46,11 @@ contSelect = entity:extend()
 
 function contSelect:new()
   contSelect.super.new(self)
-  self.transform.x = 64
-  self.transform.y = 144
+  self.x = 64
+  self.y = 144
   self.tex = megautils.getResource("menuSelect")
   self.pick = 0
-  self.offY = self.transform.y
+  self.offY = self.y
   self.picked = false
   self:setLayer(2)
 end
@@ -78,11 +78,11 @@ function contSelect:update()
       megautils.transitionToState(globals.menuState)
     end
   end
-  self.transform.y = self.offY + self.pick*16
+  self.y = self.offY + self.pick*16
 end
 
 function contSelect:draw()
-  self.tex:draw(self.transform.x, self.transform.y)
+  self.tex:draw(self.x, self.y)
 end
 
 return continueState

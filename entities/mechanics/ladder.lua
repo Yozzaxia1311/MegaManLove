@@ -8,8 +8,8 @@ mapEntity.register("ladder", function(v)
 
 function ladder:new(x, y, w, h)
   ladder.super.new(self)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self:setRectangleCollision(w or 16, h or 16)
   self.solidType = collision.ONEWAY
   self.ladder = true

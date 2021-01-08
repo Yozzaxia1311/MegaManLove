@@ -10,8 +10,8 @@ mapEntity.register("gravFlip", function(v)
 
 function gravFlip:new(x, y, w, h, dir)
   gravFlip.super.new(self)
-  self.transform.x = x
-  self.transform.y = y
+  self.x = x
+  self.y = y
   self:setRectangleCollision(w, h)
   self.dir = dir or 1
 end

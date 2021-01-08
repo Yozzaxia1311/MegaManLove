@@ -14,8 +14,8 @@ stageSelect = basicEntity:extend()
 
 function stageSelect:new()
   stageSelect.super.new(self)
-  self.transform.x = 24
-  self.transform.y = 24
+  self.x = 24
+  self.y = 24
   
   self.blinkQuad = quad(0, 32, 48, 48)
   
@@ -43,12 +43,12 @@ function stageSelect:new()
   
   self.tex = megautils.getResource("mugshots")
   self.timer = 0
-  self.oldX = self.transform.x
-  self.oldY = self.transform.y
-  self.x = 1
-  self.y = 1
-  self.transform.x = self.oldX + self.x*80
-  self.transform.y = self.oldY + self.y*80
+  self.oldX = self.x
+  self.oldY = self.y
+  self.sx = 1
+  self.sy = 1
+  self.x = self.oldX + self.sx*80
+  self.y = self.oldY + self.sy*80
   self.blink = false
   self.stop = false
   self.selected = false
@@ -83,62 +83,62 @@ end
 function stageSelect:update()
   self.anims:update(1/60)
   
-  local oldx, oldy = self.x, self.y
+  local oldx, oldy = self.sx, self.sy
   
   if not self.stop then
     if control.leftPressed[1] then
-      self.x = self.x-1
+      self.sx = self.sx-1
     elseif control.rightPressed[1] then
-      self.x = self.x+1
+      self.sx = self.sx+1
     elseif control.upPressed[1] then
-      self.y = self.y-1
+      self.sy = self.sy-1
     elseif control.downPressed[1] then
-      self.y = self.y+1
+      self.sy = self.sy+1
     end
   end
   
-  self.x = math.wrap(self.x, 0, 2)
-  self.y = math.wrap(self.y, 0, 2)
+  self.sx = math.wrap(self.sx, 0, 2)
+  self.sy = math.wrap(self.sy, 0, 2)
   
   if self.anims.current == "protoGlint" and self.anims:looped() then
     self.anims:set("proto")
   end
   
-  if oldx ~= self.x or oldy ~= self.y then
+  if oldx ~= self.sx or oldy ~= self.sy then
     megautils.playSound("cursorMove")
     local newx, newy = 0, 0
-    if self.x == 0 and self.y == 0 then
+    if self.sx == 0 and self.sy == 0 then
       newx = 0
       newy = 0
-    elseif self.x == 1 and self.y == 0 then
+    elseif self.sx == 1 and self.sy == 0 then
       newx = 1
       newy = 0
-    elseif self.x == 2 and self.y == 0 then
+    elseif self.sx == 2 and self.sy == 0 then
       newx = 2
       newy = 0
-    elseif self.x == 0 and self.y == 1 then
+    elseif self.sx == 0 and self.sy == 1 then
       newx = 0
       newy = 1
-    elseif self.x == 1 and self.y == 1 then
+    elseif self.sx == 1 and self.sy == 1 then
       newx = 1
       newy = 1
-    elseif self.x == 2 and self.y == 1 then
+    elseif self.sx == 2 and self.sy == 1 then
       newx = 2
       newy = 1
-    elseif self.x == 0 and self.y == 2 then
+    elseif self.sx == 0 and self.sy == 2 then
       newx = 0
       newy = 2
-    elseif self.x == 1 and self.y == 2 then
+    elseif self.sx == 1 and self.sy == 2 then
       newx = 1
       newy = 2
-    elseif self.x == 2 and self.y == 2 then
+    elseif self.sx == 2 and self.sy == 2 then
       newx = 2
       newy = 2
     end
     if megaMan.getSkin(1).traits.protoMug then
       self.anims:set("protoGlint")
     else
-      self.anims:set(tostring(self.x) .. "-" .. tostring(self.y))
+      self.anims:set(tostring(self.sx) .. "-" .. tostring(self.sy))
     end
     self.timer = 0
   end
@@ -157,28 +157,28 @@ function stageSelect:update()
         self.selected = false
         local pick = 1
         
-        if self.x == 0 and self.y == 0 then
+        if self.sx == 0 and self.sy == 0 then
           pick = 1
-        elseif self.x == 1 and self.y == 0 then
+        elseif self.sx == 1 and self.sy == 0 then
           pick = 2
-        elseif self.x == 2 and self.y == 0 then
+        elseif self.sx == 2 and self.sy == 0 then
           pick = 3
-        elseif self.x == 0 and self.y == 1 then
+        elseif self.sx == 0 and self.sy == 1 then
           pick = 4
-        elseif self.x == 1 and self.y == 1 then
+        elseif self.sx == 1 and self.sy == 1 then
           pick = 5
-        elseif self.x == 2 and self.y == 1 then
+        elseif self.sx == 2 and self.sy == 1 then
           pick = 6
-        elseif self.x == 0 and self.y == 2 then
+        elseif self.sx == 0 and self.sy == 2 then
           pick = 7
-        elseif self.x == 1 and self.y == 2 then
+        elseif self.sx == 1 and self.sy == 2 then
           pick = 8
-        elseif self.x == 2 and self.y == 2 then
+        elseif self.sx == 2 and self.sy == 2 then
           pick = 9
         end
         
         if not self.slots[pick] then
-          error("Slot " .. tostring(self.x) .. ", " .. tostring(self.y) .. " doesn't lead anywhere.")
+          error("Slot " .. tostring(self.sx) .. ", " .. tostring(self.sy) .. " doesn't lead anywhere.")
         end
         
         if type(self.slots[pick]) == "function" then
@@ -197,7 +197,7 @@ function stageSelect:update()
       end
     end
   elseif (control.startPressed[1] or control.jumpPressed[1]) and not self.stop then
-    if self.x ~= 1 or self.y ~= 1 or self:checkRequirements() then
+    if self.sx ~= 1 or self.sy ~= 1 or self:checkRequirements() then
       self.stop = true
       self.selected = true
       self.timer = 0
@@ -211,8 +211,8 @@ function stageSelect:update()
   else
     self.timer = math.wrap(self.timer+1, 0, 14)
     self.blink = self.timer < 7
-    self.transform.x = self.oldX + self.x*80
-    self.transform.y = self.oldY + self.y*64
+    self.x = self.oldX + self.sx*80
+    self.y = self.oldY + self.sy*64
   end
 end
 
@@ -268,7 +268,7 @@ function stageSelect:draw()
     self.tex:draw(self.wilyQuad, 32+(1*81), 32+(1*64))
   end
   if (self.blink and not self.stop) or self.selected then
-    self.tex:draw(self.blinkQuad, self.transform.x, self.transform.y)
+    self.tex:draw(self.blinkQuad, self.x, self.y)
   end
 end
 

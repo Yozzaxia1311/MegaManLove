@@ -18,8 +18,8 @@ function rebinder:new()
   lastPressed.name = nil
   
   rebinder.super.new(self)
-  self.transform.x = 32
-  self.transform.y = 112
+  self.x = 32
+  self.y = 112
   self.keysToSet = {3, 4, 1, 2, 7, 8, 11, 9, 10, 5, 6}
   self.keyNames = {"left", "right", "up", "down", "jump", "shoot", "dash", "previous weapon", "next weapon", "start", "select"}
   self.currentKey = 1
@@ -68,7 +68,7 @@ function rebinder:draw()
   love.graphics.setFont(mmFont)
   love.graphics.printf("press the player " .. tostring((self.step/11)+1) .. " \n\""
     .. self.keyNames[self.currentKey] .. "\"!" ..
-    "\n\n(press escape to leave)", self.transform.x, self.transform.y, 200, "center")
+    "\n\n(press escape to leave)", self.x, self.y, 200, "center")
 end
 
 return rebindState

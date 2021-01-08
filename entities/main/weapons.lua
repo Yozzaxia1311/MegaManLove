@@ -319,8 +319,8 @@ protoSemiBuster.autoClean = false
 
 function protoSemiBuster:new(x, y, p, dir, skin)
   protoSemiBuster.super.new(self, p)
-  self.transform.x = (x or 0) - 5
-  self.transform.y = (y or 0) - 5
+  self.x = (x or 0) - 5
+  self.y = (y or 0) - 5
   self:setRectangleCollision(10, 10)
   self.skin = skin
   self.tex = megautils.getResource(self.skin)
@@ -333,7 +333,7 @@ function protoSemiBuster:new(x, y, p, dir, skin)
 end
 
 function protoSemiBuster:draw()
-  self.tex:draw(self.quad, math.floor(self.transform.x), math.floor(self.transform.y))
+  self.tex:draw(self.quad, math.floor(self.x), math.floor(self.y))
 end
 
 protoChargedBuster = weapon:extend()
@@ -342,8 +342,8 @@ protoChargedBuster.autoClean = false
 
 function protoChargedBuster:new(x, y, p, dir, skin)
   protoChargedBuster.super.new(self, p)
-  self.transform.x = (x or 0) - 14
-  self.transform.y = (y or 0) - 4
+  self.x = (x or 0) - 14
+  self.y = (y or 0) - 4
   self:setRectangleCollision(29, 8)
   self.skin = skin
   self.tex = megautils.getResource(self.skin)
@@ -365,7 +365,7 @@ function protoChargedBuster:act()
 end
 
 function protoChargedBuster:draw()
-  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)-1,
+  self.tex:draw(self.anim, math.floor(self.x), math.floor(self.y)-1,
     nil, nil, nil, nil, nil, nil, nil, self.side ~= 1)
 end
 
@@ -400,8 +400,8 @@ function bassBuster:new(x, y, p, dir, t)
     self.recycle = true
   end
   
-  self.transform.x = (x or 0) - 3
-  self.transform.y = (y or 0) - 3
+  self.x = (x or 0) - 3
+  self.y = (y or 0) - 3
   self.velocity.velx = megautils.calcX(dir or 1) * 5
   self.velocity.vely = megautils.calcY(dir or 1) * 5
   self.side = self.velocity.velx < 0 and -1 or 1
@@ -419,7 +419,7 @@ function bassBuster:act()
 end
 
 function bassBuster:draw()
-  self.tex:draw(math.floor(self.transform.x)-1, math.floor(self.transform.y)-1)
+  self.tex:draw(math.floor(self.x)-1, math.floor(self.y)-1)
 end
 
 weapon.removeGroups["M.BUSTER"] = {"megaBuster", "megaChargedBuster"}
@@ -497,14 +497,14 @@ function megaBuster:new(x, y, p, dir)
     self.recycle = true
   end
   
-  self.transform.x = (x or 0) - 4
-  self.transform.y = (y or 0) - 3
+  self.x = (x or 0) - 4
+  self.y = (y or 0) - 3
   self.side = dir or 1
   self.velocity.velx = self.side * 5
 end
 
 function megaBuster:draw()
-  self.tex:draw(self.quad, math.floor(self.transform.x), math.floor(self.transform.y))
+  self.tex:draw(self.quad, math.floor(self.x), math.floor(self.y))
 end
 
 megaSemiBuster = weapon:extend()
@@ -513,8 +513,8 @@ megaSemiBuster.autoClean = false
 
 function megaSemiBuster:new(x, y, p, dir)
   megaSemiBuster.super.new(self, p)
-  self.transform.x = (x or 0) - 8
-  self.transform.y = (y or 0) - 5
+  self.x = (x or 0) - 8
+  self.y = (y or 0) - 5
   self:setRectangleCollision(16, 10)
   self.tex = megautils.getResource("busterTex")
   self.anim = megautils.newAnimation("smallChargeGrid", {"1-2", 1}, 1/12)
@@ -533,7 +533,7 @@ function megaSemiBuster:act()
 end
 
 function megaSemiBuster:draw()
-  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y)-3,
+  self.tex:draw(self.anim, math.floor(self.x), math.floor(self.y)-3,
     nil, nil, nil, nil, nil, nil, nil, self.side ~= 1)
 end
 
@@ -543,8 +543,8 @@ megaChargedBuster.autoClean = false
 
 function megaChargedBuster:new(x, y, p, dir)
   megaChargedBuster.super.new(self, p)
-  self.transform.x = (x or 0) - 12
-  self.transform.y = (y or 0) - 12
+  self.x = (x or 0) - 12
+  self.y = (y or 0) - 12
   self:setRectangleCollision(24, 24)
   self.tex = megautils.getResource("busterTex")
   self.anim = megautils.newAnimation("chargeGrid", {"1-4", 1}, 1/20)
@@ -565,7 +565,7 @@ function megaChargedBuster:act()
 end
 
 function megaChargedBuster:draw()
-  self.tex:draw(self.anim, math.floor(self.transform.x)+(self.side == 1 and -8 or 0), math.floor(self.transform.y)-3,
+  self.tex:draw(self.anim, math.floor(self.x)+(self.side == 1 and -8 or 0), math.floor(self.y)-3,
     nil, nil, nil, nil, nil, nil, nil, self.side ~= 1)
 end
 
@@ -595,8 +595,8 @@ trebleBoost.autoClean = false
 
 function trebleBoost:new(x, y, p, side)
   trebleBoost.super.new(self, p)
-  self.transform.x = (x or 0) - 10
-  self.transform.y = view.y-8
+  self.x = (x or 0) - 10
+  self.y = view.y-8
   self.toY = (y or 0) - 9
   self:setRectangleCollision(20, 19)
   self.tex = megautils.getResource("trebleTex")
@@ -627,8 +627,8 @@ function trebleBoost:act()
   if self.s == -1 then
     self:moveBy(0, 8)
   elseif self.s == 0 then
-    self.transform.y = math.min(self.transform.y+8, self.toY)
-    if self.transform.y == self.toY then
+    self.y = math.min(self.y+8, self.toY)
+    if self.y == self.toY then
       if not collision.checkSolid(self) then
         self.s = 1
         self.velocity.vely = 8
@@ -670,7 +670,7 @@ function trebleBoost:act()
 end
 
 function trebleBoost:draw()
-  self.tex:draw(self.anims, math.floor(self.transform.x)-6, math.floor(self.transform.y)-12+(self.gravity >= 0 and 0 or 11),
+  self.tex:draw(self.anims, math.floor(self.x)-6, math.floor(self.y)-12+(self.gravity >= 0 and 0 or 11),
     nil, nil, nil, nil, nil, nil, nil, self.side == 1, self.gravity < 0)
 end
 
@@ -740,8 +740,8 @@ rushJet.autoClean = false
 
 function rushJet:new(x, y, p, side, skin)
   rushJet.super.new(self, p)
-  self.transform.x = (x or 0) - 14
-  self.transform.y = view.y
+  self.x = (x or 0) - 14
+  self.y = view.y
   self.toY = (y or 0) - 4
   self:setRectangleCollision(27, 8)
   self.skin = skin
@@ -773,8 +773,8 @@ function rushJet:act(dt)
   if self.s == -1 then
     self:moveBy(0, 8)
   elseif self.s == 0 then
-    self.transform.y = math.min(self.transform.y+8, self.toY)
-    if self.transform.y == self.toY then
+    self.y = math.min(self.y+8, self.toY)
+    if self.y == self.toY then
       if not collision.checkSolid(self) then
         self.anims:set("spawnLand")
         self.s = 1
@@ -857,9 +857,9 @@ end
 
 function rushJet:draw()
   if (self.anims.current == "spawn" or self.anims.current == "spawnLand") and self.user then
-    self.tex:draw(self.anims, math.floor(self.transform.x)-4, math.floor(self.transform.y)+(self.user.gravity >= 0 and -16 or -6))
+    self.tex:draw(self.anims, math.floor(self.x)-4, math.floor(self.y)+(self.user.gravity >= 0 and -16 or -6))
   else
-    self.tex:draw(self.anims, math.floor(self.transform.x)-4, math.floor(self.transform.y)-12,
+    self.tex:draw(self.anims, math.floor(self.x)-4, math.floor(self.y)-12,
     nil, nil, nil, nil, nil, nil, nil, self.side ~= 1, self.gravity < 0)
   end
 end
@@ -930,8 +930,8 @@ rushCoil.autoClean = false
 
 function rushCoil:new(x, y, p, side, skin)
   rushCoil.super.new(self, p)
-  self.transform.x = (x or 0) - 10
-  self.transform.y = view.y-8
+  self.x = (x or 0) - 10
+  self.y = view.y-8
   self.toY = (y or 0) - 9
   self:setRectangleCollision(20, 19)
   self.skin = skin
@@ -961,8 +961,8 @@ function rushCoil:act(dt)
   if self.s == -1 then
     self:moveBy(0, 8)
   elseif self.s == 0 then
-    self.transform.y = math.min(self.transform.y+8, self.toY)
-    if self.transform.y == self.toY then
+    self.y = math.min(self.y+8, self.toY)
+    if self.y == self.toY then
       if not collision.checkSolid(self) then
         self.s = 1
         self.velocity.vely = 8
@@ -986,8 +986,8 @@ function rushCoil:act(dt)
   elseif self.s == 3 then
     if self.user and not self.user.climb and
       (self.user.gravity >= 0 and (self.user.velocity.vely > 0) or (self.user.velocity.vely < 0)) and
-      math.between(self.user.transform.x+self.user.collisionShape.w/2,
-      self.transform.x, self.transform.x+self.collisionShape.w) and
+      math.between(self.user.x+self.user.collisionShape.w/2,
+      self.x, self.x+self.collisionShape.w) and
       self.user:collision(self) then
       self.user:resetStates()
       self.user.canStopJump.global = false
@@ -1015,7 +1015,7 @@ function rushCoil:act(dt)
 end
 
 function rushCoil:draw()
-  self.tex:draw(self.anims, math.floor(self.transform.x)-8, math.floor(self.transform.y)-12+(self.gravity >= 0 and 0 or 11),
+  self.tex:draw(self.anims, math.floor(self.x)-8, math.floor(self.y)-12+(self.gravity >= 0 and 0 or 11),
     nil, nil, nil, nil, nil, nil, nil, self.side ~= 1, self.gravity < 0)
 end
 
@@ -1040,8 +1040,8 @@ stickWeapon.autoClean = false
 
 function stickWeapon:new(x, y, p, dir)
   stickWeapon.super.new(self, p)
-  self.transform.x = (x or 0) - 4
-  self.transform.y = (y or 0) - 3
+  self.x = (x or 0) - 4
+  self.y = (y or 0) - 3
   self:setRectangleCollision(8, 6)
   self.tex = megautils.getResource("stickWeapon")
   self.side = dir or 1
@@ -1050,5 +1050,5 @@ function stickWeapon:new(x, y, p, dir)
 end
 
 function stickWeapon:draw()
-  self.tex:draw(math.floor(self.transform.x), math.floor(self.transform.y))
+  self.tex:draw(math.floor(self.x), math.floor(self.y))
 end

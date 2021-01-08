@@ -6,8 +6,8 @@ end)
 
 function sinkIn:new(x, y, w, h, s)
   sinkIn.super.new(self)
-  self.transform.y = y
-  self.transform.x = x
+  self.y = y
+  self.x = x
   self:setRectangleCollision(w, h)
   self.sink = s or 0.125
   self.solidType = collision.STANDIN

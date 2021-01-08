@@ -66,8 +66,8 @@ function slideParticle:new(x, y, p, side)
   slideParticle.super.new(self, p)
   
   self.dontUpdateHash = true
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self.side = side or 1
   
   if self.recycling then
@@ -89,7 +89,7 @@ function slideParticle:update()
 end
 
 function slideParticle:draw()
-  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y),
+  self.tex:draw(self.anim, math.floor(self.x), math.floor(self.y),
     nil, nil, nil, nil, nil, nil, nil, self.side == 1, self.gravity < 0)
 end
 
@@ -101,8 +101,8 @@ function damageSteam:new(x, y, p)
   damageSteam.super.new(self, p)
   
   self.dontUpdateHash = true
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   
   if self.recycling then
     self.anim:gotoFrame(1)
@@ -123,7 +123,7 @@ function damageSteam:update()
 end
 
 function damageSteam:draw()
-  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y),
+  self.tex:draw(self.anim, math.floor(self.x), math.floor(self.y),
     nil, nil, nil, nil, nil, nil, nil, nil, self.gravity < 0)
 end
 
@@ -141,8 +141,8 @@ function airBubble:new(x, y, p)
     self.recycle = true
   end
   
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   
   self.off = 0
   self.timer = 0
@@ -166,7 +166,7 @@ function airBubble:update(dt)
 end
 
 function airBubble:draw()
-  self.tex:draw(self.quad, math.floor(self.transform.x)-self.off, math.floor(self.transform.y))
+  self.tex:draw(self.quad, math.floor(self.x)-self.off, math.floor(self.y))
 end
 
 harm = particle:extend()
@@ -180,8 +180,8 @@ function harm:new(p, time)
   
   if self.user then
     local cx, cy = megautils.center(self.user)
-    self.transform.x = cx-12
-    self.transform.y = cy-12
+    self.x = cx-12
+    self.y = cy-12
   end
   
   self:setRectangleCollision(24, 24)
@@ -196,15 +196,15 @@ function harm:update()
   if not self.user or self.user.isRemoved or self.timer == self.maxTime then
     megautils.removeq(self)
   else
-    self.transform.x = math.floor(self.user.transform.x)+math.floor(self.user.collisionShape.w/2)-12
-    self.transform.y = math.floor(self.user.transform.y)+math.floor(self.user.collisionShape.h/2)-12
+    self.x = math.floor(self.user.x)+math.floor(self.user.collisionShape.w/2)-12
+    self.y = math.floor(self.user.y)+math.floor(self.user.collisionShape.h/2)-12
     self.timer = math.min(self.timer+1, self.maxTime)
     self.canDraw.global = not self.user.canDraw.flash
   end
 end
 
 function harm:draw()
-  self.tex:draw(self.quad, math.floor(self.transform.x), math.floor(self.transform.y))
+  self.tex:draw(self.quad, math.floor(self.x), math.floor(self.y))
 end
 
 deathExplodeParticle = particle:extend()
@@ -215,8 +215,8 @@ function deathExplodeParticle:new(x, y, p, angle, spd)
   deathExplodeParticle.super.new(self, p)
   
   self.dontUpdateHash = true
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self:setRectangleCollision(24, 24)
   self.tex = megautils.getResource("particles")
   self.anim = megautils.newAnimation("deathExplodeParticleGrid", {"1-5", 1}, 1/10)
@@ -229,7 +229,7 @@ function deathExplodeParticle:update(dt)
 end
 
 function deathExplodeParticle:draw()
-  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y))
+  self.tex:draw(self.anim, math.floor(self.x), math.floor(self.y))
 end
 
 function deathExplodeParticle.createExplosion(x, y, p)
@@ -248,8 +248,8 @@ function absorbParticle:new(x, y, p, spd)
   absorbParticle.super.new(self, p)
   
   self.dontUpdateHash = true
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self:setRectangleCollision(24, 24)
   self.tex = megautils.getResource("particles")
   self.anim = megautils.newAnimation("deathExplodeParticleGrid", {"1-5", 1}, 1/10)
@@ -264,8 +264,8 @@ end
 function absorbParticle:update()
   if self.user and not self.user.isRemoved then
     local cx, cy = megautils.center(self.user)
-    self.transform.x = math.lerp(self.startX, cx, self.pos)
-    self.transform.y = math.lerp(self.startY, cy, self.pos)
+    self.x = math.lerp(self.startX, cx, self.pos)
+    self.y = math.lerp(self.startY, cy, self.pos)
     self.pos = math.min(self.pos + self.spd, 1)
   end
   if not self.user or self.pos == 1 or self.user.isRemoved then
@@ -275,7 +275,7 @@ function absorbParticle:update()
 end
 
 function absorbParticle:draw()
-  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y), 0, 1, 1, 12, 12)
+  self.tex:draw(self.anim, math.floor(self.x), math.floor(self.y), 0, 1, 1, 12, 12)
 end
 
 function absorbParticle.createAbsorbtion(towards, spd)
@@ -324,8 +324,8 @@ function smallBlast:new(x, y, p, spd)
   smallBlast.super.new(self, p)
   
   self.dontUpdateHash = true
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self.spd = spd or 0.065
   
   if self.recycling then
@@ -347,7 +347,7 @@ function smallBlast:update()
 end
 
 function smallBlast:draw()
-  self.tex:draw(self.anim, math.floor(self.transform.x), math.floor(self.transform.y))
+  self.tex:draw(self.anim, math.floor(self.x), math.floor(self.y))
 end
 
 blast = particle:extend()
@@ -358,8 +358,8 @@ function blast:new(x, y, p, hurt, damage, times)
   blast.super.new(self, p)
   
   self.dontUpdateHash = true
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self.deg = 0
   self.timer = 0
   self.times = 0
@@ -372,18 +372,18 @@ end
 function blast:added()
   blast.super.added(self)
   
-  megautils.add(smallBlast, self.transform.x, self.transform.y, self.user)
+  megautils.add(smallBlast, self.x, self.y, self.user)
 end
 
 function blast:check()
   if megaMan.allPlayers then
-    local ox, oy = self.transform.x, self.transform.y
-    self.transform.x = self.transform.x + 12 - 24
-    self.transform.y = self.transform.y + 12 - 24
+    local ox, oy = self.x, self.y
+    self.x = self.x + 12 - 24
+    self.y = self.y + 12 - 24
     self:setRectangleCollision(48, 48)
     self:interact(self:collisionTable(megaMan.allPlayers), self.damage)
     self.collisionShape = nil
-    self.transform.x, self.transform.y = ox, oy
+    self.x, self.y = ox, oy
   end
 end
 
@@ -391,10 +391,10 @@ function blast:update(dt)
   self.timer = math.min(self.timer+1, 5)
   if self.timer == 5 then
     self.timer = 0
-    megautils.add(smallBlast, megautils.circlePathX(self.transform.x, self.deg, 20), 
-      megautils.circlePathY(self.transform.y, self.deg, 20), self.user)
-    megautils.add(smallBlast, megautils.circlePathX(self.transform.x, self.deg-180, 20), 
-      megautils.circlePathY(self.transform.y, self.deg-180, 20), self.user)
+    megautils.add(smallBlast, megautils.circlePathX(self.x, self.deg, 20), 
+      megautils.circlePathY(self.y, self.deg, 20), self.user)
+    megautils.add(smallBlast, megautils.circlePathX(self.x, self.deg-180, 20), 
+      megautils.circlePathY(self.y, self.deg-180, 20), self.user)
     self.deg = math.wrap(self.deg+360/6, 0, 360)
     self.times = self.times + 1
   end

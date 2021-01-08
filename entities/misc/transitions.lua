@@ -11,8 +11,8 @@ end, 0, true)
 function right:new(x, y, h, scrollx, scrolly, spd, p, n)
   right.super.new(self)
   self:setRectangleCollision(2, h or view.h)
-  self.transform.x = (x or 0) + 14
-  self.transform.y = y or 0
+  self.x = (x or 0) + 14
+  self.y = y or 0
   self.scrollx = scrollx
   self.scrolly = scrolly
   self.spd = spd or 0.8
@@ -46,7 +46,7 @@ function right:update(dt)
         camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
         camera.main.player = player
         camera.main.speed = self.spd
-        local s = self:collisionTable(section.getSections(self.transform.x+2, self.transform.y, self.collisionShape.w, self.collisionShape.h), 2, 0)
+        local s = self:collisionTable(section.getSections(self.x+2, self.y, self.collisionShape.w, self.collisionShape.h), 2, 0)
         for _, v in ipairs(s) do
           if v.name == self.name then
             s = v
@@ -54,8 +54,8 @@ function right:update(dt)
           end
         end
         camera.main.toSection = s
-        camera.main.transform.x = self.transform.x+2-camera.main.collisionShape.w
-        camera.main.transX = camera.main.transform.x+camera.main.collisionShape.w+8
+        camera.main.x = self.x+2-camera.main.collisionShape.w
+        camera.main.transX = camera.main.x+camera.main.collisionShape.w+8
         break
       end
     end
@@ -75,8 +75,8 @@ end, 0, true)
 function left:new(x, y, h, scrollx, scrolly, spd, p, n)
   left.super.new(self)
   self:setRectangleCollision(2, h or view.h)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self.scrollx = scrollx
   self.scrolly = scrolly
   self.spd = spd or 0.8
@@ -110,7 +110,7 @@ function left:update(dt)
         camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
         camera.main.player = player
         camera.main.speed = self.spd
-        local s = self:collisionTable(section.getSections(self.transform.x-2, self.transform.y, self.collisionShape.w, self.collisionShape.h), -2, 0)
+        local s = self:collisionTable(section.getSections(self.x-2, self.y, self.collisionShape.w, self.collisionShape.h), -2, 0)
         for _, v in ipairs(s) do
           if v.name == self.name then
             s = v
@@ -118,8 +118,8 @@ function left:update(dt)
           end
         end
         camera.main.toSection = s
-        camera.main.transform.x = self.transform.x
-        camera.main.transX = camera.main.transform.x-camera.main.player.collisionShape.w-8
+        camera.main.x = self.x
+        camera.main.transX = camera.main.x-camera.main.player.collisionShape.w-8
         break
       end
     end
@@ -140,8 +140,8 @@ end, 0, true)
 function down:new(x, y, w, scrollx, scrolly, spd, p, n, cl)
   down.super.new(self)
   self:setRectangleCollision(w or view.w, 2)
-  self.transform.x = x or 0
-  self.transform.y = (y or 0) + 14
+  self.x = x or 0
+  self.y = (y or 0) + 14
   self.scrollx = scrollx
   self.scrolly = scrolly
   self.spd = spd or 0.8
@@ -177,7 +177,7 @@ function down:update(dt)
         camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
         camera.main.player = player
         camera.main.speed = self.spd
-        local s = self:collisionTable(section.getSections(self.transform.x, self.transform.y+2, self.collisionShape.w, self.collisionShape.h), 0, 2)
+        local s = self:collisionTable(section.getSections(self.x, self.y+2, self.collisionShape.w, self.collisionShape.h), 0, 2)
         for _, v in ipairs(s) do
           if v.name == self.name then
             s = v
@@ -185,8 +185,8 @@ function down:update(dt)
           end
         end
         camera.main.toSection = s
-        camera.main.transform.y = self.transform.y+2-camera.main.collisionShape.h
-        camera.main.transY = camera.main.transform.y+camera.main.collisionShape.h+8
+        camera.main.y = self.y+2-camera.main.collisionShape.h
+        camera.main.transY = camera.main.y+camera.main.collisionShape.h+8
         break
       end
     end
@@ -207,8 +207,8 @@ end, 0, true)
 function up:new(x, y, w, scrollx, scrolly, spd, p, n, cl)
   up.super.new(self)
   self:setRectangleCollision(w or view.w, 2)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self.scrollx = scrollx
   self.scrolly = scrolly
   self.spd = spd or 0.8
@@ -244,7 +244,7 @@ function up:update(dt)
         camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
         camera.main.player = player
         camera.main.speed = self.spd
-        local s = self:collisionTable(section.getSections(self.transform.x, self.transform.y-2, self.collisionShape.w, self.collisionShape.h), 0, -2)
+        local s = self:collisionTable(section.getSections(self.x, self.y-2, self.collisionShape.w, self.collisionShape.h), 0, -2)
         for _, v in ipairs(s) do
           if v.name == self.name then
             s = v
@@ -252,8 +252,8 @@ function up:update(dt)
           end
         end
         camera.main.toSection = s
-        camera.main.transform.y = self.transform.y
-        camera.main.transY = camera.main.transform.y-camera.main.player.collisionShape.h-8
+        camera.main.y = self.y
+        camera.main.transY = camera.main.y-camera.main.player.collisionShape.h-8
         break
       end
     end
@@ -272,8 +272,8 @@ end, 0, true)
 function sectionPrioritySetter:new(x, y, w, h, name)
   sectionPrioritySetter.super.new(self)
   self:setRectangleCollision(w or 32, h or 32)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self.name = name
   if self.name == "" then
     self.name = nil
@@ -288,10 +288,10 @@ end
 
 function sectionPrioritySetter:check()
   local count = 0
-  local sx, sy, sw, sh = self.transform.x-1, self.transform.y-1, self.collisionShape.w+2, self.collisionShape.h+2
+  local sx, sy, sw, sh = self.x-1, self.y-1, self.collisionShape.w+2, self.collisionShape.h+2
   
   for _, v in ipairs(megaMan.allPlayers) do
-    local x, y, w, h = v.transform.x, v.transform.y, v.collisionShape.w, v.collisionShape.h
+    local x, y, w, h = v.x, v.y, v.collisionShape.w, v.collisionShape.h
     if pointOverlapsRect(x, y, sx, sy, sw, sh) and pointOverlapsRect(x+w, y, sx, sy, sw, sh) and
       pointOverlapsRect(x+w, y+h, sx, sy, sw, sh) and pointOverlapsRect(x, y+h, sx, sy, sw, sh) then
       count = count + 1
@@ -319,8 +319,8 @@ end, 0, true)
 function sectionPrioritySetterXBorder:new(x, y, h, lname, rname)
   sectionPrioritySetterXBorder.super.new(self)
   self:setRectangleCollision(32, h or view.h)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self.lname = lname
   if self.lname == "" then
     self.lname = nil
@@ -340,8 +340,8 @@ end
 function sectionPrioritySetterXBorder:getSide()
   local same = 0
   for _, v in ipairs(megaMan.allPlayers) do
-    if v.transform.x+(v.collisionShape.w/2) > self.transform.x+16 and
-      math.between(v.transform.y, self.transform.y, self.transform.y+self.collisionShape.h-v.collisionShape.h) then
+    if v.x+(v.collisionShape.w/2) > self.x+16 and
+      math.between(v.y, self.y, self.y+self.collisionShape.h-v.collisionShape.h) then
       same = same + 1
     end
   end
@@ -372,8 +372,8 @@ end, 0, true)
 function sectionPrioritySetterYBorder:new(x, y, w, uname, dname)
   sectionPrioritySetterYBorder.super.new(self)
   self:setRectangleCollision(w or view.w, 32)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self.uname = uname
   if self.uname == "" then
     self.name = nil
@@ -393,8 +393,8 @@ end
 function sectionPrioritySetterYBorder:getSide()
   local same = 0
   for _, v in ipairs(megaMan.allPlayers) do
-    if v.transform.y+(v.collisionShape.h/2) > self.transform.y+16 and
-      math.between(v.transform.x, self.transform.x, self.transform.x+self.collisionShape.w-v.collisionShape.w) then
+    if v.y+(v.collisionShape.h/2) > self.y+16 and
+      math.between(v.x, self.x, self.x+self.collisionShape.w-v.collisionShape.w) then
       same = same + 1
     end
   end
@@ -425,8 +425,8 @@ end, 0, true)
 function sectionPrioritySetterArea:new(x, y, w, h, name, name2)
   sectionPrioritySetterArea.super.new(self)
   self:setRectangleCollision(w or 32, h or 32)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self.inName = name
   if self.inName == "" then
     self.inName = nil
@@ -452,10 +452,10 @@ function sectionPrioritySetterArea:check()
   end
   for _, j in ipairs(megautils.groups().sectionPriorityArea) do
     if self.inName == j.inName then
-      local sx, sy, sw, sh = j.transform.x-1, j.transform.y-1, j.collisionShape.w+2, j.collisionShape.h+2
+      local sx, sy, sw, sh = j.x-1, j.y-1, j.collisionShape.w+2, j.collisionShape.h+2
       
       for k, v in pairs(checker) do
-        local x, y, w, h = v.transform.x, v.transform.y, v.collisionShape.w, v.collisionShape.h
+        local x, y, w, h = v.x, v.y, v.collisionShape.w, v.collisionShape.h
         if pointOverlapsRect(x, y, sx, sy, sw, sh) and pointOverlapsRect(x+w, y, sx, sy, sw, sh) and
           pointOverlapsRect(x+w, y+h, sx, sy, sw, sh) and pointOverlapsRect(x, y+h, sx, sy, sw, sh) then
           checker[k] = nil

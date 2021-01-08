@@ -61,8 +61,8 @@ function mmWeaponsMenu:new(p)
   for y=1, #self.list do
     for x=1, #self.list[y] do
       if w.currentSlot == self.list[y][x] then
-        self.x = x
-        self.y = y
+        self.sx = x
+        self.sy = y
         break
       end
     end
@@ -82,8 +82,8 @@ function mmWeaponsMenu:new(p)
           h:instantUpdate(w.energy[self.list[y][x]])
         end
         h.side = -1
-        h.transform.x = view.x+(64+(x*112)-112)
-        h.transform.y = view.y+(32+(y*16)-16)
+        h.x = view.x+(64+(x*112)-112)
+        h.y = view.y+(32+(y*16)-16)
         h.icoX = 32+(x*112)-112
         h.icoY = 24+(y*16)-16
         h.gridX = x
@@ -109,9 +109,9 @@ function mmWeaponsMenu:new(p)
   end)
   self.trig.fills = self.fills
   self.trig.noFreeze = {"pause", "hb"}
-  megaMan.colorOutline[self.player.player] = weapon.colors[w.weapons[self.list[self.y][self.x]]].outline
-  megaMan.colorOne[self.player.player] = weapon.colors[w.weapons[self.list[self.y][self.x]]].one
-  megaMan.colorTwo[self.player.player] = weapon.colors[w.weapons[self.list[self.y][self.x]]].two
+  megaMan.colorOutline[self.player.player] = weapon.colors[w.weapons[self.list[self.sy][self.sx]]].outline
+  megaMan.colorOne[self.player.player] = weapon.colors[w.weapons[self.list[self.sy][self.sx]]].one
+  megaMan.colorTwo[self.player.player] = weapon.colors[w.weapons[self.list[self.sy][self.sx]]].two
   self:setLayer(10)
   if mmWeaponsMenu.main then
     megautils.removeq(mmWeaponsMenu.main)
@@ -153,8 +153,8 @@ function mmWeaponsMenu:update(dt)
   local w = megaMan.weaponHandler[self.player.player]
   if self.changing then
     if self.changing == "health" and self.fills[1][1].renderedHealth == self.player.healthHandler.segments * 4 then
-      self.x = 1
-      self.y = 1
+      self.sx = 1
+      self.sy = 1
       self.section = 0
       self.changing = nil
     elseif self.changing == "weapons" then
@@ -167,8 +167,8 @@ function mmWeaponsMenu:update(dt)
         end
       end
       if res then
-        self.x = 1
-        self.y = 1
+        self.sx = 1
+        self.sy = 1
         self.section = 0
         self.changing = nil
       end
@@ -177,21 +177,21 @@ function mmWeaponsMenu:update(dt)
   end
   
   if self.section == 0 then
-    local olx, oly = self.x, self.y
+    local olx, oly = self.sx, self.sy
     for _, v in pairs(self.fills) do
       for _, j in pairs(v) do
         j.colorOne = {124, 124, 124}
         j.colorTwo = {188, 188, 188}
       end
     end
-    local h = self.fills[self.y][self.x]
-    if self.x == 1 and self.y == 1 then
+    local h = self.fills[self.sy][self.sx]
+    if self.sx == 1 and self.sy == 1 then
       h.colorOutline = self.player.healthHandler.colorOutline
       h.colorOne = self.player.healthHandler.colorOne
       h.colorTwo = self.player.healthHandler.colorTwo
     else
-      h.colorOne = weapon.colors[w.weapons[self.list[self.y][self.x]]].one
-      h.colorTwo = weapon.colors[w.weapons[self.list[self.y][self.x]]].two
+      h.colorOne = weapon.colors[w.weapons[self.list[self.sy][self.sx]]].one
+      h.colorTwo = weapon.colors[w.weapons[self.list[self.sy][self.sx]]].two
     end
     if control.startPressed[self.player.player] then
       megautils.add(fade, true, nil, nil, function(s)
@@ -216,117 +216,117 @@ function mmWeaponsMenu:update(dt)
       megautils.playSound("selected")
       return
     elseif control.rightPressed[self.player.player] then
-      self.x = math.clamp(self.x+1, 1, 2)
-      local ly = self.y
+      self.sx = math.clamp(self.sx+1, 1, 2)
+      local ly = self.sy
       while true do
         local highSteps = 0
-        while not self.fills[self.y+highSteps] or not self.fills[self.y+highSteps][self.x] do
+        while not self.fills[self.sy+highSteps] or not self.fills[self.sy+highSteps][self.sx] do
           highSteps = highSteps - 1
-          if self.y+highSteps <= 0 then
+          if self.sy+highSteps <= 0 then
             highSteps = -42
             break --Check failed
           end
         end
         local steps = 0
-        while not self.fills[self.y+steps] or not self.fills[self.y+steps][self.x] do
+        while not self.fills[self.sy+steps] or not self.fills[self.sy+steps][self.sx] do
           steps = steps + 1
-          if self.y+steps >= 7 then
+          if self.sy+steps >= 7 then
             steps = 42
             break -- Check failed
           end
         end
         if steps == 42 and highSteps == -42 then
-          self.y = ly
-          self.x = 1
+          self.sy = ly
+          self.sx = 1
           break --Both checks failed. Revert.
         else
           if steps ~= 42 then
             --Weapon selection below is closer
-            self.y = self.y + steps
+            self.sy = self.sy + steps
           else
             --Either weapon selection above is closer, or selection is directly next to us
-            self.y = self.y + highSteps
+            self.sy = self.sy + highSteps
           end
           break
         end
       end
-      self.cur = self.fills[self.y][self.x].wid
+      self.cur = self.fills[self.sy][self.sx].wid
     elseif control.leftPressed[self.player.player] then
-      self.x = math.clamp(self.x-1, 1, 2)
-      local ly = self.y
+      self.sx = math.clamp(self.sx-1, 1, 2)
+      local ly = self.sy
       while true do
         local highSteps = 0
-        while not self.fills[self.y+highSteps] or not self.fills[self.y+highSteps][self.x] do
+        while not self.fills[self.sy+highSteps] or not self.fills[self.sy+highSteps][self.sx] do
           highSteps = highSteps - 1
-          if self.y+highSteps <= 0 then
+          if self.sy+highSteps <= 0 then
             highSteps = -42
             break --Check failed
           end
         end
         local steps = 0
-        while not self.fills[self.y+steps] or not self.fills[self.y+steps][self.x] do
+        while not self.fills[self.sy+steps] or not self.fills[self.sy+steps][self.sx] do
           steps = steps + 1
-          if self.y+steps >= 7 then
+          if self.sy+steps >= 7 then
             steps = 42
             break -- Check failed
           end
         end
         if steps == 42 and highSteps == -42 then
-          self.y = ly
-          self.x = 1
+          self.sy = ly
+          self.sx = 1
           break --Both checks failed. Revert.
         else
           if steps ~= 42 then
             --Weapon selection below is closer
-            self.y = self.y + steps
+            self.sy = self.sy + steps
           else
             --Either weapon selection above is closer, or selection is directly next to us
-            self.y = self.y + highSteps
+            self.sy = self.sy + highSteps
           end
           break
         end
       end
-      self.cur = self.fills[self.y][self.x].wid
+      self.cur = self.fills[self.sy][self.sx].wid
     elseif control.upPressed[self.player.player] then
       while true do
-        if (not self.fills[self.y] or not self.fills[self.y][self.x]) and self.y == 1 and self.x == 2 then
-          self.x = 1
+        if (not self.fills[self.sy] or not self.fills[self.sy][self.sx]) and self.sy == 1 and self.sx == 2 then
+          self.sx = 1
           break
         end
-        self.y = math.clamp(self.y-1, 1, 6)
-        if self.fills[self.y] and self.fills[self.y] and self.fills[self.y][self.x] then
+        self.sy = math.clamp(self.sy-1, 1, 6)
+        if self.fills[self.sy] and self.fills[self.sy] and self.fills[self.sy][self.sx] then
           break
         end
       end
-      self.cur = self.fills[self.y][self.x].wid
+      self.cur = self.fills[self.sy][self.sx].wid
     elseif control.downPressed[self.player.player] then
       while true do
-        if self.y >= 6 then
+        if self.sy >= 6 then
           self.section = 1
-          self.x = 1
-          self.y = 1
+          self.sx = 1
+          self.sy = 1
           self.cur = self.last[1]
           megautils.playSound("cursorMove")
          return
         end
-        self.y = math.clamp(self.y+1, 1, 6)
-        if self.fills[self.y] and self.fills[self.y][self.x] then
+        self.sy = math.clamp(self.sy+1, 1, 6)
+        if self.fills[self.sy] and self.fills[self.sy][self.sx] then
           break
         end
       end
     end
-    if olx ~= self.x or oly ~= self.y then
-      self.cur = self.list[self.y][self.x]
+    if olx ~= self.sx or oly ~= self.sy then
+      self.cur = self.list[self.sy][self.sx]
       megautils.playSound("cursorMove")
     end
   elseif self.section == 1 then
-    local olx, oly = self.x, self.y
+    local olx, oly = self.sx, self.sy
     if control.startPressed[self.player.player] then
-      if self.x == 1 and megautils.getETanks() > 0 then
+      if self.sx == 1 and megautils.getETanks() > 0 then
         self.fills[1][1]:updateThis(self.player.healthHandler.segments * 4)
         self.changing = "health"
         megautils.setETanks(math.max(megautils.getETanks()-1, 0))
-      elseif self.x == 2 and megautils.getWTanks() > 0 then
+      elseif self.sx == 2 and megautils.getWTanks() > 0 then
         local frz = false
         for _, v in pairs(self.fills) do
           for _, j in pairs(v) do
@@ -340,23 +340,23 @@ function mmWeaponsMenu:update(dt)
       end
     elseif control.upPressed[self.player.player] then
       self.section = 0
-      self.x = 1
-      self.y = #self.list
+      self.sx = 1
+      self.sy = #self.list
       while true do
-        if self.fills[self.y] and self.fills[self.y][self.x] then
+        if self.fills[self.sy] and self.fills[self.sy][self.sx] then
           break
         end
-        self.y = self.y-1
+        self.sy = self.sy-1
       end
-      self.cur = self.list[self.y][self.x]
+      self.cur = self.list[self.sy][self.sx]
       olx = -69
     end
-    if self.x == 1 and control.rightPressed[self.player.player] then
-      self.x = 2
-    elseif self.x == 2 and control.leftPressed[self.player.player] then
-      self.x = 1
+    if self.sx == 1 and control.rightPressed[self.player.player] then
+      self.sx = 2
+    elseif self.sx == 2 and control.leftPressed[self.player.player] then
+      self.sx = 1
     end
-    if olx ~= self.x or oly ~= self.y then
+    if olx ~= self.sx or oly ~= self.sy then
       megautils.playSound("cursorMove")
     end
     for _, v in pairs(self.fills) do
@@ -378,12 +378,12 @@ function mmWeaponsMenu:draw()
   
   local h = self.fills[1][1]
   local out, on, tw, x, y = h.colorOutline, h.colorOne, h.colorTwo,
-    h.transform.x, h.transform.y
+    h.x, h.y
   h.colorOutline, h.colorOne, h.colorTwo = self.player.healthHandler.colorOutline, self.player.healthHandler.colorOne, self.player.healthHandler.colorTwo
-  h.transform.x, h.transform.y = view.x+129, view.y+209
+  h.x, h.y = view.x+129, view.y+209
   h:draw()
   h.colorOutline, h.colorOne, h.colorTwo = out, on, tw
-  h.transform.x, h.transform.y = x, y
+  h.x, h.y = x, y
   
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.print((megautils.hasInfiniteLives() and "inf" or tostring(megautils.getLives())), view.x+224, view.y+200)
@@ -436,7 +436,7 @@ function mmWeaponsMenu:draw()
       for _, j in pairs(v) do
         j:draw()
         love.graphics.setColor(1, 1, 1, 1)
-        if self.x == j.gridX and self.y == j.gridY then
+        if self.sx == j.gridX and self.sy == j.gridY then
           weapon.drawIcon(w.weapons[j.wid], true, view.x+(j.icoX), view.y+(j.icoY))
         else
           weapon.drawIcon(w.weapons[j.wid], false, view.x+(j.icoX), view.y+(j.icoY))
@@ -454,7 +454,7 @@ function mmWeaponsMenu:draw()
       end
     end
     love.graphics.setColor(1, 1, 1, 1)
-    if self.x == 1 then
+    if self.sx == 1 then
       love.graphics.setColor(weapon.colors[w.weapons[self.cur]].outline[1]/255,
         weapon.colors[w.weapons[self.cur]].outline[2]/255, weapon.colors[w.weapons[self.cur]].outline[3]/255, 1)
       self.texOutline:draw(self.quadE, tx, ty)
@@ -471,7 +471,7 @@ function mmWeaponsMenu:draw()
       self.texOne:draw(self.quadW, tx2, ty)
       love.graphics.setColor(self.inactiveTankColor[3][1]/255, self.inactiveTankColor[3][2]/255, self.inactiveTankColor[3][3]/255, 1)
       self.texTwo:draw(self.quadW, tx2, ty)
-    elseif self.x == 2 then
+    elseif self.sx == 2 then
       love.graphics.setColor(self.inactiveTankColor[1][1]/255, self.inactiveTankColor[1][2]/255, self.inactiveTankColor[1][3]/255, 1)
       self.texOutline:draw(self.quadE, tx, ty)
       love.graphics.setColor(self.inactiveTankColor[2][1]/255, self.inactiveTankColor[2][2]/255, self.inactiveTankColor[2][3]/255, 1)

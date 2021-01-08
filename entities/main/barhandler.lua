@@ -84,7 +84,7 @@ function healthHandler:update(dt)
       elseif healthHandler.playerTimers[i] == -1 and control.startPressed[i] then
         if megautils.getLives() > 0 then
           healthHandler.playerTimers[i] = -2
-          local p = megautils.add(megaMan, self.player.transform.x, self.player.transform.y, self.player.side, true, i)
+          local p = megautils.add(megaMan, self.player.x, self.player.y, self.player.side, true, i)
           self.player:transferState(p)
           megautils.revivePlayer(i)
           if camera.main then
@@ -117,30 +117,30 @@ function healthHandler:draw()
   if self.player and self.player == self.mp then
     if not megautils.hasInfiniteLives() then
       love.graphics.setColor(0, 0, 0, 1)
-      love.graphics.rectangle("fill", self.transform.x, self.transform.y, 8, 8)
+      love.graphics.rectangle("fill", self.x, self.y, 8, 8)
       love.graphics.setColor(1, 1, 1, 1)
       love.graphics.setFont(mmFont)
-      love.graphics.print(tostring(megautils.getLives()), self.transform.x, self.transform.y)
+      love.graphics.print(tostring(megautils.getLives()), self.x, self.y)
     end
     if self.mp == self.player then
       for i=1, globals.playerCount do
         if healthHandler.playerTimers[i] == -1 then
           love.graphics.setColor(0, 0, 0, 1)
-          love.graphics.rectangle("fill", self.transform.x, self.transform.y+(i*8), 32, 8)
+          love.graphics.rectangle("fill", self.x, self.y+(i*8), 32, 8)
           if megautils.getLives() <= 0 then
             love.graphics.setColor(1, 0.2, 0.2, 1)
-            love.graphics.print("p" .. tostring(i) .. " x", self.transform.x, self.transform.y+(i*8))
+            love.graphics.print("p" .. tostring(i) .. " x", self.x, self.y+(i*8))
           else
             love.graphics.setColor(0.2, 1, 0.2, 1)
-            love.graphics.print("p" .. tostring(i) .. " o", self.transform.x, self.transform.y+(i*8))
+            love.graphics.print("p" .. tostring(i) .. " o", self.x, self.y+(i*8))
           end
           love.graphics.setColor(1, 1, 1, 1)
         elseif healthHandler.playerTimers[i] > -1 then
           love.graphics.setColor(0, 0, 0, 1)
-          love.graphics.rectangle("fill", self.transform.x, self.transform.y+(i*8), 32, 8)
+          love.graphics.rectangle("fill", self.x, self.y+(i*8), 32, 8)
           love.graphics.setColor(1, 1, 1, 1)
           love.graphics.print("p" .. tostring(i) .. " " ..
-            tostring(math.abs(math.ceil(healthHandler.playerTimers[i]/20))), self.transform.x, self.transform.y+(i*8))
+            tostring(math.abs(math.ceil(healthHandler.playerTimers[i]/20))), self.x, self.y+(i*8))
         end
       end
     end
@@ -157,8 +157,8 @@ function healthHandler:draw()
     elseif i < curSeg then
       bit = 4
     end
-    local tx, ty, tr = self.transform.x-(self.rot=="x" and (8*i)*self.side or 0), 
-      self.transform.y-(self.rot=="y" and (8*i)*self.side or 0), math.rad(self.rot=="x" and 90 or 0)
+    local tx, ty, tr = self.x-(self.rot=="x" and (8*i)*self.side or 0), 
+      self.y-(self.rot=="y" and (8*i)*self.side or 0), math.rad(self.rot=="x" and 90 or 0)
     love.graphics.setColor(self.colorOutline[1]/255, 
       self.colorOutline[2]/255,
       self.colorOutline[3]/255, 1)
@@ -174,10 +174,10 @@ function healthHandler:draw()
   end
   if self.player and globals.playerCount > 1 then
     love.graphics.setColor(0, 0, 0, 1)
-    love.graphics.rectangle("fill", self.transform.x, self.transform.y-(self.segments*8)-8, 8, 8)
+    love.graphics.rectangle("fill", self.x, self.y-(self.segments*8)-8, 8, 8)
     love.graphics.setColor(1, 1, 1, 1)
     love.graphics.setFont(mmFont)
-    love.graphics.print(tostring(self.player.player), self.transform.x, self.transform.y-(self.segments*8)-8)
+    love.graphics.print(tostring(self.player.player), self.x, self.y-(self.segments*8)-8)
   end
 end
 
@@ -333,8 +333,8 @@ function weaponHandler:draw()
       bit = 4
     end
     love.graphics.setColor(0, 0, 0, 1)
-    local tx, ty, tr = self.transform.x-(self.rot=="x" and (8*i)*self.side or 0), 
-      self.transform.y-(self.rot=="y" and (8*i)*self.side or 0), math.rad(self.rot=="x" and 90 or 0)
+    local tx, ty, tr = self.x-(self.rot=="x" and (8*i)*self.side or 0), 
+      self.y-(self.rot=="y" and (8*i)*self.side or 0), math.rad(self.rot=="x" and 90 or 0)
     self.barOutline:draw(self.quads[bit], tx, ty, tr)
     love.graphics.setColor(weapon.colors[self.current].one[1]/255, weapon.colors[self.current].one[2]/255,
       weapon.colors[self.current].one[3]/255, 1)

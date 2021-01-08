@@ -36,7 +36,7 @@ end
 
 function entitySystem:updateHashForEntity(e)
   if e.collisionShape and not e.noHash then
-    local xx, yy, ww, hh = e.transform.x, e.transform.y, e.collisionShape.w, e.collisionShape.h
+    local xx, yy, ww, hh = e.x, e.y, e.collisionShape.w, e.collisionShape.h
     local hs = entitySystem.hashSize
     local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
     local cx2, cy2 = math.floor((xx + ww + 2) / hs), math.floor((yy + hh + 2) / hs)
@@ -232,8 +232,8 @@ function entitySystem:add(c, ...)
     self.beginQueue[#self.beginQueue+1] = e
   end
   
-  e.previousX = e.transform.x
-  e.previousY = e.transform.y
+  e.previousX = e.x
+  e.previousY = e.y
   e.epX = e.previousX
   e.epY = e.previousY
   
@@ -282,8 +282,8 @@ function entitySystem:adde(e)
     self.beginQueue[#self.beginQueue+1] = e
   end
   
-  e.previousX = e.transform.x
-  e.previousY = e.transform.y
+  e.previousX = e.x
+  e.previousY = e.y
   e.epX = e.previousX
   e.epY = e.previousY
   
@@ -542,8 +542,8 @@ function entitySystem:update(dt)
     end
     local v = self.updates[i]
     if (type(v.noFreeze) == "table" and table.intersects(v.noFreeze, self.frozen)) or v.noFreeze == true or not checkTrue(self.frozen) then
-      v.previousX = v.transform.x
-      v.previousY = v.transform.y
+      v.previousX = v.x
+      v.previousY = v.y
       v.epX = v.previousX
       v.epY = v.previousY
       if not v.isRemoved and v.beforeUpdate and checkFalse(v.canUpdate) then
@@ -609,88 +609,6 @@ function entitySystem:update(dt)
   end
 end
 
-transform = class:extend()
-
-function transform:new(x, y, appliedTo, changeCallback)
-  self.x = x or 0
-  self.y = y or 0
-  self.appliedTo = appliedTo
-  self.callback = changeCallback
-  if self.callback then
-    self.callback(self.appliedTo)
-  end
-end
-
-function transform:__newindex(k, v)
-  if self.callback then
-    self.callback(self.appliedTo)
-  end
-  
-  rawset(self, k, v)
-end
-
-collisionShape = class:extend()
-
-function collisionShape:new(appliedTo, changeCallback)
-  self.w = 1
-  self.h = 1
-  self.type = 0
-  self.appliedTo = appliedTo
-  self.callback = changeCallback
-  if self.callback then
-    self.callback(self.appliedTo)
-  end
-end
-
-function collisionShape:__newindex(k, v)
-  if self.callback then
-    self.callback(self.appliedTo)
-  end
-  
-  rawset(self, k, v)
-end
-
-function collisionShape:setRect(w, h)
-  rawset(self, "type", 0)
-  rawset(self, "w", w or 1)
-  rawset(self, "h", h or 1)
-  
-  rawset(self, "r", nil)
-  rawset(self, "data", nil)
-  
-  if self.callback then
-    self.callback(self.appliedTo)
-  end
-end
-
-function collisionShape:setImage(resource)
-  local res = megautils.getResourceTable(resource)
-  
-  rawset(self, "type", 1)
-  rawset(self, "w", res.data:getWidth())
-  rawset(self, "h", res.data:getHeight())
-  rawset(self, "data", res.data)
-  
-  rawset(self, "r", nil)
-  
-  if self.callback then
-    self.callback(self.appliedTo)
-  end
-end
-
-function collisionShape:setCircle(r)
-  rawset(self, "type", 2)
-  rawset(self, "w", (r or 1) * 2)
-  rawset(self, "h", (r or 1) * 2)
-  rawset(self, "r", r or 1)
-  
-  rawset(self, "data", nil)
-  
-  if self.callback then
-    self.callback(self.appliedTo)
-  end
-end
-
 velocity = class:extend()
 
 binser.register(velocity, "velocity", function(o)
@@ -750,9 +668,16 @@ function basicEntity:__tostring()
   return "Entity"
 end
 
+function basicEntity:__newindex(k, v)
+  if k == "x" or k == "y" then
+    self:updateHash()
+  end
+  
+  rawset(self, k, v)
+end
+
 function basicEntity:new()
   if not self.recycling then
-    self.transform = transform(0, 0, self, self.updateHash)
     self.collisionShape = nil
     self.layer = 1
     self.isRemoved = true
@@ -763,8 +688,8 @@ function basicEntity:new()
   
   self.currentHashes = {}
   self.groupNames = {}
-  self.transform.x = 0
-  self.transform.y = 0
+  self.x = 0
+  self.y = 0
   self.iFrames = 0
   self.changeHealth = 0
   self.dontUpdateHash = false
@@ -833,58 +758,90 @@ function basicEntity:addToGroup(g)
 end
 
 function basicEntity:setRectangleCollision(w, h)
-  self.collisionShape = collisionShape(self, self.updateHash)
-  self.collisionShape:setRect(w, h)
+  if not self.collisionShape then
+    self.collisionShape = {}
+  end
+  
+  self.collisionShape.type = 0
+  self.collisionShape.w = w or 1
+  self.collisionShape.h = h or 1
+  
+  self.collisionShape.r = nil
+  self.collisionShape.data = nil
+  
+  self:updateHash()
 end
 
 function basicEntity:setImageCollision(resource)
-  self.collisionShape = collisionShape(self, self.updateHash)
-  self.collisionShape:setImage(resource)
+  local res = megautils.getResourceTable(resource)
+  
+  if not self.collisionShape then
+    self.collisionShape = {}
+  end
+  
+  self.collisionShape.type = 1
+  self.collisionShape.w = res.data:getWidth()
+  self.collisionShape.h = res.data:getHeight()
+  self.collisionShape.data = res.data
+  
+  self.collisionShape.r = nil
+  
+  self:updateHash()
 end
 
 function basicEntity:setCircleCollision(r)
-  self.collisionShape = collisionShape(self, self.updateHash)
-  self.collisionShape:setCircle(r)
+  if not self.collisionShape then
+    self.collisionShape = {}
+  end
+  
+  self.collisionShape.type = 2
+  self.collisionShape.w = (r or 1) * 2
+  self.collisionShape.h = (r or 1) * 2
+  self.collisionShape.r = r or 1
+  
+  self.collisionShape.data = nil
+  
+  self:updateHash()
 end
 
 function basicEntity:collision(e, x, y, notme)
   if not e or (notme and e == self) or not self.collisionShape or not e.collisionShape then return false end
   if self.collisionShape.type == 0 then
     if e.collisionShape.type == 0 then
-      return rectOverlapsRect(math.round(self.transform.x) + (x or 0), math.round(self.transform.y) + (y or 0),
+      return rectOverlapsRect(math.round(self.x) + (x or 0), math.round(self.y) + (y or 0),
         self.collisionShape.w, self.collisionShape.h,
-        math.round(e.transform.x), math.round(e.transform.y), e.collisionShape.w, e.collisionShape.h)
+        math.round(e.x), math.round(e.y), e.collisionShape.w, e.collisionShape.h)
     elseif e.collisionShape.type == 1 then
-      return imageOverlapsRect(math.round(e.transform.x), math.round(e.transform.y), e.collisionShape.w, e.collisionShape.h, e.collisionShape.data,
-        math.round(self.transform.x) + (x or 0), math.round(self.transform.y) + (y or 0), self.collisionShape.w, self.collisionShape.h)
+      return imageOverlapsRect(math.round(e.x), math.round(e.y), e.collisionShape.w, e.collisionShape.h, e.collisionShape.data,
+        math.round(self.x) + (x or 0), math.round(self.y) + (y or 0), self.collisionShape.w, self.collisionShape.h)
     elseif e.collisionShape.type == 2 then
-      return circleOverlapsRect(math.round(e.transform.x), math.round(e.transform.y), e.collisionShape.r,
-        math.round(self.transform.x) + (x or 0), math.round(self.transform.y) + (y or 0), self.collisionShape.w, self.collisionShape.h)
+      return circleOverlapsRect(math.round(e.x), math.round(e.y), e.collisionShape.r,
+        math.round(self.x) + (x or 0), math.round(self.y) + (y or 0), self.collisionShape.w, self.collisionShape.h)
     end
   elseif self.collisionShape.type == 1 then
     if e.collisionShape.type == 0 then
-      return imageOverlapsRect(math.round(self.transform.x) + (x or 0), math.round(self.transform.y) + (y or 0),
+      return imageOverlapsRect(math.round(self.x) + (x or 0), math.round(self.y) + (y or 0),
         self.collisionShape.w, self.collisionShape.h, self.collisionShape.data,
-        math.round(e.transform.x), math.round(e.transform.y), e.collisionShape.w, e.collisionShape.h)
+        math.round(e.x), math.round(e.y), e.collisionShape.w, e.collisionShape.h)
     elseif e.collisionShape.type == 1 then
-      return imageOverlapsImage(math.round(self.transform.x) + (x or 0), math.round(self.transform.y) + (y or 0),
+      return imageOverlapsImage(math.round(self.x) + (x or 0), math.round(self.y) + (y or 0),
         self.collisionShape.w, self.collisionShape.h, self.collisionShape.data,
-        math.round(e.transform.x), math.round(e.transform.y), e.collisionShape.w, e.collisionShape.h, e.collisionShape.data)
+        math.round(e.x), math.round(e.y), e.collisionShape.w, e.collisionShape.h, e.collisionShape.data)
     elseif e.collisionShape.type == 2 then
-      return imageOverlapsCircle(math.round(self.transform.x) + (x or 0), math.round(self.transform.y) + (y or 0),
+      return imageOverlapsCircle(math.round(self.x) + (x or 0), math.round(self.y) + (y or 0),
         self.collisionShape.w, self.collisionShape.h, self.collisionShape.data,
-        math.round(e.transform.x), math.round(e.transform.y), e.collisionShape.r)
+        math.round(e.x), math.round(e.y), e.collisionShape.r)
     end
   elseif self.collisionShape.type == 2 then
     if e.collisionShape.type == 0 then
-      return circleOverlapsRect(math.round(self.transform.x) + (x or 0), math.round(self.transform.y) + (y or 0), self.collisionShape.r,
-        math.round(e.transform.x), math.round(e.transform.y), e.collisionShape.w, e.collisionShape.h)
+      return circleOverlapsRect(math.round(self.x) + (x or 0), math.round(self.y) + (y or 0), self.collisionShape.r,
+        math.round(e.x), math.round(e.y), e.collisionShape.w, e.collisionShape.h)
     elseif e.collisionShape.type == 1 then
-      return imageOverlapsCircle(math.round(e.transform.x), math.round(e.transform.y), e.collisionShape.w, e.collisionShape.h, e.collisionShape.data,
-        math.round(self.transform.x) + (x or 0), math.round(self.transform.y) + (y or 0), self.collisionShape.r)
+      return imageOverlapsCircle(math.round(e.x), math.round(e.y), e.collisionShape.w, e.collisionShape.h, e.collisionShape.data,
+        math.round(self.x) + (x or 0), math.round(self.y) + (y or 0), self.collisionShape.r)
     elseif e.collisionShape.type == 2 then
-      return circleOverlapsCircle(math.round(self.transform.x) + (x or 0), math.round(self.transform.y) + (y or 0), self.collisionShape.r,
-        math.round(e.transform.x), math.round(e.transform.y), e.collisionShape.r)
+      return circleOverlapsCircle(math.round(self.x) + (x or 0), math.round(self.y) + (y or 0), self.collisionShape.r,
+        math.round(e.x), math.round(e.y), e.collisionShape.r)
     end
   end
   return false
@@ -893,12 +850,12 @@ end
 function basicEntity:drawCollision()
   if not self.collisionShape or megautils.outside(self) then return end
   if self.collisionShape.type == 0 then
-    love.graphics.rectangle("line", math.round(self.transform.x), math.round(self.transform.y),
+    love.graphics.rectangle("line", math.round(self.x), math.round(self.y),
       self.collisionShape.w, self.collisionShape.h)
   elseif self.collisionShape.type == 1 and self.collisionShape.image then
-    self.collisionShape.image:draw(math.round(self.transform.x), math.round(self.transform.y))
+    self.collisionShape.image:draw(math.round(self.x), math.round(self.y))
   elseif self.collisionShape.type == 2 then
-    love.graphics.circle("line", math.round(self.transform.x), math.round(self.transform.y), self.collisionShape.r)
+    love.graphics.circle("line", math.round(self.x), math.round(self.y), self.collisionShape.r)
   end
 end
 
@@ -927,7 +884,7 @@ end
 
 function basicEntity:updateHash(doAnyway, butEnforceBoundCheck)
   if (doAnyway or (not self.dontUpdateHash and self.isAdded)) and self.collisionShape then
-    local xx, yy, ww, hh = self.transform.x, self.transform.y, self.collisionShape.w, self.collisionShape.h
+    local xx, yy, ww, hh = self.x, self.y, self.collisionShape.w, self.collisionShape.h
     local hs = entitySystem.hashSize
     local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
     local cx2, cy2 = math.floor((xx + ww + 2) / hs), math.floor((yy + hh + 2) / hs)
@@ -946,10 +903,10 @@ end
 function basicEntity:getSurroundingEntities(dxx, dyy)
   if dxx or dyy then
     local dx, dy = dxx or 0, dyy or 0
-    local xx, yy, ww, hh = self.transform.x - math.min(dx, 0), self.transform.y - math.min(dy, 0),
+    local xx, yy, ww, hh = self.x - math.min(dx, 0), self.y - math.min(dy, 0),
       self.collisionShape.w + math.max(dx, 0), self.collisionShape.h + math.max(dy, 0)
     
-    return megautils.getSurroundingEntities(self.transform.x, self.transform.y, self.collisionShape.w, self.collisionShape.h)
+    return megautils.getSurroundingEntities(self.x, self.y, self.collisionShape.w, self.collisionShape.h)
   end
   
   local result = self.currentHashes[1] and {unpack(self.currentHashes[1].data)} or {}
@@ -1027,8 +984,8 @@ function entity:moveBy(xx, yy, round)
     self.moveByMoveX = self.moveByMoveX - x
     self.moveByMoveY = self.moveByMoveY - y
   end
-  self.transform.x = self.transform.x + x
-  self.transform.y = self.transform.y + y
+  self.x = self.x + x
+  self.y = self.y + y
 end
 
 function entity:calcGrav()
@@ -1094,8 +1051,8 @@ mapEntity.doSort = false
 
 function mapEntity:new(map, x, y)
   mapEntity.super.new(self)
-  self.transform.x = x or 0
-  self.transform.y = y or 0
+  self.x = x or 0
+  self.y = y or 0
   self.map = map
   self.path = self.map.path
   self.layers = {}
@@ -1195,16 +1152,16 @@ end
 
 function mapEntity:update()
   self.didDrawRange = true
-  self.map:setDrawRange((view.x - self.transform.x) - self.map.tilewidth, (view.y - self.transform.y) - self.map.tileheight,
+  self.map:setDrawRange((view.x - self.x) - self.map.tilewidth, (view.y - self.y) - self.map.tileheight,
     view.w + (self.map.tilewidth * 2), view.h + (self.map.tileheight * 2))
   self.map:update(1/60)
 end
 
 function mapEntity:draw()
   love.graphics.push()
-  love.graphics.translate(-self.transform.x, -self.transform.y)
+  love.graphics.translate(-self.x, -self.y)
   if not self.didDrawRange then
-    self.map:setDrawRange((view.x - self.transform.x) - self.map.tilewidth, (view.y - self.transform.y) - self.map.tileheight,
+    self.map:setDrawRange((view.x - self.x) - self.map.tilewidth, (view.y - self.y) - self.map.tileheight,
       view.w + (self.map.tilewidth * 2), view.h + (self.map.tileheight * 2))
   else
     self.didDrawRange = false
@@ -1390,8 +1347,8 @@ function advancedEntity:useHealthBar(oneColor, twoColor, outlineColor, add)
     camera.main.funcs.advancedEntity = function(s)
         if megautils.groups().advancedEntity then
           for _, v in ipairs(megautils.groups().advancedEntity) do
-            v.healthHandler.transform.x = (v.barRelativeToView and view.x or 0) + v.barOffsetX
-            v.healthHandler.transform.y = (v.barRelativeToView and view.y or 0) + v.barOffsetY
+            v.healthHandler.x = (v.barRelativeToView and view.x or 0) + v.barOffsetX
+            v.healthHandler.y = (v.barRelativeToView and view.y or 0) + v.barOffsetY
           end
         end
       end
@@ -1510,23 +1467,23 @@ function advancedEntity:interactedWith(o, c)
       globals.defeats[self.defeatSlot] = self.defeatSlotValue or true
     end
     if self.explosionType == advancedEntity.SMALLBLAST then
-      megautils.add(smallBlast, self.transform.x+(self.collisionShape.w/2)-12, self.transform.y+(self.collisionShape.h/2)-12, self)
+      megautils.add(smallBlast, self.x+(self.collisionShape.w/2)-12, self.y+(self.collisionShape.h/2)-12, self)
     elseif self.explosionType == advancedEntity.BIGBLAST then
-      megautils.add(blast, self.transform.x+(self.collisionShape.w/2)-12, self.transform.y+(self.collisionShape.h/2)-12, self)
+      megautils.add(blast, self.x+(self.collisionShape.w/2)-12, self.y+(self.collisionShape.h/2)-12, self)
     elseif self.explosionType == advancedEntity.DEATHBLAST then
-      deathExplodeParticle.createExplosion(self.transform.x+((self.collisionShape.w/2)-12),
-        self.transform.y+((self.collisionShape.h/2)-12), self)
+      deathExplodeParticle.createExplosion(self.x+((self.collisionShape.w/2)-12),
+        self.y+((self.collisionShape.h/2)-12), self)
     end
     if self.dropItem then
       local item
       if self.dropItem == true then
-        item = megautils.dropItem(self.transform.x, self.transform.y)
+        item = megautils.dropItem(self.x, self.y)
       else
         item = megautils.adde(self.dropItem)
       end
       if item then
-        item.transform.x = self.transform.x+(self.collisionShape.w/2)-(item.collisionShape.w/2)
-        item.transform.y = self.transform.y+(self.collisionShape.h/2)-(item.collisionShape.h/2) + (self.gravity >= 0 and -8 or 8)
+        item.x = self.x+(self.collisionShape.w/2)-(item.collisionShape.w/2)
+        item.y = self.y+(self.collisionShape.h/2)-(item.collisionShape.h/2) + (self.gravity >= 0 and -8 or 8)
       end
     end
     if self.removeOnDeath then
@@ -1638,14 +1595,14 @@ function bossEntity:intro()
     self.screen.o = 0
     self.screen:setLayer(0)
     self.ds = 1
-    self.dOff = view.y-self.transform.y
-    self.oldY = self.transform.y
-    self.transform.y = self.oldY + self.dOff
+    self.dOff = view.y-self.y
+    self.oldY = self.y
+    self.y = self.oldY + self.dOff
   elseif self.ds == 1 then
     self.screen.o = math.min(self.screen.o+0.05, 0.4)
     self.dOff = math.min(self.dOff+1, 0)
-    self.transform.y = self.oldY + self.dOff
-    if self.transform.y == self.oldY then
+    self.y = self.oldY + self.dOff
+    if self.y == self.oldY then
       self.ds = 2
     end
   elseif self.ds == 2 then
@@ -1784,8 +1741,8 @@ function bossEntity:bossIntro()
   if self._subState == 0 then
     self.autoCollision.intro = false
     self.autoGravity.intro = false
-    self.transform.x = math.floor(view.w/2)-(self.collisionShape.w/2)
-    self.transform.y = -self.collisionShape.h
+    self.x = math.floor(view.w/2)-(self.collisionShape.w/2)
+    self.y = -self.collisionShape.h
     self._timer = 0
     self._textPos = 0
     self._textTimer = 0
@@ -1795,8 +1752,8 @@ function bossEntity:bossIntro()
       megautils.playMusic(self.musicBIPath, self.musicBIVolume)
     end
   elseif self._subState == 1 then
-    self.transform.y = math.min(self.transform.y+10, math.floor(view.h/2)-(self.collisionShape.h/2))
-    if self.transform.y == math.floor(view.h/2)-(self.collisionShape.h/2) then
+    self.y = math.min(self.y+10, math.floor(view.h/2)-(self.collisionShape.h/2))
+    if self.y == math.floor(view.h/2)-(self.collisionShape.h/2) then
       self._subState = 2
     end
   elseif self._subState == 2 then

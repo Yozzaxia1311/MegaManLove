@@ -533,7 +533,7 @@ concmd["getpos"] = {
   flags = {},
   fun = function(cmd)
       if megaMan.mainPlayer then
-        console.print(tostring(megaMan.mainPlayer.transform.x) .. ", " .. tostring(megaMan.mainPlayer.transform.y))
+        console.print(tostring(megaMan.mainPlayer.x) .. ", " .. tostring(megaMan.mainPlayer.y))
       end
     end
 }
@@ -568,11 +568,11 @@ concmd["give"] = {
             if cmd[i]:match("playerx") then
               local st, en = cmd[i]:find("playerx")
               local v = cmd[i]:sub(en+1, cmd[i]:len())
-              args[#args+1] = megaMan.mainPlayer.transform.x+numberSanitize(v)
+              args[#args+1] = megaMan.mainPlayer.x+numberSanitize(v)
             elseif cmd[i]:match("playery") then
               local st, en = cmd[i]:find("playery")
               local v = cmd[i]:sub(en+1, cmd[i]:len())
-              args[#args+1] = megaMan.mainPlayer.transform.y+numberSanitize(v)
+              args[#args+1] = megaMan.mainPlayer.y+numberSanitize(v)
             else
               args[#arg+1] = tonumber(cmd[i]) or toboolean(cmd[i]) or cmd[i]
             end

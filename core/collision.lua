@@ -27,18 +27,18 @@ end
 
 function collision.doCollision(self, noSlope)
   local lvx, lvy, lx, ly, lg =
-    self.velocity.velx, self.velocity.vely, self.transform.x, self.transform.y, self.ground
+    self.velocity.velx, self.velocity.vely, self.x, self.y, self.ground
   local nslp = noSlope or collision.noSlope
   if checkFalse(self.blockCollision) then
     collision.generalCollision(self, nslp)
   else
-    self.transform.x = self.transform.x + self.velocity.velx
-    self.transform.y = self.transform.y + self.velocity.vely
+    self.x = self.x + self.velocity.velx
+    self.y = self.y + self.velocity.vely
   end
   collision.checkGround(self, false, nslp)
   collision.entityPlatform(self)
   collision.checkGround(self, false, nslp)
-  collision.checkDeath(self, lvx - (self.transform.x - lx), (lvy - (self.transform.y - ly)) + (self.ground and math.sign(self.gravity) or 0), lg)
+  collision.checkDeath(self, lvx - (self.x - lx), (lvy - (self.y - ly)) + (self.ground and math.sign(self.gravity) or 0), lg)
 end
 
 function collision.getTable(self, dx, dy, noSlope)
@@ -122,7 +122,7 @@ function collision.checkSolid(self, dx, dy, noSlope)
 end
 
 function collision.entityPlatform(self)
-  if self.transform.x ~= self.epX or self.transform.y ~= self.epY then
+  if self.x ~= self.epX or self.y ~= self.epY then
     local lduh = self.dontUpdateHash
     self.dontUpdateHash = true
     self:updateHash(true, true)
@@ -130,15 +130,15 @@ function collision.entityPlatform(self)
     local resolid = self.solidType
     local xypre
     local epCanCrush = true
-    local myyspeed = self.transform.y - self.epY
-    local myxspeed = self.transform.x - self.epX
+    local myyspeed = self.y - self.epY
+    local myxspeed = self.x - self.epX
     local all = self:getSurroundingEntities(myxspeed, myyspeed)
     local ladders = collision.getLadders(all)
     local possible = resolid ~= 0 and self.collisionShape and #all ~= 0
     
     self.solidType = collision.NONE
-    self.transform.x = self.epX
-    self.transform.y = self.epY
+    self.x = self.epX
+    self.y = self.epY
     
     if possible and myyspeed ~= 0 then
       for i=1, #all do
@@ -146,8 +146,8 @@ function collision.entityPlatform(self)
         if v ~= self and checkFalse(v.blockCollision) and v.collisionShape and
           (not self.exclusivelySolidFor or table.icontains(self.exclusivelySolidFor, v)) and
           (not self.excludeSolidFor or not table.icontains(self.excludeSolidFor, v)) then
-          local epDir = math.sign(self.transform.y + (self.collisionShape.h/2) -
-            (v.transform.y + (v.collisionShape.h/2)))
+          local epDir = math.sign(self.y + (self.collisionShape.h/2) -
+            (v.y + (v.collisionShape.h/2)))
           
           if v:collision(self, 0, -myyspeed) then
             collision.performDeath(v, self)
@@ -158,33 +158,33 @@ function collision.entityPlatform(self)
             local epWillCollide = self:collision(v, 0, myyspeed)
             
             if epIsPassenger or epWillCollide then
-              self.transform.y = self.transform.y + myyspeed
+              self.y = self.y + myyspeed
               
-              xypre = v.transform.y
+              xypre = v.y
               
               if epIsPassenger then
-                v.transform.y = v.transform.y + myyspeed
+                v.y = v.y + myyspeed
                 collision.checkDeath(v, 0, math.sign(v.gravity))
               end
               
               if (resolid == collision.SOLID or (resolid == collision.ONEWAY and (epDir * (v.gravity >= 0 and 1 or -1))>0 and
-                math.sign(v.transform.y - self.transform.y) == -cgrav and
+                math.sign(v.y - self.y) == -cgrav and
                 (not self.ladder or self:collisionNumber(ladders, 0, v.gravity < 0 and 1 or -1, true) == 0))) and
                 v:collision(self) then
                 local step = epDir * 0.5
-                v.transform.y = math.round(v.transform.y) - step
+                v.y = math.round(v.y) - step
                 
                 while true do
                   if v:collision(self) then
-                    v.transform.y = v.transform.y - step
+                    v.y = v.y - step
                   else
                     break
                   end
                 end
               end
               
-              xypre = xypre - v.transform.y
-              v.transform.y = v.transform.y + xypre
+              xypre = xypre - v.y
+              v.y = v.y + xypre
               
               collision.shiftObject(v, 0, -xypre, true)
               
@@ -204,14 +204,14 @@ function collision.entityPlatform(self)
                 v.onMovingFloor = self
               end
               
-              self.transform.y = self.transform.y - myyspeed
+              self.y = self.y - myyspeed
             end
           end
         end
       end
     end
     
-    self.transform.y = self.transform.y + myyspeed
+    self.y = self.y + myyspeed
       
     if possible and myxspeed ~= 0 then
       for i=1, #all do
@@ -227,8 +227,8 @@ function collision.entityPlatform(self)
           
           if not v:collision(self) then
             local epIsOnPlat = false
-            local epDir = math.sign((self.transform.x + (self.collisionShape.w / 2)) -
-              (v.transform.x + (v.collisionShape.w / 2)))
+            local epDir = math.sign((self.x + (self.collisionShape.w / 2)) -
+              (v.x + (v.collisionShape.w / 2)))
             
             if v:collision(self, 0, (v.gravity >= 0 and 1 or -1) * (v.ground and 1 or 0)) and
               (not self.ladder or self:collisionNumber(ladders, 0, v.gravity < 0 and 1 or -1, true) == 0) then
@@ -239,24 +239,24 @@ function collision.entityPlatform(self)
             end
             
             if resolid == 1 then
-              self.transform.x = self.transform.x + myxspeed
+              self.x = self.x + myxspeed
               
               if not epIsOnPlat and v:collision(self) then
-                xypre = v.transform.x
+                xypre = v.x
                 
-                v.transform.x = math.round(v.transform.x + myxspeed + epDir)
+                v.x = math.round(v.x + myxspeed + epDir)
                 local step = epDir * 0.5
                 
                 while true do
                   if v:collision(self) then
-                    v.transform.x = v.transform.x - step
+                    v.x = v.x - step
                   else
                     break
                   end
                 end
                 
-                xypre = xypre - v.transform.x
-                v.transform.x = v.transform.x + xypre
+                xypre = xypre - v.x
+                v.x = v.x + xypre
                 
                 collision.shiftObject(v, -xypre, 0, true)
                 
@@ -270,7 +270,7 @@ function collision.entityPlatform(self)
                 end
               end
               
-              self.transform.x = self.transform.x - myxspeed
+              self.x = self.x - myxspeed
             end
           else
             continue = true
@@ -282,12 +282,12 @@ function collision.entityPlatform(self)
       end
     end
     
-    self.transform.x = self.transform.x + myxspeed
+    self.x = self.x + myxspeed
     
     self.solidType = resolid
     
-    self.epX = self.transform.x
-    self.epY = self.transform.y
+    self.epX = self.x
+    self.epY = self.y
     
     self.dontUpdateHash = lduh
   end
@@ -300,16 +300,16 @@ function collision.shiftObject(self, dx, dy, checkforcol, ep, noSlope)
   self.velocity.velx = dx
   self.velocity.vely = dy
   
-  self.epX = self.transform.x
-  self.epY = self.transform.y
+  self.epX = self.x
+  self.epY = self.y
   
   if checkforcol then
     self.canStandSolid.global = false
     collision.generalCollision(self, noSlope or collision.noSlope)
     self.canStandSolid.global = true
   else
-    self.transform.x = self.transform.x + self.velocity.velx
-    self.transform.y = self.transform.y + self.velocity.vely
+    self.x = self.x + self.velocity.velx
+    self.y = self.y + self.velocity.vely
   end
   
   if ep == nil or ep then
@@ -353,7 +353,7 @@ function collision.checkGround(self, checkAnyway, noSlope)
         (not v.excludeSolidFor or not table.icontains(v.excludeSolidFor, self)) then
         if (v.solidType == collision.SOLID or v.solidType == collision.ONEWAY) and
           not v:collision(self, 0, cgrav) and (v.solidType ~= collision.ONEWAY or (v:collision(self, 0, -cgrav * slp) and
-          math.sign(self.transform.y - v.transform.y) == -cgrav and
+          math.sign(self.y - v.y) == -cgrav and
           (not v.ladder or v:collisionNumber(ladders, 0, -cgrav, true) == 0))) then
           solid[#solid + 1] = v
         elseif v.solidType == collision.STANDIN then
@@ -382,10 +382,10 @@ function collision.checkGround(self, checkAnyway, noSlope)
           end
           
           if self:collisionNumber(solid, 0, yStep * cgrav) ~= 0 then
-            self.transform.y = math.round(self.transform.y) + (yStep * cgrav)
+            self.y = math.round(self.y) + (yStep * cgrav)
             
             while self:collisionNumber(solid) ~= 0 do
-              self.transform.y = self.transform.y - cgrav
+              self.y = self.y - cgrav
             end
           end
           
@@ -414,7 +414,7 @@ function collision.generalCollision(self, noSlope)
   self.xColl = 0
   self.yColl = 0
   
-  local xprev = self.transform.x
+  local xprev = self.x
   local solid = {}
   local stand = {}
   local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
@@ -461,16 +461,16 @@ function collision.generalCollision(self, noSlope)
       end
     end
     
-    self.transform.x = self.transform.x + self.velocity.velx
+    self.x = self.x + self.velocity.velx
     
     if possible and self:collisionNumber(solid) ~= 0 then
       local s = math.sign(self.velocity.velx)
       local step = 1
-      self.transform.x = math.round(self.transform.x + s)
+      self.x = math.round(self.x + s)
       
       while true do
         if self:collisionNumber(solid, step * -s, 0) == 0 then
-          self.transform.x = self.transform.x + (step * -s)
+          self.x = self.x + (step * -s)
           break
         else
           step = step + 1
@@ -481,7 +481,7 @@ function collision.generalCollision(self, noSlope)
       self.velocity.velx = 0
       
       if not nslp and self.xColl ~= 0 and slp ~= 0 and self:collisionNumber(solid, 0, cgrav * slp) ~= 0 then
-        local xsl = self.xColl - (self.transform.x - xprev)
+        local xsl = self.xColl - (self.x - xprev)
         if math.sign(self.xColl) == math.sign(xsl) then
           local yStep = 1
           local xStep = 0
@@ -490,16 +490,16 @@ function collision.generalCollision(self, noSlope)
           
           while xStep ~= dst do
             if self:collisionNumber(solid, xsl - xStep, -yStep) == 0 then
-              self.transform.x = self.transform.x + xsl - xStep
-              self.transform.y = self.transform.y - yStep
+              self.x = self.x + xsl - xStep
+              self.y = self.y - yStep
               if xStep == 0 then
                 self.velocity.velx = self.xColl
                 self.xColl = 0
               end
               break
             elseif self:collisionNumber(solid, xsl - xStep, yStep) == 0 then
-              self.transform.x = self.transform.x + xsl - xStep
-              self.transform.y = self.transform.y + yStep
+              self.x = self.x + xsl - xStep
+              self.y = self.y + yStep
               if xStep == 0 then
                 self.velocity.velx = self.xColl
                 self.xColl = 0
@@ -532,7 +532,7 @@ function collision.generalCollision(self, noSlope)
           (not v.exclusivelySolidFor or table.icontains(v.exclusivelySolidFor, self)) and
           (not v.excludeSolidFor or not table.icontains(v.excludeSolidFor, self)) and v.solidType == collision.ONEWAY and
           (not v.ladder or v:collisionNumber(ladders, 0, -cgrav, true) == 0) then
-            if not v:collision(self) and math.sign(self.transform.y - v.transform.y) == -cgrav then
+            if not v:collision(self) and math.sign(self.y - v.y) == -cgrav then
               solid[#solid+1] = v
             else
               table.removevaluearray(solid, v)
@@ -542,16 +542,16 @@ function collision.generalCollision(self, noSlope)
       end
     end
     
-    self.transform.y = self.transform.y + self.velocity.vely
+    self.y = self.y + self.velocity.vely
     
     if possible and self:collisionNumber(solid) ~= 0 then
       local s = math.sign(self.velocity.vely)
       local step = 1
-      self.transform.y = math.round(self.transform.y + s)
+      self.y = math.round(self.y + s)
       
       while true do
         if self:collisionNumber(solid, 0, step * -s) == 0 then
-          self.transform.y = self.transform.y + (step * -s)
+          self.y = self.y + (step * -s)
           break
         else
           step = step + 1
@@ -605,7 +605,7 @@ function collision.checkDeath(self, x, y, dg)
     
     local deathSolid
     local lx, ly, lg, lxc, lyc, lss, lmf = 
-      self.transform.x, self.transform.y, self.ground, self.xColl, self.yColl, self.inStandSolid, self.onMovingFloor
+      self.x, self.y, self.ground, self.xColl, self.yColl, self.inStandSolid, self.onMovingFloor
     
     for i=1, #death do
       local v = death[i]
@@ -626,16 +626,18 @@ function collision.checkDeath(self, x, y, dg)
     end
     
     if deathSolid then
-      self.transform.x, self.transform.y, self.ground, self.xColl, self.yColl, self.inStandSolid, self.onMovingFloor =
+      self.x, self.y, self.ground, self.xColl, self.yColl, self.inStandSolid, self.onMovingFloor =
         lx, ly, lg, lxc, lyc, lss, lmf
       
-      if dg ~= nil then
-        self.ground = dg
-      end
+      local ld = self.dead
       
       collision.performDeath(self, deathSolid)
+      
+      if not ld and self.dead and dg ~= nil then
+        self.ground = dg
+      end
     else
-      self.transform.x, self.transform.y, self.ground, self.xColl, self.yColl, self.inStandSolid, self.onMovingFloor =
+      self.x, self.y, self.ground, self.xColl, self.yColl, self.inStandSolid, self.onMovingFloor =
         lx, ly, lg, lxc, lyc, lss, lmf
     end
   end
