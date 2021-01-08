@@ -220,10 +220,11 @@ function entitySystem:add(c, ...)
   
   self.all[#self.all+1] = e
   
-  e.currentHashes = {}
   e.isRemoved = false
   e.isAdded = true
   e.justAddedIn = true
+  e.currentHashes = {}
+  if not e.invisibleToHash then e:updateHash(true) end
   e:added()
   
   if self.inLoop then
@@ -270,10 +271,11 @@ function entitySystem:adde(e)
   
   self.all[#self.all+1] = e
   
-  e.currentHashes = {}
   e.isRemoved = false
   e.isAdded = true
   e.justAddedIn = true
+  e.currentHashes = {}
+  if not e.invisibleToHash then e:updateHash(true) end
   e:added()
   
   if self.inLoop then
@@ -695,10 +697,6 @@ function basicEntity:new()
   self.lastHashY2 = nil
 end
 
-function basicEntity:added()
-  self:updateHash(true)
-end
-
 function basicEntity:determineIFrames(o)
   return o.suggestedIFrameForInteracted or 2
 end
@@ -921,6 +919,7 @@ function basicEntity:update() end
 function basicEntity:afterUpdate() end
 function basicEntity:draw() end
 function basicEntity:drawQuality() end
+function basicEntity:added() end
 function basicEntity:removed() end
 function basicEntity:begin() end
 function basicEntity:staticToggled() end
@@ -1321,8 +1320,6 @@ function advancedEntity:new()
 end
 
 function advancedEntity:added()
-  advancedEntity.super.added(self)
-  
   self:addToGroup("removeOnTransition")
   self:addToGroup("handledBySections")
   self:addToGroup("interactable")

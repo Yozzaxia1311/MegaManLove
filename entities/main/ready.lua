@@ -17,8 +17,6 @@ function ready:new(text, blinks)
 end
 
 function ready:added()
-  ready.super.added(self)
-  
   megautils.freeze("ready")
 end
 

@@ -15,8 +15,6 @@ function checkpoint:new(x, y, w, h, c)
 end
 
 function checkpoint:added()
-  checkpoint.super.added(self)
-  
   self:addToGroup("handledBySections")
 end
 
@@ -43,8 +41,6 @@ function collisionCheckpoint:new(x, y, w, h, c)
 end
 
 function collisionCheckpoint:added()
-  collisionCheckpoint.super.added(self)
-  
   self:addToGroup("handledBySections")
 end
 

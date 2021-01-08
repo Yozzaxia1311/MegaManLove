@@ -97,8 +97,6 @@ function weapon:new(p, enWeapon)
 end
 
 function weapon:added()
-  weapon.super.added(self)
-  
   if self.weaponGroup then
     self:addToGroup(self.weaponGroup)
     if self.user and megaMan.weaponHandler[self.user.player] then

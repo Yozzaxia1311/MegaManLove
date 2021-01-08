@@ -26,8 +26,6 @@ function particle:new(user)
 end
 
 function particle:added()
-  particle.super.added(self)
-  
   self:addToGroup("removeOnTransition")
 end
 

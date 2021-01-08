@@ -52,8 +52,6 @@ function water:new(x, y, w, h, grav)
 end
 
 function water:added()
-  water.super.added(self)
-  
   self:addToGroup("handledBySections")
   self:addToGroup("water")
 end
@@ -196,8 +194,6 @@ function space:new(x, y, w, h, grav)
 end
 
 function space:added()
-  space.super.added(self)
-  
   self:addToGroup("handledBySections")
   self:addToGroup("space")
 end

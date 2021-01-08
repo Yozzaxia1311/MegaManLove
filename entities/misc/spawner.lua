@@ -14,8 +14,6 @@ function spawner:new(x, y, w, h, cond, ...)
 end
 
 function spawner:added()
-  spawner.super.added(self)
-  
   self:addToGroup("handledBySections")
   self.instance = nil
   self.wasOutside = true
@@ -48,8 +46,6 @@ function intervalSpawner:new(x, y, w, h, time, cond, ...)
 end
 
 function intervalSpawner:added()
-  intervalSpawner.super.added(self)
-  
   self:addToGroup("handledBySections")
 end
 

@@ -18,7 +18,5 @@ function death:new(x, y, w, h, damage)
 end
 
 function death:added()
-  death.super.added(self)
-  
   self:addToGroup("handledBySections")
 end

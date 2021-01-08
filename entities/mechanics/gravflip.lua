@@ -17,8 +17,6 @@ function gravFlip:new(x, y, w, h, dir)
 end
 
 function gravFlip:added()
-  gravFlip.super.added(self)
-  
   self:addToGroup("handledBySections")
 end
 

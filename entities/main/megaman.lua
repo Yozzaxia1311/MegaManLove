@@ -536,8 +536,6 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
 end
 
 function megaMan:added()
-  megaMan.super.added(self)
-  
   self:addToGroup("submergable")
 end
 

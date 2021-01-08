@@ -25,8 +25,6 @@ function right:new(x, y, h, scrollx, scrolly, spd, p, n)
 end
 
 function right:added()
-  right.super.added(self)
-  
   self:addToGroup("handledBySections")
 end
 
@@ -89,8 +87,6 @@ function left:new(x, y, h, scrollx, scrolly, spd, p, n)
 end
 
 function left:added()
-  left.super.added(self)
-  
   self:addToGroup("handledBySections")
 end
 
@@ -155,8 +151,6 @@ function down:new(x, y, w, scrollx, scrolly, spd, p, n, cl)
 end
 
 function down:added()
-  down.super.added(self)
-  
   self:addToGroup("handledBySections")
 end
 
@@ -222,8 +216,6 @@ function up:new(x, y, w, scrollx, scrolly, spd, p, n, cl)
 end
 
 function up:added()
-  up.super.added(self)
-  
   self:addToGroup("handledBySections")
 end
 
@@ -281,8 +273,6 @@ function sectionPrioritySetter:new(x, y, w, h, name)
 end
 
 function sectionPrioritySetter:added()
-  sectionPrioritySetter.super.added(self)
-  
   self:addToGroup("handledBySections")
 end
 
@@ -332,8 +322,6 @@ function sectionPrioritySetterXBorder:new(x, y, h, lname, rname)
 end
 
 function sectionPrioritySetterXBorder:added()
-  sectionPrioritySetterXBorder.super.added(self)
-  
   self:addToGroup("handledBySections")
 end
 
@@ -385,8 +373,6 @@ function sectionPrioritySetterYBorder:new(x, y, w, uname, dname)
 end
 
 function sectionPrioritySetterYBorder:added()
-  sectionPrioritySetterYBorder.super.added(self)
-  
   self:addToGroup("handledBySections")
 end
 
@@ -438,8 +424,6 @@ function sectionPrioritySetterArea:new(x, y, w, h, name, name2)
 end
 
 function sectionPrioritySetterArea:added()
-  sectionPrioritySetterArea.super.added(self)
-  
   self:addToGroup("handledBySections")
   self:addToGroup("sectionPriorityArea")
 end

@@ -51,8 +51,6 @@ function parallax:new(x, y, w, h, bg, a, as, aw, ah, spdMultX, spdMultY, sx, sy,
 end
 
 function parallax:added()
-  parallax.super.added(self)
-  
   self:addToGroup("handledBySections")
 end
 

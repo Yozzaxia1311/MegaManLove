@@ -39,8 +39,6 @@ function camera:new(x, y, doScrollX, doScrollY)
 end
 
 function camera:added()
-  camera.super.added(self)
-  
   view.x, view.y = self.x, self.y
   if megautils.groups().camera then
     for _, v in ipairs(megautils.groups().camera) do

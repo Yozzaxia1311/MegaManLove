@@ -15,8 +15,6 @@ function solid:new(x, y, w, h)
 end
 
 function solid:added()
-  solid.super.added(self)
-  
   self:addToGroup("handledBySections")
   self:makeStatic()
 end
@@ -55,8 +53,6 @@ function slope:new(x, y, mask)
 end
 
 function slope:added()
-  slope.super.added(self)
-  
   self:addToGroup("handledBySections")
   self:makeStatic()
 end

@@ -13,8 +13,6 @@ function ice:new(x, y, w, h)
 end
 
 function ice:added()
-  ice.super.added(self)
-  
   self:addToGroup("handledBySections")
   self:addToGroup("ice")
 end
