@@ -16,6 +16,8 @@ megautils.loadResource("assets/sfx/selected.ogg", "selected")
 
 menuSelect = basicEntity:extend()
 
+menuSelect.invisibleToHash = true
+
 function menuSelect:new()
   menuSelect.super.new(self)
   self.x = 88

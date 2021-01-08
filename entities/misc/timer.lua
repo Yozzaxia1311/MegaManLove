@@ -1,6 +1,7 @@
 timer = basicEntity:extend()
 
 timer.autoClean = false
+timer.invisibleToHash = true
 
 function timer:new(time, func)
   timer.super.new(self)

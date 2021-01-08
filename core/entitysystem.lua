@@ -1028,6 +1028,7 @@ end
 mapEntity = basicEntity:extend()
 
 mapEntity.autoClean = false
+mapEntity.invisibleToHash = true
 
 function mapEntity.ser()
   return {

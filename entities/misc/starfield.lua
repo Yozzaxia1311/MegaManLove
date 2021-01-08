@@ -3,6 +3,8 @@ megautils.loadResource("assets/misc/starFieldOne.png", "starFieldOne")
 
 banner = basicEntity:extend()
 
+banner.invisibleToHash = true
+
 function banner.ser()
   return {
       outline = banner.colorOutline,
@@ -45,6 +47,8 @@ end
 
 smallStar = basicEntity:extend()
 
+smallStar.invisibleToHash = true
+
 function smallStar:new(x, y, angle, spd)
   smallStar.super.new(self)
   self.x = x or 0
@@ -69,6 +73,8 @@ end
 
 star = basicEntity:extend()
 
+star.invisibleToHash = true
+
 function star:new(x, y, angle, spd)
   star.super.new(self)
   self.x = x or 0
@@ -92,6 +98,8 @@ function star:draw()
 end
 
 largeStar = basicEntity:extend()
+
+largeStar.invisibleToHash = true
 
 function largeStar:new(x, y, angle, spd)
   largeStar.super.new(self)

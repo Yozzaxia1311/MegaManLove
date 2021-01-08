@@ -9,6 +9,8 @@ end
 
 disclaimer = basicEntity:extend()
 
+disclaimer.invisibleToHash = true
+
 function disclaimer:new()
   disclaimer.super.new(self)
   self.x = 0

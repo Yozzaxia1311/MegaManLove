@@ -1,6 +1,7 @@
 trigger = basicEntity:extend()
 
 trigger.autoClean = false
+trigger.invisibleToHash = true
 
 function trigger:new(call, drawCall)
   trigger.super.new(self)

@@ -9,6 +9,8 @@ end
 
 contPanels = basicEntity:extend()
 
+contPanels.invisibleToHash = true
+
 function contPanels:new()
   contPanels.super.new(self)
   self.tex = megautils.getResource("cont")

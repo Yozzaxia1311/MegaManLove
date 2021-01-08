@@ -12,6 +12,8 @@ end
 
 rebinder = basicEntity:extend()
 
+rebinder.invisibleToHash = true
+
 function rebinder:new()
   lastPressed.type = nil
   lastPressed.input = nil

@@ -9,6 +9,8 @@ megautils.loadResource("assets/misc/title.png", "title")
 
 title = basicEntity:extend()
 
+title.invisibleToHash = true
+
 function title:new()
   title.super.new(self)
   self.tex = megautils.getResource("title")

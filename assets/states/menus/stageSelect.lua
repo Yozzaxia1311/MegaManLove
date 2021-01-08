@@ -12,6 +12,8 @@ megautils.loadResource(0, 0, 63, 62, 2, "megaManGrid")
 
 stageSelect = basicEntity:extend()
 
+stageSelect.invisibleToHash = true
+
 function stageSelect:new()
   stageSelect.super.new(self)
   self.x = 24

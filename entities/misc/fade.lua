@@ -1,6 +1,7 @@
 fade = basicEntity:extend()
 
 fade.autoClean = false
+fade.invisibleToHash = true
 
 function fade:new(fadeToColor, gap, color, after)
   fade.super.new(self)
