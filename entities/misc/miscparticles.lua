@@ -6,6 +6,7 @@ megautils.loadResource(108, 28, 5, 8, "damageSteamGrid", true)
 particle = entity:extend()
 
 particle.autoClean = false
+particle.invisibleToHash = true
 
 function particle:new(user)
   particle.super.new(self)
@@ -65,7 +66,6 @@ slideParticle.autoClean = false
 function slideParticle:new(x, y, p, side)
   slideParticle.super.new(self, p)
   
-  self.dontUpdateHash = true
   self.x = x or 0
   self.y = y or 0
   self.side = side or 1
@@ -100,7 +100,6 @@ damageSteam.autoClean = false
 function damageSteam:new(x, y, p)
   damageSteam.super.new(self, p)
   
-  self.dontUpdateHash = true
   self.x = x or 0
   self.y = y or 0
   
@@ -176,8 +175,6 @@ harm.autoClean = false
 function harm:new(p, time)
   harm.super.new(self, p)
   
-  self.dontUpdateHash = true
-  
   if self.user then
     local cx, cy = megautils.center(self.user)
     self.x = cx-12
@@ -214,7 +211,6 @@ deathExplodeParticle.autoClean = false
 function deathExplodeParticle:new(x, y, p, angle, spd)
   deathExplodeParticle.super.new(self, p)
   
-  self.dontUpdateHash = true
   self.x = x or 0
   self.y = y or 0
   self:setRectangleCollision(24, 24)
@@ -247,7 +243,6 @@ absorbParticle.autoClean = false
 function absorbParticle:new(x, y, p, spd)
   absorbParticle.super.new(self, p)
   
-  self.dontUpdateHash = true
   self.x = x or 0
   self.y = y or 0
   self:setRectangleCollision(24, 24)
@@ -294,7 +289,6 @@ absorb.autoClean = false
 function absorb:new(p, times, spd)
   absorb.super.new(self, p)
   
-  self.dontUpdateHash = true
   self.timer = 60
   self.times = 0
   self.maxTimes = times or 3
@@ -323,7 +317,6 @@ smallBlast.autoClean = false
 function smallBlast:new(x, y, p, spd)
   smallBlast.super.new(self, p)
   
-  self.dontUpdateHash = true
   self.x = x or 0
   self.y = y or 0
   self.spd = spd or 0.065
@@ -357,7 +350,6 @@ blast.autoClean = false
 function blast:new(x, y, p, hurt, damage, times)
   blast.super.new(self, p)
   
-  self.dontUpdateHash = true
   self.x = x or 0
   self.y = y or 0
   self.deg = 0

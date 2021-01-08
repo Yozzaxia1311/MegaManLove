@@ -123,10 +123,6 @@ end
 
 function collision.entityPlatform(self)
   if self.x ~= self.epX or self.y ~= self.epY then
-    local lduh = self.dontUpdateHash
-    self.dontUpdateHash = true
-    self:updateHash(true, true)
-    
     local resolid = self.solidType
     local xypre
     local epCanCrush = true
@@ -192,9 +188,8 @@ function collision.entityPlatform(self)
                 if epCanCrush and v:collision(self) then
                   local crushing = self.crushing and self:crushing(v)
                   if v.crushed and (crushing == nil or crushing) then
-                    self.dontUpdateHash = lduh
+                    self:updateHash()
                     v:crushed(self)
-                    self.dontUpdateHash = true
                   end
                 end
               end
@@ -263,9 +258,8 @@ function collision.entityPlatform(self)
                 if epCanCrush and v:collision(self) then
                   local crushing = self.crushing and self:crushing(v)
                   if v.crushed and (crushing == nil or crushing) then
-                    self.dontUpdateHash = lduh
+                    self:updateHash()
                     v:crushed(self)
-                    self.dontUpdateHash = true
                   end
                 end
               end
@@ -288,8 +282,6 @@ function collision.entityPlatform(self)
     
     self.epX = self.x
     self.epY = self.y
-    
-    self.dontUpdateHash = lduh
   end
 end
 
@@ -321,10 +313,6 @@ function collision.shiftObject(self, dx, dy, checkforcol, ep, noSlope)
 end
 
 function collision.checkGround(self, checkAnyway, noSlope)
-  local lduh = self.dontUpdateHash
-  self.dontUpdateHash = true
-  self:updateHash(true, true)
-  
   local possible = self.collisionShape and checkFalse(self.blockCollision)
   
   if not possible then
@@ -400,15 +388,9 @@ function collision.checkGround(self, checkAnyway, noSlope)
       end
     end
   end
-  
-  self.dontUpdateHash = lduh
 end
 
 function collision.generalCollision(self, noSlope)
-  local lduh = self.dontUpdateHash
-  self.dontUpdateHash = true
-  self:updateHash(true, true)
-  
   local nslp = noSlope or collision.noSlope
   
   self.xColl = 0
@@ -522,9 +504,7 @@ function collision.generalCollision(self, noSlope)
   if self.velocity.vely ~= 0 then
     if possible then
       if self.velocity.vely * cgrav > 0 then
-        self.dontUpdateHash = false
         all = self:getSurroundingEntities(self.velocity.velx, self.velocity.vely)
-        self.dontUpdateHash = true
         
         for i=1, #all do
           local v = all[i]
@@ -581,15 +561,9 @@ function collision.generalCollision(self, noSlope)
       end
     end
   end
-  
-  self.dontUpdateHash = lduh
 end
 
 function collision.checkDeath(self, x, y, dg)
-  local lduh = self.dontUpdateHash
-  self.dontUpdateHash = true
-  self:updateHash(true, true)
-  
   local all = self:getSurroundingEntities(x, y)
   local possible = self.collisionShape and checkFalse(self.blockCollision) and #all ~= 0
   
@@ -641,8 +615,6 @@ function collision.checkDeath(self, x, y, dg)
         lx, ly, lg, lxc, lyc, lss, lmf
     end
   end
-  
-  self.dontUpdateHash = lduh
 end
 
 function collision.performDeath(self, death)

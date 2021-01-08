@@ -1,7 +1,7 @@
 right = basicEntity:extend()
 
 right.autoClean = false
-right.noHash = true
+right.invisibleToHash = true
 
 mapEntity.register("right", function(v)
   megautils.add(right, v.x, v.y, v.height,
@@ -65,7 +65,7 @@ end
 left = basicEntity:extend()
 
 left.autoClean = false
-left.noHash = true
+left.invisibleToHash = true
 
 mapEntity.register("left", function(v)
   megautils.add(left, v.x, v.y, v.height,
@@ -129,7 +129,7 @@ end
 down = basicEntity:extend()
 
 down.autoClean = false
-down.noHash = true
+down.invisibleToHash = true
 
 mapEntity.register("down", function(v)
   megautils.add(down, v.x, v.y, v.width,
@@ -196,7 +196,7 @@ end
 up = basicEntity:extend()
 
 up.autoClean = false
-up.noHash = true
+up.invisibleToHash = true
 
 mapEntity.register("up", function(v)
   megautils.add(up, v.x, v.y, v.width,
@@ -263,7 +263,7 @@ end
 sectionPrioritySetter = basicEntity:extend()
 
 sectionPrioritySetter.autoClean = false
-sectionPrioritySetter.noHash = true
+sectionPrioritySetter.invisibleToHash = true
 
 mapEntity.register("sectionPrioritySetter", function(v)
   megautils.add(sectionPrioritySetter, v.x, v.y, v.width, v.height, v.properties.toSection)
@@ -310,7 +310,7 @@ end
 sectionPrioritySetterXBorder = basicEntity:extend()
 
 sectionPrioritySetterXBorder.autoClean = false
-sectionPrioritySetterXBorder.noHash = true
+sectionPrioritySetterXBorder.invisibleToHash = true
 
 mapEntity.register("sectionPrioritySetterXBorder", function(v)
   megautils.add(sectionPrioritySetterXBorder, v.x, v.y, v.height, v.properties.lname, v.properties.rname)
@@ -363,7 +363,7 @@ end
 sectionPrioritySetterYBorder = basicEntity:extend()
 
 sectionPrioritySetterYBorder.autoClean = false
-sectionPrioritySetterYBorder.noHash = true
+sectionPrioritySetterYBorder.invisibleToHash = true
 
 mapEntity.register("sectionPrioritySetterYBorder", function(v)
   megautils.add(sectionPrioritySetterYBorder, v.x, v.y, v.width, v.properties.uname, v.properties.dname)
@@ -416,7 +416,7 @@ end
 sectionPrioritySetterArea = basicEntity:extend()
 
 sectionPrioritySetterArea.autoClean = false
-sectionPrioritySetterArea.noHash = true
+sectionPrioritySetterArea.invisibleToHash = true
 
 mapEntity.register("sectionPrioritySetterArea", function(v)
   megautils.add(sectionPrioritySetterArea, v.x, v.y, v.width, v.height, v.properties.inname, v.properties.outname)

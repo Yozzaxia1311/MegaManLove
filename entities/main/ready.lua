@@ -1,7 +1,7 @@
 ready = basicEntity:extend()
 
 ready.autoClean = false
-ready.noHash = true
+ready.invisibleToHash = true
 
 function ready:new(text, blinks)
   ready.super.new(self)

@@ -1,7 +1,7 @@
 camera = basicEntity:extend()
 
 camera.autoClean = false
-camera.noHash = true
+camera.invisibleToHash = true
 
 megautils.reloadStateFuncs.camera = {func=function()
     camera.main = nil

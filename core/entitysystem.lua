@@ -35,7 +35,7 @@ function entitySystem:new()
 end
 
 function entitySystem:updateHashForEntity(e)
-  if e.collisionShape and not e.noHash then
+  if e.collisionShape then
     local xx, yy, ww, hh = e.x, e.y, e.collisionShape.w, e.collisionShape.h
     local hs = entitySystem.hashSize
     local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
@@ -548,6 +548,7 @@ function entitySystem:update(dt)
       v.epY = v.previousY
       if not v.isRemoved and v.beforeUpdate and checkFalse(v.canUpdate) then
         v:beforeUpdate(dt)
+        if not v.invisibleToHash then v:updateHash() end
       end
     end
   end
@@ -560,6 +561,7 @@ function entitySystem:update(dt)
     if ((type(v.noFreeze) == "table" and table.intersects(v.noFreeze, self.frozen)) or v.noFreeze == true or not checkTrue(self.frozen)) and
       not v.isRemoved and v.update and checkFalse(v.canUpdate) then
       v:update(dt)
+      if not v.invisibleToHash then v:updateHash() end
     end
   end
   
@@ -571,6 +573,7 @@ function entitySystem:update(dt)
     if ((type(v.noFreeze) == "table" and table.intersects(v.noFreeze, self.frozen)) or v.noFreeze or not checkTrue(self.frozen)) and
       not v.isRemoved and v.afterUpdate and checkFalse(v.canUpdate) then
       v:afterUpdate(dt)
+      if not v.invisibleToHash then v:updateHash() end
     end
     v.justAddedIn = false
   end
@@ -684,7 +687,6 @@ function basicEntity:new()
   self.y = 0
   self.iFrames = 0
   self.changeHealth = 0
-  self.dontUpdateHash = false
   self.canUpdate = {global=true}
   self.canDraw = {global=true}
   self.lastHashX = nil
@@ -874,14 +876,14 @@ function basicEntity:collisionNumber(t, x, y, notme, func)
   return result
 end
 
-function basicEntity:updateHash(doAnyway, butEnforceBoundCheck)
-  if (doAnyway or (not self.dontUpdateHash and self.isAdded)) and self.collisionShape then
+function basicEntity:updateHash(doAnyway)
+  if (doAnyway or self.isAdded) and self.collisionShape then
     local xx, yy, ww, hh = self.x, self.y, self.collisionShape.w, self.collisionShape.h
     local hs = entitySystem.hashSize
     local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
     local cx2, cy2 = math.floor((xx + ww + 2) / hs), math.floor((yy + hh + 2) / hs)
     
-    if (doAnyway and not butEnforceBoundCheck) or self.lastHashX ~= cx or self.lastHashY ~= cy or self.lastHashX2 ~= cx2 or self.lastHashY2 ~= cy2 then
+    if doAnyway or self.lastHashX ~= cx or self.lastHashY ~= cy or self.lastHashX2 ~= cx2 or self.lastHashY2 ~= cy2 then
       self.lastHashX = cx
       self.lastHashY = cy
       self.lastHashX2 = cx2
@@ -893,7 +895,7 @@ function basicEntity:updateHash(doAnyway, butEnforceBoundCheck)
 end
 
 function basicEntity:getSurroundingEntities(dxx, dyy)
-  if dxx or dyy then
+  if dxx or dyy or self.invisibleToHash then
     local dx, dy = dxx or 0, dyy or 0
     local xx, yy, ww, hh = self.x - math.min(dx, 0), self.y - math.min(dy, 0),
       self.collisionShape.w + math.max(dx, 0), self.collisionShape.h + math.max(dy, 0)

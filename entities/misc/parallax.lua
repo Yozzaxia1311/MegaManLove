@@ -1,7 +1,7 @@
 parallax = basicEntity:extend()
 
 parallax.autoClean = false
-parallax.noHash = true
+parallax.invisibleToHash = true
 
 mapEntity.register("parallax", function(v)
     megautils.add(parallax, v.x, v.y, v.width, v.height, v.properties.image, v.properties.animate, v.properties.animSpeed,

@@ -560,7 +560,6 @@ function megaMan:useThrowAnimation()
 end
 
 function megaMan:transferState(to)
-  self.dontUpdateHash = true
   to.ground = self.ground
   to.climb = self.climb
   to.currentLadder = self.currentLadder
@@ -583,7 +582,6 @@ function megaMan:transferState(to)
     to:regBox()
     to.slide = false
   end
-  self.dontUpdateHash = false
   for _, v in pairs(megautils.playerTransferFuncs) do
     if type(v) == "function" then
       v(self, to)
@@ -644,19 +642,16 @@ function megaMan:shortBox()
 end
 
 function megaMan:checkRegBox(ox, oy)
-  self.dontUpdateHash = true
   local w, h, oly = self.collisionShape.w, self.collisionShape.h, self.y
   self:regBox()
   self.y = self.y + (self.gravity < 0 and 0 or h-self.collisionShape.h)
   local result = collision.checkSolid(self, ox, oy)
   self.y = oly
   self:setRectangleCollision(w, h)
-  self.dontUpdateHash = false
   return result
 end
 
 function megaMan:checkSlideBox(ox, oy)
-  self.dontUpdateHash = true
   local w, h, olx, oly = self.collisionShape.w, self.collisionShape.h, self.x, self.y
   self:slideBox()
   self.x = self.x + (w-self.collisionShape.w)/2
@@ -665,19 +660,16 @@ function megaMan:checkSlideBox(ox, oy)
   self.x = olx
   self.y = oly
   self:setRectangleCollision(w, h)
-  self.dontUpdateHash = false
   return result
 end
 
 function megaMan:checkBasicSlideBox(ox, oy)
-  self.dontUpdateHash = true
   local w, h, oly = self.collisionShape.w, self.collisionShape.h, self.y
   self:basicSlideBox()
   self.y = self.y + (self.gravity < 0 and 0 or h-self.collisionShape.h)
   local result = collision.checkSolid(self, ox, oy)
   self.y = oly
   self:setRectangleCollision(w, h)
-  self.dontUpdateHash = false
   return result
 end
 
@@ -694,7 +686,6 @@ function megaMan:slideToReg()
 end
 
 function megaMan:checkLadder(x, y, tip)
-  self.dontUpdateHash = true
   local w, h, ox = self.collisionShape.w, self.collisionShape.h, self.x
   self:setRectangleCollision(1, tip and 1 or h)
   self.x = self.x + (w/2)
@@ -710,7 +701,6 @@ function megaMan:checkLadder(x, y, tip)
   end
   self:setRectangleCollision(w, h)
   self.x = ox
-  self.dontUpdateHash = false
   return highest
 end
 
@@ -992,7 +982,6 @@ function megaMan:attemptClimb()
 end
 
 function megaMan:checkProtoShield(e, side)
-  self.dontUpdateHash = true
   local x, y = self.x, self.y
   local w, h = self.collisionShape.w, self.collisionShape.h
   
@@ -1014,7 +1003,6 @@ function megaMan:checkProtoShield(e, side)
   self.y = y
   self.collisionShape.w = w
   self.collisionShape.h = h
-  self.dontUpdateHash = false
   
   return result
 end
@@ -1350,7 +1338,6 @@ function megaMan:code(dt)
       self:regBox()
       self.slideTimer = self.maxSlideTime
       local cgrav = self.gravity >= 0 and 1 or -1
-      self.dontUpdateHash = true
       if self:checkRegBox() then
         while collision.checkSolid(self) do
           self.y = self.y + cgrav
@@ -1363,7 +1350,6 @@ function megaMan:code(dt)
           end
         end
       end
-      self.dontUpdateHash = false
     else
       self.slideTimer = math.min(self.slideTimer+1, self.maxSlideTime)
       local rb = self:checkRegBox()
@@ -1394,11 +1380,9 @@ function megaMan:code(dt)
         local w = self.collisionShape.w
         local cgrav = self.gravity >= 0 and 1 or -1
         self:regBox()
-        self.dontUpdateHash = true
         while collision.checkSolid(self) do
           self.y = self.y + cgrav
         end
-        self.dontUpdateHash = false
       elseif checkFalse(self.canBackOutFromDash) and lastSide ~= self.side and not rb then
         self.slide = false
         self.slideTimer = self.maxSlideTime
