@@ -29,15 +29,20 @@ function collision.doCollision(self, noSlope)
   local lvx, lvy, lx, ly, lg =
     self.velocity.velx, self.velocity.vely, self.x, self.y, self.ground
   local nslp = noSlope or collision.noSlope
+  
+  collision.checkGround(self, false, nslp)
+  
   if checkFalse(self.blockCollision) then
     collision.generalCollision(self, nslp)
   else
     self.x = self.x + self.velocity.velx
     self.y = self.y + self.velocity.vely
   end
+  
   collision.checkGround(self, false, nslp)
   collision.entityPlatform(self)
   collision.checkGround(self, false, nslp)
+  
   collision.checkDeath(self, lvx - (self.x - lx), (lvy - (self.y - ly)) + (self.ground and math.sign(self.gravity) or 0), lg)
 end
 
@@ -464,7 +469,7 @@ function collision.generalCollision(self, noSlope)
       self.xColl = self.velocity.velx
       self.velocity.velx = 0
       
-      if not nslp and self.xColl ~= 0 and slp ~= 0 and self:collisionNumber(solid, 0, cgrav * slp) ~= 0 then
+      if not nslp and self.xColl ~= 0 and slp ~= 0 then
         local xsl = self.xColl - (self.x - xprev)
         if math.sign(self.xColl) == math.sign(xsl) then
           local yStep = 1
