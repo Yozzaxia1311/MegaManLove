@@ -181,16 +181,16 @@ function weapon:update(dt)
 end
 
 function weapon:afterUpdate()
+  if not self.doAutoCollisionBeforeUpdate and checkFalse(self.autoCollision) and not self._didCol then
+    collision.doCollision(self, self.noSlope)
+  end
   if self.autoHit then
     if self.damageType == weapon.DAMAGEENEMY or self.damageType == weapon.DAMAGEBOTH then
-      self:interact(self:collisionTable(megautils.groups(self:getSurroundingEntities()).interactable), self.damage)
+      self:interact(self:collisionTable(megautils.filterByGroup(self:getSurroundingEntities(), "interactable")), self.damage)
     end
     if self.damageType == weapon.DAMAGEPLAYER or self.damageType == weapon.DAMAGEBOTH then
       self:interact(self:collisionTable(megaMan.allPlayers), self.damage)
     end
-  end
-  if not self.doAutoCollisionBeforeUpdate and checkFalse(self.autoCollision) and not self._didCol then
-    collision.doCollision(self, self.noSlope)
   end
   if self.removeWhenOutside and megautils.outside(self) then
     megautils.removeq(self)

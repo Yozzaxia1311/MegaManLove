@@ -651,32 +651,20 @@ function megautils.emptyRecycling(c, num)
   states.currentState.system:emptyRecycling(c, num)
 end
 
-megautils._gMeta = {}
+function megautils.groups()
+  return states.currentState.system.groups
+end
 
-function megautils._gMeta:__index(groupName)
+function megautils.filterByGroup(g, groupName)
   local result = {}
-  local iter = rawget(self, "_SV_")
   
-  for i = 1, #iter do
-    if table.icontains(iter[i].groupNames, groupName) then
-      result[#result + 1] = iter[i]
+  for i = 1, #g do
+    if table.icontains(g[i].groupNames, groupName) then
+      result[#result + 1] = g[i]
     end
   end
   
-  if #result ~= 0 then
-    return result
-  end
-end
-
-function megautils.groups(t)
-  if t then
-    local result = {_SV_ = t}
-    setmetatable(result, megautils._gMeta)
-    
-    return result
-  end
-  
-  return states.currentState.system.groups
+  return result
 end
 
 function megautils.calcX(angle)

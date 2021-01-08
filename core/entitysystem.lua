@@ -668,14 +668,6 @@ function basicEntity:__tostring()
   return "Entity"
 end
 
-function basicEntity:__newindex(k, v)
-  if k == "x" or k == "y" then
-    self:updateHash()
-  end
-  
-  rawset(self, k, v)
-end
-
 function basicEntity:new()
   if not self.recycling then
     self.collisionShape = nil
@@ -913,7 +905,9 @@ function basicEntity:getSurroundingEntities(dxx, dyy)
   
   for i = 2, #self.currentHashes do
     for j = 1, #self.currentHashes[i].data do
-      result[#result + 1] = self.currentHashes[i].data[j]
+      if not table.icontains(result, self.currentHashes[i].data[j]) then
+        result[#result + 1] = self.currentHashes[i].data[j]
+      end
     end
   end
   
