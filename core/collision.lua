@@ -56,8 +56,8 @@ function collision.getTable(self, dx, dy, noSlope)
     for i=1, #all do
       local v = all[i]
       if v ~= self and v.collisionShape and
-        (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
-        (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) and
+        (not v.exclusivelySolidFor or table.icontains(v.exclusivelySolidFor, self)) and
+        (not v.excludeSolidFor or not table.icontains(v.excludeSolidFor, self)) and
         (v.solidType == collision.SOLID or v.solidType == collision.ONEWAY) and
         (v.solidType ~= collision.ONEWAY or ((ys == 0 and 1 or math.sign(ys)) == cgrav and
         not v:collision(self, 0, cgrav) and v:collision(self, 0, -ys)) and
@@ -97,8 +97,8 @@ function collision.checkSolid(self, dx, dy, noSlope)
     for i=1, #all do
       local v = all[i]
       if v ~= self and v.collisionShape and
-        (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
-        (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) and
+        (not v.exclusivelySolidFor or table.icontains(v.exclusivelySolidFor, self)) and
+        (not v.excludeSolidFor or not table.icontains(v.excludeSolidFor, self)) and
         (v.solidType == collision.SOLID or v.solidType == collision.ONEWAY) and
         (v.solidType ~= collision.ONEWAY or ((ys == 0 and 1 or math.sign(ys)) == cgrav and
         not v:collision(self, 0, cgrav) and v:collision(self, 0, -ys)) and
@@ -144,8 +144,8 @@ function collision.entityPlatform(self)
       for i=1, #all do
         local v = all[i]
         if v ~= self and checkFalse(v.blockCollision) and v.collisionShape and
-          (not self.exclusivelySolidFor or table.contains(self.exclusivelySolidFor, v)) and
-          (not self.excludeSolidFor or not table.contains(self.excludeSolidFor, v)) then
+          (not self.exclusivelySolidFor or table.icontains(self.exclusivelySolidFor, v)) and
+          (not self.excludeSolidFor or not table.icontains(self.excludeSolidFor, v)) then
           local epDir = math.sign(self.transform.y + (self.collisionShape.h/2) -
             (v.transform.y + (v.collisionShape.h/2)))
           
@@ -218,8 +218,8 @@ function collision.entityPlatform(self)
         local v = all[i]
         local continue = false
         if v ~= self and checkFalse(v.blockCollision) and v.collisionShape and
-          (not self.exclusivelySolidFor or table.contains(self.exclusivelySolidFor, v)) and
-          (not self.excludeSolidFor or not table.contains(self.excludeSolidFor, v)) then
+          (not self.exclusivelySolidFor or table.icontains(self.exclusivelySolidFor, v)) and
+          (not self.excludeSolidFor or not table.icontains(self.excludeSolidFor, v)) then
           
           if v:collision(self, -myxspeed, 0) then
             collision.performDeath(v, self)
@@ -349,8 +349,8 @@ function collision.checkGround(self, checkAnyway, noSlope)
     for i=1, #all do
       local v = all[i]
       if v ~= self and v.collisionShape and
-        (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
-        (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) then
+        (not v.exclusivelySolidFor or table.icontains(v.exclusivelySolidFor, self)) and
+        (not v.excludeSolidFor or not table.icontains(v.excludeSolidFor, self)) then
         if (v.solidType == collision.SOLID or v.solidType == collision.ONEWAY) and
           not v:collision(self, 0, cgrav) and (v.solidType ~= collision.ONEWAY or (v:collision(self, 0, -cgrav * slp) and
           math.sign(self.transform.y - v.transform.y) == -cgrav and
@@ -426,10 +426,10 @@ function collision.generalCollision(self, noSlope)
     for i=1, #all do
       local v = all[i]
       if v ~= self and v.collisionShape and
-        (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
-        (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) then
+        (not v.exclusivelySolidFor or table.icontains(v.exclusivelySolidFor, self)) and
+        (not v.excludeSolidFor or not table.icontains(v.excludeSolidFor, self)) then
         if v.solidType == collision.SOLID then
-          if not v:collision(self) and not table.contains(solid, v) then
+          if not v:collision(self) and not table.icontains(solid, v) then
             solid[#solid+1] = v
           end
         elseif v.solidType == collision.STANDIN then
@@ -449,9 +449,9 @@ function collision.generalCollision(self, noSlope)
         for i=1, #all do
           local v = all[i]
           if v ~= self and v.collisionShape and
-            (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
-            (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) and
-            not table.contains(solid, v) and v.solidType == collision.ONEWAY and
+            (not v.exclusivelySolidFor or table.icontains(v.exclusivelySolidFor, self)) and
+            (not v.excludeSolidFor or not table.icontains(v.excludeSolidFor, self)) and
+            not table.icontains(solid, v) and v.solidType == collision.ONEWAY and
             v:collision(self, -self.velocity.velx, 0) and
             not v:collision(self, -self.velocity.velx, -cgrav * slp) and not v:collision(self) and
             (not v.ladder or v:collisionNumber(ladders, 0, -cgrav) == 0) then
@@ -529,8 +529,8 @@ function collision.generalCollision(self, noSlope)
         for i=1, #all do
           local v = all[i]
           if v ~= self and v.collisionShape and
-          (not v.exclusivelySolidFor or table.contains(v.exclusivelySolidFor, self)) and
-          (not v.excludeSolidFor or not table.contains(v.excludeSolidFor, self)) and v.solidType == collision.ONEWAY and
+          (not v.exclusivelySolidFor or table.icontains(v.exclusivelySolidFor, self)) and
+          (not v.excludeSolidFor or not table.icontains(v.excludeSolidFor, self)) and v.solidType == collision.ONEWAY and
           (not v.ladder or v:collisionNumber(ladders, 0, -cgrav, true) == 0) then
             if not v:collision(self) and math.sign(self.transform.y - v.transform.y) == -cgrav then
               solid[#solid+1] = v

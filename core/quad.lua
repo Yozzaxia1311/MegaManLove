@@ -27,6 +27,11 @@ function quad:setViewport(x, y, w, h)
   self.quad:setViewport(x, y, w, h, 1, 1)
 end
 
+function quad:release()
+  self.quad:release()
+  self.quad = nil
+end
+
 function quad:draw(image, x, y, r, sx, sy, ox, oy, kx, ky, flipx, flipy)
   x,y,r,sx,sy,ox,oy,kx,ky = x or 0, y or 0, r or 0, sx or 1, sy or 1, ox or 0, oy or 0, kx or 0, ky or 0, flipx == true, flipy == true
   local vx, vy, vw, vh = self.quad:getViewport()

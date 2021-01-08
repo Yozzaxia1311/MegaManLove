@@ -15,7 +15,7 @@ pickupEntity.autoClean = false
 pickupEntity.banIDs = {}
 
 function pickupEntity.isBanned(i, id, path)
-  return pickupEntity.banIDs[i] and table.contains(pickupEntity.banIDs[i], (path or "") .. "|" .. id)
+  return pickupEntity.banIDs[i] and table.icontains(pickupEntity.banIDs[i], (path or "") .. "|" .. id)
 end
 
 function pickupEntity:new(despawn, gd, fwp, id, path)
@@ -74,7 +74,7 @@ function pickupEntity:afterUpdate()
     if self:collision(p) then
       self:taken(p)
       if not self.despawn and self.mapID and
-        not table.contains(pickupEntity.banIDs[self.__index], self.path .. "|" .. tostring(self.mapID)) then
+        not pickupEntity.isBanned(self.__index, tostring(self.mapID), self.path) then
         pickupEntity.banIDs[self.__index][#pickupEntity.banIDs[self.__index]+1] = self.path .. "|" .. tostring(self.mapID)
       end
       megautils.removeq(self)
@@ -328,29 +328,29 @@ function life:draw()
     local fy = self.gravity < 0
     
     love.graphics.setColor(1, 1, 1, 1)
-    skin.texture:draw(self.quad, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
+    skin.texture:draw(self.quad, math.floor(self.transform.x)+ox, math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
     love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
-    skin.outline:draw(self.quad, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
+    skin.outline:draw(self.quad, math.floor(self.transform.x)+ox, math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
     love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255, megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOne[megaMan.mainPlayer.player][3]/255, 1)
-    skin.one:draw(self.quad, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
+    skin.one:draw(self.quad, math.floor(self.transform.x)+ox, math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
     love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255, megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
       megaMan.colorTwo[megaMan.mainPlayer.player][3]/255, 1)
-    skin.two:draw(self.quad, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
+    skin.two:draw(self.quad, math.floor(self.transform.x)+ox, math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
   else
     local skin = megaMan.getSkin(1)
     
     local fy = self.gravity < 0
     
     love.graphics.setColor(1, 1, 1, 1)
-    skin.texture:draw(self.quad, math.floor(self.transform.x), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
+    skin.texture:draw(self.quad, math.floor(self.transform.x)+ox, math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
     love.graphics.setColor(0, 0, 0, 1)
-    skin.outline:draw(self.quad, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
+    skin.outline:draw(self.quad, math.floor(self.transform.x)+ox, math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
     love.graphics.setColor(0, 120/255, 248/255, 1)
-    skin.one:draw(self.quad, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
+    skin.one:draw(self.quad, math.floor(self.transform.x)+ox, math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
     love.graphics.setColor(0, 232/255, 216/255, 1)
-    skin.two:draw(self.quad, math.floor(self.transform.x+ox), math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
+    skin.two:draw(self.quad, math.floor(self.transform.x)+ox, math.floor(self.transform.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
   end
 end
 

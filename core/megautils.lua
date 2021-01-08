@@ -302,12 +302,12 @@ megautils._ranFiles = {}
 
 function megautils.runFile(path, runOnce)
   if runOnce then
-    if not table.contains(megautils._ranFiles, path) then
+    if not table.icontains(megautils._ranFiles, path) then
       megautils._ranFiles[#megautils._ranFiles+1] = path
       return love.filesystem.load(path)()
     end
   else
-    if not table.contains(megautils._ranFiles, path) then
+    if not table.icontains(megautils._ranFiles, path) then
       megautils._ranFiles[#megautils._ranFiles+1] = path
     end
     return love.filesystem.load(path)()
@@ -604,11 +604,11 @@ function megautils.removeq(o)
 end
 
 function megautils.inAddQueue(o)
-  return table.contains(states.currentState.system.addQueue, o)
+  return table.icontains(states.currentState.system.addQueue, o)
 end
 
 function megautils.inRemoveQueue(o)
-  return table.contains(states.currentState.system.removeQueue, o)
+  return table.icontains(states.currentState.system.removeQueue, o)
 end
 
 function megautils.stopAddQueue(o)
@@ -658,7 +658,7 @@ function megautils._gMeta:__index(groupName)
   local iter = rawget(self, "_SV_")
   
   for i = 1, #iter do
-    if table.contains(iter[i].groupNames, groupName) then
+    if table.icontains(iter[i].groupNames, groupName) then
       result[#result + 1] = iter[i]
     end
   end

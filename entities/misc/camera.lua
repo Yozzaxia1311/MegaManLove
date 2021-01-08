@@ -295,7 +295,7 @@ function camera:doView(spdx, spdy, without)
   
   if self.despawnLateBounds and self.approachX == self.transform.x and self.approachY == self.transform.y then
     for _, v in ipairs(self.despawnLateBounds.group) do
-      if self.bounds and not table.contains(self.bounds.group, v) then
+      if self.bounds and not table.icontains(self.bounds.group, v) then
         if v.despawnLateDuringTransition and not v.isRemoved and not megautils.inRemoveQueue(v) then
           megautils.removeq(v)
         end
@@ -442,7 +442,7 @@ end
 function section:activate(ignore)
   for _, v in ipairs(self.group) do
     if not v.isAdded and not megautils.inAddQueue(v) and
-      (not ignore or not table.contains(ignore, v)) then
+      (not ignore or not table.icontains(ignore, v)) then
       megautils.adde(v)
     end
   end
@@ -451,7 +451,7 @@ end
 function section:deactivate(ignore)
   for _, v in ipairs(self.group) do
     if not v.isRemoved and not v.dontRemoveOnSectionChange and not megautils.inRemoveQueue(v) and
-      (not ignore or not table.contains(ignore, v)) then
+      (not ignore or not table.icontains(ignore, v)) then
       megautils.removeq(v)
     end
   end
@@ -473,9 +473,9 @@ function section.getSections(xx, yy, ww, hh)
   
   for x=cx, cx2 do
     for y=cy, cy2 do
-      if section.hash[x] and section.hash[x][y] and not table.contains(result, section.hash[x][y]) then
+      if section.hash[x] and section.hash[x][y] then
         for _, v in ipairs(section.hash[x][y]) do
-          if not table.contains(result, v) then
+          if not table.icontains(result, v) then
             result[#result+1] = v
           end
         end
@@ -553,7 +553,7 @@ function section.addEntity(e)
       if not e.actualSectionGroups then
         e.actualSectionGroups = {}
       end
-      if not table.contains(e.actualSectionGroups, v.group) then
+      if not table.icontains(e.actualSectionGroups, v.group) then
         e.actualSectionGroups[#e.actualSectionGroups+1] = v.group
       end
       v.group[#v.group+1] = e

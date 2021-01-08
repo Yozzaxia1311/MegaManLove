@@ -41,6 +41,9 @@ end
 function state:draw()
   self.system:draw()
 end
+function state:switching()
+  self.system:clear()
+end
 function state:unload()
   megautils.unload()
 end

@@ -51,11 +51,11 @@ function entitySystem:updateHashForEntity(e)
         if not self.hashes[x][y] then
           self.hashes[x][y] = {x = x, y = y, data = {e}}
           self._HS[x] = self._HS[x] + 1
-        elseif not table.contains(self.hashes[x][y].data, e) then
+        elseif not table.icontains(self.hashes[x][y].data, e) then
           self.hashes[x][y].data[#self.hashes[x][y].data+1] = e
         end
         
-        if not table.contains(e.currentHashes, self.hashes[x][y]) then
+        if not table.icontains(e.currentHashes, self.hashes[x][y]) then
           e.currentHashes[#e.currentHashes+1] = self.hashes[x][y]
         end
       end
@@ -117,7 +117,7 @@ function entitySystem:getSurroundingEntities(xx, yy, ww, hh)
           result = {unpack(self.hashes[x][y].data)}
         else
           for i = 1, #self.hashes[x][y].data do
-            if not table.contains(result, self.hashes[x][y].data[i]) then
+            if not table.icontains(result, self.hashes[x][y].data[i]) then
               result[#result+1] = self.hashes[x][y].data[i]
             end
           end
@@ -130,7 +130,7 @@ function entitySystem:getSurroundingEntities(xx, yy, ww, hh)
 end
 
 function entitySystem:freeze(n)
-  if not table.contains(self.frozen, n or "global") then
+  if not table.icontains(self.frozen, n or "global") then
     self.frozen[#self.frozen+1] = n or "global"
   end
 end
@@ -245,7 +245,8 @@ function entitySystem:add(c, ...)
 end
 
 function entitySystem:adde(e)
-  if not e or table.contains(self.all, e) then return end
+  if e.isAdded then return e end
+  if not e or e.isAdded then return end
   
   if not e.static then
     local done = false
@@ -300,7 +301,7 @@ function entitySystem:addq(c, ...)
 end
 
 function entitySystem:addeq(e)
-  if not e or not e.isRemoved or e.isAdded or table.contains(self.addQueue, e) then return end
+  if not e or not e.isRemoved or e.isAdded or table.icontains(self.addQueue, e) then return end
   self.addQueue[#self.addQueue+1] = e
   return self.addQueue[#self.addQueue]
 end
@@ -310,7 +311,7 @@ function entitySystem:addToGroup(e, g)
     self.groups[g] = {}
   end
   
-  if not table.contains(self.groups[g], e) then
+  if not table.icontains(self.groups[g], e) then
     self.groups[g][#self.groups[g]+1] = e
     e.groupNames[#e.groupNames + 1] = g
   end
@@ -462,21 +463,25 @@ function entitySystem:remove(e)
   if e.recycle then
     if not self.recycle[e.__index] then
       self.recycle[e.__index] = {e}
-    elseif not table.contains(self.recycle[e.__index], e) then
+    elseif not table.icontains(self.recycle[e.__index], e) then
       self.recycle[e.__index][#self.recycle[e.__index]+1] = e
     end
   end
 end
 
 function entitySystem:removeq(e)
-  if not e or e.isRemoved or table.contains(self.removeQueue, e) then return end
+  if not e or e.isRemoved or table.icontains(self.removeQueue, e) then return end
   self.removeQueue[#self.removeQueue+1] = e
 end
 
 function entitySystem:clear()
   for i=1, #self.all do
     self.all[i].isRemoved = true
-    self.all[i]:removed()
+  end
+  for _, v in pairs(self.all) do
+    v:removed()
+  end
+  for i=1, #self.all do
     self.all[i].isAdded = false
   end
   self.all = {}
@@ -494,6 +499,9 @@ function entitySystem:clear()
   self.cameraUpdate = nil
   self.doSort = false
   self.beginQueue = {}
+  
+  collectgarbage()
+  collectgarbage()
 end
 
 function entitySystem:draw()
@@ -813,7 +821,7 @@ function basicEntity:removeFromGroup(g)
 end
 
 function basicEntity:inGroup(g)
-  return table.contains(states.currentState.system.groups[g], self)
+  return table.icontains(states.currentState.system.groups[g], self)
 end
 
 function basicEntity:removeFromAllGroups()

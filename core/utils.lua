@@ -213,6 +213,16 @@ function table.contains(t, va)
   return false
 end
 
+function table.icontains(t, va)
+  for i = 1, #t do
+    if t[i] == va then
+      return true
+    end
+  end
+  
+  return false
+end
+
 function table.clone(t, shallow, cache)
   if type(t) ~= 'table' then
     return t
