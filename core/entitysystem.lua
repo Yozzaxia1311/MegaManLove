@@ -15,7 +15,7 @@ end
 entitySystem.drawCollision = false
 entitySystem.doDrawFlicker = true
 
-entitySystem.hashSize = 96
+entitySystem.hashSize = 128
 
 function entitySystem:new()
   self.entities = {}
@@ -35,11 +35,13 @@ function entitySystem:new()
 end
 
 function entitySystem:updateHashForEntity(e)
+  local xx, yy, ww, hh = e.x, e.y, e.collisionShape.w, e.collisionShape.h
+  local hs = entitySystem.hashSize
+  local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
+  local cx2, cy2 = math.floor((xx + ww + 2) / hs), math.floor((yy + hh + 2) / hs)
+  
   if e.collisionShape then
-    local xx, yy, ww, hh = e.x, e.y, e.collisionShape.w, e.collisionShape.h
-    local hs = entitySystem.hashSize
-    local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
-    local cx2, cy2 = math.floor((xx + ww + 2) / hs), math.floor((yy + hh + 2) / hs)
+    local emptyBefore = #e.currentHashes == 0
     
     for x = cx, cx2 do
       for y = cy, cy2 do
@@ -48,36 +50,40 @@ function entitySystem:updateHashForEntity(e)
           self._HS[x] = 0
         end
         
-        if not self.hashes[x][y] then
+        local hash = self.hashes[x][y]
+        
+        if not hash then
           self.hashes[x][y] = {x = x, y = y, data = {e}}
           self._HS[x] = self._HS[x] + 1
-        elseif not table.icontains(self.hashes[x][y].data, e) then
-          self.hashes[x][y].data[#self.hashes[x][y].data+1] = e
+        elseif not table.icontains(hash.data, e) then
+          hash.data[#hash.data+1] = e
         end
         
-        if not table.icontains(e.currentHashes, self.hashes[x][y]) then
-          e.currentHashes[#e.currentHashes+1] = self.hashes[x][y]
+        if not table.icontains(e.currentHashes, hash) then
+          e.currentHashes[#e.currentHashes+1] = hash
         end
       end
     end
     
-    for _, v in ipairs(e.currentHashes) do
-      if not math.between(v.x, cx, cx2) or not math.between(v.y, cy, cy2) then
-        if self.hashes[v.x] and self.hashes[v.x][v.y] then
-          table.quickremovevaluearray(self.hashes[v.x][v.y].data, e)
-          
-          if #self.hashes[v.x][v.y].data == 0 then
-            self.hashes[v.x][v.y] = nil
-            self._HS[v.x] = self._HS[v.x] - 1
+    if not emptyBefore then
+      for _, v in ipairs(e.currentHashes) do
+        if not math.between(v.x, cx, cx2) or not math.between(v.y, cy, cy2) then
+          if self.hashes[v.x] and self.hashes[v.x][v.y] then
+            table.quickremovevaluearray(self.hashes[v.x][v.y].data, e)
             
-            if self._HS[v.x] <= 0 then
-              self.hashes[v.x] = nil
-              self._HS[v.x] = nil
+            if #self.hashes[v.x][v.y].data == 0 then
+              self.hashes[v.x][v.y] = nil
+              self._HS[v.x] = self._HS[v.x] - 1
+              
+              if self._HS[v.x] <= 0 then
+                self.hashes[v.x] = nil
+                self._HS[v.x] = nil
+              end
             end
           end
+          
+          table.quickremovevaluearray(e.currentHashes, v)
         end
-        
-        table.quickremovevaluearray(e.currentHashes, v)
       end
     end
   else -- If there's no collision, then remove from hash.
@@ -105,20 +111,19 @@ end
 
 function entitySystem:getSurroundingEntities(xx, yy, ww, hh)
   local hs = entitySystem.hashSize
-  local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
-  local cx2, cy2 = math.floor((xx + ww + 2) / hs), math.floor((yy + hh + 2) / hs)
-  
   local result
   
-  for x = cx, cx2 do
-    for y = cy, cy2 do
+  for x = math.floor((xx - 2) / hs), math.floor((xx + ww + 2) / hs) do
+    for y = math.floor((yy - 2) / hs), math.floor((yy + hh + 2) / hs) do
       if self.hashes[x] and self.hashes[x][y] then
-        if not result and #self.hashes[x][y].data > 0 then
-          result = {unpack(self.hashes[x][y].data)}
+        local hash = self.hashes[x][y]
+        
+        if not result and #hash.data > 0 then
+          result = {unpack(hash.data)}
         else
-          for i = 1, #self.hashes[x][y].data do
-            if not table.icontains(result, self.hashes[x][y].data[i]) then
-              result[#result+1] = self.hashes[x][y].data[i]
+          for i = 1, #hash.data do
+            if not table.icontains(result, hash.data[i]) then
+              result[#result+1] = hash.data[i]
             end
           end
         end
