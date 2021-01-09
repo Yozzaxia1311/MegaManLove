@@ -15,7 +15,7 @@ end
 entitySystem.drawCollision = false
 entitySystem.doDrawFlicker = true
 
-entitySystem.hashSize = 128
+entitySystem.hashSize = 96
 
 function entitySystem:new()
   self.entities = {}
