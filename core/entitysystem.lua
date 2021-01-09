@@ -901,6 +901,8 @@ function basicEntity:getSurroundingEntities(dxx, dyy)
     return megautils.getSurroundingEntities(self.x, self.y, self.collisionShape.w, self.collisionShape.h)
   end
   
+  self:updateHash()
+  
   local result = self.currentHashes[1] and {unpack(self.currentHashes[1].data)} or {}
   
   for i = 2, #self.currentHashes do
@@ -1516,13 +1518,15 @@ function advancedEntity:interactedWith(o, c)
   end
 end
 
+megautils.loadResource("assets/sfx/dieExplode.ogg", "dieExplode", true)
+
 bossEntity = advancedEntity:extend()
 
 bossEntity.autoClean = false
 
 function bossEntity:new()
   bossEntity.super.new(self)
-  self.soundOnDeath = "assets/sfx/dieExplode.ogg"
+  self.soundOnDeath = "dieExplode"
   self.dropItem = false
   self.explosionType = advancedEntity.DEATHBLAST
   self.defeatSlot = nil

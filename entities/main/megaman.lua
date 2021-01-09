@@ -1915,7 +1915,7 @@ function megaMan:die()
   
   megautils.unregisterPlayer(self)
   megautils.removeq(self)
-  megautils.playSoundFromFile("assets/sfx/dieExplode.ogg")
+  megautils.playSound("dieExplode")
 end
 
 function megaMan:update()
