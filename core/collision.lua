@@ -54,7 +54,6 @@ function collision.getTable(self, dx, dy, noSlope)
     local ys = dy or 0
     local solid = {}
     local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
-    self:updateHash(true, true)
     local all = self:getSurroundingEntities(xs, ys)
     local ladders = collision.getLadders(all)
     
@@ -95,7 +94,6 @@ function collision.checkSolid(self, dx, dy, noSlope)
     local ys = dy or 0
     local solid = {}
     local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
-    self:updateHash(true, true)
     local all = self:getSurroundingEntities(xs, ys)
     local ladders = collision.getLadders(all)
     

@@ -687,7 +687,6 @@ function megaMan:checkLadder(x, y, tip)
   local w, h, ox = self.collisionShape.w, self.collisionShape.h, self.x
   self:setRectangleCollision(1, tip and 1 or h)
   self.x = self.x + (w/2)
-  self:updateHash(true, true)
   local result = self:collisionTable(collision.getLadders(self:getSurroundingEntities()), x, y)
   local highest = result[1]
   if highest then
