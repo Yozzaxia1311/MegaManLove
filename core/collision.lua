@@ -175,12 +175,8 @@ function collision.entityPlatform(self)
                 local step = epDir * 0.5
                 v.y = math.round(v.y) - step
                 
-                while true do
-                  if v:collision(self) then
-                    v.y = v.y - step
-                  else
-                    break
-                  end
+                while not v:collision(self) do
+                  v.y = v.y - step
                 end
               end
               
@@ -248,12 +244,8 @@ function collision.entityPlatform(self)
                 v.x = math.round(v.x + myxspeed + epDir)
                 local step = epDir * 0.5
                 
-                while true do
-                  if v:collision(self) then
-                    v.x = v.x - step
-                  else
-                    break
-                  end
+                while not v:collision(self) do
+                  v.x = v.x - step
                 end
                 
                 xypre = xypre - v.x
@@ -454,16 +446,10 @@ function collision.generalCollision(self, noSlope)
     
     if possible and self:collisionNumber(solid) ~= 0 then
       local s = math.sign(self.velocity.velx)
-      local step = 1
       self.x = math.round(self.x + s)
       
-      while true do
-        if self:collisionNumber(solid, step * -s, 0) == 0 then
-          self.x = self.x + (step * -s)
-          break
-        else
-          step = step + 1
-        end
+      while self:collisionNumber(solid) ~= 0 do
+        self.x = self.x - s
       end
       
       self.xColl = self.velocity.velx
@@ -533,16 +519,10 @@ function collision.generalCollision(self, noSlope)
     
     if possible and self:collisionNumber(solid) ~= 0 then
       local s = math.sign(self.velocity.vely)
-      local step = 1
       self.y = math.round(self.y + s)
       
-      while true do
-        if self:collisionNumber(solid, 0, step * -s) == 0 then
-          self.y = self.y + (step * -s)
-          break
-        else
-          step = step + 1
-        end
+      while self:collisionNumber(solid) ~= 0 do
+        self.y = self.y - s
       end
       
       self.yColl = self.velocity.vely
