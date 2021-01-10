@@ -153,6 +153,8 @@ function mmWeaponsMenu:update(dt)
   local w = megaMan.weaponHandler[self.player.player]
   if self.changing then
     if self.changing == "health" and self.fills[1][1].renderedHealth == self.player.healthHandler.segments * 4 then
+      self.osx = nil
+      self.osy = nil
       self.sx = 1
       self.sy = 1
       self.section = 0
@@ -167,6 +169,8 @@ function mmWeaponsMenu:update(dt)
         end
       end
       if res then
+        self.osx = nil
+        self.osy = nil
         self.sx = 1
         self.sy = 1
         self.section = 0
@@ -303,6 +307,8 @@ function mmWeaponsMenu:update(dt)
       while true do
         if self.sy >= 6 then
           self.section = 1
+          self.osx = olx
+          self.osy = oly
           self.sx = 1
           self.sy = 1
           self.cur = self.last[1]
@@ -340,6 +346,8 @@ function mmWeaponsMenu:update(dt)
       end
     elseif control.upPressed[self.player.player] then
       self.section = 0
+      self.osx = nil
+      self.osy = nil
       self.sx = 1
       self.sy = #self.list
       while true do
@@ -349,9 +357,8 @@ function mmWeaponsMenu:update(dt)
         self.sy = self.sy-1
       end
       self.cur = self.list[self.sy][self.sx]
-      olx = -69
-    end
-    if self.sx == 1 and control.rightPressed[self.player.player] then
+      olx = -42
+    elseif self.sx == 1 and control.rightPressed[self.player.player] then
       self.sx = 2
     elseif self.sx == 2 and control.leftPressed[self.player.player] then
       self.sx = 1
@@ -389,24 +396,25 @@ function mmWeaponsMenu:draw()
   love.graphics.print((megautils.hasInfiniteLives() and "inf" or tostring(megautils.getLives())), view.x+224, view.y+200)
   
   local px, py = view.x+156, view.y+207
+  local sx, sy = self.osx or self.sx, self.osy or self.sy
   
   skin.texture:draw(self.headQuad, tx, ty, 0, 1, 1, 31, 37)
   skin.texture:draw(self.playerQuad, px, py, 0, 1, 1, 32, 41)
   
-  love.graphics.setColor(megaMan.colorOutline[self.player.player][1]/255, megaMan.colorOutline[self.player.player][2]/255,
-    megaMan.colorOutline[self.player.player][3]/255, 1)
+  love.graphics.setColor(weapon.colors[w.weapons[self.list[sy][sx]]].outline[1]/255, weapon.colors[w.weapons[self.list[sy][sx]]].outline[2]/255,
+    weapon.colors[w.weapons[self.list[sy][sx]]].outline[3]/255, 1)
   
   skin.outline:draw(self.headQuad, tx, ty, 0, 1, 1, 31, 37)
   skin.outline:draw(self.playerQuad, px, py, 0, 1, 1, 32, 41)
   
-  love.graphics.setColor(megaMan.colorOne[self.player.player][1]/255, megaMan.colorOne[self.player.player][2]/255,
-    megaMan.colorOne[self.player.player][3]/255, 1)
+  love.graphics.setColor(weapon.colors[w.weapons[self.list[sy][sx]]].one[1]/255, weapon.colors[w.weapons[self.list[sy][sx]]].one[2]/255,
+    weapon.colors[w.weapons[self.list[sy][sx]]].one[3]/255, 1)
   
   skin.one:draw(self.headQuad, tx, ty, 0, 1, 1, 31, 37)
   skin.one:draw(self.playerQuad, px, py, 0, 1, 1, 32, 41)
   
-  love.graphics.setColor(megaMan.colorTwo[self.player.player][1]/255, megaMan.colorTwo[self.player.player][2]/255,
-    megaMan.colorTwo[self.player.player][3]/255, 1)
+  love.graphics.setColor(weapon.colors[w.weapons[self.list[sy][sx]]].two[1]/255, weapon.colors[w.weapons[self.list[sy][sx]]].two[2]/255,
+    weapon.colors[w.weapons[self.list[sy][sx]]].two[3]/255, 1)
   
   skin.two:draw(self.headQuad, tx, ty, 0, 1, 1, 31, 37)
   skin.two:draw(self.playerQuad, px, py, 0, 1, 1, 32, 41)

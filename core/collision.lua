@@ -131,13 +131,15 @@ function collision.entityPlatform(self)
     local epCanCrush = true
     local myyspeed = self.y - self.epY
     local myxspeed = self.x - self.epX
-    local all = self:getSurroundingEntities(myxspeed, myyspeed)
+    
     local ladders = collision.getLadders(all)
-    local possible = resolid ~= 0 and self.collisionShape and #all ~= 0
     
     self.solidType = collision.NONE
     self.x = self.epX
     self.y = self.epY
+    
+    local all = self:getSurroundingEntities(myxspeed, myyspeed)
+    local possible = resolid ~= 0 and self.collisionShape and #all ~= 0
     
     if possible and myyspeed ~= 0 then
       for i=1, #all do
@@ -327,7 +329,7 @@ function collision.checkGround(self, checkAnyway, noSlope)
   local solid = {}
   local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
   local slp = (noSlope or collision.noSlope) and 1 or ((math.ceil(math.abs(self.velocity.velx)) * collision.maxSlope) + 2)
-  local all = self:getSurroundingEntities(self.velocity.velx, self.velocity.vely)
+  local all = self:getSurroundingEntities(0, cgrav * slp)
   local ladders = collision.getLadders(all)
   
   if possible then
@@ -397,7 +399,9 @@ function collision.generalCollision(self, noSlope)
   local solid = {}
   local stand = {}
   local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
-  local all = self:getSurroundingEntities(self.velocity.velx, self.velocity.vely)
+  local slp = math.ceil(math.abs(self.velocity.velx)) * collision.maxSlope
+  local all = table.imerge({self:getSurroundingEntities(self.velocity.velx, self.velocity.vely),
+    self:getSurroundingEntities(self.velocity.velx, -cgrav * slp)}, true, true)
   local ladders = collision.getLadders(all)
   local possible = self.collisionShape and checkFalse(self.blockCollision) and #all ~= 0
     
@@ -419,11 +423,7 @@ function collision.generalCollision(self, noSlope)
   end
   
   if self.velocity.velx ~= 0 then
-    local slp = 0
-    
     if possible then
-      slp = math.ceil(math.abs(self.velocity.velx)) * collision.maxSlope
-      
       if not nslp and slp ~= 0 then
         for i=1, #all do
           local v = all[i]

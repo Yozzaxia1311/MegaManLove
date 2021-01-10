@@ -131,6 +131,18 @@ function table.merge(tables)
   return result
 end
 
+function table.imerge(tables, noDup, noClone)
+  local result = noClone and tables[1] or {unpack(tables[1])}
+  for i=2, #tables do
+    for j=1, #tables[i] do
+      if not noDup or not table.contains(result, tables[i][j]) then
+        result[#result+1] = tables[i][j]
+      end
+    end
+  end
+  return result
+end
+
 function table.shuffle(t)
   for i = #t, 2, -1 do
     local j = love.math.random(i)
