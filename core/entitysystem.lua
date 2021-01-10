@@ -903,7 +903,7 @@ function basicEntity:getSurroundingEntities(dxx, dyy)
     local xx, yy, ww, hh = self.x - math.min(dx, 0), self.y - math.min(dy, 0),
       self.collisionShape.w + math.max(dx, 0), self.collisionShape.h + math.max(dy, 0)
     
-    return megautils.getSurroundingEntities(self.x, self.y, self.collisionShape.w, self.collisionShape.h)
+    return megautils.getSurroundingEntities(xx, yy, ww, hh)
   end
   
   self:updateHash()
