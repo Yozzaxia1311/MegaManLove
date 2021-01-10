@@ -1277,6 +1277,7 @@ pierce.PIERCEIFKILLING = 2
 megautils.loadResource("assets/sfx/enemyHit.ogg", "enemyHit", true)
 megautils.loadResource("assets/sfx/enemyExplode.ogg", "enemyExplode", true)
 megautils.loadResource("assets/sfx/hugeExplode.ogg", "enemyHugeExplode", true)
+megautils.loadResource("assets/sfx/dieExplode.ogg", "dieExplode", true)
 
 advancedEntity = entity:extend()
 
@@ -1522,8 +1523,6 @@ function advancedEntity:interactedWith(o, c)
     end
   end
 end
-
-megautils.loadResource("assets/sfx/dieExplode.ogg", "dieExplode", true)
 
 bossEntity = advancedEntity:extend()
 
