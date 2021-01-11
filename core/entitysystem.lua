@@ -46,21 +46,17 @@ function entitySystem:updateHashForEntity(e)
     for x = cx, cx2 do
       for y = cy, cy2 do
         if not self.hashes[x] then
-          self.hashes[x] = {}
-          self._HS[x] = 0
-        end
-        
-        local hash = self.hashes[x][y]
-        
-        if not hash then
+          self.hashes[x] = {{x = x, y = y, data = {e}}}
+          self._HS[x] = 1
+        elseif not self.hashes[x][y] then
           self.hashes[x][y] = {x = x, y = y, data = {e}}
           self._HS[x] = self._HS[x] + 1
-        elseif not table.icontains(hash.data, e) then
-          hash.data[#hash.data+1] = e
+        elseif not table.icontains(self.hashes[x][y].data, e) then
+          self.hashes[x][y].data[#self.hashes[x][y].data+1] = e
         end
         
-        if not table.icontains(e.currentHashes, hash) then
-          e.currentHashes[#e.currentHashes+1] = hash
+        if not table.icontains(e.currentHashes, self.hashes[x][y]) then
+          e.currentHashes[#e.currentHashes+1] = self.hashes[x][y]
         end
       end
     end
