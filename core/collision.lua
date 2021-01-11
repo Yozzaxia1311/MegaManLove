@@ -169,13 +169,12 @@ function collision.entityPlatform(self)
               end
               
               if (resolid == collision.SOLID or (resolid == collision.ONEWAY and (epDir * (v.gravity >= 0 and 1 or -1))>0 and
-                math.sign(v.y - self.y) == -cgrav and
                 (not self.ladder or self:collisionNumber(ladders, 0, v.gravity < 0 and 1 or -1, true) == 0))) and
                 v:collision(self) then
                 local step = epDir * 0.5
                 v.y = math.round(v.y) - step
                 
-                while not v:collision(self) do
+                while v:collision(self) do
                   v.y = v.y - step
                 end
               end
@@ -244,7 +243,7 @@ function collision.entityPlatform(self)
                 v.x = math.round(v.x + myxspeed + epDir)
                 local step = epDir * 0.5
                 
-                while not v:collision(self) do
+                while v:collision(self) do
                   v.x = v.x - step
                 end
                 
@@ -340,7 +339,6 @@ function collision.checkGround(self, checkAnyway, noSlope)
         (not v.excludeSolidFor or not table.icontains(v.excludeSolidFor, self)) then
         if (v.solidType == collision.SOLID or v.solidType == collision.ONEWAY) and
           not v:collision(self, 0, cgrav) and (v.solidType ~= collision.ONEWAY or (v:collision(self, 0, -cgrav * slp) and
-          math.sign(self.y - v.y) == -cgrav and
           (not v.ladder or v:collisionNumber(ladders, 0, -cgrav, true) == 0))) then
           solid[#solid + 1] = v
         elseif v.solidType == collision.STANDIN then
@@ -503,7 +501,7 @@ function collision.generalCollision(self, noSlope)
           (not v.exclusivelySolidFor or table.icontains(v.exclusivelySolidFor, self)) and
           (not v.excludeSolidFor or not table.icontains(v.excludeSolidFor, self)) and v.solidType == collision.ONEWAY and
           (not v.ladder or v:collisionNumber(ladders, 0, -cgrav, true) == 0) then
-            if not v:collision(self) and math.sign(self.y - v.y) == -cgrav then
+            if not v:collision(self) then
               solid[#solid+1] = v
             else
               table.removevaluearray(solid, v)
