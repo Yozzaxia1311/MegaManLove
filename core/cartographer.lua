@@ -1234,6 +1234,9 @@ local function finalXML2LuaTable(str, f)
   
   layerGroupParenting(result)
   
+  collectgarbage()
+  collectgarbage()
+  
   return result
 end
 
