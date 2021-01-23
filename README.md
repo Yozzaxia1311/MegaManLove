@@ -1,3 +1,5 @@
+*Notice: this engine is broken, please don't use it. Archive mode is a go!*
+
 <img src="https://raw.githubusercontent.com/Yozzaxia1311/MegaManLove/wikires/mml.png" width="404" height="172"/>
 <h1>Mega Man Love engine</h1>
 The Mega Man Love engine is a free, open-source NES-style Mega Man engine built for <a href="http://love2d.org">Love2D 11.3</a>.
