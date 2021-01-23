@@ -35,24 +35,24 @@ function entitySystem:new()
 end
 
 function entitySystem:updateHashForEntity(e)
-  local xx, yy, ww, hh = e.x, e.y, e.collisionShape.w, e.collisionShape.h
-  local hs = entitySystem.hashSize
-  local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
-  local cx2, cy2 = math.floor((xx + ww + 2) / hs), math.floor((yy + hh + 2) / hs)
-  
   if e.collisionShape then
+    local xx, yy, ww, hh = e.x, e.y, e.collisionShape.w, e.collisionShape.h
+    local hs = entitySystem.hashSize
+    local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
+    local cx2, cy2 = math.floor((xx + ww + 2) / hs), math.floor((yy + hh + 2) / hs)
     local emptyBefore = #e.currentHashes == 0
     
     for x = cx, cx2 do
       for y = cy, cy2 do
         if not self.hashes[x] then
-          self.hashes[x] = {{x = x, y = y, data = {e}}}
+          self.hashes[x] = {{x = x, y = y, data = {e}, isRemoved = false}}
           self._HS[x] = 1
         elseif not self.hashes[x][y] then
-          self.hashes[x][y] = {x = x, y = y, data = {e}}
+          self.hashes[x][y] = {x = x, y = y, data = {e}, isRemoved = false}
           self._HS[x] = self._HS[x] + 1
         elseif not table.icontains(self.hashes[x][y].data, e) then
           self.hashes[x][y].data[#self.hashes[x][y].data+1] = e
+          self.hashes[x][y].data[#self.hashes[x][y].data].isRemoved = false
         end
         
         if not table.icontains(e.currentHashes, self.hashes[x][y]) then
@@ -63,11 +63,12 @@ function entitySystem:updateHashForEntity(e)
     
     if not emptyBefore then
       for _, v in ipairs(e.currentHashes) do
-        if not math.between(v.x, cx, cx2) or not math.between(v.y, cy, cy2) then
-          if self.hashes[v.x] and self.hashes[v.x][v.y] then
-            table.quickremovevaluearray(self.hashes[v.x][v.y].data, e)
+        if not math.between(v.x, cx, cx2) or not math.between(v.y, cy, cy2) or v.isRemoved then
+          if self.hashes[v.x] and self.hashes[v.x][v.y] and not v.isRemoved then
+            table.quickremovevaluearray(v.data, e)
             
-            if #self.hashes[v.x][v.y].data == 0 then
+            if #v.data == 0 then
+              v.isRemoved = true
               self.hashes[v.x][v.y] = nil
               self._HS[v.x] = self._HS[v.x] - 1
               
@@ -84,18 +85,17 @@ function entitySystem:updateHashForEntity(e)
     end
   else -- If there's no collision, then remove from hash.
     for _, v in ipairs(e.currentHashes) do
-      if not math.between(v.x, cx, cx2) or not math.between(v.y, cy, cy2) then
-        if self.hashes[v.x] and self.hashes[v.x][v.y] then
-          table.quickremovevaluearray(self.hashes[v.x][v.y].data, e)
+      if self.hashes[v.x] and self.hashes[v.x][v.y] and not v.isRemoved then
+        table.quickremovevaluearray(v.data, e)
+        
+        if #v.data == 0 then
+          v.isRemoved = true
+          self.hashes[v.x][v.y] = nil
+          self._HS[v.x] = self._HS[v.x] - 1
           
-          if #self.hashes[v.x][v.y].data == 0 then
-            self.hashes[v.x][v.y] = nil
-            self._HS[v.x] = self._HS[v.x] - 1
-            
-            if self._HS[v.x] <= 0 then
-              self.hashes[v.x] = nil
-              self._HS[v.x] = nil
-            end
+          if self._HS[v.x] <= 0 then
+            self.hashes[v.x] = nil
+            self._HS[v.x] = nil
           end
         end
         
@@ -443,10 +443,11 @@ function entitySystem:remove(e)
   table.quickremovevaluearray(self.beginQueue, e)
   
   for _, v in ipairs(e.currentHashes) do
-    if self.hashes[v.x] and self.hashes[v.x][v.y] then
-      table.quickremovevaluearray(self.hashes[v.x][v.y].data, e)
+    if self.hashes[v.x] and self.hashes[v.x][v.y] and not v.isRemoved then
+      table.quickremovevaluearray(v.data, e)
       
-      if #self.hashes[v.x][v.y].data == 0 then
+      if #v.data == 0 then
+        v.isRemoved = true
         self.hashes[v.x][v.y] = nil
         self._HS[v.x] = self._HS[v.x] - 1
         

@@ -184,7 +184,7 @@ function collision.entityPlatform(self)
               
               collision.shiftObject(v, 0, -xypre, true)
               
-              if resolid == 1 then
+              if resolid == collision.SOLID then
                 if epCanCrush and v:collision(self) then
                   local crushing = self.crushing and self:crushing(v)
                   if v.crushed and (crushing == nil or crushing) then
@@ -234,7 +234,7 @@ function collision.entityPlatform(self)
               v.onMovingFloor = self
             end
             
-            if resolid == 1 then
+            if resolid == collision.SOLID then
               self.x = self.x + myxspeed
               
               if not epIsOnPlat and v:collision(self) then
@@ -501,7 +501,8 @@ function collision.generalCollision(self, noSlope)
           (not v.exclusivelySolidFor or table.icontains(v.exclusivelySolidFor, self)) and
           (not v.excludeSolidFor or not table.icontains(v.excludeSolidFor, self)) and v.solidType == collision.ONEWAY and
           (not v.ladder or v:collisionNumber(ladders, 0, -cgrav, true) == 0) then
-            if not v:collision(self) then
+            if not v:collision(self) and (not ((v.collisionShape.type == 0 or v.collisionShape.type == 2) and
+              (self.collisionShape.type == 0 or self.collisionShape.type == 2)) or math.sign(self.y - v.y) == -cgrav) then
               solid[#solid+1] = v
             else
               table.removevaluearray(solid, v)
