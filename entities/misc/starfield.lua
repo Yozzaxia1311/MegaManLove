@@ -55,16 +55,17 @@ function smallStar:new(x, y, angle, spd)
   self.y = y or 0
   self.t = megautils.getResource("starField")
   self.quad = quad(25, 120, 3, 3)
-  self.velocity = velocity()
-  self.velocity.velx = megautils.calcX(angle or 0) * (spd or 1)
-  self.velocity.vely = megautils.calcY(angle or 0) * (spd or 1)
+  self.velX = 0
+  self.velY = 0
+  self.velX = megautils.calcX(angle or 0) * (spd or 1)
+  self.velY = megautils.calcY(angle or 0) * (spd or 1)
   self:setLayer(-1)
   self.noFreeze = true
 end
 
 function smallStar:update()
-  self.x = math.wrap(self.x+self.velocity.velx, -3, view.w)
-  self.y = math.wrap(self.y+self.velocity.vely, -3, view.h)
+  self.x = math.wrap(self.x+self.velX, -3, view.w)
+  self.y = math.wrap(self.y+self.velY, -3, view.h)
 end
 
 function smallStar:draw()
@@ -81,16 +82,17 @@ function star:new(x, y, angle, spd)
   self.y = y or 0
   self.t = megautils.getResource("starField")
   self.quad = quad(0, 120, 10, 6)
-  self.velocity = velocity()
-  self.velocity.velx = megautils.calcX(angle or 0) * (spd or 1)
-  self.velocity.vely = megautils.calcY(angle or 0) * (spd or 1)
+  self.velX = 0
+  self.velY = 0
+  self.velX = megautils.calcX(angle or 0) * (spd or 1)
+  self.velY = megautils.calcY(angle or 0) * (spd or 1)
   self:setLayer(-1)
   self.noFreeze = true
 end
 
 function star:update()
-  self.x = math.wrap(self.x+self.velocity.velx, -10, view.w)
-  self.y = math.wrap(self.y+self.velocity.vely, -6, view.h)
+  self.x = math.wrap(self.x+self.velX, -10, view.w)
+  self.y = math.wrap(self.y+self.velY, -6, view.h)
 end
 
 function star:draw()
@@ -107,16 +109,17 @@ function largeStar:new(x, y, angle, spd)
   self.y = y or 0
   self.t = megautils.getResource("starField")
   self.quad = quad(10, 120, 15, 11)
-  self.velocity = velocity()
-  self.velocity.velx = megautils.calcX(angle or 0) * (spd or 1)
-  self.velocity.vely = megautils.calcY(angle or 0) * (spd or 1)
+  self.velX = 0
+  self.velY = 0
+  self.velX = megautils.calcX(angle or 0) * (spd or 1)
+  self.velY = megautils.calcY(angle or 0) * (spd or 1)
   self:setLayer(-1)
   self.noFreeze = true
 end
 
 function largeStar:update()
-  self.x = math.wrap(self.x+self.velocity.velx, -15, view.w)
-  self.y = math.wrap(self.y+self.velocity.vely, -11, view.h)
+  self.x = math.wrap(self.x+self.velX, -15, view.w)
+  self.y = math.wrap(self.y+self.velY, -11, view.h)
 end
 
 function largeStar:draw()

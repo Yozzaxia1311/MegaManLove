@@ -76,6 +76,7 @@ function weapon:new(p, enWeapon)
     self.doDink = true
     self.applyAutoFace = false
     self.noSlope = false
+    self.maxFallingSpeed = 7
   end
   
   self.dinkedBy = nil
@@ -120,18 +121,17 @@ function weapon:added()
 end
 
 function weapon:grav()
-  self.velocity.vely = self.velocity.vely+self.gravity
-  self.velocity:clampY(7)
+  self.velY = math.clamp(self.velY + self.gravity, -self.maxFallingSpeed, self.maxFallingSpeed)
 end
 
 function weapon:dink(e)
   if self.doDink then
     if self.isEnemyWeapon then
-      self.velocity.velx = -self.velocity.velx
-      self.velocity.vely = -self.velocity.vely
+      self.velX = -self.velX
+      self.velY = -self.velY
     else
-      self.velocity.velx = self.velocity.velx >= 0 and -4 or 4
-      self.velocity.vely = (self.gravity >= 0) and -4 or 4
+      self.velX = self.velX >= 0 and -4 or 4
+      self.velY = (self.gravity >= 0) and -4 or 4
     end
     self.dinked = true
     self.dinkedBy = e
@@ -324,7 +324,7 @@ function protoSemiBuster:new(x, y, p, dir, skin)
   self.tex = megautils.getResource(self.skin)
   self.quad = quad(0, 0, 10, 10)
   self.side = dir or 1
-  self.velocity.velx = self.side * 5
+  self.velX = self.side * 5
   self.weaponGroup = "megaBuster"
   self.sound = "semiCharged"
   self.damage = -1
@@ -347,7 +347,7 @@ function protoChargedBuster:new(x, y, p, dir, skin)
   self.tex = megautils.getResource(self.skin)
   self.anim = megautils.newAnimation("protoBusterGrid", {"1-2", 1}, 1/20)
   self.side = dir or 1
-  self.velocity.velx = self.side * 6
+  self.velX = self.side * 6
   self.pierceType = pierce.PIERCEIFKILLING
   self.sound = "protoCharged"
   self.weaponGroup = "protoChargedBuster"
@@ -400,9 +400,9 @@ function bassBuster:new(x, y, p, dir, t)
   
   self.x = (x or 0) - 3
   self.y = (y or 0) - 3
-  self.velocity.velx = megautils.calcX(dir or 1) * 5
-  self.velocity.vely = megautils.calcY(dir or 1) * 5
-  self.side = self.velocity.velx < 0 and -1 or 1
+  self.velX = megautils.calcX(dir or 1) * 5
+  self.velY = megautils.calcY(dir or 1) * 5
+  self.side = self.velX < 0 and -1 or 1
   self.treble = t
   if not self.treble then
     self.damage = -0.5
@@ -410,7 +410,7 @@ function bassBuster:new(x, y, p, dir, t)
 end
 
 function bassBuster:act()
-  local col = collision.checkSolid(self, self.velocity.velx, self.velocity.vely)
+  local col = collision.checkSolid(self, self.velX, self.velY)
   if not self.treble and not self.dinked and col then
     megautils.removeq(self)
   end
@@ -486,7 +486,7 @@ function megaBuster:new(x, y, p, dir)
   megaBuster.super.new(self, p)
   
   if self.recycling then
-    self.velocity.vely = 0
+    self.velY = 0
   else
     self:setRectangleCollision(8, 6)
     self.tex = megautils.getResource("busterTex")
@@ -498,7 +498,7 @@ function megaBuster:new(x, y, p, dir)
   self.x = (x or 0) - 4
   self.y = (y or 0) - 3
   self.side = dir or 1
-  self.velocity.velx = self.side * 5
+  self.velX = self.side * 5
 end
 
 function megaBuster:draw()
@@ -517,7 +517,7 @@ function megaSemiBuster:new(x, y, p, dir)
   self.tex = megautils.getResource("busterTex")
   self.anim = megautils.newAnimation("smallChargeGrid", {"1-2", 1}, 1/12)
   self.side = dir or 1
-  self.velocity.velx = self.side * 5
+  self.velX = self.side * 5
   self.sound = "semiCharged"
   self.weaponGroup = "megaBuster"
 end
@@ -547,7 +547,7 @@ function megaChargedBuster:new(x, y, p, dir)
   self.tex = megautils.getResource("busterTex")
   self.anim = megautils.newAnimation("chargeGrid", {"1-4", 1}, 1/20)
   self.side = dir or 1
-  self.velocity.velx = self.side * 5.5
+  self.velX = self.side * 5.5
   self.pierceType = pierce.PIERCEIFKILLING
   self.sound = "charged"
   self.weaponGroup = "megaChargedBuster"
@@ -629,7 +629,7 @@ function trebleBoost:act()
     if self.y == self.toY then
       if not collision.checkSolid(self) then
         self.s = 1
-        self.velocity.vely = 8
+        self.velY = 8
         self.blockCollision.global = true
         self.autoGravity.global = true
       else
@@ -651,7 +651,7 @@ function trebleBoost:act()
     if self.user and not self.user.climb and self.user.ground and self.user:collision(self) then
       self.user:resetStates()
       self.user.treble = 1
-      self.user.velocity.velx = 0
+      self.user.velX = 0
       self.s = 4
       self.anims:set("start")
     end
@@ -791,7 +791,7 @@ function rushJet:act(dt)
     if self.user and self.user.ground and self.user:collision(self, 0, self.user.gravity >= 0 and 1 or -1) and
       not self.user:collision(self) then
       self.s = 3
-      self.velocity.velx = self.side
+      self.velX = self.side
       self.user.canWalk.rj = false
       self.playerOn = true
     end
@@ -804,18 +804,18 @@ function rushJet:act(dt)
     end
     if self.playerOn and self.user then
       if control.upDown[self.user.player] then
-        self.velocity.vely = -1
+        self.velY = -1
       elseif control.downDown[self.user.player] then
-        self.velocity.vely = 1
+        self.velY = 1
       else
-        self.velocity.vely = 0
+        self.velY = 0
       end
     else
-      self.velocity.vely = 0
+      self.velY = 0
       if self.user and self.user.ground and self.user:collision(self, 0, self.user.gravity >= 0 and 1 or -1) and
         not self.user:collision(self) then
         self.s = 3
-        self.velocity.velx = self.side
+        self.velX = self.side
         self.user.canWalk.rj = false
         self.playerOn = true
       end
@@ -827,8 +827,8 @@ function rushJet:act(dt)
       self.blockCollision.global = false
       self.s = 4
       self.solidType = collision.NONE
-      self.velocity.velx = 0
-      self.velocity.vely = 0
+      self.velX = 0
+      self.velY = 0
       megautils.playSound("ascend")
     end
     self.timer = math.min(self.timer+1, 60)
@@ -842,7 +842,7 @@ function rushJet:act(dt)
     if self.anims:looped() then
       self.s = 5
       self.anims:set("spawn")
-      self.velocity.vely = -8
+      self.velY = -8
     end
   end
 end
@@ -963,7 +963,7 @@ function rushCoil:act(dt)
     if self.y == self.toY then
       if not collision.checkSolid(self) then
         self.s = 1
-        self.velocity.vely = 8
+        self.velY = 8
         self.autoGravity.global = true
         self.blockCollision.global = true
       else
@@ -983,13 +983,13 @@ function rushCoil:act(dt)
     end
   elseif self.s == 3 then
     if self.user and not self.user.climb and
-      (self.user.gravity >= 0 and (self.user.velocity.vely > 0) or (self.user.velocity.vely < 0)) and
+      (self.user.gravity >= 0 and (self.user.velY > 0) or (self.user.velY < 0)) and
       math.between(self.user.x+self.user.collisionShape.w/2,
       self.x, self.x+self.collisionShape.w) and
       self.user:collision(self) then
       self.user:resetStates()
       self.user.canStopJump.global = false
-      self.user.velocity.vely = -7.5 * (self.user.gravity >= 0 and 1 or -1)
+      self.user.velY = -7.5 * (self.user.gravity >= 0 and 1 or -1)
       self.s = 4
       self.anims:set("coil")
       megaMan.weaponHandler[self.user.player]:updateCurrent(megaMan.weaponHandler[self.user.player]:currentWE() - 7)
@@ -1007,7 +1007,7 @@ function rushCoil:act(dt)
     if self.anims:looped() then
       self.s = 6
       self.anims:set("spawn")
-      self.velocity.vely = -8
+      self.velY = -8
     end
   end
 end
@@ -1043,7 +1043,7 @@ function stickWeapon:new(x, y, p, dir)
   self:setRectangleCollision(8, 6)
   self.tex = megautils.getResource("stickWeapon")
   self.side = dir or 1
-  self.velocity.velx = self.side * 8
+  self.velX = self.side * 8
   self.weaponGroup = "stickWeapon"
 end
 

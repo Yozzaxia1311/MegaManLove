@@ -98,8 +98,8 @@ function metBullet:new(x, y, p, vx, vy)
   
   self.x = x or 0
   self.y = y or 0
-  self.velocity.velx = vx or 0
-  self.velocity.vely = vy or 0
+  self.velX = vx or 0
+  self.velY = vy or 0
   self.damage = megautils.diffValue(-2, {easy=-1, normal=-2, hard=-3})
 end
 

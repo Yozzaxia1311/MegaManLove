@@ -627,43 +627,6 @@ function entitySystem:update(dt)
   end
 end
 
-velocity = class:extend()
-
-binser.register(velocity, "velocity", function(o)
-    return {velx = o.velx, vely = o.vely}
-  end, function(o)
-    local result = velocity()
-    result.velx = o.velx
-    result.vely = o.vely
-    return result
-  end)
-
-function velocity:new()
-  self.velx = 0
-  self.vely = 0
-end
-function velocity:clampX(v)
-  self.velx = math.clamp(self.velx, -v, v)
-end
-function velocity:clampY(v)
-  self.vely = math.clamp(self.vely, -v, v)
-end
-
-function velocity:slowX(v)
-  if self.velx < 0 then 
-		self.velx = math.min(self.velx + v, 0)
-  elseif self.velx > 0 then
-    self.velx = math.max(self.velx - v, 0)
-  end
-end
-function velocity:slowY(v)
-  if self.vely < 0 then 
-		self.vely = math.min(self.vely + v, 0)
-  elseif self.vely > 0 then
-    self.vely = math.max(self.vely - v, 0)
-  end
-end
-
 basicEntity = class:extend()
 
 basicEntity.autoClean = false
@@ -953,11 +916,12 @@ function entity:new()
   self.gravityMultipliers = {global=1}
   
   if self.recycling then
-    self.velocity.velx = 0
-    self.velocity.vely = 0
+    self.velX = 0
+    self.velY = 0
   else
     self.solidType = collision.NONE
-    self.velocity = velocity()
+    self.velX = 0
+    self.velY = 0
     self.normalGravity = 0.25
     self:calcGrav()
     self.doShake = false
@@ -1370,8 +1334,7 @@ function advancedEntity:removed()
 end
 
 function advancedEntity:grav()
-  self.velocity.vely = self.velocity.vely+self.gravity
-  self.velocity:clampY(self.maxFallingSpeed)
+  self.velY = math.clamp(self.velY + self.gravity, -self.maxFallingSpeed, self.maxFallingSpeed)
 end
 
 function advancedEntity:crushed(o)
@@ -1649,7 +1612,7 @@ function bossEntity:start()
       for _, v in ipairs(megaMan.allPlayers) do
         v.canControl.boss = false
         v.canBeInvincible.intro = true
-        v.velocity.velx = 0
+        v.velX = 0
         v:resetStates()
         v.side = megautils.side(v, self, true)
       end

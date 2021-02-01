@@ -22,6 +22,7 @@ function particle:new(user)
     self.doAutoCollisionBeforeUpdate = true
     self.flipWithUser = true
     self.noSlope = false
+    self.maxFallingSpeed = 7
   end
 end
 
@@ -30,8 +31,7 @@ function particle:added()
 end
 
 function particle:grav()
-  self.velocity.vely = self.velocity.vely+self.gravity
-  self.velocity:clampY(7)
+  self.velY = math.clamp(self.velY + self.gravity, -self.maxFallingSpeed, self.maxFallingSpeed)
 end
 
 function particle:beforeUpdate()
@@ -143,7 +143,7 @@ function airBubble:new(x, y, p)
   
   self.off = 0
   self.timer = 0
-  self.velocity.vely = -1
+  self.velY = -1
 end
 
 function airBubble:check()
@@ -214,8 +214,8 @@ function deathExplodeParticle:new(x, y, p, angle, spd)
   self:setRectangleCollision(24, 24)
   self.tex = megautils.getResource("particles")
   self.anim = megautils.newAnimation("deathExplodeParticleGrid", {"1-5", 1}, 1/10)
-  self.velocity.velx = megautils.calcX(angle or 0)*(spd or 1)
-  self.velocity.vely = megautils.calcY(angle or 0)*(spd or 1)
+  self.velX = megautils.calcX(angle or 0)*(spd or 1)
+  self.velY = megautils.calcY(angle or 0)*(spd or 1)
 end
 
 function deathExplodeParticle:update(dt)

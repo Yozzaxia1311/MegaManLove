@@ -382,7 +382,6 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   self.weaponSwitchTimer = 70
   self:regBox()
   self.doAnimation = true
-  self.velocity = velocity()
   self.chargeTimer2 = 0
   self.chargeFrame = 1
   self.chargeState = 0
@@ -408,7 +407,8 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   self.rapidShotTime = self.maxRapidShotTime
   self.treble = false
   self.trebleSine = 0
-  self.trebleForce = velocity()
+  self.trebleVelX = 0
+  self.trebleVelY = 0
   self.protoShielding = false
   self.doSplashing = not self.drop
   self.teleporter = tp
@@ -600,8 +600,8 @@ function megaMan:resetStates()
   self.treble = false
   self.trebleSine = 0
   self.trebleTimer = 0
-  self.trebleForce.velx = 0
-  self.trebleForce.vely = 0
+  self.trebleVelX = 0
+  self.trebleVelY = 0
   self.canBeInvincible.treble = false
   self.extraJumps = 0
   self.shootFrames = 0
@@ -962,8 +962,8 @@ function megaMan:attemptClimb()
     if downDown and self.ground and not self:collision(self.currentLadder) then
       self.y = self.y + (self.gravity >= 0 and (math.round(self.collisionShape.h*0.3)) or (-math.round(self.collisionShape.h*0.3)))
     end
-    self.velocity.vely = 0
-    self.velocity.velx = 0
+    self.velY = 0
+    self.velX = 0
     self.climb = true
     self.dashJump = false
     self.ground = false
@@ -1074,8 +1074,8 @@ function megaMan:interactedWith(o, c)
       return
     else
       if not checkTrue(self.canIgnoreKnockback) then
-        self.velocity.velx = (self.side==1 and self.leftKnockBackSpeed or self.rightKnockBackSpeed)
-        self.velocity.vely = 0
+        self.velX = (self.side==1 and self.leftKnockBackSpeed or self.rightKnockBackSpeed)
+        self.velY = 0
         self.hitTimer = 0
       end
       if self.slide and not self:checkRegBox() then
@@ -1083,7 +1083,7 @@ function megaMan:interactedWith(o, c)
         self:slideToReg()
       elseif self.slide and self:checkRegBox() then
         self.hitTimer = self.maxHitTime
-        self.velocity.velx = 0
+        self.velX = 0
       end
       self.climb = false
       self.dashJump = false
@@ -1126,24 +1126,24 @@ function megaMan:code(dt)
   self.blockCollision.noClip = true
   if megautils.isNoClip() then
     self.blockCollision.noClip = false
-    self.velocity.velx = 0
-    self.velocity.vely = 0
+    self.velX = 0
+    self.velY = 0
     local m = control.jumpDown[self.player] and 2 or 1
     if self.runCheck then
       if control.rightDown[self.player] then
-        self.velocity.velx = 2*m
+        self.velX = 2*m
         self.side = 1
       else
-        self.velocity.velx = -2*m
+        self.velX = -2*m
         self.side = -1
       end
     end
     if ((control.upDown[self.player] and not control.downDown[self.player]) or
       (control.downDown[self.player] and not control.upDown[self.player])) then
       if control.downDown[self.player] then
-        self.velocity.vely = 2*m
+        self.velY = 2*m
       else
-        self.velocity.vely = -2*m
+        self.velY = -2*m
       end
     end
     collision.doCollision(self)
@@ -1172,24 +1172,24 @@ function megaMan:code(dt)
     elseif self.treble == 3 and self.hitTimer == self.maxHitTime then
       if self.runCheck then
         self.side = control.leftDown[self.player] and -1 or 1
-        self.trebleForce.velx = math.clamp(self.trebleForce.velx + (self.side == 1 and 0.1 or -0.1),
+        self.trebleVelX = math.clamp(self.trebleVelX + (self.side == 1 and 0.1 or -0.1),
           -self.maxTrebleSpeed, self.maxTrebleSpeed)
       else
-        self.trebleForce:slowX(self.trebleDecel)
+        self.trebleVelX = math.approach(self.trebleVelX, 0, self.trebleDecel)
       end
       if ((control.upDown[self.player] and not control.downDown[self.player]) or
         (control.downDown[self.player] and not control.upDown[self.player])) then
-        self.trebleForce.vely = math.clamp(self.trebleForce.vely + (control.downDown[self.player] and 0.1 or -0.1),
+        self.trebleVelY = math.clamp(self.trebleVelY + (control.downDown[self.player] and 0.1 or -0.1),
           -self.maxTrebleSpeed, self.maxTrebleSpeed)
       else
-        self.trebleForce:slowY(self.trebleDecel)
+        self.trebleVelY = math.approach(self.trebleVelY, 0, self.trebleDecel)
       end
-      self.velocity.velx = self.trebleForce.velx
-      self.velocity.vely = self.trebleForce.vely
+      self.velX = self.trebleVelX
+      self.velY = self.trebleVelY
       self.trebleSine = self.trebleSine + 0.13
-      self.velocity.vely = self.velocity.vely + (math.sin(self.trebleSine) * 0.3)
-      self.velocity:clampX(self.maxTrebleSpeed)
-      self.velocity:clampY(self.maxTrebleSpeed)
+      self.velY = self.velY + (math.sin(self.trebleSine) * 0.3)
+      self.velX = math.clamp(self.velX, -self.maxTrebleSpeed, self.maxTrebleSpeed)
+      self.velY = math.clamp(self.velY, -self.maxTrebleSpeed, self.maxTrebleSpeed)
       self.trebleTimer = self.trebleTimer + 1
       if self.trebleTimer == 60 then
         self.trebleTimer = 0
@@ -1214,8 +1214,8 @@ function megaMan:code(dt)
       self.canBeInvincible.treble = false
       self.trebleSine = 0
       self.trebleTimer = 0
-      self.trebleForce.velx = 0
-      self.trebleForce.vely = 0
+      self.trebleVelX = 0
+      self.trebleVelY = 0
     end
   elseif self.hitTimer ~= self.maxHitTime then
     collision.doGrav(self)
@@ -1240,8 +1240,8 @@ function megaMan:code(dt)
       self.currentLadder = self:checkLadder()
     end
     
-    self.velocity.velx = 0
-    self.velocity.vely = 0
+    self.velX = 0
+    self.velY = 0
     
     local downDown, upDown
     if self.gravity >= 0 then
@@ -1260,7 +1260,7 @@ function megaMan:code(dt)
     elseif upDown and ((self.gravity >= 0 and self.y+(self.collisionShape.h*0.8) < self.currentLadder.y) or 
       (self.gravity < 0 and self.y+(self.collisionShape.h*0.2) > self.currentLadder.y+self.currentLadder.collisionShape.h)) and
       not tipc then
-        self.velocity.vely = 0
+        self.velY = 0
         self.y = math.round(self.y)
         local hit = false
         while self:collision(self.currentLadder) do
@@ -1285,13 +1285,13 @@ function megaMan:code(dt)
       self.x = self.currentLadder.x+(self.currentLadder.collisionShape.w/2)-(self.collisionShape.w/2)
       if (control.upDown[self.player] or control.downDown[self.player]) and self.shootFrames == 0 then
         if control.upDown[self.player] then
-          self.velocity.vely = self.climbUpSpeed
+          self.velY = self.climbUpSpeed
         else
-          self.velocity.vely = self.climbDownSpeed
+          self.velY = self.climbDownSpeed
         end
       end
-      if self.currentLadder.velocity then
-        self.velocity.vely = self.velocity.vely + self.currentLadder.velocity.vely
+      if self.currentLadder.velY then
+        self.velY = self.velY + self.currentLadder.velY
       end
     end
     for _, v in pairs(megautils.playerClimbFuncs) do
@@ -1303,13 +1303,13 @@ function megaMan:code(dt)
     end
     self:attemptWeaponUsage()
     if self.shootFrames ~= 0 then
-      self.velocity.vely = 0      
+      self.velY = 0      
     end
     collision.doCollision(self)
     self.currentLadder = self:checkLadder()
     if not self.currentLadder then
       self.climb = false
-      self.velocity.vely = 0 
+      self.velY = 0 
     end
     self.climbTip = self.currentLadder and not tipc and not self:checkLadder(0, self.gravity >= 0 and -1 or self.collisionShape.h, true)
   elseif self.slide then
@@ -1324,13 +1324,13 @@ function megaMan:code(dt)
       self.step = true
       self.stepTime = 0
     end
-    self.velocity.velx = self.side==1 and self.slideRightSpeed or self.slideLeftSpeed
-    self.velocity.velx = math.clamp(self.velocity.velx, self.slideLeftSpeed, self.slideRightSpeed)
+    self.velX = self.side==1 and self.slideRightSpeed or self.slideLeftSpeed
+    self.velX = math.clamp(self.velX, self.slideLeftSpeed, self.slideRightSpeed)
     local jumped = false
     local sb = self:checkSlideBox(0, math.sign(self.gravity))
     if not sb and not self.ground then
       self.slide = false
-      self.velocity.velx = 0
+      self.velX = 0
       local w = self.collisionShape.w
       self:regBox()
       self.slideTimer = self.maxSlideTime
@@ -1364,7 +1364,7 @@ function megaMan:code(dt)
         and (self.ground or sb) and not control.downDown[self.player] then
         self.slide = false
         jumped = true
-        self.velocity.vely = self.jumpSpeed * (self.gravity >= 0 and 1 or -1)
+        self.velY = self.jumpSpeed * (self.gravity >= 0 and 1 or -1)
         self.ground = false
         self.slideTimer = self.maxSlideTime
         self.hitTimer = self.maxHitTime
@@ -1386,7 +1386,7 @@ function megaMan:code(dt)
         self:slideToReg()
       end
     end
-    if not self.slide and not jumped then self.velocity.vely = 0 end
+    if not self.slide and not jumped then self.velY = 0 end
     for _, v in pairs(megautils.playerSlideFuncs) do
       if type(v) == "function" then
         v(self)
@@ -1423,12 +1423,12 @@ function megaMan:code(dt)
           self.step = true
           self.stepTime = 0
         end
-        self.velocity:slowX(self.side == -1 and self.leftDecel or self.rightDecel)
+        self.velX = math.approach(self.velX, 0, self.side == -1 and self.leftDecel or self.rightDecel)
       elseif self.runCheck then
         self.side = control.leftDown[self.player] and -1 or 1
-        self.velocity.velx = self.velocity.velx + (self.side == -1 and self.leftSpeed or self.rightSpeed)
+        self.velX = self.velX + (self.side == -1 and self.leftSpeed or self.rightSpeed)
       else
-        self.velocity:slowX(self.side == -1 and self.leftDecel or self.rightDecel)
+        self.velX = math.approach(self.velX, 0, self.side == -1 and self.leftDecel or self.rightDecel)
         self.stepTime = 0
         self.step = false
       end
@@ -1436,7 +1436,7 @@ function megaMan:code(dt)
       if self.runCheck then
         self.side = control.leftDown[self.player] and -1 or 1
       end
-      self.velocity:slowX(self.side == -1 and self.leftDecel or self.rightDecel)
+      self.velX = math.approach(self.velX, 0, self.side == -1 and self.leftDecel or self.rightDecel)
       self.stepTime = 0
       self.step = false
     end
@@ -1451,15 +1451,15 @@ function megaMan:code(dt)
     elseif checkFalse(self.canJump) and self.inStandSolid and control.jumpDown[self.player] and
       self.standSolidJumpTimer ~= self.maxStandSolidJumpTime and
       self.standSolidJumpTimer ~= -1 then
-      self.velocity.vely = self.jumpSpeed * (self.gravity >= 0 and 1 or -1)
+      self.velY = self.jumpSpeed * (self.gravity >= 0 and 1 or -1)
       self.standSolidJumpTimer = math.min(self.standSolidJumpTimer+1, self.maxStandSolidJumpTime)
     elseif checkFalse(self.canJump) and control.jumpPressed[self.player] and
       not (control[self.gravity >= 0 and "downDown" or "upDown"][self.player] and self:checkBasicSlideBox(self.side, 0)) then
-      self.velocity.vely = self.jumpSpeed * (self.gravity >= 0 and 1 or -1)
+      self.velY = self.jumpSpeed * (self.gravity >= 0 and 1 or -1)
       self.protoShielding = checkFalse(self.canProtoShield)
       self.ground = false
     else
-      self.velocity.vely = 0
+      self.velY = 0
     end
     if self.standSolidJumpTimer > 0 and (not control.jumpDown[self.player] or
       self.standSolidJumpTimer == self.maxStandSolidJumpTime) then
@@ -1469,7 +1469,7 @@ function megaMan:code(dt)
     if self.standSolidJumpTimer == -1 and not control.jumpDown[self.player] then
       self.standSolidJumpTimer = 0
     end
-    self.velocity.velx = math.clamp(self.velocity.velx, self.maxLeftSpeed, self.maxRightSpeed)
+    self.velX = math.clamp(self.velX, self.maxLeftSpeed, self.maxRightSpeed)
     for _, v in pairs(megautils.playerGroundFuncs) do
       if type(v) == "function" then
         v(self)
@@ -1495,30 +1495,30 @@ function megaMan:code(dt)
     self.protoShielding = checkFalse(self.canProtoShield)
     if self.runCheck then
       self.side = control.leftDown[self.player] and -1 or 1
-      self.velocity.velx = self.velocity.velx + (self.side == -1 and 
+      self.velX = self.velX + (self.side == -1 and 
         (self.dashJump and self.slideLeftSpeed*self.dashJumpMultiplier or self.leftAirSpeed) or 
         (self.dashJump and self.slideRightSpeed*self.dashJumpMultiplier or self.rightAirSpeed))
       if self.dashJump then
-        self.velocity.velx = math.clamp(self.velocity.velx, -(self.slideLeftSpeed*self.dashJumpMultiplier),
+        self.velX = math.clamp(self.velX, -(self.slideLeftSpeed*self.dashJumpMultiplier),
           (self.slideLeftSpeed*self.dashJumpMultiplier))
       else
-        self.velocity.velx = math.clamp(self.velocity.velx, self.maxLeftAirSpeed, self.maxRightAirSpeed)
+        self.velX = math.clamp(self.velX, self.maxLeftAirSpeed, self.maxRightAirSpeed)
       end
       self.stepTime = 0
       self.step = true
     else
-      self.velocity:slowX(self.side == -1 and self.leftAirDecel or self.rightAirDecel)
-      self.velocity.velx = math.clamp(self.velocity.velx, self.maxLeftAirSpeed, self.maxRightAirSpeed)
+      self.velX = math.approach(self.velX, 0, self.side == -1 and self.leftAirDecel or self.rightAirDecel)
+      self.velX = math.clamp(self.velX, self.maxLeftAirSpeed, self.maxRightAirSpeed)
       self.stepTime = 0
       self.step = false
     end
     if control.jumpPressed[self.player] and self.extraJumps < self.maxExtraJumps then
       self.extraJumps = self.extraJumps + 1
-      self.velocity.vely = self.jumpSpeed * (self.gravity >= 0 and 1 or -1)
+      self.velY = self.jumpSpeed * (self.gravity >= 0 and 1 or -1)
     end
     if checkFalse(self.canStopJump) and not control.jumpDown[self.player] and
-      ((self.gravity < 0 and self.velocity.vely > 0) or (self.gravity >= 0 and self.velocity.vely < 0)) then
-      self.velocity:slowY(self.jumpDecel)
+      ((self.gravity < 0 and self.velY > 0) or (self.gravity >= 0 and self.velY < 0)) then
+      self.velY = math.approach(self.velY, 0, self.jumpDecel)
     end
     for _, v in pairs(megautils.playerAirFuncs) do
       if type(v) == "function" then
@@ -1647,11 +1647,11 @@ end
 
 function megaMan:grav()
   if self.gravityType == 0 then
-    self.velocity.vely = self.velocity.vely+self.gravity
+    self.velY = self.velY + self.gravity
   elseif self.gravityType == 1 then
-    self.velocity:slowY(self.gravity)
+    self.velY = math.approach(self.velY, 0, self.gravity)
   end
-  self.velocity.vely = self.gravity >= 0 and math.min(self.maxAirSpeed, self.velocity.vely) or math.max(-self.maxAirSpeed, self.velocity.vely)
+  self.velY = self.gravity >= 0 and math.min(self.maxAirSpeed, self.velY) or math.max(-self.maxAirSpeed, self.velY)
 end
 
 function megaMan:attemptWeaponSwitch()

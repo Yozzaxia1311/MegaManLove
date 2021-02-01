@@ -35,6 +35,7 @@ function pickupEntity:new(despawn, gd, fwp, id, path)
   self.autoCollision = {global = true}
   self.autoGravity = {global = true}
   self.noSlope = false
+  self.maxFallingSpeed = 7
   if gd or self.fwp then
     self:setGravityMultiplier("flipWithPlayer",  megaMan.mainPlayer and megaMan.mainPlayer.gravityMultipliers.gravityFlip or self.gravDir)
   end
@@ -51,8 +52,7 @@ function pickupEntity:added()
 end
 
 function pickupEntity:grav()
-  self.velocity:clampY(7)
-  self.velocity.vely = self.velocity.vely + self.gravity
+  self.velY = math.clamp(self.velY + self.gravity, -self.maxFallingSpeed, self.maxFallingSpeed)
 end
 
 function pickupEntity:taken(p) end
