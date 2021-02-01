@@ -1,7 +1,6 @@
 camera = basicEntity:extend()
 
 camera.autoClean = false
-camera.invisibleToHash = true
 
 megautils.reloadStateFuncs.camera = {func=function()
     camera.main = nil
@@ -35,6 +34,7 @@ function camera:new(x, y, doScrollX, doScrollY)
   self.once = false
   self.player = nil
   self.funcs = {}
+  self.spawners = {}
   megautils.state().system.cameraUpdate = nil
 end
 
@@ -47,9 +47,38 @@ function camera:added()
   end
   self:addToGroup("camera")
   camera.main = self
+  
+  self.spawners = {}
+  local se = self:getSurroundingEntities()
+  
+  for i = 1, #se do
+    if se[i].updateSpawner and not table.icontains(self.spawners, se[i]) then
+      self.spawners[#self.spawners + 1] = se[i]
+    end
+  end
+  
+  for _, v in ipairs(self.spawners) do
+    if v.static then
+      v:updateSpawner()
+    end
+    
+    if not table.icontains(se, v) then
+      table.quickremovevaluearray(self.spawners, v)
+    end
+  end
 end
 
 function camera:removed()
+  local se = self:getSurroundingEntities()
+  
+  for _, v in ipairs(self.spawners) do
+    if not table.icontains(se, v) then
+      v:updateSpawner()
+    end
+  end
+  
+  self.spawners = {}
+  
   camera.main = nil
 end
 
@@ -315,6 +344,24 @@ function camera:doView(spdx, spdy, without)
   end
   
   view.x, view.y = math.floor(self.approachX), math.floor(self.approachY)
+  
+  local se = self:getSurroundingEntities()
+  
+  for i = 1, #se do
+    if se[i].updateSpawner and not table.icontains(self.spawners, se[i]) then
+      self.spawners[#self.spawners + 1] = se[i]
+    end
+  end
+  
+  for _, v in ipairs(self.spawners) do
+    if v.static then
+      v:updateSpawner()
+    end
+    
+    if not table.icontains(se, v) then
+      table.quickremovevaluearray(self.spawners, v)
+    end
+  end
   
   self:updateFuncs()
 end

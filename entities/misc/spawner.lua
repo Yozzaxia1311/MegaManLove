@@ -17,17 +17,24 @@ function spawner:added()
   self:addToGroup("handledBySections")
   self.instance = nil
   self.wasOutside = true
+  
+  self:makeStatic()
 end
 
-function spawner:update()
-  if megautils.outside(self) and (not self.instance or self.instance.isRemoved) then
+function spawner:updateSpawner()
+  if (megautils.outside(self) and (not self.instance or self.instance.isRemoved)) or self.isRemoved then
     self.instance = nil
     self.wasOutside = true
   end
-  if not megautils.outside(self) and self.wasOutside and not self.instance and (not self.cond or self.cond(self)) then
+  if not megautils.outside(self) and self.wasOutside and not self.instance and
+    (not self.cond or self.cond(self)) and not self.isRemoved then
     self.instance = megautils.add(unpack(self.stuff))
     self.wasOutside = false
   end
+end
+
+function spawner:update()
+  self:updateSpawner()
 end
 
 intervalSpawner = basicEntity:extend()
@@ -47,10 +54,12 @@ end
 
 function intervalSpawner:added()
   self:addToGroup("handledBySections")
+  
+  self:makeStatic()
 end
 
-function intervalSpawner:update(dt)
-  if not megautils.outside(self) then
+function intervalSpawner:updateSpawner()
+  if not megautils.outside(self) and not self.isRemoved then
     self.timer = math.min(self.timer+1, self.time)
     if self.timer == self.time then
       self.timer = 0
@@ -61,4 +70,8 @@ function intervalSpawner:update(dt)
   else
     self.timer = 0
   end
+end
+
+function intervalSpawner:update()
+  self:updateSpawner()
 end
