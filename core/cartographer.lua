@@ -270,7 +270,7 @@ function Layer.tilelayer:_init(map)
   if self.encoding == "base64" then
     --error("LuaJIT FFI is not allowed; use CSV instead.")
     
-    assert(require "ffi", "Compressed maps require LuaJIT FFI.\nPlease Switch your interperator to LuaJIT or your Tile Layer Format to \"CSV\".")
+    assert(ffi, "Compressed maps require LuaJIT FFI.\nPlease Switch your interperator to LuaJIT or your Tile Layer Format to \"CSV\".")
     if self.chunks then
       for _, v in ipairs(self.chunks) do
         if v.data then
@@ -553,7 +553,6 @@ end
 -- Decompress tile layer data
 -- https://github.com/karai17/Simple-Tiled-Implementation/blob/master/sti/utils.lua#L67
 function Map:getDecompressedData(data)
-  local ffi = require("ffi")
   local d = {}
   local decoded = ffi.cast("uint32_t*", data)
   
