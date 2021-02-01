@@ -420,6 +420,45 @@ function collision.generalCollision(self, noSlope)
     end
   end
   
+  if self.velocity.vely ~= 0 then
+    if possible then
+      if self.velocity.vely * cgrav > 0 then
+        all = self:getSurroundingEntities(self.velocity.velx, self.velocity.vely)
+        
+        for i = 1, #all do
+          local v = all[i]
+          if v ~= self and v.collisionShape and
+            (not v.exclusivelySolidFor or table.icontains(v.exclusivelySolidFor, self)) and
+            (not v.excludeSolidFor or not table.icontains(v.excludeSolidFor, self)) and
+            v.solidType == collision.ONEWAY and
+            (not v:collision(self) or not v:collision(self, 0, cgrav * 0.01)) and -- Oneway safe-margin, for floating-point errors.
+            (not v.ladder or v:collisionNumber(ladders, 0, -cgrav, true) == 0) then
+            solid[#solid+1] = v
+          end
+        end
+      end
+    end
+    
+    self.y = self.y + self.velocity.vely
+    
+    if possible and self:collisionNumber(solid) ~= 0 then
+      local s = math.sign(self.velocity.vely)
+      self.y = math.round(self.y + s)
+      
+      while self:collisionNumber(solid) ~= 0 do
+        self.y = self.y - s
+      end
+      
+      self.yColl = self.velocity.vely
+      
+      if self.velocity.vely * cgrav > 0 then
+        self.ground = true
+      end
+      
+      self.velocity.vely = 0
+    end
+  end
+  
   if self.velocity.velx ~= 0 then
     if possible then
       if not nslp and slp ~= 0 then
@@ -428,11 +467,14 @@ function collision.generalCollision(self, noSlope)
           if v ~= self and v.collisionShape and
             (not v.exclusivelySolidFor or table.icontains(v.exclusivelySolidFor, self)) and
             (not v.excludeSolidFor or not table.icontains(v.excludeSolidFor, self)) and
-            not table.icontains(solid, v) and v.solidType == collision.ONEWAY and
-            v:collision(self, -self.velocity.velx, 0) and
-            not v:collision(self, -self.velocity.velx, -cgrav * slp) and not v:collision(self) and
+            v.solidType == collision.ONEWAY and v:collision(self, -self.velocity.velx, 0) and
+            not v:collision(self, -self.velocity.velx, -cgrav * slp) and
             (not v.ladder or v:collisionNumber(ladders, 0, -cgrav) == 0) then
-            solid[#solid+1] = v
+            if not v:collision(self) or not v:collision(self, 0, cgrav * 0.01) then -- Oneway safe-margin, for floating-point errors.
+              solid[#solid+1] = v
+            else
+              table.quickremovevaluearray(solid, v)
+            end
           end
         end
       end
@@ -487,48 +529,6 @@ function collision.generalCollision(self, noSlope)
           end
         end
       end
-    end
-  end
-  
-  if self.velocity.vely ~= 0 then
-    if possible then
-      if self.velocity.vely * cgrav > 0 then
-        all = self:getSurroundingEntities(self.velocity.velx, self.velocity.vely)
-        
-        for i=1, #all do
-          local v = all[i]
-          if v ~= self and v.collisionShape and
-          (not v.exclusivelySolidFor or table.icontains(v.exclusivelySolidFor, self)) and
-          (not v.excludeSolidFor or not table.icontains(v.excludeSolidFor, self)) and v.solidType == collision.ONEWAY and
-          (not v.ladder or v:collisionNumber(ladders, 0, -cgrav, true) == 0) then
-            if not v:collision(self) and (not ((v.collisionShape.type == 0 or v.collisionShape.type == 2) and
-              (self.collisionShape.type == 0 or self.collisionShape.type == 2)) or math.sign(self.y - v.y) == -cgrav) then
-              solid[#solid+1] = v
-            else
-              table.removevaluearray(solid, v)
-            end
-          end
-        end
-      end
-    end
-    
-    self.y = self.y + self.velocity.vely
-    
-    if possible and self:collisionNumber(solid) ~= 0 then
-      local s = math.sign(self.velocity.vely)
-      self.y = math.round(self.y + s)
-      
-      while self:collisionNumber(solid) ~= 0 do
-        self.y = self.y - s
-      end
-      
-      self.yColl = self.velocity.vely
-      
-      if self.velocity.vely * cgrav > 0 then
-        self.ground = true
-      end
-      
-      self.velocity.vely = 0
     end
   end
   
