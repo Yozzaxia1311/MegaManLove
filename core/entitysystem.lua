@@ -41,6 +41,7 @@ function entitySystem:updateHashForEntity(e)
     local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
     local cx2, cy2 = math.floor((xx + ww + 2) / hs), math.floor((yy + hh + 2) / hs)
     local emptyBefore = #e.currentHashes == 0
+    local check = {}
     
     for x = cx, cx2 do
       for y = cy, cy2 do
@@ -58,13 +59,17 @@ function entitySystem:updateHashForEntity(e)
         if not table.icontains(e.currentHashes, self.hashes[x][y]) then
           e.currentHashes[#e.currentHashes+1] = self.hashes[x][y]
         end
+        
+        if self.hashes[x] and self.hashes[x][y] then
+          check[#check + 1] = self.hashes[x][y]
+        end
       end
     end
     
     if not emptyBefore then
       for _, v in ipairs(e.currentHashes) do
-        if not math.between(v.x, cx, cx2) or not math.between(v.y, cy, cy2) or v.isRemoved then
-          if self.hashes[v.x] and self.hashes[v.x][v.y] and not v.isRemoved then
+        if v.isRemoved or not table.icontains(check, v) then
+          if not v.isRemoved then
             table.quickremovevaluearray(v.data, e)
             
             if #v.data == 0 then
@@ -72,7 +77,7 @@ function entitySystem:updateHashForEntity(e)
               self.hashes[v.x][v.y] = nil
               self._HS[v.x] = self._HS[v.x] - 1
               
-              if self._HS[v.x] <= 0 then
+              if self._HS[v.x] == 0 then
                 self.hashes[v.x] = nil
                 self._HS[v.x] = nil
               end
@@ -83,9 +88,11 @@ function entitySystem:updateHashForEntity(e)
         end
       end
     end
-  else -- If there's no collision, then remove from hash.
-    for _, v in ipairs(e.currentHashes) do
-      if self.hashes[v.x] and self.hashes[v.x][v.y] and not v.isRemoved then
+  elseif #e.currentHashes ~= 0 then -- If there's no collision, then remove from hash.
+    for i = 1, #e.currentHashes do
+      local v = e.currentHashes[i]
+      
+      if not v.isRemoved then
         table.quickremovevaluearray(v.data, e)
         
         if #v.data == 0 then
@@ -93,15 +100,15 @@ function entitySystem:updateHashForEntity(e)
           self.hashes[v.x][v.y] = nil
           self._HS[v.x] = self._HS[v.x] - 1
           
-          if self._HS[v.x] <= 0 then
+          if self._HS[v.x] == 0 then
             self.hashes[v.x] = nil
             self._HS[v.x] = nil
           end
         end
-        
-        table.quickremovevaluearray(e.currentHashes, v)
       end
     end
+    
+    e.currentHashes = {}
   end
 end
 
@@ -275,6 +282,10 @@ function entitySystem:adde(e)
   e.isRemoved = false
   e.isAdded = true
   e.justAddedIn = true
+  e.lastHashX = nil
+  e.lastHashY = nil
+  e.lastHashX2 = nil
+  e.lastHashY2 = nil
   e.currentHashes = {}
   if not e.invisibleToHash then e:updateHash(true) end
   e:added()
@@ -443,7 +454,7 @@ function entitySystem:remove(e)
   table.quickremovevaluearray(self.beginQueue, e)
   
   for _, v in ipairs(e.currentHashes) do
-    if self.hashes[v.x] and self.hashes[v.x][v.y] and not v.isRemoved then
+    if not v.isRemoved then
       table.quickremovevaluearray(v.data, e)
       
       if #v.data == 0 then
@@ -451,7 +462,7 @@ function entitySystem:remove(e)
         self.hashes[v.x][v.y] = nil
         self._HS[v.x] = self._HS[v.x] - 1
         
-        if self._HS[v.x] <= 0 then
+        if self._HS[v.x] == 0 then
           self.hashes[v.x] = nil
           self._HS[v.x] = nil
         end
@@ -693,10 +704,6 @@ function basicEntity:new()
   self.changeHealth = 0
   self.canUpdate = {global=true}
   self.canDraw = {global=true}
-  self.lastHashX = nil
-  self.lastHashY = nil
-  self.lastHashX2 = nil
-  self.lastHashY2 = nil
 end
 
 function basicEntity:determineIFrames(o)
@@ -1022,7 +1029,7 @@ function entity:setShake(x, y, t)
 end
 
 function entity:updateFlash(length, range)
-  if self.iFrames == 0 then
+  if self.iFrames == 0 or (camera.main and camera.main.transition) then
     self.canDraw.flash = true
   else
     self.canDraw.flash = math.wrap(self.iFrames, 0, length or 4) > (range or 2)

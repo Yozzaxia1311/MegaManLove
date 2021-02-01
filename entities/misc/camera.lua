@@ -56,6 +56,16 @@ end
 function camera:updateCam(spdx, spdy)
   if self.transition then
     if not self.preTrans then
+      if not self.once then
+        self.once = true
+        for i = 1, #megautils.getAllEntities() do
+          local v = megautils.getAllEntities()[i]
+          
+          if v.updateFlash then
+            v:updateFlash()
+          end
+        end
+      end
       if not self.toPos then
         self:updateBounds(true)
         if self.transitionDirection == "up" or self.transitionDirection == "down" then
@@ -71,12 +81,14 @@ function camera:updateCam(spdx, spdy)
         if self.x == self.toPos then
           self.toPos = nil
           self.preTrans = true
+          self.once = false
         end
       elseif self.transitionDirection == "left" or self.transitionDirection == "right" then
         self.y = math.approach(self.y, self.toPos, spdy or 4)
         if self.y == self.toPos then
           self.toPos = nil
           self.preTrans = true
+          self.once = false
         end
       end
       self.x = math.floor(self.x)
