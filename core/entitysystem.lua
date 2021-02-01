@@ -36,6 +36,10 @@ end
 
 function entitySystem:updateHashForEntity(e)
   if e.collisionShape then
+    if not e.currentHashes then
+      e.currentHashes = {}
+    end
+    
     local xx, yy, ww, hh = e.x, e.y, e.collisionShape.w, e.collisionShape.h
     local hs = entitySystem.hashSize
     local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
@@ -231,7 +235,6 @@ function entitySystem:add(c, ...)
   e.isRemoved = false
   e.isAdded = true
   e.justAddedIn = true
-  e.currentHashes = {}
   if not e.invisibleToHash then e:updateHash(true) end
   e:added()
   
@@ -282,11 +285,6 @@ function entitySystem:adde(e)
   e.isRemoved = false
   e.isAdded = true
   e.justAddedIn = true
-  e.lastHashX = nil
-  e.lastHashY = nil
-  e.lastHashX2 = nil
-  e.lastHashY2 = nil
-  e.currentHashes = {}
   if not e.invisibleToHash then e:updateHash(true) end
   e:added()
   
@@ -347,20 +345,28 @@ function entitySystem:removeFromAllGroups(e)
 end
 
 function entitySystem:makeStatic(e)
-  table.quickremovevaluearray(self.updates, e)
-  
-  local al = self:getLayer(e.layer)
-  
-  table.quickremovevaluearray(al.data, e)
-  
-  if #al.data == 0 then
-    table.removevaluearray(self.entities, al)
+  if not e.static then
+    table.quickremovevaluearray(self.updates, e)
+    
+    local al = self:getLayer(e.layer)
+    
+    table.quickremovevaluearray(al.data, e)
+    
+    if #al.data == 0 then
+      table.removevaluearray(self.entities, al)
+    end
+    
+    self.static[#self.static+1] = e
+    
+    e.static = true
+    e:staticToggled()
+    
+    e.lastHashX = nil
+    e.lastHashY = nil
+    e.lastHashX2 = nil
+    e.lastHashY2 = nil
+    e.currentHashes = nil
   end
-  
-  self.static[#self.static+1] = e
-  
-  e.static = true
-  e:staticToggled()
 end
 
 function entitySystem:revertFromStatic(e)
@@ -384,6 +390,11 @@ function entitySystem:revertFromStatic(e)
     end
     
     self.updates[#self.updates+1] = e
+    
+    if not e.invisibleToHash then
+      e.currentHashes = {}
+      e:updateHash()
+    end
     
     e.static = false
     e:staticToggled()
@@ -453,24 +464,30 @@ function entitySystem:remove(e)
   table.quickremovevaluearray(self.all, e)
   table.quickremovevaluearray(self.beginQueue, e)
   
-  for _, v in ipairs(e.currentHashes) do
-    if not v.isRemoved then
-      table.quickremovevaluearray(v.data, e)
-      
-      if #v.data == 0 then
-        v.isRemoved = true
-        self.hashes[v.x][v.y] = nil
-        self._HS[v.x] = self._HS[v.x] - 1
+  if e.currentHashes then
+    for _, v in ipairs(e.currentHashes) do
+      if not v.isRemoved then
+        table.quickremovevaluearray(v.data, e)
         
-        if self._HS[v.x] == 0 then
-          self.hashes[v.x] = nil
-          self._HS[v.x] = nil
+        if #v.data == 0 then
+          v.isRemoved = true
+          self.hashes[v.x][v.y] = nil
+          self._HS[v.x] = self._HS[v.x] - 1
+          
+          if self._HS[v.x] == 0 then
+            self.hashes[v.x] = nil
+            self._HS[v.x] = nil
+          end
         end
       end
     end
   end
   
-  e.currentHashes = {}
+  e.lastHashX = nil
+  e.lastHashY = nil
+  e.lastHashX2 = nil
+  e.lastHashY2 = nil
+  e.currentHashes = nil
   
   e.isAdded = false
   e.justAddedIn = false
@@ -490,14 +507,8 @@ function entitySystem:removeq(e)
 end
 
 function entitySystem:clear()
-  for i=1, #self.all do
-    self.all[i].isRemoved = true
-  end
-  for _, v in pairs(self.all) do
-    v:removed()
-  end
-  for i=1, #self.all do
-    self.all[i].isAdded = false
+  for _, v in ipairs(self.all) do
+    self:remove(v)
   end
   self.all = {}
   section.sections = {}
@@ -646,7 +657,7 @@ function basicEntity:extend()
 end
 
 function basicEntity:__tostring()
-  return "Entity"
+  return "_Ent"
 end
 
 function basicEntity:new()
@@ -659,7 +670,7 @@ function basicEntity:new()
     self.recycle = false
   end
   
-  self.currentHashes = {}
+  self.currentHashes = nil
   self.groupNames = {}
   self.x = 0
   self.y = 0
@@ -684,7 +695,7 @@ function basicEntity:interact(t, h, single)
 end
 
 function basicEntity:updateIFrame()
-  self.iFrames = math.max(self.iFrames-1, 0)
+  self.iFrames = math.max(self.iFrames - 1, 0)
 end
 
 function basicEntity:interactedWith(other, c) end
@@ -892,7 +903,6 @@ function basicEntity:beforeUpdate() end
 function basicEntity:update() end
 function basicEntity:afterUpdate() end
 function basicEntity:draw() end
-function basicEntity:drawQuality() end
 function basicEntity:added() end
 function basicEntity:removed() end
 function basicEntity:begin() end
