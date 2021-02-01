@@ -35,7 +35,7 @@ function entitySystem:new()
 end
 
 function entitySystem:updateHashForEntity(e)
-  if e.collisionShape then
+  if e.collisionShape and not e.invisibleToHash then
     if not e.currentHashes then
       e.currentHashes = {}
     end
@@ -92,7 +92,7 @@ function entitySystem:updateHashForEntity(e)
         end
       end
     end
-  elseif #e.currentHashes ~= 0 then -- If there's no collision, then remove from hash.
+  elseif e.currentHashes and #e.currentHashes ~= 0 then -- If there's no collision, then remove from hash.
     for i = 1, #e.currentHashes do
       local v = e.currentHashes[i]
       
@@ -112,7 +112,7 @@ function entitySystem:updateHashForEntity(e)
       end
     end
     
-    e.currentHashes = {}
+    e.currentHashes = nil
   end
 end
 
@@ -876,7 +876,11 @@ function basicEntity:updateHash(doAnyway)
 end
 
 function basicEntity:getSurroundingEntities(dxx, dyy)
-  if dxx or dyy or self.invisibleToHash then
+  if self.invisibleToHash then
+    return {}
+  end
+  
+  if dxx or dyy then
     local dx, dy = dxx or 0, dyy or 0
     local xx, yy, ww, hh = self.x - math.min(dx, 0), self.y - math.min(dy, 0),
       self.collisionShape.w + math.max(dx, 0), self.collisionShape.h + math.max(dy, 0)
