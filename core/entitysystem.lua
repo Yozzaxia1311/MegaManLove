@@ -880,7 +880,7 @@ function basicEntity:getSurroundingEntities(dxx, dyy)
     return {}
   end
   
-  if dxx or dyy then
+  if dxx or dyy or not self.currentHashes then
     local dx, dy = dxx or 0, dyy or 0
     local xx, yy, ww, hh = self.x - math.min(dx, 0), self.y - math.min(dy, 0),
       self.collisionShape.w + math.max(dx, 0), self.collisionShape.h + math.max(dy, 0)
