@@ -363,21 +363,3 @@ function tween.new(duration, subject, target, easing)
     clock     = 0
   }, Tween_mt)
 end
-
-binser.register(Tween_mt, "tween", function(o)
-    local result = {}
-    
-    result.duration = o.duration
-    result.subject = o.subject
-    result.target = o.target
-    result.easing = o.easing
-    result.clock = o.clock
-    
-    return result
-  end, function(o)
-    local result = tween.new(o.duration, o.subject, o.target, o.easing)
-    
-    result.clock = o.clock
-    
-    return result
-  end)
