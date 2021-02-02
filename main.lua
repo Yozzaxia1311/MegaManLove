@@ -303,6 +303,7 @@ function love.update(dt)
     control.update()
     if useConsole then console.update(dt) end
     states.update(dt)
+    megautils.checkQueue()
     states.checkQueue()
     control.flush()
     doAgain = states.switched
