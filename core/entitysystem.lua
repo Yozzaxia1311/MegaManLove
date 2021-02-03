@@ -143,7 +143,7 @@ end
 
 function entitySystem:freeze(n)
   if not table.icontains(self.frozen, n or "global") then
-    self.frozen[#self.frozen+1] = n or "global"
+    self.frozen[#self.frozen + 1] = n or "global"
   end
 end
 
@@ -185,7 +185,7 @@ function entitySystem:sortLayers()
   local vals = {}
   
   for k, v in pairs(self.entities) do
-    keys[#keys+1] = v.layer
+    keys[#keys + 1] = v.layer
     vals[v.layer] = v
     self.entities[k] = nil
   end
@@ -216,18 +216,20 @@ function entitySystem:add(c, ...)
     for i=1, #self.entities do
       local v = self.entities[i]
       if v.layer == e.layer then
-        v.data[#v.data+1] = e
+        v.data[#v.data + 1] = e
         done = true
         break
       end
     end
     
     if not done then
-      self.entities[#self.entities+1] = {layer=e.layer, data={e}, flicker=true}
+      self.entities[#self.entities + 1] = {layer = e.layer, data = {e}, flicker = true}
       self.doSort = true
     end
     
-    self.updates[#self.updates+1] = e
+    self.updates[#self.updates + 1] = e
+  else
+    self.static[#self.static + 1] = e
   end
   
   self.all[#self.all+1] = e
@@ -241,7 +243,7 @@ function entitySystem:add(c, ...)
   if self.inLoop then
     e:begin()
   else
-    self.beginQueue[#self.beginQueue+1] = e
+    self.beginQueue[#self.beginQueue + 1] = e
   end
   
   e.previousX = e.x
@@ -266,18 +268,20 @@ function entitySystem:adde(e)
     for i=1, #self.entities do
       local v = self.entities[i]
       if v.layer == e.layer then
-        v.data[#v.data+1] = e
+        v.data[#v.data + 1] = e
         done = true
         break
       end
     end
     
     if not done then
-      self.entities[#self.entities+1] = {layer=e.layer, data={e}, flicker=true}
+      self.entities[#self.entities + 1] = {layer = e.layer, data = {e}, flicker = true}
       self.doSort = true
     end
     
-    self.updates[#self.updates+1] = e
+    self.updates[#self.updates + 1] = e
+  else
+    self.static[#self.static + 1] = e
   end
   
   self.all[#self.all+1] = e
@@ -291,7 +295,7 @@ function entitySystem:adde(e)
   if self.inLoop then
     e:begin()
   else
-    self.beginQueue[#self.beginQueue+1] = e
+    self.beginQueue[#self.beginQueue + 1] = e
   end
   
   e.previousX = e.x
@@ -308,13 +312,13 @@ end
 
 function entitySystem:addq(c, ...)
   if not c then return end
-  self.addQueue[#self.addQueue+1] = self:getRecycled(c, ...)
+  self.addQueue[#self.addQueue + 1] = self:getRecycled(c, ...)
   return self.addQueue[#self.addQueue]
 end
 
 function entitySystem:addeq(e)
   if not e or not e.isRemoved or e.isAdded or table.icontains(self.addQueue, e) then return end
-  self.addQueue[#self.addQueue+1] = e
+  self.addQueue[#self.addQueue + 1] = e
   return self.addQueue[#self.addQueue]
 end
 
@@ -324,7 +328,7 @@ function entitySystem:addToGroup(e, g)
   end
   
   if not table.icontains(self.groups[g], e) then
-    self.groups[g][#self.groups[g]+1] = e
+    self.groups[g][#self.groups[g] + 1] = e
     e.groupNames[#e.groupNames + 1] = g
   end
 end
@@ -356,9 +360,16 @@ function entitySystem:makeStatic(e)
       table.removevaluearray(self.entities, al)
     end
     
-    self.static[#self.static+1] = e
+    self.static[#self.static + 1] = e
     
     e.static = true
+    e.staticX = e.x
+    e.staticY = e.y
+    if e.collisionShape then
+      e.staticW = e.collisionShape.w
+      e.staticH = e.collisionShape.h
+    end
+    
     e:staticToggled()
     
     e.lastHashX = nil
@@ -378,25 +389,81 @@ function entitySystem:revertFromStatic(e)
     for i=1, #self.entities do
       local v = self.entities[i]
       if v.layer == e.layer then
-        v.data[#v.data+1] = e
+        v.data[#v.data + 1] = e
         done = true
         break
       end
     end
     
     if not done then
-      self.entities[#self.entities+1] = {layer=e.layer, data={e}, flicker=true}
+      self.entities[#self.entities + 1] = {layer = e.layer, data = {e}, flicker = true}
       self.doSort = true
     end
     
-    self.updates[#self.updates+1] = e
+    self.updates[#self.updates + 1] = e
     
-    if not e.invisibleToHash then
-      e.currentHashes = {}
-      e:updateHash()
+    if e.collisionShape and e.staticX == e.x and e.staticY == e.y and
+      e.staticW == e.collisionShape.w and e.staticH == e.collisionShape.h then
+      local xx, yy, ww, hh = e.x, e.y, e.collisionShape.w, e.collisionShape.h
+      local hs = entitySystem.hashSize
+      local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
+      local cx2, cy2 = math.floor((xx + ww + 2) / hs), math.floor((yy + hh + 2) / hs)
+      
+      for x = cx, cx2 do
+        for y = cy, cy2 do
+          if self.hashes[x] and self.hashes[x][y] and not self.hashes[x][y].isRemoved then
+            table.quickremovevaluearray(self.hashes[x][y].data, e)
+            
+            if #self.hashes[x][y].data == 0 then
+              self.hashes[x][y].isRemoved = true
+              self.hashes[x][y] = nil
+              self._HS[x] = self._HS[x] - 1
+              
+              if self._HS[x] == 0 then
+                self.hashes[x] = nil
+                self._HS[x] = nil
+              end
+            end
+          end
+        end
+      end
+    else
+      for x, xt in pairs(self.hashes) do
+        for y, yt in pairs(xt) do
+          if table.icontains(yt.data, e) then
+            table.quickremovevaluearray(yt.data, e)
+          end
+          
+          if #yt.data == 0 and not yt.isRemoved then
+            yt.isRemoved = true
+            self.hashes[x][y] = nil
+            self._HS[x] = self._HS[x] - 1
+            
+            if self._HS[x] == 0 then
+              self.hashes[x] = nil
+              self._HS[x] = nil
+            end
+          end
+        end
+      end
     end
     
     e.static = false
+    e.staticX = nil
+    e.staticY = nil
+    e.staticW = nil
+    e.staticH = nil
+    
+    if not e.invisibleToHash then
+      e.lastHashX = nil
+      e.lastHashY = nil
+      e.lastHashX2 = nil
+      e.lastHashY2 = nil
+      e.currentHashes = nil
+      
+      e:updateHash()
+    end
+    
     e:staticToggled()
   end
 end
@@ -419,14 +486,14 @@ function entitySystem:setLayer(e, l)
       local v = self.entities[i]
       
       if v.layer == e.layer then
-        v.data[#v.data+1] = e
+        v.data[#v.data + 1] = e
         done = true
         break
       end
     end
     
     if not done then
-      self.entities[#self.entities+1] = {layer=e.layer, data={e}, flicker=true}
+      self.entities[#self.entities + 1] = {layer = e.layer, data = {e}, flicker = true}
       self.doSort = true
     end
   end
@@ -481,6 +548,52 @@ function entitySystem:remove(e)
         end
       end
     end
+  elseif e.static then
+    if e.collisionShape and e.staticX == e.x and e.staticY == e.y and
+      e.staticW == e.collisionShape.w and e.staticH == e.collisionShape.h then
+      local xx, yy, ww, hh = e.x, e.y, e.collisionShape.w, e.collisionShape.h
+      local hs = entitySystem.hashSize
+      local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
+      local cx2, cy2 = math.floor((xx + ww + 2) / hs), math.floor((yy + hh + 2) / hs)
+      
+      for x = cx, cx2 do
+        for y = cy, cy2 do
+          if self.hashes[x] and self.hashes[x][y] and not self.hashes[x][y].isRemoved then
+            table.quickremovevaluearray(self.hashes[x][y].data, e)
+            
+            if #self.hashes[x][y].data == 0 then
+              self.hashes[x][y].isRemoved = true
+              self.hashes[x][y] = nil
+              self._HS[x] = self._HS[x] - 1
+              
+              if self._HS[x] == 0 then
+                self.hashes[x] = nil
+                self._HS[x] = nil
+              end
+            end
+          end
+        end
+      end
+    else
+      for x, xt in pairs(self.hashes) do
+        for y, yt in pairs(xt) do
+          if table.icontains(yt.data, e) then
+            table.quickremovevaluearray(yt.data, e)
+          end
+          
+          if #yt.data == 0 and not yt.isRemoved then
+            yt.isRemoved = true
+            self.hashes[x][y] = nil
+            self._HS[x] = self._HS[x] - 1
+            
+            if self._HS[x] == 0 then
+              self.hashes[x] = nil
+              self._HS[x] = nil
+            end
+          end
+        end
+      end
+    end
   end
   
   e.lastHashX = nil
@@ -496,7 +609,7 @@ function entitySystem:remove(e)
     if not self.recycle[e.__index] then
       self.recycle[e.__index] = {e}
     elseif not table.icontains(self.recycle[e.__index], e) then
-      self.recycle[e.__index][#self.recycle[e.__index]+1] = e
+      self.recycle[e.__index][#self.recycle[e.__index] + 1] = e
     end
   end
 end
@@ -510,6 +623,7 @@ function entitySystem:clear()
   for _, v in ipairs(self.all) do
     self:remove(v)
   end
+  
   self.all = {}
   section.sections = {}
   section.current = nil

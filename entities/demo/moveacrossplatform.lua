@@ -31,8 +31,8 @@ function moveAcrossPlatform:update()
     end
   elseif self.state == 1 then
     self.tween:update(1/60)
-    self.x = math.round(self.x)
-    self.y = math.round(self.y)
+    self.x = math.floor(self.x)
+    self.y = math.floor(self.y)
   end
 end
 
