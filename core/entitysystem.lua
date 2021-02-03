@@ -577,9 +577,7 @@ function entitySystem:remove(e)
     else
       for x, xt in pairs(self.hashes) do
         for y, yt in pairs(xt) do
-          if table.icontains(yt.data, e) then
-            table.quickremovevaluearray(yt.data, e)
-          end
+          table.quickremovevaluearray(yt.data, e)
           
           if #yt.data == 0 and not yt.isRemoved then
             yt.isRemoved = true
