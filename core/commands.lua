@@ -168,7 +168,7 @@ concmd["setskin"] = {
               v:setSkin(path)
             end
           else
-            megaMan.setSkin(player, path)
+            megaMan.setSkin(player or 1, path)
           end
         else
           if not player and #megaMan.allPlayer > 0 then
@@ -176,7 +176,7 @@ concmd["setskin"] = {
               v:setSkin(path .. ".zip")
             end
           else
-            megaMan.setSkin(player, path .. ".zip")
+            megaMan.setSkin(player or 1, path .. ".zip")
           end
         end
       else

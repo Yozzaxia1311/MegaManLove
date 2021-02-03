@@ -620,7 +620,8 @@ function megaMan:camOffX()
 end
 
 function megaMan:camOffY()
-  return self.cameraOffsetY + ((self.gravity >= 0) and (self.slide and -3 or 0) or (self.slide and 4 or 0))
+  return self.cameraOffsetY + (checkFalse(self.canHaveSmallSlide) and
+    ((self.gravity >= 0) and (self.slide and -3 or 0) or (self.slide and 4 or 0)) or 0)
 end
 
 function megaMan:regBox()
