@@ -30,18 +30,43 @@ function disclaimer:new()
     "\nPress Alt+Enter for fullscreen" ..
     "\nPress 1-9 to set the scale" ..
     "\nPress Escape here to rebind"
+  self.bottomTextGP = "Press Start to continue" ..
+    "\nPress Select here for fullscreen" ..
+    "\nPress 1-9 to set the scale" ..
+    "\nPress RStickBtn here to rebind"
+  self.gpTimer = 0
 end
 
 function disclaimer:update()
   if self.check then
+    if #inputHandler.gamepads ~= 0 then
+      self.gpTimer = (self.gpTimer + 1) % 160
+      if lastPressed.input == "back" then
+        megautils.setFullscreen(not megautils.getFullscreen())
+        local data = save.load("main.sav") or {}
+        data.fullscreen = megautils.getFullscreen()
+        save.save("main.sav", data)
+      elseif lastPressed.input == "rightstick" then
+        globals.sendBackToDisclaimer = true
+        megautils.transitionToState(globals.rebindState)
+        self.check = false
+        return
+      end
+    else
+      self.gpTimer = 0
+    end
     if control.startPressed[1] then
       megautils.transitionToState(globals.titleState)
+      self.check = false
+      return
     elseif lastPressed.input == "escape" then
       globals.sendBackToDisclaimer = true
       megautils.transitionToState(globals.rebindState)
+      self.check = false
+      return
     end
   end
-  self.timer = self.timer + 1
+  self.timer = math.min(self.timer + 1, 81)
   if self.timer == 80 then
     self.check = true
   end
@@ -68,7 +93,7 @@ function disclaimer:draw()
   love.graphics.setFont(mmFont)
   love.graphics.printf(self.disclaimerText, 4, 16, 248, "center")
   love.graphics.setColor(1, 1, 1, self.alpha/255)
-  love.graphics.printf(self.bottomText, -21, 181, 300, "center")
+  love.graphics.printf((self.gpTimer < 80) and self.bottomText or self.bottomTextGP, -21, 181, 300, "center")
 end
 
 return disclaimerState
