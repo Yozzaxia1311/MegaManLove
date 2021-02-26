@@ -566,7 +566,6 @@ function megautils.unload()
   megautils.cleanCallbacks()
   megautils.unloadAllResources()
   megautils._ranFiles = {}
-  megautils._frozen = {}
 end
 
 function megautils.addMapEntity(path)
@@ -735,6 +734,16 @@ end
 
 function megautils.unfreeze(name)
   megautils.state().system:unfreeze(name)
+end
+
+function megautils.checkFrozen(name)
+  for _, v in ipairs(megautils.state().system.frozen) do
+    if v == name then
+      return true
+    end
+  end
+  
+  return false
 end
 
 function megautils.outside(o, ex, ey)
