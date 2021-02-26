@@ -108,6 +108,23 @@ function mmWeaponsMenu:new(p)
   megaMan.colorOne[self.player.player] = weapon.colors[w.weapons[self.list[self.sy][self.sx]]].one
   megaMan.colorTwo[self.player.player] = weapon.colors[w.weapons[self.list[self.sy][self.sx]]].two
   self:setLayer(10)
+  
+  for _, v in pairs(self.fills) do
+    for _, j in pairs(v) do
+      j.colorOne = {124, 124, 124}
+      j.colorTwo = {188, 188, 188}
+    end
+  end
+  local h = self.fills[self.sy][self.sx]
+  if self.sx == 1 and self.sy == 1 then
+    h.colorOutline = self.player.healthHandler.colorOutline
+    h.colorOne = self.player.healthHandler.colorOne
+    h.colorTwo = self.player.healthHandler.colorTwo
+  else
+    h.colorOne = weapon.colors[w.weapons[self.list[self.sy][self.sx]]].one
+    h.colorTwo = weapon.colors[w.weapons[self.list[self.sy][self.sx]]].two
+  end
+  
   if mmWeaponsMenu.main then
     megautils.removeq(mmWeaponsMenu.main)
   end
