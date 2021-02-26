@@ -150,6 +150,7 @@ function mmWeaponsMenu:removed()
 end
 
 function mmWeaponsMenu:update(dt)
+  if megautils.checkFrozen("fade") then return end
   local w = megaMan.weaponHandler[self.player.player]
   if self.changing then
     if self.changing == "health" and self.fills[1][1].renderedHealth == self.player.healthHandler.segments * 4 then
