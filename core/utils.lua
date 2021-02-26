@@ -34,8 +34,8 @@ end
 
 function table.intersects(t, t2, fully)
   if fully then
-    for _, v2 in pairs(t2) do
-      if not table.contains(t, v2) then
+    for _, v in pairs(t) do
+      if not table.contains(t2, v) then
         return false
       end
     end
