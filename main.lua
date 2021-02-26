@@ -417,7 +417,7 @@ function pressingHardInputs(k)
 end
 
 function love.run()
-  local bu = love.timer.getTime()
+  local bu = lt and lt.getTime()
   
   if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
   if lt then lt.step() end
@@ -439,9 +439,9 @@ function love.run()
           
           for i=1, 9 do
             local k = tostring(i)
-            if love.keyboard.isDown(k) or love.keyboard.isDown("kp" .. k) then
-              if view.w * i ~= love.graphics.getWidth() or
-                view.h * i ~= love.graphics.getHeight() then
+            if lk.isDown(k) or lk.isDown("kp" .. k) then
+              if view.w * i ~= lg.getWidth() or
+                view.h * i ~= lg.getHeight() then
                 local last = megautils.getScale()
                 megautils.setScale(i)
                 if i ~= last then
