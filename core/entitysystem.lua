@@ -265,7 +265,7 @@ end
 
 function entitySystem:adde(e)
   if e.isAdded then return e end
-  if not e or e.isAdded then return end
+  if not e then return end
   
   if not e.static then
     local done = false
@@ -1036,7 +1036,7 @@ function basicEntity:staticToggled() end
 
 megautils.cleanFuncs.autoCleaner = {func=function()
     for k, v in pairs(_G) do
-      if type(v) == "table" and tostring(v) == "Entity" and v.autoClean then
+      if type(v) == "table" and tostring(v) == "_Ent" and v.autoClean then
         _G[k] = nil
       end
     end
