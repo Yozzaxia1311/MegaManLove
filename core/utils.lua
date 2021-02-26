@@ -32,11 +32,20 @@ function checkFalse(w)
   return true
 end
 
-function table.intersects(t, t2)
-  for _, v in pairs(t) do
+function table.intersects(t, t2, fully)
+  if fully then
     for _, v2 in pairs(t2) do
-      if v == v2 then
-        return true
+      if not table.contains(t, v2) then
+        return false
+      end
+    end
+    return true
+  else
+    for _, v in pairs(t) do
+      for _, v2 in pairs(t2) do
+        if v == v2 then
+          return true
+        end
       end
     end
   end
