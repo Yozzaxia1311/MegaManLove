@@ -50,7 +50,7 @@ function entitySystem:updateHashForEntity(e)
     for x = cx, cx2 do
       for y = cy, cy2 do
         if not self.hashes[x] then
-          self.hashes[x] = {{x = x, y = y, data = {e}, isRemoved = false}}
+          self.hashes[x] = {[y] = {x = x, y = y, data = {e}, isRemoved = false}}
           self._HS[x] = 1
         elseif not self.hashes[x][y] then
           self.hashes[x][y] = {x = x, y = y, data = {e}, isRemoved = false}
@@ -237,6 +237,11 @@ function entitySystem:add(c, ...)
   e.isRemoved = false
   e.isAdded = true
   e.justAddedIn = true
+  e.lastHashX = nil
+  e.lastHashY = nil
+  e.lastHashX2 = nil
+  e.lastHashY2 = nil
+  e.currentHashes = nil
   if not e.invisibleToHash then e:updateHash(true) end
   e:added()
   
@@ -289,6 +294,11 @@ function entitySystem:adde(e)
   e.isRemoved = false
   e.isAdded = true
   e.justAddedIn = true
+  e.lastHashX = nil
+  e.lastHashY = nil
+  e.lastHashX2 = nil
+  e.lastHashY2 = nil
+  e.currentHashes = nil
   if not e.invisibleToHash then e:updateHash(true) end
   e:added()
   
