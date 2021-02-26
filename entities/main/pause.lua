@@ -50,12 +50,7 @@ function mmWeaponsMenu:new(p)
   self.section = 0
   self.dOutline, self.dOne, self.dTwo = {0, 0, 0}, {124, 124, 124}, {188, 188, 188}
   self.fills = {{}}
-  self.list = {{0, -1},
-			{1, 6},
-			{2, 7},
-			{3, 8},
-			{4, 9},
-			{5, 10}}
+  self.list = {{0, -1}, {1, 6}, {2, 7}, {3, 8}, {4, 9}, {5, 10}}
   
   local w = megaMan.weaponHandler[self.player.player]
   for y=1, #self.list do
@@ -150,7 +145,6 @@ function mmWeaponsMenu:removed()
 end
 
 function mmWeaponsMenu:update(dt)
-  if megautils.checkFrozen("fade") then return end
   local w = megaMan.weaponHandler[self.player.player]
   if self.changing then
     if self.changing == "health" and self.fills[1][1].renderedHealth == self.player.healthHandler.segments * 4 then
