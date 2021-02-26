@@ -689,7 +689,7 @@ function entitySystem:update(dt)
       return
     end
     local v = self.updates[i]
-    if (type(v.noFreeze) == "table" and table.intersects(v.noFreeze, self.frozen)) or v.noFreeze == true or not checkTrue(self.frozen) then
+    if (type(v.noFreeze) == "table" and table.intersects(self.frozen, v.noFreeze, true)) or v.noFreeze == true or not checkTrue(self.frozen) then
       v.previousX = v.x
       v.previousY = v.y
       v.epX = v.previousX
@@ -706,7 +706,7 @@ function entitySystem:update(dt)
       return
     end
     local v = self.updates[i]
-    if ((type(v.noFreeze) == "table" and table.intersects(v.noFreeze, self.frozen)) or v.noFreeze == true or not checkTrue(self.frozen)) and
+    if ((type(v.noFreeze) == "table" and table.intersects(self.frozen, v.noFreeze, true)) or v.noFreeze == true or not checkTrue(self.frozen)) and
       not v.isRemoved and v.update and checkFalse(v.canUpdate) then
       v:update(dt)
       if not v.invisibleToHash then v:updateHash() end
@@ -718,7 +718,7 @@ function entitySystem:update(dt)
       return
     end
     local v = self.updates[i]
-    if ((type(v.noFreeze) == "table" and table.intersects(v.noFreeze, self.frozen)) or v.noFreeze or not checkTrue(self.frozen)) and
+    if ((type(v.noFreeze) == "table" and table.intersects(self.frozen, v.noFreeze, true)) or v.noFreeze or not checkTrue(self.frozen)) and
       not v.isRemoved and v.afterUpdate and checkFalse(v.canUpdate) then
       v:afterUpdate(dt)
       if not v.invisibleToHash then v:updateHash() end
