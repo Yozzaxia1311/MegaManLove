@@ -27,8 +27,8 @@ function megautils.ser()
       "playerPauseFuncs",
     }
   
-  for k, v in ipairs(callbacks) do
-    result[k] = v
+  for _, v in ipairs(callbacks) do
+    result[v] = megautils[v]
   end
   
   result._q = megautils._q
@@ -70,8 +70,8 @@ function megautils.deser(t)
       "playerPauseFuncs",
     }
   
-  for k, _ in ipairs(callbacks) do
-    megautils[k] = t[k]
+  for _, v in ipairs(callbacks) do
+    megautils[v] = t[v]
   end
   
   megautils._q = t._q
