@@ -66,7 +66,7 @@ function initEngine()
   globals.stageSelectState = "assets/states/menus/stageSelect.state.tmx"
   globals.gameOverState = "assets/states/menus/cont.state.tmx"
   
-  globals.defeats = {stickMan={weaponSlot=1, weaponName="STICK W."}} -- This should be filled out automatically by bossEntity
+  globals.defeats = {} -- This should be filled out automatically by bossEntity
   
   globals.defeatRequirementsForWily = {
       "stickMan"
