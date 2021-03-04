@@ -8,18 +8,18 @@ megautils.loadResource(72, 0, 8, 8, "smallEnergyGrid", true)
 megautils.loadResource(88, 0, 16, 12, "energyGrid", true)
 megautils.loadResource(72, 12, 16, 16, "tankGrid", true)
 
-pickupEntity = entity:extend()
+pickup = entity:extend()
 
-pickupEntity.autoClean = false
+pickup.autoClean = false
 
-pickupEntity.banIDs = {}
+pickup.banIDs = {}
 
-function pickupEntity.isBanned(i, id, path)
-  return pickupEntity.banIDs[i] and table.icontains(pickupEntity.banIDs[i], (path or "") .. "|" .. id)
+function pickup.isBanned(i, id, path)
+  return pickup.banIDs[i] and table.icontains(pickup.banIDs[i], (path or "") .. "|" .. id)
 end
 
-function pickupEntity:new(despawn, gd, fwp, id, path)
-  pickupEntity.super.new(self)
+function pickup:new(despawn, gd, fwp, id, path)
+  pickup.super.new(self)
   self:setRectangleCollision(16, 16)
   self.timer = 0
   self.blockCollision.global = true
@@ -39,25 +39,25 @@ function pickupEntity:new(despawn, gd, fwp, id, path)
   if gd or self.fwp then
     self:setGravityMultiplier("flipWithPlayer",  megaMan.mainPlayer and megaMan.mainPlayer.gravityMultipliers.gravityFlip or self.gravDir)
   end
-  if not pickupEntity.banIDs[self.__index] then
-    pickupEntity.banIDs[self.__index] = {}
+  if not pickup.banIDs[self.__index] then
+    pickup.banIDs[self.__index] = {}
   end
 end
 
-function pickupEntity:added()
+function pickup:added()
   self:addToGroup("removeOnTransition")
   if self.despawn then
     self:addToGroup("handledBySections")
   end
 end
 
-function pickupEntity:grav()
+function pickup:grav()
   self.velY = math.clamp(self.velY + self.gravity, -self.maxFallingSpeed, self.maxFallingSpeed)
 end
 
-function pickupEntity:taken(p) end
+function pickup:taken(p) end
 
-function pickupEntity:afterUpdate()
+function pickup:afterUpdate()
   if self.fwp then
     self:setGravityMultiplier("flipWithPlayer", megaMan.mainPlayer and megaMan.mainPlayer.gravityMultipliers.gravityFlip or self.gravDir)
   end
@@ -72,8 +72,8 @@ function pickupEntity:afterUpdate()
     if self:collision(p) then
       self:taken(p)
       if not self.despawn and self.mapID and
-        not pickupEntity.isBanned(self.__index, tostring(self.mapID), self.path) then
-        pickupEntity.banIDs[self.__index][#pickupEntity.banIDs[self.__index]+1] = self.path .. "|" .. tostring(self.mapID)
+        not pickup.isBanned(self.__index, tostring(self.mapID), self.path) then
+        pickup.banIDs[self.__index][#pickup.banIDs[self.__index]+1] = self.path .. "|" .. tostring(self.mapID)
       end
       megautils.removeq(self)
       return
@@ -90,13 +90,13 @@ function pickupEntity:afterUpdate()
   end
 end
 
-smallHealth = pickupEntity:extend()
+smallHealth = pickup:extend()
 
 smallHealth.autoClean = false
 
 mapEntity.register("smallHealth", function(v, map)
   megautils.add(spawner, v.x+4, v.y, 8, 6, function()
-      return not pickupEntity.isBanned(smallHealth, v.id, map.path)
+      return not pickup.isBanned(smallHealth, v.id, map.path)
     end, smallHealth, v.x+4, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
 
@@ -135,13 +135,13 @@ function smallHealth:draw()
   end
 end
 
-health = pickupEntity:extend()
+health = pickup:extend()
 
 health.autoClean = false
 
 mapEntity.register("health", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 14, function()
-      return not pickupEntity.isBanned(health, v.id, map.path)
+      return not pickup.isBanned(health, v.id, map.path)
     end, health, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
 
@@ -180,13 +180,13 @@ function health:draw()
   end
 end
 
-smallEnergy = pickupEntity:extend()
+smallEnergy = pickup:extend()
 
 smallEnergy.autoClean = false
 
 mapEntity.register("smallEnergy", function(v, map)
   megautils.add(spawner, v.x+4, v.y, 8, 6, function()
-      return not pickupEntity.isBanned(smallEnergy, v.id, map.path)
+      return not pickup.isBanned(smallEnergy, v.id, map.path)
     end, smallEnergy, v.x+4, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
 
@@ -235,13 +235,13 @@ function smallEnergy:draw()
   end
 end
 
-energy = pickupEntity:extend()
+energy = pickup:extend()
 
 energy.autoClean = false
 
 mapEntity.register("energy", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 10, function()
-      return not pickupEntity.isBanned(energy, v.id, map.path)
+      return not pickup.isBanned(energy, v.id, map.path)
     end, energy, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
 
@@ -290,13 +290,13 @@ function energy:draw()
   end
 end
 
-life = pickupEntity:extend()
+life = pickup:extend()
 
 life.autoClean = false
 
 mapEntity.register("life", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 15, function()
-      return not pickupEntity.isBanned(life, v.id, map.path)
+      return not pickup.isBanned(life, v.id, map.path)
     end, life, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
 
@@ -352,13 +352,13 @@ function life:draw()
   end
 end
 
-eTank = pickupEntity:extend()
+eTank = pickup:extend()
 
 eTank.autoClean = false
 
 mapEntity.register("eTank", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 15, function()
-      return not pickupEntity.isBanned(eTank, v.id, map.path)
+      return not pickup.isBanned(eTank, v.id, map.path)
     end, eTank, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
 
@@ -410,13 +410,13 @@ function eTank:draw()
   end
 end
 
-wTank = pickupEntity:extend()
+wTank = pickup:extend()
 
 wTank.autoClean = false
 
 mapEntity.register("wTank", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 15, function()
-      return not pickupEntity.isBanned(wTank, v.id, map.path)
+      return not pickup.isBanned(wTank, v.id, map.path)
     end, wTank, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
 
@@ -467,5 +467,5 @@ function wTank:draw()
 end
 
 megautils.resetGameObjectsFuncs.pickups = {func=function()
-    pickupEntity.banIDs = {}
+    pickup.banIDs = {}
   end, autoClean=false}

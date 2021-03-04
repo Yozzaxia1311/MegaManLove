@@ -279,7 +279,6 @@ function megaMan.properties(self, g, gf, c)
   self.blockCollision.global = true
   self.maxStandSolidJumpTime = 4
   self.maxExtraJumps = 0
-  self.maxRapidShotTime = 5
   self.maxTrebleSpeed = 2
   self.trebleDecel = 0.1
   if megautils.diff("easy") then
@@ -404,7 +403,7 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   self.runCheck = false
   self.standSolidJumpTimer = 0
   self.extraJumps = 0
-  self.rapidShotTime = self.maxRapidShotTime
+  self.rapidShotTime = 0
   self.treble = false
   self.trebleSine = 0
   self.trebleVelX = 0
@@ -748,9 +747,9 @@ function megaMan:attemptWeaponUsage()
   
   if control.shootDown[self.player] then
     if w.current == "B.BUSTER" then
-      self.rapidShotTime = math.min(self.rapidShotTime + 1, self.maxRapidShotTime)
-      if self.rapidShotTime == self.maxRapidShotTime then
-        self.rapidShotTime = 0
+      self.rapidShotTime = math.max(self.rapidShotTime - 1, 0)
+      if self.rapidShotTime == 0 then
+        self.rapidShotTime = 5
         self.shootFrames = 14
         self:resetCharge()
         self:useShootAnimation()
@@ -785,9 +784,27 @@ function megaMan:attemptWeaponUsage()
           shots[#shots+1] = megautils.add(bassBuster, self.x+self:shootOffX(tx), self.y+self:shootOffY(ty), self, dir)
         end
       end
+    elseif weapon.rapidFireFuncs[w.current] and self:checkWeaponEnergy(w.current) and weapon.rapidFire[w.current] then
+      local e, energy = weapon.rapidFireFuncs[w.current](self)
+      
+      if e then
+        self.shootFrames = weapon.shootFrames[w.current] or 14
+        self.rapidShotTime = weapon.rapidFire[w.current] or 5
+        if weapon.throwAnim[w.current] then
+          self:useThrowAnimation()
+        else
+          self:useShootAnimation()
+        end
+        self.stopOnShot = weapon.stopOnShot[w.current]
+        self:resetCharge()
+        if e:is(weapon) then
+          shots[#shots+1] = e
+        end
+        w:updateCurrent(w.energy[w.currentSlot] - (energy or 1))
+      end
     end
   else
-    self.rapidShotTime = self.maxRapidShotTime
+    self.rapidShotTime = 0
   end
   if control.shootPressed[self.player] then
     if (w.current == "M.BUSTER" or w.current == "RUSH JET" or w.current == "RUSH C.")
@@ -864,14 +881,23 @@ function megaMan:attemptWeaponUsage()
         shots[#shots+1] = megautils.add(trebleBoost, self.x+self:shootOffX(16), 
           self.y+self:shootOffY(-16), self, self.side)
       end
-    elseif w.current == "STICK W." and self:checkWeaponEnergy("STICK W.") and
-      self:numberOfShots("stickWeapon") < 1 then
-      self.shootFrames = 14
-      self:resetCharge()
-      self:useShootAnimation()
-      shots[#shots+1] = megautils.add(stickWeapon, self.x+self:shootOffX(), 
-        self.y+self:shootOffY(), self, self.side)
-      w:updateCurrent(w.energy[w.currentSlot] - 1)
+    elseif weapon.shootFuncs[w.current] and self:checkWeaponEnergy(w.current) then
+      local e, energy = weapon.shootFuncs[w.current](self)
+      
+      if e then
+        self.shootFrames = weapon.shootFrames[w.current] or 14
+        if weapon.throwAnim[w.current] then
+          self:useThrowAnimation()
+        else
+          self:useShootAnimation()
+        end
+        self.stopOnShot = weapon.stopOnShot[w.current]
+        self:resetCharge()
+        if e:is(weapon) then
+          shots[#shots+1] = e
+        end
+        w:updateCurrent(w.energy[w.currentSlot] - (energy or 1))
+      end
     end
   end
   if not control.shootDown[self.player] and self.chargeState ~= 0 then
@@ -923,9 +949,27 @@ function megaMan:attemptWeaponUsage()
       else
         self:resetCharge()
       end
+    elseif weapon.chargeShotFuncs[w.current] and self:checkWeaponEnergy(w.current) and weapon.chargeColors[w.current] then
+      local e, energy = weapon.chargeShotFuncs[w.current](self, self.chargeState)
+      
+      if e then
+        self.shootFrames = weapon.shootFrames[w.current] or 14
+        if weapon.throwAnim[w.current] then
+          self:useThrowAnimation()
+        else
+          self:useShootAnimation()
+        end
+        self.stopOnShot = weapon.stopOnShot[w.current]
+        self:resetCharge()
+        if e:is(weapon) then
+          shots[#shots+1] = e
+        end
+        w:updateCurrent(w.energy[w.currentSlot] - (energy or 1))
+      end
     end
   end
-  if control.shootDown[self.player] and checkFalse(self.canChargeBuster) then
+  if control.shootDown[self.player] and (w.current ~= "M.BUSTER" or w.current ~= "P.BUSTER" or w.current ~= "R.BUSTER" or
+    checkFalse(self.canChargeBuster)) then
     self:charge()
   end
   for _, v in pairs(megautils.playerAttemptWeaponFuncs) do

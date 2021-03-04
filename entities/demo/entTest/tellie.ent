@@ -1,0 +1,31 @@
+width: 16
+height: 16
+imageCollisionPath: false
+radius: false
+
+-- Type can be: "enemy", "boss", "weapon", "pickup", or "particle".
+type: "enemy"
+
+-- Weapon stuff.
+-- Type can be "enemy" or "player".
+weaponType: enemy
+
+-- This is for player weapons only.
+weaponName: WEAPON
+weaponGroup: ???
+stopOnShot: false
+throwAnim: false
+sevenWayAnim: false
+-- A remove group is a list of weapon groups that get removed; for example, when switching weapons. Check `weapons.lua` for example usage.
+removeGroup1: ???
+removeGroup2: ???
+removeGroup3: ??? ect.
+
+-- Spawner stuff.
+noAutoClean: false
+noRegister: false
+noSpawner: false
+intervalSpawner: true
+intervalTime: 80
+spawnerWidth: 16
+spawnerHeight: 16

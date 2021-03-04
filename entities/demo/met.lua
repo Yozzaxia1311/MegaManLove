@@ -3,8 +3,8 @@ megautils.loadResource("assets/global/entities/met.png", "met")
 met = advancedEntity:extend()
 
 mapEntity.register("met", function(v)
-  megautils.add(spawner, v.x, v.y+2, 14, 14, nil, met, v.x, v.y+2)
-end)
+    megautils.add(spawner, v.x, v.y+2, 14, 14, nil, met, v.x, v.y+2)
+  end)
 
 function met:new(x, y)
   met.super.new(self)

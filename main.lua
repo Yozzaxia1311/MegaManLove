@@ -66,7 +66,7 @@ function initEngine()
   globals.stageSelectState = "assets/states/menus/stageSelect.state.tmx"
   globals.gameOverState = "assets/states/menus/cont.state.tmx"
   
-  globals.defeats = {} -- This should be filled out automatically by bossEntity
+  globals.defeats = {stickMan={weaponSlot=1, weaponName="STICK W."}} -- This should be filled out automatically by bossEntity
   
   globals.defeatRequirementsForWily = {
       "stickMan"
@@ -111,6 +111,8 @@ function initEngine()
   megautils.setDifficulty("normal")
   
   megautils.runFile("init.lua")
+  
+  --megautils.runFile("entities/demo/entTest/tellie.ent")
 end
 
 function love.load()
@@ -573,7 +575,7 @@ function ser()
       control = control.ser(),
       collision = collision.ser(),
       banner = banner and banner.ser(),
-      banIDs = pickupEntity.banIDs,
+      banIDs = pickup.banIDs,
       weapon = weapon.ser(),
       camera = camera.main and camera.main,
       fade = fade.main and fade.main,
@@ -619,7 +621,7 @@ function deser(from, dontChangeMusic)
   if t.banner then
     banner.deser(t.banner)
   end
-  pickupEntity.banIDs = t.banIDs
+  pickup.banIDs = t.banIDs
   weapon.deser(t.weapon)
   camera.main = t.camera
   fade.main = t.fade
