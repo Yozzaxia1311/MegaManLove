@@ -117,6 +117,10 @@ function states.set(n, before, after)
   end
   
   if megautils.reloadState and megautils.resetGameObjects then
+    if lastState then
+      lastState:unload()
+    end
+    
     if isStage then
       for _, v in pairs(megautils.resetGameObjectsFuncs) do
         if type(v) == "function" then
@@ -125,10 +129,6 @@ function states.set(n, before, after)
           v.func()
         end
       end
-    end
-    
-    if lastState then
-      lastState:unload()
     end
     
     states.currentState = nextState()

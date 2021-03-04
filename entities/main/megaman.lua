@@ -41,7 +41,6 @@ megaMan.mainPlayer = nil
 megaMan.allPlayers = {}
 megaMan.skins = {}
 megaMan.skinCache = {}
-megaMan.oldSkin = {}
 megaMan.colorOutline = {}
 megaMan.colorOne = {}
 megaMan.colorTwo = {}
@@ -117,6 +116,8 @@ function megaMan:setSkin(path)
   
   megaMan.skins[player] = {traits=t, path=p, texture=tex, outline=out, one=on, two=tw}
   
+  megaMan.registerWeapons(player)
+  
   if type(self) == "table" then
     self:syncPlayerSkin()
   end
@@ -136,10 +137,6 @@ function megaMan:getSkin()
   return megaMan.skins[player]
 end
 
-for i=1, maxPlayerCount do
-  megaMan.setSkin(i, "assets/players/megaMan")
-end
-
 megautils.reloadStateFuncs.megaMan = {func=function()
     megaMan.once = nil
   end, autoClean=false}
@@ -156,7 +153,6 @@ megautils.resetGameObjectsFuncs.megaMan = {func=function()
     megaMan.weaponHandler = {}
     megaMan.mainPlayer = nil
     megaMan.allPlayers = {}
-    megaMan.oldSkin = {}
     megaMan.once = nil
     megautils.setLives((megautils.getLives() > globals.startingLives) and megautils.getLives() or globals.startingLives)
     globals.checkpoint = globals.overrideCheckpoint or "start"
@@ -313,9 +309,9 @@ function megaMan.properties(self, g, gf, c)
 end
 
 function megaMan.registerWeapons(p)
-  local skin = megaMan.getSkin(p)
-  
-  if megaMan.oldSkin[p] ~= skin.path then
+  if megaMan.weaponHandler[p] then
+    local skin = megaMan.getSkin(p)
+    
     for i=0, 10 do
       if skin.traits["slot" .. i] then
         megaMan.weaponHandler[p]:register(i, skin.traits["slot" .. i], true)
@@ -330,14 +326,10 @@ function megaMan.registerWeapons(p)
       end
     end
   end
-  
-  megaMan.oldSkin[p] = skin.path
 end
 
 function megaMan:syncPlayerSkin()
   local skin = megaMan.getSkin(self.player)
-  
-  megaMan.registerWeapons(self.player)
   
   self.texOutline = skin.outline
   self.texOne = skin.one
@@ -373,6 +365,10 @@ function megaMan:syncPlayerSkin()
   self.shootY = skin.traits.shootY or self.shootY
   
   self:switchWeaponSlot(0)
+end
+
+for i=1, maxPlayerCount do
+  megaMan.setSkin(i, "assets/players/megaMan")
 end
 
 function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
@@ -2137,11 +2133,13 @@ function megaMan:draw()
   if self.weaponSwitchTimer ~= 70 then
     love.graphics.setColor(1, 1, 1, 1)
     local w = megaMan.weaponHandler[self.player]
+    local woff = self.gravity >= 0 and -20 or (self.collisionShape.h + 4)
+    local cgrav = self.gravity >= 0 and 1 or -1
     if checkFalse(self.canHaveThreeWeaponIcons) then
-      weapon.drawIcon(w.weapons[self.nextWeapon], true, roundx+math.round(self.collisionShape.w/2)+8, roundy-18)
-      weapon.drawIcon(w.weapons[self.prevWeapon], true, roundx+math.round(self.collisionShape.w/2)-24, roundy-18)
+      weapon.drawIcon(w.weapons[self.nextWeapon], true, roundx+math.round(self.collisionShape.w/2)+8, roundy+woff+(2*cgrav))
+      weapon.drawIcon(w.weapons[self.prevWeapon], true, roundx+math.round(self.collisionShape.w/2)-24, roundy+woff+(2*cgrav))
     end
-    weapon.drawIcon(w.current, true, roundx+math.round(self.collisionShape.w/2)-8, roundy-20)
+    weapon.drawIcon(w.current, true, roundx+math.round(self.collisionShape.w/2)-8, roundy+woff)
   end
   
   if self.doWeaponGet and self._text then
