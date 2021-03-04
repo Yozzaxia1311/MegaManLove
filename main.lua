@@ -163,7 +163,7 @@ function love.keypressed(k, s, r)
   end
   
   -- keypressed event must be hijacked for console to work
-	if useConsole then
+  if useConsole then
     if k == "`" then
       if console.state == 0 then
         console.open()
@@ -186,7 +186,7 @@ function love.keypressed(k, s, r)
       end
       return
     end
-	end
+  end
   
   if not doCheckDelay or not keyboardCheck[k] then
     lastPressed.type = "keyboard"
