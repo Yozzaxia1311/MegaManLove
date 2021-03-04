@@ -300,137 +300,17 @@ end
 
 megautils._ranFiles = {}
 
-function megautils._parseFile(path)
-  if path:sub(-4) == ".ent" then
-    local strippedPath = path:sub(0, -5)
-    local tmp = strippedPath:split("/")
-    local name = tmp[#tmp]
-    local t = {}
-    
-    for line in love.filesystem.lines(path) do
-      if line ~= "" and line:sub(2) ~= "--" and line:match(":") then
-        local data = line:split(":")
-        local v = data[2]:trimmed()
-        v = tonumber(v) or (toboolean(v) == nil and v) or toboolean(v)
-        t[data[1]] = v
-      end
-    end
-    
-    local width = t.width or 16
-    local height = t.height or 16
-    local imageCollisionPath = t.imageCollisionPath
-    if not imageCollisionPath then
-      imageCollisionPath = nil
-    end
-    local radius = t.radius
-    if not radius then
-      radius = nil
-    end
-    local weaponName = t.weaponName or "WEAPON"
-    local stopOnShot = t.stopOnShot == true
-    local throwAnim = t.throwAnim == true
-    local sevenWayAnim = t.sevenWayAnim == true
-    local autoClean = not t.noAutoClean
-    local register = not t.noRegister
-    local useSpawner = not t.noSpawner
-    local iSpawner = t.intervalSpawner == true
-    local iTime = t.intervalTime or 60
-    local spawnerWidth = t.spawnerWidth or width
-    local spawnerHeight = t.spawnerHeight or height
-    local spawnOffX = t.spawnOffX or 0
-    local spawnOffY = t.spawnOffY or 0
-    local typ = t.type or "enemy"
-    
-    if typ == "enemy" then
-      _G[name] = advancedEntity:extend()
-    elseif typ == "boss" then
-      _G[name] = bossEntity:extend()
-    elseif typ == "weapon" then
-      _G[name] = weapon:extend()
-      
-      if typ == "player" then
-        if t.removeGroup1 then
-          local i = 1
-          weapon.removeGroups[weaponName] = {}
-          while t[removeGroup .. tostring(i)] do
-            weapon.removeGroups[weaponName][#weapon.removeGroups[weaponName] + 1] = t[removeGroup .. tostring(i)]
-            i = i + 1
-          end
-        end
-        
-        if stopOnShot then
-          weapon.stopOnShot[weaponName] = true
-        end
-        
-        if throwAnim then
-          weapon.throwAnim[weaponName] = true
-        end
-        
-        if sevenWayAnim then
-          weapon.sevenWayAnim[weaponName] = true
-        end
-      end
-    elseif typ == "pickup" then
-      _G[name] = pickup:extend()
-    elseif typ == "particle" then
-      _G[name] = particle:extend()
-    end
-    
-    if autoClean then
-      _G[name].autoClean = true
-    end
-    
-    _G[name]._metadata = t
-    
-    if register then
-      if useSpawner then
-        if iSpawner then
-          mapEntity.register(name, function(v)
-              megautils.add(intervalSpawner, v.x + spawnOffX, v.y + spawnOffY, spawnerWidth, spawnerHeight, iTime, nil,
-                _G[name], v.x + spawnOffX, v.y + spawnOffY, width, height)
-            end)
-        else
-          mapEntity.register(name, function(v)
-              megautils.add(spawner, v.x + spawnOffX, v.y + spawnOffY, spawnerWidth, spawnerHeight, nil,
-                _G[name], v.x + spawnOffX, v.y + spawnOffY, width, height)
-            end)
-        end
-      else
-        mapEntity.register(name, function(v)
-            megautils.add(_G[name], v.x + spawnOffX, v.y + spawnOffY, width, height)
-          end)
-      end
-    end
-    
-    _G[name].new = function(self, x, y, w, h, p)
-        if _G[name]._metadata.type == "weapon" then
-          _G[name].super.new(self, p, _G[name]._metadata.weaponType == "enemy")
-          
-          self.weaponGroup = _G[name]._metadata.weaponGroup
-          if not self.weaponGroup then
-            self.weaponGroup = nil
-          end
-        end
-        
-      end
-    
-    return t
-  else
-    return love.filesystem.load(path)()
-  end
-end
-
 function megautils.runFile(path, runOnce)
   if runOnce then
     if not table.icontains(megautils._ranFiles, path) then
       megautils._ranFiles[#megautils._ranFiles+1] = path
-      return megautils._parseFile(path)
+      return love.filesystem.load(path)()
     end
   else
     if not table.icontains(megautils._ranFiles, path) then
       megautils._ranFiles[#megautils._ranFiles+1] = path
     end
-    return megautils._parseFile(path)
+    return love.filesystem.load(path)()
   end
 end
 
@@ -499,7 +379,7 @@ end
 
 function megautils.loadResource(...)
   local args = {...}
-  if #args == 0 then error("megautils.load takes at least two arguments") end
+  if #args < 2 then error("megautils.loadResource takes at least two arguments") end
   local locked = false
   local path = args[1]
   local nick = args[2]

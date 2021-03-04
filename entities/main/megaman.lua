@@ -9,6 +9,7 @@ function megaMan.ser()
   end
   return {
     skins = skins,
+    oldSkin = megaMan.oldSkin,
     we = megaMan.weaponHandler,
     players = megaMan.allPlayers,
     main = megaMan.mainPlayer ~= nil,
@@ -23,6 +24,7 @@ function megaMan.deser(t)
   for k, v in pairs(t.skins) do
     megaMan.setSkin(k, v)
   end
+  megaMan.oldSkin = t.oldSkin
   megaMan.weaponHandler = t.we
   megaMan.allPlayers = t.players
   megaMan.colorOutline = t.outline
@@ -39,6 +41,7 @@ megaMan.mainPlayer = nil
 megaMan.allPlayers = {}
 megaMan.skins = {}
 megaMan.skinCache = {}
+megaMan.oldSkin = {}
 megaMan.colorOutline = {}
 megaMan.colorOne = {}
 megaMan.colorTwo = {}
@@ -153,6 +156,7 @@ megautils.resetGameObjectsFuncs.megaMan = {func=function()
     megaMan.weaponHandler = {}
     megaMan.mainPlayer = nil
     megaMan.allPlayers = {}
+    megaMan.oldSkin = {}
     megaMan.once = nil
     megautils.setLives((megautils.getLives() > globals.startingLives) and megautils.getLives() or globals.startingLives)
     globals.checkpoint = globals.overrideCheckpoint or "start"
@@ -165,12 +169,6 @@ megautils.resetGameObjectsFuncs.megaMan = {func=function()
     for i=1, globals.playerCount do
       megaMan.weaponHandler[i] = weaponHandler(nil, nil, 10)
       megaMan.registerWeapons(i)
-      
-      for _, v in pairs(globals.defeats) do
-        if type(v) == "table" then
-          megaMan.weaponHandler[i]:register(v.weaponSlot or 1, v.weaponName or "WEAPON")
-        end
-      end
     end
     
     megaMan.individualLanded = {}
@@ -317,19 +315,29 @@ end
 function megaMan.registerWeapons(p)
   local skin = megaMan.getSkin(p)
   
-  for i=0, 10 do
-    if skin.traits["slot" .. i] then
-      megaMan.weaponHandler[p]:register(i, skin.traits["slot" .. i], true)
-    else
-      megaMan.weaponHandler[p]:unregister(i)
+  if megaMan.oldSkin[p] ~= skin.path then
+    for i=0, 10 do
+      if skin.traits["slot" .. i] then
+        megaMan.weaponHandler[p]:register(i, skin.traits["slot" .. i], true)
+      else
+        megaMan.weaponHandler[p]:unregister(i)
+      end
+    end
+    
+    for _, v in pairs(globals.defeats) do
+      if type(v) == "table" then
+        megaMan.weaponHandler[p]:register(v.weaponSlot or 1, v.weaponName or "WEAPON")
+      end
     end
   end
+  
+  megaMan.oldSkin[p] = skin.path
 end
 
 function megaMan:syncPlayerSkin()
-  megaMan.registerWeapons(self.player)
-  
   local skin = megaMan.getSkin(self.player)
+  
+  megaMan.registerWeapons(self.player)
   
   self.texOutline = skin.outline
   self.texOne = skin.one
@@ -449,7 +457,7 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   self.anims:add("jumpShoot", megautils.newAnimation(pp, {4, 3}))
   self.anims:add("jumpShootUM", megautils.newAnimation(pp, {5, 3}))
   self.anims:add("jumpShootU", megautils.newAnimation(pp, {6, 3}))
-  self.anims:add("jumpThrow", megautils.newAnimation(pp, {7, 3}))
+  self.anims:add("jumpThrow", megautils.newAnimation(pp, {7, 4}))
   self.anims:add("run", megautils.newAnimation(pp, {"4-6", 1, 5, 1}, 1/8))
   self.anims:add("runShoot", megautils.newAnimation(pp, {8, 2, "1-2", 3, 1, 3}, 1/8))
   self.anims:add("runThrow", megautils.newAnimation(pp, {"4-6", 4, 5, 4}, 1/8))
@@ -800,7 +808,7 @@ function megaMan:attemptWeaponUsage()
         if e:is(weapon) then
           shots[#shots+1] = e
         end
-        w:updateCurrent(w.energy[w.currentSlot] - (energy or 1))
+        w:updateCurrent(w.energy[w.currentSlot] + (energy or -1))
       end
     end
   else
@@ -896,7 +904,7 @@ function megaMan:attemptWeaponUsage()
         if e:is(weapon) then
           shots[#shots+1] = e
         end
-        w:updateCurrent(w.energy[w.currentSlot] - (energy or 1))
+        w:updateCurrent(w.energy[w.currentSlot] + (energy or -1))
       end
     end
   end
@@ -964,7 +972,7 @@ function megaMan:attemptWeaponUsage()
         if e:is(weapon) then
           shots[#shots+1] = e
         end
-        w:updateCurrent(w.energy[w.currentSlot] - (energy or 1))
+        w:updateCurrent(w.energy[w.currentSlot] + (energy or -1))
       end
     end
   end

@@ -228,7 +228,7 @@ function weaponHandler:register(slot, name, noRefill)
   end
   
   if weapon.resources[name] then
-    megautils.loadResource(weapon.icons[p], weapon.icons[p])
+    megautils.loadResource(weapon.icons[name], weapon.icons[name])
     weapon.resources[name]()
   end
 end

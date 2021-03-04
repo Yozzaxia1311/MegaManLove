@@ -22,6 +22,7 @@ function weapon.ser()
       shootFuncs = weapon.shootFuncs,
       rapidFireFuncs = weapon.rapidFireFuncs,
       chargeShotFuncs = weapon.chargeShotFuncs,
+      autoCleanWeaponData = weapon.autoCleanWeaponData,
       _activeQuad = weapon._activeQuad,
       _inactiveQuad = weapon._inactiveQuad
     }
@@ -43,6 +44,7 @@ function weapon.deser(t)
   weapon.shootFuncs = t.shootFuncs
   weapon.rapidFireFuncs = t.rapidFireFuncs
   weapon.chargeShotFuncs = t.chargeShotFuncs
+  weapon.autoCleanWeaponData = t.autoCleanWeaponData
   weapon._activeQuad = t._activeQuad
   weapon._inactiveQuad = t._inactiveQuad
 end
@@ -67,6 +69,7 @@ weapon.chargeShotFuncs = {}
 weapon.shootFrames = {}
 weapon.rapidFire = {}
 weapon.shootFuncs = {}
+weapon.autoCleanWeaponData = {}
 
 weapon._activeQuad = quad(0, 0, 16, 16)
 weapon._inactiveQuad = quad(16, 0, 16, 16)
@@ -79,6 +82,30 @@ function weapon.drawIcon(p, on, x, y)
     tex:draw(weapon._inactiveQuad, x, y)
   end
 end
+
+megautils.cleanFuncs.weaponAutoCleaner = {func=function()
+    for k, v in pairs(weapon.autoCleanWeaponData) do
+      if v then
+        weapon.removeGroups[k] = nil
+        weapon.resources[k] = nil
+        weapon.colors[k] = nil
+        weapon.chargeColors[k] = nil
+        weapon.chargeSounds[k] = nil
+        weapon.icons[k] = nil
+        weapon.segments[k] = nil
+        weapon.sevenWayAnim[k] = nil
+        weapon.throwAnim[k] = nil
+        weapon.stopOnShot[k] = nil
+        weapon.rapidFireFuncs[k] = nil
+        weapon.chargeShotFuncs[k] = nil
+        weapon.shootFrames[k] = nil
+        weapon.rapidFire[k] = nil
+        weapon.shootFuncs[k] = nil
+      end
+      
+      weapon.autoCleanWeaponData[k] = nil
+    end
+  end, autoClean=false}
 
 function weapon:new(p, enWeapon)
   weapon.super.new(self)
@@ -1031,7 +1058,7 @@ weapon.removeGroups["STICK W."] = {"stickWeapon"}
 
 weapon.resources["STICK W."] = function()
     megautils.loadResource("assets/misc/weapons/stickWeapon.png", "stickWeapon")
-\  end
+  end
 
 weapon.icons["STICK W."] = "assets/misc/weapons/icons/stickWeapon.png"
 
@@ -1047,7 +1074,7 @@ weapon.throwAnim["STICK W."] = true
 
 weapon.shootFuncs["STICK W."] = function(player)
     if player:numberOfShots("stickWeapon") < 1 then
-      return megautils.add(stickWeapon, player.x + player:shootX(), player.y + player:shootY(), player, player.side), -2
+      return megautils.add(stickWeapon, player.x + player:shootOffX(), player.y + player:shootOffY(), player, player.side), -2
     end
   end
 

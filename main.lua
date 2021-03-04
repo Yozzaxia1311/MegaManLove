@@ -111,8 +111,6 @@ function initEngine()
   megautils.setDifficulty("normal")
   
   megautils.runFile("init.lua")
-  
-  --megautils.runFile("entities/demo/entTest/tellie.ent")
 end
 
 function love.load()
