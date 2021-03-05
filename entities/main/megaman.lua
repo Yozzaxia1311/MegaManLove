@@ -789,22 +789,26 @@ function megaMan:attemptWeaponUsage()
         end
       end
     elseif weapon.rapidFireFuncs[w.current] and self:checkWeaponEnergy(w.current) and weapon.rapidFire[w.current] then
-      local e, energy = weapon.rapidFireFuncs[w.current](self)
+      self.rapidShotTime = math.max(self.rapidShotTime - 1, 0)
       
-      if e then
-        self.shootFrames = weapon.shootFrames[w.current] or 14
-        self.rapidShotTime = weapon.rapidFire[w.current] or 5
-        if weapon.throwAnim[w.current] then
-          self:useThrowAnimation()
-        else
-          self:useShootAnimation()
+      if self.rapidShotTime == 0 then
+        local e, energy = weapon.rapidFireFuncs[w.current](self)
+        
+        if e then
+          self.shootFrames = weapon.shootFrames[w.current] or 14
+          self.rapidShotTime = weapon.rapidFire[w.current] or 5
+          if weapon.throwAnim[w.current] then
+            self:useThrowAnimation()
+          else
+            self:useShootAnimation()
+          end
+          self.stopOnShot = weapon.stopOnShot[w.current]
+          self:resetCharge()
+          if e:is(weapon) then
+            shots[#shots+1] = e
+          end
+          w:updateCurrent(w.energy[w.currentSlot] + (energy or -1))
         end
-        self.stopOnShot = weapon.stopOnShot[w.current]
-        self:resetCharge()
-        if e:is(weapon) then
-          shots[#shots+1] = e
-        end
-        w:updateCurrent(w.energy[w.currentSlot] + (energy or -1))
       end
     end
   else
