@@ -749,237 +749,101 @@ function megaMan:attemptWeaponUsage()
   local w = megaMan.weaponHandler[self.player]
   local shots = {}
   
-  if control.shootDown[self.player] then
-    if w.current == "B.BUSTER" then
-      self.rapidShotTime = math.max(self.rapidShotTime - 1, 0)
-      if self.rapidShotTime == 0 then
-        self.rapidShotTime = 5
-        self.shootFrames = 14
-        self:resetCharge()
-        self:useShootAnimation()
-        self.stopOnShot = true
-        if self:numberOfShots("bassBuster") < 4 then
-          local dir = self.side == 1 and 0 or 180
-          if control.upDown[self.player] then
-            if control.leftDown[self.player] then
-              dir = -45+180
-            elseif control.rightDown[self.player] then
-              dir = 45
-            else
-              if self.gravity >= 0 then
-                dir = 90
-              else
-                dir = self.side == 1 and 45 or -45+180
-              end
-            end
-          elseif control.downDown[self.player] then
-            if control.leftDown[self.player] then
-              dir = 45+180
-            elseif control.rightDown[self.player] then
-              dir = -45
-            else
-              if self.gravity >= 0 then
-                dir = self.side == 1 and -45 or 45+180
-              else
-                dir = -90
-              end
-            end
-          end
-          shots[#shots+1] = megautils.add(bassBuster, self.x+self:shootOffX(tx), self.y+self:shootOffY(ty), self, dir)
-        end
-      end
-    elseif weapon.rapidFireFuncs[w.current] and self:checkWeaponEnergy(w.current) and weapon.rapidFire[w.current] then
-      self.rapidShotTime = math.max(self.rapidShotTime - 1, 0)
+  if control.shootDown[self.player] and weapon.rapidFireFuncs[w.current] and
+    (weapon.ignoreEnergy[w.current] or self:checkWeaponEnergy(w.current)) then
+    self.rapidShotTime = math.max(self.rapidShotTime - 1, 0)
+    
+    if self.rapidShotTime == 0 then
+      local e, energy = weapon.rapidFireFuncs[w.current](self)
       
-      if self.rapidShotTime == 0 then
-        local e, energy = weapon.rapidFireFuncs[w.current](self)
-        
-        if e then
-          self.shootFrames = weapon.shootFrames[w.current] or 14
-          self.rapidShotTime = weapon.rapidFire[w.current] or 5
-          if weapon.throwAnim[w.current] then
-            self:useThrowAnimation()
+      if e then
+        self.shootFrames = weapon.shootFrames[w.current] or 14
+        self.rapidShotTime = weapon.rapidFire[w.current] or 5
+        if weapon.throwAnim[w.current] then
+          self:useThrowAnimation()
+        else
+          self:useShootAnimation()
+        end
+        self.stopOnShot = weapon.stopOnShot[w.current]
+        self:resetCharge()
+        if type(e) == "table" then
+          if type(e.is) == "function" and e:is(weapon) then
+            shots[#shots + 1] = e
           else
-            self:useShootAnimation()
+            for i = 1, #e do
+              shots[#shots + 1] = e[i]
+            end
           end
-          self.stopOnShot = weapon.stopOnShot[w.current]
-          self:resetCharge()
-          if e:is(weapon) then
-            shots[#shots+1] = e
-          end
-          w:updateCurrent(w.energy[w.currentSlot] + (energy or -1))
+        end
+        if energy and energy ~= 0 then
+          w:updateCurrent(w.energy[w.currentSlot] + energy)
         end
       end
     end
   else
     self.rapidShotTime = 0
   end
-  if control.shootPressed[self.player] then
-    if (w.current == "M.BUSTER" or w.current == "RUSH JET" or w.current == "RUSH C.")
-      and self:numberOfShots("megaBuster") < 3 and self:numberOfShots("megaChargedBuster") == 0 then
-      if w.current == "RUSH C." and self:checkWeaponEnergy("RUSH C.") and self:numberOfShots("rushCoil") < 1 then
-        self.shootFrames = 14
-        self:useShootAnimation()
-        shots[#shots+1] = megautils.add(rushCoil, self.x+self:shootOffX(16), self.y+self:shootOffY(-16), self, self.side, "rush")
-      elseif w.current == "RUSH JET" and self:checkWeaponEnergy("RUSH JET") and self:numberOfShots("rushJet") < 1 then
-        self.shootFrames = 14
-        self:useShootAnimation()
-        shots[#shots+1] = megautils.add(rushJet, self.x+self:shootOffX(16), self.y+self:shootOffY(), self, self.side, "rush")
+  
+  if control.shootPressed[self.player] and weapon.shootFuncs[w.current] and
+    (weapon.ignoreEnergy[w.current] or self:checkWeaponEnergy(w.current)) then
+    local e, energy = weapon.shootFuncs[w.current](self)
+    
+    if e then
+      self.shootFrames = weapon.shootFrames[w.current] or 14
+      if weapon.throwAnim[w.current] then
+        self:useThrowAnimation()
       else
-        self.shootFrames = 14
-        self:resetCharge()
         self:useShootAnimation()
-        shots[#shots+1] = megautils.add(megaBuster, self.x+self:shootOffX(), self.y+self:shootOffY(), self, self.side)
       end
-    elseif (w.current == "P.BUSTER" or w.current == "PROTO JET" or w.current == "PROTO C.")
-      and self:numberOfShots("megaBuster") < 3 and self:numberOfShots("protoChargedBuster") == 0 then
-      if w.current == "PROTO C." and self:checkWeaponEnergy("PROTO C.") and self:numberOfShots("rushCoil") < 1 then
-        self.shootFrames = 14
-        self:useShootAnimation()
-        shots[#shots+1] = megautils.add(rushCoil, self.x+self:shootOffX(16),
-          self.y+self:shootOffY(-16), self, self.side, "protoRush")
-      elseif w.current == "PROTO JET" and self:checkWeaponEnergy("PROTO JET") and self:numberOfShots("rushJet") < 1 then
-        self.shootFrames = 14
-        self:useShootAnimation()
-        shots[#shots+1] = megautils.add(rushJet, self.x+self:shootOffX(16),
-          self.y+self:shootOffY(), self, self.side, "protoRush")
-      else
-        self.shootFrames = 14
-        self:resetCharge()
-        self:useShootAnimation()
-        shots[#shots+1] = megautils.add(megaBuster, self.x+self:shootOffX(), self.y+self:shootOffY(), self, self.side)
-      end
-    elseif (w.current == "R.BUSTER" or w.current == "TANGO JET" or w.current == "TANGO C.")
-      and self:numberOfShots("megaBuster") < 3 and self:numberOfShots("protoChargedBuster") == 0 then
-      if w.current == "TANGO C." and self:checkWeaponEnergy("TANGO C.") and self:numberOfShots("rushCoil") < 1 then
-        self.shootFrames = 14
-        self:useShootAnimation()
-        shots[#shots+1] = megautils.add(rushCoil, self.x+self:shootOffX(16),
-          self.y+self:shootOffY(-16), self, self.side, "tango")
-      elseif w.current == "TANGO JET" and self:checkWeaponEnergy("TANGO JET") and self:numberOfShots("rushJet") < 1 then
-        self.shootFrames = 14
-        self:useShootAnimation()
-        shots[#shots+1] = megautils.add(rushJet, self.x+self:shootOffX(16),
-          self.y+self:shootOffY(), self, self.side, "tango")
-      else
-        self.shootFrames = 14
-        self:resetCharge()
-        self:useShootAnimation()
-        shots[#shots+1] = megautils.add(megaBuster, self.x+self:shootOffX(), self.y+self:shootOffY(), self, self.side)
-      end
-    elseif w.current == "T. BOOST" and self:checkWeaponEnergy("T. BOOST") then
-      if self.treble == 3 then
-        if self:numberOfShots("bassBuster") < 1 then
-          self.shootFrames = 14
-          self:resetCharge()
-          self:useShootAnimation()
-          local ox, oy = self:shootOffX(), self:shootOffY()
-          shots[#shots+1] = megautils.add(bassBuster, self.x+ox, self.y+oy,
-            self, self.side==1 and 0 or 180, true)
-          shots[#shots+1] = megautils.add(bassBuster, self.x+ox, self.y+oy,
-            self, self.side==1 and 45 or 180+45, true)
-          shots[#shots+1] = megautils.add(bassBuster, self.x+ox, self.y+oy,
-            self, self.side==1 and -45 or 180-45, true)
-          megautils.playSound("buster")
-        end
-      elseif self:numberOfShots("trebleBoost") < 1 then
-        self.shootFrames = 14
-        self:resetCharge()
-        self:useShootAnimation()
-        shots[#shots+1] = megautils.add(trebleBoost, self.x+self:shootOffX(16), 
-          self.y+self:shootOffY(-16), self, self.side)
-      end
-    elseif weapon.shootFuncs[w.current] and self:checkWeaponEnergy(w.current) then
-      local e, energy = weapon.shootFuncs[w.current](self)
-      
-      if e then
-        self.shootFrames = weapon.shootFrames[w.current] or 14
-        if weapon.throwAnim[w.current] then
-          self:useThrowAnimation()
+      self.stopOnShot = weapon.stopOnShot[w.current]
+      self:resetCharge()
+      if type(e) == "table" then
+        if type(e.is) == "function" and e:is(weapon) then
+          shots[#shots + 1] = e
         else
-          self:useShootAnimation()
+          for i = 1, #e do
+            shots[#shots + 1] = e[i]
+          end
         end
-        self.stopOnShot = weapon.stopOnShot[w.current]
-        self:resetCharge()
-        if e:is(weapon) then
-          shots[#shots+1] = e
-        end
-        w:updateCurrent(w.energy[w.currentSlot] + (energy or -1))
+      end
+      if energy and energy ~= 0 then
+        w:updateCurrent(w.energy[w.currentSlot] + energy)
       end
     end
   end
-  if not control.shootDown[self.player] and self.chargeState ~= 0 then
-    if w.current == "M.BUSTER" then
-      if self.chargeState == 1 and self:numberOfShots("megaBuster") < 3 then
-        self.shootFrames = 14
-        self:resetCharge()
-        self:useShootAnimation()
-        shots[#shots+1] = megautils.add(megaSemiBuster, self.x+self:shootOffX(2), 
-          self.y+self:shootOffY(), self, self.side)
-      elseif self.chargeState == 2 and self:numberOfShots("megaChargedBuster") < 1 then
-        self.shootFrames = 14
-        self:resetCharge()
-        self:useShootAnimation()
-        shots[#shots+1] = megautils.add(megaChargedBuster, self.x+self:shootOffX(4), 
-          self.y+self:shootOffY(), self, self.side)
+  if not control.shootDown[self.player] and self.chargeState ~= 0 and weapon.chargeShotFuncs[w.current] and
+    (weapon.ignoreEnergy[w.current] or self:checkWeaponEnergy(w.current)) and weapon.chargeColors[w.current] then
+    local e, energy = weapon.chargeShotFuncs[w.current](self, self.chargeState)
+    
+    if e then
+      self.shootFrames = weapon.shootFrames[w.current] or 14
+      if weapon.throwAnim[w.current] then
+        self:useThrowAnimation()
       else
-        self:resetCharge()
+        self:useShootAnimation()
       end
-    elseif w.current == "P.BUSTER" then
-      if self.chargeState == 1 and self:numberOfShots("megaBuster") < 3 then
-        self.shootFrames = 14
-        self:resetCharge()
-        self:useShootAnimation()
-        shots[#shots+1] = megautils.add(protoSemiBuster, self.x+self:shootOffX(2), 
-          self.y+self:shootOffY(), self, self.side, "protoBuster")
-      elseif self.chargeState == 2 and self:numberOfShots("protoChargedBuster") < 1 then
-        self.shootFrames = 14
-        self:resetCharge()
-        self:useShootAnimation()
-        shots[#shots+1] = megautils.add(protoChargedBuster, self.x+self:shootOffX(8), 
-          self.y+self:shootOffY(), self, self.side, "protoBuster")
-      else
-        self:resetCharge()
-      end
-    elseif w.current == "R.BUSTER" then
-      if self.chargeState == 1 and self:numberOfShots("megaBuster") < 3 then
-        self.shootFrames = 14
-        self:resetCharge()
-        self:useShootAnimation()
-        shots[#shots+1] = megautils.add(protoSemiBuster, self.x+self:shootOffX(2), 
-          self.y+self:shootOffY(), self, self.side, "rollBuster")
-      elseif self.chargeState == 2 and self:numberOfShots("protoChargedBuster") < 1 then
-        self.shootFrames = 14
-        self:resetCharge()
-        self:useShootAnimation()
-        shots[#shots+1] = megautils.add(protoChargedBuster, self.x+self:shootOffX(8), 
-          self.y+self:shootOffY(), self, self.side, "rollBuster")
-      else
-        self:resetCharge()
-      end
-    elseif weapon.chargeShotFuncs[w.current] and self:checkWeaponEnergy(w.current) and weapon.chargeColors[w.current] then
-      local e, energy = weapon.chargeShotFuncs[w.current](self, self.chargeState)
-      
-      if e then
-        self.shootFrames = weapon.shootFrames[w.current] or 14
-        if weapon.throwAnim[w.current] then
-          self:useThrowAnimation()
+      self.stopOnShot = weapon.stopOnShot[w.current]
+      self:resetCharge()
+      if type(e) == "table" then
+        if type(e.is) == "function" and e:is(weapon) then
+          shots[#shots + 1] = e
         else
-          self:useShootAnimation()
+          for i = 1, #e do
+            shots[#shots + 1] = e[i]
+          end
         end
-        self.stopOnShot = weapon.stopOnShot[w.current]
-        self:resetCharge()
-        if e:is(weapon) then
-          shots[#shots+1] = e
-        end
-        w:updateCurrent(w.energy[w.currentSlot] + (energy or -1))
+      end
+      if energy and energy ~= 0 then
+        w:updateCurrent(w.energy[w.currentSlot] + energy)
       end
     end
   end
+  
   if control.shootDown[self.player] and (w.current ~= "M.BUSTER" or w.current ~= "P.BUSTER" or w.current ~= "R.BUSTER" or
     checkFalse(self.canChargeBuster)) then
     self:charge()
   end
+  
   for _, v in pairs(megautils.playerAttemptWeaponFuncs) do
     if type(v) == "function" then
       v(self, shots)
