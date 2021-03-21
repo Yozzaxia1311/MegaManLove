@@ -1,6 +1,31 @@
+-- Engine globals.
+function engineGlobals(whenLoveModuleIsLoaded)
+  if whenLoveModuleIsLoaded then
+    mmFont = love.graphics.newFont("assets/misc/mm.ttf", 8)
+    isMobile = love.system.getOS() == "Android" or love.system.getOS() == "iOS"
+    useConsole = love.keyboard
+  else
+    gameWidth = 256
+    gameHeight = 224
+    gameScale = 2
+    splash = "assets/misc/splash.bmp"
+    borderLeft = "assets/misc/borderLeft.png"
+    borderRight = "assets/misc/borderRight.png"
+    deadZone = 0.8
+    defaultFPS = 60
+    clampSkinShootOffsets = true
+    maxPlayerCount = 4
+    maxLives = 10
+    maxETanks = 10
+    maxWTanks = 10
+  end
+end
+
 io.stdout:setvbuf("no")
 
 function love.conf(t)
+  engineGlobals(false)
+  
   t.identity = "MMLOVE"                         -- The name of the save directory (string)
   t.appendidentity = false                      -- Search files in source directory before save directory (boolean)
   t.version = "11.3"                            -- The LÖVE version this game was made for (string)
@@ -14,8 +39,8 @@ function love.conf(t)
 
   t.window.title = "Mega Man Love"              -- The window title (string)
   t.window.icon = "assets/misc/mmIcon.png"     -- Filepath to an image to use as the window's icon (string)
-  t.window.width = 256*2                        -- The window width (number)
-  t.window.height = 224*2                       -- The window height (number)
+  t.window.width = gameWidth * gameScale                        -- The window width (number)
+  t.window.height = gameHeight * gameScale                       -- The window height (number)
   --t.window.borderless = false                   -- Remove all border visuals from the window (boolean)
   t.window.resizable = true                     -- Let the window be user-resizable (boolean)
   --t.window.minwidth = 1                         -- Minimum window width if the window is resizable (number)
