@@ -1,17 +1,5 @@
--- Engine globals.
-splash = "assets/misc/splash.bmp"
-borderLeft = "assets/misc/borderLeft.png"
-borderRight = "assets/misc/borderRight.png"
-isMobile = love.system.getOS() == "Android" or love.system.getOS() == "iOS"
-deadZone = 0.8
-defaultFPS = 60
-clampSkinShootOffsets = true
-useConsole = love.keyboard
-mmFont = love.graphics.newFont("assets/misc/mm.ttf", 8)
-maxPlayerCount = 4
-maxLives = 10
-maxETanks = 10
-maxWTanks = 10
+-- For engine globals, see `conf.lua`.
+engineGlobals(true)
 
 -- Splash screen
 if not isMobile and love.graphics then
@@ -37,7 +25,6 @@ altEnterOnce = false
 scaleOnce = {false, false, false, false, false, false, false, false, false}
 contextOnce = false
 
-
 -- Initializes the whole game to its base state.
 function initEngine()
   keyboardCheck = {}
@@ -47,7 +34,7 @@ function initEngine()
   inputHandler.init()
   control.init()
   globals = {}
-  view.init(256, 224, 1)
+  view.init(gameWidth, gameHeight, 1)
   cscreen.init(view.w*view.scale, view.h*view.scale, borderLeft, borderRight)
   
   megautils.runFile("core/commands.lua")
