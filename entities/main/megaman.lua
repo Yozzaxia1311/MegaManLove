@@ -1899,15 +1899,16 @@ function megaMan:update()
     if not megaMan.once then
       megaMan.once = true
     end
-    if self.ready or (megaMan.mainPlayer and megaMan.mainPlayer.ready) then
+    if megaMan.mainPlayer and megaMan.mainPlayer.ready then
       if megaMan.mainPlayer == self and self.ready.isRemoved then
         self.ready = nil
-        self.teleportOffY = (not self.teleporter and self.drop) and (view.y-self.y) or 0
         if self.mq then
           megautils.playMusic(unpack(self.mq))
           self.mq = nil
         end
       end
+      self.teleportOffY = nil
+      self._rw = true
     elseif self.dead then
       for _, v in pairs(megautils.playerDeathFuncs) do
         if type(v) == "function" then
@@ -1973,7 +1974,12 @@ function megaMan:afterUpdate(dt)
 end
 
 function megaMan:draw()
-  if megaMan.mainPlayer and megaMan.mainPlayer.ready then return end
+  if (megaMan.mainPlayer and megaMan.mainPlayer.ready) or self._rw then
+    if self.teleportOffY then
+      self._rw = nil
+    end
+    return
+  end
   
   local offsetx, offsety = math.round(self.collisionShape.w/2), (self.gravity >= 0 and self.collisionShape.h or 0) + (self.teleportOffY or 0)
   local roundx, roundy = math.floor(self.x), math.floor(self.y)
