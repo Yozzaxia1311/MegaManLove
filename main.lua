@@ -96,19 +96,17 @@ function loadBinds()
   
   if data and data.inputBinds then
     for i = 1, maxPlayerCount do
-      if data.inputBinds[i] then
-        if data.inputBinds[i]["up" .. tostring(i)] then input.bind(data.inputBinds[i].up, "up" .. tostring(i)) end
-        if data.inputBinds[i]["down" .. tostring(i)] then input.bind(data.inputBinds[i].down, "down" .. tostring(i)) end
-        if data.inputBinds[i]["left" .. tostring(i)] then input.bind(data.inputBinds[i].left, "left" .. tostring(i)) end
-        if data.inputBinds[i]["right" .. tostring(i)] then input.bind(data.inputBinds[i].right, "right" .. tostring(i)) end
-        if data.inputBinds[i]["jump" .. tostring(i)] then input.bind(data.inputBinds[i].jump, "jump" .. tostring(i)) end
-        if data.inputBinds[i]["shoot" .. tostring(i)] then input.bind(data.inputBinds[i].shoot, "shoot" .. tostring(i)) end
-        if data.inputBinds[i]["dash" .. tostring(i)] then input.bind(data.inputBinds[i].dash, "dash" .. tostring(i)) end
-        if data.inputBinds[i]["start" .. tostring(i)] then input.bind(data.inputBinds[i].start, "start" .. tostring(i)) end
-        if data.inputBinds[i]["select" .. tostring(i)] then input.bind(data.inputBinds[i].select, "select" .. tostring(i)) end
-        if data.inputBinds[i]["prev" .. tostring(i)] then input.bind(data.inputBinds[i].prev, "prev" .. tostring(i)) end
-        if data.inputBinds[i]["next" .. tostring(i)] then input.bind(data.inputBinds[i].next, "next" .. tostring(i)) end
-      end
+      if data.inputBinds["up" .. tostring(i)] then input.bind(data.inputBinds["up" .. tostring(i)], "up" .. tostring(i)) end
+      if data.inputBinds["down" .. tostring(i)] then input.bind(data.inputBinds["down" .. tostring(i)], "down" .. tostring(i)) end
+      if data.inputBinds["left" .. tostring(i)] then input.bind(data.inputBinds["left" .. tostring(i)], "left" .. tostring(i)) end
+      if data.inputBinds["right" .. tostring(i)] then input.bind(data.inputBinds["right" .. tostring(i)], "right" .. tostring(i)) end
+      if data.inputBinds["jump" .. tostring(i)] then input.bind(data.inputBinds["jump" .. tostring(i)], "jump" .. tostring(i)) end
+      if data.inputBinds["shoot" .. tostring(i)] then input.bind(data.inputBinds["shoot" .. tostring(i)], "shoot" .. tostring(i)) end
+      if data.inputBinds["dash" .. tostring(i)] then input.bind(data.inputBinds["dash" .. tostring(i)], "dash" .. tostring(i)) end
+      if data.inputBinds["start" .. tostring(i)] then input.bind(data.inputBinds["start" .. tostring(i)], "start" .. tostring(i)) end
+      if data.inputBinds["select" .. tostring(i)] then input.bind(data.inputBinds["select" .. tostring(i)], "select" .. tostring(i)) end
+      if data.inputBinds["prev" .. tostring(i)] then input.bind(data.inputBinds["prev" .. tostring(i)], "prev" .. tostring(i)) end
+      if data.inputBinds["next" .. tostring(i)] then input.bind(data.inputBinds["next" .. tostring(i)], "next" .. tostring(i)) end
     end
   end
 end

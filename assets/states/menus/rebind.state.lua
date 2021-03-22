@@ -22,13 +22,13 @@ function rebinder:new()
   rebinder.super.new(self)
   self.x = 32
   self.y = 112
-  self.keysToSet = {3, 4, 1, 2, 7, 8, 11, 9, 10, 5, 6}
+  self.keys = {"left", "right", "up", "down", "jump", "shoot", "dash", "prev", "next", "start", "select"}
   self.keyNames = {"left", "right", "up", "down", "jump", "shoot", "dash", "previous weapon", "next weapon", "start", "select"}
   self.currentKey = 1
-  self.step = 0
+  self.player = 1
   self.done = false
   self.data = save.load("main.sav") or {}
-  self.data.controls = {}
+  self.data.inputBinds = {}
 end
 
 function rebinder:update()
@@ -40,13 +40,13 @@ function rebinder:update()
     return
   end
   if lastPressed.input and not self.done then
-    self.data.controls[self.keysToSet[self.currentKey]+self.step] = {table.clone(lastPressed)}
+    self.data.inputBinds[self.keys[self.currentKey] .. tostring(self.player)] = {table.clone(lastPressed)}
     
-    if self.currentKey == table.length(self.keysToSet) then
-      if (self.step/11)+1 == globals.playerCount then
+    if self.currentKey == table.length(self.keys) then
+      if self.player == globals.playerCount then
         self.done = true
         input.unbind()
-        for k, v in pairs(self.data.controls) do
+        for k, v in pairs(self.data.inputBinds) do
           input.bind(v, k)
         end
         save.save("main.sav", self.data)
@@ -56,17 +56,17 @@ function rebinder:update()
           end)
       else
         self.currentKey = 1
-        self.step = self.step + 11
+        self.player = self.player + 1
       end
     else
-      self.currentKey = math.min(self.currentKey + 1, table.length(self.keysToSet))
+      self.currentKey = math.min(self.currentKey + 1, table.length(self.keys))
     end
   end
 end
 
 function rebinder:draw()
   love.graphics.setFont(mmFont)
-  love.graphics.printf("press the player " .. tostring((self.step/11)+1) .. " \n\""
+  love.graphics.printf("press the player " .. tostring(self.player) .. " \n\""
     .. self.keyNames[self.currentKey] .. "\"!" ..
     "\n\n(press escape to leave)", self.x, self.y, 200, "center")
 end
