@@ -60,37 +60,7 @@ function useDefaultBinds()
 end
 
 function loadBinds()
-  input.unbind()
-  
-  local defaultInputBinds, defaultInputBindsExtra = defaultBindsTable()
-  
-  input.bind(defaultInputBinds.up, "up1")
-  input.bind(defaultInputBinds.down, "down1")
-  input.bind(defaultInputBinds.left, "left1")
-  input.bind(defaultInputBinds.right, "right1")
-  input.bind(defaultInputBinds.jump, "jump1")
-  input.bind(defaultInputBinds.shoot, "shoot1")
-  input.bind(defaultInputBinds.dash, "dash1")
-  input.bind(defaultInputBinds.start, "start1")
-  input.bind(defaultInputBinds.select, "select1")
-  input.bind(defaultInputBinds.prev, "prev1")
-  input.bind(defaultInputBinds.next, "next1")
-  
-  for i=2, maxPlayerCount do
-    if defaultInputBindsExtra[i] then
-      input.bind(defaultInputBindsExtra[i].up, "up" .. tostring(i))
-      input.bind(defaultInputBindsExtra[i].down, "down" .. tostring(i))
-      input.bind(defaultInputBindsExtra[i].left, "left" .. tostring(i))
-      input.bind(defaultInputBindsExtra[i].right, "right" .. tostring(i))
-      input.bind(defaultInputBindsExtra[i].jump, "jump" .. tostring(i))
-      input.bind(defaultInputBindsExtra[i].shoot, "shoot" .. tostring(i))
-      input.bind(defaultInputBindsExtra[i].dash, "dash" .. tostring(i))
-      input.bind(defaultInputBindsExtra[i].start, "start" .. tostring(i))
-      input.bind(defaultInputBindsExtra[i].select, "select" .. tostring(i))
-      input.bind(defaultInputBindsExtra[i].prev, "prev" .. tostring(i))
-      input.bind(defaultInputBindsExtra[i].next, "next" .. tostring(i))
-    end
-  end
+  useDefaultBinds()
   
   local data = save.load("main.sav")
   
