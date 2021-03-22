@@ -64,10 +64,22 @@ function contSelect:update()
   elseif input.pressed.down1 then
     self.pick = math.wrap(self.pick+1, 0, 1)
   end
+  local touched = false
+  if #input.touchPressed ~= 0 then
+    for i = 0, 1 do
+      local x, y, w, h = self.x + 8, self.offY + (i * 16), 96, 8
+      y = y - 4
+      h = h + 8
+      if input.touchPressedOverlaps(x, y, w, h) then
+        self.pick = i
+        touched = true
+      end
+    end
+  end
   if old ~= self.pick then
     megautils.playSound("cursorMove")
   end
-  if (input.pressed.start1 or input.pressed.jump1) and not self.picked then
+  if (input.pressed.start1 or input.pressed.jump1 or touched) and not self.picked then
     if self.pick == 1 then
       self.picked = true
       self.canDraw.global = false

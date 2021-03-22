@@ -18,7 +18,7 @@ gamepadCheck = {}
 doCheckDelay = false
 
 lastPressed = {type=nil, input=nil, name=nil}
-lastTouch = {x=nil, y=nil, id=nil, pressure=nil, dx=nil, dy=nil}
+lastTouch = {x=nil, y=nil, id=nil, pressure=nil}
 lastTextInput = nil
 
 altEnterOnce = false
@@ -249,6 +249,7 @@ function love.keypressed(k, s, r)
   if not doCheckDelay or not keyboardCheck[k] then
     lastPressed.type = "keyboard"
     lastPressed.input = k
+    input.usingTouch = false
   end
   keyboardCheck[k] = 5
 end
@@ -264,6 +265,7 @@ function love.gamepadpressed(j, b)
     lastPressed.type = "gamepad"
     lastPressed.input = b
     lastPressed.name = j:getName()
+    input.usingTouch = false
   end
   gamepadCheck[b] = 5
   
@@ -295,6 +297,7 @@ function love.gamepadaxis(j, b, v)
         lastPressed.input = b .. (v > 0 and "+" or "-")
         lastPressed.name = j:getName()
       end
+      input.usingTouch = false
     end
     gamepadCheck[b] = 10
   end
@@ -307,6 +310,13 @@ function love.gamepadaxis(j, b, v)
   end
 end
 
+function love.mousepressed(x, y, button)
+  lastTouch.x, lastTouch.y = cscreen.project(x, y)
+  lastTouch.id = "mousetouch"
+  lastTouch.pressure = 1
+  input.usingTouch = true
+end
+
 function love.touchpressed(id, x, y, dx, dy, pressure)
   if record.demo and not record.pressAnyway then
     record.anyPressedDuringRec = true
@@ -314,12 +324,10 @@ function love.touchpressed(id, x, y, dx, dy, pressure)
   end
   if useConsole and console.state == 1 then return end
   
-  lastTouch.x = x
-  lastTouch.y = y
+  lastTouch.x, lastTouch.y = cscreen.project(x, y)
   lastTouch.id = id
   lastTouch.pressure = pressure
-  lastTouch.dx = dx
-  lastTouch.dy = dy
+  input.usingTouch = true
   
   if record.recordInput then
     if not record.touchPressedRec then
@@ -394,6 +402,7 @@ function love.draw()
   view.draw()
   love.graphics.pop()
   if useConsole then console.draw() end
+  input.draw()
 end
 
 function love.quit()
@@ -411,6 +420,11 @@ local lum = love.window.updateMode
 function love.window.setFullscreen(s)
   lf(s)
   love.resize(love.graphics.getDimensions())
+  if s then
+    love.mouse.setVisible(true)
+  elseif input and input.usingTouch then
+    love.mouse.setVisible(s and not input.usingTouch)
+  end
 end
 
 function love.window.setMode(w, h, f)
@@ -601,8 +615,6 @@ function love.run()
       lastTouch.y = nil
       lastTouch.id = nil
       lastTouch.pressure = nil
-      lastTouch.dx = nil
-      lastTouch.dy = nil
       lastTextInput = nil
     end
 end

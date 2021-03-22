@@ -38,10 +38,22 @@ function menuSelect:update()
     elseif input.pressed.down1 then
       self.pick = math.wrap(self.pick+1, 0, 7)
     end
-    if old ~= self.pick then
+    local touched = false
+    if #input.touchPressed ~= 0 then
+      for i = 0, 7 do
+        local x, y, w, h = 80, 80 + (i * 16), 96, 8
+        y = y - 4
+        h = h + 8
+        if input.touchPressedOverlaps(x, y, w, h) then
+          self.pick = i
+          touched = true
+        end
+      end
+    end
+    if old ~= self.pick and not input.usingTouch then
       megautils.playSound("cursorMove")
     end
-    if (input.pressed.start1 or input.pressed.jump1) and not self.picked then
+    if (input.pressed.start1 or input.pressed.jump1 or touched) and not self.picked then
       if self.pick == 0 then
         self.picked = true
         self.section = -1
@@ -75,14 +87,18 @@ function menuSelect:update()
         end
         save.save("save.sav", data)
         megautils.playSound("selected")
-      elseif self.pick == 3 then
+      elseif self.pick == 3 and not isMobile then
         megautils.setFullscreen(not megautils.getFullscreen())
         local data = save.load("main.sav") or {}
         data.fullscreen = megautils.getFullscreen()
         save.save("main.sav", data)
-      elseif self.pick == 4 then
-        self.section = 1
-        self.timer = 0
+      elseif self.pick == 4 and not isMobile then
+        if input.usingTouch then
+          megautils.setScale(math.wrap(megautils.getScale()+1, 1, 4))
+        else
+          self.section = 1
+          self.timer = 0
+        end
         megautils.playSound("selected")
       elseif self.pick == 5 then
         self.picked = true
@@ -90,8 +106,12 @@ function menuSelect:update()
         globals.lastStateName = megautils.getCurrentState()
         megautils.transitionToState(globals.rebindState)
       elseif self.pick == 6 then
-        self.section = 2
-        self.timer = 0
+        if input.usingTouch then
+          globals.playerCount = math.wrap(globals.playerCount+1, 1, maxPlayerCount)
+        else
+          self.section = 2
+          self.timer = 0
+        end
         megautils.playSound("selected")
       elseif self.pick == 7 then
         self.picked = true
@@ -136,7 +156,7 @@ function menuSelect:update()
 end
 
 function menuSelect:draw()
-  if self.section == 0 then
+  if self.section == 0 and not input.usingTouch then
     self.tex:draw(self.x, self.y)
   end
   if self.section ~= 1 or self.timer > 10 then
@@ -147,6 +167,11 @@ function menuSelect:draw()
   end
   if globals.playerCount > 1 then
     love.graphics.print("S", 20*8, (22*8)-1)
+  end
+  if isMobile then
+    love.graphics.setColor(0, 0, 0, 0.5)
+    love.graphics.rectangle("fill", 14 * 8, 16 * 8, 48, 8)
+    love.graphics.rectangle("fill", 12 * 8, 18 * 8, 64, 8)
   end
 end
 

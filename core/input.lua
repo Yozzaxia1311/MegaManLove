@@ -38,6 +38,9 @@ function input.init()
   setmetatable(input.down, input._downMT)
   input.pressed = {_sv = {}}
   setmetatable(input.pressed, input._pressedMT)
+  input.touchDown = {}
+  input.touchPressed = {}
+  input.usingTouch = isMobile or (not love.keyboard and (love.mouse or love.touch))
 end
 
 function input.refreshGamepads()
@@ -155,6 +158,26 @@ function input._pressed(k)
   return false
 end
 
+function input.touchDownOverlaps(x, y, w, h)
+  for _, v in pairs(input.touchDown) do
+    if pointOverlapsRect(v.x, v.y, x, y, w, h) then
+      return true
+    end
+  end
+  
+  return false
+end
+
+function input.touchPressedOverlaps(x, y, w, h)
+  for _, v in pairs(input.touchPressed) do
+    if pointOverlapsRect(v.x, v.y, x, y, w, h) then
+      return true
+    end
+  end
+  
+  return false
+end
+
 function input.anyDown()
   if console and console.state == 1 then
     return false
@@ -164,13 +187,47 @@ function input.anyDown()
       return true
     end
   end
-  return false
+  return #input.touchDown ~= 0
 end
 
 function input.poll()
   for k, _ in pairs(input.keys) do
     input.down[k] = input._down(k)
     input.pressed[k] = input._pressed(k)
+  end
+  
+  if love.touch or love.mouse then
+    local newTouches = love.touch and love.touch.getTouches() or {}
+    local ids = {}
+    
+    if love.mouse and love.mouse.isDown(1, 2, 3) then
+      newTouches[#newTouches + 1] = "mousetouch"
+    end
+    
+    for _, v in pairs(input.touchDown) do
+      if not table.contains(newTouches, v.id) then
+        table.removevalue(input.touchDown, v)
+      end
+    end
+    
+    for _, v in pairs(input.touchDown) do
+      ids[#ids + 1] = v.id
+    end
+    
+    for _, v in pairs(newTouches) do
+      if not table.contains(ids, v) then
+        if love.mouse and v == "mousetouch" then
+          local x, y = cscreen.project(love.mouse.getPosition())
+          input.touchDown[#input.touchDown + 1] = {id = v, x = x, y = y, pressure = 1}
+          input.touchPressed[#input.touchPressed + 1] = {id = v, x = x, y = y, pressure = 1}
+        elseif love.touch then
+          local x, y = cscreen.project(love.touch.getPosition(v))
+          local p = love.touch.getPressure(v)
+          input.touchDown[#input.touchDown + 1] = {id = v, x = x, y = y, pressure = p}
+          input.touchPressed[#input.touchPressed + 1] = {id = v, x = x, y = y, pressure = p}
+        end
+      end
+    end
   end
 end
 
@@ -179,5 +236,38 @@ function input.flush()
     if not input._down(k) then
       input._pressedTable[k] = nil
     end
+  end
+  
+  input.touchPressed = {}
+end
+
+input._dTimer = 0
+
+function input.draw()
+  if input._checkD == nil then
+    input._checkD = input.usingTouch
+  end
+  if input._checkD ~= input.usingTouch then
+    input._dTimer = 100
+    input._checkD = input.usingTouch
+  end
+  if input._dTimer > 0 then
+    input._dTimer = math.max(input._dTimer - 1, 0)
+    local na = (input._dTimer % 8 < 5) and 1 or 0.5
+    local r, g, b, a = love.graphics.getColor()
+    
+    if input.usingTouch then
+      love.graphics.setColor(0, 0, 0, na)
+      love.graphics.rectangle("fill", 0, 0, 8*22, 32)
+      love.graphics.setColor(1, 1, 1, na)
+      love.graphics.rectangle("line", 0, 0, 8*22, 32)
+    else
+      love.graphics.setColor(0, 0, 0, na)
+      love.graphics.rectangle("fill", 0, 0, 8*24, 32)
+      love.graphics.setColor(1, 1, 1, na)
+      love.graphics.rectangle("line", 0, 0, 8*24, 32)
+    end
+    love.graphics.print(input.usingTouch and "TOUCH MODE ACTIVATED" or "TOUCH MODE DEACTIVATED", 8, 8)
+    love.graphics.setColor(r, g, b, a)
   end
 end

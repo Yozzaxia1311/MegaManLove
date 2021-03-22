@@ -19,6 +19,9 @@ function title:new()
   self.cont = false
   self.text = "name + year"
   self.textPos = 128-(self.text:len()*8)/2
+  self.startText = "PRESS START"
+  self.startTextT = "TOUCH SCREEN"
+  self.whichText = true
   self.timer = 0
   self.s = 0
   self.quad1 = quad(0, 0, 256, 115)
@@ -28,10 +31,11 @@ function title:new()
 end
 
 function title:update()
-  if self.s < 2 and (input.pressed.start1 or input.pressed.jump1) then
+  if self.s < 2 and (input.pressed.start1 or input.pressed.jump1 or #input.touchPressed ~= 0) then
     self.s = 3
     self.oneOff = 0
     self.twoOff = 0
+    self.drawText = true
     megautils.playMusic("assets/sfx/music/title.ogg")
     return
   end
@@ -48,9 +52,17 @@ function title:update()
     end
   elseif self.s == 2 then
     self.s = 3
+    self.drawText = true
   elseif self.s == 3 then
     --self.timer = self.timer + 1
     self.textTimer = math.wrap(self.textTimer+1, 0, 40)
+    if self.textTimer == 21 then
+      if input.usingTouch then
+        self.whichText = not self.whichText
+      else
+        self.whichText = true
+      end
+    end
     if self.timer == 400 then
       states.openRecord = "assets/demo.rd"
       megautils.add(fade, true, nil, nil, function(s)
@@ -66,7 +78,7 @@ function title:update()
             end
           megautils.gotoState()
         end)
-    elseif input.pressed.start1 then
+    elseif input.pressed.start1 or #input.touchPressed ~= 0 then
       megautils.stopMusic()
       self.drawText = false
       megautils.transitionToState(globals.menuState)
@@ -79,8 +91,8 @@ function title:draw()
   self.tex:draw(self.quad2, self.twoOff, self.y+115)
   if self.s == 3 then
     love.graphics.print(self.text, self.textPos, 208)
-    if self.textTimer < 20 then
-      love.graphics.print("PRESS START", 56, 144)
+    if self.textTimer < 20 and self.drawText then
+      love.graphics.print(self.whichText and self.startText or self.startTextT, 56, 144)
     end
   end
 end

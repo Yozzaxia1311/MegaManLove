@@ -73,6 +73,24 @@ function stageSelect:new()
   end
 end
 
+function stageSelect:begin()
+  self:updateMap()
+end
+
+function stageSelect:updateMap()
+  if megautils.groups().map then
+    for _, v in ipairs(megautils.groups().map) do
+      if input.usingTouch then
+        v:getLayerByName("start").visible = false
+        v:getLayerByName("touch").visible = true
+      else
+        v:getLayerByName("start").visible = true
+        v:getLayerByName("touch").visible = false
+      end
+    end
+  end
+end
+
 function stageSelect:removed()
   love.graphics.setBackgroundColor(0, 0, 0, 1)
   for i=1, 9 do
@@ -86,6 +104,7 @@ function stageSelect:update()
   self.anims:update(1/60)
   
   local oldx, oldy = self.sx, self.sy
+  local touched = false
   
   if not self.stop then
     if input.pressed.left1 then
@@ -96,6 +115,18 @@ function stageSelect:update()
       self.sy = self.sy-1
     elseif input.pressed.down1 then
       self.sy = self.sy+1
+    end
+    
+    if #input.touchPressed ~= 0 then
+      for x=0, 2 do
+        for y=0, 2 do
+          if input.touchPressedOverlaps(32+(x*81), 32+(y*64), 48, 48) then
+            self.sx = x
+            self.sy = y
+            touched = true
+          end
+        end
+      end
     end
   end
   
@@ -198,15 +229,17 @@ function stageSelect:update()
         end
       end
     end
-  elseif (input.pressed.start1 or input.pressed.jump1) and not self.stop then
+  elseif (input.pressed.start1 or input.pressed.jump1 or touched) and not self.stop then
     if self.sx ~= 1 or self.sy ~= 1 or self:checkRequirements() then
       self.stop = true
       self.selected = true
       self.timer = 0
+      self.x = self.oldX + self.sx*80
+      self.y = self.oldY + self.sy*64
       megautils.stopMusic()
       megautils.playSound("selected")
     end
-  elseif input.pressed.select1 and not self.stop then
+  elseif (input.pressed.select1 or input.touchPressedOverlaps(8 - 4, (26 * 8) - 4, 32 + 8, 16 + 8)) and not self.stop then
     self.stop = true
     megautils.transitionToState(globals.menuState)
     megautils.stopMusic()
@@ -216,6 +249,8 @@ function stageSelect:update()
     self.x = self.oldX + self.sx*80
     self.y = self.oldY + self.sy*64
   end
+  
+  self:updateMap()
 end
 
 function stageSelect:checkRequirements()
@@ -226,10 +261,6 @@ function stageSelect:checkRequirements()
   end
   
   return true
-end
-
-function stageSelect:checkRequirement()
-  
 end
 
 function stageSelect:draw()
