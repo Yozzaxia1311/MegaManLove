@@ -39,7 +39,7 @@ function stickMan:new(x, y)
         return true
       elseif m._stickTimer % 60 == 0 then
         m.shootFrames = 14
-        m:useShootAnimation()
+        m:useThrowAnimation()
         megautils.add(stickWeapon, m.x+m:shootOffX(), 
           m.y+m:shootOffY(), m, m.side)
       end
