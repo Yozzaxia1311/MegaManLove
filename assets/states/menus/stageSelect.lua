@@ -88,13 +88,13 @@ function stageSelect:update()
   local oldx, oldy = self.sx, self.sy
   
   if not self.stop then
-    if control.leftPressed[1] then
+    if input.pressed.left1 then
       self.sx = self.sx-1
-    elseif control.rightPressed[1] then
+    elseif input.pressed.right1 then
       self.sx = self.sx+1
-    elseif control.upPressed[1] then
+    elseif input.pressed.up1 then
       self.sy = self.sy-1
-    elseif control.downPressed[1] then
+    elseif input.pressed.down1 then
       self.sy = self.sy+1
     end
   end
@@ -198,7 +198,7 @@ function stageSelect:update()
         end
       end
     end
-  elseif (control.startPressed[1] or control.jumpPressed[1]) and not self.stop then
+  elseif (input.pressed.start1 or input.pressed.jump1) and not self.stop then
     if self.sx ~= 1 or self.sy ~= 1 or self:checkRequirements() then
       self.stop = true
       self.selected = true
@@ -206,7 +206,7 @@ function stageSelect:update()
       megautils.stopMusic()
       megautils.playSound("selected")
     end
-  elseif control.selectPressed[1] and not self.stop then
+  elseif input.pressed.select1 and not self.stop then
     self.stop = true
     megautils.transitionToState(globals.menuState)
     megautils.stopMusic()

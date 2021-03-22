@@ -21,7 +21,7 @@ function save.createDirChain(p)
 end
 
 function save.save(file, data)
-  if control.demo or control.recordInput then
+  if record.demo or record.recordInput then
     error("Cannot save during recordings")
   end
   
@@ -33,7 +33,7 @@ function save.save(file, data)
 end
 
 function save.load(file)
-  if control.demo or control.recordInput then
+  if record.demo or record.recordInput then
     error("Cannot load during recordings")
   end
   

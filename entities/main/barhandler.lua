@@ -81,7 +81,7 @@ function healthHandler:update(dt)
         if healthHandler.playerTimers[i] == 0 then
           healthHandler.playerTimers[i] = -1
         end
-      elseif healthHandler.playerTimers[i] == -1 and control.startPressed[i] then
+      elseif healthHandler.playerTimers[i] == -1 and input.pressed["start" .. tostring(i)] then
         if megautils.getLives() > 0 then
           healthHandler.playerTimers[i] = -2
           local p = megautils.add(megaMan, self.player.x, self.player.y, self.player.side, true, i)

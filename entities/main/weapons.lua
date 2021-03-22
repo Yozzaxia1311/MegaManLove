@@ -478,10 +478,10 @@ weapon.rapidFireFuncs["B.BUSTER"] = function(player)
     if player:numberOfShots("bassBuster") < 4 then
       local dir = player.side == 1 and 0 or 180
       
-      if control.upDown[player.player] then
-        if control.leftDown[player.player] then
+      if input.down["up" .. tostring(player.player)] then
+        if input.down["left" .. tostring(player.player)] then
           dir = -45+180
-        elseif control.rightDown[player.player] then
+        elseif input.down["right" .. tostring(player.player)] then
           dir = 45
         else
           if player.gravity >= 0 then
@@ -490,10 +490,10 @@ weapon.rapidFireFuncs["B.BUSTER"] = function(player)
             dir = player.side == 1 and 45 or -45+180
           end
         end
-      elseif control.downDown[player.player] then
-        if control.leftDown[player.player] then
+      elseif input.down["down" .. tostring(player.player)] then
+        if input.down["left" .. tostring(player.player)] then
           dir = 45+180
-        elseif control.rightDown[player.player] then
+        elseif input.down["right" .. tostring(player.player)] then
           dir = -45
         else
           if player.gravity >= 0 then
@@ -991,9 +991,9 @@ function rushJet:act(dt)
       self.playerOn = false
     end
     if self.playerOn and self.user then
-      if control.upDown[self.user.player] then
+      if input.down["up" .. tostring(self.user.player)] then
         self.velY = -1
-      elseif control.downDown[self.user.player] then
+      elseif input.down["down" .. tostring(self.user.player)] then
         self.velY = 1
       else
         self.velY = 0

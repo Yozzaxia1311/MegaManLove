@@ -39,7 +39,7 @@ end
 
 function disclaimer:update()
   if self.check then
-    if #inputHandler.gamepads ~= 0 then
+    if #input.gamepads ~= 0 then
       self.gpTimer = (self.gpTimer + 1) % 160
       if lastPressed.input == "back" then
         megautils.setFullscreen(not megautils.getFullscreen())
@@ -55,7 +55,7 @@ function disclaimer:update()
     else
       self.gpTimer = 0
     end
-    if control.startPressed[1] then
+    if input.pressed.start1 then
       megautils.transitionToState(globals.titleState)
       self.check = false
       return

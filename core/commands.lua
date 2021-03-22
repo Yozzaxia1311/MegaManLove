@@ -189,10 +189,10 @@ concmd["rec"] = {
   helptext = "record after the state switches",
   flags = {},
   fun = function(cmd)
-      if control.recordInput then
+      if record.recordInput then
         console.print("Recording already in progress.")
       else
-        control.startRecQ()
+        record.startRecQ()
         console.print("Recording...")
       end
     end
@@ -202,7 +202,7 @@ concmd["recend"] = {
   helptext = "stop recording",
   flags = {},
   fun = function(cmd)
-      control.recordInput = false
+      record.recordInput = false
       console.print("Recording ended")
       console.print("Remember to save with recsave")
     end
@@ -213,8 +213,8 @@ concmd["recsave"] = {
   flags = {},
   fun = function(cmd)
       if not cmd[2] then return end
-      if not control.recordInput and table.length(control.record.data) > 0 then
-        control.finishRecord(cmd[2] .. ".rd")
+      if not record.recordInput and table.length(record.record.data) > 0 then
+        record.finishRecord(cmd[2] .. ".rd")
         console.print("Recording saved")
       else
         console.print("No recording ready to save")
@@ -242,7 +242,7 @@ concmd["recopen"] = {
   fun = function(cmd)
       if not cmd[2] then return end
       if love.filesystem.getInfo(cmd[2] .. ".rd") then
-        control.openRecQ(cmd[2] .. ".rd")
+        record.openRecQ(cmd[2] .. ".rd")
       else
         console.print("No such record file \"" .. cmd[2] .. "\"")
       end
@@ -279,7 +279,7 @@ concmd["defbinds"] = {
   helptext = "load default input binds",
   flags = {"client"},
   fun = function(cmd)
-      control.defaultBinds()
+      useDefaultBinds()
       console.print("Now using default input binds")
     end
 }
@@ -288,7 +288,7 @@ concmd["opendir"] = {
   helptext = "open save directory",
   flags = {"client"},
   fun = function(cmd)
-    if not control.demo then
+    if not record.demo then
       love.system.openURL(love.filesystem.getSaveDirectory())
     end
   end

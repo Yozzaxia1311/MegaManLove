@@ -1,50 +1,92 @@
-inputHandler = {}
+input = {}
 
-function inputHandler.init()
-  inputHandler.keys = {}
-  inputHandler.pressedTable = {}
-  inputHandler.gamepads = love.joystick.getJoysticks()
-  inputHandler.custom = {}
+input._downMT = {__newindex = function(self, k, v)
+    rawget(self, "_sv")[k] = v
+  end, __index = function(self, k)
+    if record and record.demo then
+      if record.loadedRec and record.loadedRec.data and
+        record.loadedRec.data[record.loadedRecPos] and record.loadedRec.data[record.loadedRecPos].down then
+        return record.loadedRec.data[record.loadedRecPos].down[k]
+      end
+      
+      return
+    end
+    
+    return rawget(self, "_sv")[k]
+  end}
+
+input._pressedMT = {__newindex = function(self, k, v)
+    rawget(self, "_sv")[k] = v
+  end, __index = function(self, k)
+    if record and record.demo then
+      if record.loadedRec and record.loadedRec.data and
+        record.loadedRec.data[record.loadedRecPos] and record.loadedRec.data[record.loadedRecPos].pressed then
+        return record.loadedRec.data[record.loadedRecPos].pressed[k]
+      end
+      
+      return
+    end
+    
+    return rawget(self, "_sv")[k]
+  end}
+
+function input.init()
+  input.keys = {}
+  input._pressedTable = {}
+  input.gamepads = love.joystick and love.joystick.getJoysticks()
+  input.down = {_sv = {}}
+  setmetatable(input.down, input._downMT)
+  input.pressed = {_sv = {}}
+  setmetatable(input.pressed, input._pressedMT)
 end
 
-function inputHandler.refreshGamepads()
-  inputHandler.gamepads = love.joystick.getJoysticks()
+function input.refreshGamepads()
+  input.gamepads = love.joystick.getJoysticks()
 end
 
-function inputHandler.bind(v, k)
-  inputHandler.keys[k] = v
+function input.bind(v, k)
+  input.keys[k] = v
+  input.down[k] = false
+  input.pressed[k] = false
+  input._pressedTable[k] = nil  
 end
 
-function inputHandler.unbind(k)
+function input.unbind(k)
   if not k then
-    inputHandler.keys = {}
-    inputHandler.pressedTable = {}
+    input.keys = {}
+    input._pressedTable = {}
+    input.down = {_sv = {}}
+    setmetatable(input.down, input._downMT)
+    input.pressed = {_sv = {}}
+    setmetatable(input.pressed, input._pressedMT)
   else
-    inputHandler.keys[k] = nil
-    inputHandler.pressedTable[k] = nil
+    input.keys[k] = nil
+    input._pressedTable[k] = nil
+    input.down[k] = nil
+    input.pressed[k] = nil
   end
 end
 
-function inputHandler.down(k)
-  if (console and console.state == 1) or not inputHandler.keys[k] then
+function input._down(k)
+  if (console and console.state == 1) or not input.keys[k] then
     return false
   end
   local result = false
-  for i=1, #inputHandler.keys[k] do
-    if inputHandler.keys[k][i].type == "keyboard" then
-      local v = inputHandler.keys[k][i].input
+  for i=1, #input.keys[k] do
+    if input.keys[k][i].type == "keyboard" then
+      local v = input.keys[k][i].input
       result = love.keyboard.isDown(v) and not pressingHardInputs(v)
-    elseif inputHandler.keys[k][i].type == "gamepad" then
-      for _, v in ipairs(inputHandler.gamepads) do
-        if inputHandler.keys[k][i].name == v:getName() and v:isGamepadDown(inputHandler.keys[k][i].input) then
+    elseif input.keys[k][i].type == "gamepad" then
+      for _, v in ipairs(input.gamepads) do
+        if input.keys[k][i].name == v:getName() and v:isGamepadDown(input.keys[k][i].input) then
           result = true
           break
         end
       end
-    elseif inputHandler.keys[k][i].type == "axis" then
-      for _, v in ipairs(inputHandler.gamepads) do
-        if inputHandler.keys[k][i].name == v:getName() then
-          local input = inputHandler.keys[k][i].input
+    elseif input.keys[k][i].type == "axis" then
+      for _, v in ipairs(input.gamepads) do
+        if input.keys[k][i].name == v:getName() then
+          local input = input.keys[k][i].input
           if input == "leftx+" and v:getGamepadAxis("leftx") > deadZone then
             result = v:getGamepadAxis("leftx")
             break
@@ -89,9 +131,9 @@ function inputHandler.down(k)
           end
         end
       end
-    elseif inputHandler.keys[k][i].type == "custom" then
-      if inputHandler.custom[k] then
-        result = inputHandler.custom[k]()
+    elseif input.keys[k][i].type == "custom" then
+      if input.keys[k][i].func then
+        result = input.keys[k][i].func()
       end
     end
     if result then break end
@@ -99,36 +141,43 @@ function inputHandler.down(k)
   return result
 end
 
-function inputHandler.pressed(k)
+function input._pressed(k)
   if console and console.state == 1 then
     return false
   end
-  if not inputHandler.pressedTable[k] then
-    local res = inputHandler.down(k)
+  if not input._pressedTable[k] then
+    local res = input._down(k)
     if res then
-      inputHandler.pressedTable[k] = true
+      input._pressedTable[k] = true
       return res
     end
   end
   return false
 end
 
-function inputHandler.anyDown()
+function input.anyDown()
   if console and console.state == 1 then
     return false
   end
-  for k, _ in pairs(inputHandler.keys) do
-    if inputHandler.down(k) then
+  for k, _ in pairs(input.keys) do
+    if input._down(k) then
       return true
     end
   end
   return false
 end
 
-function inputHandler.flush()
-  for k, _ in pairs(inputHandler.pressedTable) do
-    if not inputHandler.down(k) then
-      inputHandler.pressedTable[k] = nil
+function input.poll()
+  for k, _ in pairs(input.keys) do
+    input.down[k] = input._down(k)
+    input.pressed[k] = input._pressed(k)
+  end
+end
+
+function input.flush()
+  for k, _ in pairs(input._pressedTable) do
+    if not input._down(k) then
+      input._pressedTable[k] = nil
     end
   end
 end

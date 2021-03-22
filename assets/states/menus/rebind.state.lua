@@ -29,7 +29,6 @@ function rebinder:new()
   self.done = false
   self.data = save.load("main.sav") or {}
   self.data.controls = {}
-  inputHandler.refreshGamepads()
 end
 
 function rebinder:update()
@@ -46,11 +45,10 @@ function rebinder:update()
     if self.currentKey == table.length(self.keysToSet) then
       if (self.step/11)+1 == globals.playerCount then
         self.done = true
-        inputHandler.unbind()
+        input.unbind()
         for k, v in pairs(self.data.controls) do
-          inputHandler.bind(v, k)
+          input.bind(v, k)
         end
-        control.usesDefaultBinds = false
         save.save("main.sav", self.data)
         megautils.add(fade, true, nil, nil, function(s)
             megautils.gotoState(globals.sendBackToDisclaimer and globals.disclaimerState or globals.lastStateName)

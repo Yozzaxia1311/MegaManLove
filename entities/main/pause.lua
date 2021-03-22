@@ -209,7 +209,7 @@ function mmWeaponsMenu:update(dt)
       h.colorOne = weapon.colors[w.weapons[self.list[self.sy][self.sx]]].one
       h.colorTwo = weapon.colors[w.weapons[self.list[self.sy][self.sx]]].two
     end
-    if control.startPressed[self.player.player] then
+    if input.pressed["start" .. tostring(self.player.player)] then
       megautils.add(fade, true, nil, nil, function(s)
           megautils.removeq(self)
           megautils.removeq(s)
@@ -231,7 +231,7 @@ function mmWeaponsMenu:update(dt)
       self.changing = "leaving"
       megautils.playSound("selected")
       return
-    elseif control.rightPressed[self.player.player] then
+    elseif input.pressed["right" .. tostring(self.player.player)] then
       self.sx = math.clamp(self.sx+1, 1, 2)
       local ly = self.sy
       while true do
@@ -267,7 +267,7 @@ function mmWeaponsMenu:update(dt)
         end
       end
       self.cur = self.fills[self.sy][self.sx].wid
-    elseif control.leftPressed[self.player.player] then
+    elseif input.pressed["left" .. tostring(self.player.player)] then
       self.sx = math.clamp(self.sx-1, 1, 2)
       local ly = self.sy
       while true do
@@ -303,7 +303,7 @@ function mmWeaponsMenu:update(dt)
         end
       end
       self.cur = self.fills[self.sy][self.sx].wid
-    elseif control.upPressed[self.player.player] then
+    elseif input.pressed["up" .. tostring(self.player.player)] then
       while true do
         if (not self.fills[self.sy] or not self.fills[self.sy][self.sx]) and self.sy == 1 and self.sx == 2 then
           self.sx = 1
@@ -315,7 +315,7 @@ function mmWeaponsMenu:update(dt)
         end
       end
       self.cur = self.fills[self.sy][self.sx].wid
-    elseif control.downPressed[self.player.player] then
+    elseif input.pressed["down" .. tostring(self.player.player)] then
       while true do
         if self.sy >= 6 then
           self.section = 1
@@ -339,7 +339,7 @@ function mmWeaponsMenu:update(dt)
     end
   elseif self.section == 1 then
     local olx, oly = self.sx, self.sy
-    if control.startPressed[self.player.player] then
+    if input.pressed["start" .. tostring(self.player.player)] then
       if self.sx == 1 and megautils.getETanks() > 0 then
         self.fills[1][1]:updateThis(self.player.healthHandler.segments * 4)
         self.changing = "health"
@@ -356,7 +356,7 @@ function mmWeaponsMenu:update(dt)
         self.changing = "weapons"
         megautils.setWTanks(math.max(megautils.getWTanks()-1, 0))
       end
-    elseif control.upPressed[self.player.player] then
+    elseif input.pressed["up" .. tostring(self.player.player)] then
       self.section = 0
       self.osx = nil
       self.osy = nil
@@ -370,9 +370,9 @@ function mmWeaponsMenu:update(dt)
       end
       self.cur = self.list[self.sy][self.sx]
       olx = -42
-    elseif self.sx == 1 and control.rightPressed[self.player.player] then
+    elseif self.sx == 1 and input.pressed["right" .. tostring(self.player.player)] then
       self.sx = 2
-    elseif self.sx == 2 and control.leftPressed[self.player.player] then
+    elseif self.sx == 2 and input.pressed["left" .. tostring(self.player.player)] then
       self.sx = 1
     end
     if olx ~= self.sx or oly ~= self.sy then

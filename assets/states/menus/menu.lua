@@ -33,15 +33,15 @@ end
 function menuSelect:update()
   if self.section == 0 then
     local old = self.pick
-    if control.upPressed[1] then
+    if input.pressed.up1 then
       self.pick = math.wrap(self.pick-1, 0, 7)
-    elseif control.downPressed[1] then
+    elseif input.pressed.down1 then
       self.pick = math.wrap(self.pick+1, 0, 7)
     end
     if old ~= self.pick then
       megautils.playSound("cursorMove")
     end
-    if (control.jumpPressed[1] or control.startPressed[1]) and not self.picked then
+    if (input.pressed.start1 or input.pressed.jump1) and not self.picked then
       if self.pick == 0 then
         self.picked = true
         self.section = -1
@@ -104,14 +104,14 @@ function menuSelect:update()
   elseif self.section == 1 then
     self.timer = math.wrap(self.timer+1, 0, 20)
     local old = megautils.getScale()
-    if control.leftPressed[1] then
+    if input.pressed.left1 then
       megautils.playSound("selected")
       megautils.setScale(math.wrap(megautils.getScale()-1, 1, 8))
-    elseif control.rightPressed[1] then
+    elseif input.pressed.right1 then
       megautils.playSound("selected")
       megautils.setScale(math.wrap(megautils.getScale()+1, 1, 8))
     end
-    if control.jumpPressed[1] or control.startPressed[1] then
+    if input.pressed.start1 or input.pressed.jump1 then
       self.section = 0
       self.timer = 20
       megautils.playSound("selected")
@@ -119,15 +119,15 @@ function menuSelect:update()
   elseif self.section == 2 then
     self.timer = math.wrap(self.timer+1, 0, 20)
     local old = globals.playerCount
-    if control.leftPressed[1] then
+    if input.pressed.left1 then
       globals.playerCount = math.wrap(globals.playerCount-1, 1, maxPlayerCount)
-    elseif control.rightPressed[1] then
+    elseif input.pressed.right1 then
       globals.playerCount = math.wrap(globals.playerCount+1, 1, maxPlayerCount)
     end
     if old ~= globals.playerCount then
       megautils.playSound("cursorMove")
     end
-    if control.jumpPressed[1] or control.startPressed[1] then
+    if input.pressed.start1 or input.pressed.jump1 then
       self.section = 0
       self.timer = 20
       megautils.playSound("selected")

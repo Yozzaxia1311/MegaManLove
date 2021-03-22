@@ -28,7 +28,7 @@ function title:new()
 end
 
 function title:update()
-  if self.s < 2 and (control.startPressed[1] or control.jumpPressed[1]) then
+  if self.s < 2 and (input.pressed.start1 or input.pressed.jump1) then
     self.s = 3
     self.oneOff = 0
     self.twoOff = 0
@@ -55,18 +55,18 @@ function title:update()
       states.openRecord = "assets/demo.rd"
       megautils.add(fade, true, nil, nil, function(s)
           megautils.setMusicLock(true)
-          control.drawDemoFunc = function()
-              if control.demo and math.wrap(control.recPos, 0, 40) < 20 then
+          record.drawDemoFunc = function()
+              if record.demo and math.wrap(record.recPos, 0, 40) < 20 then
                 love.graphics.setFont(mmFont)
                 love.graphics.print("DEMO", view.w - 48, view.h - 16)
               end
             end
-          control.returning = function()
+          record.returning = function()
               megautils.add(fade, true, nil, nil, function(s) megautils.resetGame("assets/states/menus/title.state.lua", false, true) end)
             end
           megautils.gotoState()
         end)
-    elseif control.startPressed[1] then
+    elseif input.pressed.start1 then
       megautils.stopMusic()
       self.drawText = false
       megautils.transitionToState(globals.menuState)

@@ -39,7 +39,7 @@ function view.draw()
   love.graphics.pop()
   megautils.updateShake()
   love.graphics.setColor(1, 1, 1, 1)
-  control.drawDemo()
+  record.drawDemo()
   if megautils.isShowingEntityCount() then
     local count = #megautils.state().system.all
     love.graphics.setFont(mmFont)

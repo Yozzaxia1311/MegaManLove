@@ -59,15 +59,15 @@ end
 
 function contSelect:update()
   local old = self.pick
-  if control.upPressed[1] then
+  if input.pressed.up1 then
     self.pick = math.wrap(self.pick-1, 0, 1)
-  elseif control.downPressed[1] then
+  elseif input.pressed.down1 then
     self.pick = math.wrap(self.pick+1, 0, 1)
   end
   if old ~= self.pick then
     megautils.playSound("cursorMove")
   end
-  if (control.jumpPressed[1] or control.startPressed[1]) and not self.picked then
+  if (input.pressed.start1 or input.pressed.jump1) and not self.picked then
     if self.pick == 1 then
       self.picked = true
       self.canDraw.global = false

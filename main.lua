@@ -25,14 +25,103 @@ altEnterOnce = false
 scaleOnce = {false, false, false, false, false, false, false, false, false}
 contextOnce = false
 
+function useDefaultBinds()
+  input.unbind()
+  
+  local defaultInputBinds, defaultInputBindsExtra = defaultBindsTable()
+  
+  input.bind(defaultInputBinds.up, "up1")
+  input.bind(defaultInputBinds.down, "down1")
+  input.bind(defaultInputBinds.left, "left1")
+  input.bind(defaultInputBinds.right, "right1")
+  input.bind(defaultInputBinds.jump, "jump1")
+  input.bind(defaultInputBinds.shoot, "shoot1")
+  input.bind(defaultInputBinds.dash, "dash1")
+  input.bind(defaultInputBinds.start, "start1")
+  input.bind(defaultInputBinds.select, "select1")
+  input.bind(defaultInputBinds.prev, "prev1")
+  input.bind(defaultInputBinds.next, "next1")
+  
+  for i=2, maxPlayerCount do
+    if defaultInputBindsExtra[i] then
+      input.bind(defaultInputBindsExtra[i].up, "up" .. tostring(i))
+      input.bind(defaultInputBindsExtra[i].down, "down" .. tostring(i))
+      input.bind(defaultInputBindsExtra[i].left, "left" .. tostring(i))
+      input.bind(defaultInputBindsExtra[i].right, "right" .. tostring(i))
+      input.bind(defaultInputBindsExtra[i].jump, "jump" .. tostring(i))
+      input.bind(defaultInputBindsExtra[i].shoot, "shoot" .. tostring(i))
+      input.bind(defaultInputBindsExtra[i].dash, "dash" .. tostring(i))
+      input.bind(defaultInputBindsExtra[i].start, "start" .. tostring(i))
+      input.bind(defaultInputBindsExtra[i].select, "select" .. tostring(i))
+      input.bind(defaultInputBindsExtra[i].prev, "prev" .. tostring(i))
+      input.bind(defaultInputBindsExtra[i].next, "next" .. tostring(i))
+    end
+  end
+end
+
+function loadBinds()
+  input.unbind()
+  
+  local defaultInputBinds, defaultInputBindsExtra = defaultBindsTable()
+  
+  input.bind(defaultInputBinds.up, "up1")
+  input.bind(defaultInputBinds.down, "down1")
+  input.bind(defaultInputBinds.left, "left1")
+  input.bind(defaultInputBinds.right, "right1")
+  input.bind(defaultInputBinds.jump, "jump1")
+  input.bind(defaultInputBinds.shoot, "shoot1")
+  input.bind(defaultInputBinds.dash, "dash1")
+  input.bind(defaultInputBinds.start, "start1")
+  input.bind(defaultInputBinds.select, "select1")
+  input.bind(defaultInputBinds.prev, "prev1")
+  input.bind(defaultInputBinds.next, "next1")
+  
+  for i=2, maxPlayerCount do
+    if defaultInputBindsExtra[i] then
+      input.bind(defaultInputBindsExtra[i].up, "up" .. tostring(i))
+      input.bind(defaultInputBindsExtra[i].down, "down" .. tostring(i))
+      input.bind(defaultInputBindsExtra[i].left, "left" .. tostring(i))
+      input.bind(defaultInputBindsExtra[i].right, "right" .. tostring(i))
+      input.bind(defaultInputBindsExtra[i].jump, "jump" .. tostring(i))
+      input.bind(defaultInputBindsExtra[i].shoot, "shoot" .. tostring(i))
+      input.bind(defaultInputBindsExtra[i].dash, "dash" .. tostring(i))
+      input.bind(defaultInputBindsExtra[i].start, "start" .. tostring(i))
+      input.bind(defaultInputBindsExtra[i].select, "select" .. tostring(i))
+      input.bind(defaultInputBindsExtra[i].prev, "prev" .. tostring(i))
+      input.bind(defaultInputBindsExtra[i].next, "next" .. tostring(i))
+    end
+  end
+  
+  local data = save.load("main.sav")
+  
+  if data and data.inputBinds then
+    for i = 1, maxPlayerCount do
+      if data.inputBinds[i] then
+        if data.inputBinds[i]["up" .. tostring(i)] then input.bind(data.inputBinds[i].up, "up" .. tostring(i)) end
+        if data.inputBinds[i]["down" .. tostring(i)] then input.bind(data.inputBinds[i].down, "down" .. tostring(i)) end
+        if data.inputBinds[i]["left" .. tostring(i)] then input.bind(data.inputBinds[i].left, "left" .. tostring(i)) end
+        if data.inputBinds[i]["right" .. tostring(i)] then input.bind(data.inputBinds[i].right, "right" .. tostring(i)) end
+        if data.inputBinds[i]["jump" .. tostring(i)] then input.bind(data.inputBinds[i].jump, "jump" .. tostring(i)) end
+        if data.inputBinds[i]["shoot" .. tostring(i)] then input.bind(data.inputBinds[i].shoot, "shoot" .. tostring(i)) end
+        if data.inputBinds[i]["dash" .. tostring(i)] then input.bind(data.inputBinds[i].dash, "dash" .. tostring(i)) end
+        if data.inputBinds[i]["start" .. tostring(i)] then input.bind(data.inputBinds[i].start, "start" .. tostring(i)) end
+        if data.inputBinds[i]["select" .. tostring(i)] then input.bind(data.inputBinds[i].select, "select" .. tostring(i)) end
+        if data.inputBinds[i]["prev" .. tostring(i)] then input.bind(data.inputBinds[i].prev, "prev" .. tostring(i)) end
+        if data.inputBinds[i]["next" .. tostring(i)] then input.bind(data.inputBinds[i].next, "next" .. tostring(i)) end
+      end
+    end
+  end
+end
+
 -- Initializes the whole game to its base state.
 function initEngine()
   keyboardCheck = {}
   gamepadCheck = {}
   doCheckDelay = false
   love.graphics.setFont(mmFont)
-  inputHandler.init()
-  control.init()
+  input.init()
+  loadBinds()
+  record.init()
   globals = {}
   view.init(gameWidth, gameHeight, 1)
   cscreen.init(view.w*view.scale, view.h*view.scale, borderLeft, borderRight)
@@ -135,18 +224,32 @@ function love.resize(w, h)
 end
 
 function love.joystickadded(j)
-  control.loadBinds()
+  loadBinds()
 end
 
 function love.joystickremoved(j)
-  control.loadBinds()
+  loadBinds()
 end
 
 function love.keypressed(k, s, r)
-  if pressingHardInputs(k) and not control.pressAnyway then return end
-  if control.demo and not control.pressAnyway then
-    control.anyPressedDuringRec = true
+  if pressingHardInputs(k) and not record.pressAnyway then
+    if record.recordInput then
+      record._backupKey = k
+    end
     return
+  end
+  if record.demo and not record.pressAnyway then
+    record.anyPressedDuringRec = true
+    return
+  end
+  
+  record.anyPressed = true
+  
+  if record.recordInput then
+    if not record.keyPressedRec then
+      record.keyPressedRec = {}
+    end
+    record.keyPressedRec[#record.keyPressedRec+1] = {k, s, r}
   end
   
   -- keypressed event must be hijacked for console to work
@@ -180,20 +283,11 @@ function love.keypressed(k, s, r)
     lastPressed.input = k
   end
   keyboardCheck[k] = 5
-  
-  control.anyPressed = true
-  
-  if control.recordInput then
-    if not control.keyPressedRec then
-      control.keyPressedRec = {}
-    end
-    control.keyPressedRec[#control.keyPressedRec+1] = {k, s, r}
-  end
 end
 
 function love.gamepadpressed(j, b)
-  if control.demo and not control.pressAnyway then
-    control.anyPressedDuringRec = true
+  if record.demo and not record.pressAnyway then
+    record.anyPressedDuringRec = true
     return
   end
   if useConsole and console.state == 1 then return end
@@ -205,18 +299,18 @@ function love.gamepadpressed(j, b)
   end
   gamepadCheck[b] = 5
   
-  control.anyPressed = true
+  record.anyPressed = true
   
-  if control.recordInput then
-    if not control.gamepadPressedRec then
-      control.gamepadPressedRec = {}
+  if record.recordInput then
+    if not record.gamepadPressedRec then
+      record.gamepadPressedRec = {}
     end
-    control.gamepadPressedRec[#control.gamepadPressedRec+1] = {k, s, r}
+    record.gamepadPressedRec[#record.gamepadPressedRec+1] = {k, s, r}
   end
 end
 
 function love.gamepadaxis(j, b, v)
-  if control.demo and not control.pressAnyway then return end
+  if record.demo and not record.pressAnyway then return end
   if useConsole and console.state == 1 then return end
   
   if not math.between(v, -deadZone, deadZone) then
@@ -237,17 +331,17 @@ function love.gamepadaxis(j, b, v)
     gamepadCheck[b] = 10
   end
   
-  if control.recordInput then
-    if not control.gamepadAxisRec then
-      control.gamepadAxisRec = {}
+  if record.recordInput then
+    if not record.gamepadAxisRec then
+      record.gamepadAxisRec = {}
     end
-    control.gamepadAxisRec[#control.gamepadAxisRec+1] = {k, s, r}
+    record.gamepadAxisRec[#record.gamepadAxisRec+1] = {k, s, r}
   end
 end
 
 function love.touchpressed(id, x, y, dx, dy, pressure)
-  if control.demo and not control.pressAnyway then
-    control.anyPressedDuringRec = true
+  if record.demo and not record.pressAnyway then
+    record.anyPressedDuringRec = true
     return
   end
   if useConsole and console.state == 1 then return end
@@ -259,26 +353,26 @@ function love.touchpressed(id, x, y, dx, dy, pressure)
   lastTouch.dx = dx
   lastTouch.dy = dy
   
-  if control.recordInput then
-    if not control.touchPressedRec then
-      control.touchPressedRec = {}
+  if record.recordInput then
+    if not record.touchPressedRec then
+      record.touchPressedRec = {}
     end
-    control.touchPressedRec[#control.touchPressedRec+1] = {k, s, r}
+    record.touchPressedRec[#record.touchPressedRec+1] = {k, s, r}
   end
 end
 
 function love.textinput(k)
-  if pressingHardInputs(k) and not control.pressAnyway then return end
-  if control.demo and not control.pressAnyway then return end
+  if pressingHardInputs(k) and not record.pressAnyway then return end
+  if record.demo and not record.pressAnyway then return end
   if useConsole then console.doInput(k) end
   
   lastTextInput = k
   
-  if control and control.recordInput then
-    if not control.textInputRec then
-      control.textInputRec = {}
+  if record and record.recordInput then
+    if not record.textInputRec then
+      record.textInputRec = {}
     end
-    control.textInputRec[#control.textInputRec+1] = k
+    record.textInputRec[#record.textInputRec+1] = k
   end
 end
 
@@ -287,12 +381,14 @@ function love.update(dt)
   
   while doAgain do
     states.switched = false
-    control.update()
+    if not record.demo then input.poll() end
+    record.update()
     if useConsole then console.update(dt) end
     states.update(dt)
     megautils.checkQueue()
     states.checkQueue()
-    control.flush()
+    input.flush()
+    record.anyPressed = false
     doAgain = states.switched
   end
   
@@ -377,7 +473,7 @@ function pressingHardInputs(k)
     elseif (k == "o" or k == "p" or k == "r") and megautils.isCheating() then
       isHardKey = true
       checkMod = 2
-    elseif k == "backspace" and control.recordInput then
+    elseif k == "backspace" and record.recordInput then
       isHardKey = true
     elseif k == "ralt" or k == "lalt" then
       isHardKey = true
@@ -483,15 +579,15 @@ function love.run()
         deser(f)
       end
       
-      if control._openRecQ then
-        local f = control._openRecQ
-        control._openRecQ = nil
-        control.openRec(f)
+      if record._openRecQ then
+        local f = record._openRecQ
+        record._openRecQ = nil
+        record.openRec(f)
       end
       
-      if control._startRecQ then
-        control._startRecQ = false
-        control.startRec()
+      if record._startRecQ then
+        record._startRecQ = false
+        record.startRec()
       end
       
       if le then
@@ -526,8 +622,8 @@ function love.run()
       states.checkQueue()
       mmMusic.checkQueue()
       console.doWait()
-      control.anyPressed = false
-      control.anyPressedDuringRec = false
+      record.anyPressed = false
+      record.anyPressedDuringRec = false
       cscreen.updateFade()
       
       lastPressed.type = nil
@@ -557,7 +653,7 @@ function ser()
       section = section.ser(),
       loader = loader.ser(),
       music = mmMusic.ser(),
-      control = control.ser(),
+      record = record.ser(),
       collision = collision.ser(),
       banner = banner and banner.ser(),
       banIDs = pickup.banIDs,
@@ -601,7 +697,7 @@ function deser(from, dontChangeMusic)
   if not dontChangeMusic then
     mmMusic.deser(t.music)
   end
-  control.deser(t.control)
+  record.deser(t.record)
   collision.deser(t.collision)
   if t.banner then
     banner.deser(t.banner)

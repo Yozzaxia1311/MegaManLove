@@ -14,12 +14,7 @@ end
 
 function mmMusic.deser(t)
   mmMusic.locked = false
-  
-  if mmMusic.thread and mmMusic.thread:isRunning() then
-    mmMusic.stop()
-    mmMusic.thread:wait()
-  end
-  
+  mmMusic.stop()
   mmMusic.curID = t.curID
   mmMusic._queue = t.queue
   if t.curID and t.playing then
