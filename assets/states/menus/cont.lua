@@ -65,7 +65,7 @@ function contSelect:update()
     self.pick = math.wrap(self.pick+1, 0, 1)
   end
   local touched = false
-  if #input.touchPressed ~= 0 then
+  if input.length(input.touchPressed) ~= 0 then
     for i = 0, 1 do
       local x, y, w, h = self.x + 8, self.offY + (i * 16), 96, 8
       y = y - 4

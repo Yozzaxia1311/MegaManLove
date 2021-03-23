@@ -73,7 +73,7 @@ function disclaimer:update()
         return
       end
     end
-    if input.pressed.start1 or #input.touchPressed ~= 0 then
+    if input.pressed.start1 or input.length(input.touchPressed) ~= 0 then
       megautils.transitionToState(globals.titleState)
       self.check = false
       return

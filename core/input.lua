@@ -1,7 +1,51 @@
 input = {}
 
+function input.ser()
+  return {
+      deactivateTouch = input.deactivateTouch,
+      usingTouch = input.usingTouch
+    }
+end
+
+function input.deser(t)
+  input.deactivateTouch = t.deactivateTouch
+  input.usingTouch = t.usingTouch
+end
+
+function input.pairs(t)
+  local function iter(tbl, k)
+    local v
+    
+    if tbl == input.down then
+      k, v = next(input._downSV, k)
+    elseif tbl == input.pressed then
+      k, v = next(input._pressedSV, k)
+    elseif tbl == input.touchDown then
+      k, v = next(input._touchDownSV, k)
+    elseif tbl == input.touchPressed then
+      k, v = next(input._touchPressedSV, k)
+    end
+    
+    return k, v
+  end
+  
+  return iter, t, nil
+end
+
+function input.length(t)
+  if t == input.down then
+    return table.length(input._downSV)
+  elseif t == input.pressed then
+    return table.length(input._pressedSV)
+  elseif t == input.touchDown then
+    return #input._touchDownSV
+  elseif t == input.touchPressed then
+    return #input._touchPressedSV
+  end
+end
+
 input._downMT = {__newindex = function(self, k, v)
-    rawget(self, "_sv")[k] = v
+    input._downSV[k] = v
   end, __index = function(self, k)
     if record and record.demo then
       if record.loadedRec and record.loadedRec.data and
@@ -12,11 +56,11 @@ input._downMT = {__newindex = function(self, k, v)
       return
     end
     
-    return rawget(self, "_sv")[k]
+    return input._downSV[k]
   end}
 
 input._pressedMT = {__newindex = function(self, k, v)
-    rawget(self, "_sv")[k] = v
+    input._pressedSV[k] = v
   end, __index = function(self, k)
     if record and record.demo then
       if record.loadedRec and record.loadedRec.data and
@@ -27,19 +71,55 @@ input._pressedMT = {__newindex = function(self, k, v)
       return
     end
     
-    return rawget(self, "_sv")[k]
+    return input._pressedSV[k]
+  end}
+
+input._touchDownMT = {__newindex = function(self, k, v)
+    input._touchDownSV[k] = v
+  end, __index = function(self, k)
+    if record and record.demo then
+      if record.loadedRec and record.loadedRec.data and
+        record.loadedRec.data[record.loadedRecPos] and record.loadedRec.data[record.loadedRecPos].touchDown then
+        return record.loadedRec.data[record.loadedRecPos].touchDown[k]
+      end
+      
+      return
+    end
+    
+    return input._touchDownSV[k]
+  end}
+
+input._touchPressedMT = {__newindex = function(self, k, v)
+    input._touchPressedSV[k] = v
+  end, __index = function(self, k)
+    if record and record.demo then
+      if record.loadedRec and record.loadedRec.data and
+        record.loadedRec.data[record.loadedRecPos] and record.loadedRec.data[record.loadedRecPos].touchPressed then
+        return record.loadedRec.data[record.loadedRecPos].touchPressed[k]
+      end
+      
+      return
+    end
+    
+    return input._touchPressedSV[k]
   end}
 
 function input.init()
   input.keys = {}
   input._pressedTable = {}
   input.gamepads = love.joystick and love.joystick.getJoysticks()
-  input.down = {_sv = {}}
+  input.down = {}
+  input._downSV = {}
   setmetatable(input.down, input._downMT)
-  input.pressed = {_sv = {}}
+  input.pressed = {}
+  input._pressedSV = {}
   setmetatable(input.pressed, input._pressedMT)
   input.touchDown = {}
+  input._touchDownSV = {}
+  setmetatable(input.touchDown, input._touchDownMT)
   input.touchPressed = {}
+  input._touchPressedSV = {}
+  setmetatable(input.touchPressed, input._touchPressedMT)
   input.deactivateTouch = {}
   input.usingTouch = isMobile or (not love.keyboard and (love.mouse or love.touch))
 end
@@ -62,9 +142,11 @@ function input.unbind(k)
   if not k then
     input.keys = {}
     input._pressedTable = {}
-    input.down = {_sv = {}}
+    input.down = {}
+    input._downSV = {}
     setmetatable(input.down, input._downMT)
-    input.pressed = {_sv = {}}
+    input.pressed = {}
+    input._pressedSV = {}
     setmetatable(input.pressed, input._pressedMT)
     input.deactivateTouch = {}
   else
@@ -164,9 +246,9 @@ function input._pressed(k)
   return false
 end
 
-function input.touchDownOverlaps(x, y, w, h)
-  for _, v in pairs(input.touchDown) do
-    if pointOverlapsRect(v.x, v.y, x, y, w, h) then
+function input.touchDownOverlaps(x, y, w, h, realCoords)
+  for _, v in input.pairs(input.touchDown) do
+    if pointOverlapsRect(realCoords and v.realX or v.x, realCoords and v.realY or v.y, x, y, w, h) then
       return true
     end
   end
@@ -174,9 +256,9 @@ function input.touchDownOverlaps(x, y, w, h)
   return false
 end
 
-function input.touchPressedOverlaps(x, y, w, h)
-  for _, v in pairs(input.touchPressed) do
-    if pointOverlapsRect(v.x, v.y, x, y, w, h) then
+function input.touchPressedOverlaps(x, y, w, h, realCoords)
+  for _, v in input.pairs(input.touchPressed) do
+    if pointOverlapsRect(realCoords and v.realX or v.x, realCoords and v.realY or v.y, x, y, w, h) then
       return true
     end
   end
@@ -193,7 +275,7 @@ function input.anyDown()
       return true
     end
   end
-  return #input.touchDown ~= 0
+  return input.length(input.touchDown) ~= 0
 end
 
 function input.poll()
@@ -216,28 +298,60 @@ function input.poll()
       newTouches[#newTouches + 1] = "mousetouch"
     end
     
-    for _, v in pairs(input.touchDown) do
-      if not table.contains(newTouches, v.id) then
-        table.removevalue(input.touchDown, v)
+    for k, v in input.pairs(input.touchDown) do
+      if not table.icontains(newTouches, v.id) then
+        local len = input.length(input.touchDown)
+        if input.touchDown[len] == v then input.touchDown[len] = nil return end
+        for i=1, len do
+          if input.touchDown[i] == v then
+            input.touchDown[i] = input.touchDown[len]
+            input.touchDown[len] = nil
+            break
+          end
+        end
       end
     end
     
-    for _, v in pairs(input.touchDown) do
+    for _, v in input.pairs(input.touchDown) do
       ids[#ids + 1] = v.id
     end
     
     for _, v in pairs(newTouches) do
-      if not table.contains(ids, v) then
+      if not table.icontains(ids, v) then
         if love.mouse and v == "mousetouch" then
-          local x, y = cscreen.project(love.mouse.getPosition())
-          input.touchDown[#input.touchDown + 1] = {id = v, x = x, y = y, pressure = 1}
-          input.touchPressed[#input.touchPressed + 1] = {id = v, x = x, y = y, pressure = 1}
+          local realX, realY = love.mouse.getPosition()
+          local x, y = cscreen.project(realX, realY)
+          input.touchDown[input.length(input.touchDown) + 1] = {id = v, x = x, y = y, pressure = 1, realX = realX, realY = realY}
+          input.touchPressed[input.length(input.touchPressed) + 1] = {id = v, x = x, y = y, pressure = 1, realX = realX, realY = realY}
         elseif love.touch then
-          local x, y = cscreen.project(love.touch.getPosition(v))
+          local realX, realY = love.touch.getPosition(v)
+          local x, y = cscreen.project(realX, realY)
           local p = love.touch.getPressure(v)
-          input.touchDown[#input.touchDown + 1] = {id = v, x = x, y = y, pressure = p}
-          input.touchPressed[#input.touchPressed + 1] = {id = v, x = x, y = y, pressure = p}
+          input.touchDown[input.length(input.touchDown) + 1] = {id = v, x = x, y = y, pressure = p, realX = realX, realY = realY}
+          input.touchPressed[input.length(input.touchPressed) + 1] = {id = v, x = x, y = y, pressure = p, realX = realX, realY = realY}
         end
+      end
+    end
+    
+    for _, v in input.pairs(input.touchDown) do
+      if love.mouse and v.id == "mousetouch" then
+        v.realX, v.realY = love.mouse.getPosition()
+        v.x, v.y = cscreen.project(v.realX, v.realY)
+      elseif love.touch then
+        v.realX, v.realY = love.touch.getPosition(v.id)
+        v.x, v.y = cscreen.project(v.realX, v.realY)
+        v.pressure = love.touch.getPressure(v.id)
+      end
+    end
+    
+    for _, v in input.pairs(input.touchPressed) do
+      if love.mouse and v.id == "mousetouch" then
+        v.realX, v.realY = love.mouse.getPosition()
+        v.x, v.y = cscreen.project(v.realX, v.realY)
+      elseif love.touch then
+        v.realX, v.realY = love.touch.getPosition(v.id)
+        v.x, v.y = cscreen.project(v.realX, v.realY)
+        v.pressure = love.touch.getPressure(v.id)
       end
     end
   end
@@ -251,6 +365,8 @@ function input.flush()
   end
   
   input.touchPressed = {}
+  input._touchPressedSV = {}
+  setmetatable(input.touchPressed, input._touchPressedMT)
 end
 
 input._dTimer = 0

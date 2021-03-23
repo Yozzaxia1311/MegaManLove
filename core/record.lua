@@ -182,7 +182,7 @@ function record.playRecord()
 end
 
 function record.doRecording()
-  for k, _ in pairs(input.keys) do
+  for k, _ in input.pairs(input.keys) do
     if input.down[k] then
       if not record.record.data[record.recPos] then
         record.record.data[record.recPos] = {}
@@ -201,6 +201,26 @@ function record.doRecording()
       end
       record.record.data[record.recPos].pressed[k] = input.pressed[k]
     end
+  end
+  
+  for k, _ in input.pairs(input.touchDown) do
+    if not record.record.data[record.recPos] then
+      record.record.data[record.recPos] = {}
+    end
+    if not record.record.data[record.recPos].touchDown then
+      record.record.data[record.recPos].touchDown = {}
+    end
+    record.record.data[record.recPos].touchDown[k] = input.touchDown[k]
+  end
+  
+  for k, _ in input.pairs(input.touchPressed) do
+    if not record.record.data[record.recPos] then
+      record.record.data[record.recPos] = {}
+    end
+    if not record.record.data[record.recPos].touchPressed then
+      record.record.data[record.recPos].touchPressed = {}
+    end
+    record.record.data[record.recPos].touchPressed[k] = input.touchPressed[k]
   end
   
   if record.keyPressedRec then
@@ -255,7 +275,7 @@ end
 
 function record.updateDemo()
   if record.updateDemoFunc then
-    return record.updateDemoFunc()
+    return record.anyPressedDuringRec or record.updateDemoFunc()
   else
     if record.demo then
       return record.anyPressedDuringRec

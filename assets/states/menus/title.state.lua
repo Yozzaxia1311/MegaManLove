@@ -31,7 +31,7 @@ function title:new()
 end
 
 function title:update()
-  if self.s < 2 and (input.pressed.start1 or input.pressed.jump1 or #input.touchPressed ~= 0) then
+  if self.s < 2 and (input.pressed.start1 or input.pressed.jump1 or input.length(input.touchPressed) ~= 0) then
     self.s = 3
     self.oneOff = 0
     self.twoOff = 0
@@ -78,7 +78,7 @@ function title:update()
             end
           megautils.gotoState()
         end)
-    elseif input.pressed.start1 or #input.touchPressed ~= 0 then
+    elseif input.pressed.start1 or input.length(input.touchPressed) ~= 0 then
       megautils.stopMusic()
       self.drawText = false
       megautils.transitionToState(globals.menuState)

@@ -39,7 +39,7 @@ function menuSelect:update()
       self.pick = math.wrap(self.pick+1, 0, 7)
     end
     local touched = false
-    if #input.touchPressed ~= 0 then
+    if input.length(input.touchPressed) ~= 0 then
       for i = 0, 7 do
         local x, y, w, h = 80, 80 + (i * 16), 96, 8
         y = y - 4

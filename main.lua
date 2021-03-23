@@ -90,6 +90,7 @@ function initEngine()
   input.init()
   loadBinds()
   record.init()
+  vPad.init()
   globals = {}
   view.init(gameWidth, gameHeight, 1)
   cscreen.init(view.w*view.scale, view.h*view.scale, borderLeft, borderRight)
@@ -356,7 +357,10 @@ function love.update(dt)
   
   while doAgain do
     states.switched = false
-    if not record.demo then input.poll() end
+    if not record.demo then
+      input.poll()
+      vPad.update()
+    end
     record.update()
     if useConsole then console.update(dt) end
     states.update(dt)
@@ -400,6 +404,7 @@ function love.draw()
   love.graphics.push()
   view.draw()
   love.graphics.pop()
+  vPad.draw()
   if useConsole then console.draw() end
 end
 
@@ -623,6 +628,7 @@ function ser()
       serQueue = serQueue,
       deserQueue = deserQueue,
       backgroundColor = {love.graphics.getBackgroundColor()},
+      input = input.ser(),
       cscreen = cscreen.ser(),
       view = view.ser(),
       megautils = megautils.ser(),
@@ -665,6 +671,7 @@ function deser(from, dontChangeMusic)
   serQueue = t.serQueue
   deserQueue = t.deserQueue
   love.graphics.setBackgroundColor(unpack(t.backgroundColor))
+  input.deser(t.input)
   cscreen.deser(t.cscreen)
   view.deser(t.view)
   megautils.deser(t.megautils)

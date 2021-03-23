@@ -117,7 +117,7 @@ function stageSelect:update()
       self.sy = self.sy+1
     end
     
-    if #input.touchPressed ~= 0 then
+    if input.length(input.touchPressed) ~= 0 then
       for x=0, 2 do
         for y=0, 2 do
           if input.touchPressedOverlaps(32+(x*81), 32+(y*64), 48, 48) then
@@ -138,7 +138,9 @@ function stageSelect:update()
   end
   
   if oldx ~= self.sx or oldy ~= self.sy then
-    megautils.playSound("cursorMove")
+    if not input.usingTouch then
+      megautils.playSound("cursorMove")
+    end
     local newx, newy = 0, 0
     if self.sx == 0 and self.sy == 0 then
       newx = 0
