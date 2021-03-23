@@ -81,7 +81,9 @@ function healthHandler:update(dt)
         if healthHandler.playerTimers[i] == 0 then
           healthHandler.playerTimers[i] = -1
         end
-      elseif healthHandler.playerTimers[i] == -1 and input.pressed["start" .. tostring(i)] then
+      elseif healthHandler.playerTimers[i] == -1 and
+        (input.pressed["start" .. tostring(i)] or
+        (i == 1 and input.touchPressedOverlaps(self.x - 8, self.y + 8 - 8, 48 + 16, 8 + 16))) then
         if megautils.getLives() > 0 then
           healthHandler.playerTimers[i] = -2
           local p = megautils.add(megaMan, self.player.x, self.player.y, self.player.side, true, i)
@@ -126,13 +128,13 @@ function healthHandler:draw()
       for i=1, globals.playerCount do
         if healthHandler.playerTimers[i] == -1 then
           love.graphics.setColor(0, 0, 0, 1)
-          love.graphics.rectangle("fill", self.x, self.y+(i*8), 32, 8)
+          love.graphics.rectangle("fill", self.x, self.y+(i*8), (i == 1 and input.usingTouch) and 48 or 32, 8)
           if megautils.getLives() <= 0 then
             love.graphics.setColor(1, 0.2, 0.2, 1)
             love.graphics.print("p" .. tostring(i) .. " x", self.x, self.y+(i*8))
           else
             love.graphics.setColor(0.2, 1, 0.2, 1)
-            love.graphics.print("p" .. tostring(i) .. " o", self.x, self.y+(i*8))
+            love.graphics.print("p" .. tostring(i) .. (i == 1 and input.usingTouch and " tap" or " o"), self.x, self.y+(i*8))
           end
           love.graphics.setColor(1, 1, 1, 1)
         elseif healthHandler.playerTimers[i] > -1 then
