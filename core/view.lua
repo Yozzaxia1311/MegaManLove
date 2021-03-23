@@ -43,15 +43,20 @@ function view.draw()
   if megautils.isShowingEntityCount() then
     local count = #megautils.state().system.all
     love.graphics.setFont(mmFont)
+    love.graphics.setColor(0, 0, 0, 0.4)
+    love.graphics.rectangle("fill", view.w - 24 - 8, 23, 32, 10)
     love.graphics.setColor(1, 1, 1, 0.8)
     love.graphics.print(count, view.w - 24, 24)
   end
   if megautils.isShowingFPS() then
     local fps = love.timer.getFPS()
     love.graphics.setFont(mmFont)
+    love.graphics.setColor(0, 0, 0, 0.4)
+    love.graphics.rectangle("fill", view.w - 24 - 8, 7, 32, 10)
     love.graphics.setColor(1, 1, 1, 0.8)
     love.graphics.print(fps, view.w - 24, 8)
   end
+  input.draw()
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.setCanvas()
   cscreen.apply()

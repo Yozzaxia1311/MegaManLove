@@ -30,17 +30,17 @@ function useDefaultBinds()
   
   local defaultInputBinds, defaultInputBindsExtra = defaultBindsTable()
   
-  input.bind(defaultInputBinds.up, "up1")
-  input.bind(defaultInputBinds.down, "down1")
-  input.bind(defaultInputBinds.left, "left1")
-  input.bind(defaultInputBinds.right, "right1")
-  input.bind(defaultInputBinds.jump, "jump1")
-  input.bind(defaultInputBinds.shoot, "shoot1")
-  input.bind(defaultInputBinds.dash, "dash1")
-  input.bind(defaultInputBinds.start, "start1")
-  input.bind(defaultInputBinds.select, "select1")
-  input.bind(defaultInputBinds.prev, "prev1")
-  input.bind(defaultInputBinds.next, "next1")
+  input.bind(defaultInputBinds.up, "up1", true)
+  input.bind(defaultInputBinds.down, "down1", true)
+  input.bind(defaultInputBinds.left, "left1", true)
+  input.bind(defaultInputBinds.right, "right1", true)
+  input.bind(defaultInputBinds.jump, "jump1", true)
+  input.bind(defaultInputBinds.shoot, "shoot1", true)
+  input.bind(defaultInputBinds.dash, "dash1", true)
+  input.bind(defaultInputBinds.start, "start1", true)
+  input.bind(defaultInputBinds.select, "select1", true)
+  input.bind(defaultInputBinds.prev, "prev1", true)
+  input.bind(defaultInputBinds.next, "next1", true)
   
   for i=2, maxPlayerCount do
     if defaultInputBindsExtra[i] then
@@ -66,17 +66,17 @@ function loadBinds()
   
   if data and data.inputBinds then
     for i = 1, maxPlayerCount do
-      if data.inputBinds["up" .. tostring(i)] then input.bind(data.inputBinds["up" .. tostring(i)], "up" .. tostring(i)) end
-      if data.inputBinds["down" .. tostring(i)] then input.bind(data.inputBinds["down" .. tostring(i)], "down" .. tostring(i)) end
-      if data.inputBinds["left" .. tostring(i)] then input.bind(data.inputBinds["left" .. tostring(i)], "left" .. tostring(i)) end
-      if data.inputBinds["right" .. tostring(i)] then input.bind(data.inputBinds["right" .. tostring(i)], "right" .. tostring(i)) end
-      if data.inputBinds["jump" .. tostring(i)] then input.bind(data.inputBinds["jump" .. tostring(i)], "jump" .. tostring(i)) end
-      if data.inputBinds["shoot" .. tostring(i)] then input.bind(data.inputBinds["shoot" .. tostring(i)], "shoot" .. tostring(i)) end
-      if data.inputBinds["dash" .. tostring(i)] then input.bind(data.inputBinds["dash" .. tostring(i)], "dash" .. tostring(i)) end
-      if data.inputBinds["start" .. tostring(i)] then input.bind(data.inputBinds["start" .. tostring(i)], "start" .. tostring(i)) end
-      if data.inputBinds["select" .. tostring(i)] then input.bind(data.inputBinds["select" .. tostring(i)], "select" .. tostring(i)) end
-      if data.inputBinds["prev" .. tostring(i)] then input.bind(data.inputBinds["prev" .. tostring(i)], "prev" .. tostring(i)) end
-      if data.inputBinds["next" .. tostring(i)] then input.bind(data.inputBinds["next" .. tostring(i)], "next" .. tostring(i)) end
+      if data.inputBinds["up" .. tostring(i)] then input.bind(data.inputBinds["up" .. tostring(i)], "up" .. tostring(i), i == 1) end
+      if data.inputBinds["down" .. tostring(i)] then input.bind(data.inputBinds["down" .. tostring(i)], "down" .. tostring(i), i == 1) end
+      if data.inputBinds["left" .. tostring(i)] then input.bind(data.inputBinds["left" .. tostring(i)], "left" .. tostring(i), i == 1) end
+      if data.inputBinds["right" .. tostring(i)] then input.bind(data.inputBinds["right" .. tostring(i)], "right" .. tostring(i), i == 1) end
+      if data.inputBinds["jump" .. tostring(i)] then input.bind(data.inputBinds["jump" .. tostring(i)], "jump" .. tostring(i), i == 1) end
+      if data.inputBinds["shoot" .. tostring(i)] then input.bind(data.inputBinds["shoot" .. tostring(i)], "shoot" .. tostring(i), i == 1) end
+      if data.inputBinds["dash" .. tostring(i)] then input.bind(data.inputBinds["dash" .. tostring(i)], "dash" .. tostring(i), i == 1) end
+      if data.inputBinds["start" .. tostring(i)] then input.bind(data.inputBinds["start" .. tostring(i)], "start" .. tostring(i), i == 1) end
+      if data.inputBinds["select" .. tostring(i)] then input.bind(data.inputBinds["select" .. tostring(i)], "select" .. tostring(i), i == 1) end
+      if data.inputBinds["prev" .. tostring(i)] then input.bind(data.inputBinds["prev" .. tostring(i)], "prev" .. tostring(i), i == 1) end
+      if data.inputBinds["next" .. tostring(i)] then input.bind(data.inputBinds["next" .. tostring(i)], "next" .. tostring(i), i == 1) end
     end
   end
 end
@@ -249,7 +249,6 @@ function love.keypressed(k, s, r)
   if not doCheckDelay or not keyboardCheck[k] then
     lastPressed.type = "keyboard"
     lastPressed.input = k
-    input.usingTouch = false
   end
   keyboardCheck[k] = 5
 end
@@ -265,7 +264,6 @@ function love.gamepadpressed(j, b)
     lastPressed.type = "gamepad"
     lastPressed.input = b
     lastPressed.name = j:getName()
-    input.usingTouch = false
   end
   gamepadCheck[b] = 5
   
@@ -297,7 +295,6 @@ function love.gamepadaxis(j, b, v)
         lastPressed.input = b .. (v > 0 and "+" or "-")
         lastPressed.name = j:getName()
       end
-      input.usingTouch = false
     end
     gamepadCheck[b] = 10
   end
@@ -310,11 +307,13 @@ function love.gamepadaxis(j, b, v)
   end
 end
 
-function love.mousepressed(x, y, button)
-  lastTouch.x, lastTouch.y = cscreen.project(x, y)
-  lastTouch.id = "mousetouch"
-  lastTouch.pressure = 1
-  input.usingTouch = true
+function love.mousepressed(x, y, button, touch)
+  if not touch then
+    lastTouch.x, lastTouch.y = cscreen.project(x, y)
+    lastTouch.id = "mousetouch"
+    lastTouch.pressure = 1
+    input.usingTouch = true
+  end
 end
 
 function love.touchpressed(id, x, y, dx, dy, pressure)
@@ -402,7 +401,6 @@ function love.draw()
   view.draw()
   love.graphics.pop()
   if useConsole then console.draw() end
-  input.draw()
 end
 
 function love.quit()

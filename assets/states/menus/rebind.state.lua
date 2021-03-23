@@ -29,6 +29,7 @@ function rebinder:new()
   self.done = false
   self.data = save.load("main.sav") or {}
   self.data.inputBinds = {}
+  self.dt = {}
 end
 
 function rebinder:update()
@@ -41,13 +42,16 @@ function rebinder:update()
   end
   if lastPressed.input and not self.done then
     self.data.inputBinds[self.keys[self.currentKey] .. tostring(self.player)] = {table.clone(lastPressed)}
+    if self.player == 1 then
+      self.dt[#self.dt + 1] = self.keys[self.currentKey] .. tostring(self.player)
+    end
     
     if self.currentKey == table.length(self.keys) then
       if self.player == globals.playerCount then
         self.done = true
         input.unbind()
         for k, v in pairs(self.data.inputBinds) do
-          input.bind(v, k)
+          input.bind(v, k, table.contains(self.dt, k))
         end
         save.save("main.sav", self.data)
         megautils.add(fade, true, nil, nil, function(s)

@@ -40,6 +40,7 @@ function input.init()
   setmetatable(input.pressed, input._pressedMT)
   input.touchDown = {}
   input.touchPressed = {}
+  input.deactivateTouch = {}
   input.usingTouch = isMobile or (not love.keyboard and (love.mouse or love.touch))
 end
 
@@ -47,11 +48,14 @@ function input.refreshGamepads()
   input.gamepads = love.joystick.getJoysticks()
 end
 
-function input.bind(v, k)
+function input.bind(v, k, deactivateTouch)
   input.keys[k] = v
   input.down[k] = false
   input.pressed[k] = false
-  input._pressedTable[k] = nil  
+  input._pressedTable[k] = nil
+  if deactivateTouch then
+    input.deactivateTouch[k] = true
+  end
 end
 
 function input.unbind(k)
@@ -62,16 +66,18 @@ function input.unbind(k)
     setmetatable(input.down, input._downMT)
     input.pressed = {_sv = {}}
     setmetatable(input.pressed, input._pressedMT)
+    input.deactivateTouch = {}
   else
     input.keys[k] = nil
     input._pressedTable[k] = nil
     input.down[k] = nil
     input.pressed[k] = nil
+    input.deactivateTouch[k] = nil
   end
 end
 
 function input._down(k)
-  if (console and console.state == 1) or not input.keys[k] then
+  if not input.keys[k] then
     return false
   end
   local result = false
@@ -191,9 +197,15 @@ function input.anyDown()
 end
 
 function input.poll()
+  if console and console.state == 1 then return end
+  
   for k, _ in pairs(input.keys) do
     input.down[k] = input._down(k)
     input.pressed[k] = input._pressed(k)
+    
+    if input.down[k] and input.deactivateTouch[k] then
+      input.usingTouch = false
+    end
   end
   
   if love.touch or love.mouse then
@@ -253,20 +265,17 @@ function input.draw()
   end
   if input._dTimer > 0 then
     input._dTimer = math.max(input._dTimer - 1, 0)
-    local na = (input._dTimer % 8 < 5) and 1 or 0.5
+    local na = input._dTimer % 12 < 6
     local r, g, b, a = love.graphics.getColor()
     
     if input.usingTouch then
-      love.graphics.setColor(0, 0, 0, na)
-      love.graphics.rectangle("fill", 0, 0, 8*22, 32)
-      love.graphics.setColor(1, 1, 1, na)
-      love.graphics.rectangle("line", 0, 0, 8*22, 32)
+      love.graphics.setColor(0, 0, 0, na and 0.4 or 0)
+      love.graphics.rectangle("fill", 0, 0, 8*22, 24)
     else
-      love.graphics.setColor(0, 0, 0, na)
-      love.graphics.rectangle("fill", 0, 0, 8*24, 32)
-      love.graphics.setColor(1, 1, 1, na)
-      love.graphics.rectangle("line", 0, 0, 8*24, 32)
+      love.graphics.setColor(0, 0, 0, na and 0.4 or 0)
+      love.graphics.rectangle("fill", 0, 0, 8*24, 24)
     end
+    love.graphics.setColor(1, 1, 1, na and 0.8 or 0)
     love.graphics.print(input.usingTouch and "TOUCH MODE ACTIVATED" or "TOUCH MODE DEACTIVATED", 8, 8)
     love.graphics.setColor(r, g, b, a)
   end
