@@ -51,6 +51,8 @@ function mmWeaponsMenu:new(p)
   self.dOutline, self.dOne, self.dTwo = {0, 0, 0}, {124, 124, 124}, {188, 188, 188}
   self.fills = {{}}
   self.list = {{0, -1}, {1, 6}, {2, 7}, {3, 8}, {4, 9}, {5, 10}}
+  self.lastVPadActive = vPad.active
+  vPad.active = false
   
   local w = megaMan.weaponHandler[self.player.player]
   for y=1, #self.list do
@@ -159,6 +161,8 @@ function mmWeaponsMenu:removed()
   if self.trig then
     megautils.remove(self.trig)
   end
+  
+  vPad.active = self.lastVPadActive
 end
 
 function mmWeaponsMenu:update(dt)
@@ -338,7 +342,7 @@ function mmWeaponsMenu:update(dt)
           break
         end
       end
-    elseif input.length(input.touchPressed) ~= 0 then
+    elseif self.player.player == 1 and input.length(input.touchPressed) ~= 0 then
       if input.touchPressedOverlaps(view.x+24 - 8, view.y+184 - 8, 16 + 16, 16 + 16) then
         self.fills[1][1]:updateThis(self.player.healthHandler.segments * 4)
         self.changing = "health"
@@ -541,7 +545,7 @@ function mmWeaponsMenu:draw()
     end
   end
   
-  if input.usingTouch and self.section == 0 and not self.changing then
+  if self.player.player == 1 and input.usingTouch and self.section == 0 and not self.changing then
     love.graphics.setColor(1, 1, 1, 1)
     love.graphics.print("BACK", view.x + view.w - 48, view.y + view.h - 16)
   end
