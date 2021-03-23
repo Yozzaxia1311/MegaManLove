@@ -629,6 +629,7 @@ function ser()
       deserQueue = deserQueue,
       backgroundColor = {love.graphics.getBackgroundColor()},
       input = input.ser(),
+      vPad = vPad.ser(),
       cscreen = cscreen.ser(),
       view = view.ser(),
       megautils = megautils.ser(),
@@ -672,6 +673,7 @@ function deser(from, dontChangeMusic)
   deserQueue = t.deserQueue
   love.graphics.setBackgroundColor(unpack(t.backgroundColor))
   input.deser(t.input)
+  vPad.deser(t.vPad)
   cscreen.deser(t.cscreen)
   view.deser(t.view)
   megautils.deser(t.megautils)
