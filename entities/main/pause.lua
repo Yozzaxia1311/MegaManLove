@@ -164,12 +164,15 @@ end
 function mmWeaponsMenu:update(dt)
   local w = megaMan.weaponHandler[self.player.player]
   if self.changing then
-    if self.changing == "health" and self.fills[1][1].renderedHealth == self.player.healthHandler.segments * 4 then
-      self.osx = nil
-      self.osy = nil
-      self.sx = 1
-      self.sy = 1
-      self.section = 0
+    if self.changing == "health" and
+      self.fills[1][1].renderedHealth == self.player.healthHandler.segments * 4 then
+      if self.section == 1 then
+        self.osx = nil
+        self.osy = nil
+        self.sx = 1
+        self.sy = 1
+        self.section = 0
+      end
       self.changing = nil
     elseif self.changing == "weapons" then
       local res = true
@@ -181,11 +184,13 @@ function mmWeaponsMenu:update(dt)
         end
       end
       if res then
-        self.osx = nil
-        self.osy = nil
-        self.sx = 1
-        self.sy = 1
-        self.section = 0
+        if self.section == 1 then
+          self.osx = nil
+          self.osy = nil
+          self.sx = 1
+          self.sy = 1
+          self.section = 0
+        end
         self.changing = nil
       end
     end
@@ -209,7 +214,8 @@ function mmWeaponsMenu:update(dt)
       h.colorOne = weapon.colors[w.weapons[self.list[self.sy][self.sx]]].one
       h.colorTwo = weapon.colors[w.weapons[self.list[self.sy][self.sx]]].two
     end
-    if input.pressed["start" .. tostring(self.player.player)] then
+    if input.pressed["start" .. tostring(self.player.player)] or
+      input.touchPressedOverlaps(view.w - 48 - 8, view.h - 16 - 8, 32 + 16, 8 + 16) then
       megautils.add(fade, true, nil, nil, function(s)
           megautils.removeq(self)
           megautils.removeq(s)
@@ -332,6 +338,31 @@ function mmWeaponsMenu:update(dt)
           break
         end
       end
+    elseif input.length(input.touchPressed) ~= 0 then
+      if input.touchPressedOverlaps(view.x+24 - 8, view.y+184 - 8, 16 + 16, 16 + 16) then
+        self.fills[1][1]:updateThis(self.player.healthHandler.segments * 4)
+        self.changing = "health"
+        megautils.setETanks(math.max(megautils.getETanks()-1, 0))
+      elseif input.touchPressedOverlaps(view.x+80 - 8, view.y+184 - 8, 16 + 16, 16 + 16) then
+        for _, v in pairs(self.fills) do
+          for _, j in pairs(v) do
+            if j.wid ~= 0 then
+              j:updateThis((weapon.segments[w.weapons[j.wid]] or 7) * 4)
+            end
+          end
+        end
+        self.changing = "weapons"
+        megautils.setWTanks(math.max(megautils.getWTanks()-1, 0))
+      end
+      for _, v in pairs(self.fills) do
+        for _, bars in pairs(v) do
+          if input.touchPressedOverlaps(view.x + bars.icoX, view.y + bars.icoY, 89, 16) then
+            self.sx = bars.gridX
+            self.sy = bars.gridY
+            break
+          end
+        end
+      end
     end
     if olx ~= self.sx or oly ~= self.sy then
       self.cur = self.list[self.sy][self.sx]
@@ -345,7 +376,6 @@ function mmWeaponsMenu:update(dt)
         self.changing = "health"
         megautils.setETanks(math.max(megautils.getETanks()-1, 0))
       elseif self.sx == 2 and megautils.getWTanks() > 0 then
-        local frz = false
         for _, v in pairs(self.fills) do
           for _, j in pairs(v) do
             if j.wid ~= 0 then
@@ -509,5 +539,10 @@ function mmWeaponsMenu:draw()
         weapon.colors[w.weapons[self.cur]].two[2]/255, weapon.colors[w.weapons[self.cur]].two[3]/255, 1)
       self.texTwo:draw(self.quadW, tx2, ty)
     end
+  end
+  
+  if input.usingTouch and self.section == 0 and not self.changing then
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.print("BACK", view.x + view.w - 48, view.y + view.h - 16)
   end
 end
