@@ -76,7 +76,7 @@ function contSelect:update()
       end
     end
   end
-  if old ~= self.pick then
+  if old ~= self.pick and not input.usingTouch then
     megautils.playSound("cursorMove")
   end
   if (input.pressed.start1 or input.pressed.jump1 or touched) and not self.picked then
@@ -96,7 +96,9 @@ function contSelect:update()
 end
 
 function contSelect:draw()
-  self.tex:draw(self.x, self.y)
+  if not input.usingTouch then
+    self.tex:draw(self.x, self.y)
+  end
 end
 
 return continueState
