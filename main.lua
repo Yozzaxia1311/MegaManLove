@@ -159,9 +159,6 @@ function initEngine()
 end
 
 function love.load()
-  love.keyboard.setKeyRepeat(true)
-  love.graphics.setDefaultFilter("nearest", "nearest")
-  
   require("requires")
   
   console.init()
