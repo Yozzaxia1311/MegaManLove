@@ -337,7 +337,7 @@ function input.poll()
       if love.mouse and v.id == "mousetouch" then
         v.realX, v.realY = love.mouse.getPosition()
         v.x, v.y = cscreen.project(v.realX, v.realY)
-      elseif love.touch then
+      elseif love.touch and table.icontains(newTouches, v.id) then
         v.realX, v.realY = love.touch.getPosition(v.id)
         v.x, v.y = cscreen.project(v.realX, v.realY)
         v.pressure = love.touch.getPressure(v.id)
@@ -348,7 +348,7 @@ function input.poll()
       if love.mouse and v.id == "mousetouch" then
         v.realX, v.realY = love.mouse.getPosition()
         v.x, v.y = cscreen.project(v.realX, v.realY)
-      elseif love.touch then
+      elseif love.touch and table.icontains(newTouches, v.id) then
         v.realX, v.realY = love.touch.getPosition(v.id)
         v.x, v.y = cscreen.project(v.realX, v.realY)
         v.pressure = love.touch.getPressure(v.id)
