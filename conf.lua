@@ -1,6 +1,8 @@
 -- Engine globals.
 function engineGlobals(whenLoveModuleIsLoaded)
   if whenLoveModuleIsLoaded then
+    love.keyboard.setKeyRepeat(true)
+    love.graphics.setDefaultFilter("nearest", "nearest")
     mmFont = love.graphics.newFont("assets/misc/mm.ttf", 8)
     isMobile = love.system.getOS() == "Android" or love.system.getOS() == "iOS"
     useConsole = love.keyboard
