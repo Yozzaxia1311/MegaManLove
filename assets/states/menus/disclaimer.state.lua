@@ -34,7 +34,7 @@ function disclaimer:new()
     "\nPress Select here for fullscreen" ..
     "\nPress 1-9 to set the scale" ..
     "\nPress RStickBtn here to rebind"
-  self.bottomTextT = "Touch or LMouseBtn to continue" ..
+  self.bottomTextT = "Touch or MouseBtn to continue" ..
     "\n" ..
     "\n" ..
     "\nPress Back here to rebind"
