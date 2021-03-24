@@ -1880,7 +1880,7 @@ function megaMan:update()
   if self.player == 1 then
     local exludeTrans = {unpack(self.canControl)}
     exludeTrans.trans = nil
-    vPad.active = not self.died and not self.cameraTween and checkFalse(exludeTrans) and input.usingTouch
+    vPad.active = not self.died and not self.cameraTween and checkFalse(exludeTrans) and not self.doWeaponGet and input.usingTouch and 
     self.tLeft = vPad.down.left
     self.tLeftPressed = vPad.pressed.left
     self.tRight = vPad.down.right
