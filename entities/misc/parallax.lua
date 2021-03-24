@@ -69,9 +69,8 @@ end
 
 function parallax:draw()
   if not megautils.outside(self) then
-    megautils.rectStencil(self.x, self.y, self.collisionShape.w, self.collisionShape.h)
-    love.graphics.stencil(megautils.rectStencil, "replace", 1)
-    love.graphics.setStencilTest("equal", 1)
+    love.graphics.setScissor((self.x - view.x) * view.scale, (self.y - view.y) * view.scale,
+      self.collisionShape.w * view.scale, self.collisionShape.h * view.scale)
     local imgw, imgh
     if self.anim then
       imgw = self.animWidth
@@ -141,6 +140,6 @@ function parallax:draw()
         end
       end
     end
-    love.graphics.setStencilTest()
+    love.graphics.setScissor()
   end
 end

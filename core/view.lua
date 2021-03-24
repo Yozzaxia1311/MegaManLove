@@ -26,11 +26,10 @@ function view.init(sw, sh, s)
   if isMobile then
     view.canvas:setFilter("linear", "linear")
   end
-  view.wrapper = {view.canvas, stencil=true}
 end
 
 function view.draw()
-  love.graphics.setCanvas(view.wrapper)
+  love.graphics.setCanvas(view.canvas)
   love.graphics.clear(love.graphics.getBackgroundColor())
   love.graphics.push()
   love.graphics.scale(view.scale)
