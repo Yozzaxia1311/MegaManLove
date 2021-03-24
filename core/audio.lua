@@ -262,7 +262,7 @@ function mmMusic._threadPlay(curID, loop, loopPoint, time, vol)
   mmMusic.dec = love.sound.newDecoder(curID, 1024*24)
   mmMusic.time = time or 0
   mmMusic.rate = ((1024*24) / ((mmMusic.dec:getBitDepth() * mmMusic.dec:getChannelCount()) / 8)) / mmMusic.dec:getSampleRate()
-  mmMusic.buffers = 3
+  mmMusic.buffers = 4
   while mmMusic.dec:getDuration() * mmMusic.buffers < mmMusic.rate do -- incase of unbelievably short "music".
     mmMusic.buffers = mmMusic.buffers + 1
   end
