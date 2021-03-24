@@ -40,68 +40,71 @@ mmMusic._queue = nil
 mmMusic.paused = true
 mmMusic.stopping = true
 mmMusic.vol = 1
+mmMusic.loopEndPoint = nil
 
-mmMusic.threadChannel = love.thread.getChannel("mmMusicThread")
-mmMusic.mainChannel = love.thread.getChannel("mmMusicMain")
+if not compatMusicMode then
+  mmMusic.threadChannel = love.thread.getChannel("mmMusicThread")
+  mmMusic.mainChannel = love.thread.getChannel("mmMusicMain")
 
-mmMusic.thread = love.thread.newThread([[
-    require("love.timer")
-    require("love.sound")
-    require("love.audio")
-    require("core/utils")
-    require("core/audio")
-    
-    local curID, loop, loopPoint, time, vol = ...
-    local timer = love.timer
-    local threadChannel = mmMusic.threadChannel
-    local mainChannel = mmMusic.mainChannel
-    local run = true
-    
-    mmMusic._threadPlay(curID, loop, loopPoint, time, vol)
-    
-    while run do
-      mmMusic._threadUpdate()
+  mmMusic.thread = love.thread.newThread([[
+      require("love.timer")
+      require("love.sound")
+      require("love.audio")
+      require("core/utils")
+      require("core/audio")
       
-      while true do
-        local value = threadChannel:pop()
-        if value ~= nil then
-          if value == "stop" then
-            run = false
-          elseif value == "pause" then
-            mmMusic._threadPause()
-          elseif value == "unpause" then
-            mmMusic._threadUnpause()
-          elseif value == "seek" then
-            mmMusic._threadSeek(threadChannel:pop())
-          elseif value == "lock" then
-            mmMusic.locked = threadChannel:pop()
-          elseif value == "vol" then
-            mmMusic._threadSetVolume(threadChannel:pop())
+      local curID, loop, loopPoint, time, vol = ...
+      local timer = love.timer
+      local threadChannel = mmMusic.threadChannel
+      local mainChannel = mmMusic.mainChannel
+      local run = true
+      
+      mmMusic._threadPlay(curID, loop, loopPoint, time, vol)
+      
+      while run do
+        mmMusic._threadUpdate()
+        
+        while true do
+          local value = threadChannel:pop()
+          if value ~= nil then
+            if value == "stop" then
+              run = false
+            elseif value == "pause" then
+              mmMusic._threadPause()
+            elseif value == "unpause" then
+              mmMusic._threadUnpause()
+            elseif value == "seek" then
+              mmMusic._threadSeek(threadChannel:pop())
+            elseif value == "lock" then
+              mmMusic.locked = threadChannel:pop()
+            elseif value == "vol" then
+              mmMusic._threadSetVolume(threadChannel:pop())
+            end
+          else
+            break
           end
-        else
-          break
+        end
+        
+        mainChannel:push("time")
+        mainChannel:push(mmMusic.time)
+        if mmMusic.music then
+          mainChannel:push("tell")
+          mainChannel:push(mmMusic._threadTell())
+        end
+        
+        if mmMusic._threadStopped() then
+          run = false
+        end
+        
+        if timer then
+          timer.sleep(0.05)
         end
       end
       
-      mainChannel:push("time")
-      mainChannel:push(mmMusic.time)
-      if mmMusic.music then
-        mainChannel:push("tell")
-        mainChannel:push(mmMusic._threadTell())
-      end
-      
-      if mmMusic._threadStopped() then
-        run = false
-      end
-      
-      if timer then
-        timer.sleep(0.05)
-      end
-    end
-    
-    mmMusic._threadStop()
-    mainChannel:push("stop")
-  ]])
+      mmMusic._threadStop()
+      mainChannel:push("stop")
+    ]])
+end
 
 function mmMusic._threadSetVolume(v)
   if mmMusic.music and not mmMusic.locked and v then
@@ -115,7 +118,11 @@ function mmMusic._threadGetVolume()
 end
 
 function mmMusic.setVolume(v)
-  if mmMusic.thread:isRunning() then
+  if compatMusicMode then
+    if mmMusic.music then
+      mmMusic.music:setVolume(v or mmMusic.vol)
+    end
+  elseif mmMusic.thread:isRunning() then
     mmMusic.threadChannel:push("vol")
     mmMusic.threadChannel:push(v or mmMusic.vol)
   end
@@ -143,13 +150,27 @@ function mmMusic._threadStop()
 end
 
 function mmMusic.stop()
-  if mmMusic.thread:isRunning() then
+  if not compatMusicMode and mmMusic.thread:isRunning() then
     mmMusic.threadChannel:push("stop")
     mmMusic.thread:wait()
   end
   
   mmMusic.curID = nil
   mmMusic._queue = nil
+  
+  if compatMusicMode then
+    mmMusic.loopPoint = 0
+    mmMusic.time = 0
+    mmMusic.mTell = 0
+    mmMusic.stopping = true
+    mmMusic.vol = 1
+    mmMusic.loopEndPoint = nil
+    if mmMusic.music then
+      mmMusic.music:stop()
+      mmMusic.music:release()
+      mmMusic.music = nil
+    end
+  end
 end
 
 function mmMusic._threadStopped()
@@ -157,7 +178,11 @@ function mmMusic._threadStopped()
 end
 
 function mmMusic.stopped()
-  return not mmMusic.thread:isRunning()
+  if compatMusicMode then
+    return mmMusic.stopping and mmMusic.music and not mmMusic.music:isPlaying()
+  else
+    return not mmMusic.thread:isRunning()
+  end
 end
 
 function mmMusic._threadPause()
@@ -168,7 +193,12 @@ function mmMusic._threadPause()
 end
 
 function mmMusic.pause()
-  if mmMusic.thread:isRunning() and not mmMusic.paused then
+  if compatMusicMode then
+    if not mmMusic.paused and mmMusic.music then
+      mmMusic.music:pause()
+      mmMusic.paused = true
+    end
+  elseif mmMusic.thread:isRunning() and not mmMusic.paused then
     mmMusic.threadChannel:push("pause")
     mmMusic.paused = true
   end
@@ -182,7 +212,12 @@ function mmMusic._threadUnpause()
 end
 
 function mmMusic.unpause()
-  if mmMusic.thread:isRunning() and mmMusic.paused then
+  if compatMusicMode then
+    if mmMusic.paused and mmMusic.music then
+      mmMusic.music:resume()
+      mmMusic.paused = false
+    end
+  elseif mmMusic.thread:isRunning() and mmMusic.paused then
     mmMusic.threadChannel:push("unpause")
     mmMusic.paused = false
   end
@@ -197,7 +232,11 @@ function mmMusic._threadSeek(s)
 end
 
 function mmMusic.seek(s)
-  if mmMusic.thread:isRunning() then
+  if compatMusicMode then
+    if mmMusic.music then
+      mmMusic.music:seek(s, "seconds")
+    end
+  elseif mmMusic.thread:isRunning() then
     mmMusic.threadChannel:push("seek")
     mmMusic.threadChannel:push(s)
   end
@@ -212,12 +251,16 @@ function mmMusic._threadTell()
 end
 
 function mmMusic.tell()
-  return mmMusic.mTell
+  if compatMusicMode then
+    return mmMusic.music and mmMusic.music:tell("seconds")
+  else
+    return mmMusic.mTell
+  end
 end
 
 function mmMusic.setLock(w)
   mmMusic.locked = w == true
-  if mmMusic.thread:isRunning() then
+  if not compatMusicMode and mmMusic.thread:isRunning() then
     mmMusic.threadChannel:push("lock")
     mmMusic.threadChannel:push(mmMusic.locked)
   end
@@ -303,8 +346,42 @@ function mmMusic.play(path, vol, from)
   mmMusic.vol = vol or mmMusic.vol
   mmMusic.stopping = false
   
-  mmMusic.thread:start(mmMusic.curID, mmMusic.loop, mmMusic.loopPoint, mmMusic.time, mmMusic.vol)
-  mmMusic.setLock(mmMusic.locked)
+  if compatMusicMode then
+    if mmMusic.loopPoint > 0 then
+      local tmp = love.sound.newSoundData(mmMusic.curID)
+      local lpSamples = mmMusic.loopPoint * tmp:getSampleRate()
+      mmMusic.loopEndPoint = tmp:getDuration()
+      local nm = love.sound.newSoundData(tmp:getSampleCount() + tmp:getSampleRate(), tmp:getSampleRate(), tmp:getBitDepth(), tmp:getChannelCount())
+      for ch = 1, tmp:getChannelCount() do
+        for i = 0, tmp:getSampleCount() - 1 do
+          nm:setSample(i, ch, tmp:getSample(i, ch))
+        end
+      end
+      local tmp2 = tmp:getSampleCount() - 1
+      for ch = 1, tmp:getChannelCount() do
+        for i = tmp:getSampleCount(), nm:getSampleCount() - 1 do
+          nm:setSample(i, ch, tmp:getSample(math.wrap(i, lpSamples, tmp2), ch))
+        end
+      end
+      
+      mmMusic.music = love.audio.newSource(nm)
+      tmp:release()
+      tmp = nil
+    else
+      mmMusic.music = love.audio.newSource(mmMusic.curID, "static")
+    end
+    if mmMusic.loop then
+      mmMusic.music:setLooping(mmMusic.loopPoint == 0)
+    else
+      mmMusic.music:setLooping(false)
+    end
+    mmMusic.setVolume(mmMusic.vol)
+    mmMusic.seek(mmMusic.time)
+    mmMusic.music:play()
+  else
+    mmMusic.thread:start(mmMusic.curID, mmMusic.loop, mmMusic.loopPoint, mmMusic.time, mmMusic.vol)
+    mmMusic.setLock(mmMusic.locked)
+  end
 end
 
 function mmMusic._threadUpdate()
@@ -330,24 +407,36 @@ function mmMusic._threadUpdate()
 end
 
 function mmMusic.update()
-  while not mmMusic.stopping do
-    local value = mmMusic.mainChannel:pop()
-    if value ~= nil then
-      if value == "time" then
-        mmMusic.time = mmMusic.mainChannel:pop()
-      elseif value == "tell" then
-        mmMusic.mTell = mmMusic.mainChannel:pop()
-      elseif value == "vol" then
-        mmMusic.vol = mmMusic.mainChannel:pop()
-      elseif value == "stop" then
-        mmMusic.loopPoint = 0
-        mmMusic.time = 0
-        mmMusic.mTell = 0
-        mmMusic.stopping = true
-        mmMusic.vol = 1
+  if compatMusicMode then
+    if mmMusic.music and mmMusic.loop and not mmMusic.stopping and
+      mmMusic.loopPoint > 0 and (mmMusic.music:tell("seconds") > mmMusic.loopEndPoint or not mmMusic.music:isPlaying()) then
+      if mmMusic.music:isPlaying() then
+        mmMusic.music:seek(mmMusic.music:tell("seconds") - (mmMusic.loopEndPoint - mmMusic.loopPoint), "seconds")
+      else
+        mmMusic.music:seek(mmMusic.loopPoint, "seconds")
+        mmMusic.music:play()
       end
-    else
-      break
+    end
+  else
+    while not mmMusic.stopping do
+      local value = mmMusic.mainChannel:pop()
+      if value ~= nil then
+        if value == "time" then
+          mmMusic.time = mmMusic.mainChannel:pop()
+        elseif value == "tell" then
+          mmMusic.mTell = mmMusic.mainChannel:pop()
+        elseif value == "vol" then
+          mmMusic.vol = mmMusic.mainChannel:pop()
+        elseif value == "stop" then
+          mmMusic.loopPoint = 0
+          mmMusic.time = 0
+          mmMusic.mTell = 0
+          mmMusic.stopping = true
+          mmMusic.vol = 1
+        end
+      else
+        break
+      end
     end
   end
 end

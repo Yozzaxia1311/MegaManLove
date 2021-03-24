@@ -5,7 +5,9 @@ function engineGlobals(whenLoveModuleIsLoaded)
     love.graphics.setDefaultFilter("nearest", "nearest")
     mmFont = love.graphics.newFont("assets/misc/mm.ttf", 8)
     isMobile = love.system.getOS() == "Android" or love.system.getOS() == "iOS"
-    useConsole = love.keyboard
+    isWeb = love.system.getOS() == "Web"
+    useConsole = love.keyboard and not isWeb
+    compatMusicMode = isMobile or isWeb
   else
     gameWidth = 256
     gameHeight = 224
@@ -120,7 +122,7 @@ function love.conf(t)
   t.modules.joystick = true                     -- Enable the joystick module (boolean)
   t.modules.keyboard = true                     -- Enable the keyboard module (boolean)
   t.modules.math = true                         -- Enable the math module (boolean)
-  t.modules.mouse = true                        -- Enable the mouse module (boolean)
+  t.modules.mouse = false                        -- Enable the mouse module (boolean)
   t.modules.physics = false                     -- Enable the physics module (boolean)
   t.modules.sound = true                        -- Enable the sound module (boolean)
   t.modules.system = true                       -- Enable the system module (boolean)

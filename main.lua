@@ -2,7 +2,7 @@
 engineGlobals(true)
 
 -- Splash screen
-if not isMobile and love.graphics then
+if not isMobile and not isWeb and love.graphics then
   local s = love.graphics.newImage(splash)
   love.graphics.clear(0, 0, 0, 1)
   love.graphics.draw(s, (love.graphics.getWidth()/2)-(s:getWidth()/2), (love.graphics.getHeight()/2)-(s:getHeight()/2))
@@ -306,7 +306,7 @@ function love.gamepadaxis(j, b, v)
 end
 
 function love.mousepressed(x, y, button, touch)
-  if not touch then
+  if love.mouse and not touch then
     lastTouch.x, lastTouch.y = cscreen.project(x, y)
     lastTouch.id = "mousetouch"
     lastTouch.pressure = 1
@@ -403,10 +403,14 @@ function love.draw()
   love.graphics.pop()
   vPad.draw()
   if useConsole then console.draw() end
+  
+  if isWeb then
+    afterUpdate()
+  end
 end
 
 function love.quit()
-  if mmMusic and mmMusic.thread:isRunning() then
+  if not compatMusicMode and mmMusic and mmMusic.thread:isRunning() then
     mmMusic.stop()
     mmMusic.thread:wait()
   end
@@ -481,142 +485,148 @@ function pressingHardInputs(k)
   return false
 end
 
-function love.run()
-  local bu = lt and lt.getTime()
+function afterUpdate()
+  megautils.checkQueue()
+  states.checkQueue()
+  mmMusic.checkQueue()
+  console.doWait()
+  record.anyPressed = false
+  record.anyPressedDuringRec = false
+  cscreen.updateFade()
   
-  if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
-  if lt then lt.step() end
-  
-  return function()
-      if lk and console and save and megautils then
-        if not (useConsole and console.state == 1) then
-          if not lk.isDown("return") then
-            altEnterOnce = false
-          elseif (lk.isDown("ralt") or lk.isDown("lalt")) and lk.isDown("return") then
-            if not altEnterOnce then
-              megautils.setFullscreen(not megautils.getFullscreen())
-              local data = save.load("main.sav") or {}
-              data.fullscreen = megautils.getFullscreen()
-              save.save("main.sav", data)
+  lastPressed.type = nil
+  lastPressed.input = nil
+  lastPressed.name = nil
+  lastTouch.x = nil
+  lastTouch.y = nil
+  lastTouch.id = nil
+  lastTouch.pressure = nil
+  lastTextInput = nil
+end
+
+if not isWeb then
+  function love.run()
+    local bu = lt and lt.getTime()
+    
+    if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
+    if lt then lt.step() end
+    
+    return function()
+        if lk and console and save and megautils then
+          if not (useConsole and console.state == 1) then
+            if not lk.isDown("return") then
+              altEnterOnce = false
+            elseif (lk.isDown("ralt") or lk.isDown("lalt")) and lk.isDown("return") then
+              if not altEnterOnce then
+                megautils.setFullscreen(not megautils.getFullscreen())
+                local data = save.load("main.sav") or {}
+                data.fullscreen = megautils.getFullscreen()
+                save.save("main.sav", data)
+              end
+              altEnterOnce = true
             end
-            altEnterOnce = true
+            
+            for i=1, 9 do
+              local k = tostring(i)
+              if lk.isDown(k) or lk.isDown("kp" .. k) then
+                if view.w * i ~= lg.getWidth() or
+                  view.h * i ~= lg.getHeight() then
+                  local last = megautils.getScale()
+                  megautils.setScale(i)
+                  if i ~= last then
+                    if not scaleOnce[i] then
+                      local data = save.load("main.sav") or {}
+                      data.scale = megautils.getScale()
+                      save.save("main.sav", data)
+                    end
+                    scaleOnce[i] = true
+                  end
+                end
+              else
+                scaleOnce[i] = false
+              end
+            end
           end
           
-          for i=1, 9 do
-            local k = tostring(i)
-            if lk.isDown(k) or lk.isDown("kp" .. k) then
-              if view.w * i ~= lg.getWidth() or
-                view.h * i ~= lg.getHeight() then
-                local last = megautils.getScale()
-                megautils.setScale(i)
-                if i ~= last then
-                  if not scaleOnce[i] then
-                    local data = save.load("main.sav") or {}
-                    data.scale = megautils.getScale()
-                    save.save("main.sav", data)
-                  end
-                  scaleOnce[i] = true
-                end
+          if not lk.isDown("o") and not lk.isDown("p") and not lk.isDown("r") then
+            contextOnce = false
+          elseif (lk.isDown("lctrl") or lk.isDown("rctrl")) then
+            if lk.isDown("o") then
+              if not contextOnce then
+                console.parse("contextsave quickContext")
               end
-            else
-              scaleOnce[i] = false
+              contextOnce = true
+            elseif lk.isDown("p") then
+              if not contextOnce then
+                console.parse("contextopen quickContext")
+              end
+              contextOnce = true
+            elseif lk.isDown("r") then
+              if not contextOnce then
+                console.parse("rec")
+              end
+              contextOnce = true
             end
           end
         end
         
-        if not lk.isDown("o") and not lk.isDown("p") and not lk.isDown("r") then
-          contextOnce = false
-        elseif (lk.isDown("lctrl") or lk.isDown("rctrl")) then
-          if lk.isDown("o") then
-            if not contextOnce then
-              console.parse("contextsave quickContext")
-            end
-            contextOnce = true
-          elseif lk.isDown("p") then
-            if not contextOnce then
-              console.parse("contextopen quickContext")
-            end
-            contextOnce = true
-          elseif lk.isDown("r") then
-            if not contextOnce then
-              console.parse("rec")
-            end
-            contextOnce = true
-          end
+        if serQueue then
+          local f = serQueue
+          serQueue = nil
+          f(ser())
         end
-      end
-      
-      if serQueue then
-        local f = serQueue
-        serQueue = nil
-        f(ser())
-      end
-      
-      if deserQueue then
-        local f = deserQueue
-        if type(deserQueue) == "function" then
-          f = deserQueue()
-        end
-        deserQueue = nil
-        deser(f)
-      end
-      
-      if record._openRecQ then
-        local f = record._openRecQ
-        record._openRecQ = nil
-        record.openRec(f)
-      end
-      
-      if record._startRecQ then
-        record._startRecQ = false
-        record.startRec()
-      end
-      
-      if le then
-        le.pump()
         
-        for name, a,b,c,d,e,f in le.poll() do
-          if name == "quit" then
-            if not love.quit or not love.quit() then
-              return a or 0
-            end
+        if deserQueue then
+          local f = deserQueue
+          if type(deserQueue) == "function" then
+            f = deserQueue()
           end
-          love.handlers[name](a,b,c,d,e,f)
+          deserQueue = nil
+          deser(f)
         end
+        
+        if record._openRecQ then
+          local f = record._openRecQ
+          record._openRecQ = nil
+          record.openRec(f)
+        end
+        
+        if record._startRecQ then
+          record._startRecQ = false
+          record.startRec()
+        end
+        
+        if le then
+          le.pump()
+          
+          for name, a,b,c,d,e,f in le.poll() do
+            if name == "quit" then
+              if not love.quit or not love.quit() then
+                return a or 0
+              end
+            end
+            love.handlers[name](a,b,c,d,e,f)
+          end
+        end
+        
+        if lu then lu(lt and lt.step()) end
+        
+        if lg and lg.isActive() then
+          lg.origin()
+          lg.clear(lg.getBackgroundColor())
+          if ld then ld() end
+          lg.present()
+        end
+        
+        if lt then
+          local delta, fps = lt.getTime() - bu, 1/megautils.getFPS()
+          if delta < fps then lt.sleep(fps - delta) end
+          bu = lt.getTime()
+        end
+        
+        afterUpdate()
       end
-      
-      if lu then lu(lt and lt.step()) end
-      
-      if lg and lg.isActive() then
-        lg.origin()
-        lg.clear(lg.getBackgroundColor())
-        if ld then ld() end
-        lg.present()
-      end
-      
-      if lt then
-        local delta, fps = lt.getTime() - bu, 1/megautils.getFPS()
-        if delta < fps then lt.sleep(fps - delta) end
-        bu = lt.getTime()
-      end
-      
-      megautils.checkQueue()
-      states.checkQueue()
-      mmMusic.checkQueue()
-      console.doWait()
-      record.anyPressed = false
-      record.anyPressedDuringRec = false
-      cscreen.updateFade()
-      
-      lastPressed.type = nil
-      lastPressed.input = nil
-      lastPressed.name = nil
-      lastTouch.x = nil
-      lastTouch.y = nil
-      lastTouch.id = nil
-      lastTouch.pressure = nil
-      lastTextInput = nil
-    end
+  end
 end
 
 -- Save state to memory
