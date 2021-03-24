@@ -29,11 +29,11 @@ function vPad.update()
   vPad.down.down = input.touchDownOverlaps(32 + 16, h - 81, 64, 64, true)
   vPad.pressed.down = input.touchPressedOverlaps(32 + 16, h - 81, 64, 64, true)
   
-  vPad.down.left = input.touchDownOverlaps(16, h - 81 - 64, 64, 64, true)
-  vPad.pressed.left = input.touchPressedOverlaps(16, h - 81 - 64, 64, 64, true)
+  vPad.down.left = input.touchDownOverlaps(8, h - 81 - 64, 64 + 8, 64, true)
+  vPad.pressed.left = input.touchPressedOverlaps(8, h - 81 - 64, 64 + 8, 64, true)
   
-  vPad.down.right = input.touchDownOverlaps(16 + 64, h - 81 - 64, 64, 64, true)
-  vPad.pressed.right = input.touchPressedOverlaps(16 + 64, h - 81 - 64, 64, 64, true)
+  vPad.down.right = input.touchDownOverlaps(16 + 64, h - 81 - 64, 64 + 8, 64, true)
+  vPad.pressed.right = input.touchPressedOverlaps(16 + 64, h - 81 - 64, 64 + 8, 64, true)
   
   vPad.down.up = input.touchDownOverlaps(32 + 16, h - 81 - 128, 64, 64, true)
   vPad.pressed.up = input.touchPressedOverlaps(32 + 16, h - 81 - 128, 64, 64, true)
@@ -114,16 +114,16 @@ function vPad.draw()
     love.graphics.rectangle("line", 32 + 16, h - 81, 64, 64)
     
     love.graphics.setColor(0, 0, 0, 0.4)
-    love.graphics.rectangle("fill", 16, h - 81 - 64, 64, 64)
+    love.graphics.rectangle("fill", 8, h - 81 - 64, 64 + 8, 64)
     love.graphics.setColor(1, (vPad.down.left and not vPad.extra.downLeft and not vPad.extra.upLeft) and 0 or 1,
       (vPad.down.left and not vPad.extra.downLeft and not vPad.extra.upLeft) and 0 or 1, 1)
-    love.graphics.rectangle("line", 16, h - 81 - 64, 64, 64)
+    love.graphics.rectangle("line", 8, h - 81 - 64, 64 + 8, 64)
     
     love.graphics.setColor(0, 0, 0, 0.4)
-    love.graphics.rectangle("fill", 16 + 64, h - 81 - 64, 64, 64)
+    love.graphics.rectangle("fill", 16 + 64, h - 81 - 64, 64 + 8, 64)
     love.graphics.setColor(1, (vPad.down.right and not vPad.extra.downRight and not vPad.extra.upRight) and 0 or 1,
       (vPad.down.right and not vPad.extra.downRight and not vPad.extra.upRight) and 0 or 1, 1)
-    love.graphics.rectangle("line", 16 + 64, h - 81 - 64, 64, 64)
+    love.graphics.rectangle("line", 16 + 64, h - 81 - 64, 64 + 8, 64)
     
     love.graphics.setColor(0, 0, 0, 0.4)
     love.graphics.rectangle("fill", 32 + 16, h - 81 - 128, 64, 64)
