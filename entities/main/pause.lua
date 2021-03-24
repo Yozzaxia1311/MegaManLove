@@ -343,11 +343,11 @@ function mmWeaponsMenu:update(dt)
         end
       end
     elseif self.player.player == 1 and input.length(input.touchPressed) ~= 0 then
-      if input.touchPressedOverlaps(view.x+24 - 8, view.y+184 - 8, 16 + 16, 16 + 16) then
+      if input.touchPressedOverlaps(24 - 8, 184 - 8, 16 + 16, 16 + 16) then
         self.fills[1][1]:updateThis(self.player.healthHandler.segments * 4)
         self.changing = "health"
         megautils.setETanks(math.max(megautils.getETanks()-1, 0))
-      elseif input.touchPressedOverlaps(view.x+80 - 8, view.y+184 - 8, 16 + 16, 16 + 16) then
+      elseif input.touchPressedOverlaps(80 - 8, 184 - 8, 16 + 16, 16 + 16) then
         for _, v in pairs(self.fills) do
           for _, j in pairs(v) do
             if j.wid ~= 0 then
@@ -360,7 +360,7 @@ function mmWeaponsMenu:update(dt)
       end
       for _, v in pairs(self.fills) do
         for _, bars in pairs(v) do
-          if input.touchPressedOverlaps(view.x + bars.icoX, view.y + bars.icoY, 89, 16) then
+          if input.touchPressedOverlaps(bars.icoX, bars.icoY, 89, 16) then
             self.sx = bars.gridX
             self.sy = bars.gridY
             break
