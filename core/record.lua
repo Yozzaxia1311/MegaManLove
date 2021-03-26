@@ -182,7 +182,7 @@ function record.playRecord()
 end
 
 function record.doRecording()
-  for k, _ in input.pairs(input.keys) do
+  for k, _ in pairs(input.keys) do
     if input.down[k] then
       if not record.record.data[record.recPos] then
         record.record.data[record.recPos] = {}

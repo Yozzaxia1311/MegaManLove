@@ -6,9 +6,6 @@ convar["cheats"] = {
       if numberSanitize(arg) == 1 then
         console.print("Press Control + O to quick-save context")
         console.print("Press Control + P to quick-load context")
-        console.print("Press Control + R to start recording")
-        console.print("DO NOT OPEN A CONTEXT OR RECORDING FROM A SOURCE YOU DO NOT TRUST!")
-        console.print(".ctx FILES CAN AND WILL EXECUTE POTENTIALLY DANGEROUS LUA CODE!")
       end
     end
 }
