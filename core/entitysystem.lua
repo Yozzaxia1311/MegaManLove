@@ -234,6 +234,10 @@ function entitySystem:add(c, ...)
   
   self.all[#self.all+1] = e
   
+  for i = 1, #e.groupNames do
+    self:addToGroup(e, e.groupNames[i])
+  end
+  
   e.isRemoved = false
   e.isAdded = true
   e.justAddedIn = true
@@ -291,6 +295,10 @@ function entitySystem:adde(e)
   
   self.all[#self.all+1] = e
   
+  for i = 1, #e.groupNames do
+    self:addToGroup(e, e.groupNames[i])
+  end
+  
   e.isRemoved = false
   e.isAdded = true
   e.justAddedIn = true
@@ -339,6 +347,9 @@ function entitySystem:addToGroup(e, g)
   
   if not table.icontains(self.groups[g], e) then
     self.groups[g][#self.groups[g] + 1] = e
+  end
+  
+  if not table.icontains(e.groupNames, g) then
     e.groupNames[#e.groupNames + 1] = g
   end
 end
@@ -380,13 +391,13 @@ function entitySystem:makeStatic(e)
       e.staticH = e.collisionShape.h
     end
     
-    e:staticToggled()
-    
     e.lastHashX = nil
     e.lastHashY = nil
     e.lastHashX2 = nil
     e.lastHashY2 = nil
     e.currentHashes = nil
+    
+    e:staticToggled()
   end
 end
 
@@ -463,14 +474,13 @@ function entitySystem:revertFromStatic(e)
     e.staticY = nil
     e.staticW = nil
     e.staticH = nil
+    e.lastHashX = nil
+    e.lastHashY = nil
+    e.lastHashX2 = nil
+    e.lastHashY2 = nil
+    e.currentHashes = nil
     
     if not e.invisibleToHash then
-      e.lastHashX = nil
-      e.lastHashY = nil
-      e.lastHashX2 = nil
-      e.lastHashY2 = nil
-      e.currentHashes = nil
-      
       e:updateHash()
     end
     
@@ -479,32 +489,36 @@ function entitySystem:revertFromStatic(e)
 end
 
 function entitySystem:setLayer(e, l)
-  if l and e.layer ~= l then
-    local al = self:getLayer(e.layer)
-    
-    table.quickremovevaluearray(al.data, e)
-    
-    if #al.data == 0 then
-      table.removevaluearray(self.entities, al)
-    end
-    
-    e.layer = l
-    
-    local done = false
-    
-    for i=1, #self.entities do
-      local v = self.entities[i]
+  if e.layer ~= l then
+    if not e.isAdded or e.static then
+      e.layer = l
+    else
+      local al = self:getLayer(e.layer)
       
-      if v.layer == e.layer then
-        v.data[#v.data + 1] = e
-        done = true
-        break
+      table.quickremovevaluearray(al.data, e)
+      
+      if #al.data == 0 then
+        table.removevaluearray(self.entities, al)
       end
-    end
-    
-    if not done then
-      self.entities[#self.entities + 1] = {layer = e.layer, data = {e}, flicker = true}
-      self.doSort = true
+      
+      e.layer = l
+      
+      local done = false
+      
+      for i=1, #self.entities do
+        local v = self.entities[i]
+        
+        if v.layer == e.layer then
+          v.data[#v.data + 1] = e
+          done = true
+          break
+        end
+      end
+      
+      if not done then
+        self.entities[#self.entities + 1] = {layer = e.layer, data = {e}, flicker = true}
+        self.doSort = true
+      end
     end
   end
 end
@@ -523,7 +537,7 @@ function entitySystem:remove(e)
   
   e.isRemoved = true
   e:removed()
-  e:removeFromAllGroups()
+  self:removeFromAllGroups(e)
   
   local al = self:getLayer(e.layer)
   
@@ -534,7 +548,7 @@ function entitySystem:remove(e)
     table.quickremovevaluearray(self.updates, e)
   end
   
-  if #al.data == 0 then
+  if not e.static and #al.data == 0 then
     table.removevaluearray(self.entities, al)
   end
   
@@ -823,35 +837,80 @@ end
 function basicEntity:interactedWith(other, c) end
 
 function basicEntity:setLayer(l)
-  if not self.isAdded or self.static then
-    self.layer = l or self.layer
-  else
+  if megautils.state() and megautils.state().system then
     megautils.state().system:setLayer(self, l)
+  else
+    self.layer = l
   end
 end
 
 function basicEntity:makeStatic()
-  megautils.state().system:makeStatic(self)
+  if megautils.state() and megautils.state().system then
+    megautils.state().system:makeStatic(self)
+  else
+    self.static = true
+    self.staticX = self.x
+    self.staticY = self.y
+    if self.collisionShape then
+      self.staticW = self.collisionShape.w
+      self.staticH = self.collisionShape.h
+    end
+    
+    self.lastHashX = nil
+    self.lastHashY = nil
+    self.lastHashX2 = nil
+    self.lastHashY2 = nil
+    self.currentHashes = nil
+    
+    self:staticToggled()
+  end
 end
 
 function basicEntity:revertFromStatic()
-  megautils.state().system:revertFromStatic(self)
+  if megautils.state() and megautils.state().system then
+    megautils.state().system:revertFromStatic(self)
+  else
+    self.static = false
+    self.staticX = nil
+    self.staticY = nil
+    self.staticW = nil
+    self.staticH = nil
+    self.lastHashX = nil
+    self.lastHashY = nil
+    self.lastHashX2 = nil
+    self.lastHashY2 = nil
+    self.currentHashes = nil
+    
+    self:staticToggled()
+  end
 end
 
 function basicEntity:removeFromGroup(g)
-  megautils.state().system:removeFromGroup(self, g)
+  if megautils.state() and megautils.state().system then
+    megautils.state().system:removeFromGroup(self, g)
+  else
+    table.quickremovevaluearray(self.groupNames, g)
+  end
 end
 
 function basicEntity:inGroup(g)
-  return table.icontains(states.currentState.system.groups[g], self)
+  return table.icontains(self.groupNames, g)
 end
 
 function basicEntity:removeFromAllGroups()
-  megautils.state().system:removeFromAllGroups(self, g)
+  if megautils.state() and megautils.state().system then
+    megautils.state().system:removeFromAllGroups(self, g)
+  else
+    self.groupNames = {}
+  end
 end
 
 function basicEntity:addToGroup(g)
-  megautils.state().system:addToGroup(self, g)
+  if megautils.state() and megautils.state().system then
+    megautils.state().system:addToGroup(self, g)
+  elseif not table.icontains(self.groupNames, g) then
+    self.groupNames[#self.groupNames + 1] = g
+  end
 end
 
 function basicEntity:setRectangleCollision(w, h)

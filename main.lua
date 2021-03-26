@@ -406,9 +406,8 @@ function love.draw()
 end
 
 function love.quit()
-  if not compatMusicMode and mmMusic and mmMusic.thread:isRunning() then
+  if mmMusic then
     mmMusic.stop()
-    mmMusic.thread:wait()
   end
 end
 

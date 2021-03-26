@@ -5,8 +5,7 @@ function engineGlobals(whenLoveModuleIsLoaded)
     love.graphics.setDefaultFilter("nearest", "nearest")
     mmFont = love.graphics.newFont("assets/misc/mm.ttf", 8)
     isMobile = love.system.getOS() == "Android" or love.system.getOS() == "iOS"
-    useConsole = love.keyboard
-    compatMusicMode = isMobile or not love.thread
+    compatMusicMode = isMobile
   else
     gameWidth = 256
     gameHeight = 224
@@ -21,6 +20,7 @@ function engineGlobals(whenLoveModuleIsLoaded)
     maxLives = 10
     maxETanks = 10
     maxWTanks = 10
+    useConsole = true
   end
 end
 
