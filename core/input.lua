@@ -290,7 +290,7 @@ function input.poll()
     end
   end
   
-  if love.touch or love.mouse then
+  if input.usingTouch then
     local newTouches = love.touch and love.touch.getTouches() or {}
     local ids = {}
     
