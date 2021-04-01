@@ -26,20 +26,20 @@ end
 function vPad.update()
   local w, h = love.graphics.getDimensions()
   
-  vPad.down.down = input.touchDownOverlaps(32 + 16, h - 81, 64, 64, true)
-  vPad.pressed.down = input.touchPressedOverlaps(32 + 16, h - 81, 64, 64, true)
+  vPad.down.down = vPad.active and input.touchDownOverlaps(32 + 16, h - 81, 64, 64, true)
+  vPad.pressed.down = vPad.active and input.touchPressedOverlaps(32 + 16, h - 81, 64, 64, true)
   
-  vPad.down.left = input.touchDownOverlaps(8, h - 81 - 64, 64 + 8, 64, true)
+  vPad.down.left = vPad.active and input.touchDownOverlaps(8, h - 81 - 64, 64 + 8, 64, true)
   vPad.pressed.left = input.touchPressedOverlaps(8, h - 81 - 64, 64 + 8, 64, true)
   
-  vPad.down.right = input.touchDownOverlaps(16 + 64, h - 81 - 64, 64 + 8, 64, true)
-  vPad.pressed.right = input.touchPressedOverlaps(16 + 64, h - 81 - 64, 64 + 8, 64, true)
+  vPad.down.right = vPad.active and input.touchDownOverlaps(16 + 64, h - 81 - 64, 64 + 8, 64, true)
+  vPad.pressed.right = vPad.active and input.touchPressedOverlaps(16 + 64, h - 81 - 64, 64 + 8, 64, true)
   
-  vPad.down.up = input.touchDownOverlaps(32 + 16, h - 81 - 128, 64, 64, true)
-  vPad.pressed.up = input.touchPressedOverlaps(32 + 16, h - 81 - 128, 64, 64, true)
+  vPad.down.up = vPad.active and input.touchDownOverlaps(32 + 16, h - 81 - 128, 64, 64, true)
+  vPad.pressed.up = vPad.active and input.touchPressedOverlaps(32 + 16, h - 81 - 128, 64, 64, true)
   
-  local downRightDown = input.touchDownOverlaps(32 + 64 + 16, h - 81, 32, 32, true)
-  local downRightPressed = input.touchPressedOverlaps(32 + 64 + 16, h - 81, 32, 32, true)
+  local downRightDown = vPad.active and input.touchDownOverlaps(32 + 64 + 16, h - 81, 32, 32, true)
+  local downRightPressed = vPad.active and input.touchPressedOverlaps(32 + 64 + 16, h - 81, 32, 32, true)
   vPad.extra.downRight = downRightDown
   if downRightDown then
     vPad.down.down = downRightDown
@@ -50,8 +50,8 @@ function vPad.update()
     vPad.pressed.right = downRightPressed
   end
   
-  local downLeftDown = input.touchDownOverlaps(16, h - 81, 32, 32, true)
-  local downLeftPressed = input.touchPressedOverlaps(16, h - 81, 32, 32, true)
+  local downLeftDown = vPad.active and input.touchDownOverlaps(16, h - 81, 32, 32, true)
+  local downLeftPressed = vPad.active and input.touchPressedOverlaps(16, h - 81, 32, 32, true)
   vPad.extra.downLeft = downLeftDown
   if downLeftDown then
     vPad.down.down = downLeftDown
@@ -62,8 +62,8 @@ function vPad.update()
     vPad.pressed.left = downLeftPressed
   end
   
-  local upRightDown = input.touchDownOverlaps(32 + 64 + 16, h - 81 - 128 + 32, 32, 32, true)
-  local upRightPressed = input.touchPressedOverlaps(32 + 64 + 16, h - 81 - 128 + 32, 32, 32, true)
+  local upRightDown = vPad.active and input.touchDownOverlaps(32 + 64 + 16, h - 81 - 128 + 32, 32, 32, true)
+  local upRightPressed = vPad.active and input.touchPressedOverlaps(32 + 64 + 16, h - 81 - 128 + 32, 32, 32, true)
   vPad.extra.upRight = upRightDown
   if upRightDown then
     vPad.down.up = upRightDown
@@ -74,8 +74,8 @@ function vPad.update()
     vPad.pressed.right = upRightPressed
   end
   
-  local upLeftDown = input.touchDownOverlaps(16, h - 81 - 128 + 32, 32, 32, true)
-  local upLeftPressed = input.touchPressedOverlaps(16, h - 81 - 128 + 32, 32, 32, true)
+  local upLeftDown = vPad.active and input.touchDownOverlaps(16, h - 81 - 128 + 32, 32, 32, true)
+  local upLeftPressed = vPad.active and input.touchPressedOverlaps(16, h - 81 - 128 + 32, 32, 32, true)
   vPad.extra.upLeft = upLeftDown
   if upLeftDown then
     vPad.down.up = upLeftDown
@@ -86,20 +86,20 @@ function vPad.update()
     vPad.pressed.left = upLeftPressed
   end
   
-  vPad.down.jump = input.touchDownOverlaps(w - 64 - 48, h - 128 - 16, 64, 64, true)
-  vPad.pressed.jump = input.touchPressedOverlaps(w - 64 - 48, h - 128 - 16, 64, 64, true)
+  vPad.down.jump = vPad.active and input.touchDownOverlaps(w - 64 - 48, h - 128 - 16, 64, 64, true)
+  vPad.pressed.jump = vPad.active and input.touchPressedOverlaps(w - 64 - 48, h - 128 - 16, 64, 64, true)
   
-  vPad.down.shoot = input.touchDownOverlaps(w - 96 - 48, h - 64 - 16, 64, 64, true)
-  vPad.pressed.shoot = input.touchPressedOverlaps(w - 96 - 48, h - 64 - 16, 64, 64, true)
+  vPad.down.shoot = vPad.active and input.touchDownOverlaps(w - 96 - 48, h - 64 - 16, 64, 64, true)
+  vPad.pressed.shoot = vPad.active and input.touchPressedOverlaps(w - 96 - 48, h - 64 - 16, 64, 64, true)
   
-  vPad.down.dash = input.touchDownOverlaps(w - 64 - 16, h - 128 - 64 - 16, 64, 64, true)
-  vPad.pressed.dash = input.touchPressedOverlaps(w - 64 - 16, h - 128 - 64 - 16, 64, 64, true)
+  vPad.down.dash = vPad.active and input.touchDownOverlaps(w - 64 - 16, h - 128 - 64 - 16, 64, 64, true)
+  vPad.pressed.dash = vPad.active and input.touchPressedOverlaps(w - 64 - 16, h - 128 - 64 - 16, 64, 64, true)
   
-  vPad.down.start = input.touchDownOverlaps(16 + 48, 16, 32, 32, true)
-  vPad.pressed.start = input.touchPressedOverlaps(16 + 48, 16, 32, 32, true)
+  vPad.down.start = vPad.active and input.touchDownOverlaps(16 + 48, 16, 32, 32, true)
+  vPad.pressed.start = vPad.active and input.touchPressedOverlaps(16 + 48, 16, 32, 32, true)
   
-  vPad.down.select = input.touchDownOverlaps(16, 16, 32, 32, true)
-  vPad.pressed.select = input.touchPressedOverlaps(16, 16, 32, 32, true)
+  vPad.down.select = vPad.active and input.touchDownOverlaps(16, 16, 32, 32, true)
+  vPad.pressed.select = vPad.active and input.touchPressedOverlaps(16, 16, 32, 32, true)
 end
 
 function vPad.draw()
