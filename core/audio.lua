@@ -55,15 +55,6 @@ if compatMusicMode then
       
       for ch = 1, tmp:getChannelCount() do
         for i = st, en do
-          while i % 400 == 1 do
-            local value = threadChannel:pop()
-            if value ~= nil and value == "stop" then
-              return
-            else
-              break
-            end
-          end
-          
           nm:setSample(i, ch, tmp:getSample(i, ch))
         end
       end
