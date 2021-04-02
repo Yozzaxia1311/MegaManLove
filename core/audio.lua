@@ -41,29 +41,9 @@ mmMusic.paused = true
 mmMusic.stopping = true
 mmMusic.vol = 1
 mmMusic.loopEndPoint = nil
+mmMusic.loopEndOffset = nil
 
-if compatMusicMode then
-  mmMusic.threadChannel1 = love.thread.getChannel("mmMusicThread1")
-  mmMusic.threadChannel2 = love.thread.getChannel("mmMusicThread2")
-  mmMusic.threadChannel3 = love.thread.getChannel("mmMusicThread3")
-  
-  local threadCode = [[
-      require("love.sound")
-      
-      local which, nm, tmp, st, en = ...
-      local threadChannel = love.thread.getChannel("mmMusicThread" .. which)
-      
-      for ch = 1, tmp:getChannelCount() do
-        for i = st, en do
-          nm:setSample(i, ch, tmp:getSample(i, ch))
-        end
-      end
-    ]]
-  
-  mmMusic.thread1 = love.thread.newThread(threadCode)
-  mmMusic.thread2 = love.thread.newThread(threadCode)
-  mmMusic.thread3 = love.thread.newThread(threadCode)
-else
+if not compatMusicMode then
   mmMusic.threadChannel = love.thread.getChannel("mmMusicThread")
   mmMusic.mainChannel = love.thread.getChannel("mmMusicMain")
 
@@ -171,20 +151,7 @@ function mmMusic._threadStop()
 end
 
 function mmMusic.stop()
-  if compatMusicMode then
-    if mmMusic.thread1:isRunning() then
-      mmMusic.threadChannel1:push("stop")
-      mmMusic.thread1:wait()
-    end
-    if mmMusic.thread2:isRunning() then
-      mmMusic.threadChannel2:push("stop")
-      mmMusic.thread2:wait()
-    end
-    if mmMusic.thread3:isRunning() then
-      mmMusic.threadChannel3:push("stop")
-      mmMusic.thread3:wait()
-    end
-  elseif mmMusic.thread:isRunning() then
+  if not compatMusicMode and mmMusic.thread:isRunning() then
     mmMusic.threadChannel:push("stop")
     mmMusic.thread:wait()
   end
@@ -199,6 +166,7 @@ function mmMusic.stop()
     mmMusic.stopping = true
     mmMusic.vol = 1
     mmMusic.loopEndPoint = nil
+    mmMusic.loopEndOffset = nil
     if mmMusic.music then
       mmMusic.music:stop()
       mmMusic.music:release()
@@ -338,7 +306,7 @@ function mmMusic._threadPlay(curID, loop, loopPoint, time, vol)
   
   mmMusic.dec = love.sound.newDecoder(curID, 1024*24)
   mmMusic.time = time or 0
-  mmMusic.rate = ((1024*24) / ((mmMusic.dec:getBitDepth() * mmMusic.dec:getChannelCount()) / 8)) / mmMusic.dec:getSampleRate()
+  mmMusic.rate = ((1024*24) / ((mmMusic.dec:getBitDepth() / 8) * mmMusic.dec:getChannelCount())) / mmMusic.dec:getSampleRate()
   mmMusic.buffers = 4
   while mmMusic.dec:getDuration() * mmMusic.buffers < mmMusic.rate do -- incase of unbelievably short "music".
     mmMusic.buffers = mmMusic.buffers + 1
@@ -386,40 +354,24 @@ function mmMusic.play(path, vol, from)
       local tmp = love.sound.newSoundData(mmMusic.curID)
       local lpSamples = mmMusic.loopPoint * tmp:getSampleRate()
       mmMusic.loopEndPoint = tmp:getDuration()
+      mmMusic.loopEndOffset = mmMusic.loopEndPoint - mmMusic.loopPoint
       local nm = love.sound.newSoundData(tmp:getSampleCount() + tmp:getSampleRate(), tmp:getSampleRate(), tmp:getBitDepth(), tmp:getChannelCount())
       
-      if tmp:getDuration() >= 5 then
-        local lastIndex = tmp:getSampleCount() - 1
-        local st1, en1 = 0, math.ceil(lastIndex / 3)
-        local st2, en2 = en1 + 1, en1 * 2
-        local st3, en3 = en2 + 1, lastIndex
-        
-        mmMusic.thread1:start("1", nm, tmp, st1, en1)
-        mmMusic.thread2:start("2", nm, tmp, st2, en2)
-        mmMusic.thread3:start("3", nm, tmp, st3, en3)
+      if ffi then
+        ffi.copy(nm:getFFIPointer(), tmp:getFFIPointer(), tmp:getSize() - 1)
       else
         for ch = 1, tmp:getChannelCount() do
           for i = 0, tmp:getSampleCount() - 1 do
             nm:setSample(i, ch, tmp:getSample(i, ch))
           end
         end
-      end
-      
-      local tmp2 = tmp:getSampleCount() - 1
-      for ch = 1, tmp:getChannelCount() do
-        for i = tmp:getSampleCount(), nm:getSampleCount() - 1 do
-          nm:setSample(i, ch, tmp:getSample(math.wrap(i, lpSamples, tmp2), ch))
+        
+        local tmp2 = tmp:getSampleCount() - 1
+        for ch = 1, tmp:getChannelCount() do
+          for i = tmp:getSampleCount(), nm:getSampleCount() - 1 do
+            nm:setSample(i, ch, tmp:getSample(math.wrap(i, lpSamples, tmp2), ch))
+          end
         end
-      end
-      
-      if mmMusic.thread1:isRunning() then
-        mmMusic.thread1:wait()
-      end
-      if mmMusic.thread2:isRunning() then
-        mmMusic.thread2:wait()
-      end
-      if mmMusic.thread3:isRunning() then
-        mmMusic.thread3:wait()
       end
       
       mmMusic.music = love.audio.newSource(nm)
@@ -466,14 +418,9 @@ end
 
 function mmMusic.update()
   if compatMusicMode then
-    if mmMusic.music and mmMusic.loop and not mmMusic.stopping and
-      mmMusic.loopPoint > 0 and (mmMusic.music:tell("seconds") > mmMusic.loopEndPoint or not mmMusic.music:isPlaying()) then
-      if mmMusic.music:isPlaying() then
-        mmMusic.music:seek(mmMusic.music:tell("seconds") - (mmMusic.loopEndPoint - mmMusic.loopPoint), "seconds")
-      else
-        mmMusic.music:seek(mmMusic.loopPoint, "seconds")
-        mmMusic.music:play()
-      end
+    if mmMusic.music and mmMusic.loop and not mmMusic.stopping and not mmMusic.paused and mmMusic.music:isPlaying() and
+      mmMusic.loopPoint > 0 and mmMusic.music:tell() > mmMusic.loopEndPoint then
+      mmMusic.music:seek(mmMusic.music:tell() - mmMusic.loopEndOffset)
     end
   else
     while not mmMusic.stopping do
