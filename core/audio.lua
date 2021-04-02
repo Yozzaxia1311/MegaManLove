@@ -365,12 +365,12 @@ function mmMusic.play(path, vol, from)
             nm:setSample(i, ch, tmp:getSample(i, ch))
           end
         end
-        
-        local tmp2 = tmp:getSampleCount() - 1
-        for ch = 1, tmp:getChannelCount() do
-          for i = tmp:getSampleCount(), nm:getSampleCount() - 1 do
-            nm:setSample(i, ch, tmp:getSample(math.wrap(i, lpSamples, tmp2), ch))
-          end
+      end
+      
+      local tmp2 = tmp:getSampleCount() - 1
+      for ch = 1, tmp:getChannelCount() do
+        for i = tmp:getSampleCount(), nm:getSampleCount() - 1 do
+          nm:setSample(i, ch, tmp:getSample(math.wrap(i, lpSamples, tmp2), ch))
         end
       end
       
