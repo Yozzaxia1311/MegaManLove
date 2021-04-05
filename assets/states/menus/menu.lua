@@ -87,12 +87,12 @@ function menuSelect:update()
         end
         save.save("save.sav", data)
         megautils.playSound("selected")
-      elseif self.pick == 3 and not isMobile then
+      elseif self.pick == 3 and not isMobile and not isWeb then
         megautils.setFullscreen(not megautils.getFullscreen())
         local data = save.load("main.sav") or {}
         data.fullscreen = megautils.getFullscreen()
         save.save("main.sav", data)
-      elseif self.pick == 4 and not isMobile then
+      elseif self.pick == 4 and not isMobile and not isWeb then
         if input.usingTouch then
           megautils.setScale(math.wrap(megautils.getScale()+1, 1, 4))
         else
@@ -168,10 +168,10 @@ function menuSelect:draw()
   if globals.playerCount > 1 then
     love.graphics.print("S", 20*8, (22*8)-1)
   end
-  if isMobile then
+  if isMobile or isWeb then
     love.graphics.setColor(0, 0, 0, 0.5)
-    love.graphics.rectangle("fill", 14 * 8, 16 * 8, 48, 8)
-    love.graphics.rectangle("fill", 12 * 8, 18 * 8, 64, 8)
+    love.graphics.rectangle("fill", (14 * 8) - 1, 16 * 8, 50, 8)
+    love.graphics.rectangle("fill", (12 * 8) - 1, 18 * 8, 66, 8)
   end
 end
 
