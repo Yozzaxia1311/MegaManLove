@@ -1,12 +1,12 @@
 spriteBatch = class:extend()
 
 binser.register(spriteBatch, "spriteBatch", function(o)
-    return {path = o.image.path, ids = o.ids}
+    return {image = o.image, ids = o.ids}
   end, function(o)
-    local result = spriteBatch(o.path)
+    local result = spriteBatch(o.image)
     
-    for _, v in pairs(o.ids) do
-      result:set(unpack(v))
+    for _, v in ipairs(o.ids) do
+      result:add(unpack(v))
     end
     
     return result
@@ -20,6 +20,7 @@ end
 
 function spriteBatch:add(quad, x, y, r, sx, sy, ox, oy, kx, ky)
   if type(quad) == "table" then
+    quad:fillFromImage(self.image)
     local id = self.batch:add(quad.quad, x, y, r, sx, sy, ox, oy, kx, ky)
     self.ids[id] = {quad, x, y, r, sx, sy, ox, oy, kx, ky}
     return id
@@ -31,6 +32,8 @@ function spriteBatch:add(quad, x, y, r, sx, sy, ox, oy, kx, ky)
 end
 
 function spriteBatch:set(spriteindex, quad, x, y, r, sx, sy, ox, oy, kx, ky)
+  assert(self.ids[spriteindex])
+  
   if type(quad) == "table" then
     self.batch:set(spriteindex, quad.quad, x, y, r, sx, sy, ox, oy, kx, ky)
   else
