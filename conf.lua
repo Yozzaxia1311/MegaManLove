@@ -8,6 +8,7 @@ function engineGlobals(whenLoveModuleIsLoaded)
     isWeb = love.system.getOS() == "Web"
     compatMusicMode = isMobile or isWeb
     spriteBatchTileMaps = isWeb
+    useConsole = not isMobile and not isWeb
   else
     gameWidth = 256
     gameHeight = 224
@@ -22,7 +23,6 @@ function engineGlobals(whenLoveModuleIsLoaded)
     maxLives = 10
     maxETanks = 10
     maxWTanks = 10
-    useConsole = true
   end
 end
 
