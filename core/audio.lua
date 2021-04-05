@@ -234,10 +234,12 @@ function mmMusic._threadSeek(s)
 end
 
 function mmMusic.seek(s)
-  if compatMusicMode then
+  if compatMusicMode == 1 then
     if mmMusic.music then
       mmMusic.music:seek(s, "seconds")
     end
+  elseif compatMusicMode == 2 then
+    error("Compatibility music mode 2 cannot seek audio")
   elseif mmMusic.thread:isRunning() then
     mmMusic.threadChannel:push("seek")
     mmMusic.threadChannel:push(s)
@@ -349,7 +351,7 @@ function mmMusic.play(path, vol, from)
   mmMusic.stopping = false
   mmMusic.paused = false
   
-  if compatMusicMode then
+  if compatMusicMode == 1 then
     if mmMusic.loopPoint > 0 then
       local tmp = love.sound.newSoundData(mmMusic.curID)
       local lpSamples = mmMusic.loopPoint * tmp:getSampleRate()
@@ -388,6 +390,10 @@ function mmMusic.play(path, vol, from)
     mmMusic.setVolume(mmMusic.vol)
     mmMusic.seek(mmMusic.time)
     mmMusic.music:play()
+  elseif compatMusicMode == 2 then
+    mmMusic.music:setLooping(mmMusic.loop)
+    mmMusic.setVolume(mmMusic.vol)
+    -- TODO
   else
     mmMusic.thread:start(mmMusic.curID, mmMusic.loop, mmMusic.loopPoint, mmMusic.time, mmMusic.vol)
     mmMusic.setLock(mmMusic.locked)
@@ -417,11 +423,13 @@ function mmMusic._threadUpdate()
 end
 
 function mmMusic.update()
-  if compatMusicMode then
+  if compatMusicMode == 1 then
     if mmMusic.music and mmMusic.loop and not mmMusic.stopping and not mmMusic.paused and mmMusic.music:isPlaying() and
       mmMusic.loopPoint > 0 and mmMusic.music:tell() > mmMusic.loopEndPoint then
       mmMusic.music:seek(mmMusic.music:tell() - mmMusic.loopEndOffset)
     end
+  elseif compatMusicMode == 2 then
+    
   else
     while not mmMusic.stopping do
       local value = mmMusic.mainChannel:pop()
