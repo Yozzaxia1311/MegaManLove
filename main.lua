@@ -425,17 +425,23 @@ local lsm = love.window.setMode
 local lum = love.window.updateMode
 
 function love.window.setFullscreen(s)
-  lf(s)
+  if not isWeb then
+    lf(s)
+  end
   love.resize(love.graphics.getDimensions())
 end
 
 function love.window.setMode(w, h, f)
-  lsm(w, h, f)
+  if not isWeb then
+    lsm(w, h, f)
+  end
   love.resize(love.graphics.getDimensions())
 end
 
 function love.window.updateMode(w, h, f)
-  lum(w, h, f)
+  if not isWeb then
+    lum(w, h, f)
+  end
   love.resize(love.graphics.getDimensions())
 end
 
