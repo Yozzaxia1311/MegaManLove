@@ -427,11 +427,6 @@ local lum = love.window.updateMode
 function love.window.setFullscreen(s)
   lf(s)
   love.resize(love.graphics.getDimensions())
-  if s then
-    love.mouse.setVisible(true)
-  elseif input and input.usingTouch then
-    love.mouse.setVisible(s and not input.usingTouch)
-  end
 end
 
 function love.window.setMode(w, h, f)
