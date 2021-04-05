@@ -24,7 +24,7 @@ function quad:getViewport()
 end
 
 function quad:setViewport(x, y, w, h)
-  self.quad:setViewport(x, y, w, h, 1, 1)
+  self.quad:setViewport(x, y, w, h)
 end
 
 function quad:release()
@@ -32,11 +32,15 @@ function quad:release()
   self.quad = nil
 end
 
+function quad:fillFromImage(image)
+  local vx, vy, vw, vh = self.quad:getViewport()
+  self.quad:setViewport(vx, vy, vw, vh, image:getDimensions())
+end
+
 function quad:draw(image, x, y, r, sx, sy, ox, oy, kx, ky, flipx, flipy)
   x,y,r,sx,sy,ox,oy,kx,ky = x or 0, y or 0, r or 0, sx or 1, sy or 1, ox or 0, oy or 0, kx or 0, ky or 0, flipx == true, flipy == true
-  local vx, vy, vw, vh = self.quad:getViewport()
   
-  self.quad:setViewport(vx, vy, vw, vh, image:getDimensions())
+  self:fillFromImage(image)
   
   if flipx then
     sx = sx * -1
