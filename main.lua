@@ -642,6 +642,10 @@ function ser()
       serQueue = serQueue,
       deserQueue = deserQueue,
       backgroundColor = {love.graphics.getBackgroundColor()},
+      isMobile = isMobile,
+      isWeb = isWeb,
+      compatMusicMode = compatMusicMode,
+      spriteBatchTileMaps = spriteBatchTileMaps,
       input = input.ser(),
       vPad = vPad.ser(),
       cscreen = cscreen.ser(),
@@ -686,6 +690,10 @@ function deser(from, dontChangeMusic)
   serQueue = t.serQueue
   deserQueue = t.deserQueue
   love.graphics.setBackgroundColor(unpack(t.backgroundColor))
+  isMobile = t.isMobile
+  isWeb = t.isWeb
+  compatMusicMode = t.compatMusicMode
+  spriteBatchTileMaps = t.spriteBatchTileMaps
   input.deser(t.input)
   vPad.deser(t.vPad)
   cscreen.deser(t.cscreen)
