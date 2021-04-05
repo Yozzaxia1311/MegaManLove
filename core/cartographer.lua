@@ -106,18 +106,18 @@ function Layer.spritelayer:_initAnimations()
 end
 
 function Layer.spritelayer:_createSpriteBatches()
-	self._spriteBatches = {}
-	for _, tileset in ipairs(self._map.tilesets) do
-		if tileset.image then
-			local image = self._map._images[tileset.image]
-			self._spriteBatches[tileset] = spriteBatch(image)
-		end
-	end
+  self._spriteBatches = {}
+  for _, tileset in ipairs(self._map.tilesets) do
+    if tileset.image then
+      local image = self._map._images[tileset.image]
+      self._spriteBatches[tileset] = spriteBatch(image)
+    end
+  end
 end
 
 function Layer.spritelayer:_setSprite(x, y, gid, offGrid)
   if spriteBatchTileMaps then
-    self:_batchSetSprite(x, y, gid)
+    self:_batchSetSprite(x, y, gid, offGrid)
   else
     -- if the gid is 0 (empty), remove the sprite at (x, y)
     -- (if it exists)
@@ -130,14 +130,14 @@ function Layer.spritelayer:_setSprite(x, y, gid, offGrid)
           self._sprites.offGridQuads[y][x] = nil
         end
       end
-      
+
       if not self._sprites.offGridMap[y] then
         self._sprites.offGridMap[y] = {}
       end
       self._sprites.offGridMap[y][x] = gid
-      
+
       local tileset = self._map:getTileset(gid)
-      
+
       if tileset.image then
         -- get the new quad
         local animation = self._animations[gid]
@@ -161,7 +161,7 @@ function Layer.spritelayer:_setSprite(x, y, gid, offGrid)
         end
         return
       end
-      
+
       if not self._sprites.map[y] then
         self._sprites.map[y] = {}
       end
@@ -186,25 +186,29 @@ function Layer.spritelayer:_setSprite(x, y, gid, offGrid)
   end
 end
 
-function Layer.spritelayer:_batchSetSprite(x, y, gid)
-	-- if the gid is 0 (empty), remove the sprite at (x, y)
-	-- (if it exists)
-	if gid == 0 then
-		for i = #self._sprites.exists, 1, -1 do
-			if self._sprites.x[i] == x and self._sprites.y[i] == y then
-				if self._sprites.spriteBatch[i] then
-					self._sprites.spriteBatch[i]:set(self._sprites.id[i], 0, 0, 0, 0, 0)
-				end
-				table.remove(self._sprites.exists, i)
-				table.remove(self._sprites.tileGid, i)
-				table.remove(self._sprites.x, i)
-				table.remove(self._sprites.y, i)
-				table.remove(self._sprites.spriteBatch, i)
-				table.remove(self._sprites.id, i)
-				break
-			end
-		end
-	    return
+function Layer.spritelayer:_batchSetSprite(x, y, gid, offGrid)
+  if not offGrid then
+    x = x * self._map.tilewidth
+    y = y * self._map.tileheight
+  end
+  -- if the gid is 0 (empty), remove the sprite at (x, y)
+  -- (if it exists)
+  if gid == 0 then
+    for i = #self._sprites.exists, 1, -1 do
+      if self._sprites.x[i] == x and self._sprites.y[i] == y then
+        if self._sprites.spriteBatch[i] then
+          self._sprites.spriteBatch[i]:set(self._sprites.id[i], 0, 0, 0, 0, 0)
+        end
+        table.remove(self._sprites.exists, i)
+        table.remove(self._sprites.tileGid, i)
+        table.remove(self._sprites.x, i)
+        table.remove(self._sprites.y, i)
+        table.remove(self._sprites.spriteBatch, i)
+        table.remove(self._sprites.id, i)
+        break
+      end
+    end
+    return
   end
   local index
   -- check if a sprite already exists at (x, y)
@@ -253,9 +257,9 @@ end
 
 function Layer.spritelayer:_init(map)
   Layer.base._init(self, map)
-  
+
   self:_initAnimations()
-  
+
   if spriteBatchTileMaps then
     self:_createSpriteBatches()
     self._sprites = {
@@ -264,6 +268,7 @@ function Layer.spritelayer:_init(map)
       x = {},
       y = {},
       id = {},
+      spriteBatch = {},
     }
   else
     self._sprites = {
@@ -332,29 +337,29 @@ function Layer.spritelayer:_updateAnimations(dt)
 end
 
 function Layer.spritelayer:_batchUpdateAnimations(dt)
-	for gid, animation in pairs(self._animations) do
-		-- decrement the animation timer
-		animation.timer = animation.timer - 1000 * dt
-		while animation.timer <= 0 do
-			-- move to the next frame of animation
-			animation.currentFrame = animation.currentFrame + 1
-			if animation.currentFrame > #animation.frames then
-				animation.currentFrame = 1
-			end
-			-- increment the animation timer by the duration of the new frame
-			animation.timer = animation.timer + animation.frames[animation.currentFrame].duration
-			-- update sprites
-			local tileset = self._map:getTileset(gid)
-			if tileset.image then
-				local quad = self._map:_getTileQuad(gid, animation.currentFrame)
-				for i = 1, #self._sprites.exists do
-					if self._sprites.tileGid[i] == gid then
-						self._sprites.spriteBatch[i]:set(self._sprites.id[i], quad, self._sprites.x[i], self._sprites.y[i])
-					end
-				end
-			end
-		end
-	end
+  for gid, animation in pairs(self._animations) do
+    -- decrement the animation timer
+    animation.timer = animation.timer - 1000 * dt
+    while animation.timer <= 0 do
+      -- move to the next frame of animation
+      animation.currentFrame = animation.currentFrame + 1
+      if animation.currentFrame > #animation.frames then
+        animation.currentFrame = 1
+      end
+      -- increment the animation timer by the duration of the new frame
+      animation.timer = animation.timer + animation.frames[animation.currentFrame].duration
+      -- update sprites
+      local tileset = self._map:getTileset(gid)
+      if tileset.image then
+        local quad = self._map:_getTileQuad(gid, animation.currentFrame)
+        for i = 1, #self._sprites.exists do
+          if self._sprites.tileGid[i] == gid then
+            self._sprites.spriteBatch[i]:set(self._sprites.id[i], quad, self._sprites.x[i], self._sprites.y[i])
+          end
+        end
+      end
+    end
+  end
 end
 
 function Layer.spritelayer:update(dt)
@@ -372,7 +377,7 @@ function Layer.spritelayer:draw()
     local th = math.floor(self._sprites.drawRange.h/self._map.tileheight)+1
     local tx = math.ceil(self._sprites.drawRange.x/self._map.tilewidth)-1
     local tw = math.floor(self._sprites.drawRange.w/self._map.tilewidth)+1
-    
+
     for y=ty, ty+th do
       for x=tx, tx+tw do
         if self._sprites.map[y] and self._sprites.map[y][x] and self._sprites.quads[y] and self._sprites.quads[y][x] then
@@ -411,10 +416,10 @@ Layer.tilelayer.__index = Layer.tilelayer
 
 function Layer.tilelayer:_init(map)
   Layer.spritelayer._init(self, map)
-  
+
   if self.encoding == "base64" then
     --error("LuaJIT FFI is not allowed; use CSV instead.")
-    
+
     assert(ffi, "Compressed maps require LuaJIT FFI.\nPlease Switch your interperator to LuaJIT or your Tile Layer Format to \"CSV\".")
     if self.chunks then
       for _, v in ipairs(self.chunks) do
@@ -568,7 +573,7 @@ Layer.objectgroup.__index = Layer.objectgroup
 
 function Layer.objectgroup:_init(map)
   Layer.spritelayer._init(self, map)
-  
+
   for _, object in ipairs(self.objects) do
     if object.gid and object.visible then
       self:_setSprite(object.x, object.y - object.height, object.gid, true)
@@ -590,7 +595,7 @@ Layer.group.__index = Layer.group
 
 function Layer.group:_init(map)
   Layer.base._init(self, map)
-  
+
   for _, layer in ipairs(self.layers) do
     setmetatable(layer, Layer[layer.type])
     layer:_init(self._map)
@@ -626,7 +631,7 @@ Map.__index = Map
 -- path to the image.
 function Map:_loadImage(relativeImagePath)
   if self._images[relativeImagePath] then return end
-  
+
   local imagePath = self.dir .. relativeImagePath
   local npGen1, npGen2 = '[^SEP]+SEP%.%.SEP?', 'SEP+%.?SEP'
   local npPat1, npPat2 = npGen1:gsub('SEP', '/'), npGen2:gsub('SEP', '/')
@@ -634,7 +639,7 @@ function Map:_loadImage(relativeImagePath)
   repeat imagePath, k = imagePath:gsub(npPat2, '/') until k == 0
   repeat imagePath, k = imagePath:gsub(npPat1, '') until k == 0
   if imagePath == '' then imagePath = '.' end
-  
+
   self._images[relativeImagePath] = image(imagePath)
 end
 
@@ -647,16 +652,16 @@ function Map:_loadImages()
       if tile.image then self:_loadImage(tile.image) end
     end
   end
-  
+
   local function recursiveImageLayer(l)
-      for _, layer in ipairs(l) do
-        if layer.type == 'imagelayer' then
-          self:_loadImage(layer.image)
-        elseif layer.type == 'group' then
-          recursiveImageLayer(layer.layers)
-        end
+    for _, layer in ipairs(l) do
+      if layer.type == 'imagelayer' then
+        self:_loadImage(layer.image)
+      elseif layer.type == 'group' then
+        recursiveImageLayer(layer.layers)
       end
     end
+  end
   recursiveImageLayer(self.layers)
 end
 
@@ -700,11 +705,11 @@ end
 function Map:getDecompressedData(data)
   local d = {}
   local decoded = ffi.cast("uint32_t*", data)
-  
+
   for i = 0, (data:len() / ffi.sizeof("uint32_t")) - 1 do
     table.insert(d, tonumber(decoded[i]))
   end
-  
+
   return d
 end
 
@@ -822,7 +827,7 @@ end
 
 function Map:draw()
   self:drawBackground()
-	love.graphics.setColor(1, 1, 1, 1)
+  love.graphics.setColor(1, 1, 1, 1)
   for _, layer in ipairs(self.layers) do
     if layer.visible and layer.draw then layer:draw() end
   end
@@ -833,7 +838,7 @@ function Map:release()
     v:release()
   end
   self._quadCache = nil
-  
+
   for _, v in pairs(self._images) do
     v:release()
   end
@@ -848,13 +853,13 @@ local function finalXML2LuaTable(str, f)
   str = str:gsub("</objectgroup", "</layer")
   str = str:gsub("</imagelayer", "</layer")
   str = str:gsub("</group", "</layer")
-  
+
   local result = xml2lua:parse(str).map
-  
+
   local tmp = f:split("/")
   tmp = tmp[#tmp]:len()
   local path = f:sub(0, -tmp-2)
-  
+
   result.compressionLevel = nil
   result.height = tonumber(result.height)
   result.width = tonumber(result.width)
@@ -870,16 +875,16 @@ local function finalXML2LuaTable(str, f)
     result.backgroundcolor = {tonumber("0x"..result.backgroundcolor:sub(1,2)),
       tonumber("0x"..result.backgroundcolor:sub(3,4)), tonumber("0x"..result.backgroundcolor:sub(5,6))}
   end
-  
+
   result.properties = result.properties or {}
   local ref = result.properties
   result.properties = {}
-  
+
   if ref.property then
     if not (type(ref.property[1]) == "table" and type(ref.property[2]) == "table") then
       ref.property = {ref.property}
     end
-    
+
     for o, p in pairs(ref.property) do
       if p.type == "int" or p.type == "float" or p.type == "object" then
         result.properties[p.name] = tonumber(p.value)
@@ -897,7 +902,7 @@ local function finalXML2LuaTable(str, f)
     end
     result.tilesets = result.tileset
     result.tileset = nil
-    
+
     for k, v in pairs(result.tilesets) do
       v.firstgid = tonumber(v.firstgid)
       local ts
@@ -906,7 +911,7 @@ local function finalXML2LuaTable(str, f)
         local test = v.source:split("/")
         local newPath = ""
         local tr = 0
-        
+
         for i=#test, 1, -1 do
           if test[i] == ".." then
             table.remove(test, i)
@@ -927,16 +932,16 @@ local function finalXML2LuaTable(str, f)
             newPath = newPath .. "/"
           end
         end
-        
+
         if not love.filesystem.getInfo(newPath) then
           error("No such tileset '" .. v.source .. "'")
         end
-        
+
         ts = xml2lua:parse(love.filesystem.read(newPath)).tileset
       else
         ts = v
       end
-      
+
       if not v.source then
         ts.filename = v.source
       end
@@ -946,21 +951,21 @@ local function finalXML2LuaTable(str, f)
       ts.tileheight = tonumber(ts.tileheight)
       ts.spacing = tonumber(ts.spacing) or 0
       ts.margin = tonumber(ts.margin) or 0
-      
+
       if ts.grid then
         ts.grid.width = tonumber(ts.grid.width)
         ts.grid.height = tonumber(ts.grid.height)
       else
         ts.grid = {width=ts.tilewidth, height=ts.tileheight, orientation="orthogonal"}
       end
-      
+
       if ts.tileoffset then
         ts.tileoffset.x = tonumber(ts.tileoffset.x)
         ts.tileoffset.y = tonumber(ts.tileoffset.y)
       else
         ts.tileoffset = {x=0, y=0}
       end
-      
+
       if ts.image then
         if v.source then
           tmp = ts.image
@@ -974,16 +979,16 @@ local function finalXML2LuaTable(str, f)
           v.image = v.image.source
         end
       end
-      
+
       ts.properties = ts.properties or {}
       local ref = ts.properties
       ts.properties = {}
-      
+
       if ref.property then
         if not (type(ref.property[1]) == "table" and type(ref.property[2]) == "table") then
           ref.property = {ref.property}
         end
-        
+
         for o, p in pairs(ref.property) do
           if p.type == "int" or p.type == "float" or p.type == "object" then
             ts.properties[p.name] = tonumber(p.value)
@@ -994,7 +999,7 @@ local function finalXML2LuaTable(str, f)
           end
         end
       end
-      
+
       ts.terraintypes = ts.terraintypes or {}
       ref = ts.terraintypes
       ts.terraintypes = nil
@@ -1003,10 +1008,10 @@ local function finalXML2LuaTable(str, f)
         if not (type(ref.terrain[1]) == "table" and type(ref.terrain[2]) == "table") then
           ref.terrain = {ref.terrain}
         end
-        
+
         for o, p in pairs(ref.terrain) do
           p.tile = tonumber(p.tile)
-          
+
           p.properties = p.properties or {}
           local ref2 = p.properties
           p.properties = {}
@@ -1014,7 +1019,7 @@ local function finalXML2LuaTable(str, f)
             if not (type(ref2.property[1]) == "table" and type(ref2.property[2]) == "table") then
               ref2.property = {ref2.property}
             end
-            
+
             for o2, p2 in pairs(ref2.property) do
               if p2.type == "int" or p2.type == "float" or p2.type == "object" then
                 p.properties[p2.name] = tonumber(p2.value)
@@ -1025,30 +1030,30 @@ local function finalXML2LuaTable(str, f)
               end
             end
           end
-          
+
           ts.terrains[#ts.terrains+1] = p
         end
       end
-      
+
       if ts.tile then
         ts.tiles = ts.tile
         ts.tile = nil
         if not (type(ts.tiles[1]) == "table" and type(ts.tiles[2]) == "table") then
           ts.tiles = {ts.tiles}
         end
-        
+
         for o, p in pairs(ts.tiles) do
           p.id = tonumber(p.id)
           p.probability = tonumber(p.probability)
-          
+
           if p.properties then
             if not (type(p.properties.property[1]) == "table" and type(p.properties.property[2]) == "table") then
               p.properties.property = {p.properties.property}
             end
-            
+
             local ref = p.properties.property
             p.properties = {}
-            
+
             for o2, p2 in pairs(ref) do
               if p2.type == "int" or p2.type == "float" or p2.type == "object" then
                 p.properties[p2.name] = tonumber(p2.value)
@@ -1059,37 +1064,37 @@ local function finalXML2LuaTable(str, f)
               end
             end
           end
-          
+
           if p.terrain then
             p.terrain = p.terrain:split(",")
             for o2, p2 in pairs(p.terrain) do
               p.terrain[o2] = tonumber(p.terrain[o2]) or -1
             end
           end
-          
+
           if p.animation then
             if not (type(p.animation.frame[1]) == "table" and type(p.animation.frame[2]) == "table") then
               p.animation.frame = {p.animation.frame}
             end
-            
+
             for o2, p2 in pairs(p.animation.frame) do
               p2.duration = tonumber(p2.duration)
               p2.tileid = tonumber(p2.tileid)
             end
-            
+
             p.animation = p.animation.frame
             p.animation.frame = nil
           end
-          
+
         end
       else
         ts.tiles = {}
       end
-      
+
       ts.firstgid = v.firstgid
       ts.version = nil
       ts.tiledversion = nil
-      
+
       result.tilesets[k] = ts
     end
   end
@@ -1109,7 +1114,7 @@ local function finalXML2LuaTable(str, f)
           v.width = tonumber(v.width) or 0
           v.height = tonumber(v.height) or 0
           v.id = tonumber(v.id)
-          
+
           if v.data then
             if v.data.encoding then
               v.encoding = v.data.encoding
@@ -1119,7 +1124,7 @@ local function finalXML2LuaTable(str, f)
               v.compression = v.data.compression
               v.data.compression = nil
             end
-            
+
             if inf then
               if v.data.chunk then
                 if not (type(v.data.chunk[1]) == "table" and type(v.data.chunk[2]) == "table") then
@@ -1188,17 +1193,17 @@ local function finalXML2LuaTable(str, f)
             end
             v.objects = v.object
             v.object = nil
-            
+
             local function templateParenting(j, fcache)
               local tf = {}
-              
+
               if j.template then
                 if not fcache[path .. j.template] then
                   local base = path:split("/")
                   local test = j.template:split("/")
                   local newPath = ""
                   local tr = 0
-                  
+
                   for i=#test, 1, -1 do
                     if test[i] == ".." then
                       table.remove(test, i)
@@ -1219,7 +1224,7 @@ local function finalXML2LuaTable(str, f)
                       newPath = newPath .. "/"
                     end
                   end
-                  
+
                   if not love.filesystem.getInfo(newPath) then
                     error("No such template file '" .. j.template .. "'")
                   end
@@ -1227,7 +1232,7 @@ local function finalXML2LuaTable(str, f)
                 end
                 tf = templateParenting(table.clone(fcache[path .. j.template]), fcache)
               end
-              
+
               j.type = j.type == nil and (tf.type == nil and "" or tf.type) or j.type
               j.name = j.name == nil and (tf.name == nil and "" or tf.name) or j.name
               j.width = tonumber(j.width) or tonumber(tf.width) or 0
@@ -1237,7 +1242,7 @@ local function finalXML2LuaTable(str, f)
               j.rotation = tonumber(j.rotation) or tonumber(tf.rotation) or 0
               j.visible = j.visible == nil and (tf.visible ~= "0") or (j.visible ~= "0")
               j.id = tonumber(j.id) or tonumber(tf.id)
-              
+
               if not j.point and not j.ellipse and not j.polyline and not j.polygon and not j.text then
                 j.point = tf.tmpPoint
                 j.ellipse = tf.tmpEllipse
@@ -1245,7 +1250,7 @@ local function finalXML2LuaTable(str, f)
                 j.polygon = tf.tmpPolygon
                 j.text = tf.tmpText
               end
-              
+
               if j.point then
                 j.tmpPoint = j.point
                 j.point = nil
@@ -1257,7 +1262,7 @@ local function finalXML2LuaTable(str, f)
               elseif j.polyline then
                 j.tmpPolyline = j.polyline
                 j.shape = "polyline"
-                
+
                 j.polyline = j.polyline.points:split(" ")
                 local ptmp = {}
                 for o, p in pairs(j.polyline) do
@@ -1270,7 +1275,7 @@ local function finalXML2LuaTable(str, f)
               elseif j.polygon then
                 j.tmpPolygon = j.polygon
                 j.shape = "polygon"
-                
+
                 j.polygon = j.polygon.points:split(" ")
                 local ptmp = {}
                 for o, p in pairs(j.polygon) do
@@ -1289,7 +1294,7 @@ local function finalXML2LuaTable(str, f)
                 j.shape = "rectangle"
                 j.gid = tonumber(j.gid) or tonumber(tf.gid)
               end
-              
+
               j.properties = j.properties or {}
               local ref = j.properties
               j.properties = {}
@@ -1297,7 +1302,7 @@ local function finalXML2LuaTable(str, f)
                 if not (type(ref.property[1]) == "table" and type(ref.property[2]) == "table") then
                   ref.property = {ref.property}
                 end
-                
+
                 for o, p in pairs(ref.property) do
                   if p.type == "int" or p.type == "float" or p.type == "object" then
                     j.properties[p.name] = tonumber(p.value)
@@ -1308,7 +1313,7 @@ local function finalXML2LuaTable(str, f)
                   end
                 end
               end
-              
+
               if tf.properties then
                 for o, p in pairs(tf.properties) do
                   if j.properties[o] == nil then
@@ -1316,10 +1321,10 @@ local function finalXML2LuaTable(str, f)
                   end
                 end
               end
-              
+
               return j
             end
-            
+
             local tcache = {}
             for i, j in pairs(v.objects) do
               j = templateParenting(j, tcache)
@@ -1347,7 +1352,7 @@ local function finalXML2LuaTable(str, f)
           v.opacity = tonumber(v.opacity) or 1
           v.offsetx = tonumber(v.offsetx) or 0
           v.offsety = tonumber(v.offsety) or 0
-          
+
           layerGroupParenting(v)
         end
         v.properties = v.properties or {}
@@ -1357,7 +1362,7 @@ local function finalXML2LuaTable(str, f)
           if not (type(ref.property[1]) == "table" and type(ref.property[2]) == "table") then
             ref.property = {ref.property}
           end
-          
+
           for i, j in pairs(ref.property) do
             if j.type == "int" or j.type == "float" or j.type == "object" then
               v.properties[j.name] = tonumber(j.value)
@@ -1375,12 +1380,12 @@ local function finalXML2LuaTable(str, f)
       tab.layers = {}
     end
   end
-  
+
   layerGroupParenting(result)
-  
+
   collectgarbage()
   collectgarbage()
-  
+
   return result
 end
 
@@ -1388,17 +1393,17 @@ end
 function cartographer.load(path)
   if not path then error('No map path provided', 2) end
   if not love.filesystem.getInfo(path) then error('Map path "' .. path .. '" does not exist', 2) end
-  
+
   local map
-  
+
   if path:sub(path:len()-3, path:len()) == ".tmx" then
     map = setmetatable(finalXML2LuaTable(love.filesystem.read(path), path), Map)
   else
     map = setmetatable(love.filesystem.load(path)(), Map)
   end
-  
+
   map:_init(path)
-  
+
   return map
 end
 
