@@ -27,11 +27,11 @@ function disclaimer:new()
     "various contributors.\n\nIt is not for sale.\n\n" .. 
     "Have fun!"
   self.bottomText = "Press Start to continue" ..
-    "\nPress Alt+Enter for fullscreen" ..
+    (isWeb and "\n" or "\nPress Alt+Enter for fullscreen") ..
     "\nPress 1-9 to set the scale" ..
     "\nPress Escape here to rebind"
   self.bottomTextGP = "Press Start to continue" ..
-    "\nPress Select here for fullscreen" ..
+    (isWeb and "\n" or "\nPress Select here for fullscreen") ..
     "\nPress 1-9 to set the scale" ..
     "\nPress RStickBtn here to rebind"
   self.bottomTextT = "Touch or MouseBtn to continue" ..
