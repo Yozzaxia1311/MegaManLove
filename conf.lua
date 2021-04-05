@@ -6,7 +6,7 @@ function engineGlobals(whenLoveModuleIsLoaded)
     mmFont = love.graphics.newFont("assets/misc/mm.ttf", 8)
     isMobile = love.system.getOS() == "Android" or love.system.getOS() == "iOS"
     isWeb = love.system.getOS() == "Web"
-    compatMusicMode = isMobile or isWeb
+    compatMusicMode = isWeb and 2 or (isMobile and 1 or 0)
     spriteBatchTileMaps = isWeb
     useConsole = not isMobile and not isWeb
   else
