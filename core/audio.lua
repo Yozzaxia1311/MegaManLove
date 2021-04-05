@@ -351,29 +351,40 @@ function mmMusic.play(path, vol, from)
   
   if compatMusicMode then
     if mmMusic.loopPoint > 0 then
-      local ext = mmMusic.curID:split("%.")
-      ext = ext[#ext]
-      local file = mmMusic.curID:sub(0, -ext:len()-2)
-      file = file .. ".compat." .. ext
-      
-      assert(love.filesystem.getInfo(file),
-        "Compat music required for music with intros. Create audio file with a bit of its loop at the end, then have it be " ..
-        "\"" .. file .. "\"")
-      
-      mmMusic.loopEndPoint = love.sound.newSoundData(mmMusic.curID):getDuration()
+      local tmp = love.sound.newSoundData(mmMusic.curID)
+      local lpSamples = mmMusic.loopPoint * tmp:getSampleRate()
+      mmMusic.loopEndPoint = tmp:getDuration()
       mmMusic.loopEndOffset = mmMusic.loopEndPoint - mmMusic.loopPoint
+      local nm = love.sound.newSoundData(tmp:getSampleCount() + tmp:getSampleRate(), tmp:getSampleRate(), tmp:getBitDepth(), tmp:getChannelCount())
       
-      mmMusic.music = love.audio.newSource(file, "static")
+      if ffi then
+        ffi.copy(nm:getFFIPointer(), tmp:getFFIPointer(), tmp:getSize() - 1)
+      else
+        for ch = 1, tmp:getChannelCount() do
+          for i = 0, tmp:getSampleCount() - 1 do
+            nm:setSample(i, ch, tmp:getSample(i, ch))
+          end
+        end
+      end
+      
+      local tmp2 = tmp:getSampleCount() - 1
+      for ch = 1, tmp:getChannelCount() do
+        for i = tmp:getSampleCount(), nm:getSampleCount() - 1 do
+          nm:setSample(i, ch, tmp:getSample(math.wrap(i, lpSamples, tmp2), ch))
+        end
+      end
+      
+      mmMusic.music = love.audio.newSource(nm)
+      tmp:release()
+      tmp = nil
     else
       mmMusic.music = love.audio.newSource(mmMusic.curID, "static")
     end
-    
     if mmMusic.loop then
       mmMusic.music:setLooping(mmMusic.loopPoint == 0)
     else
       mmMusic.music:setLooping(false)
     end
-    
     mmMusic.setVolume(mmMusic.vol)
     mmMusic.seek(mmMusic.time)
     mmMusic.music:play()
