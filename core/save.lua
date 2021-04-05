@@ -37,7 +37,7 @@ function save.load(file)
     error("Cannot load during recordings")
   end
   
-  local sv = love.filesystem.read(file)
+  local sv = love.filesystem.getInfo(file) and love.filesystem.read(file)
   
   if not sv then
     return

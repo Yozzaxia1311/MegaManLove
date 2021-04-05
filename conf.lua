@@ -5,7 +5,9 @@ function engineGlobals(whenLoveModuleIsLoaded)
     love.graphics.setDefaultFilter("nearest", "nearest")
     mmFont = love.graphics.newFont("assets/misc/mm.ttf", 8)
     isMobile = love.system.getOS() == "Android" or love.system.getOS() == "iOS"
-    compatMusicMode = isMobile
+    isWeb = love.system.getOS() == "Web"
+    compatMusicMode = isMobile or isWeb
+    spriteBatchTileMaps = isWeb
   else
     gameWidth = 256
     gameHeight = 224

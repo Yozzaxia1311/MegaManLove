@@ -350,6 +350,10 @@ function love.textinput(k)
 end
 
 function love.update(dt)
+  if isWeb then
+    beforeUpdate()
+  end
+  
   local doAgain = true
   
   while doAgain do
@@ -403,6 +407,10 @@ function love.draw()
   love.graphics.pop()
   vPad.draw()
   if useConsole then console.draw() end
+  
+  if isWeb then
+    afterUpdate()
+  end
 end
 
 function love.quit()
@@ -480,6 +488,92 @@ function pressingHardInputs(k)
   return false
 end
 
+function beforeUpdate()
+  if lk and console and save and megautils then
+    if not (useConsole and console.state == 1) then
+      if not lk.isDown("return") then
+        altEnterOnce = false
+      elseif (lk.isDown("ralt") or lk.isDown("lalt")) and lk.isDown("return") then
+        if not altEnterOnce then
+          megautils.setFullscreen(not megautils.getFullscreen())
+          local data = save.load("main.sav") or {}
+          data.fullscreen = megautils.getFullscreen()
+          save.save("main.sav", data)
+        end
+        altEnterOnce = true
+      end
+      
+      for i=1, 9 do
+        local k = tostring(i)
+        if lk.isDown(k) or lk.isDown("kp" .. k) then
+          if view.w * i ~= lg.getWidth() or
+            view.h * i ~= lg.getHeight() then
+            local last = megautils.getScale()
+            megautils.setScale(i)
+            if i ~= last then
+              if not scaleOnce[i] then
+                local data = save.load("main.sav") or {}
+                data.scale = megautils.getScale()
+                save.save("main.sav", data)
+              end
+              scaleOnce[i] = true
+            end
+          end
+        else
+          scaleOnce[i] = false
+        end
+      end
+    end
+    
+    if not lk.isDown("o") and not lk.isDown("p") and not lk.isDown("r") then
+      contextOnce = false
+    elseif (lk.isDown("lctrl") or lk.isDown("rctrl")) then
+      if lk.isDown("o") then
+        if not contextOnce then
+          console.parse("contextsave quickContext")
+        end
+        contextOnce = true
+      elseif lk.isDown("p") then
+        if not contextOnce then
+          console.parse("contextopen quickContext")
+        end
+        contextOnce = true
+      elseif lk.isDown("r") then
+        if not contextOnce then
+          console.parse("rec")
+        end
+        contextOnce = true
+      end
+    end
+  end
+  
+  if serQueue then
+    local f = serQueue
+    serQueue = nil
+    f(ser())
+  end
+  
+  if deserQueue then
+    local f = deserQueue
+    if type(deserQueue) == "function" then
+      f = deserQueue()
+    end
+    deserQueue = nil
+    deser(f)
+  end
+  
+  if record._openRecQ then
+    local f = record._openRecQ
+    record._openRecQ = nil
+    record.openRec(f)
+  end
+  
+  if record._startRecQ then
+    record._startRecQ = false
+    record.startRec()
+  end
+end
+
 function afterUpdate()
   megautils.checkQueue()
   states.checkQueue()
@@ -499,127 +593,47 @@ function afterUpdate()
   lastTextInput = nil
 end
 
-function love.run()
-  local bu = lt and lt.getTime()
-  
-  if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
-  if lt then lt.step() end
-  
-  return function()
-      if lk and console and save and megautils then
-        if not (useConsole and console.state == 1) then
-          if not lk.isDown("return") then
-            altEnterOnce = false
-          elseif (lk.isDown("ralt") or lk.isDown("lalt")) and lk.isDown("return") then
-            if not altEnterOnce then
-              megautils.setFullscreen(not megautils.getFullscreen())
-              local data = save.load("main.sav") or {}
-              data.fullscreen = megautils.getFullscreen()
-              save.save("main.sav", data)
-            end
-            altEnterOnce = true
-          end
+if not isWeb then
+  function love.run()
+    local bu = lt and lt.getTime()
+    
+    if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
+    if lt then lt.step() end
+    
+    return function()
+        beforeUpdate()
+        
+        if le then
+          le.pump()
           
-          for i=1, 9 do
-            local k = tostring(i)
-            if lk.isDown(k) or lk.isDown("kp" .. k) then
-              if view.w * i ~= lg.getWidth() or
-                view.h * i ~= lg.getHeight() then
-                local last = megautils.getScale()
-                megautils.setScale(i)
-                if i ~= last then
-                  if not scaleOnce[i] then
-                    local data = save.load("main.sav") or {}
-                    data.scale = megautils.getScale()
-                    save.save("main.sav", data)
-                  end
-                  scaleOnce[i] = true
-                end
+          for name, a,b,c,d,e,f in le.poll() do
+            if name == "quit" then
+              if not love.quit or not love.quit() then
+                return a or 0
               end
-            else
-              scaleOnce[i] = false
             end
+            love.handlers[name](a,b,c,d,e,f)
           end
         end
         
-        if not lk.isDown("o") and not lk.isDown("p") and not lk.isDown("r") then
-          contextOnce = false
-        elseif (lk.isDown("lctrl") or lk.isDown("rctrl")) then
-          if lk.isDown("o") then
-            if not contextOnce then
-              console.parse("contextsave quickContext")
-            end
-            contextOnce = true
-          elseif lk.isDown("p") then
-            if not contextOnce then
-              console.parse("contextopen quickContext")
-            end
-            contextOnce = true
-          elseif lk.isDown("r") then
-            if not contextOnce then
-              console.parse("rec")
-            end
-            contextOnce = true
-          end
-        end
-      end
-      
-      if serQueue then
-        local f = serQueue
-        serQueue = nil
-        f(ser())
-      end
-      
-      if deserQueue then
-        local f = deserQueue
-        if type(deserQueue) == "function" then
-          f = deserQueue()
-        end
-        deserQueue = nil
-        deser(f)
-      end
-      
-      if record._openRecQ then
-        local f = record._openRecQ
-        record._openRecQ = nil
-        record.openRec(f)
-      end
-      
-      if record._startRecQ then
-        record._startRecQ = false
-        record.startRec()
-      end
-      
-      if le then
-        le.pump()
+        if lu then lu(lt and lt.step()) end
         
-        for name, a,b,c,d,e,f in le.poll() do
-          if name == "quit" then
-            if not love.quit or not love.quit() then
-              return a or 0
-            end
-          end
-          love.handlers[name](a,b,c,d,e,f)
+        if lg and lg.isActive() then
+          lg.origin()
+          lg.clear(lg.getBackgroundColor())
+          if ld then ld() end
+          lg.present()
         end
+        
+        if lt then
+          local delta, fps = lt.getTime() - bu, 1/megautils.getFPS()
+          if delta < fps then lt.sleep(fps - delta) end
+          bu = lt.getTime()
+        end
+        
+        afterUpdate()
       end
-      
-      if lu then lu(lt and lt.step()) end
-      
-      if lg and lg.isActive() then
-        lg.origin()
-        lg.clear(lg.getBackgroundColor())
-        if ld then ld() end
-        lg.present()
-      end
-      
-      if lt then
-        local delta, fps = lt.getTime() - bu, 1/megautils.getFPS()
-        if delta < fps then lt.sleep(fps - delta) end
-        bu = lt.getTime()
-      end
-      
-      afterUpdate()
-    end
+  end
 end
 
 -- Save state to memory
