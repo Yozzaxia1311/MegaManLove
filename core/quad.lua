@@ -24,7 +24,7 @@ function quad:getViewport()
 end
 
 function quad:setViewport(x, y, w, h)
-  self.quad:setViewport(x, y, w, h)
+  self.quad:setViewport(x, y, w, h, 1, 1)
 end
 
 function quad:release()
