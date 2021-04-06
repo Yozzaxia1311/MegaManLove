@@ -42,6 +42,7 @@ mmMusic.stopping = true
 mmMusic.vol = 1
 mmMusic.loopEndPoint = nil
 mmMusic.loopEndOffset = nil
+mmMusic._ml = nil
 
 if not compatMusicMode then
   mmMusic.threadChannel = love.thread.getChannel("mmMusicThread")
@@ -172,6 +173,10 @@ function mmMusic.stop()
       mmMusic.music:release()
       mmMusic.music = nil
     end
+    if mmMusic._ml then
+      mmMusic._ml:release()
+      mmMusic._ml = nil
+    end
   end
 end
 
@@ -181,7 +186,7 @@ end
 
 function mmMusic.stopped()
   if compatMusicMode then
-    return mmMusic.stopping and mmMusic.music and not mmMusic.music:isPlaying()
+    return mmMusic.stopping
   else
     return not mmMusic.thread:isRunning()
   end
@@ -236,10 +241,10 @@ end
 function mmMusic.seek(s)
   if compatMusicMode == 1 then
     if mmMusic.music then
-      mmMusic.music:seek(s, "seconds")
+      mmMusic.music:seek(s)
     end
   elseif compatMusicMode == 2 then
-    error("Compatibility music mode 2 cannot seek audio")
+    error("Compatibility music mode 2 cannot seek audio. (Too buggy for web!)")
   elseif mmMusic.thread:isRunning() then
     mmMusic.threadChannel:push("seek")
     mmMusic.threadChannel:push(s)
@@ -255,8 +260,8 @@ function mmMusic._threadTell()
 end
 
 function mmMusic.tell()
-  if compatMusicMode then
-    return mmMusic.music and mmMusic.music:tell("seconds")
+  if compatMusicMode == 1 then
+    return mmMusic.music and mmMusic.music:tell()
   else
     return mmMusic.mTell
   end
@@ -350,14 +355,17 @@ function mmMusic.play(path, vol, from)
   mmMusic.vol = vol or mmMusic.vol
   mmMusic.stopping = false
   mmMusic.paused = false
+  mmMusic._ml = nil
+  mmMusic.music = nil
   
   if compatMusicMode == 1 then
-    if mmMusic.loopPoint > 0 then
+    if mmMusic.loop and mmMusic.loopPoint > 0 then
       local tmp = love.sound.newSoundData(mmMusic.curID)
       local lpSamples = mmMusic.loopPoint * tmp:getSampleRate()
       mmMusic.loopEndPoint = tmp:getDuration()
       mmMusic.loopEndOffset = mmMusic.loopEndPoint - mmMusic.loopPoint
-      local nm = love.sound.newSoundData(tmp:getSampleCount() + tmp:getSampleRate(), tmp:getSampleRate(), tmp:getBitDepth(), tmp:getChannelCount())
+      local nm = love.sound.newSoundData(tmp:getSampleCount() + tmp:getSampleRate(),
+        tmp:getSampleRate(), tmp:getBitDepth(), tmp:getChannelCount())
       
       if ffi then
         ffi.copy(nm:getFFIPointer(), tmp:getFFIPointer(), tmp:getSize() - 1)
@@ -391,9 +399,43 @@ function mmMusic.play(path, vol, from)
     mmMusic.seek(mmMusic.time)
     mmMusic.music:play()
   elseif compatMusicMode == 2 then
-    mmMusic.music:setLooping(mmMusic.loop)
-    mmMusic.setVolume(mmMusic.vol)
-    -- TODO
+    if mmMusic.loop and mmMusic.loopPoint > 0 then
+      error("Compatibility music mode 2 cannot have audio with intros. (FRUSTRATING WEB BUG)")
+      
+      local tmp = love.sound.newSoundData(mmMusic.curID)
+      local intro = love.sound.newSoundData(math.floor(mmMusic.loopPoint * tmp:getSampleRate()), tmp:getSampleRate(),
+        tmp:getBitDepth(), tmp:getChannelCount())
+      local music = love.sound.newSoundData(tmp:getSampleCount() - intro:getSampleCount(), tmp:getSampleRate(),
+        tmp:getBitDepth(), tmp:getChannelCount())
+      
+      for ch = 1, tmp:getChannelCount() do
+        for i = 0, intro:getSampleCount() - 1 do
+          intro:setSample(i, ch, tmp:getSample(i, ch))
+        end
+      end
+      local lps = intro:getSampleCount()
+      for ch = 1, tmp:getChannelCount() do
+        for i = 0, music:getSampleCount() - 1 do
+          music:setSample(i, ch, tmp:getSample(lps + i, ch))
+        end
+      end
+      
+      mmMusic.music = love.audio.newQueueableSource(tmp:getSampleRate(), tmp:getBitDepth(), tmp:getChannelCount(), 3)
+      mmMusic.setVolume(mmMusic.vol)
+      mmMusic._ml = music
+      mmMusic.music:queue(intro)
+      mmMusic.music:queue(music)
+      
+      tmp:release()
+      tmp = nil
+      
+      mmMusic.music:play()
+    else
+      mmMusic.music = love.audio.newSource(mmMusic.curID, "static")
+      mmMusic.music:setLooping(mmMusic.loop)
+      mmMusic.setVolume(mmMusic.vol)
+      mmMusic.music:play()
+    end
   else
     mmMusic.thread:start(mmMusic.curID, mmMusic.loop, mmMusic.loopPoint, mmMusic.time, mmMusic.vol)
     mmMusic.setLock(mmMusic.locked)
@@ -429,7 +471,11 @@ function mmMusic.update()
       mmMusic.music:seek(mmMusic.music:tell() - mmMusic.loopEndOffset)
     end
   elseif compatMusicMode == 2 then
-    
+    if mmMusic._ml and mmMusic.music and not mmMusic.stopping and not mmMusic.paused then
+      while mmMusic.music:getFreeBufferCount() ~= 0 do
+        mmMusic.music:queue(mmMusic._ml)
+      end
+    end
   else
     while not mmMusic.stopping do
       local value = mmMusic.mainChannel:pop()
