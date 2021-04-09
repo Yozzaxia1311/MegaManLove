@@ -2040,7 +2040,7 @@ end
 
 function megaMan:draw()
   if (megaMan.mainPlayer and megaMan.mainPlayer.ready) or self._rw then
-    if self.teleportOffY then
+    if self._rw then
       self._rw = nil
     end
     return
