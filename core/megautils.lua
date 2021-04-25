@@ -581,9 +581,14 @@ function megautils.getCurrentState()
 end
 
 function megautils.transitionToState(s, before, after, gap)
-  local tmp = megautils.add(fade, true, gap, nil, function(se)
-      megautils.gotoState(s, before, after)
+  local tmp = fade(true, gap, nil, function(se)
+      megautils.gotoState(se._state, se._before, se._after)
     end)
+  tmp._state = s
+  tmp._before = before
+  tmp._after = after
+  
+  megautils.adde(tmp)
 end
 
 function megautils.gotoState(st, before, after)
