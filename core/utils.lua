@@ -32,6 +32,37 @@ function checkFalse(w)
   return true
 end
 
+function parseConf(str)
+  local result
+  
+  for _, line in ipairs(str:split("\r\n")) do
+    if line ~= "" and line:match(":") and not line:match("<>") then
+      local data = line:split(":")
+      local v = data[2]:trimmed()
+      v = tonumber(v) or (toboolean(v) == nil and v) or toboolean(v)
+      
+      if type(v) == "string" and line:match(",") then
+        local od = v:split(",")
+        
+        for i = 1, #od do
+          od[i] = od[i]:trimmed()
+          od[i] = tonumber(od[i]) or (toboolean(od[i]) == nil and od[i]) or toboolean(od[i])
+        end
+        
+        v = od
+      end
+      
+      if not result then
+        result = {}
+      end
+      
+      result[data[1]] = v
+    end
+  end
+  
+  return result
+end
+
 function table.intersects(t, t2, fully)
   if fully then
     for _, v in pairs(t) do

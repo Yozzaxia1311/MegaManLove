@@ -337,14 +337,7 @@ function mmMusic.play(path, vol, from)
   local t = {}
   
   if love.filesystem.getInfo(path .. ".txt") then
-    for line in love.filesystem.lines(path .. ".txt") do
-      if line ~= "" and line:match(":") then
-        local data = line:split(":")
-        local v = data[2]:trimmed()
-        v = tonumber(v) or (toboolean(v) == nil and v) or toboolean(v)
-        t[data[1]] = v
-      end
-    end
+    t = parseConf(love.filesystem.read(path .. ".txt"))
   end
   
   mmMusic.curID = path

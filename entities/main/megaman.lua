@@ -63,7 +63,7 @@ end
 function megaMan:setSkin(path)
   local player = (type(self) == "number") and self or self.player
   
-  if table.length(megaMan.skinCache) > maxPlayerCount+1 then
+  if table.length(megaMan.skinCache) > maxPlayerCount + 1 then
     for p, skin in pairs(megaMan.skinCache) do
       if not table.contains(megaMan.skins, skin) then
         megaMan.skinCache[p][2]:release()
@@ -71,7 +71,7 @@ function megaMan:setSkin(path)
         megaMan.skinCache[p][4]:release()
         megaMan.skinCache[p][5]:release()
         megaMan.skinCache[p] = nil
-        if table.length(megaMan.skinCache) <= maxPlayerCount+1 then
+        if table.length(megaMan.skinCache) <= maxPlayerCount + 1 then
           break
         end
       end
@@ -82,39 +82,23 @@ function megaMan:setSkin(path)
     megaMan.skins[player] = nil
   else
     local finfo = love.filesystem.getInfo(path)
-    if not finfo then error("Skin \"" .. path .. "\" does not exist") end
+    assert(finfo, "Skin \"" .. path .. "\" does not exist")
     
     if not megaMan.skinCache[path] or megaMan.skinCache[path][7] ~= finfo.modtime then
-      local t = {}
-      local mount
+      local t = parseConf(love.filesystem.read(path .. "/conf.txt"))
       
-      if finfo.type == "file" then
-        mount = "skinArchive"
-        love.filesystem.mount(path, mount)
-      end
-      if love.filesystem.getInfo((mount or path) .. "/conf.txt") then
-        for line in love.filesystem.lines((mount or path) .. "/conf.txt") do
-          if line ~= "" and line:match(":") then
-            local data = line:split(":")
-            local v = data[2]:trimmed()
-            v = tonumber(v) or (toboolean(v) == nil and v) or toboolean(v)
-            t[data[1]] = v
-          end
-        end
-      end
+      assert(t, "\"" .. path .. "/conf.txt\" could not be parsed")
+      
       megaMan.skinCache[path] = {path, image((mount or path) .. "/player.png"),
         image(path .. "/outline.png"),
         image(path .. "/one.png"),
         image(path .. "/two.png"), t, finfo.modtime}
-      if mount then
-        love.graphics.unmount(path)
-      end
     end
   end
   
   local p, tex, out, on, tw, t = unpack(megaMan.skinCache[path])
   
-  megaMan.skins[player] = {traits=t, path=p, texture=tex, outline=out, one=on, two=tw}
+  megaMan.skins[player] = {traits = t, path = p, texture = tex, outline = out, one = on, two = tw}
   
   megaMan.registerWeapons(player)
   
@@ -165,7 +149,7 @@ megautils.resetGameObjectsFuncs.megaMan = {func=function()
     
     megaMan.resources()
     
-    for i=1, globals.playerCount do
+    for i = 1, globals.playerCount do
       megaMan.weaponHandler[i] = weaponHandler(nil, nil, 10)
       megaMan.registerWeapons(i)
     end
@@ -356,11 +340,11 @@ function megaMan:syncPlayerSkin()
   for k, v in pairs(skin.traits) do
     local s, e = k:find("shootX")
     if s == 1 and k:len() > e then
-      self.shootOffsetXTable[k:sub(e+1)] = clampSkinShootOffsets and math.clamp(v, 0, 63) or v
+      self.shootOffsetXTable[k:sub(e + 1)] = clampSkinShootOffsets and math.clamp(v, 0, 63) or v
     end
     s, e = k:find("shootY")
     if s == 1 and k:len() > e then
-      self.shootOffsetYTable[k:sub(e+1)] = clampSkinShootOffsets and math.clamp(v, 0, 41) or v
+      self.shootOffsetYTable[k:sub(e + 1)] = clampSkinShootOffsets and math.clamp(v, 0, 41) or v
     end
   end
   
@@ -469,8 +453,6 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   self.anims:add("climbTip", megautils.newAnimation(pp, {3, 2}))
   self.anims:add("hit", megautils.newAnimation(pp, {3, 7}))
   self.anims:add("dash", megautils.newAnimation(pp, {7, 1}, 1/14, "pauseAtEnd"))
-  --self.anims:add("dashShoot", megautils.newAnimation(pp, {4, 10}))
-  --self.anims:add("dashThrow", megautils.newAnimation(pp, {1, 11})) -- Neither of these should exist
   self.anims:add("spawn", megautils.newAnimation(pp, {1, 5}))
   self.anims:add("spawnLand", megautils.newAnimation(pp, {2, 5, 1, 5, 3, 5}, 1/20))
   self.anims:add("jumpProtoShield", megautils.newAnimation(pp, {1, 7}))
