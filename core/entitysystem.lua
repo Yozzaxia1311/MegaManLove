@@ -257,8 +257,8 @@ function entitySystem:add(c, ...)
   
   e.previousX = e.x
   e.previousY = e.y
-  e.epX = e.previousX
-  e.epY = e.previousY
+  e._epX = e.previousX
+  e._epY = e.previousY
   
   if e.calcGrav then
     e:calcGrav()
@@ -318,8 +318,8 @@ function entitySystem:adde(e)
   
   e.previousX = e.x
   e.previousY = e.y
-  e.epX = e.previousX
-  e.epY = e.previousY
+  e._epX = e.previousX
+  e._epY = e.previousY
   
   if e.calcGrav then
     e:calcGrav()
@@ -706,8 +706,8 @@ function entitySystem:update(dt)
     if (type(v.noFreeze) == "table" and table.intersects(self.frozen, v.noFreeze, true)) or v.noFreeze == true or not checkTrue(self.frozen) then
       v.previousX = v.x
       v.previousY = v.y
-      v.epX = v.previousX
-      v.epY = v.previousY
+      v._epX = v.previousX
+      v._epY = v.previousY
       if not v.isRemoved and v.beforeUpdate and checkFalse(v.canUpdate) then
         v:beforeUpdate(dt)
         if not v.invisibleToHash then v:updateHash() end
@@ -768,7 +768,7 @@ function entitySystem:update(dt)
   if entitySystem.doDrawFlicker then
     for i=1, #self.entities do
       if self.entities[i].flicker and #self.entities[i].data > 1 then
-        table.shuffle(self.entities[i].data)
+        table.lazyShuffle(self.entities[i].data)
       end
     end
   end
@@ -928,6 +928,8 @@ function basicEntity:setRectangleCollision(w, h)
   self:updateHash()
 end
 
+basicEntity._imgCache = {}
+
 function basicEntity:setImageCollision(resource)
   local res = megautils.getResourceTable(resource)
   
@@ -939,6 +941,12 @@ function basicEntity:setImageCollision(resource)
   self.collisionShape.w = res.data:getWidth()
   self.collisionShape.h = res.data:getHeight()
   self.collisionShape.data = res.data
+  
+  if not basicEntity._imgCache[self.collisionShape.data] then
+    basicEntity._imgCache[self.collisionShape.data] = self.collisionShape.data:toImage()
+  end
+  
+  self.collisionShape.image = basicEntity._imgCache[self.collisionShape.data]
   
   self.collisionShape.r = nil
   
@@ -1008,7 +1016,7 @@ function basicEntity:drawCollision()
   if self.collisionShape.type == 0 then
     love.graphics.rectangle("line", math.round(self.x), math.round(self.y),
       self.collisionShape.w, self.collisionShape.h)
-  elseif self.collisionShape.type == 1 and self.collisionShape.image then
+  elseif self.collisionShape.type == 1 then
     self.collisionShape.image:draw(math.round(self.x), math.round(self.y))
   elseif self.collisionShape.type == 2 then
     love.graphics.circle("line", math.round(self.x), math.round(self.y), self.collisionShape.r)
@@ -1066,7 +1074,7 @@ function basicEntity:getSurroundingEntities(dxx, dyy)
     local xx, yy, ww, hh = self.x - math.min(dx, 0), self.y - math.min(dy, 0),
       self.collisionShape.w + math.max(dx, 0), self.collisionShape.h + math.max(dy, 0)
     
-    return megautils.getSurroundingEntities(xx, yy, ww, hh)
+    return megautils.getSurroundingEntities(xx, yy, ww, hh, self)
   end
   
   self:updateHash()
@@ -1094,6 +1102,8 @@ function basicEntity:begin() end
 function basicEntity:staticToggled() end
 
 megautils.cleanFuncs.autoCleaner = {func=function()
+    basicEntity._imgCache = {}
+    
     for k, v in pairs(_G) do
       if type(v) == "table" and tostring(v) == "_Ent" and v.autoClean then
         _G[k] = nil

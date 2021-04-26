@@ -161,6 +161,14 @@ function table.shuffle(t)
   return t
 end
 
+function table.lazyShuffle(t)
+  for i = 1, math.floor(#t / 2), love.math.random(1, math.max(math.floor(#t / 3), 1)) do
+    t[i], t[#t] = t[#t], t[i]
+  end
+  
+  return t
+end
+
 function math.even(n)
   return n % 2 == 0
 end

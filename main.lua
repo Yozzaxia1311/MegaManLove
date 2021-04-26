@@ -653,6 +653,7 @@ function ser()
       view = view.ser(),
       megautils = megautils.ser(),
       state = states.ser(),
+      basicEntity = basicEntity.basicEntityImgCache,
       entitySystem = entitySystem.ser(),
       section = section.ser(),
       loader = loader.ser(),
@@ -701,6 +702,7 @@ function deser(from, dontChangeMusic)
   view.deser(t.view)
   megautils.deser(t.megautils)
   states.deser(t.state)
+  basicEntity._imgCache = t.basicEntityImgCache
   entitySystem.deser(t.entitySystem)
   section.deser(t.section)
   loader.deser(t.loader)
