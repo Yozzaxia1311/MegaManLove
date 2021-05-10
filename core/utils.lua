@@ -32,10 +32,10 @@ function checkFalse(w)
   return true
 end
 
-function parseConf(str)
+function parseConf(path)
   local result
   
-  for _, line in ipairs(str:split("\r\n")) do
+  for line in love.filesystem.lines(path) do
     if line ~= "" and line:match(":") and not line:match("<>") then
       local data = line:split(":")
       local v = data[2]:trimmed()

@@ -85,7 +85,7 @@ function megaMan:setSkin(path)
     assert(finfo, "Skin \"" .. path .. "\" does not exist")
     
     if not megaMan.skinCache[path] or megaMan.skinCache[path][7] ~= finfo.modtime then
-      local t = parseConf(love.filesystem.read(path .. "/conf.txt"))
+      local t = parseConf(path .. "/conf.txt")
       
       assert(t, "\"" .. path .. "/conf.txt\" could not be parsed")
       
@@ -470,6 +470,31 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
     self.x = math.floor(view.w/2)-(self.collisionShape.w/2)
     self.canDraw.global = false
   elseif (dr == nil or dr) and not self.teleporter and megaMan.mainPlayer == self and not megaMan.once then
+    self._checkDR = true
+  end
+  self.side = side or 1
+  
+  self.anims:set(self.drop and "spawn" or "idle")
+  
+  for _, v in pairs(megautils.playerCreatedFuncs) do
+    if type(v) == "function" then
+      v(self)
+    else
+      v.func(self)
+    end
+  end
+end
+
+function megaMan:begin()
+  if self.drop then
+    self.teleportOffY = (not self.teleporter and self.drop) and (view.y-self.y) or 0
+  end
+end
+
+function megaMan:added()
+  self:addToGroup("submergable")
+  
+  if self._checkDR then
     if self.protoWhistle then
       self.ready = megautils.add(ready, nil, 32)
       if mmMusic._queue then
@@ -480,13 +505,22 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
     else
       self.ready = megautils.add(ready)
     end
+    
+    self._checkDR = nil
   end
-  self.side = side or 1
   
   if not self.doWeaponGet then
+    if self.healthHandler and not self.healthHandler.isRemoved then
+      megautils.removeq(self.healthHandler)
+    end
+    
     self.healthHandler = megautils.add(healthHandler, nil, nil, nil,
       nil, nil, globals.lifeSegments, self)
     self.healthHandler.canDraw.global = false
+    
+    if megaMan.weaponHandler[self.player] and not megaMan.weaponHandler[self.player].isRemoved then
+      megautils.removeq(megaMan.weaponHandler[self.player])
+    end
     
     local w = megautils.adde(megaMan.weaponHandler[self.player])
     megaMan.colorOutline[self.player] = weapon.colors[w.current].outline
@@ -511,20 +545,6 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
       end
     end
   end
-  
-  self.anims:set(self.drop and "spawn" or "idle")
-  
-  for _, v in pairs(megautils.playerCreatedFuncs) do
-    if type(v) == "function" then
-      v(self)
-    else
-      v.func(self)
-    end
-  end
-end
-
-function megaMan:added()
-  self:addToGroup("submergable")
 end
 
 function megaMan:useShootAnimation()
@@ -1999,6 +2019,7 @@ function megaMan:update()
             self.drop = false
             self.doSplashing = true
             self.teleportOffY = nil
+            self.anims:set(self.ground and self.idleAnimation.regular or self.jumpAnimation.regular)
             megautils.playSound("start")
           end
         end
@@ -2021,7 +2042,7 @@ function megaMan:afterUpdate(dt)
 end
 
 function megaMan:draw()
-  if (megaMan.mainPlayer and megaMan.mainPlayer.ready) or self._rw then
+  if (megaMan.mainPlayer and megaMan.mainPlayer.ready) or (self.drop and megautils.checkFrozen("fade")) or self._rw then
     if self._rw then
       self._rw = nil
     end

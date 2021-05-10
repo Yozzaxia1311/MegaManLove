@@ -337,7 +337,7 @@ function mmMusic.play(path, vol, from)
   local t = {}
   
   if love.filesystem.getInfo(path .. ".txt") then
-    t = parseConf(love.filesystem.read(path .. ".txt"))
+    t = parseConf(path .. ".txt")
   end
   
   mmMusic.curID = path
