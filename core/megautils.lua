@@ -300,18 +300,71 @@ end
 
 megautils._ranFiles = {}
 
-function megautils.runFile(path, runOnce)
+function megautils.runFile(path, runOnce, ...)
   if runOnce then
     if not table.icontains(megautils._ranFiles, path) then
       megautils._ranFiles[#megautils._ranFiles+1] = path
-      return love.filesystem.load(path)()
+      return love.filesystem.load(path)(...)
     end
   else
     if not table.icontains(megautils._ranFiles, path) then
       megautils._ranFiles[#megautils._ranFiles+1] = path
     end
-    return love.filesystem.load(path)()
+    return love.filesystem.load(path)(...)
   end
+end
+
+megautils._fsmeta = {}
+
+function megautils._fso(index)
+  for i = 1, #megautils._fsmeta do
+    if megautils._fsmeta[i].__index == index then
+      return megautils._fsmeta[i]
+    end
+  end
+end
+
+function megautils.runFolderStructure(path, ...)
+  local f = love.filesystem.getInfo(path)
+  assert(f and f.type == "directory", "\"" .. tostring(path) .. "\" is not a valid folder structure")
+  assert(love.filesystem.getInfo(path .. "/conf.txt"), "\"" .. tostring(path) .. "/conf.txt\" does not exist")
+  
+  local conf = parseConf(path .. "/conf.txt")
+  
+  local name = path:split("/")
+  name = name[#name]
+  local baseClass = conf.baseClass or "advancedEntity"
+  local result = _G[baseClass]:extend()
+  
+  local autoClean = conf.autoClean == nil or conf.autoClean
+  local collision
+  local enemyWeapon = conf.enemyWeapon == nil or conf.enemyWeapon
+  
+  if type(conf.collision) == "table" then
+    if conf.collision[2] then
+      collision = {"rect", unpack(conf.collision)}
+    else
+      collision = {"circle", conf.collision[1]}
+    end
+  else
+    collision = {"image", conf.collision}
+  end
+  
+  megautils._fsmeta[#megautils._fsmeta + 1] = {
+      path = path,
+      name = name,
+      collision = collision,
+      enemyWeapon = enemyWeapon,
+      baseClass = baseClass
+    }
+  
+  if baseClass == "weapon" then
+    function megautils._fsmeta[#megautils._fsmeta]:new(player)
+      self.__index.super.new(self, player, true)
+    end
+  end
+  
+  megautils.runFile(path .. "/" .. path .. ".lua", false, ...)
 end
 
 function megautils.resetGame(s, saveSfx, saveMusic)
