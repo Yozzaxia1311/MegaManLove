@@ -57,7 +57,7 @@ end
 
 function pickup:taken(p) end
 
-function pickup:afterUpdate()
+function pickup:_afterUpdate(dt)
   if self.fwp then
     self:setGravityMultiplier("flipWithPlayer", megaMan.mainPlayer and megaMan.mainPlayer.gravityMultipliers.gravityFlip or self.gravDir)
   end
@@ -88,6 +88,8 @@ function pickup:afterUpdate()
       megautils.removeq(self)
     end
   end
+  
+  self:afterUpdate(dt)
 end
 
 smallHealth = pickup:extend()
