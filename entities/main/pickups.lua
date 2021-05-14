@@ -117,7 +117,6 @@ function smallHealth:taken(p)
 end
 
 function smallHealth:update()
-  smallHealth.super.update(self)
   self.anim:update(1/60)
 end
 
@@ -162,7 +161,6 @@ function health:taken(p)
 end
 
 function health:update()
-  health.super.update(self)
   self.anim:update(1/60)
 end
 
@@ -208,7 +206,6 @@ function smallEnergy:taken(p)
 end
 
 function smallEnergy:update()
-  smallEnergy.super.update(self)
   self.anim:update(1/60)
 end
 
@@ -263,7 +260,6 @@ function energy:taken(p)
 end
 
 function energy:update()
-  energy.super.update(self)
   self.anim:update(1/60)
 end
 
@@ -383,7 +379,6 @@ function eTank:taken(p)
 end
 
 function eTank:update()
-  eTank.super.update(self)
   self.anim:update(1/60)
 end
 
@@ -438,8 +433,7 @@ function wTank:taken(p)
   megautils.playSoundFromFile("assets/sfx/life.ogg")
 end
 
-function wTank:update(dt)
-  wTank.super.update(self)
+function wTank:update()
   self.anim:update(1/60)
 end
 
