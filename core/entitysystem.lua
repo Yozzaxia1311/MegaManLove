@@ -1392,17 +1392,17 @@ function mapEntity:draw()
   love.graphics.pop()
 end
 
-function mapEntity.register(n, f, l, lock)
+function mapEntity.register(n, f, l, lock, ...)
   local done = false
   for i=1, #mapEntity.registered do
     if mapEntity.registered[i].layer == (l or 0) then
-      mapEntity.registered[i].data[#mapEntity.registered[i].data+1] = {func=f, name=n, locked=lock}
+      mapEntity.registered[i].data[#mapEntity.registered[i].data+1] = {func=f, name=n, locked=lock, args={...}}
       done = true
       break
     end
   end
   if not done then
-    mapEntity.registered[#mapEntity.registered+1] = {layer=l or 0, data={{func=f, name=n, locked=lock}}}
+    mapEntity.registered[#mapEntity.registered+1] = {layer=l or 0, data={{func=f, name=n, locked=lock, args={...}}}}
     mapEntity.doSort = true
   end
 end
@@ -1467,7 +1467,7 @@ function mapEntity.add(ol, map)
       end
       for j=1, #layer.data do
         if layer.data[j].name == v.name then
-          layer.data[j].func(v, map)
+          layer.data[j].func(v, map, unpack(layer.data[j].args))
         end
       end
     end

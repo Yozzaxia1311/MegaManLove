@@ -304,27 +304,46 @@ function megautils.runFile(path, runOnce, ...)
   if runOnce then
     if not table.icontains(megautils._ranFiles, path) then
       megautils._ranFiles[#megautils._ranFiles+1] = path
-      return love.filesystem.load(path)(...)
+      if love.filesystem.getInfo(path).type == "directory" then
+        megautils._runFolderStructure(path, ...)
+      else
+        return love.filesystem.load(path)(...)
+      end
     end
   else
     if not table.icontains(megautils._ranFiles, path) then
       megautils._ranFiles[#megautils._ranFiles+1] = path
     end
-    return love.filesystem.load(path)(...)
-  end
-end
-
-megautils._fsmeta = {}
-
-function megautils._fso(index)
-  for i = 1, #megautils._fsmeta do
-    if megautils._fsmeta[i].__index == index then
-      return megautils._fsmeta[i]
+    if love.filesystem.getInfo(path).type == "directory" then
+      megautils._runFolderStructure(path, ...)
+    else
+      return love.filesystem.load(path)(...)
     end
   end
 end
 
-function megautils.runFolderStructure(path, ...)
+megautils._fsCache = {}
+
+function megautils.runFSEvent(self, event, ...)
+  assert(self.__index._meta, "Object provided is not a folder structure")
+  local path = self.__index._meta.path
+  local file
+  if event then
+    file = path .. "/" .. path .. "." .. event .. ".lua"
+  else
+    file = path .. "/" .. path .. ".lua"
+  end
+  
+  if love.filesystem.getInfo(file) then
+    if not megautils._fsCache[file] then
+      megautils._fsCache[file] = love.filesystem.load(file)
+    end
+    
+    megautils._fsCache[file](...)
+  end
+end
+
+function megautils._runFolderStructure(path, ...)
   local f = love.filesystem.getInfo(path)
   assert(f and f.type == "directory", "\"" .. tostring(path) .. "\" is not a valid folder structure")
   assert(love.filesystem.getInfo(path .. "/conf.txt"), "\"" .. tostring(path) .. "/conf.txt\" does not exist")
@@ -339,18 +358,30 @@ function megautils.runFolderStructure(path, ...)
   local autoClean = conf.autoClean == nil or conf.autoClean
   local collision
   local enemyWeapon = conf.enemyWeapon == nil or conf.enemyWeapon
+  local register = conf.register == nil or conf.register
+  local spawner = conf.spawner or "regular"
+  local interval = 120
+  if type(spawner) == "table" then
+    interval = spawner[2]
+    spawner = spawner[1]
+  end
+  local locked = conf.locked
   
   if type(conf.collision) == "table" then
     if conf.collision[2] then
-      collision = {"rect", unpack(conf.collision)}
+      collision = {type = "rect", w = conf.collision[1], h = conf.collision[2]}
     else
-      collision = {"circle", conf.collision[1]}
+      collision = {type = "circle", r = conf.collision[1], w = conf.collision[1] * 2, h = conf.collision[1] * 2}
     end
   else
-    collision = {"image", conf.collision}
+    if not megautils.getResource(conf.collision) then
+      megautils.loadResource(conf.collision, conf.collision, conf.locked)
+    end
+    local w, h = megautils.getResource(conf.collision):getDimensions()
+    collision = {type = "image", img = conf.collision, w = w, h = h}
   end
   
-  megautils._fsmeta[#megautils._fsmeta + 1] = {
+  result._meta = {
       path = path,
       name = name,
       collision = collision,
@@ -358,13 +389,31 @@ function megautils.runFolderStructure(path, ...)
       baseClass = baseClass
     }
   
-  if baseClass == "weapon" then
-    function megautils._fsmeta[#megautils._fsmeta]:new(player)
-      self.__index.super.new(self, player, true)
+  function result:new(...)
+    if self.__index._meta.baseClass == "weapon" then
+      local user = ...
+      self.__index.super.new(self, user, self.__index._meta.enemyWeapon)
     end
+    
+    megautils.runFSEvent(self)
   end
   
-  megautils.runFile(path .. "/" .. path .. ".lua", false, ...)
+  if register then
+    mapEntity.register(tostring(name), function(v, map, s, r)
+        local args = {x = v.x, y = v.y, width = v.width, height = v.height}
+        for k, v in pairs(v.properties) do
+          args[k] = v
+        end
+        if s == "regular" then
+          megautils.add(spawner, r.__index._meta.collision.w, r.__index._meta.collision.h, nil, r, args)
+        elseif s == "interval" then
+          megautils.add(intervalSpawner, r.__index._meta.collision.w, r.__index._meta.collision.h,
+            r.__index._meta.interval, nil, r, args)
+        elseif s == "custom" then
+          megautils.add(r, args)
+        end
+      end, nil, nil, spawner, result)
+  end
 end
 
 function megautils.resetGame(s, saveSfx, saveMusic)
