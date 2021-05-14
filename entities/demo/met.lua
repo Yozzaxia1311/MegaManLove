@@ -11,9 +11,9 @@ function met:new(x, y)
   self.x = x or 0
   self.y = y or 0
   self:setRectangleCollision(14, 14)
-  self.t = megautils.getResource("met")
-  self.c = "safe"
-  self.quads = {safe=quad(0, 0, 18, 15), up=quad(18, 0, 18, 15)}
+  self.safeQuad = quad(0, 0, 18, 15)
+  self.upQuad = quad(18, 0, 18, 15)
+  self:addGFX("tex", image("met", self.safeQuad))
   self.s = 0
   self.canBeInvincible.global = true
   self.timer = 0
@@ -45,7 +45,7 @@ function met:determineDink(o)
   return checkTrue(self.canBeInvincible)
 end
 
-function met:update(dt)
+function met:update()
   if self.s == 0 then
     if self.closest and math.between(self.closest.x, 
       self.x - 120, self.x + 120) then
@@ -57,7 +57,7 @@ function met:update(dt)
       self.timer = 0
       self.s = 1
       self.canBeInvincible.global = false
-      self.c = "up"
+      self:getGFXByName("tex"):setQuad(self.upQuad)
     end
   elseif self.s == 1 then
     self.timer = math.min(self.timer+1, 20)
@@ -71,17 +71,14 @@ function met:update(dt)
   elseif self.s == 2 then
     self.timer = math.min(self.timer+1, 20)
     if self.timer == 20 then
-      self.c = "safe"
+      self:getGFXByName("tex"):setQuad(self.safeQuad)
       self.canBeInvincible.global = true
       self.timer = 0
       self.s = 0
     end
   end
-end
-
-function met:draw()
-  self.t:draw(self.quads[self.c], math.floor(self.x), math.floor(self.y),
-    nil, nil, nil, nil, nil, nil, nil, self.side == 1, self.gravity < 0)
+  
+  self:getGFXByName("tex"):flip(self.side == 1, self.gravity < 0)
 end
 
 metBullet = weapon:extend()
@@ -91,8 +88,7 @@ function metBullet:new(x, y, p, vx, vy)
   
   if not self.recycling then
     self:setRectangleCollision(6, 6)
-    self.tex = megautils.getResource("met")
-    self.quad = quad(36, 0, 6, 6)
+    self:addGFX("tex", image("met", quad(36, 0, 6, 6)))
     self.recycle = true
   end
   
@@ -101,8 +97,4 @@ function metBullet:new(x, y, p, vx, vy)
   self.velX = vx or 0
   self.velY = vy or 0
   self.damage = megautils.diffValue(-2, {easy=-1, normal=-2, hard=-3})
-end
-
-function metBullet:draw()
-  self.tex:draw(self.quad, math.floor(self.x), math.floor(self.y))
 end

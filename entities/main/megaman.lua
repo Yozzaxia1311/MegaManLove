@@ -89,10 +89,10 @@ function megaMan:setSkin(path)
       
       assert(t, "\"" .. path .. "/conf.txt\" could not be parsed")
       
-      megaMan.skinCache[path] = {path, image((mount or path) .. "/player.png"),
-        image(path .. "/outline.png"),
-        image(path .. "/one.png"),
-        image(path .. "/two.png"), t, finfo.modtime}
+      megaMan.skinCache[path] = {path, imageWrapper((mount or path) .. "/player.png"),
+        imageWrapper(path .. "/outline.png"),
+        imageWrapper(path .. "/one.png"),
+        imageWrapper(path .. "/two.png"), t, finfo.modtime}
     end
   end
   
@@ -427,39 +427,39 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   local pp = "megaManGrid"
   
   self.anims = animationSet()
-  self.anims:add("idle", megautils.newAnimation(pp, {1, 1, 2, 1}, {2.5, 0.1}))
-  self.anims:add("protoIdle", megautils.newAnimation(pp, {1, 1, 2, 1}, (1/8)))
-  self.anims:add("idleShootDM", megautils.newAnimation(pp, {4, 2}))
-  self.anims:add("idleShoot", megautils.newAnimation(pp, {5, 2}))
-  self.anims:add("idleShootUM", megautils.newAnimation(pp, {6, 2}))
-  self.anims:add("idleShootU", megautils.newAnimation(pp, {7, 2}))
-  self.anims:add("idleThrow", megautils.newAnimation(pp, {3, 4}))
-  self.anims:add("nudge", megautils.newAnimation(pp, {3, 1}))
-  self.anims:add("jump", megautils.newAnimation(pp, {8, 1}))
-  self.anims:add("jumpShootDM", megautils.newAnimation(pp, {3, 3}))
-  self.anims:add("jumpShoot", megautils.newAnimation(pp, {4, 3}))
-  self.anims:add("jumpShootUM", megautils.newAnimation(pp, {5, 3}))
-  self.anims:add("jumpShootU", megautils.newAnimation(pp, {6, 3}))
-  self.anims:add("jumpThrow", megautils.newAnimation(pp, {7, 4}))
-  self.anims:add("run", megautils.newAnimation(pp, {"4-6", 1, 5, 1}, 1/8))
-  self.anims:add("runShoot", megautils.newAnimation(pp, {8, 2, "1-2", 3, 1, 3}, 1/8))
-  self.anims:add("runThrow", megautils.newAnimation(pp, {"4-6", 4, 5, 4}, 1/8))
-  self.anims:add("climb", megautils.newAnimation(pp, {"1-2", 2}, 1/8))
-  self.anims:add("climbShootDM", megautils.newAnimation(pp, {7, 3}))
-  self.anims:add("climbShoot", megautils.newAnimation(pp, {8, 3}))
-  self.anims:add("climbShootUM", megautils.newAnimation(pp, {1, 4}))
-  self.anims:add("climbShootU", megautils.newAnimation(pp, {2, 4}))
-  self.anims:add("climbThrow", megautils.newAnimation(pp, {8, 4}))
-  self.anims:add("climbTip", megautils.newAnimation(pp, {3, 2}))
-  self.anims:add("hit", megautils.newAnimation(pp, {3, 7}))
-  self.anims:add("dash", megautils.newAnimation(pp, {7, 1}, 1/14, "pauseAtEnd"))
-  self.anims:add("spawn", megautils.newAnimation(pp, {1, 5}))
-  self.anims:add("spawnLand", megautils.newAnimation(pp, {2, 5, 1, 5, 3, 5}, 1/20))
-  self.anims:add("jumpProtoShield", megautils.newAnimation(pp, {1, 7}))
-  self.anims:add("jumpProtoShield2", megautils.newAnimation(pp, {2, 7}))
-  self.anims:add("trebleStart", megautils.newAnimation(pp, {"4-8", 5, 1, 6}, 1/8, "pauseAtEnd"))
-  self.anims:add("treble", megautils.newAnimation(pp, {"2-3", 6}, 1/12))
-  self.anims:add("trebleShoot", megautils.newAnimation(pp, {"4-5", 6}, 1/12))
+  self.anims:add("idle", animation(pp, {1, 1, 2, 1}, {2.5, 0.1}))
+  self.anims:add("protoIdle", animation(pp, {1, 1, 2, 1}, (1/8)))
+  self.anims:add("idleShootDM", animation(pp, {4, 2}))
+  self.anims:add("idleShoot", animation(pp, {5, 2}))
+  self.anims:add("idleShootUM", animation(pp, {6, 2}))
+  self.anims:add("idleShootU", animation(pp, {7, 2}))
+  self.anims:add("idleThrow", animation(pp, {3, 4}))
+  self.anims:add("nudge", animation(pp, {3, 1}))
+  self.anims:add("jump", animation(pp, {8, 1}))
+  self.anims:add("jumpShootDM", animation(pp, {3, 3}))
+  self.anims:add("jumpShoot", animation(pp, {4, 3}))
+  self.anims:add("jumpShootUM", animation(pp, {5, 3}))
+  self.anims:add("jumpShootU", animation(pp, {6, 3}))
+  self.anims:add("jumpThrow", animation(pp, {7, 4}))
+  self.anims:add("run", animation(pp, {"4-6", 1, 5, 1}, 1/8))
+  self.anims:add("runShoot", animation(pp, {8, 2, "1-2", 3, 1, 3}, 1/8))
+  self.anims:add("runThrow", animation(pp, {"4-6", 4, 5, 4}, 1/8))
+  self.anims:add("climb", animation(pp, {"1-2", 2}, 1/8))
+  self.anims:add("climbShootDM", animation(pp, {7, 3}))
+  self.anims:add("climbShoot", animation(pp, {8, 3}))
+  self.anims:add("climbShootUM", animation(pp, {1, 4}))
+  self.anims:add("climbShootU", animation(pp, {2, 4}))
+  self.anims:add("climbThrow", animation(pp, {8, 4}))
+  self.anims:add("climbTip", animation(pp, {3, 2}))
+  self.anims:add("hit", animation(pp, {3, 7}))
+  self.anims:add("dash", animation(pp, {7, 1}, 1/14, "pauseAtEnd"))
+  self.anims:add("spawn", animation(pp, {1, 5}))
+  self.anims:add("spawnLand", animation(pp, {2, 5, 1, 5, 3, 5}, 1/20))
+  self.anims:add("jumpProtoShield", animation(pp, {1, 7}))
+  self.anims:add("jumpProtoShield2", animation(pp, {2, 7}))
+  self.anims:add("trebleStart", animation(pp, {"4-8", 5, 1, 6}, 1/8, "pauseAtEnd"))
+  self.anims:add("treble", animation(pp, {"2-3", 6}, 1/12))
+  self.anims:add("trebleShoot", animation(pp, {"4-5", 6}, 1/12))
   
   self:syncPlayerSkin()
   
@@ -2065,13 +2065,13 @@ function megaMan:draw()
   end
   
   love.graphics.setColor(1, 1, 1, 1)
-  self.texBase:draw(self.anims, roundx+offsetx, roundy+offsety, 0, 1, sy, 32, 41, nil, nil, fx)
+  self.texBase:draw(self.anims, roundx, roundy, 0, 1, sy, 32, 41, offsetx, offsety, fx)
   love.graphics.setColor(megaMan.colorOutline[self.player][1]/255, megaMan.colorOutline[self.player][2]/255, megaMan.colorOutline[self.player][3]/255, 1)
-  self.texOutline:draw(self.anims, roundx+offsetx, roundy+offsety, 0, 1, sy, 32, 41, nil, nil, fx)
+  self.texOutline:draw(self.anims, roundx, roundy, 0, 1, sy, 32, 41, offsetx, offsety, fx)
   love.graphics.setColor(megaMan.colorOne[self.player][1]/255, megaMan.colorOne[self.player][2]/255, megaMan.colorOne[self.player][3]/255, 1)
-  self.texOne:draw(self.anims, roundx+offsetx, roundy+offsety, 0, 1, sy, 32, 41, nil, nil, fx)
+  self.texOne:draw(self.anims, roundx, roundy, 0, 1, sy, 32, 41, offsetx, offsety, fx)
   love.graphics.setColor(megaMan.colorTwo[self.player][1]/255, megaMan.colorTwo[self.player][2]/255, megaMan.colorTwo[self.player][3]/255, 1)
-  self.texTwo:draw(self.anims, roundx+offsetx, roundy+offsety, 0, 1, sy, 32, 41, nil, nil, fx)
+  self.texTwo:draw(self.anims, roundx, roundy, 0, 1, sy, 32, 41, offsetx, offsety, fx)
   
   if self.weaponSwitchTimer ~= 70 then
     love.graphics.setColor(1, 1, 1, 1)

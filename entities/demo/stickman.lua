@@ -12,10 +12,10 @@ function stickMan:new(x, y)
   self.y = y or 0
   self.x = x or 0
   self:setRectangleCollision(12, 24)
-  self.t = megautils.getResource("stickMan")
-  self.anims = animationSet()
-  self.anims:add("idle", megautils.newAnimation("stickManGrid", {1, 1}))
-  self.anims:add("pose", megautils.newAnimation("stickManGrid", {2, 1, 1, 1, 3, 1, 1, 1, 2, 1, 1, 1, 3, 1}, 1/10, "pauseAtEnd"))
+  self.anims = animationSet("stickMan"):off(-4, -8)
+  self.anims:add("idle", animation("stickManGrid", {1, 1}))
+  self.anims:add("pose", animation("stickManGrid", {2, 1, 1, 1, 3, 1, 1, 1, 2, 1, 1, 1, 3, 1}, 1/10, "pauseAtEnd"))
+  self:addGFX("anims", self.anims)
   self:useHealthBar({128, 128, 128}, {255, 255, 255})
   
   -- Stage select exclusive
@@ -69,7 +69,6 @@ function stickMan:determineDink(o)
 end
 
 function stickMan:pose()
-  self.anims:update(1/60)
   if self.anims.current ~= "pose" then
     self.anims:set("pose")
   end
@@ -79,16 +78,15 @@ function stickMan:pose()
 end
 
 function stickMan:act()
-  self.anims:update(1/60)
   if self.state == 0 then
     self.anims:set("idle")
     self.state = 1
   end
 end
 
-function stickMan:draw()
-  stickMan.super.draw(self)
-  self.t:draw(self.anims, math.floor(self.x)-4, math.floor(self.y)-8)
-end
+--function stickMan:draw()
+--  stickMan.super.draw(self)
+--  self.t:draw(self.anims, math.floor(self.x)-4, math.floor(self.y)-8)
+--end
 
 return stickMan

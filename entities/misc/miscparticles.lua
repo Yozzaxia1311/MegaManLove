@@ -73,7 +73,7 @@ function slideParticle:new(x, y, p, side)
   else
     self:setRectangleCollision(8, 8)
     self.tex = megautils.getResource("particles")
-    self.anim = megautils.newAnimation("slideParticleGrid", {"1-3", 1}, 1/10)
+    self.anim = animation("slideParticleGrid", {"1-3", 1}, 1/10)
     self.autoCollision.global = false
     self.recycle = true
   end
@@ -106,7 +106,7 @@ function damageSteam:new(x, y, p)
   else
     self:setRectangleCollision(5, 8)
     self.tex = megautils.getResource("particles")
-    self.anim = megautils.newAnimation("damageSteamGrid", {"1-3", 1}, 1/8)
+    self.anim = animation("damageSteamGrid", {"1-3", 1}, 1/8)
     self.autoCollision.global = false
     self.recycle = true
   end
@@ -213,7 +213,7 @@ function deathExplodeParticle:new(x, y, p, angle, spd)
   self.y = y or 0
   self:setRectangleCollision(24, 24)
   self.tex = megautils.getResource("particles")
-  self.anim = megautils.newAnimation("deathExplodeParticleGrid", {"1-5", 1}, 1/10)
+  self.anim = animation("deathExplodeParticleGrid", {"1-5", 1}, 1/10)
   self.velX = megautils.calcX(angle or 0)*(spd or 1)
   self.velY = megautils.calcY(angle or 0)*(spd or 1)
 end
@@ -245,7 +245,7 @@ function absorbParticle:new(x, y, p, spd)
   self.y = y or 0
   self:setRectangleCollision(24, 24)
   self.tex = megautils.getResource("particles")
-  self.anim = megautils.newAnimation("deathExplodeParticleGrid", {"1-5", 1}, 1/10)
+  self.anim = animation("deathExplodeParticleGrid", {"1-5", 1}, 1/10)
   self.startX = x
   self.startY = y
   self.pos = 0
@@ -324,7 +324,7 @@ function smallBlast:new(x, y, p, spd)
   else
     self:setRectangleCollision(24, 24)
     self.tex = megautils.getResource("particles")
-    self.anim = megautils.newAnimation("deathExplodeParticleGrid", {"1-5", 1}, self.spd)
+    self.anim = animation("deathExplodeParticleGrid", {"1-5", 1}, self.spd)
     self.autoCollision.global = false
     self.recycle = true
   end

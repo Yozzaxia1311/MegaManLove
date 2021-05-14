@@ -1,4 +1,4 @@
-megautils.loadResource("assets/global/entities/moveAcrossPlatform.png", "moveArossPlatform")
+megautils.loadResource("assets/global/entities/moveAcrossPlatform.png", "moveAcrossPlatform")
 
 moveAcrossPlatform = advancedEntity:extend()
 
@@ -13,8 +13,7 @@ function moveAcrossPlatform:new(x, y, toX, toY)
   self.x = x or 0
   self.y = y or 0
   self:setRectangleCollision(32, 16)
-  self.tex = megautils.getResource("moveArossPlatform")
-  self.quad = quad(0, 0, 32, 16)
+  self:addGFX("tex", image("moveAcrossPlatform", quad(0, 0, 32, 16)))
   self.tween = tween.new(1, self, {x=toX or (self.x+32), y=toY or (self.y-32)}, "inOutBack")
   self.state = 0
   self.hurtable = false
@@ -34,8 +33,4 @@ function moveAcrossPlatform:update()
     self.x = math.floor(self.x)
     self.y = math.floor(self.y)
   end
-end
-
-function moveAcrossPlatform:draw()
-  self.tex:draw(self.quad, math.floor(self.x), math.floor(self.y))
 end

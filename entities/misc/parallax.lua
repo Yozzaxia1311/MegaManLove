@@ -30,7 +30,7 @@ function parallax:new(x, y, w, h, bg, a, as, aw, ah, spdMultX, spdMultY, sx, sy,
     end
     self.animWidth = aw
     self.animHeight = ah
-    self.anim = megautils.newAnimation(self.bg .. "Grid", frames, as or 0.5)
+    self.anim = animation(self.bg .. "Grid", frames, as or 0.5)
   end
   self.spdMultX = spdMultX or 0.5
   self.spdMultY = spdMultY or 0.5

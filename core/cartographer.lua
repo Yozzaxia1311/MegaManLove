@@ -640,7 +640,7 @@ function Map:_loadImage(relativeImagePath)
   repeat imagePath, k = imagePath:gsub(npPat1, '') until k == 0
   if imagePath == '' then imagePath = '.' end
 
-  self._images[relativeImagePath] = image(imagePath)
+  self._images[relativeImagePath] = imageWrapper(imagePath)
 end
 
 -- Loads all of the images used by the map.

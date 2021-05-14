@@ -107,7 +107,7 @@ function smallHealth:new(x, y, despawn, gd, fwp, id, path)
   self:setRectangleCollision(8, 6)
   self.t = megautils.getResource("particles")
   self.tOutline = megautils.getResource("particlesOutline")
-  self.anim = megautils.newAnimation("smallHealthGrid", {"1-2", 1}, 1/8)
+  self.anim = animation("smallHealthGrid", {"1-2", 1}, 1/8)
 end
 
 function smallHealth:taken(p)
@@ -152,7 +152,7 @@ function health:new(x, y, despawn, gd, fwp, id, path)
   self:setRectangleCollision(16, 14)
   self.t = megautils.getResource("particles")
   self.tOutline = megautils.getResource("particlesOutline")
-  self.anim = megautils.newAnimation("healthGrid", {"1-2", 1}, 1/8)
+  self.anim = animation("healthGrid", {"1-2", 1}, 1/8)
 end
 
 function health:taken(p)
@@ -195,7 +195,7 @@ function smallEnergy:new(x, y, despawn, gd, fwp, id, path)
   self.x = x or 0
   self.y = y or 0
   self:setRectangleCollision(8, 6)
-  self.anim = megautils.newAnimation("smallEnergyGrid", {"1-2", 1}, 1/8)
+  self.anim = animation("smallEnergyGrid", {"1-2", 1}, 1/8)
   self.texOutline = megautils.getResource("particlesOutline")
   self.texOne = megautils.getResource("particlesOne")
   self.texTwo = megautils.getResource("particlesTwo")
@@ -250,7 +250,7 @@ function energy:new(x, y, despawn, gd, fwp, id, path)
   self.x = x or 0
   self.y = y or 0
   self:setRectangleCollision(16, 10)
-  self.anim = megautils.newAnimation("energyGrid", {"1-2", 1}, 1/8)
+  self.anim = animation("energyGrid", {"1-2", 1}, 1/8)
   self.texOutline = megautils.getResource("particlesOutline")
   self.texOne = megautils.getResource("particlesOne")
   self.texTwo = megautils.getResource("particlesTwo")
@@ -369,7 +369,7 @@ function eTank:new(x, y, despawn, gd, fwp, id, path)
   self.x = x or 0
   self.y = y or 0
   self:setRectangleCollision(16, 15)
-  self.anim = megautils.newAnimation("tankGrid", {1, 1, 2, 2}, 1/8)
+  self.anim = animation("tankGrid", {1, 1, 2, 2}, 1/8)
   self.texOutline = megautils.getResource("particlesOutline")
   self.texOne = megautils.getResource("particlesOne")
   self.texTwo = megautils.getResource("particlesTwo")
@@ -425,7 +425,7 @@ function wTank:new(x, y, despawn, gd, fwp, id, path)
   self.x = x or 0
   self.y = y or 0
   self:setRectangleCollision(16, 15)
-  self.anim = megautils.newAnimation("tankGrid", {2, 2, 2, 1}, 1/8)
+  self.anim = animation("tankGrid", {2, 2, 2, 1}, 1/8)
   self.texOutline = megautils.getResource("particlesOutline")
   self.texOne = megautils.getResource("particlesOne")
   self.texTwo = megautils.getResource("particlesTwo")

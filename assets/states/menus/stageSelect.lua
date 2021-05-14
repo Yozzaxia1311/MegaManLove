@@ -22,17 +22,17 @@ function stageSelect:new()
   self.blinkQuad = quad(0, 32, 48, 48)
   
   self.anims = animationSet()
-  self.anims:add("0-0", megautils.newAnimation("megaManGrid", {6, 6}))
-  self.anims:add("1-0", megautils.newAnimation("megaManGrid", {7, 6}))
-  self.anims:add("2-0", megautils.newAnimation("megaManGrid", {8, 6}))
-  self.anims:add("0-1", megautils.newAnimation("megaManGrid", {6, 7}))
-  self.anims:add("1-1", megautils.newAnimation("megaManGrid", {7, 7}))
-  self.anims:add("2-1", megautils.newAnimation("megaManGrid", {8, 7}))
-  self.anims:add("0-2", megautils.newAnimation("megaManGrid", {6, 8}))
-  self.anims:add("1-2", megautils.newAnimation("megaManGrid", {7, 8}))
-  self.anims:add("2-2", megautils.newAnimation("megaManGrid", {8, 8}))
-  self.anims:add("proto", megautils.newAnimation("megaManGrid", {7, 7}))
-  self.anims:add("protoGlint", megautils.newAnimation("megaManGrid", {"6-8", 6}, 1/28))
+  self.anims:add("0-0", animation("megaManGrid", {6, 6}))
+  self.anims:add("1-0", animation("megaManGrid", {7, 6}))
+  self.anims:add("2-0", animation("megaManGrid", {8, 6}))
+  self.anims:add("0-1", animation("megaManGrid", {6, 7}))
+  self.anims:add("1-1", animation("megaManGrid", {7, 7}))
+  self.anims:add("2-1", animation("megaManGrid", {8, 7}))
+  self.anims:add("0-2", animation("megaManGrid", {6, 8}))
+  self.anims:add("1-2", animation("megaManGrid", {7, 8}))
+  self.anims:add("2-2", animation("megaManGrid", {8, 8}))
+  self.anims:add("proto", animation("megaManGrid", {7, 7}))
+  self.anims:add("protoGlint", animation("megaManGrid", {"6-8", 6}, 1/28))
   
   if megaMan.getSkin(1).traits.protoMug then
     self.anims:set("proto")
@@ -66,7 +66,7 @@ function stageSelect:new()
       else
         self.slots[i] = megautils.runFile(v)()
         if self.slots[i].mugshotPath then
-          self.images[i] = image(self.slots[i].mugshotPath)
+          self.images[i] = imageWrapper(self.slots[i].mugshotPath)
         end
       end
     end

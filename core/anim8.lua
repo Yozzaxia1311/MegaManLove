@@ -311,12 +311,12 @@ function Animation:resume()
   self.status = "playing"
 end
 
-function Animation:draw(image, x, y, r, sx, sy, ox, oy, kx, ky, flipx, flipy)
+function Animation:draw(image, x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY)
   local frame = self.frames[self.position]
   local vx, vy, vw, vh = frame:getViewport()
   frame:setViewport(vx, vy, vw, vh, image:getDimensions())
   
-  frame:draw(image, x, y, r, sx, sy, ox, oy, kx, ky, flipx, flipy)
+  frame:draw(image, x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY)
 end
 
 function Animation:getDimensions()

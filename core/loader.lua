@@ -44,9 +44,9 @@ function loader.load(path, nick, typ, parameters, lock)
     if lock then
       if parameters and parameters[1] then
         local imgData = imageData(path)
-        loader.locked[nick] = {data=imgData, path=path, img=imgData:toImage(), type=typ, parameters=parameters}
+        loader.locked[nick] = {data=imgData, path=path, img=imgData:toImageWrapper(), type=typ, parameters=parameters}
       else
-        loader.locked[nick] = {data=image(path), path=path, type=typ}
+        loader.locked[nick] = {data=imageWrapper(path), path=path, type=typ}
       end
       
       loader.resources[nick] = nil
@@ -58,9 +58,9 @@ function loader.load(path, nick, typ, parameters, lock)
       end
       if parameters and parameters[1] then
         local imgData = imageData(path)
-        loader.resources[nick] = {data=imgData, path=path, img=imgData:toImage(), type=typ, parameters=parameters}
+        loader.resources[nick] = {data=imgData, path=path, img=imgData:toImageWrapper(), type=typ, parameters=parameters}
       else
-        loader.resources[nick] = {data=image(path), path=path, type=typ}
+        loader.resources[nick] = {data=imageWrapper(path), path=path, type=typ}
       end
       
       return loader.resources[nick]

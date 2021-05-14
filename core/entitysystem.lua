@@ -676,7 +676,7 @@ function entitySystem:draw()
       if checkFalse(v.canDraw) and not v.isRemoved and v.draw then
         love.graphics.setColor(1, 1, 1, 1)
         love.graphics.setFont(mmFont)
-        v:draw()
+        v:_draw()
       end
     end
   end
@@ -709,7 +709,7 @@ function entitySystem:update(dt)
       v._epX = v.previousX
       v._epY = v.previousY
       if not v.isRemoved and v.beforeUpdate and checkFalse(v.canUpdate) then
-        v:beforeUpdate(dt)
+        v:_beforeUpdate(dt)
         if not v.invisibleToHash then v:updateHash() end
       end
     end
@@ -803,6 +803,7 @@ function basicEntity:new()
     self.isRemoved = true
     self.isAdded = false
     self.suggestedIFrameForInteracted = nil
+    self.gfx = {}
     self.recycle = false
   end
   
@@ -814,6 +815,35 @@ function basicEntity:new()
   self.changeHealth = 0
   self.canUpdate = {global=true}
   self.canDraw = {global=true}
+end
+
+function basicEntity:addGFX(name, gfx, noSync)
+  if not table.icontains(self.gfx, gfx) then
+    gfx.name = name or "GFX"
+    gfx.syncPos = not noSync and self
+    self.gfx[#self.gfx + 1] = gfx
+  end
+end
+
+function basicEntity:removeGFX(gfx)
+  table.removevaluearray(self.gfx, gfx)
+end
+
+function basicEntity:removeGFXByName(n)
+  for i = 1, #self.gfx do
+    if self.gfx[i].name == n then
+      table.remove(self.gfx, i)
+      return
+    end
+  end
+end
+
+function basicEntity:getGFXByName(n)
+  for i = 1, #self.gfx do
+    if self.gfx[i].name == n then
+      return self.gfx[i]
+    end
+  end
 end
 
 function basicEntity:determineIFrames(o)
@@ -943,7 +973,7 @@ function basicEntity:setImageCollision(resource)
   self.collisionShape.data = res.data
   
   if not basicEntity._imgCache[self.collisionShape.data] then
-    basicEntity._imgCache[self.collisionShape.data] = self.collisionShape.data:toImage()
+    basicEntity._imgCache[self.collisionShape.data] = self.collisionShape.data:toImageWrapper()
   end
   
   self.collisionShape.image = basicEntity._imgCache[self.collisionShape.data]
@@ -1100,6 +1130,22 @@ function basicEntity:added() end
 function basicEntity:removed() end
 function basicEntity:begin() end
 function basicEntity:staticToggled() end
+
+function basicEntity:_beforeUpdate(dt)
+  for i = 1, #self.gfx do
+    self.gfx[i]:_update(dt)
+  end
+  
+  self:beforeUpdate(dt)
+end
+
+function basicEntity:_draw()
+  for i = 1, #self.gfx do
+    self.gfx[i]:_draw()
+  end
+  
+  self:draw()
+end
 
 megautils.cleanFuncs.autoCleaner = {func=function()
     basicEntity._imgCache = {}

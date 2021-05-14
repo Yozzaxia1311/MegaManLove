@@ -430,7 +430,7 @@ function protoChargedBuster:new(x, y, p, dir, skin)
   self:setRectangleCollision(29, 8)
   self.skin = skin
   self.tex = megautils.getResource(self.skin)
-  self.anim = megautils.newAnimation("protoBusterGrid", {"1-2", 1}, 1/20)
+  self.anim = animation("protoBusterGrid", {"1-2", 1}, 1/20)
   self.side = dir or 1
   self.velX = self.side * 6
   self.pierceType = pierce.PIERCEIFKILLING
@@ -656,7 +656,7 @@ function megaSemiBuster:new(x, y, p, dir)
   self.y = (y or 0) - 5
   self:setRectangleCollision(16, 10)
   self.tex = megautils.getResource("busterTex")
-  self.anim = megautils.newAnimation("smallChargeGrid", {"1-2", 1}, 1/12)
+  self.anim = animation("smallChargeGrid", {"1-2", 1}, 1/12)
   self.side = dir or 1
   self.velX = self.side * 5
   self.sound = "semiCharged"
@@ -686,7 +686,7 @@ function megaChargedBuster:new(x, y, p, dir)
   self.y = (y or 0) - 12
   self:setRectangleCollision(24, 24)
   self.tex = megautils.getResource("busterTex")
-  self.anim = megautils.newAnimation("chargeGrid", {"1-4", 1}, 1/20)
+  self.anim = animation("chargeGrid", {"1-4", 1}, 1/20)
   self.side = dir or 1
   self.velX = self.side * 5.5
   self.pierceType = pierce.PIERCEIFKILLING
@@ -760,10 +760,10 @@ function trebleBoost:new(x, y, p, side)
   self:setRectangleCollision(20, 19)
   self.tex = megautils.getResource("trebleTex")
   self.anims = animationSet()
-  self.anims:add("spawn", megautils.newAnimation("trebleGrid", {1, 1}))
-  self.anims:add("spawnLand", megautils.newAnimation("trebleGrid", {2, 1, 1, 1, 3, 1}, 1/20))
-  self.anims:add("idle", megautils.newAnimation("trebleGrid", {4, 1}))
-  self.anims:add("start", megautils.newAnimation("trebleGrid", {"5-6", 1, "5-6", 1, "5-6", 1, "5-6", 1, "7-8", 1}, 1/16, "pauseAtEnd"))
+  self.anims:add("spawn", animation("trebleGrid", {1, 1}))
+  self.anims:add("spawnLand", animation("trebleGrid", {2, 1, 1, 1, 3, 1}, 1/20))
+  self.anims:add("idle", animation("trebleGrid", {4, 1}))
+  self.anims:add("start", animation("trebleGrid", {"5-6", 1, "5-6", 1, "5-6", 1, "5-6", 1, "7-8", 1}, 1/16, "pauseAtEnd"))
   self.side = side or -1
   self.s = 0
   self.timer = 0
@@ -933,9 +933,9 @@ function rushJet:new(x, y, p, side, skin)
   self.skin = skin
   self.tex = megautils.getResource(skin)
   self.anims = animationSet()
-  self.anims:add("spawn", megautils.newAnimation("rushGrid", {1, 1}))
-  self.anims:add("spawnLand", megautils.newAnimation("rushGrid", {2, 1, 1, 1, 3, 1}, 1/20))
-  self.anims:add("jet", megautils.newAnimation("rushGrid", {"2-3", 2}, 1/8))
+  self.anims:add("spawn", animation("rushGrid", {1, 1}))
+  self.anims:add("spawnLand", animation("rushGrid", {2, 1, 1, 1, 3, 1}, 1/20))
+  self.anims:add("jet", animation("rushGrid", {"2-3", 2}, 1/8))
   self.side = side or 1
   self.s = 0
   self.timer = 0
@@ -1046,7 +1046,7 @@ function rushJet:draw()
     self.tex:draw(self.anims, math.floor(self.x)-4, math.floor(self.y)+(self.user.gravity >= 0 and -16 or -6))
   else
     self.tex:draw(self.anims, math.floor(self.x)-4, math.floor(self.y)-12,
-    nil, nil, nil, nil, nil, nil, nil, self.side ~= 1, self.gravity < 0)
+      nil, nil, nil, nil, nil, nil, nil, self.side ~= 1, self.gravity < 0)
   end
 end
 
@@ -1150,10 +1150,10 @@ function rushCoil:new(x, y, p, side, skin)
   self.skin = skin
   self.tex = megautils.getResource(skin)
   self.anims = animationSet()
-  self.anims:add("spawn", megautils.newAnimation("rushGrid", {1, 1}))
-  self.anims:add("spawnLand", megautils.newAnimation("rushGrid", {2, 1, 1, 1, 3, 1}, 1/20))
-  self.anims:add("idle", megautils.newAnimation("rushGrid", {4, 1, 1, 2}, 1/8))
-  self.anims:add("coil", megautils.newAnimation("rushGrid", {4, 2}))
+  self.anims:add("spawn", animation("rushGrid", {1, 1}))
+  self.anims:add("spawnLand", animation("rushGrid", {2, 1, 1, 1, 3, 1}, 1/20))
+  self.anims:add("idle", animation("rushGrid", {4, 1, 1, 2}, 1/8))
+  self.anims:add("coil", animation("rushGrid", {4, 2}))
   self.side = side or 1
   self.s = 0
   self.timer = 0

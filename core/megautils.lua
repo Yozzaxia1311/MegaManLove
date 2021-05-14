@@ -445,10 +445,6 @@ function megautils.loadResource(...)
   end
 end
 
-function megautils.newAnimation(gnick, a, t, eFunc)
-  return anim8.newAnimation(megautils.getResource(gnick)(unpack(a)), t or 1, eFunc)
-end
-
 function megautils.setMusicLock(w)
   mmMusic.setLock(w)
 end
