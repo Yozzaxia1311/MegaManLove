@@ -722,7 +722,7 @@ weapon.resources["T. BOOST"] = function()
     megautils.loadResource("assets/sfx/treble.ogg", "treble")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource(33, 32, "trebleGrid")    
+    megautils.loadResource("assets/misc/weapons/treble.animset", "trebleAnims")    
   end
 
 weapon.icons["T. BOOST"] = "assets/misc/weapons/icons/trebleBoost.png"
@@ -765,11 +765,7 @@ function trebleBoost:new(x, y, p, side)
   self.toY = (y or 0) - 9
   self:setRectangleCollision(20, 19)
   self.tex = megautils.getResource("trebleTex")
-  self.anims = animationSet()
-  self.anims:add("spawn", animation("trebleGrid", {1, 1}))
-  self.anims:add("spawnLand", animation("trebleGrid", {2, 1, 1, 1, 3, 1}, 1/20))
-  self.anims:add("idle", animation("trebleGrid", {4, 1}))
-  self.anims:add("start", animation("trebleGrid", {"5-6", 1, "5-6", 1, "5-6", 1, "5-6", 1, "7-8", 1}, 1/16, "pauseAtEnd"))
+  self.anims = animationSet("trebleAnims")
   self.side = side or -1
   self.s = 0
   self.timer = 0
@@ -845,7 +841,7 @@ weapon.resources["RUSH JET"] = function()
     megautils.loadResource("assets/misc/weapons/rush.png", "rush")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource(32, 32, "rushGrid")
+    megautils.loadResource("assets/misc/weapons/rush.animset", "rushAnims")
     
     weapon.resources["M.BUSTER"]() -- So it's possible to use the Mega Buster shots even if the weapon wasn't already loaded in for some reason...
   end
@@ -874,7 +870,7 @@ weapon.resources["PROTO JET"] = function()
     megautils.loadResource("assets/misc/weapons/protoRush.png", "protoRush")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource(32, 32, "rushGrid")
+    megautils.loadResource("assets/misc/weapons/rush.animset", "rushAnims")
     
     weapon.resources["P.BUSTER"]()
   end
@@ -903,7 +899,7 @@ weapon.resources["TANGO JET"] = function()
     megautils.loadResource("assets/misc/weapons/tango.png", "tango")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource(32, 32, "rushGrid")
+    megautils.loadResource("assets/misc/weapons/rush.animset", "rushAnims")
     
     weapon.resources["R.BUSTER"]()
   end
@@ -1062,7 +1058,7 @@ weapon.resources["RUSH C."] = function()
     megautils.loadResource("assets/misc/weapons/rush.png", "rush")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource(32, 32, "rushGrid")
+    megautils.loadResource("assets/misc/weapons/rush.animset", "rushAnims")
     
     weapon.resources["M.BUSTER"]() -- So it's possible to use the Mega Buster shots even if the weapon wasn't already loaded in for some reason...
   end
@@ -1091,7 +1087,7 @@ weapon.resources["PROTO C."] = function()
     megautils.loadResource("assets/misc/weapons/protoRush.png", "protoRush")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource(32, 32, "rushGrid")
+    megautils.loadResource("assets/misc/weapons/rush.animset", "rushAnims")
     
     weapon.resources["P.BUSTER"]()
   end
@@ -1120,7 +1116,7 @@ weapon.resources["TANGO C."] = function()
     megautils.loadResource("assets/misc/weapons/tango.png", "tango")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource(32, 32, "rushGrid")
+    megautils.loadResource("assets/misc/weapons/rush.animset", "rushAnims")
     
     weapon.resources["R.BUSTER"]()
   end
@@ -1155,11 +1151,7 @@ function rushCoil:new(x, y, p, side, skin)
   self:setRectangleCollision(20, 19)
   self.skin = skin
   self.tex = megautils.getResource(skin)
-  self.anims = animationSet()
-  self.anims:add("spawn", animation("rushGrid", {1, 1}))
-  self.anims:add("spawnLand", animation("rushGrid", {2, 1, 1, 1, 3, 1}, 1/20))
-  self.anims:add("idle", animation("rushGrid", {4, 1, 1, 2}, 1/8))
-  self.anims:add("coil", animation("rushGrid", {4, 2}))
+  self.anims = animationSet("rushAnims")
   self.side = side or 1
   self.s = 0
   self.timer = 0

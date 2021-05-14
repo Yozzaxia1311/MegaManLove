@@ -33,6 +33,8 @@ function checkFalse(w)
 end
 
 function parseConf(path)
+  assert(love.filesystem.getInfo(path), "\"" .. path .. "\" is not a valid conf file")
+  
   local result
   
   for line in love.filesystem.lines(path) do

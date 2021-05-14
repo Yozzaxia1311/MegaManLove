@@ -202,13 +202,14 @@ end
 
 animation = gfx:extend()
 
-function animation:new(grid, frames, durations, onLoop, img, useDelta, framerate,
+function animation:new(res, useDelta, framerate,
     x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, color, syncPos)
   animation.super.new(self, x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, color, syncPos)
   
-  self.anim = anim8.newAnimation(
-    type(grid) == "string" and megautils.getResource(grid)(unpack(frames)) or grid(unpack(frames)), durations or 1, onLoop)
-  self.image = type(img) == "string" and megautils.getResource(img) or img
+  local rt = type(res) == "string" and megautils.getResourceTable(res) or res
+  
+  self.anim = anim8.newAnimation(rt.data(unpack(rt.frames)), rt.durations or 1, rt.onLoop)
+  self.image = rt.img
   self.useDelta = useDelta == true
   self.framerate = framerate or 1/60
 end
@@ -276,13 +277,24 @@ end
 
 animationSet = gfx:extend()
 
-function animationSet:new(img, useDelta, framerate,
+function animationSet:new(res, useDelta, framerate,
     x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, color, syncPos)
   animationSet.super.new(self, x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, color, syncPos)
   
+  local rt = type(res) == "string" and megautils.getResourceTable(res) or res
+  
   self.anims = {}
+  
+  for k, v in pairs(rt.sets) do
+    self:add(k, animation(v))
+  end
+  
+  if rt.default then
+    self:set(rt.default)
+  end
+  
   self.current = nil
-  self.image = type(img) == "string" and megautils.getResource(img) or img
+  self.image = res.img
   self.useDelta = useDelta == true
   self.framerate = framerate or 1/60
 end

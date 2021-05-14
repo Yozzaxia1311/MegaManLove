@@ -325,7 +325,7 @@ end
 megautils._fsCache = {}
 
 function megautils.runFSEvent(self, event, ...)
-  assert(self.__index._meta, "Object provided is not a folder structure")
+  assert(self.__index._meta, "Object provided is not a folder structure object")
   local path = self.__index._meta.path
   local name = path:split("/")
   name = name[#name]
@@ -336,13 +336,11 @@ function megautils.runFSEvent(self, event, ...)
     file = path .. "/" .. name .. ".lua"
   end
   
-  if love.filesystem.getInfo(file) then
-    if not megautils._fsCache[file] then
-      megautils._fsCache[file] = love.filesystem.load(file)
-    end
-    
-    megautils._fsCache[file](...)
+  if not megautils._fsCache[file] then
+    megautils._fsCache[file] = love.filesystem.load(file)
   end
+  
+  megautils._fsCache[file](...)
 end
 
 function megautils._runFolderStructure(path, ...)
@@ -368,6 +366,7 @@ function megautils._runFolderStructure(path, ...)
     interval = spawner[2]
     spawner = spawner[1]
   end
+  local recycle = conf.recycle
   
   if conf.collision then
     if type(conf.collision) == "table" then
@@ -390,21 +389,42 @@ function megautils._runFolderStructure(path, ...)
       name = name,
       collision = collision,
       enemyWeapon = enemyWeapon,
-      baseClass = baseClass
+      baseClass = baseClass,
+      recycle = recycle
     }
   
-  function result:new(...)
-    if self.__index._meta.baseClass == "weapon" then
-      local user = ...
-      self.__index.super.new(self, user, self.__index._meta.enemyWeapon)
+  function result:new(args)
+    if not args then
+      args = {}
     end
     
-    megautils.runFSEvent(self, "new")
+    if self.__index._meta.baseClass == "weapon" then
+      self.__index.super.new(self, args.user, self.__index._meta.enemyWeapon)
+    elseif self.__index._meta.baseClass == "pickUp" then
+      self.__index.super.new(self, args.despawn, args.gravDir, args.flipWithPlayer, args.id, args.path)
+    end
+    
+    if self.__index._meta.collision then
+      if self.__index._meta.collision.type == "rect" then
+        self:setRectangleCollision(self.__index._meta.collision.w, self.__index._meta.collision.h)
+      elseif self.__index._meta.collision.type == "circle" then
+        self:setCircleCollision(self.__index._meta.collision.r)
+      elseif self.__index._meta.collision.type == "image" then
+        self:setImageCollision(self.__index._meta.collision.img)
+      end
+    end
+    
+    if not self.recycling then
+      self.recycle = self.__index._meta.recycle
+      megautils.runFSEvent(self, "new")
+    else
+      megautils.runFSEvent(self, "recycle")
+    end
   end
   
   local i = 1
-  while conf["resource" .. i] do
-    megautils.loadResource(unpack(conf["resource" .. i]))
+  while conf["resource" .. tostring(i)] do
+    megautils.loadResource(unpack(conf["resource" .. tostring(i)]))
     i = i + 1
   end
   
@@ -532,6 +552,16 @@ function megautils.loadResource(...)
       grid = {args[1], args[2]}
     end
     loader.load(nil, nick, t, grid, locked)
+    return loader.get(nick)
+  elseif checkExt(t, {"anim"}) then
+    t = "anim"
+    locked = args[3]
+    loader.load(path, nick, t, nil, locked)
+    return loader.get(nick)
+  elseif checkExt(t, {"animset"}) then
+    t = "animSet"
+    locked = args[3]
+    loader.load(path, nick, t, nil, locked)
     return loader.get(nick)
   elseif checkExt(t, {"png", "jpeg", "jpg", "bmp", "tga", "hdr", "pic", "exr"}) then
     local ext = t

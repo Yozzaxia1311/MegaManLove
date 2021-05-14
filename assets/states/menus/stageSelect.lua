@@ -8,7 +8,7 @@ end
 megautils.loadResource("assets/misc/select.png", "mugshots")
 megautils.loadResource("assets/sfx/ascend.ogg", "selected")
 megautils.loadResource("assets/sfx/cursorMove.ogg", "cursorMove")
-megautils.loadResource(0, 0, 63, 62, 2, "megaManGrid")
+megautils.loadResource("assets/players/mug.animset", "mugAnims")
 
 stageSelect = basicEntity:extend()
 
@@ -20,19 +20,7 @@ function stageSelect:new()
   self.y = 24
   
   self.blinkQuad = quad(0, 32, 48, 48)
-  
-  self.anims = animationSet()
-  self.anims:add("0-0", animation("megaManGrid", {6, 6}))
-  self.anims:add("1-0", animation("megaManGrid", {7, 6}))
-  self.anims:add("2-0", animation("megaManGrid", {8, 6}))
-  self.anims:add("0-1", animation("megaManGrid", {6, 7}))
-  self.anims:add("1-1", animation("megaManGrid", {7, 7}))
-  self.anims:add("2-1", animation("megaManGrid", {8, 7}))
-  self.anims:add("0-2", animation("megaManGrid", {6, 8}))
-  self.anims:add("1-2", animation("megaManGrid", {7, 8}))
-  self.anims:add("2-2", animation("megaManGrid", {8, 8}))
-  self.anims:add("proto", animation("megaManGrid", {7, 7}))
-  self.anims:add("protoGlint", animation("megaManGrid", {"6-8", 6}, 1/28))
+  self.anims = animationSet("mugAnims")
   
   if megaMan.getSkin(1).traits.protoMug then
     self.anims:set("proto")

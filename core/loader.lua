@@ -95,6 +95,102 @@ function loader.load(path, nick, typ, parameters, lock)
       
       return loader.resources[nick]
     end
+  elseif typ == "anim" then
+    if lock then
+      local c = parseConf(path)
+      loader.locked[nick] = {data=anim8.newGrid(unpack(c.quad)),
+        parameters=parameters, type=typ, frames=c.frames, durations=c.durations, onLoop=c.onLoop, img=imageWrapper(c.image)}
+      loader.resources[nick] = nil
+      
+      return loader.locked[nick]
+    else
+      if loader.locked[nick] then
+        error("Cannot overwrite a locked resource.")
+      end
+      local c = parseConf(path)
+      loader.resources[nick] = {data=anim8.newGrid(unpack(c.quad)),
+        parameters=parameters, type=typ, frames=c.frames, durations=c.durations, onLoop=c.onLoop, img=imageWrapper(c.image)}
+      
+      return loader.resources[nick]
+    end
+  elseif typ == "animSet" then
+    if lock then
+      local c = parseConf(path)
+      local data = {}
+      for k, v in pairs(c) do
+        if k:sub(-6) == "Frames" then
+          local l = k:sub(0, k:len() - 6)
+          if not data[l] then
+            data[l] = {frames = v}
+          else
+            data[l].frames = v
+          end
+        elseif k:sub(-9) == "Durations" then
+          local l = k:sub(0, k:len() - 9)
+          if not data[l] then
+            data[l] = {durations = v}
+          else
+            data[l].durations = v
+          end
+        elseif k:sub(-6) == "OnLoop" then
+          local l = k:sub(0, k:len() - 6)
+          if not data[6] then
+            data[6] = {onLoop = v}
+          else
+            data[6].onLoop = v
+          end
+        end
+      end
+      local fx, fy, fw, fh, fb = unpack(c.quad)
+      local grid = anim8.newGrid(fw, fh, fx, fy, fb)
+      for _, v in pairs(data) do
+        v.data = grid
+      end
+      loader.locked[nick] = {data=grid,
+        parameters=parameters, type=typ, sets=data, default=c.default, img=c.image and imageWrapper(c.image)}
+      loader.resources[nick] = nil
+      
+      return loader.locked[nick]
+    else
+      if loader.locked[nick] then
+        error("Cannot overwrite a locked resource.")
+      end
+      local c = parseConf(path)
+      local data = {}
+      for k, v in pairs(c) do
+        if k:sub(-6) == "Frames" then
+          local l = k:sub(0, k:len() - 6)
+          if not data[l] then
+            data[l] = {frames = v}
+          else
+            data[l].frames = v
+          end
+        elseif k:sub(-9) == "Durations" then
+          local l = k:sub(0, k:len() - 9)
+          if not data[l] then
+            data[l] = {durations = v}
+          else
+            data[l].durations = v
+          end
+        elseif k:sub(-6) == "OnLoop" then
+          local l = k:sub(0, k:len() - 6)
+          if not data[6] then
+            data[6] = {onLoop = v}
+          else
+            data[6].onLoop = v
+          end
+        end
+      end
+      local fx, fy, fw, fh, fb = unpack(c.quad)
+      local grid = anim8.newGrid(fw, fh, fx, fy, fb)
+      for _, v in pairs(data) do
+        v.data = grid
+      end
+      loader.resources[nick] = {data=grid,
+        parameters=parameters, type=typ, sets=data, default=c.default, img=c.image and imageWrapper(c.image)}
+      
+      return loader.resources[nick]
+    end
   end
 end
 
