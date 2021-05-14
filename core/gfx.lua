@@ -284,6 +284,10 @@ function animationSet:new(res, useDelta, framerate,
   local rt = type(res) == "string" and megautils.getResourceTable(res) or res
   
   self.anims = {}
+  self.current = nil
+  self.image = rt.img
+  self.useDelta = useDelta == true
+  self.framerate = framerate or 1/60
   
   for k, v in pairs(rt.sets) do
     self:add(k, animation(v))
@@ -292,11 +296,6 @@ function animationSet:new(res, useDelta, framerate,
   if rt.default then
     self:set(rt.default)
   end
-  
-  self.current = nil
-  self.image = res.img
-  self.useDelta = useDelta == true
-  self.framerate = framerate or 1/60
 end
 
 function animationSet:add(name, anim)

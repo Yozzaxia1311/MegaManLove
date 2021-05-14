@@ -1,7 +1,7 @@
 megautils.loadResource("assets/misc/particles.png", "particles", true)
-megautils.loadResource(8, 8, "slideParticleGrid", true)
-megautils.loadResource(0, 46, 24, 24, "deathExplodeParticleGrid", true)
-megautils.loadResource(108, 28, 5, 8, "damageSteamGrid", true)
+megautils.loadResource("assets/misc/slideParticle.anim", "slideParticleAnim", true)
+megautils.loadResource("assets/misc/deathExplodeParticle.anim", "deathExplodeParticleAnim", true)
+megautils.loadResource("assets/misc/damageSteam.anim", "damageSteamAnim", true)
 
 particle = entity:extend()
 
@@ -79,7 +79,7 @@ function slideParticle:new(x, y, p, side)
   else
     self:setRectangleCollision(8, 8)
     self.tex = megautils.getResource("particles")
-    self.anim = animation("slideParticleGrid", {"1-3", 1}, 1/10)
+    self.anim = animation("slideParticleAnim")
     self.autoCollision.global = false
     self.recycle = true
   end
@@ -112,7 +112,7 @@ function damageSteam:new(x, y, p)
   else
     self:setRectangleCollision(5, 8)
     self.tex = megautils.getResource("particles")
-    self.anim = animation("damageSteamGrid", {"1-3", 1}, 1/8)
+    self.anim = animation("damageSteamAnim")
     self.autoCollision.global = false
     self.recycle = true
   end
@@ -219,7 +219,7 @@ function deathExplodeParticle:new(x, y, p, angle, spd)
   self.y = y or 0
   self:setRectangleCollision(24, 24)
   self.tex = megautils.getResource("particles")
-  self.anim = animation("deathExplodeParticleGrid", {"1-5", 1}, 1/10)
+  self.anim = animation("deathExplodeParticleAnim")
   self.velX = megautils.calcX(angle or 0)*(spd or 1)
   self.velY = megautils.calcY(angle or 0)*(spd or 1)
 end
@@ -251,7 +251,7 @@ function absorbParticle:new(x, y, p, spd)
   self.y = y or 0
   self:setRectangleCollision(24, 24)
   self.tex = megautils.getResource("particles")
-  self.anim = animation("deathExplodeParticleGrid", {"1-5", 1}, 1/10)
+  self.anim = animation("deathExplodeParticleAnim")
   self.startX = x
   self.startY = y
   self.pos = 0
@@ -318,19 +318,18 @@ smallBlast = particle:extend()
 
 smallBlast.autoClean = false
 
-function smallBlast:new(x, y, p, spd)
+function smallBlast:new(x, y, p)
   smallBlast.super.new(self, p)
   
   self.x = x or 0
   self.y = y or 0
-  self.spd = spd or 0.065
   
   if self.recycling then
     self.anim:gotoFrame(1)
   else
     self:setRectangleCollision(24, 24)
     self.tex = megautils.getResource("particles")
-    self.anim = animation("deathExplodeParticleGrid", {"1-5", 1}, self.spd)
+    self.anim = animation("deathExplodeParticleAnim")
     self.autoCollision.global = false
     self.recycle = true
   end

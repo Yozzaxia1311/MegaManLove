@@ -1,0 +1,7 @@
+quad: 72, 12, 16, 16
+
+eTankFrames: 1, 1, 2, 2
+eTankDurations: 0.125
+
+wTankFrames: 2, 2, 2, 1
+wTankDurations: 0.125

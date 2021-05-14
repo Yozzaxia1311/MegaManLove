@@ -1,0 +1,71 @@
+quad: 0, 0, 63, 62, 2
+default: idle
+
+idleFrames: 1, 1, 2, 1
+idleDurations: 2.5, 0.1
+
+protoIdleFrames: 1, 1, 2, 1
+protoIdleDurations: 0.125
+
+idleShootDMFrames: 4, 2
+idleShootFrames: 5, 2
+idleShootUMFrames: 6, 2
+idleShootUFrames: 7, 2
+
+idleThrowFrames: 3, 4
+
+nudgeFrames: 3, 1
+
+jumpFrames: 8, 1
+
+jumpShootDMFrames: 3, 3
+jumpShootFrames: 4, 3
+jumpShootUMFrames: 5, 3
+jumpShootUFrames: 6, 3
+
+jumpThrowFrames: 7, 4
+
+runFrames: 4-6, 1, 5, 1
+runDurations: 0.125
+
+runShootFrames: 8, 2, 1-2, 3, 1, 3
+runShootDurations: 0.125
+
+runThrowFrames: 4-6, 4, 5, 4
+runThrowDurations: 0.125
+
+climbFrames: 1-2, 2
+climbDurations: 0.125
+
+climbShootDMFrames: 7, 3
+climbShootFrames: 8, 3
+climbShootUMFrames: 1, 4
+climbShootUFrames: 2, 4
+
+climbThrowFrames: 8, 4
+
+climbTipFrames: 3, 2
+
+hitFrames: 3, 7
+
+dashFrames: 7, 1
+dashDurations: 0.0714285714285714
+dashOnLoop: pauseAtEnd
+
+spawnFrames: 1, 5
+
+spawnLandFrames: 2, 5, 1, 5, 3, 5
+spawnLandDurations: 0.05
+
+jumpProtoShieldFrames: 1, 7
+jumpProtoShield2Frames: 2, 7
+
+trebleStartFrames: 4-8, 5, 1, 6
+trebleStartDurations: 0.125
+trebleStartOnLoop: pauseAtEnd
+
+trebleFrames: 2-3, 6
+trebleDurations: 0.08333333333
+
+trebleShootFrames: 4-5, 6
+trebleShootDurations: 0.08333333333

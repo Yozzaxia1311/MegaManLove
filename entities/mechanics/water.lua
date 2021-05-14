@@ -1,5 +1,5 @@
 megautils.loadResource("assets/sfx/splash.ogg", "splash")
-megautils.loadResource(0, 70, 32, 28, "splashGrid")
+megautils.loadResource("assets/misc/splash.anim", "splashAnim")
 
 splash = particle:extend()
 
@@ -11,7 +11,7 @@ function splash:new(offx, offy, p, rot)
   self.offy = offy or 0
   self:setRectangleCollision(32, 28)
   self.tex = megautils.getResource("particles")
-  self.anim = animation("splashGrid", {"1-4", 1}, 1/8)
+  self.anim = animation("splashAnim")
   self.rot = math.rad(rot or 0)
   if self.user then
     self.x = self.user.x + self.offx

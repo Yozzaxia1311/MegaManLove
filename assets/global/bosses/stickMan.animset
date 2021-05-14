@@ -1,3 +1,4 @@
+image: assets/global/bosses/stickMan.png
 quad: 0, 0, 21, 32
 default: idle
 

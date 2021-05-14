@@ -98,8 +98,15 @@ function loader.load(path, nick, typ, parameters, lock)
   elseif typ == "anim" then
     if lock then
       local c = parseConf(path)
-      loader.locked[nick] = {data=anim8.newGrid(unpack(c.quad)),
-        parameters=parameters, type=typ, frames=c.frames, durations=c.durations, onLoop=c.onLoop, img=imageWrapper(c.image)}
+      local fx, fy, fw, fh, fb = unpack(c.quad)
+      local img
+      if c.image then
+        loader.load(c.image, c.image, "texture", nil, lock)
+        img = loader.get(c.image)
+      end
+      loader.locked[nick] = {data=anim8.newGrid(fw or fx, fh or fy, fx, fy, fb),
+        parameters=parameters, type=typ, frames=c.frames, durations=c.durations,
+        onLoop=c.onLoop, img=img}
       loader.resources[nick] = nil
       
       return loader.locked[nick]
@@ -108,8 +115,15 @@ function loader.load(path, nick, typ, parameters, lock)
         error("Cannot overwrite a locked resource.")
       end
       local c = parseConf(path)
-      loader.resources[nick] = {data=anim8.newGrid(unpack(c.quad)),
-        parameters=parameters, type=typ, frames=c.frames, durations=c.durations, onLoop=c.onLoop, img=imageWrapper(c.image)}
+      local fx, fy, fw, fh, fb = unpack(c.quad)
+      local img
+      if c.image then
+        loader.load(c.image, c.image, "texture", nil, lock)
+        img = loader.get(c.image)
+      end
+      loader.resources[nick] = {data=anim8.newGrid(fw or fx, fh or fy, fx, fy, fb),
+        parameters=parameters, type=typ, frames=c.frames, durations=c.durations,
+        onLoop=c.onLoop, img=img}
       
       return loader.resources[nick]
     end
@@ -134,20 +148,25 @@ function loader.load(path, nick, typ, parameters, lock)
           end
         elseif k:sub(-6) == "OnLoop" then
           local l = k:sub(0, k:len() - 6)
-          if not data[6] then
-            data[6] = {onLoop = v}
+          if not data[l] then
+            data[l] = {onLoop = v}
           else
-            data[6].onLoop = v
+            data[l].onLoop = v
           end
         end
       end
       local fx, fy, fw, fh, fb = unpack(c.quad)
-      local grid = anim8.newGrid(fw, fh, fx, fy, fb)
+      local grid = anim8.newGrid(fw or fx, fh or fy, fx, fy, fb)
       for _, v in pairs(data) do
         v.data = grid
       end
+      local img
+      if c.image then
+        loader.load(c.image, c.image, "texture", nil, lock)
+        img = loader.get(c.image)
+      end
       loader.locked[nick] = {data=grid,
-        parameters=parameters, type=typ, sets=data, default=c.default, img=c.image and imageWrapper(c.image)}
+        parameters=parameters, type=typ, sets=data, default=c.default, img=img}
       loader.resources[nick] = nil
       
       return loader.locked[nick]
@@ -174,20 +193,25 @@ function loader.load(path, nick, typ, parameters, lock)
           end
         elseif k:sub(-6) == "OnLoop" then
           local l = k:sub(0, k:len() - 6)
-          if not data[6] then
-            data[6] = {onLoop = v}
+          if not data[l] then
+            data[l] = {onLoop = v}
           else
-            data[6].onLoop = v
+            data[l].onLoop = v
           end
         end
       end
       local fx, fy, fw, fh, fb = unpack(c.quad)
-      local grid = anim8.newGrid(fw, fh, fx, fy, fb)
+      local grid = anim8.newGrid(fw or fx, fh or fy, fx, fy, fb)
       for _, v in pairs(data) do
         v.data = grid
       end
+      local img
+      if c.image then
+        loader.load(c.image, c.image, "texture", nil, lock)
+        img = loader.get(c.image)
+      end
       loader.resources[nick] = {data=grid,
-        parameters=parameters, type=typ, sets=data, default=c.default, img=c.image and imageWrapper(c.image)}
+        parameters=parameters, type=typ, sets=data, default=c.default, img=img}
       
       return loader.resources[nick]
     end

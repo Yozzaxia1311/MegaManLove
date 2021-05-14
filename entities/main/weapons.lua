@@ -260,7 +260,7 @@ weapon.resources["P.BUSTER"] = function()
     megautils.loadResource("assets/sfx/semi.ogg", "semiCharged")
     megautils.loadResource("assets/sfx/protoCharge.ogg", "protoCharge")
     megautils.loadResource("assets/sfx/protoCharged.ogg", "protoCharged")
-    megautils.loadResource(10, 0, 29, 10, "protoBusterGrid")
+    megautils.loadResource("assets/misc/weapons/protoBuster.anim", "protoBusterAnim")
   end
 
 weapon.icons["P.BUSTER"] = "assets/misc/weapons/icons/protoBuster.png"
@@ -335,7 +335,7 @@ weapon.resources["R.BUSTER"] = function()
     megautils.loadResource("assets/sfx/semi.ogg", "semiCharged")
     megautils.loadResource("assets/sfx/charge.ogg", "charge")
     megautils.loadResource("assets/sfx/protoCharged.ogg", "protoCharged")
-    megautils.loadResource(10, 0, 29, 10, "protoBusterGrid")
+    megautils.loadResource("assets/misc/weapons/protoBuster.anim", "protoBusterAnim")
   end
 
 weapon.icons["R.BUSTER"] = "assets/misc/weapons/icons/rollBuster.png"
@@ -436,7 +436,7 @@ function protoChargedBuster:new(x, y, p, dir, skin)
   self:setRectangleCollision(29, 8)
   self.skin = skin
   self.tex = megautils.getResource(self.skin)
-  self.anim = animation("protoBusterGrid", {"1-2", 1}, 1/20)
+  self.anim = animation("protoBusterAnim")
   self.side = dir or 1
   self.velX = self.side * 6
   self.pierceType = pierce.PIERCEIFKILLING
@@ -557,8 +557,8 @@ weapon.resources["M.BUSTER"] = function()
     megautils.loadResource("assets/sfx/semi.ogg", "semiCharged")
     megautils.loadResource("assets/sfx/charge.ogg", "charge")
     megautils.loadResource("assets/sfx/charged.ogg", "charged")
-    megautils.loadResource(33, 30, "chargeGrid")
-    megautils.loadResource(8, 31, 17, 16, "smallChargeGrid")
+    megautils.loadResource("assets/misc/weapons/megaChargedBuster.anim", "megaChargedBusterAnim")
+    megautils.loadResource("assets/misc/weapons/megaSemiBuster.anim", "megaSemiBuster")
   end
 
 weapon.icons["M.BUSTER"] = "assets/misc/weapons/icons/megaBuster.png"
@@ -662,7 +662,7 @@ function megaSemiBuster:new(x, y, p, dir)
   self.y = (y or 0) - 5
   self:setRectangleCollision(16, 10)
   self.tex = megautils.getResource("busterTex")
-  self.anim = animation("smallChargeGrid", {"1-2", 1}, 1/12)
+  self.anim = animation("megaSemiBuster")
   self.side = dir or 1
   self.velX = self.side * 5
   self.sound = "semiCharged"
@@ -692,7 +692,7 @@ function megaChargedBuster:new(x, y, p, dir)
   self.y = (y or 0) - 12
   self:setRectangleCollision(24, 24)
   self.tex = megautils.getResource("busterTex")
-  self.anim = animation("chargeGrid", {"1-4", 1}, 1/20)
+  self.anim = animation("megaChargedBusterAnim")
   self.side = dir or 1
   self.velX = self.side * 5.5
   self.pierceType = pierce.PIERCEIFKILLING
@@ -934,10 +934,7 @@ function rushJet:new(x, y, p, side, skin)
   self:setRectangleCollision(27, 8)
   self.skin = skin
   self.tex = megautils.getResource(skin)
-  self.anims = animationSet()
-  self.anims:add("spawn", animation("rushGrid", {1, 1}))
-  self.anims:add("spawnLand", animation("rushGrid", {2, 1, 1, 1, 3, 1}, 1/20))
-  self.anims:add("jet", animation("rushGrid", {"2-3", 2}, 1/8))
+  self.anims = animationSet("rushAnims")
   self.side = side or 1
   self.s = 0
   self.timer = 0
