@@ -722,7 +722,7 @@ function entitySystem:update(dt)
     local v = self.updates[i]
     if ((type(v.noFreeze) == "table" and table.intersects(self.frozen, v.noFreeze, true)) or v.noFreeze == true or not checkTrue(self.frozen)) and
       not v.isRemoved and v.update and checkFalse(v.canUpdate) then
-      v:update(dt)
+      v:_update(dt)
       if not v.invisibleToHash then v:updateHash() end
     end
   end
@@ -734,7 +734,7 @@ function entitySystem:update(dt)
     local v = self.updates[i]
     if ((type(v.noFreeze) == "table" and table.intersects(self.frozen, v.noFreeze, true)) or v.noFreeze or not checkTrue(self.frozen)) and
       not v.isRemoved and v.afterUpdate and checkFalse(v.canUpdate) then
-      v:afterUpdate(dt)
+      v:_afterUpdate(dt)
       if not v.invisibleToHash then v:updateHash() end
     end
     v.justAddedIn = false
@@ -1137,6 +1137,14 @@ function basicEntity:_beforeUpdate(dt)
   end
   
   self:beforeUpdate(dt)
+end
+
+function basicEntity:_update(dt)
+  self:update(dt)
+end
+
+function basicEntity:_afterUpdate(dt)
+  self:afterUpdate(dt)
 end
 
 function basicEntity:_draw()
@@ -1855,8 +1863,6 @@ function bossEntity:skip()
   return true
 end
 
-function bossEntity:act() end
-
 function bossEntity:start()
   if self._subState == 0 then
     if megaMan.allPlayers then
@@ -1996,7 +2002,7 @@ function bossEntity:bossIntro()
   end
 end
 
-function bossEntity:update()
+function bossEntity:_update()
   if self.doBossIntro then
     self:bossIntro()
   else
@@ -2032,7 +2038,7 @@ function bossEntity:update()
         end
       end
     elseif self.didIntro then
-      self:act()
+      self:update()
     end
   end
   self.canDraw.firstFrame = nil

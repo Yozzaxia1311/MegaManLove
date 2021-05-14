@@ -200,9 +200,11 @@ end
 
 function weapon:dinking(e, dt) end
 
-function weapon:act(dt) end
-
-function weapon:beforeUpdate()
+function weapon:_beforeUpdate(dt)
+  for i = 1, #self.gfx do
+    self.gfx[i]:_update(dt)
+  end
+  
   if self.flipWithUser and self.user and self.user.gravityMultipliers then
     self:setGravityMultiplier("flipWithUser", self.user.gravityMultipliers.gravityFlip or 1)
   end
@@ -219,17 +221,19 @@ function weapon:beforeUpdate()
   if self.applyAutoFace then
     self.side = self.autoFace
   end
+  
+  self:beforeUpdate(dt)
 end
 
-function weapon:update(dt)
+function weapon:_update(dt)
   if self.dinked and self.doDink then
     self:dinking(self.dinkedBy, dt)
   else
-    self:act(dt)
+    self:update(dt)
   end
 end
 
-function weapon:afterUpdate()
+function weapon:_afterUpdate(dt)
   if not self.doAutoCollisionBeforeUpdate and checkFalse(self.autoCollision) and not self._didCol then
     collision.doCollision(self, self.noSlope)
   end
@@ -244,6 +248,8 @@ function weapon:afterUpdate()
   if self.removeWhenOutside and megautils.outside(self) then
     megautils.removeq(self)
   end
+  
+  self:afterUpdate(dt)
 end
 
 weapon.removeGroups["P.BUSTER"] = {"megaBuster", "protoChargedBuster"}
@@ -443,7 +449,7 @@ function protoChargedBuster:dinking()
   self.anim:update(1/60)
 end
 
-function protoChargedBuster:act()
+function protoChargedBuster:update()
   self.anim:update(1/60)
 end
 
@@ -533,7 +539,7 @@ function bassBuster:new(x, y, p, dir, t)
   end
 end
 
-function bassBuster:act()
+function bassBuster:update()
   local col = collision.checkSolid(self, self.velX, self.velY)
   if not self.treble and not self.dinked and col then
     megautils.removeq(self)
@@ -667,7 +673,7 @@ function megaSemiBuster:dinking()
   self.anim:update(1/60)
 end
 
-function megaSemiBuster:act()
+function megaSemiBuster:update()
   self.anim:update(1/60)
 end
 
@@ -699,7 +705,7 @@ function megaChargedBuster:dinking()
   self.anim:update(1/60)
 end
 
-function megaChargedBuster:act()
+function megaChargedBuster:update()
   self.anim:update(1/60)
 end
 
@@ -781,7 +787,7 @@ function trebleBoost:added()
   self:addToGroup("submergable")
 end
 
-function trebleBoost:act()
+function trebleBoost:update()
   self.anims:update(1/60)
   if self.s == -1 then
     self:moveBy(0, 8)
@@ -954,7 +960,7 @@ function rushJet:added()
   self:addToGroup("submergable")
 end
 
-function rushJet:act(dt)
+function rushJet:update()
   self.anims:update(1/60)
   if self.s == -1 then
     self:moveBy(0, 8)
@@ -1169,7 +1175,7 @@ function rushCoil:added()
   self:addToGroup("submergable")
 end
 
-function rushCoil:act(dt)
+function rushCoil:update()
   self.anims:update(1/60)
   if self.s == -1 then
     self:moveBy(0, 8)

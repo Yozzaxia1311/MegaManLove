@@ -34,7 +34,11 @@ function particle:grav()
   self.velY = math.clamp(self.velY + self.gravity, -self.maxFallingSpeed, self.maxFallingSpeed)
 end
 
-function particle:beforeUpdate()
+function particle:_beforeUpdate(dt)
+  for i = 1, #self.gfx do
+    self.gfx[i]:_update(dt)
+  end
+  
   if self.flipWithUser and self.user and self.user.gravityMultipliers then
     self:setGravityMultiplier("flipWithUser", self.user.gravityMultipliers.gravityFlip or 1)
   end
@@ -48,13 +52,15 @@ function particle:beforeUpdate()
   end
 end
 
-function particle:afterUpdate()
+function particle:_afterUpdate(dt)
   if not self.doAutoCollisionBeforeUpdate and checkFalse(self.autoCollision) and not self._didCol then
     collision.doCollision(self, self.noSlope)
   end
   if self.removeWhenOutside and megautils.outside(self) then
     megautils.removeq(self)
   end
+  
+  self:afterUpdate(dt)
 end
 
 slideParticle = particle:extend()

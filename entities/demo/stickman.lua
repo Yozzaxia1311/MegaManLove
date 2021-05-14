@@ -77,16 +77,11 @@ function stickMan:pose()
   end
 end
 
-function stickMan:act()
+function stickMan:update()
   if self.state == 0 then
     self.anims:set("idle")
     self.state = 1
   end
 end
-
---function stickMan:draw()
---  stickMan.super.draw(self)
---  self.t:draw(self.anims, math.floor(self.x)-4, math.floor(self.y)-8)
---end
 
 return stickMan

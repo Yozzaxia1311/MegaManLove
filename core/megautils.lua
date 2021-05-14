@@ -402,6 +402,12 @@ function megautils._runFolderStructure(path, ...)
     megautils.runFSEvent(self, "new")
   end
   
+  local i = 1
+  while conf["resource" .. i] do
+    megautils.loadResource(unpack(conf["resource" .. i]))
+    i = i + 1
+  end
+  
   if register then
     mapEntity.register(tostring(name), function(v, map, s, r)
         local args = {x = v.x, y = v.y, width = v.width, height = v.height}
@@ -672,6 +678,7 @@ function megautils.unload()
   megautils.cleanCallbacks()
   megautils.unloadAllResources()
   megautils._ranFiles = {}
+  megautils._fsCache = {}
 end
 
 function megautils.addMapEntity(path)
