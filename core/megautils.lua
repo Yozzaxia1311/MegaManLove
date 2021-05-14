@@ -327,11 +327,13 @@ megautils._fsCache = {}
 function megautils.runFSEvent(self, event, ...)
   assert(self.__index._meta, "Object provided is not a folder structure")
   local path = self.__index._meta.path
+  local name = path:split("/")
+  name = name[#name]
   local file
   if event then
-    file = path .. "/" .. path .. "." .. event .. ".lua"
+    file = path .. "/" .. name .. "." .. event .. ".lua"
   else
-    file = path .. "/" .. path .. ".lua"
+    file = path .. "/" .. name .. ".lua"
   end
   
   if love.filesystem.getInfo(file) then
@@ -354,6 +356,7 @@ function megautils._runFolderStructure(path, ...)
   name = name[#name]
   local baseClass = conf.baseClass or "advancedEntity"
   local result = _G[baseClass]:extend()
+  _G[name] = result
   
   local autoClean = conf.autoClean == nil or conf.autoClean
   local collision
@@ -365,20 +368,21 @@ function megautils._runFolderStructure(path, ...)
     interval = spawner[2]
     spawner = spawner[1]
   end
-  local locked = conf.locked
   
-  if type(conf.collision) == "table" then
-    if conf.collision[2] then
-      collision = {type = "rect", w = conf.collision[1], h = conf.collision[2]}
+  if conf.collision then
+    if type(conf.collision) == "table" then
+      if conf.collision[2] then
+        collision = {type = "rect", w = conf.collision[1], h = conf.collision[2]}
+      else
+        collision = {type = "circle", r = conf.collision[1], w = conf.collision[1] * 2, h = conf.collision[1] * 2}
+      end
     else
-      collision = {type = "circle", r = conf.collision[1], w = conf.collision[1] * 2, h = conf.collision[1] * 2}
+      if not megautils.getResource(conf.collision) then
+        megautils.loadResource(conf.collision, conf.collision, conf.autoClean)
+      end
+      local w, h = megautils.getResource(conf.collision):getDimensions()
+      collision = {type = "image", img = conf.collision, w = w, h = h}
     end
-  else
-    if not megautils.getResource(conf.collision) then
-      megautils.loadResource(conf.collision, conf.collision, conf.locked)
-    end
-    local w, h = megautils.getResource(conf.collision):getDimensions()
-    collision = {type = "image", img = conf.collision, w = w, h = h}
   end
   
   result._meta = {
@@ -395,7 +399,7 @@ function megautils._runFolderStructure(path, ...)
       self.__index.super.new(self, user, self.__index._meta.enemyWeapon)
     end
     
-    megautils.runFSEvent(self)
+    megautils.runFSEvent(self, "new")
   end
   
   if register then
@@ -404,16 +408,20 @@ function megautils._runFolderStructure(path, ...)
         for k, v in pairs(v.properties) do
           args[k] = v
         end
+        local w, h = r.__index._meta.collision and r.__index._meta.collision.w or 16,
+          r.__index._meta.collision and r.__index._meta.collision.h or 16
+        
         if s == "regular" then
-          megautils.add(spawner, r.__index._meta.collision.w, r.__index._meta.collision.h, nil, r, args)
+          megautils.add(spawner, w, h, nil, r, args)
         elseif s == "interval" then
-          megautils.add(intervalSpawner, r.__index._meta.collision.w, r.__index._meta.collision.h,
-            r.__index._meta.interval, nil, r, args)
+          megautils.add(intervalSpawner, w, h, r.__index._meta.interval, nil, r, args)
         elseif s == "custom" then
           megautils.add(r, args)
         end
       end, nil, nil, spawner, result)
   end
+  
+  megautils.runFSEvent(result)
 end
 
 function megautils.resetGame(s, saveSfx, saveMusic)
