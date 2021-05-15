@@ -99,12 +99,18 @@ function loader.load(path, nick, typ, parameters, lock)
     if lock then
       local c = parseConf(path)
       local fx, fy, fw, fh, fb = unpack(c.quad)
+      if not fw or not fh then
+        fw = fx
+        fh = fy
+        fx = 0
+        fy = 0
+      end
       local img
       if c.image then
         loader.load(c.image, c.image, "texture", nil, lock)
         img = loader.get(c.image)
       end
-      loader.locked[nick] = {data=anim8.newGrid(fw or fx, fh or fy, fx, fy, fb),
+      loader.locked[nick] = {data=anim8.newGrid(fw, fh, fx, fy, fb),
         parameters=parameters, type=typ, frames=c.frames, durations=c.durations,
         onLoop=c.onLoop, img=img}
       loader.resources[nick] = nil
@@ -116,12 +122,18 @@ function loader.load(path, nick, typ, parameters, lock)
       end
       local c = parseConf(path)
       local fx, fy, fw, fh, fb = unpack(c.quad)
+      if not fw or not fh then
+        fw = fx
+        fh = fy
+        fx = 0
+        fy = 0
+      end
       local img
       if c.image then
         loader.load(c.image, c.image, "texture", nil, lock)
         img = loader.get(c.image)
       end
-      loader.resources[nick] = {data=anim8.newGrid(fw or fx, fh or fy, fx, fy, fb),
+      loader.resources[nick] = {data=anim8.newGrid(fw, fh, fx, fy, fb),
         parameters=parameters, type=typ, frames=c.frames, durations=c.durations,
         onLoop=c.onLoop, img=img}
       
@@ -156,7 +168,13 @@ function loader.load(path, nick, typ, parameters, lock)
         end
       end
       local fx, fy, fw, fh, fb = unpack(c.quad)
-      local grid = anim8.newGrid(fw or fx, fh or fy, fx, fy, fb)
+      if not fw or not fh then
+        fw = fx
+        fh = fy
+        fx = 0
+        fy = 0
+      end
+      local grid = anim8.newGrid(fw, fh, fx, fy, fb)
       for _, v in pairs(data) do
         v.data = grid
       end
@@ -201,7 +219,13 @@ function loader.load(path, nick, typ, parameters, lock)
         end
       end
       local fx, fy, fw, fh, fb = unpack(c.quad)
-      local grid = anim8.newGrid(fw or fx, fh or fy, fx, fy, fb)
+      if not fw or not fh then
+        fw = fx
+        fh = fy
+        fx = 0
+        fy = 0
+      end
+      local grid = anim8.newGrid(fw, fh, fx, fy, fb)
       for _, v in pairs(data) do
         v.data = grid
       end

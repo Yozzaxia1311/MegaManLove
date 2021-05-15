@@ -165,6 +165,8 @@ end
 
 function image:setQuad(q)
   self.quad = q
+  
+  return self
 end
 
 function image:getQuad()

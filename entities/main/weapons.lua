@@ -636,8 +636,7 @@ function megaBuster:new(x, y, p, dir)
     self.velY = 0
   else
     self:setRectangleCollision(8, 6)
-    self.tex = megautils.getResource("busterTex")
-    self.quad = quad(0, 31, 8, 6)
+    self:addGFX("tex", image("busterTex", quad(0, 31, 8, 6)))
     self.weaponGroup = "megaBuster"
     self.recycle = true
   end
@@ -646,10 +645,6 @@ function megaBuster:new(x, y, p, dir)
   self.y = (y or 0) - 3
   self.side = dir or 1
   self.velX = self.side * 5
-end
-
-function megaBuster:draw()
-  self.tex:draw(self.quad, math.floor(self.x), math.floor(self.y))
 end
 
 megaSemiBuster = weapon:extend()
@@ -661,25 +656,16 @@ function megaSemiBuster:new(x, y, p, dir)
   self.x = (x or 0) - 8
   self.y = (y or 0) - 5
   self:setRectangleCollision(16, 10)
-  self.tex = megautils.getResource("busterTex")
-  self.anim = animation("megaSemiBuster")
+  self.anim = animation("megaSemiBuster"):off(0, -3):flip(self.side ~= 1)
+  self:addGFX("anim", self.anim)
   self.side = dir or 1
   self.velX = self.side * 5
   self.sound = "semiCharged"
   self.weaponGroup = "megaBuster"
 end
 
-function megaSemiBuster:dinking()
-  self.anim:update(1/60)
-end
-
 function megaSemiBuster:update()
-  self.anim:update(1/60)
-end
-
-function megaSemiBuster:draw()
-  self.tex:draw(self.anim, math.floor(self.x), math.floor(self.y)-3,
-    nil, nil, nil, nil, nil, nil, nil, self.side ~= 1)
+  self.anim:flip(self.side ~= 1)
 end
 
 megaChargedBuster = weapon:extend()
@@ -691,27 +677,19 @@ function megaChargedBuster:new(x, y, p, dir)
   self.x = (x or 0) - 12
   self.y = (y or 0) - 12
   self:setRectangleCollision(24, 24)
-  self.tex = megautils.getResource("busterTex")
-  self.anim = animation("megaChargedBusterAnim")
   self.side = dir or 1
   self.velX = self.side * 5.5
   self.pierceType = pierce.PIERCEIFKILLING
   self.sound = "charged"
   self.weaponGroup = "megaChargedBuster"
   self.damage = -2
-end
-
-function megaChargedBuster:dinking()
-  self.anim:update(1/60)
+  
+  self.anim = animation("megaChargedBusterAnim"):off(self.side == 1 and -8 or 0, -3):flip(self.side ~= 1)
+  self:addGFX("anim", self.anim)
 end
 
 function megaChargedBuster:update()
-  self.anim:update(1/60)
-end
-
-function megaChargedBuster:draw()
-  self.tex:draw(self.anim, math.floor(self.x)+(self.side == 1 and -8 or 0), math.floor(self.y)-3,
-    nil, nil, nil, nil, nil, nil, nil, self.side ~= 1)
+  self.anim:off(self.side == 1 and -8 or 0, -3):flip(self.side ~= 1)
 end
 
 weapon.removeGroups["T. BOOST"] = {"trebleBoost", "bassBuster"}
