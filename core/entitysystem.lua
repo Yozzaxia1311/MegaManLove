@@ -1537,6 +1537,7 @@ function advancedEntity:new()
     self.barOffsetX = (view.w - 24)
     self.barOffsetY = 80
     self.applyAutoFace = true
+    self.flipFace = false
     self.pierceType = pierce.PIERCE
     self.autoCollision = {global = true}
     self.autoGravity = {global = true}
@@ -1637,6 +1638,9 @@ function advancedEntity:beforeUpdate()
   self.autoFace = s or self.autoFace
   if self.applyAutoFace then
     self.side = self.autoFace
+  end
+  for i = 1, #self.gfx do
+    self.gfx[i]:flip(self.side == (self.flipFace and -1 or 1))
   end
   self.closest = n
   self:updateFlash()

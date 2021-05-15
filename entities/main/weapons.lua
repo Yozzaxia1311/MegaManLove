@@ -126,6 +126,7 @@ function weapon:new(p, enWeapon)
     self.doAutoCollisionBeforeUpdate = true
     self.doDink = true
     self.applyAutoFace = false
+    self.flipFace = false
     self.noSlope = false
     self.maxFallingSpeed = 7
   end
@@ -220,6 +221,9 @@ function weapon:_beforeUpdate(dt)
   self.autoFace = s or self.autoFace
   if self.applyAutoFace then
     self.side = self.autoFace
+  end
+  for i = 1, #self.gfx do
+    self.gfx[i]:flip(self.side == (self.flipFace and 1 or -1))
   end
   
   self:beforeUpdate(dt)

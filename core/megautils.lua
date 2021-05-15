@@ -382,6 +382,22 @@ function megautils._runFolderStructure(path, ...)
   local explosion = conf.explosion
   local removeOnDeath = conf.removeOnDeath
   local dropItem = conf.dropItem
+  local soundOnHit = conf.soundOnHit
+  local soundOnDeath = conf.soundOnDeath
+  local autoHit = autoHit
+  local damage = damage
+  local hurtable = hurtable
+  local flipWithPlayer = flipWithPlayer
+  local removeWhenOutside = removeWhenOutside
+  local removeHealthBarWithSelf = removeHealthBarWithSelf
+  local barRelativeToView = barRelativeToView
+  local barOffsetX = barOffsetX
+  local barOffsetY = barOffsetY
+  local applyAutoFace = applyAutoFace
+  local flipFace = flipFace
+  local pierceType = pierceType
+  local autoCollision = autoCollision
+  local autoGravity = autoGravity
   
   if conf.collision then
     if type(conf.collision) == "table" then
@@ -418,7 +434,23 @@ function megautils._runFolderStructure(path, ...)
       weapon = weapon,
       explosion = explosion,
       removeOnDeath = removeOnDeath,
-      dropItem = dropItem
+      dropItem = dropItem,
+      soundOnHit = soundOnHit,
+      soundOnDeath = soundOnDeath,
+      autoHit = autoHit,
+      damage = damage,
+      hurtable = hurtable,
+      flipWithPlayer = flipWithPlayer,
+      removeWhenOutside = removeWhenOutside,
+      removeHealthBarWithSelf = removeHealthBarWithSelf,
+      barRelativeToView = barRelativeToView,
+      barOffsetX = barOffsetX,
+      barOffsetY = barOffsetY,
+      applyAutoFace = applyAutoFace,
+      flipFace = flipFace,
+      pierceType = pierceType,
+      autoCollision = autoCollision,
+      autoGravity = autoGravity
     }
   
   function result:new(args)
@@ -428,8 +460,55 @@ function megautils._runFolderStructure(path, ...)
     
     if self:is(weapon) then
       self.__index.super.new(self, args.user, self.__index._meta.enemyWeapon)
+      
+      if self.__index._meta.autoHit then
+        self.autoHit = self.__index._meta.autoHit
+      end
+      if self.__index._meta.damage then
+        self.damage = self.__index._meta.damage
+      end
+      if self.__index._meta.applyAutoFace then
+        self.applyAutoFace = self.__index._meta.applyAutoFace
+      end
+      if self.__index._meta.flipFace then
+        self.flipFace = self.__index._meta.flipFace
+      end
+      if self.__index._meta.pierceType then
+        if self.__index._meta.pierceType == "pierce" then
+          self.pierceType = pierce.PIERCE
+        elseif self.__index._meta.pierceType == "nopierce" then
+          self.pierceType = pierce.NOPIERCE
+        elseif self.__index._meta.pierceType == "pierceifkilling" then
+          self.pierceType = pierce.PIERCEIFKILLING
+        end
+      end
+      if self.__index._meta.autoCollision then
+        self.autoCollision.global = self.__index._meta.autoCollision
+      end
+      if self.__index._meta.autoGravity then
+        self.autoGravity.global = self.__index._meta.autoGravity
+      end
+      if self.__index._meta.removeWhenOutside then
+        self.removeWhenOutside = self.__index._meta.removeWhenOutside
+      end
     elseif self:is(pickUp) then
       self.__index.super.new(self, args.despawn, args.gravDir, args.flipWithPlayer, args.id, args.path)
+      
+      if self.__index._meta.flipWithPlayer then
+        self.fwp = self.__index._meta.flipWithPlayer
+      end
+      if self.__index._meta.autoCollision then
+        self.autoCollision.global = self.__index._meta.autoCollision
+      end
+      if self.__index._meta.autoGravity then
+        self.autoGravity.global = self.__index._meta.autoGravity
+      end
+    elseif self:is(particle) then
+      self.__index.super.new(self, args.user)
+      
+      if self.__index._meta.removeWhenOutside then
+        self.removeWhenOutside = self.__index._meta.removeWhenOutside
+      end
     end
     
     if self.__index._meta.collision then
@@ -445,7 +524,6 @@ function megautils._runFolderStructure(path, ...)
     if self.__index._meta.x then
       self.x = self.__index._meta.x
     end
-    
     if self.__index._meta.y then
       self.y = self.__index._meta.y
     end
@@ -470,36 +548,87 @@ function megautils._runFolderStructure(path, ...)
       elseif self.__index._meta.explosion == "death" then
         self.explosionType = advancedEntity.DEATHBLAST
       end
-      
       if self.__index._meta.removeOnDeath then
         self.removeOnDeath = self.__index._meta.removeOnDeath
       end
-      
       if self.__index._meta.dropItem then
         self.dropItem = self.__index._meta.dropItem
       end
-      
       if self.__index._meta.health then
         self.health = self.__index._meta.health
       end
-      
+      if self.__index._meta.soundOnHit then
+        self.soundOnHit = self.__index._meta.soundOnHit
+      end
+      if self.__index._meta.soundOnDeath then
+        self.soundOnDeath = self.__index._meta.soundOnDeath
+      end
+      if self.__index._meta.autoHit then
+        self.autoHitPlayer = self.__index._meta.autoHit
+      end
+      if self.__index._meta.damage then
+        self.damage = self.__index._meta.damage
+      end
+      if self.__index._meta.hurtable then
+        self.hurtable = self.__index._meta.hurtable
+      end
+      if self.__index._meta.flipWithPlayer then
+        self.flipWithPlayer = self.__index._meta.flipWithPlayer
+      end
+      if self.__index._meta.removeWhenOutside then
+        self.removeWhenOutside = self.__index._meta.removeWhenOutside
+      end
+      if self.__index._meta.removeHealthBarWithSelf then
+        self.removeHealthBarWithSelf = self.__index._meta.removeHealthBarWithSelf
+      end
+      if self.__index._meta.barRelativeToView then
+        self.barRelativeToView = self.__index._meta.barRelativeToView
+      end
+      if self.__index._meta.barOffsetX then
+        self.barOffsetX = self.__index._meta.barOffsetX
+      end
+      if self.__index._meta.barOffsetY then
+        self.barOffsetY = self.__index._meta.barOffsetY
+      end
+      if self.__index._meta.applyAutoFace then
+        self.applyAutoFace = self.__index._meta.applyAutoFace
+      end
+      if self.__index._meta.flipFace then
+        self.flipFace = self.__index._meta.flipFace
+      end
+      if self.__index._meta.pierceType then
+        if self.__index._meta.pierceType == "pierce" then
+          self.pierceType = pierce.PIERCE
+        elseif self.__index._meta.pierceType == "nopierce" then
+          self.pierceType = pierce.NOPIERCE
+        elseif self.__index._meta.pierceType == "pierceifkilling" then
+          self.pierceType = pierce.PIERCEIFKILLING
+        end
+      end
+      if self.__index._meta.autoCollision then
+        self.autoCollision.global = self.__index._meta.autoCollision
+      end
+      if self.__index._meta.autoGravity then
+        self.autoGravity.global = self.__index._meta.autoGravity
+      end
+      if self.__index._meta.soundOnDeath then
+        self.soundOnDeath = self.__index._meta.soundOnDeath
+      end
       self.defeatSlot = self.__index._meta.defeatSlot
-      
       if self.__index._meta.weapon then
         self.defeatSlotValue = {weaponName = self.__index._meta.weapon[1], weaponSlot = self.__index._meta.weapon[2]}
       end
-      
       if self.__index._meta.healthBar then
         self:useHealthBar({self.__index._meta.healthBar[1], self.__index._meta.healthBar[2], self.__index._meta.healthBar[3]},
           {self.__index._meta.healthBar[4], self.__index._meta.healthBar[5], self.__index._meta.healthBar[6]})
       end
     end
     
-    if not self.recycling then
+    if self.recycling then
+      megautils.runFSEvent(self, "recycle")
+    else
       self.recycle = self.__index._meta.recycle
       megautils.runFSEvent(self, "new")
-    else
-      megautils.runFSEvent(self, "recycle")
     end
   end
   
