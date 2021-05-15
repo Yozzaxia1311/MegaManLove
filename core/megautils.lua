@@ -379,6 +379,9 @@ function megautils._runFolderStructure(path, ...)
   local weaponGetText = conf.weaponGetText
   local defeatSlot = conf.defeatSlot
   local weapon = conf.weapon
+  local explosion = conf.explosion
+  local removeOnDeath = conf.removeOnDeath
+  local dropItem = conf.dropItem
   
   if conf.collision then
     if type(conf.collision) == "table" then
@@ -412,7 +415,10 @@ function megautils._runFolderStructure(path, ...)
       stageState = stageState,
       weaponGetText = weaponGetText,
       defeatSlot = defeatSlot,
-      weapon = weapon
+      weapon = weapon,
+      explosion = explosion,
+      removeOnDeath = removeOnDeath,
+      dropItem = dropItem
     }
   
   function result:new(args)
@@ -444,10 +450,6 @@ function megautils._runFolderStructure(path, ...)
       self.y = self.__index._meta.y
     end
     
-    if self.__index._meta.health then
-      self.health = self.__index._meta.health
-    end
-    
     if self:is(advancedEntity) then
       if self:is(bossEntity) then
         self.mugshotPath = self.__index._meta.mugshot
@@ -461,7 +463,28 @@ function megautils._runFolderStructure(path, ...)
           end
       end
       
+      if self.__index._meta.explosion == "small" then
+        self.explosionType = advancedEntity.SMALLBLAST
+      elseif self.__index._meta.explosion == "big" then
+        self.explosionType = advancedEntity.BIGBLAST
+      elseif self.__index._meta.explosion == "death" then
+        self.explosionType = advancedEntity.DEATHBLAST
+      end
+      
+      if self.__index._meta.removeOnDeath then
+        self.removeOnDeath = self.__index._meta.removeOnDeath
+      end
+      
+      if self.__index._meta.dropItem then
+        self.dropItem = self.__index._meta.dropItem
+      end
+      
+      if self.__index._meta.health then
+        self.health = self.__index._meta.health
+      end
+      
       self.defeatSlot = self.__index._meta.defeatSlot
+      
       if self.__index._meta.weapon then
         self.defeatSlotValue = {weaponName = self.__index._meta.weapon[1], weaponSlot = self.__index._meta.weapon[2]}
       end
