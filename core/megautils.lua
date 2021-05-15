@@ -305,7 +305,7 @@ function megautils.runFile(path, runOnce, ...)
     if not table.icontains(megautils._ranFiles, path) then
       megautils._ranFiles[#megautils._ranFiles+1] = path
       if love.filesystem.getInfo(path).type == "directory" then
-        megautils._runFolderStructure(path, ...)
+        return megautils._runFolderStructure(path, ...)
       else
         return love.filesystem.load(path)(...)
       end
@@ -315,7 +315,7 @@ function megautils.runFile(path, runOnce, ...)
       megautils._ranFiles[#megautils._ranFiles+1] = path
     end
     if love.filesystem.getInfo(path).type == "directory" then
-      megautils._runFolderStructure(path, ...)
+      return megautils._runFolderStructure(path, ...)
     else
       return love.filesystem.load(path)(...)
     end
@@ -337,10 +337,12 @@ function megautils.runFSEvent(self, event, ...)
   end
   
   if not megautils._fsCache[file] then
-    megautils._fsCache[file] = love.filesystem.load(file)
+    megautils._fsCache[file] = love.filesystem.getInfo(file) and love.filesystem.load(file) or true
   end
   
-  megautils._fsCache[file](...)
+  if megautils._fsCache[file] ~= true then
+    return megautils._fsCache[file](self, self.__index.super, ...)
+  end
 end
 
 function megautils._runFolderStructure(path, ...)
@@ -367,6 +369,16 @@ function megautils._runFolderStructure(path, ...)
     spawner = spawner[1]
   end
   local recycle = conf.recycle
+  local healthBar = conf.healthBar
+  local health = conf.health
+  local x = conf.x
+  local y = conf.y
+  local mugshot = conf.mugshot
+  local bossIntroText = conf.bossIntroText
+  local stageState = conf.stageState
+  local weaponGetText = conf.weaponGetText
+  local defeatSlot = conf.defeatSlot
+  local weapon = conf.weapon
   
   if conf.collision then
     if type(conf.collision) == "table" then
@@ -390,7 +402,17 @@ function megautils._runFolderStructure(path, ...)
       collision = collision,
       enemyWeapon = enemyWeapon,
       baseClass = baseClass,
-      recycle = recycle
+      recycle = recycle,
+      healthBar = healthBar,
+      health = health,
+      x = x,
+      y = y,
+      mugshot = mugshot,
+      bossIntroText = bossIntroText,
+      stageState = stageState,
+      weaponGetText = weaponGetText,
+      defeatSlot = defeatSlot,
+      weapon = weapon
     }
   
   function result:new(args)
@@ -398,9 +420,9 @@ function megautils._runFolderStructure(path, ...)
       args = {}
     end
     
-    if self.__index._meta.baseClass == "weapon" then
+    if self:is(weapon) then
       self.__index.super.new(self, args.user, self.__index._meta.enemyWeapon)
-    elseif self.__index._meta.baseClass == "pickUp" then
+    elseif self:is(pickUp) then
       self.__index.super.new(self, args.despawn, args.gravDir, args.flipWithPlayer, args.id, args.path)
     end
     
@@ -414,11 +436,111 @@ function megautils._runFolderStructure(path, ...)
       end
     end
     
+    if self.__index._meta.x then
+      self.x = self.__index._meta.x
+    end
+    
+    if self.__index._meta.y then
+      self.y = self.__index._meta.y
+    end
+    
+    if self.__index._meta.health then
+      self.health = self.__index._meta.health
+    end
+    
+    if self:is(advancedEntity) then
+      if self:is(bossEntity) then
+        self.mugshotPath = self.__index._meta.mugshot
+        self.bossIntroText = self.__index._meta.bossIntroText
+        self.stageState = self.__index._meta.stageState
+        self.weaponGetText = self.__index._meta.weaponGetText
+        self.weaponGetBehaviour = function(m)
+            if megautils.runFSEvent(self, "weaponget", m) then
+              return true
+            end
+          end
+      end
+      
+      self.defeatSlot = self.__index._meta.defeatSlot
+      if self.__index._meta.weapon then
+        self.defeatSlotValue = {weaponName = self.__index._meta.weapon[1], weaponSlot = self.__index._meta.weapon[2]}
+      end
+      
+      if self.__index._meta.healthBar then
+        self:useHealthBar({self.__index._meta.healthBar[1], self.__index._meta.healthBar[2], self.__index._meta.healthBar[3]},
+          {self.__index._meta.healthBar[4], self.__index._meta.healthBar[5], self.__index._meta.healthBar[6]})
+      end
+    end
+    
     if not self.recycling then
       self.recycle = self.__index._meta.recycle
       megautils.runFSEvent(self, "new")
     else
       megautils.runFSEvent(self, "recycle")
+    end
+  end
+  
+  function result:added()
+    self.__index.super.added(self)
+    
+    megautils.runFSEvent(self, "added")
+  end
+  
+  function result:begin()
+    self.__index.super.begin(self)
+    
+    megautils.runFSEvent(self, "begin")
+  end
+  
+  function result:beforeUpdate(dt)
+    megautils.runFSEvent(self, "beforeupdate", dt)
+  end
+  
+  function result:update(dt)
+    megautils.runFSEvent(self, "update", dt)
+  end
+  
+  function result:afterUpdate(dt)
+    megautils.runFSEvent(self, "afterupdate", dt)
+  end
+  
+  function result:removed()
+    self.__index.super.removed(self)
+    
+    megautils.runFSEvent(self, "removed")
+  end
+  
+  function result:interactedWith(o, c)
+    megautils.runFSEvent(self, "interacted", o, c)
+  end
+  
+  if result:is(advancedEntity) then
+    function result:grav()
+      megautils.runFSEvent(self, "grav")
+    end
+    
+    function result:crushed(o)
+      megautils.runFSEvent(self, "crushed", o)
+    end
+    
+    function result:hit(o)
+      megautils.runFSEvent(self, "hit", o)
+    end
+    
+    function result:die(o)
+      megautils.runFSEvent(self, "die", o)
+    end
+    
+    function result:determineDink(o)
+      megautils.runFSEvent(self, "determinedink", o)
+    end
+    
+    function result:weaponTable(o)
+      megautils.runFSEvent(self, "weapontable", o)
+    end
+    
+    function result:heal(o)
+      megautils.runFSEvent(self, "heal", o)
     end
   end
   

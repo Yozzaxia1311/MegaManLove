@@ -1619,6 +1619,7 @@ function advancedEntity:hit(o) end
 function advancedEntity:die(o) end
 function advancedEntity:determineDink(o) end
 function advancedEntity:weaponTable(o) end
+function advancedEntity:heal(o) end
 
 function advancedEntity:beforeUpdate()
   if self.flipWithPlayer and megaMan.mainPlayer then
@@ -1741,7 +1742,9 @@ function advancedEntity:interactedWith(o, c)
         megautils.playSoundFromFile(self.soundOnHit)
       end
     end
-  else
+  elseif self.changeHealth > 0 then
+    self:heal(o)
+    
     if self.healthHandler then
       self.healthHandler:updateThis(self.healthHandler.health + self.changeHealth)
     else
