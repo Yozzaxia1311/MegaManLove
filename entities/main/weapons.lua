@@ -412,17 +412,12 @@ function protoSemiBuster:new(x, y, p, dir, skin)
   self.y = (y or 0) - 5
   self:setRectangleCollision(10, 10)
   self.skin = skin
-  self.tex = megautils.getResource(self.skin)
-  self.quad = quad(0, 0, 10, 10)
+  self:addGFX("tex", image(self.skin, quad(0, 0, 10, 10)))
   self.side = dir or 1
   self.velX = self.side * 5
   self.weaponGroup = "megaBuster"
   self.sound = "semiCharged"
   self.damage = -1
-end
-
-function protoSemiBuster:draw()
-  self.tex:draw(self.quad, math.floor(self.x), math.floor(self.y))
 end
 
 protoChargedBuster = weapon:extend()
@@ -481,6 +476,7 @@ weapon.stopOnShot["B.BUSTER"] = true
 weapon.ignoreEnergy["B.BUSTER"] = true
 
 weapon.rapidFireFuncs["B.BUSTER"] = function(player)
+    player.shootFrames = 15
     if player:numberOfShots("bassBuster") < 4 then
       local dir = player.side == 1 and 0 or 180
       
@@ -523,7 +519,7 @@ function bassBuster:new(x, y, p, dir, t)
   
   if not self.recycling then
     self:setRectangleCollision(6, 6)
-    self.tex = megautils.getResource("bassBuster")
+    self:addGFX("tex", image("bassBuster"):off(-1, -1))
     self.weaponGroup = "bassBuster"
     self.recycle = true
   end
@@ -544,10 +540,6 @@ function bassBuster:update()
   if not self.treble and not self.dinked and col then
     megautils.removeq(self)
   end
-end
-
-function bassBuster:draw()
-  self.tex:draw(math.floor(self.x)-1, math.floor(self.y)-1)
 end
 
 weapon.removeGroups["M.BUSTER"] = {"megaBuster", "megaChargedBuster"}

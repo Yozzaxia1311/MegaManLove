@@ -10,29 +10,25 @@ function splash:new(offx, offy, p, rot)
   self.offx = offx or 0
   self.offy = offy or 0
   self:setRectangleCollision(32, 28)
-  self.tex = megautils.getResource("particles")
-  self.anim = animation("splashAnim")
   self.rot = math.rad(rot or 0)
   if self.user then
     self.x = self.user.x + self.offx
     self.y = self.user.y + self.offy
   end
   self.autoCollision.global = false
+  
+  self:addGFX("anim", animation("splashAnim"):origin(16, 16):rot(self.rot))
 end
 
 function splash:update()
-  self.anim:update(1/60)
   if self.user then
     self.x = self.user.x + self.offx
     self.y = self.user.y + self.offy
   end
-  if not self.user or self.user.isRemoved or self.anim:looped() then
+  if not self.user or self.user.isRemoved or self:getGFXByName("anim"):looped() then
     megautils.removeq(self)
   end
-end
-
-function splash:draw()
-  self.tex:draw(self.anim, math.floor(self.x), math.floor(self.y), self.rot, 1, 1, 16, 16)
+  self:getGFXByName("anim"):rot(self.rot)
 end
 
 water = basicEntity:extend()

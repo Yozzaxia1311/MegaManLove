@@ -333,15 +333,15 @@ function animationSet:resume()
 end
 
 function animationSet:isPaused()
-  return self.anims[self.current].status == "paused"
+  return self.anims[self.current]:isPaused()
 end
 
 function animationSet:time(a)
-  return self.anims[a or self.current].timer
+  return self.anims[a or self.current]:time()
 end
 
 function animationSet:setTime(t, a)
-  self.anims[a or self.current].timer = t
+  self.anims[a or self.current]:setTime(t)
 end
 
 function animationSet:frame(a)
