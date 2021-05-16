@@ -18,6 +18,7 @@ function particle:new(user)
     self:setRectangleCollision(8, 8)
     self.autoCollision = {global = true}
     self.autoGravity = {global = false}
+    self.blockCollision.global = false
     self.removeWhenOutside = true
     self.doAutoCollisionBeforeUpdate = true
     self.flipWithUser = true

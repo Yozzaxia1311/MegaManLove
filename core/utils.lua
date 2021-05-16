@@ -119,7 +119,7 @@ function iterateDirs(func, path, noAppdata)
       if v:sub(1, 1) ~= "." then
         if not no and info.type == "directory" then
           results = table.merge({results, iterateDirs(func, p, noAppdata)})
-        elseif not func or func(v) then
+        elseif not func or func(v, p) then
           results[#results+1] = p
         end
       end

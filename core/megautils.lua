@@ -348,15 +348,20 @@ end
 function megautils._runFolderStructure(path, ...)
   local f = love.filesystem.getInfo(path)
   assert(f and f.type == "directory", "\"" .. tostring(path) .. "\" is not a valid folder structure")
-  assert(love.filesystem.getInfo(path .. "/conf.txt"), "\"" .. tostring(path) .. "/conf.txt\" does not exist")
   
-  local conf = parseConf(path .. "/conf.txt")
+  local conf = love.filesystem.getInfo(path .. "/conf.txt") and parseConf(path .. "/conf.txt") or {}
   
   local name = path:split("/")
   name = name[#name]
   local baseClass = conf.baseClass or "advancedEntity"
   local result = _G[baseClass]:extend()
   _G[name] = result
+  
+  iterateDirs(function(ff, pp)
+      if ff:split("%.")[1] == name then
+        megautils._fsCache[pp] = love.filesystem.load(pp)
+      end
+    end, path, true)
   
   local autoClean = conf.autoClean == nil or conf.autoClean
   local collision
@@ -384,20 +389,29 @@ function megautils._runFolderStructure(path, ...)
   local dropItem = conf.dropItem
   local soundOnHit = conf.soundOnHit
   local soundOnDeath = conf.soundOnDeath
-  local autoHit = autoHit
-  local damage = damage
-  local hurtable = hurtable
-  local flipWithPlayer = flipWithPlayer
-  local removeWhenOutside = removeWhenOutside
-  local removeHealthBarWithSelf = removeHealthBarWithSelf
-  local barRelativeToView = barRelativeToView
-  local barOffsetX = barOffsetX
-  local barOffsetY = barOffsetY
-  local applyAutoFace = applyAutoFace
-  local flipFace = flipFace
-  local pierceType = pierceType
-  local autoCollision = autoCollision
-  local autoGravity = autoGravity
+  local autoHit = conf.autoHit
+  local damage = conf.damage
+  local hurtable = conf.hurtable
+  local flipWithPlayer = conf.flipWithPlayer
+  local removeWhenOutside = conf.removeWhenOutside
+  local removeHealthBarWithSelf = conf.removeHealthBarWithSelf
+  local barRelativeToView = conf.barRelativeToView
+  local barOffsetX = conf.barOffsetX
+  local barOffsetY = conf.barOffsetY
+  local applyAutoFace = conf.applyAutoFace
+  local flipFace = conf.flipFace
+  local pierceType = conf.pierceType
+  local autoCollision = conf.autoCollision
+  local autoGravity = conf.autoGravity
+  local flipWithUser = conf.flipWithUser
+  local crushable = conf.crushable
+  local blockCollision = conf.blockCollision
+  local maxFallingSpeed = conf.maxFallingSpeed
+  local sound = conf.sound
+  local soundOnDink = conf.soundOnDink
+  local weaponGroup = conf.weaponGroup
+  local doDink = conf.doDink
+  local gravDir = conf.gravDir
   
   if conf.collision then
     if type(conf.collision) == "table" then
@@ -450,7 +464,16 @@ function megautils._runFolderStructure(path, ...)
       flipFace = flipFace,
       pierceType = pierceType,
       autoCollision = autoCollision,
-      autoGravity = autoGravity
+      autoGravity = autoGravity,
+      flipWithUser = flipWithUser,
+      crushable = crushable,
+      blockCollision = blockCollision,
+      maxFallingSpeed = maxFallingSpeed,
+      sound = sound,
+      soundOnDink = soundOnDink,
+      weaponGroup = weaponGroup,
+      doDink = doDink,
+      gravDir = gravDir
     }
   
   function result:new(args)
@@ -491,8 +514,29 @@ function megautils._runFolderStructure(path, ...)
       if self.__index._meta.removeWhenOutside then
         self.removeWhenOutside = self.__index._meta.removeWhenOutside
       end
+      if self.__index._meta.flipWithUser then
+        self.flipWithUser = self.__index._meta.flipWithUser
+      end
+      if self.__index._meta.blockCollision then
+        self.blockCollision.global = self.__index._meta.blockCollision
+      end
+      if self.__index._meta.maxFallingSpeed then
+        self.maxFallingSpeed = self.__index._meta.maxFallingSpeed
+      end
+      if self.__index._meta.sound then
+        self.sound = self.__index._meta.sound
+      end
+      if self.__index._meta.soundOnDink then
+        self.soundOnDink = self.__index._meta.soundOnDink
+      end
+      if self.__index._meta.weaponGroup then
+        self.weaponGroup = self.__index._meta.weaponGroup
+      end
+      if self.__index._meta.doDink then
+        self.doDink = self.__index._meta.doDink
+      end
     elseif self:is(pickUp) then
-      self.__index.super.new(self, args.despawn, args.gravDir, args.flipWithPlayer, args.id, args.path)
+      self.__index.super.new(self, args.despawn, args.gravDir, args.flipWithPlayer, args.id, args.map.path)
       
       if self.__index._meta.flipWithPlayer then
         self.fwp = self.__index._meta.flipWithPlayer
@@ -503,11 +547,35 @@ function megautils._runFolderStructure(path, ...)
       if self.__index._meta.autoGravity then
         self.autoGravity.global = self.__index._meta.autoGravity
       end
+      if self.__index._meta.blockCollision then
+        self.blockCollision.global = self.__index._meta.blockCollision
+      end
+      if self.__index._meta.maxFallingSpeed then
+        self.maxFallingSpeed = self.__index._meta.maxFallingSpeed
+      end
+      if self.__index._meta.gravDir then
+        self.gravDir = self.__index._meta.gravDir
+      end
     elseif self:is(particle) then
       self.__index.super.new(self, args.user)
       
       if self.__index._meta.removeWhenOutside then
         self.removeWhenOutside = self.__index._meta.removeWhenOutside
+      end
+      if self.__index._meta.flipWithUser then
+        self.flipWithUser = self.__index._meta.flipWithUser
+      end
+      if self.__index._meta.blockCollision then
+        self.blockCollision.global = self.__index._meta.blockCollision
+      end
+      if self.__index._meta.maxFallingSpeed then
+        self.maxFallingSpeed = self.__index._meta.maxFallingSpeed
+      end
+      if self.__index._meta.autoCollision then
+        self.autoCollision.global = self.__index._meta.autoCollision
+      end
+      if self.__index._meta.autoGravity then
+        self.autoGravity.global = self.__index._meta.autoGravity
       end
     end
     
@@ -526,6 +594,9 @@ function megautils._runFolderStructure(path, ...)
     end
     if self.__index._meta.y then
       self.y = self.__index._meta.y
+    end
+    if self.__index._meta.noSlope then
+      self.noSlope = self.__index._meta.noSlope
     end
     
     if self:is(advancedEntity) then
@@ -611,8 +682,14 @@ function megautils._runFolderStructure(path, ...)
       if self.__index._meta.autoGravity then
         self.autoGravity.global = self.__index._meta.autoGravity
       end
-      if self.__index._meta.soundOnDeath then
-        self.soundOnDeath = self.__index._meta.soundOnDeath
+      if self.__index._meta.crushable then
+        self.crushable = self.__index._meta.crushable
+      end
+      if self.__index._meta.blockCollision then
+        self.blockCollision.global = self.__index._meta.blockCollision
+      end
+      if self.__index._meta.maxFallingSpeed then
+        self.maxFallingSpeed = self.__index._meta.maxFallingSpeed
       end
       self.defeatSlot = self.__index._meta.defeatSlot
       if self.__index._meta.weapon then
@@ -704,7 +781,7 @@ function megautils._runFolderStructure(path, ...)
   
   if register then
     mapEntity.register(tostring(name), function(v, map, s, r)
-        local args = {x = v.x, y = v.y, width = v.width, height = v.height}
+        local args = {x = v.x, y = v.y, width = v.width, height = v.height, id = v.id, map = map}
         for k, v in pairs(v.properties) do
           args[k] = v
         end
@@ -714,7 +791,7 @@ function megautils._runFolderStructure(path, ...)
         if s == "regular" then
           megautils.add(spawner, w, h, nil, r, args)
         elseif s == "interval" then
-          megautils.add(intervalSpawner, w, h, r.__index._meta.interval, nil, r, args)
+          megautils.add(intervalSpawner, w, h, args.interval or r.__index._meta.interval, nil, r, args)
         elseif s == "custom" then
           megautils.add(r, args)
         end

@@ -1542,7 +1542,7 @@ function advancedEntity:new()
     self.autoCollision = {global = true}
     self.autoGravity = {global = true}
     self.doAutoCollisionBeforeUpdate = false
-    self.autoCrush = true
+    self.crushable = true
     self.blockCollision.global = true
     self.maxFallingSpeed = 7
     self.noSlope = false
@@ -1598,7 +1598,7 @@ function advancedEntity:grav()
 end
 
 function advancedEntity:crushed(o)
-  if self.autoCrush and self.hurtable then
+  if self.crushable and self.hurtable then
     local oldInv, oldIF = table.clone(self.canBeInvincible), self.iFrames
     self.iFrames = 0
     for k, _ in pairs(self.canBeInvincible) do
