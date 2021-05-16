@@ -10,7 +10,7 @@ function splash:new(offx, offy, p, rot)
   self.offx = offx or 0
   self.offy = offy or 0
   self:setRectangleCollision(32, 28)
-  self.rot = math.rad(rot or 0)
+  self.rot = rot or 0
   if self.user then
     self.x = self.user.x + self.offx
     self.y = self.user.y + self.offy

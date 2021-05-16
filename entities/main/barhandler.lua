@@ -160,7 +160,7 @@ function healthHandler:draw()
       bit = 4
     end
     local tx, ty, tr = self.x-(self.rot=="x" and (8*i)*self.side or 0), 
-      self.y-(self.rot=="y" and (8*i)*self.side or 0), math.rad(self.rot=="x" and 90 or 0)
+      self.y-(self.rot=="y" and (8*i)*self.side or 0), self.rot=="x" and 90 or 0
     love.graphics.setColor(self.colorOutline[1]/255, 
       self.colorOutline[2]/255,
       self.colorOutline[3]/255, 1)
@@ -337,7 +337,7 @@ function weaponHandler:draw()
     end
     love.graphics.setColor(0, 0, 0, 1)
     local tx, ty, tr = self.x-(self.rot=="x" and (8*i)*self.side or 0), 
-      self.y-(self.rot=="y" and (8*i)*self.side or 0), math.rad(self.rot=="x" and 90 or 0)
+      self.y-(self.rot=="y" and (8*i)*self.side or 0), self.rot=="x" and 90 or 0
     self.barOutline:draw(self.quads[bit], tx, ty, tr)
     love.graphics.setColor(weapon.colors[self.current].one[1]/255, weapon.colors[self.current].one[2]/255,
       weapon.colors[self.current].one[3]/255, 1)

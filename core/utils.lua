@@ -131,6 +131,18 @@ function iterateDirs(func, path, noAppdata)
   return results
 end
 
+function checkExt(path, list)
+  local p = path:split("%.")
+  p = p[#p]:lower()
+  
+  for _, v in ipairs(list) do
+    if v:lower() == p then
+      return true
+    end
+  end
+  return false
+end
+
 function string:trimmed()
   return self:match("^%s*(.-)%s*$")
 end

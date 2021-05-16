@@ -194,10 +194,12 @@ function image:draw(x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY)
     fy = flipY
   end
   if self.quad then
-    self.image:draw(self.quad, math.floor(x or self.x), math.floor(y or self.y), r or self.r, sx or self.sx, sy or self.sy,
+    self.image:draw(self.quad, math.floor(x or self.x), math.floor(y or self.y),
+      math.rad(r or self.r), sx or self.sx, sy or self.sy,
       ox or self.ox, oy or self.oy, offX or self.offX, offY or self.offY, fx, fy)
   else
-    self.image:draw(math.floor(x or self.x), math.floor(y or self.y), r or self.r, sx or self.sx, sy or self.sy,
+    self.image:draw(math.floor(x or self.x), math.floor(y or self.y),
+      math.rad(r or self.r), sx or self.sx, sy or self.sy,
       ox or self.ox, oy or self.oy, offX or self.offX, offY or self.offY, fx, fy)
   end
 end
@@ -272,7 +274,7 @@ function animation:draw(image, x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY
     if flipY ~= nil then
       fy = flipY
     end
-    self.anim:draw(image or self.image, math.floor(x or self.x), math.floor(y or self.y), r or self.r,
+    self.anim:draw(image or self.image, math.floor(x or self.x), math.floor(y or self.y), math.rad(r or self.r),
       sx or self.sx, sy or self.sy, ox or self.ox, oy or self.oy, offX or self.offX, offY or self.offY, fx, fy)
   end
 end
@@ -380,7 +382,7 @@ function animationSet:draw(image, x, y, r, sx, sy, ox, oy, offX, offY, flipX, fl
     if flipY ~= nil then
       fy = flipY
     end
-    self.anims[self.current]:draw(image or self.image, math.floor(x or self.x), math.floor(y or self.y), r or self.r,
+    self.anims[self.current]:draw(image or self.image, math.floor(x or self.x), math.floor(y or self.y), math.rad(r or self.r),
       sx or self.sx, sy or self.sy, ox or self.ox, oy or self.oy, offX or self.offX, offY or self.offY, fx, fy)
   end
 end

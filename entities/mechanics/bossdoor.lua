@@ -325,7 +325,7 @@ function bossDoor:draw()
     if self.dir == "left" or self.dir == "right" then
       self.tex:draw(self.quad, self.x, self.y + (i*16) - 16)
     else
-      self.tex:draw(self.quad, self.x + (i*16), self.y, math.rad(90))
+      self.tex:draw(self.quad, self.x + (i*16), self.y, 90)
     end
   end
 end

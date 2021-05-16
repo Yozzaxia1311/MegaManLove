@@ -345,6 +345,25 @@ function megautils.runFSEvent(self, event, ...)
   end
 end
 
+function megautils.hasFSEvent(self, event)
+  assert(self.__index._meta, "Object provided is not a folder structure object")
+  local path = self.__index._meta.path
+  local name = path:split("/")
+  name = name[#name]
+  local file
+  if event then
+    file = path .. "/" .. name .. "." .. event .. ".lua"
+  else
+    file = path .. "/" .. name .. ".lua"
+  end
+  
+  if not megautils._fsCache[file] then
+    megautils._fsCache[file] = love.filesystem.getInfo(file) and love.filesystem.load(file) or true
+  end
+  
+  return megautils._fsCache[file] and megautils._fsCache[file] ~= true
+end
+
 function megautils._runFolderStructure(path, ...)
   local f = love.filesystem.getInfo(path)
   assert(f and f.type == "directory", "\"" .. tostring(path) .. "\" is not a valid folder structure")
@@ -475,6 +494,12 @@ function megautils._runFolderStructure(path, ...)
       doDink = doDink,
       gravDir = gravDir
     }
+  
+  for k, v in pairs(conf) do
+    if not result._meta[k] then
+      result._meta[k] = v
+    end
+  end
   
   function result:new(args)
     if not args then
@@ -705,6 +730,34 @@ function megautils._runFolderStructure(path, ...)
       megautils.runFSEvent(self, "recycle")
     else
       self.recycle = self.__index._meta.recycle
+      local conf = self.__index._meta
+      local i = 1
+      while conf["image" .. tostring(i)] do
+        self:addGFX("image" .. tostring(i), image(conf["image" .. tostring(i)])
+          :off(conf["image" .. tostring(i) .. "OffX"], conf["image" .. tostring(i) .. "OffY"])
+          :flip(conf["image" .. tostring(i) .. "FlipX"], conf["image" .. tostring(i) .. "FlipY"])
+          :rot(conf["image" .. tostring(i) .. "Rot"])
+          :origin(conf["image" .. tostring(i) .. "OriginX"], conf["image" .. tostring(i) .. "OriginX"]))
+        i = i + 1
+      end
+      i = 1
+      while conf["animation" .. tostring(i)] do
+        self:addGFX("animation" .. tostring(i), animation(conf["animation" .. tostring(i)])
+          :off(conf["animation" .. tostring(i) .. "OffX"], conf["animation" .. tostring(i) .. "OffY"])
+          :flip(conf["animation" .. tostring(i) .. "FlipX"], conf["animation" .. tostring(i) .. "FlipY"])
+          :rot(conf["animation" .. tostring(i) .. "Rot"])
+          :origin(conf["animation" .. tostring(i) .. "OriginX"], conf["animation" .. tostring(i) .. "OriginX"]))
+        i = i + 1
+      end
+      i = 1
+      while conf["animationSet" .. tostring(i)] do
+        self:addGFX("animationSet" .. tostring(i), animationSet(conf["animationSet" .. tostring(i)])
+          :off(conf["animationSet" .. tostring(i) .. "OffX"], conf["animationSet" .. tostring(i) .. "OffY"])
+          :flip(conf["animationSet" .. tostring(i) .. "FlipX"], conf["animationSet" .. tostring(i) .. "FlipY"])
+          :rot(conf["animationSet" .. tostring(i) .. "Rot"])
+          :origin(conf["animationSet" .. tostring(i) .. "OriginX"], conf["animationSet" .. tostring(i) .. "OriginX"]))
+        i = i + 1
+      end
       megautils.runFSEvent(self, "new")
     end
   end
@@ -721,16 +774,22 @@ function megautils._runFolderStructure(path, ...)
     megautils.runFSEvent(self, "begin")
   end
   
-  function result:beforeUpdate(dt)
-    megautils.runFSEvent(self, "beforeupdate", dt)
+  if megautils.hasFSEvent(result, "beforeupdate") then
+    function result:beforeUpdate(dt)
+      megautils.runFSEvent(self, "beforeupdate", dt)
+    end
   end
   
-  function result:update(dt)
-    megautils.runFSEvent(self, "update", dt)
+  if megautils.hasFSEvent(result, "update") then
+    function result:update(dt)
+      megautils.runFSEvent(self, "update", dt)
+    end
   end
   
-  function result:afterUpdate(dt)
-    megautils.runFSEvent(self, "afterupdate", dt)
+  if megautils.hasFSEvent(result, "afterupdate") then
+    function result:afterUpdate(dt)
+      megautils.runFSEvent(self, "afterupdate", dt)
+    end
   end
   
   function result:removed()
@@ -739,43 +798,83 @@ function megautils._runFolderStructure(path, ...)
     megautils.runFSEvent(self, "removed")
   end
   
-  function result:interactedWith(o, c)
-    megautils.runFSEvent(self, "interacted", o, c)
+  if megautils.hasFSEvent(result, "interacted") then
+    function result:interactedWith(o, c)
+      megautils.runFSEvent(self, "interacted", o, c)
+    end
   end
   
   if result:is(advancedEntity) then
-    function result:grav()
-      megautils.runFSEvent(self, "grav")
+    if megautils.hasFSEvent(result, "grav") then
+      function result:grav()
+        megautils.runFSEvent(self, "grav")
+      end
     end
     
-    function result:crushed(o)
-      megautils.runFSEvent(self, "crushed", o)
+    if megautils.hasFSEvent(result, "crushed") then
+      function result:crushed(o)
+        megautils.runFSEvent(self, "crushed", o)
+      end
     end
     
-    function result:hit(o)
-      megautils.runFSEvent(self, "hit", o)
+    if megautils.hasFSEvent(result, "hit") then
+      function result:hit(o)
+        megautils.runFSEvent(self, "hit", o)
+      end
     end
     
-    function result:die(o)
-      megautils.runFSEvent(self, "die", o)
+    if megautils.hasFSEvent(result, "die") then
+      function result:die(o)
+        megautils.runFSEvent(self, "die", o)
+      end
     end
     
-    function result:determineDink(o)
-      megautils.runFSEvent(self, "determinedink", o)
+    if megautils.hasFSEvent(result, "determinedink") then
+      function result:determineDink(o)
+        megautils.runFSEvent(self, "determinedink", o)
+      end
     end
     
-    function result:weaponTable(o)
-      megautils.runFSEvent(self, "weapontable", o)
+    if megautils.hasFSEvent(result, "weapontable") then
+      function result:weaponTable(o)
+        megautils.runFSEvent(self, "weapontable", o)
+      end
     end
     
-    function result:heal(o)
-      megautils.runFSEvent(self, "heal", o)
+    if megautils.hasFSEvent(result, "heal") then
+      function result:heal(o)
+        megautils.runFSEvent(self, "heal", o)
+      end
     end
   end
   
   local i = 1
   while conf["resource" .. tostring(i)] do
     megautils.loadResource(unpack(conf["resource" .. tostring(i)]))
+    i = i + 1
+  end
+  i = 1
+  while conf["image" .. tostring(i)] do
+    if not megautils.getResource(conf["image" .. tostring(i)]) and
+      checkExt(conf["image" .. tostring(i)], {"png", "jpeg", "jpg", "bmp", "tga", "hdr", "pic", "exr"}) then
+      megautils.loadResource(conf["image" .. tostring(i)], conf["image" .. tostring(i)])
+    end
+    i = i + 1
+  end
+  i = 1
+  while conf["animation" .. tostring(i)] do
+    if not megautils.getResource(conf["animation" .. tostring(i)]) and
+      checkExt(conf["animation" .. tostring(i)], {"anim"}) then
+      megautils.loadResource(conf["animation" .. tostring(i)], conf["animation" .. tostring(i)])
+    end
+    i = i + 1
+  end
+  i = 1
+  while conf["animationSet" .. tostring(i)] do
+    if not megautils.getResource(conf["animationSet" .. tostring(i)]) and
+      checkExt(conf["animationSet" .. tostring(i)], {"animset"}) then
+      megautils.loadResource(conf["animationSet" .. tostring(i)], conf["animationSet" .. tostring(i)])
+    end
     i = i + 1
   end
   
@@ -871,19 +970,6 @@ function megautils.loadResource(...)
   local path = args[1]
   local nick = args[2]
   local t = ""
-  if type(path) == "string" then
-    t = path:split("%.")
-    t = t[#t]
-  end
-  
-  local function checkExt(ext, list)
-    for _, v in ipairs(list) do
-      if ext:lower() == v then
-        return true
-      end
-    end
-    return false
-  end
   
   if type(args[1]) == "number" and type(args[2]) == "number" then
     local grid
@@ -904,17 +990,17 @@ function megautils.loadResource(...)
     end
     loader.load(nil, nick, t, grid, locked)
     return loader.get(nick)
-  elseif checkExt(t, {"anim"}) then
+  elseif checkExt(path, {"anim"}) then
     t = "anim"
     locked = args[3]
     loader.load(path, nick, t, nil, locked)
     return loader.get(nick)
-  elseif checkExt(t, {"animset"}) then
+  elseif checkExt(path, {"animset"}) then
     t = "animSet"
     locked = args[3]
     loader.load(path, nick, t, nil, locked)
     return loader.get(nick)
-  elseif checkExt(t, {"png", "jpeg", "jpg", "bmp", "tga", "hdr", "pic", "exr"}) then
+  elseif checkExt(path, {"png", "jpeg", "jpg", "bmp", "tga", "hdr", "pic", "exr"}) then
     local ext = t
     t = "texture"
     if #args == 4 then
@@ -926,7 +1012,8 @@ function megautils.loadResource(...)
       loader.load(path, nick, t, nil, locked)
       return loader.get(nick)
     end
-  elseif checkExt(t, {"ogg", "mp3", "wav", "flac", "oga", "ogv", "xm", "it", "mod", "mid", "669", "amf", "ams", "dbm", "dmf", "dsm", "far",
+  elseif checkExt(path, {"ogg", "mp3", "wav", "flac", "oga", "ogv", "xm", "it",
+      "mod", "mid", "669", "amf", "ams", "dbm", "dmf", "dsm", "far",
       "j2b", "mdl", "med", "mt2", "mtm", "okt", "psm", "s3m", "stm", "ult", "umx", "abc", "pat"}) then
     if type(args[3]) == "string" then
       t = args[3]
