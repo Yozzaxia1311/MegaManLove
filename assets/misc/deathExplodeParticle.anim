@@ -1,0 +1,4 @@
+image: assets/misc/particles.png
+quad: 0, 46, 24, 24
+frames: 1-5, 1
+durations: 0.065

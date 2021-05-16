@@ -2,11 +2,11 @@ megautils.loadResource("assets/misc/particles.png", "particles", true)
 megautils.loadResource("assets/misc/particlesOutline.png", "particlesOutline", true)
 megautils.loadResource("assets/misc/particlesOne.png", "particlesOne", true)
 megautils.loadResource("assets/misc/particlesTwo.png", "particlesTwo", true)
-megautils.loadResource(24, 0, 8, 8, "smallHealthGrid", true)
-megautils.loadResource(40, 0, 16, 16, "healthGrid", true)
-megautils.loadResource(72, 0, 8, 8, "smallEnergyGrid", true)
-megautils.loadResource(88, 0, 16, 12, "energyGrid", true)
-megautils.loadResource(72, 12, 16, 16, "tankGrid", true)
+megautils.loadResource("assets/misc/smallHealth.anim", "smallHealthAnim", true)
+megautils.loadResource("assets/misc/health.anim", "healthAnim", true)
+megautils.loadResource("assets/misc/smallEnergy.anim", "smallEnergyAnim", true)
+megautils.loadResource("assets/misc/energy.anim", "energyAnim", true)
+megautils.loadResource("assets/misc/tanks.animset", "tankAnims", true)
 
 pickup = entity:extend()
 
@@ -57,7 +57,7 @@ end
 
 function pickup:taken(p) end
 
-function pickup:afterUpdate()
+function pickup:_afterUpdate(dt)
   if self.fwp then
     self:setGravityMultiplier("flipWithPlayer", megaMan.mainPlayer and megaMan.mainPlayer.gravityMultipliers.gravityFlip or self.gravDir)
   end
@@ -88,6 +88,8 @@ function pickup:afterUpdate()
       megautils.removeq(self)
     end
   end
+  
+  self:afterUpdate(dt)
 end
 
 smallHealth = pickup:extend()
@@ -107,7 +109,7 @@ function smallHealth:new(x, y, despawn, gd, fwp, id, path)
   self:setRectangleCollision(8, 6)
   self.t = megautils.getResource("particles")
   self.tOutline = megautils.getResource("particlesOutline")
-  self.anim = animation("smallHealthGrid", {"1-2", 1}, 1/8)
+  self.anim = animation("smallHealthAnim")
 end
 
 function smallHealth:taken(p)
@@ -115,7 +117,6 @@ function smallHealth:taken(p)
 end
 
 function smallHealth:update()
-  smallHealth.super.update(self)
   self.anim:update(1/60)
 end
 
@@ -152,7 +153,7 @@ function health:new(x, y, despawn, gd, fwp, id, path)
   self:setRectangleCollision(16, 14)
   self.t = megautils.getResource("particles")
   self.tOutline = megautils.getResource("particlesOutline")
-  self.anim = animation("healthGrid", {"1-2", 1}, 1/8)
+  self.anim = animation("healthAnim")
 end
 
 function health:taken(p)
@@ -160,7 +161,6 @@ function health:taken(p)
 end
 
 function health:update()
-  health.super.update(self)
   self.anim:update(1/60)
 end
 
@@ -195,7 +195,7 @@ function smallEnergy:new(x, y, despawn, gd, fwp, id, path)
   self.x = x or 0
   self.y = y or 0
   self:setRectangleCollision(8, 6)
-  self.anim = animation("smallEnergyGrid", {"1-2", 1}, 1/8)
+  self.anim = animation("smallEnergyAnim")
   self.texOutline = megautils.getResource("particlesOutline")
   self.texOne = megautils.getResource("particlesOne")
   self.texTwo = megautils.getResource("particlesTwo")
@@ -206,7 +206,6 @@ function smallEnergy:taken(p)
 end
 
 function smallEnergy:update()
-  smallEnergy.super.update(self)
   self.anim:update(1/60)
 end
 
@@ -250,7 +249,7 @@ function energy:new(x, y, despawn, gd, fwp, id, path)
   self.x = x or 0
   self.y = y or 0
   self:setRectangleCollision(16, 10)
-  self.anim = animation("energyGrid", {"1-2", 1}, 1/8)
+  self.anim = animation("energyAnim")
   self.texOutline = megautils.getResource("particlesOutline")
   self.texOne = megautils.getResource("particlesOne")
   self.texTwo = megautils.getResource("particlesTwo")
@@ -261,7 +260,6 @@ function energy:taken(p)
 end
 
 function energy:update()
-  energy.super.update(self)
   self.anim:update(1/60)
 end
 
@@ -369,7 +367,8 @@ function eTank:new(x, y, despawn, gd, fwp, id, path)
   self.x = x or 0
   self.y = y or 0
   self:setRectangleCollision(16, 15)
-  self.anim = animation("tankGrid", {1, 1, 2, 2}, 1/8)
+  self.anim = animationSet("tankAnims")
+  self.anim:set("eTank")
   self.texOutline = megautils.getResource("particlesOutline")
   self.texOne = megautils.getResource("particlesOne")
   self.texTwo = megautils.getResource("particlesTwo")
@@ -381,7 +380,6 @@ function eTank:taken(p)
 end
 
 function eTank:update()
-  eTank.super.update(self)
   self.anim:update(1/60)
 end
 
@@ -425,7 +423,8 @@ function wTank:new(x, y, despawn, gd, fwp, id, path)
   self.x = x or 0
   self.y = y or 0
   self:setRectangleCollision(16, 15)
-  self.anim = animation("tankGrid", {2, 2, 2, 1}, 1/8)
+  self.anim = animationSet("tankAnims")
+  self.anim:set("wTank")
   self.texOutline = megautils.getResource("particlesOutline")
   self.texOne = megautils.getResource("particlesOne")
   self.texTwo = megautils.getResource("particlesTwo")
@@ -436,8 +435,7 @@ function wTank:taken(p)
   megautils.playSoundFromFile("assets/sfx/life.ogg")
 end
 
-function wTank:update(dt)
-  wTank.super.update(self)
+function wTank:update()
   self.anim:update(1/60)
 end
 

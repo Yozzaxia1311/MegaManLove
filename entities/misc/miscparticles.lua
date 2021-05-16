@@ -1,7 +1,7 @@
 megautils.loadResource("assets/misc/particles.png", "particles", true)
-megautils.loadResource(8, 8, "slideParticleGrid", true)
-megautils.loadResource(0, 46, 24, 24, "deathExplodeParticleGrid", true)
-megautils.loadResource(108, 28, 5, 8, "damageSteamGrid", true)
+megautils.loadResource("assets/misc/slideParticle.anim", "slideParticleAnim", true)
+megautils.loadResource("assets/misc/deathExplodeParticle.anim", "deathExplodeParticleAnim", true)
+megautils.loadResource("assets/misc/damageSteam.anim", "damageSteamAnim", true)
 
 particle = entity:extend()
 
@@ -18,6 +18,7 @@ function particle:new(user)
     self:setRectangleCollision(8, 8)
     self.autoCollision = {global = true}
     self.autoGravity = {global = false}
+    self.blockCollision.global = false
     self.removeWhenOutside = true
     self.doAutoCollisionBeforeUpdate = true
     self.flipWithUser = true
@@ -34,7 +35,11 @@ function particle:grav()
   self.velY = math.clamp(self.velY + self.gravity, -self.maxFallingSpeed, self.maxFallingSpeed)
 end
 
-function particle:beforeUpdate()
+function particle:_beforeUpdate(dt)
+  for i = 1, #self.gfx do
+    self.gfx[i]:_update(dt)
+  end
+  
   if self.flipWithUser and self.user and self.user.gravityMultipliers then
     self:setGravityMultiplier("flipWithUser", self.user.gravityMultipliers.gravityFlip or 1)
   end
@@ -48,13 +53,15 @@ function particle:beforeUpdate()
   end
 end
 
-function particle:afterUpdate()
+function particle:_afterUpdate(dt)
   if not self.doAutoCollisionBeforeUpdate and checkFalse(self.autoCollision) and not self._didCol then
     collision.doCollision(self, self.noSlope)
   end
   if self.removeWhenOutside and megautils.outside(self) then
     megautils.removeq(self)
   end
+  
+  self:afterUpdate(dt)
 end
 
 slideParticle = particle:extend()
@@ -69,26 +76,20 @@ function slideParticle:new(x, y, p, side)
   self.side = side or 1
   
   if self.recycling then
-    self.anim:gotoFrame(1)
+    self:getGFXByName("anim"):gotoFrame(1)
   else
     self:setRectangleCollision(8, 8)
-    self.tex = megautils.getResource("particles")
-    self.anim = animation("slideParticleGrid", {"1-3", 1}, 1/10)
+    self:addGFX("anim", animation("slideParticleAnim"):flip(self.side == 1, self.gravity < 0))
     self.autoCollision.global = false
     self.recycle = true
   end
 end
 
 function slideParticle:update()
-  self.anim:update(1/60)
-  if self.anim:looped() then
+  self:getGFXByName("anim"):flip(self.side == 1, self.gravity < 0)
+  if self:getGFXByName("anim"):looped() then
     megautils.removeq(self)
   end
-end
-
-function slideParticle:draw()
-  self.tex:draw(self.anim, math.floor(self.x), math.floor(self.y),
-    nil, nil, nil, nil, nil, nil, nil, self.side == 1, self.gravity < 0)
 end
 
 damageSteam = particle:extend()
@@ -102,26 +103,20 @@ function damageSteam:new(x, y, p)
   self.y = y or 0
   
   if self.recycling then
-    self.anim:gotoFrame(1)
+    self:getGFXByName("anim"):gotoFrame(1)
   else
     self:setRectangleCollision(5, 8)
-    self.tex = megautils.getResource("particles")
-    self.anim = animation("damageSteamGrid", {"1-3", 1}, 1/8)
+    self:addGFX("anim", animation("damageSteamAnim"):flip(false, self.gravity < 0))
     self.autoCollision.global = false
     self.recycle = true
   end
 end
 
 function damageSteam:update()
-  self.anim:update(1/60)
-  if self.anim:looped() then
+  self:getGFXByName("anim"):flip(false, self.gravity < 0)
+  if self:getGFXByName("anim"):looped() then
     megautils.removeq(self)
   end
-end
-
-function damageSteam:draw()
-  self.tex:draw(self.anim, math.floor(self.x), math.floor(self.y),
-    nil, nil, nil, nil, nil, nil, nil, nil, self.gravity < 0)
 end
 
 airBubble = particle:extend()
@@ -133,8 +128,7 @@ function airBubble:new(x, y, p)
   
   if not self.recycling then
     self:setRectangleCollision(2, 8)
-    self.tex = megautils.getResource("particles")
-    self.quad = quad(104, 28, 4, 4)
+    self:addGFX("tex", image("particles", quad(104, 28, 4, 4)))
     self.recycle = true
   end
   
@@ -160,10 +154,7 @@ function airBubble:update(dt)
   if self:check() then
     megautils.removeq(self)
   end
-end
-
-function airBubble:draw()
-  self.tex:draw(self.quad, math.floor(self.x)-self.off, math.floor(self.y))
+  self:getGFXByName("tex"):off(-self.off, 0)
 end
 
 harm = particle:extend()
@@ -180,8 +171,7 @@ function harm:new(p, time)
   end
   
   self:setRectangleCollision(24, 24)
-  self.tex = megautils.getResource("particles")
-  self.quad = quad(0, 22, 24, 24)
+  self:addGFX("tex", image("particles", quad(0, 22, 24, 24)))
   self.timer = 0
   self.maxTime = time or 32
   self.autoCollision.global = false
@@ -198,10 +188,6 @@ function harm:update()
   end
 end
 
-function harm:draw()
-  self.tex:draw(self.quad, math.floor(self.x), math.floor(self.y))
-end
-
 deathExplodeParticle = particle:extend()
 
 deathExplodeParticle.autoClean = false
@@ -212,18 +198,9 @@ function deathExplodeParticle:new(x, y, p, angle, spd)
   self.x = x or 0
   self.y = y or 0
   self:setRectangleCollision(24, 24)
-  self.tex = megautils.getResource("particles")
-  self.anim = animation("deathExplodeParticleGrid", {"1-5", 1}, 1/10)
+  self:addGFX("anim", animation("deathExplodeParticleAnim"))
   self.velX = megautils.calcX(angle or 0)*(spd or 1)
   self.velY = megautils.calcY(angle or 0)*(spd or 1)
-end
-
-function deathExplodeParticle:update(dt)
-  self.anim:update(1/60)
-end
-
-function deathExplodeParticle:draw()
-  self.tex:draw(self.anim, math.floor(self.x), math.floor(self.y))
 end
 
 function deathExplodeParticle.createExplosion(x, y, p)
@@ -244,8 +221,7 @@ function absorbParticle:new(x, y, p, spd)
   self.x = x or 0
   self.y = y or 0
   self:setRectangleCollision(24, 24)
-  self.tex = megautils.getResource("particles")
-  self.anim = animation("deathExplodeParticleGrid", {"1-5", 1}, 1/10)
+  self:addGFX("anim", animation("deathExplodeParticleAnim"):origin(12, 12))
   self.startX = x
   self.startY = y
   self.pos = 0
@@ -264,11 +240,6 @@ function absorbParticle:update()
   if not self.user or self.pos == 1 or self.user.isRemoved then
     megautils.removeq(self)
   end
-  self.anim:update(1/60)
-end
-
-function absorbParticle:draw()
-  self.tex:draw(self.anim, math.floor(self.x), math.floor(self.y), 0, 1, 1, 12, 12)
 end
 
 function absorbParticle.createAbsorbtion(towards, spd)
@@ -312,33 +283,27 @@ smallBlast = particle:extend()
 
 smallBlast.autoClean = false
 
-function smallBlast:new(x, y, p, spd)
+function smallBlast:new(x, y, p)
   smallBlast.super.new(self, p)
   
   self.x = x or 0
   self.y = y or 0
-  self.spd = spd or 0.065
   
   if self.recycling then
-    self.anim:gotoFrame(1)
+    self:getGFXByName("anim"):gotoFrame(1)
   else
     self:setRectangleCollision(24, 24)
     self.tex = megautils.getResource("particles")
-    self.anim = animation("deathExplodeParticleGrid", {"1-5", 1}, self.spd)
+    self:addGFX("anim", animation("deathExplodeParticleAnim"))
     self.autoCollision.global = false
     self.recycle = true
   end
 end
 
 function smallBlast:update()
-  self.anim:update(1/60)
-  if self.anim:looped() then
+  if self:getGFXByName("anim"):looped() then
     megautils.removeq(self)
   end
-end
-
-function smallBlast:draw()
-  self.tex:draw(self.anim, math.floor(self.x), math.floor(self.y))
 end
 
 blast = particle:extend()
@@ -377,7 +342,7 @@ function blast:check()
   end
 end
 
-function blast:update(dt)
+function blast:update()
   self.timer = math.min(self.timer+1, 5)
   if self.timer == 5 then
     self.timer = 0

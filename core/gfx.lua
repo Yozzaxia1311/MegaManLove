@@ -165,6 +165,8 @@ end
 
 function image:setQuad(q)
   self.quad = q
+  
+  return self
 end
 
 function image:getQuad()
@@ -192,23 +194,26 @@ function image:draw(x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY)
     fy = flipY
   end
   if self.quad then
-    self.image:draw(self.quad, math.floor(x or self.x), math.floor(y or self.y), r or self.r, sx or self.sx, sy or self.sy,
+    self.image:draw(self.quad, math.floor(x or self.x), math.floor(y or self.y),
+      r or self.r, sx or self.sx, sy or self.sy,
       ox or self.ox, oy or self.oy, offX or self.offX, offY or self.offY, fx, fy)
   else
-    self.image:draw(math.floor(x or self.x), math.floor(y or self.y), r or self.r, sx or self.sx, sy or self.sy,
+    self.image:draw(math.floor(x or self.x), math.floor(y or self.y),
+      r or self.r, sx or self.sx, sy or self.sy,
       ox or self.ox, oy or self.oy, offX or self.offX, offY or self.offY, fx, fy)
   end
 end
 
 animation = gfx:extend()
 
-function animation:new(grid, frames, durations, onLoop, img, useDelta, framerate,
+function animation:new(res, useDelta, framerate,
     x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, color, syncPos)
   animation.super.new(self, x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, color, syncPos)
   
-  self.anim = anim8.newAnimation(
-    type(grid) == "string" and megautils.getResource(grid)(unpack(frames)) or grid(unpack(frames)), durations or 1, onLoop)
-  self.image = type(img) == "string" and megautils.getResource(img) or img
+  local rt = type(res) == "string" and megautils.getResourceTable(res) or res
+  
+  self.anim = anim8.newAnimation(rt.data(unpack(rt.frames)), rt.durations or 1, rt.onLoop)
+  self.image = rt.img
   self.useDelta = useDelta == true
   self.framerate = framerate or 1/60
 end
@@ -276,15 +281,25 @@ end
 
 animationSet = gfx:extend()
 
-function animationSet:new(img, useDelta, framerate,
+function animationSet:new(res, useDelta, framerate,
     x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, color, syncPos)
   animationSet.super.new(self, x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, color, syncPos)
   
+  local rt = type(res) == "string" and megautils.getResourceTable(res) or res
+  
   self.anims = {}
   self.current = nil
-  self.image = type(img) == "string" and megautils.getResource(img) or img
+  self.image = rt.img
   self.useDelta = useDelta == true
   self.framerate = framerate or 1/60
+  
+  for k, v in pairs(rt.sets) do
+    self:add(k, animation(v))
+  end
+  
+  if rt.default then
+    self:set(rt.default)
+  end
 end
 
 function animationSet:add(name, anim)
@@ -305,6 +320,8 @@ function animationSet:set(name, f, t)
     self:gotoFrame(f or 1, t)
     self:resume()
   end
+  
+  return self
 end
 
 function animationSet:looped()
@@ -313,6 +330,8 @@ end
 
 function animationSet:pause()
   self.anims[self.current]:pause()
+  
+  return self
 end
 
 function animationSet:resume()
@@ -320,15 +339,17 @@ function animationSet:resume()
 end
 
 function animationSet:isPaused()
-  return self.anims[self.current].status == "paused"
+  return self.anims[self.current]:isPaused()
 end
 
 function animationSet:time(a)
-  return self.anims[a or self.current].timer
+  return self.anims[a or self.current]:time()
 end
 
 function animationSet:setTime(t, a)
-  self.anims[a or self.current].timer = t
+  self.anims[a or self.current]:setTime(t)
+  
+  return self
 end
 
 function animationSet:frame(a)
@@ -344,6 +365,8 @@ function animationSet:gotoFrame(f, t)
   if t then
     self:setTime(t)
   end
+  
+  return self
 end
 
 function animationSet:length(a)

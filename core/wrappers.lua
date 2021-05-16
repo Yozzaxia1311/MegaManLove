@@ -24,8 +24,10 @@ function imageWrapper:getDimensions()
 end
 
 function imageWrapper:release()
-  self.image:release()
-  self.image = nil
+  if self.image then
+    self.image:release()
+    self.image = nil
+  end
 end
 
 function imageWrapper:draw(x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, what)
@@ -51,7 +53,7 @@ function imageWrapper:draw(x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, wh
       oy = vh - oy
     end
     
-    love.graphics.draw(self.image, x + offX, y + offY, r, sx, sy, ox, oy)
+    love.graphics.draw(self.image, x + offX, y + offY, math.rad(r), sx, sy, ox, oy)
   end
 end
 
@@ -95,8 +97,10 @@ function imageData:setPixel(x, y, r, g, b, a)
 end
 
 function imageData:release()
-  self.imageData:release()
-  self.imageData = nil
+  if self.imageData then
+    self.imageData:release()
+    self.imageData = nil
+  end
 end
 
 quad = class:extend()
@@ -129,8 +133,10 @@ function quad:setViewport(x, y, w, h)
 end
 
 function quad:release()
-  self.quad:release()
-  self.quad = nil
+  if self.quad then
+    self.quad:release()
+    self.quad = nil
+  end
 end
 
 function quad:fillFromImage(image)
@@ -154,7 +160,7 @@ function quad:draw(image, x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY)
     oy = vh - oy
   end
   
-  love.graphics.draw(image.image, self.quad, x + offX, y + offY, r, sx, sy, ox, oy)
+  love.graphics.draw(image.image, self.quad, x + offX, y + offY, math.rad(r), sx, sy, ox, oy)
 end
 
 spriteBatch = class:extend()
@@ -219,5 +225,5 @@ function spriteBatch:getColor()
 end
 
 function spriteBatch:draw(x, y, r, sx, sy, ox, oy, kx, ky)
-  love.graphics.draw(self.batch, x, y, r, sx, sy, ox, oy, kx, ky)
+  love.graphics.draw(self.batch, x, y, math.rad(r), sx, sy, ox, oy, kx, ky)
 end

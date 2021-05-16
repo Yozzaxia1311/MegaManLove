@@ -722,7 +722,7 @@ function entitySystem:update(dt)
     local v = self.updates[i]
     if ((type(v.noFreeze) == "table" and table.intersects(self.frozen, v.noFreeze, true)) or v.noFreeze == true or not checkTrue(self.frozen)) and
       not v.isRemoved and v.update and checkFalse(v.canUpdate) then
-      v:update(dt)
+      v:_update(dt)
       if not v.invisibleToHash then v:updateHash() end
     end
   end
@@ -734,7 +734,7 @@ function entitySystem:update(dt)
     local v = self.updates[i]
     if ((type(v.noFreeze) == "table" and table.intersects(self.frozen, v.noFreeze, true)) or v.noFreeze or not checkTrue(self.frozen)) and
       not v.isRemoved and v.afterUpdate and checkFalse(v.canUpdate) then
-      v:afterUpdate(dt)
+      v:_afterUpdate(dt)
       if not v.invisibleToHash then v:updateHash() end
     end
     v.justAddedIn = false
@@ -823,6 +823,8 @@ function basicEntity:addGFX(name, gfx, noSync)
     gfx.syncPos = not noSync and self
     self.gfx[#self.gfx + 1] = gfx
   end
+  
+  return gfx
 end
 
 function basicEntity:removeGFX(gfx)
@@ -1139,6 +1141,14 @@ function basicEntity:_beforeUpdate(dt)
   self:beforeUpdate(dt)
 end
 
+function basicEntity:_update(dt)
+  self:update(dt)
+end
+
+function basicEntity:_afterUpdate(dt)
+  self:afterUpdate(dt)
+end
+
 function basicEntity:_draw()
   for i = 1, #self.gfx do
     self.gfx[i]:_draw()
@@ -1392,17 +1402,17 @@ function mapEntity:draw()
   love.graphics.pop()
 end
 
-function mapEntity.register(n, f, l, lock)
+function mapEntity.register(n, f, l, lock, ...)
   local done = false
   for i=1, #mapEntity.registered do
     if mapEntity.registered[i].layer == (l or 0) then
-      mapEntity.registered[i].data[#mapEntity.registered[i].data+1] = {func=f, name=n, locked=lock}
+      mapEntity.registered[i].data[#mapEntity.registered[i].data+1] = {func=f, name=n, locked=lock, args={...}}
       done = true
       break
     end
   end
   if not done then
-    mapEntity.registered[#mapEntity.registered+1] = {layer=l or 0, data={{func=f, name=n, locked=lock}}}
+    mapEntity.registered[#mapEntity.registered+1] = {layer=l or 0, data={{func=f, name=n, locked=lock, args={...}}}}
     mapEntity.doSort = true
   end
 end
@@ -1467,7 +1477,7 @@ function mapEntity.add(ol, map)
       end
       for j=1, #layer.data do
         if layer.data[j].name == v.name then
-          layer.data[j].func(v, map)
+          layer.data[j].func(v, map, unpack(layer.data[j].args))
         end
       end
     end
@@ -1529,11 +1539,16 @@ function advancedEntity:new()
     self.barOffsetX = (view.w - 24)
     self.barOffsetY = 80
     self.applyAutoFace = true
+    self.flipFace = false
+    self.applyGravFace = true
+    self.flipGravFace = false
+    self.gravFace = self.gravity >= 0 and 1 or -1
+    self.autoGravFace = self.gravFace
     self.pierceType = pierce.PIERCE
     self.autoCollision = {global = true}
     self.autoGravity = {global = true}
     self.doAutoCollisionBeforeUpdate = false
-    self.autoCrush = true
+    self.crushable = true
     self.blockCollision.global = true
     self.maxFallingSpeed = 7
     self.noSlope = false
@@ -1589,7 +1604,7 @@ function advancedEntity:grav()
 end
 
 function advancedEntity:crushed(o)
-  if self.autoCrush and self.hurtable then
+  if self.crushable and self.hurtable then
     local oldInv, oldIF = table.clone(self.canBeInvincible), self.iFrames
     self.iFrames = 0
     for k, _ in pairs(self.canBeInvincible) do
@@ -1609,8 +1624,9 @@ end
 
 function advancedEntity:hit(o) end
 function advancedEntity:die(o) end
-function advancedEntity:determineDink(o) end
+function advancedEntity:determineDink(o) return checkTrue(self.canBeInvincible) end
 function advancedEntity:weaponTable(o) end
+function advancedEntity:heal(o) end
 
 function advancedEntity:beforeUpdate()
   if self.flipWithPlayer and megaMan.mainPlayer then
@@ -1628,6 +1644,12 @@ function advancedEntity:beforeUpdate()
   self.autoFace = s or self.autoFace
   if self.applyAutoFace then
     self.side = self.autoFace
+  end
+  if self.applyAutoGravFace then
+    self.gravFace = self.autoGravFace
+  end
+  for i = 1, #self.gfx do
+    self.gfx[i]:flip(self.side == (self.flipFace and -1 or 1), (self.gravity * (self.flipGravFace and 1 or -1)) >= 0)
   end
   self.closest = n
   self:updateFlash()
@@ -1733,7 +1755,9 @@ function advancedEntity:interactedWith(o, c)
         megautils.playSoundFromFile(self.soundOnHit)
       end
     end
-  else
+  elseif self.changeHealth > 0 then
+    self:heal(o)
+    
     if self.healthHandler then
       self.healthHandler:updateThis(self.healthHandler.health + self.changeHealth)
     else
@@ -1854,8 +1878,6 @@ function bossEntity:skip()
   megautils.removeq(self)
   return true
 end
-
-function bossEntity:act() end
 
 function bossEntity:start()
   if self._subState == 0 then
@@ -1996,7 +2018,7 @@ function bossEntity:bossIntro()
   end
 end
 
-function bossEntity:update()
+function bossEntity:_update()
   if self.doBossIntro then
     self:bossIntro()
   else
@@ -2032,7 +2054,7 @@ function bossEntity:update()
         end
       end
     elseif self.didIntro then
-      self:act()
+      self:update()
     end
   end
   self.canDraw.firstFrame = nil

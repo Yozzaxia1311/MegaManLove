@@ -300,18 +300,660 @@ end
 
 megautils._ranFiles = {}
 
-function megautils.runFile(path, runOnce)
+function megautils.runFile(path, runOnce, ...)
   if runOnce then
     if not table.icontains(megautils._ranFiles, path) then
       megautils._ranFiles[#megautils._ranFiles+1] = path
-      return love.filesystem.load(path)()
+      if love.filesystem.getInfo(path).type == "directory" then
+        return megautils._runFolderStructure(path, ...)
+      else
+        return love.filesystem.load(path)(...)
+      end
     end
   else
     if not table.icontains(megautils._ranFiles, path) then
       megautils._ranFiles[#megautils._ranFiles+1] = path
     end
-    return love.filesystem.load(path)()
+    if love.filesystem.getInfo(path).type == "directory" then
+      return megautils._runFolderStructure(path, ...)
+    else
+      return love.filesystem.load(path)(...)
+    end
   end
+end
+
+megautils._fsCache = {}
+
+function megautils.runFSEvent(self, event, ...)
+  assert(self.__index._meta, "Object provided is not a folder structure object")
+  local path = self.__index._meta.path
+  local name = path:split("/")
+  name = name[#name]
+  local file
+  if event then
+    file = path .. "/" .. name .. "." .. event .. ".lua"
+  else
+    file = path .. "/" .. name .. ".lua"
+  end
+  
+  if not megautils._fsCache[file] then
+    megautils._fsCache[file] = love.filesystem.getInfo(file) and love.filesystem.load(file) or true
+  end
+  
+  if megautils._fsCache[file] ~= true then
+    return megautils._fsCache[file](self, self.__index.super, ...)
+  end
+end
+
+function megautils.hasFSEvent(self, event)
+  assert(self.__index._meta, "Object provided is not a folder structure object")
+  local path = self.__index._meta.path
+  local name = path:split("/")
+  name = name[#name]
+  local file
+  if event then
+    file = path .. "/" .. name .. "." .. event .. ".lua"
+  else
+    file = path .. "/" .. name .. ".lua"
+  end
+  
+  if not megautils._fsCache[file] then
+    megautils._fsCache[file] = love.filesystem.getInfo(file) and love.filesystem.load(file) or true
+  end
+  
+  return megautils._fsCache[file] and megautils._fsCache[file] ~= true
+end
+
+function megautils._runFolderStructure(path, ...)
+  local f = love.filesystem.getInfo(path)
+  assert(f and f.type == "directory", "\"" .. tostring(path) .. "\" is not a valid folder structure")
+  
+  local conf = love.filesystem.getInfo(path .. "/conf.txt") and parseConf(path .. "/conf.txt") or {}
+  
+  local name = path:split("/")
+  name = name[#name]
+  local baseClass = conf.baseClass or "advancedEntity"
+  _G[name] = _G[baseClass]:extend()
+  local result = _G[name]
+  
+  iterateDirs(function(ff, pp)
+      if ff:split("%.")[1] == name then
+        megautils._fsCache[pp] = love.filesystem.load(pp)
+      end
+    end, path, true)
+  
+  local autoClean = conf.autoClean == nil or conf.autoClean
+  local collision
+  local enemyWeapon = conf.enemyWeapon == nil or conf.enemyWeapon
+  local register = conf.register == nil or conf.register
+  local _spawner = conf.spawner or
+    ((not result:is(weapon) and not result:is(particle)) and "regular" or "none")
+  if _spawner == "none" then
+    _spawner = nil
+  end
+  local interval = 120
+  if type(_spawner) == "table" then
+    interval = _spawner[2]
+    _spawner = _spawner[1]
+  end
+  local recycle = conf.recycle
+  local healthBar = conf.healthBar
+  local health = conf.health
+  local x = conf.x
+  local y = conf.y
+  local mugshot = conf.mugshot
+  local bossIntroText = conf.bossIntroText
+  local stageState = conf.stageState
+  local weaponGetText = conf.weaponGetText
+  local defeatSlot = conf.defeatSlot
+  local _weapon = conf.weapon
+  local explosion = conf.explosion
+  local removeOnDeath = conf.removeOnDeath
+  local dropItem = conf.dropItem
+  local soundOnHit = conf.soundOnHit
+  local soundOnDeath = conf.soundOnDeath
+  local autoHit = conf.autoHit
+  local damage = conf.damage
+  local hurtable = conf.hurtable
+  local flipWithPlayer = conf.flipWithPlayer
+  local removeWhenOutside = conf.removeWhenOutside
+  local removeHealthBarWithSelf = conf.removeHealthBarWithSelf
+  local barRelativeToView = conf.barRelativeToView
+  local barOffsetX = conf.barOffsetX
+  local barOffsetY = conf.barOffsetY
+  local applyAutoFace = conf.applyAutoFace
+  local flipFace = conf.flipFace
+  local pierceType = conf.pierceType
+  local autoCollision = conf.autoCollision
+  local autoGravity = conf.autoGravity
+  local flipWithUser = conf.flipWithUser
+  local crushable = conf.crushable
+  local blockCollision = conf.blockCollision
+  local maxFallingSpeed = conf.maxFallingSpeed
+  local sound = conf.sound
+  local soundOnDink = conf.soundOnDink
+  local weaponGroup = conf.weaponGroup
+  local doDink = conf.doDink
+  local gravDir = conf.gravDir
+  local spawnOffX = conf.spawnOffX
+  local spawnOffY = conf.spawnOffY
+  local invincible = conf.invincible
+  local canStandSolid = conf.canStandSolid
+  local snapToMovingFloor = conf.snapToMovingFloor
+  
+  if conf.collision then
+    if type(conf.collision) == "table" then
+      if conf.collision[2] then
+        collision = {type = "rect", w = conf.collision[1], h = conf.collision[2]}
+      else
+        collision = {type = "circle", r = conf.collision[1], w = conf.collision[1] * 2, h = conf.collision[1] * 2}
+      end
+    else
+      if not megautils.getResource(conf.collision) then
+        megautils.loadResource(conf.collision, conf.collision, conf.autoClean)
+      end
+      local w, h = megautils.getResource(conf.collision):getDimensions()
+      collision = {type = "image", img = conf.collision, w = w, h = h}
+    end
+  end
+  
+  result._meta = {
+      path = path,
+      name = name,
+      collision = collision,
+      enemyWeapon = enemyWeapon,
+      baseClass = baseClass,
+      recycle = recycle,
+      healthBar = healthBar,
+      health = health,
+      x = x,
+      y = y,
+      mugshot = mugshot,
+      bossIntroText = bossIntroText,
+      stageState = stageState,
+      weaponGetText = weaponGetText,
+      defeatSlot = defeatSlot,
+      weapon = _weapon,
+      explosion = explosion,
+      removeOnDeath = removeOnDeath,
+      dropItem = dropItem,
+      soundOnHit = soundOnHit,
+      soundOnDeath = soundOnDeath,
+      autoHit = autoHit,
+      damage = damage,
+      hurtable = hurtable,
+      flipWithPlayer = flipWithPlayer,
+      removeWhenOutside = removeWhenOutside,
+      removeHealthBarWithSelf = removeHealthBarWithSelf,
+      barRelativeToView = barRelativeToView,
+      barOffsetX = barOffsetX,
+      barOffsetY = barOffsetY,
+      applyAutoFace = applyAutoFace,
+      flipFace = flipFace,
+      pierceType = pierceType,
+      autoCollision = autoCollision,
+      autoGravity = autoGravity,
+      flipWithUser = flipWithUser,
+      crushable = crushable,
+      blockCollision = blockCollision,
+      maxFallingSpeed = maxFallingSpeed,
+      sound = sound,
+      soundOnDink = soundOnDink,
+      weaponGroup = weaponGroup,
+      doDink = doDink,
+      gravDir = gravDir,
+      spawnOffX = spawnOffX,
+      spawnOffY = spawnOffY,
+      invincible = invincible,
+      canStandSolid = canStandSolid,
+      snapToMovingFloor = snapToMovingFloor
+    }
+  
+  for k, v in pairs(conf) do
+    if not result._meta[k] then
+      result._meta[k] = v
+    end
+  end
+  
+  function result:new(args)
+    if not args then
+      args = {}
+    end
+    
+    if self:is(weapon) then
+      self.__index.super.new(self, args.user, args.enemyWeapon or self.__index._meta.enemyWeapon)
+      
+      if not self.recycling then
+        if self.__index._meta.autoHit then
+          self.autoHit = self.__index._meta.autoHit
+        end
+        if self.__index._meta.damage then
+          self.damage = self.__index._meta.damage
+        end
+        if self.__index._meta.applyAutoFace then
+          self.applyAutoFace = self.__index._meta.applyAutoFace
+        end
+        if self.__index._meta.flipFace then
+          self.flipFace = self.__index._meta.flipFace
+        end
+        if self.__index._meta.pierceType then
+          if self.__index._meta.pierceType == "pierce" then
+            self.pierceType = pierce.PIERCE
+          elseif self.__index._meta.pierceType == "nopierce" then
+            self.pierceType = pierce.NOPIERCE
+          elseif self.__index._meta.pierceType == "pierceifkilling" then
+            self.pierceType = pierce.PIERCEIFKILLING
+          end
+        end
+        if self.__index._meta.autoCollision then
+          self.autoCollision.global = self.__index._meta.autoCollision
+        end
+        if self.__index._meta.autoGravity then
+          self.autoGravity.global = self.__index._meta.autoGravity
+        end
+        if self.__index._meta.removeWhenOutside then
+          self.removeWhenOutside = self.__index._meta.removeWhenOutside
+        end
+        if self.__index._meta.flipWithUser then
+          self.flipWithUser = self.__index._meta.flipWithUser
+        end
+        if self.__index._meta.blockCollision then
+          self.blockCollision.global = self.__index._meta.blockCollision
+        end
+        if self.__index._meta.maxFallingSpeed then
+          self.maxFallingSpeed = self.__index._meta.maxFallingSpeed
+        end
+        if self.__index._meta.sound then
+          self.sound = self.__index._meta.sound
+        end
+        if self.__index._meta.soundOnDink then
+          self.soundOnDink = self.__index._meta.soundOnDink
+        end
+        if self.__index._meta.weaponGroup then
+          self.weaponGroup = self.__index._meta.weaponGroup
+        end
+        if self.__index._meta.doDink then
+          self.doDink = self.__index._meta.doDink
+        end
+      end
+    elseif self:is(pickUp) then
+      self.__index.super.new(self, args.despawn, args.gravDir or self.__index._meta.gravDir,
+        args.flipWithPlayer or self.__index._meta.flipWithPlayer, args.id, args.map.path)
+      
+      if not self.recycling then
+        if self.__index._meta.autoCollision then
+          self.autoCollision.global = self.__index._meta.autoCollision
+        end
+        if self.__index._meta.autoGravity then
+          self.autoGravity.global = self.__index._meta.autoGravity
+        end
+        if self.__index._meta.blockCollision then
+          self.blockCollision.global = self.__index._meta.blockCollision
+        end
+        if self.__index._meta.maxFallingSpeed then
+          self.maxFallingSpeed = self.__index._meta.maxFallingSpeed
+        end
+      end
+    elseif self:is(particle) then
+      self.__index.super.new(self, args.user)
+      
+      if not self.recycling then
+        if self.__index._meta.removeWhenOutside then
+          self.removeWhenOutside = self.__index._meta.removeWhenOutside
+        end
+        if self.__index._meta.flipWithUser then
+          self.flipWithUser = self.__index._meta.flipWithUser
+        end
+        if self.__index._meta.blockCollision then
+          self.blockCollision.global = self.__index._meta.blockCollision
+        end
+        if self.__index._meta.maxFallingSpeed then
+          self.maxFallingSpeed = self.__index._meta.maxFallingSpeed
+        end
+        if self.__index._meta.autoCollision then
+          self.autoCollision.global = self.__index._meta.autoCollision
+        end
+        if self.__index._meta.autoGravity then
+          self.autoGravity.global = self.__index._meta.autoGravity
+        end
+      end
+    else
+      self.__index.super.new(self)
+    end
+    
+    if not self.recycling then
+      if self.__index._meta.collision then
+        if self.__index._meta.collision.type == "rect" then
+          self:setRectangleCollision(self.__index._meta.collision.w, self.__index._meta.collision.h)
+        elseif self.__index._meta.collision.type == "circle" then
+          self:setCircleCollision(self.__index._meta.collision.r)
+        elseif self.__index._meta.collision.type == "image" then
+          self:setImageCollision(self.__index._meta.collision.img)
+        end
+      end
+      
+      if self.__index._meta.x then
+        self.x = self.__index._meta.x
+      end
+      if self.__index._meta.y then
+        self.y = self.__index._meta.y
+      end
+      if self.__index._meta.noSlope then
+        self.noSlope = self.__index._meta.noSlope
+      end
+    end
+    
+    if self:is(entity) then
+      if self:is(advancedEntity) then
+        if self:is(bossEntity) then
+          self.mugshotPath = self.__index._meta.mugshot
+          self.bossIntroText = self.__index._meta.bossIntroText
+          self.stageState = self.__index._meta.stageState
+          self.weaponGetText = self.__index._meta.weaponGetText
+          self.weaponGetBehaviour = function(m)
+              if megautils.runFSEvent(self, "weaponget", m) then
+                return true
+              end
+            end
+        end
+        
+        if not self.recycling then
+          if self.__index._meta.explosion == "small" then
+            self.explosionType = advancedEntity.SMALLBLAST
+          elseif self.__index._meta.explosion == "big" then
+            self.explosionType = advancedEntity.BIGBLAST
+          elseif self.__index._meta.explosion == "death" then
+            self.explosionType = advancedEntity.DEATHBLAST
+          end
+          if self.__index._meta.removeOnDeath then
+            self.removeOnDeath = self.__index._meta.removeOnDeath
+          end
+          if self.__index._meta.dropItem then
+            self.dropItem = self.__index._meta.dropItem
+          end
+          if self.__index._meta.health then
+            self.health = self.__index._meta.health
+          end
+          if self.__index._meta.soundOnHit then
+            self.soundOnHit = self.__index._meta.soundOnHit
+          end
+          if self.__index._meta.soundOnDeath then
+            self.soundOnDeath = self.__index._meta.soundOnDeath
+          end
+          if self.__index._meta.autoHit then
+            self.autoHitPlayer = self.__index._meta.autoHit
+          end
+          if self.__index._meta.damage then
+            self.damage = self.__index._meta.damage
+          end
+          if self.__index._meta.hurtable then
+            self.hurtable = self.__index._meta.hurtable
+          end
+          if self.__index._meta.flipWithPlayer then
+            self.flipWithPlayer = self.__index._meta.flipWithPlayer
+          end
+          if self.__index._meta.removeWhenOutside then
+            self.removeWhenOutside = self.__index._meta.removeWhenOutside
+          end
+          if self.__index._meta.removeHealthBarWithSelf then
+            self.removeHealthBarWithSelf = self.__index._meta.removeHealthBarWithSelf
+          end
+          if self.__index._meta.barRelativeToView then
+            self.barRelativeToView = self.__index._meta.barRelativeToView
+          end
+          if self.__index._meta.barOffsetX then
+            self.barOffsetX = self.__index._meta.barOffsetX
+          end
+          if self.__index._meta.barOffsetY then
+            self.barOffsetY = self.__index._meta.barOffsetY
+          end
+          if self.__index._meta.applyAutoFace then
+            self.applyAutoFace = self.__index._meta.applyAutoFace
+          end
+          if self.__index._meta.flipFace then
+            self.flipFace = self.__index._meta.flipFace
+          end
+          if self.__index._meta.pierceType then
+            if self.__index._meta.pierceType == "pierce" then
+              self.pierceType = pierce.PIERCE
+            elseif self.__index._meta.pierceType == "nopierce" then
+              self.pierceType = pierce.NOPIERCE
+            elseif self.__index._meta.pierceType == "pierceifkilling" then
+              self.pierceType = pierce.PIERCEIFKILLING
+            end
+          end
+          if self.__index._meta.autoCollision then
+            self.autoCollision.global = self.__index._meta.autoCollision
+          end
+          if self.__index._meta.autoGravity then
+            self.autoGravity.global = self.__index._meta.autoGravity
+          end
+          if self.__index._meta.crushable then
+            self.crushable = self.__index._meta.crushable
+          end
+          if self.__index._meta.blockCollision then
+            self.blockCollision.global = self.__index._meta.blockCollision
+          end
+          if self.__index._meta.maxFallingSpeed then
+            self.maxFallingSpeed = self.__index._meta.maxFallingSpeed
+          end
+          self.defeatSlot = self.__index._meta.defeatSlot
+          if self.__index._meta.weapon then
+            self.defeatSlotValue = {weaponName = self.__index._meta.weapon[1], weaponSlot = self.__index._meta.weapon[2]}
+          end
+          if self.__index._meta.healthBar then
+            self:useHealthBar({self.__index._meta.healthBar[1], self.__index._meta.healthBar[2], self.__index._meta.healthBar[3]},
+              {self.__index._meta.healthBar[4], self.__index._meta.healthBar[5], self.__index._meta.healthBar[6]})
+          end
+        end
+      end
+      
+      if self.__index._meta.invincible then
+        self.canBeInvincible.global = self.__index._meta.invincible
+      end
+      if self.__index._meta.canStandSolid then
+        self.canStandSolid.global = self.__index._meta.canStandSolid
+      end
+      if self.__index._meta.snapToMovingFloor then
+        self.snapToMovingFloor = self.__index._meta.snapToMovingFloor
+      end
+      
+      if megautils.hasFSEvent(result, "taken") then
+        function result:taken(p)
+          megautils.runFSEvent(self, "taken", p)
+        end
+      end
+    end
+    
+    if self.recycling then
+      megautils.runFSEvent(self, "recycle", args)
+    else
+      self.recycle = self.__index._meta.recycle
+      local conf = self.__index._meta
+      local i = 1
+      while conf["image" .. tostring(i)] do
+        local g = self:addGFX("image" .. tostring(i), image(conf["image" .. tostring(i)])
+          :off(conf["image" .. tostring(i) .. "OffX"], conf["image" .. tostring(i) .. "OffY"])
+          :flip(conf["image" .. tostring(i) .. "FlipX"], conf["image" .. tostring(i) .. "FlipY"])
+          :rot(conf["image" .. tostring(i) .. "Rot"])
+          :origin(conf["image" .. tostring(i) .. "OriginX"], conf["image" .. tostring(i) .. "OriginX"]))
+        if conf["image" .. tostring(i) .. "Quad"] then
+          g:setQuad(quad(unpack(conf["image" .. tostring(i) .. "Quad"])))
+        end
+        i = i + 1
+      end
+      i = 1
+      while conf["animation" .. tostring(i)] do
+        self:addGFX("animation" .. tostring(i), animation(conf["animation" .. tostring(i)])
+          :off(conf["animation" .. tostring(i) .. "OffX"], conf["animation" .. tostring(i) .. "OffY"])
+          :flip(conf["animation" .. tostring(i) .. "FlipX"], conf["animation" .. tostring(i) .. "FlipY"])
+          :rot(conf["animation" .. tostring(i) .. "Rot"])
+          :origin(conf["animation" .. tostring(i) .. "OriginX"], conf["animation" .. tostring(i) .. "OriginX"]))
+        i = i + 1
+      end
+      i = 1
+      while conf["animationSet" .. tostring(i)] do
+        self:addGFX("animationSet" .. tostring(i), animationSet(conf["animationSet" .. tostring(i)])
+          :off(conf["animationSet" .. tostring(i) .. "OffX"], conf["animationSet" .. tostring(i) .. "OffY"])
+          :flip(conf["animationSet" .. tostring(i) .. "FlipX"], conf["animationSet" .. tostring(i) .. "FlipY"])
+          :rot(conf["animationSet" .. tostring(i) .. "Rot"])
+          :origin(conf["animationSet" .. tostring(i) .. "OriginX"], conf["animationSet" .. tostring(i) .. "OriginX"])
+          :set(conf["animationSet" .. tostring(i) .. "Default"])
+          :gotoFrame(conf["animationSet" .. tostring(i) .. "GotoFrame"])
+          :setTime(conf["animationSet" .. tostring(i) .. "Time"]))
+        i = i + 1
+      end
+      megautils.runFSEvent(self, "new", args)
+    end
+  end
+  
+  function result:added()
+    self.__index.super.added(self)
+    
+    megautils.runFSEvent(self, "added")
+  end
+  
+  function result:begin()
+    self.__index.super.begin(self)
+    
+    megautils.runFSEvent(self, "begin")
+  end
+  
+  if megautils.hasFSEvent(result, "beforeupdate") then
+    function result:beforeUpdate(dt)
+      megautils.runFSEvent(self, "beforeupdate", dt)
+    end
+  end
+  
+  if megautils.hasFSEvent(result, "update") then
+    function result:update(dt)
+      megautils.runFSEvent(self, "update", dt)
+    end
+  end
+  
+  if megautils.hasFSEvent(result, "afterupdate") then
+    function result:afterUpdate(dt)
+      megautils.runFSEvent(self, "afterupdate", dt)
+    end
+  end
+  
+  function result:removed()
+    self.__index.super.removed(self)
+    
+    megautils.runFSEvent(self, "removed")
+  end
+  
+  if megautils.hasFSEvent(result, "interacted") then
+    function result:interactedWith(o, c)
+      megautils.runFSEvent(self, "interacted", o, c)
+    end
+  end
+  
+  if result:is(advancedEntity) then
+    if megautils.hasFSEvent(result, "grav") then
+      function result:grav()
+        megautils.runFSEvent(self, "grav")
+      end
+    end
+    
+    if megautils.hasFSEvent(result, "crushed") then
+      function result:crushed(o)
+        return megautils.runFSEvent(self, "crushed", o)
+      end
+    end
+    
+    if megautils.hasFSEvent(result, "hit") then
+      function result:hit(o)
+        megautils.runFSEvent(self, "hit", o)
+      end
+    end
+    
+    if megautils.hasFSEvent(result, "die") then
+      function result:die(o)
+        megautils.runFSEvent(self, "die", o)
+      end
+    end
+    
+    if megautils.hasFSEvent(result, "determinedink") then
+      function result:determineDink(o)
+        return megautils.runFSEvent(self, "determinedink", o)
+      end
+    end
+    
+    if megautils.hasFSEvent(result, "weapontable") then
+      function result:weaponTable(o)
+        return megautils.runFSEvent(self, "weapontable", o)
+      end
+    end
+    
+    if megautils.hasFSEvent(result, "heal") then
+      function result:heal(o)
+        megautils.runFSEvent(self, "heal", o)
+      end
+    end
+  end
+  
+  local i = 1
+  while conf["resource" .. tostring(i)] do
+    if checkExt(conf["resource" .. tostring(i)], {"lua"}) or
+      love.filesystem.getInfo(conf["resource" .. tostring(i)]).type == "directory" then
+      megautils.runFile(conf["resource" .. tostring(i)], true)
+    else
+      if type(conf["resource" .. tostring(i)]) == "table" then
+        megautils.loadResource(unpack(conf["resource" .. tostring(i)]))
+      else
+        megautils.loadResource(conf["resource" .. tostring(i)], conf["resource" .. tostring(i)])
+      end
+    end
+    i = i + 1
+  end
+  i = 1
+  while conf["image" .. tostring(i)] do
+    if not megautils.getResource(conf["image" .. tostring(i)]) and
+      checkExt(conf["image" .. tostring(i)], {"png", "jpeg", "jpg", "bmp", "tga", "hdr", "pic", "exr"}) then
+      megautils.loadResource(conf["image" .. tostring(i)], conf["image" .. tostring(i)])
+    end
+    i = i + 1
+  end
+  i = 1
+  while conf["animation" .. tostring(i)] do
+    if not megautils.getResource(conf["animation" .. tostring(i)]) and
+      checkExt(conf["animation" .. tostring(i)], {"anim"}) then
+      megautils.loadResource(conf["animation" .. tostring(i)], conf["animation" .. tostring(i)])
+    end
+    i = i + 1
+  end
+  i = 1
+  while conf["animationSet" .. tostring(i)] do
+    if not megautils.getResource(conf["animationSet" .. tostring(i)]) and
+      checkExt(conf["animationSet" .. tostring(i)], {"animset"}) then
+      megautils.loadResource(conf["animationSet" .. tostring(i)], conf["animationSet" .. tostring(i)])
+    end
+    i = i + 1
+  end
+  
+  if register then
+    mapEntity.register(name, function(v, map, s, r)
+        local ox, oy = r.__index._meta.spawnOffX or 0, r.__index._meta.spawnOffY or 0
+        local args = {x = v.x + ox, y = v.y + oy, width = v.width, height = v.height, id = v.id, map = map}
+        for k, v in pairs(v.properties) do
+          args[k] = v
+        end
+        local w, h = r.__index._meta.collision and r.__index._meta.collision.w or 16,
+          r.__index._meta.collision and r.__index._meta.collision.h or 16
+        
+        if s == "regular" then
+          megautils.add(spawner, v.x + ox, v.y + oy, w, h, nil, r, args)
+        elseif s == "interval" then
+          megautils.add(intervalSpawner,
+            v.x + ox, v.y + oy, w, h, args.interval or r.__index._meta.interval, nil, r, args)
+        elseif s == "custom" then
+          megautils.add(r, args)
+        end
+      end, nil, nil, _spawner, result)
+  end
+  
+  megautils.runFSEvent(result)
 end
 
 function megautils.resetGame(s, saveSfx, saveMusic)
@@ -384,19 +1026,6 @@ function megautils.loadResource(...)
   local path = args[1]
   local nick = args[2]
   local t = ""
-  if type(path) == "string" then
-    t = path:split("%.")
-    t = t[#t]
-  end
-  
-  local function checkExt(ext, list)
-    for _, v in ipairs(list) do
-      if ext:lower() == v then
-        return true
-      end
-    end
-    return false
-  end
   
   if type(args[1]) == "number" and type(args[2]) == "number" then
     local grid
@@ -417,7 +1046,17 @@ function megautils.loadResource(...)
     end
     loader.load(nil, nick, t, grid, locked)
     return loader.get(nick)
-  elseif checkExt(t, {"png", "jpeg", "jpg", "bmp", "tga", "hdr", "pic", "exr"}) then
+  elseif checkExt(path, {"anim"}) then
+    t = "anim"
+    locked = args[3]
+    loader.load(path, nick, t, nil, locked)
+    return loader.get(nick)
+  elseif checkExt(path, {"animset"}) then
+    t = "animSet"
+    locked = args[3]
+    loader.load(path, nick, t, nil, locked)
+    return loader.get(nick)
+  elseif checkExt(path, {"png", "jpeg", "jpg", "bmp", "tga", "hdr", "pic", "exr"}) then
     local ext = t
     t = "texture"
     if #args == 4 then
@@ -429,7 +1068,8 @@ function megautils.loadResource(...)
       loader.load(path, nick, t, nil, locked)
       return loader.get(nick)
     end
-  elseif checkExt(t, {"ogg", "mp3", "wav", "flac", "oga", "ogv", "xm", "it", "mod", "mid", "669", "amf", "ams", "dbm", "dmf", "dsm", "far",
+  elseif checkExt(path, {"ogg", "mp3", "wav", "flac", "oga", "ogv", "xm", "it",
+      "mod", "mid", "669", "amf", "ams", "dbm", "dmf", "dsm", "far",
       "j2b", "mdl", "med", "mt2", "mtm", "okt", "psm", "s3m", "stm", "ult", "umx", "abc", "pat"}) then
     if type(args[3]) == "string" then
       t = args[3]
@@ -562,6 +1202,7 @@ function megautils.unload()
   megautils.cleanCallbacks()
   megautils.unloadAllResources()
   megautils._ranFiles = {}
+  megautils._fsCache = {}
 end
 
 function megautils.addMapEntity(path)

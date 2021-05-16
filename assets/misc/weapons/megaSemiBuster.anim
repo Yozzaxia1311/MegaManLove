@@ -1,0 +1,4 @@
+image: assets/misc/weapons/buster.png
+quad: 8, 31, 17, 16
+frames: 1-2, 1
+durations: 0.083333333

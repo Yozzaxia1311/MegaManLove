@@ -1,5 +1,4 @@
-megautils.loadResource("assets/global/bosses/stickMan.png", "stickMan")
-megautils.loadResource(0, 0, 21, 32, "stickManGrid")
+megautils.loadResource("assets/global/bosses/stickMan.animset", "stickManAnims")
 
 stickMan = bossEntity:extend()
 
@@ -12,11 +11,10 @@ function stickMan:new(x, y)
   self.y = y or 0
   self.x = x or 0
   self:setRectangleCollision(12, 24)
-  self.anims = animationSet("stickMan"):off(-4, -8)
-  self.anims:add("idle", animation("stickManGrid", {1, 1}))
-  self.anims:add("pose", animation("stickManGrid", {2, 1, 1, 1, 3, 1, 1, 1, 2, 1, 1, 1, 3, 1}, 1/10, "pauseAtEnd"))
+  self.anims = animationSet("stickManAnims"):off(-4, -8)
   self:addGFX("anims", self.anims)
   self:useHealthBar({128, 128, 128}, {255, 255, 255})
+  self.flipFace = true
   
   -- Stage select exclusive
   self.mugshotPath = "assets/global/bosses/stickManMug.png"
@@ -77,16 +75,11 @@ function stickMan:pose()
   end
 end
 
-function stickMan:act()
+function stickMan:update()
   if self.state == 0 then
     self.anims:set("idle")
     self.state = 1
   end
 end
-
---function stickMan:draw()
---  stickMan.super.draw(self)
---  self.t:draw(self.anims, math.floor(self.x)-4, math.floor(self.y)-8)
---end
 
 return stickMan

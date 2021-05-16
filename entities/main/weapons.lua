@@ -126,6 +126,7 @@ function weapon:new(p, enWeapon)
     self.doAutoCollisionBeforeUpdate = true
     self.doDink = true
     self.applyAutoFace = false
+    self.flipFace = false
     self.noSlope = false
     self.maxFallingSpeed = 7
   end
@@ -200,9 +201,11 @@ end
 
 function weapon:dinking(e, dt) end
 
-function weapon:act(dt) end
-
-function weapon:beforeUpdate()
+function weapon:_beforeUpdate(dt)
+  for i = 1, #self.gfx do
+    self.gfx[i]:_update(dt)
+  end
+  
   if self.flipWithUser and self.user and self.user.gravityMultipliers then
     self:setGravityMultiplier("flipWithUser", self.user.gravityMultipliers.gravityFlip or 1)
   end
@@ -219,17 +222,22 @@ function weapon:beforeUpdate()
   if self.applyAutoFace then
     self.side = self.autoFace
   end
+  for i = 1, #self.gfx do
+    self.gfx[i]:flip(self.side == (self.flipFace and 1 or -1))
+  end
+  
+  self:beforeUpdate(dt)
 end
 
-function weapon:update(dt)
+function weapon:_update(dt)
   if self.dinked and self.doDink then
     self:dinking(self.dinkedBy, dt)
   else
-    self:act(dt)
+    self:update(dt)
   end
 end
 
-function weapon:afterUpdate()
+function weapon:_afterUpdate(dt)
   if not self.doAutoCollisionBeforeUpdate and checkFalse(self.autoCollision) and not self._didCol then
     collision.doCollision(self, self.noSlope)
   end
@@ -244,6 +252,8 @@ function weapon:afterUpdate()
   if self.removeWhenOutside and megautils.outside(self) then
     megautils.removeq(self)
   end
+  
+  self:afterUpdate(dt)
 end
 
 weapon.removeGroups["P.BUSTER"] = {"megaBuster", "protoChargedBuster"}
@@ -254,7 +264,7 @@ weapon.resources["P.BUSTER"] = function()
     megautils.loadResource("assets/sfx/semi.ogg", "semiCharged")
     megautils.loadResource("assets/sfx/protoCharge.ogg", "protoCharge")
     megautils.loadResource("assets/sfx/protoCharged.ogg", "protoCharged")
-    megautils.loadResource(10, 0, 29, 10, "protoBusterGrid")
+    megautils.loadResource("assets/misc/weapons/protoBuster.anim", "protoBusterAnim")
   end
 
 weapon.icons["P.BUSTER"] = "assets/misc/weapons/icons/protoBuster.png"
@@ -329,7 +339,7 @@ weapon.resources["R.BUSTER"] = function()
     megautils.loadResource("assets/sfx/semi.ogg", "semiCharged")
     megautils.loadResource("assets/sfx/charge.ogg", "charge")
     megautils.loadResource("assets/sfx/protoCharged.ogg", "protoCharged")
-    megautils.loadResource(10, 0, 29, 10, "protoBusterGrid")
+    megautils.loadResource("assets/misc/weapons/protoBuster.anim", "protoBusterAnim")
   end
 
 weapon.icons["R.BUSTER"] = "assets/misc/weapons/icons/rollBuster.png"
@@ -406,17 +416,12 @@ function protoSemiBuster:new(x, y, p, dir, skin)
   self.y = (y or 0) - 5
   self:setRectangleCollision(10, 10)
   self.skin = skin
-  self.tex = megautils.getResource(self.skin)
-  self.quad = quad(0, 0, 10, 10)
+  self:addGFX("tex", image(self.skin, quad(0, 0, 10, 10)))
   self.side = dir or 1
   self.velX = self.side * 5
   self.weaponGroup = "megaBuster"
   self.sound = "semiCharged"
   self.damage = -1
-end
-
-function protoSemiBuster:draw()
-  self.tex:draw(self.quad, math.floor(self.x), math.floor(self.y))
 end
 
 protoChargedBuster = weapon:extend()
@@ -430,7 +435,7 @@ function protoChargedBuster:new(x, y, p, dir, skin)
   self:setRectangleCollision(29, 8)
   self.skin = skin
   self.tex = megautils.getResource(self.skin)
-  self.anim = animation("protoBusterGrid", {"1-2", 1}, 1/20)
+  self.anim = animation("protoBusterAnim")
   self.side = dir or 1
   self.velX = self.side * 6
   self.pierceType = pierce.PIERCEIFKILLING
@@ -443,7 +448,7 @@ function protoChargedBuster:dinking()
   self.anim:update(1/60)
 end
 
-function protoChargedBuster:act()
+function protoChargedBuster:update()
   self.anim:update(1/60)
 end
 
@@ -475,6 +480,7 @@ weapon.stopOnShot["B.BUSTER"] = true
 weapon.ignoreEnergy["B.BUSTER"] = true
 
 weapon.rapidFireFuncs["B.BUSTER"] = function(player)
+    player.shootFrames = 15
     if player:numberOfShots("bassBuster") < 4 then
       local dir = player.side == 1 and 0 or 180
       
@@ -517,7 +523,7 @@ function bassBuster:new(x, y, p, dir, t)
   
   if not self.recycling then
     self:setRectangleCollision(6, 6)
-    self.tex = megautils.getResource("bassBuster")
+    self:addGFX("tex", image("bassBuster"):off(-1, -1))
     self.weaponGroup = "bassBuster"
     self.recycle = true
   end
@@ -533,15 +539,11 @@ function bassBuster:new(x, y, p, dir, t)
   end
 end
 
-function bassBuster:act()
+function bassBuster:update()
   local col = collision.checkSolid(self, self.velX, self.velY)
   if not self.treble and not self.dinked and col then
     megautils.removeq(self)
   end
-end
-
-function bassBuster:draw()
-  self.tex:draw(math.floor(self.x)-1, math.floor(self.y)-1)
 end
 
 weapon.removeGroups["M.BUSTER"] = {"megaBuster", "megaChargedBuster"}
@@ -551,8 +553,8 @@ weapon.resources["M.BUSTER"] = function()
     megautils.loadResource("assets/sfx/semi.ogg", "semiCharged")
     megautils.loadResource("assets/sfx/charge.ogg", "charge")
     megautils.loadResource("assets/sfx/charged.ogg", "charged")
-    megautils.loadResource(33, 30, "chargeGrid")
-    megautils.loadResource(8, 31, 17, 16, "smallChargeGrid")
+    megautils.loadResource("assets/misc/weapons/megaChargedBuster.anim", "megaChargedBusterAnim")
+    megautils.loadResource("assets/misc/weapons/megaSemiBuster.anim", "megaSemiBuster")
   end
 
 weapon.icons["M.BUSTER"] = "assets/misc/weapons/icons/megaBuster.png"
@@ -630,8 +632,7 @@ function megaBuster:new(x, y, p, dir)
     self.velY = 0
   else
     self:setRectangleCollision(8, 6)
-    self.tex = megautils.getResource("busterTex")
-    self.quad = quad(0, 31, 8, 6)
+    self:addGFX("tex", image("busterTex", quad(0, 31, 8, 6)))
     self.weaponGroup = "megaBuster"
     self.recycle = true
   end
@@ -640,10 +641,6 @@ function megaBuster:new(x, y, p, dir)
   self.y = (y or 0) - 3
   self.side = dir or 1
   self.velX = self.side * 5
-end
-
-function megaBuster:draw()
-  self.tex:draw(self.quad, math.floor(self.x), math.floor(self.y))
 end
 
 megaSemiBuster = weapon:extend()
@@ -655,25 +652,16 @@ function megaSemiBuster:new(x, y, p, dir)
   self.x = (x or 0) - 8
   self.y = (y or 0) - 5
   self:setRectangleCollision(16, 10)
-  self.tex = megautils.getResource("busterTex")
-  self.anim = animation("smallChargeGrid", {"1-2", 1}, 1/12)
+  self.anim = animation("megaSemiBuster"):off(0, -3):flip(self.side ~= 1)
+  self:addGFX("anim", self.anim)
   self.side = dir or 1
   self.velX = self.side * 5
   self.sound = "semiCharged"
   self.weaponGroup = "megaBuster"
 end
 
-function megaSemiBuster:dinking()
-  self.anim:update(1/60)
-end
-
-function megaSemiBuster:act()
-  self.anim:update(1/60)
-end
-
-function megaSemiBuster:draw()
-  self.tex:draw(self.anim, math.floor(self.x), math.floor(self.y)-3,
-    nil, nil, nil, nil, nil, nil, nil, self.side ~= 1)
+function megaSemiBuster:update()
+  self.anim:flip(self.side ~= 1)
 end
 
 megaChargedBuster = weapon:extend()
@@ -685,27 +673,19 @@ function megaChargedBuster:new(x, y, p, dir)
   self.x = (x or 0) - 12
   self.y = (y or 0) - 12
   self:setRectangleCollision(24, 24)
-  self.tex = megautils.getResource("busterTex")
-  self.anim = animation("chargeGrid", {"1-4", 1}, 1/20)
   self.side = dir or 1
   self.velX = self.side * 5.5
   self.pierceType = pierce.PIERCEIFKILLING
   self.sound = "charged"
   self.weaponGroup = "megaChargedBuster"
   self.damage = -2
+  
+  self.anim = animation("megaChargedBusterAnim"):off(self.side == 1 and -8 or 0, -3):flip(self.side ~= 1)
+  self:addGFX("anim", self.anim)
 end
 
-function megaChargedBuster:dinking()
-  self.anim:update(1/60)
-end
-
-function megaChargedBuster:act()
-  self.anim:update(1/60)
-end
-
-function megaChargedBuster:draw()
-  self.tex:draw(self.anim, math.floor(self.x)+(self.side == 1 and -8 or 0), math.floor(self.y)-3,
-    nil, nil, nil, nil, nil, nil, nil, self.side ~= 1)
+function megaChargedBuster:update()
+  self.anim:off(self.side == 1 and -8 or 0, -3):flip(self.side ~= 1)
 end
 
 weapon.removeGroups["T. BOOST"] = {"trebleBoost", "bassBuster"}
@@ -716,7 +696,7 @@ weapon.resources["T. BOOST"] = function()
     megautils.loadResource("assets/sfx/treble.ogg", "treble")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource(33, 32, "trebleGrid")    
+    megautils.loadResource("assets/misc/weapons/treble.animset", "trebleAnims")    
   end
 
 weapon.icons["T. BOOST"] = "assets/misc/weapons/icons/trebleBoost.png"
@@ -759,11 +739,7 @@ function trebleBoost:new(x, y, p, side)
   self.toY = (y or 0) - 9
   self:setRectangleCollision(20, 19)
   self.tex = megautils.getResource("trebleTex")
-  self.anims = animationSet()
-  self.anims:add("spawn", animation("trebleGrid", {1, 1}))
-  self.anims:add("spawnLand", animation("trebleGrid", {2, 1, 1, 1, 3, 1}, 1/20))
-  self.anims:add("idle", animation("trebleGrid", {4, 1}))
-  self.anims:add("start", animation("trebleGrid", {"5-6", 1, "5-6", 1, "5-6", 1, "5-6", 1, "7-8", 1}, 1/16, "pauseAtEnd"))
+  self.anims = animationSet("trebleAnims")
   self.side = side or -1
   self.s = 0
   self.timer = 0
@@ -781,7 +757,7 @@ function trebleBoost:added()
   self:addToGroup("submergable")
 end
 
-function trebleBoost:act()
+function trebleBoost:update()
   self.anims:update(1/60)
   if self.s == -1 then
     self:moveBy(0, 8)
@@ -839,7 +815,7 @@ weapon.resources["RUSH JET"] = function()
     megautils.loadResource("assets/misc/weapons/rush.png", "rush")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource(32, 32, "rushGrid")
+    megautils.loadResource("assets/misc/weapons/rush.animset", "rushAnims")
     
     weapon.resources["M.BUSTER"]() -- So it's possible to use the Mega Buster shots even if the weapon wasn't already loaded in for some reason...
   end
@@ -868,7 +844,7 @@ weapon.resources["PROTO JET"] = function()
     megautils.loadResource("assets/misc/weapons/protoRush.png", "protoRush")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource(32, 32, "rushGrid")
+    megautils.loadResource("assets/misc/weapons/rush.animset", "rushAnims")
     
     weapon.resources["P.BUSTER"]()
   end
@@ -897,7 +873,7 @@ weapon.resources["TANGO JET"] = function()
     megautils.loadResource("assets/misc/weapons/tango.png", "tango")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource(32, 32, "rushGrid")
+    megautils.loadResource("assets/misc/weapons/rush.animset", "rushAnims")
     
     weapon.resources["R.BUSTER"]()
   end
@@ -932,10 +908,7 @@ function rushJet:new(x, y, p, side, skin)
   self:setRectangleCollision(27, 8)
   self.skin = skin
   self.tex = megautils.getResource(skin)
-  self.anims = animationSet()
-  self.anims:add("spawn", animation("rushGrid", {1, 1}))
-  self.anims:add("spawnLand", animation("rushGrid", {2, 1, 1, 1, 3, 1}, 1/20))
-  self.anims:add("jet", animation("rushGrid", {"2-3", 2}, 1/8))
+  self.anims = animationSet("rushAnims")
   self.side = side or 1
   self.s = 0
   self.timer = 0
@@ -954,7 +927,7 @@ function rushJet:added()
   self:addToGroup("submergable")
 end
 
-function rushJet:act(dt)
+function rushJet:update()
   self.anims:update(1/60)
   if self.s == -1 then
     self:moveBy(0, 8)
@@ -1056,7 +1029,7 @@ weapon.resources["RUSH C."] = function()
     megautils.loadResource("assets/misc/weapons/rush.png", "rush")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource(32, 32, "rushGrid")
+    megautils.loadResource("assets/misc/weapons/rush.animset", "rushAnims")
     
     weapon.resources["M.BUSTER"]() -- So it's possible to use the Mega Buster shots even if the weapon wasn't already loaded in for some reason...
   end
@@ -1085,7 +1058,7 @@ weapon.resources["PROTO C."] = function()
     megautils.loadResource("assets/misc/weapons/protoRush.png", "protoRush")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource(32, 32, "rushGrid")
+    megautils.loadResource("assets/misc/weapons/rush.animset", "rushAnims")
     
     weapon.resources["P.BUSTER"]()
   end
@@ -1114,7 +1087,7 @@ weapon.resources["TANGO C."] = function()
     megautils.loadResource("assets/misc/weapons/tango.png", "tango")
     megautils.loadResource("assets/sfx/mmStart.ogg", "start")
     megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource(32, 32, "rushGrid")
+    megautils.loadResource("assets/misc/weapons/rush.animset", "rushAnims")
     
     weapon.resources["R.BUSTER"]()
   end
@@ -1149,11 +1122,7 @@ function rushCoil:new(x, y, p, side, skin)
   self:setRectangleCollision(20, 19)
   self.skin = skin
   self.tex = megautils.getResource(skin)
-  self.anims = animationSet()
-  self.anims:add("spawn", animation("rushGrid", {1, 1}))
-  self.anims:add("spawnLand", animation("rushGrid", {2, 1, 1, 1, 3, 1}, 1/20))
-  self.anims:add("idle", animation("rushGrid", {4, 1, 1, 2}, 1/8))
-  self.anims:add("coil", animation("rushGrid", {4, 2}))
+  self.anims = animationSet("rushAnims")
   self.side = side or 1
   self.s = 0
   self.timer = 0
@@ -1169,7 +1138,7 @@ function rushCoil:added()
   self:addToGroup("submergable")
 end
 
-function rushCoil:act(dt)
+function rushCoil:update()
   self.anims:update(1/60)
   if self.s == -1 then
     self:moveBy(0, 8)

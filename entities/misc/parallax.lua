@@ -25,12 +25,16 @@ function parallax:new(x, y, w, h, bg, a, as, aw, ah, spdMultX, spdMultY, sx, sy,
         frames[#frames+1] = y
       end
     end
-    if not megautils.getResource(self.bg .. "Grid") then
-      megautils.loadResource(0, 0, aw, ah, self.bg .. "Grid")
+    if not megautils.getResource(self.bg .. "Anim") then
+      loader.resources[self.bg .. "Anim"] = {
+          data = anim8.newGrid(aw, ah),
+          frames = frames,
+          durations = as or 0.5
+        }
     end
     self.animWidth = aw
     self.animHeight = ah
-    self.anim = animation(self.bg .. "Grid", frames, as or 0.5)
+    self.anim = animation(self.bg .. "Anim")
   end
   self.spdMultX = spdMultX or 0.5
   self.spdMultY = spdMultY or 0.5

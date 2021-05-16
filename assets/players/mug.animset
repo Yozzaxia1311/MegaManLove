@@ -1,0 +1,17 @@
+quad: 0, 0, 63, 62, 2
+
+<> Regular Mugshot
+0-0Frames: 6, 6
+1-0Frames: 7, 6
+2-0Frames: 8, 6
+0-1Frames: 6, 7
+1-1Frames: 7, 7
+2-1Frames: 8, 7
+0-2Frames: 6, 8
+1-2Frames: 7, 8
+2-2Frames: 8, 8
+
+<> Proto Man Mugshot shine
+protoFrames: 7, 7
+protoGlintFrames: 6-8, 6
+protoGlintDurations: 0.0357142857142857

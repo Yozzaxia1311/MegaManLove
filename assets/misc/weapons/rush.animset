@@ -1,0 +1,14 @@
+quad: 32, 32
+default: spawn
+
+spawnFrames: 1, 1
+spawnLandFrames: 2, 1, 1, 1, 3, 1
+spawnLandDurations: 0.05
+
+idleFrames: 4, 1, 1, 2
+idleDurations: 0.125
+
+coilFrames: 4, 2
+
+jetFrames: 2-3, 2
+jetDurations: 0.125
