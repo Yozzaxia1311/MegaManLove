@@ -1,3 +1,7 @@
+megautils.runFile("entities/main/weapons.lua")
+megautils.runFile("entities/main/pickups.lua")
+megautils.runFile("entities/misc/miscparticles.lua")
+
 megautils.runFile("entities/main/barhandler.lua")
 megautils.runFile("entities/main/megaman.lua")
 megautils.runFile("entities/main/pause.lua")
