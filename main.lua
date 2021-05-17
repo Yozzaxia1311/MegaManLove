@@ -179,9 +179,6 @@ function love.load()
   megautils.gotoState(globals.disclaimerState)
   
   console.parse("exec autoexec")
-  
-  megautils.runFile("entities/fstest")
-  fstest()
 end
 
 function love.resize(w, h)

@@ -320,6 +320,8 @@ function animationSet:set(name, f, t)
     self:gotoFrame(f or 1, t)
     self:resume()
   end
+  
+  return self
 end
 
 function animationSet:looped()
@@ -328,6 +330,8 @@ end
 
 function animationSet:pause()
   self.anims[self.current]:pause()
+  
+  return self
 end
 
 function animationSet:resume()
@@ -344,6 +348,8 @@ end
 
 function animationSet:setTime(t, a)
   self.anims[a or self.current]:setTime(t)
+  
+  return self
 end
 
 function animationSet:frame(a)
@@ -359,6 +365,8 @@ function animationSet:gotoFrame(f, t)
   if t then
     self:setTime(t)
   end
+  
+  return self
 end
 
 function animationSet:length(a)

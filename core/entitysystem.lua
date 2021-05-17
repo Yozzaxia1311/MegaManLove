@@ -823,6 +823,8 @@ function basicEntity:addGFX(name, gfx, noSync)
     gfx.syncPos = not noSync and self
     self.gfx[#self.gfx + 1] = gfx
   end
+  
+  return gfx
 end
 
 function basicEntity:removeGFX(gfx)
@@ -1538,6 +1540,10 @@ function advancedEntity:new()
     self.barOffsetY = 80
     self.applyAutoFace = true
     self.flipFace = false
+    self.applyGravFace = true
+    self.flipGravFace = false
+    self.gravFace = self.gravity >= 0 and 1 or -1
+    self.autoGravFace = self.gravFace
     self.pierceType = pierce.PIERCE
     self.autoCollision = {global = true}
     self.autoGravity = {global = true}
@@ -1618,7 +1624,7 @@ end
 
 function advancedEntity:hit(o) end
 function advancedEntity:die(o) end
-function advancedEntity:determineDink(o) end
+function advancedEntity:determineDink(o) return checkTrue(self.canBeInvincible) end
 function advancedEntity:weaponTable(o) end
 function advancedEntity:heal(o) end
 
@@ -1639,8 +1645,11 @@ function advancedEntity:beforeUpdate()
   if self.applyAutoFace then
     self.side = self.autoFace
   end
+  if self.applyAutoGravFace then
+    self.gravFace = self.autoGravFace
+  end
   for i = 1, #self.gfx do
-    self.gfx[i]:flip(self.side == (self.flipFace and -1 or 1))
+    self.gfx[i]:flip(self.side == (self.flipFace and -1 or 1), (self.gravity * (self.flipGravFace and 1 or -1)) >= 0)
   end
   self.closest = n
   self:updateFlash()
