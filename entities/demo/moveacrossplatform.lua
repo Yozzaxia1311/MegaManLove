@@ -14,6 +14,7 @@ function moveAcrossPlatform:new(x, y, toX, toY)
   self.y = y or 0
   self:setRectangleCollision(32, 16)
   self:addGFX("tex", image("moveAcrossPlatform", quad(0, 0, 32, 16)))
+  self.applyAutoFace = false
   self.tween = tween.new(1, self, {x=toX or (self.x+32), y=toY or (self.y-32)}, "inOutBack")
   self.state = 0
   self.hurtable = false

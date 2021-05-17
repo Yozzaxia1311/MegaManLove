@@ -14,6 +14,7 @@ function stickMan:new(x, y)
   self.anims = animationSet("stickManAnims"):off(-4, -8)
   self:addGFX("anims", self.anims)
   self:useHealthBar({128, 128, 128}, {255, 255, 255})
+  self.flipFace = true
   
   -- Stage select exclusive
   self.mugshotPath = "assets/global/bosses/stickManMug.png"
