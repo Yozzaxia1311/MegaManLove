@@ -170,8 +170,7 @@ function menuSelect:draw()
   end
   if isMobile or isWeb then
     love.graphics.setColor(0, 0, 0, 0.5)
-    love.graphics.rectangle("fill", (14 * 8) - 1, 16 * 8, 50, 8)
-    love.graphics.rectangle("fill", (12 * 8) - 1, 18 * 8, 66, 8)
+    love.graphics.rectangle("fill", (12 * 8) - 1, (16 * 8) - 1, 58 + 2, (8 * 3) + 2)
   end
 end
 

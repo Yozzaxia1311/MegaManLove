@@ -321,14 +321,18 @@ function input.poll()
         if love.mouse and v == "mousetouch" then
           local realX, realY = love.mouse.getPosition()
           local x, y = cscreen.project(realX, realY)
-          input.touchDown[input.length(input.touchDown) + 1] = {id = v, x = x, y = y, pressure = 1, realX = realX, realY = realY}
-          input.touchPressed[input.length(input.touchPressed) + 1] = {id = v, x = x, y = y, pressure = 1, realX = realX, realY = realY}
+          input.touchDown[input.length(input.touchDown) + 1] = {id = v, x = x / view.scale, y = y / view.scale,
+            pressure = 1, realX = realX, realY = realY}
+          input.touchPressed[input.length(input.touchPressed) + 1] = {id = v, x = x / view.scale, y = y / view.scale,
+            pressure = 1, realX = realX, realY = realY}
         elseif love.touch then
           local realX, realY = love.touch.getPosition(v)
           local x, y = cscreen.project(realX, realY)
           local p = love.touch.getPressure(v)
-          input.touchDown[input.length(input.touchDown) + 1] = {id = v, x = x, y = y, pressure = p, realX = realX, realY = realY}
-          input.touchPressed[input.length(input.touchPressed) + 1] = {id = v, x = x, y = y, pressure = p, realX = realX, realY = realY}
+          input.touchDown[input.length(input.touchDown) + 1] = {id = v, x = x / view.scale, y = y / view.scale,
+            pressure = p, realX = realX, realY = realY}
+          input.touchPressed[input.length(input.touchPressed) + 1] = {id = v, x = x / view.scale, y = y / view.scale,
+            pressure = p, realX = realX, realY = realY}
         end
       end
     end
@@ -337,9 +341,11 @@ function input.poll()
       if love.mouse and v.id == "mousetouch" then
         v.realX, v.realY = love.mouse.getPosition()
         v.x, v.y = cscreen.project(v.realX, v.realY)
+        v.x, v.y = v.x / view.scale, v.y / view.scale
       elseif love.touch and table.icontains(newTouches, v.id) then
         v.realX, v.realY = love.touch.getPosition(v.id)
         v.x, v.y = cscreen.project(v.realX, v.realY)
+        v.x, v.y = v.x / view.scale, v.y / view.scale
         v.pressure = love.touch.getPressure(v.id)
       end
     end
@@ -348,9 +354,11 @@ function input.poll()
       if love.mouse and v.id == "mousetouch" then
         v.realX, v.realY = love.mouse.getPosition()
         v.x, v.y = cscreen.project(v.realX, v.realY)
+        v.x, v.y = v.x / view.scale, v.y / view.scale
       elseif love.touch and table.icontains(newTouches, v.id) then
         v.realX, v.realY = love.touch.getPosition(v.id)
         v.x, v.y = cscreen.project(v.realX, v.realY)
+        v.x, v.y = v.x / view.scale, v.y / view.scale
         v.pressure = love.touch.getPressure(v.id)
       end
     end

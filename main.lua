@@ -92,7 +92,7 @@ function initEngine()
   record.init()
   vPad.init()
   globals = {}
-  view.init(gameWidth, gameHeight, 1)
+  view.init(gameWidth, gameHeight, isMobile and 2 or 1)
   cscreen.init(view.w*view.scale, view.h*view.scale, borderLeft, borderRight)
   
   megautils.runFile("core/commands.lua")

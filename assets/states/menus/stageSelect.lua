@@ -108,7 +108,7 @@ function stageSelect:update()
     if input.length(input.touchPressed) ~= 0 then
       for x=0, 2 do
         for y=0, 2 do
-          if input.touchPressedOverlaps(32+(x*81), 32+(y*64), 48, 48) then
+          if input.touchPressedOverlaps(32+(x*81), 32+(y*64), 32, 32) then
             self.sx = x
             self.sy = y
             touched = true
