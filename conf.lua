@@ -1,23 +1,23 @@
--- Engine globals. The comments direct the game editor.
+-- Set the engine globals here!
 function engineGlobals(whenLoveModuleIsLoaded)
   if whenLoveModuleIsLoaded then
     love.keyboard.setKeyRepeat(true)
     love.graphics.setDefaultFilter("nearest", "nearest")
-mmFont = love.graphics.newFont("assets/misc/mm.ttf", 8) -- CONF FONT
+    mmFont = love.graphics.newFont("assets/misc/mm.ttf", 8)
     isMobile = love.system.getOS() == "Android" or love.system.getOS() == "iOS"
     isWeb = love.system.getOS() == "Web"
     compatMusicMode = isWeb and 2 or (isMobile and 1)
     spriteBatchTileMaps = isWeb
     useConsole = not isMobile and not isWeb
   else
-gameWidth = 256 -- CONF WIDTH
-gameHeight = 224 -- CONF HEIGHT
-gameScale = 2 -- CONF SCALE
-splash = "assets/misc/splash.bmp" -- CONF SPLASH
-borderLeft = "assets/misc/borderLeft.png" -- CONF LEFT BORDER
-borderRight = "assets/misc/borderRight.png" -- CONF RIGHT BORDER
+    gameWidth = 256
+    gameHeight = 224
+    gameScale = 2
+    splash = "assets/misc/splash.bmp"
+    borderLeft = "assets/misc/borderLeft.png"
+    borderRight = "assets/misc/borderRight.png"
     deadZone = 0.8
-defaultFPS = 60 -- CONF FPS
+    defaultFPS = 60
     clampSkinShootOffsets = true
     maxPlayerCount = 4
     maxLives = 10
