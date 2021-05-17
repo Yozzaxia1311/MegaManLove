@@ -110,7 +110,7 @@ function loader.load(path, nick, typ, parameters, lock)
         loader.load(c.image, c.image, "texture", nil, lock)
       end
       img = loader.get(c.image)
-      loader.locked[nick] = {data=anim8.newGrid(fw, fh, fx, fy, fb),
+      loader.locked[nick] = {path=path, data=anim8.newGrid(fw, fh, fx, fy, fb),
         parameters=parameters, type=typ, frames=c.frames, durations=c.durations,
         onLoop=c.onLoop, img=img}
       loader.resources[nick] = nil
@@ -133,7 +133,7 @@ function loader.load(path, nick, typ, parameters, lock)
         loader.load(c.image, c.image, "texture", nil, lock)
       end
       img = loader.get(c.image)
-      loader.resources[nick] = {data=anim8.newGrid(fw, fh, fx, fy, fb),
+      loader.resources[nick] = {path=path, data=anim8.newGrid(fw, fh, fx, fy, fb),
         parameters=parameters, type=typ, frames=c.frames, durations=c.durations,
         onLoop=c.onLoop, img=img}
       
@@ -183,7 +183,7 @@ function loader.load(path, nick, typ, parameters, lock)
         loader.load(c.image, c.image, "texture", nil, lock)
       end
       img = loader.get(c.image)
-      loader.locked[nick] = {data=grid,
+      loader.locked[nick] = {path=path, data=grid,
         parameters=parameters, type=typ, sets=data, default=c.default, img=img}
       loader.resources[nick] = nil
       
@@ -234,7 +234,7 @@ function loader.load(path, nick, typ, parameters, lock)
         loader.load(c.image, c.image, "texture", nil, lock)
       end
       img = loader.get(c.image)
-      loader.resources[nick] = {data=grid,
+      loader.resources[nick] = {path=path, data=grid,
         parameters=parameters, type=typ, sets=data, default=c.default, img=img}
       
       return loader.resources[nick]
