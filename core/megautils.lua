@@ -967,12 +967,11 @@ function megautils.serDependencies()
   end
   local entities = {}
   
-  return {scripts = scripts, resources = resources, state = states.current, music = mmMusic.ser()}
+  return {scripts = scripts, resources = resources, music = mmMusic.ser()}
 end
 
 function megautils.deserDependencies(tt)
   megautils.queue(function(t)
-      states.set(t.state)
       love.audio.stop()
       for _, v in ipairs(t.scripts) do
         megautils.runFile(v)
