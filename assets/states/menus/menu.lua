@@ -107,7 +107,7 @@ function menuSelect:update()
         megautils.transitionToState(globals.rebindState)
       elseif self.pick == 6 then
         if input.usingTouch then
-          globals.playerCount = math.wrap(globals.playerCount+1, 1, maxPlayerCount)
+          megaMan.playerCount = math.wrap(megaMan.playerCount+1, 1, maxPlayerCount)
         else
           self.section = 2
           self.timer = 0
@@ -138,13 +138,13 @@ function menuSelect:update()
     end
   elseif self.section == 2 then
     self.timer = math.wrap(self.timer+1, 0, 20)
-    local old = globals.playerCount
+    local old = megaMan.playerCount
     if input.pressed.left1 then
-      globals.playerCount = math.wrap(globals.playerCount-1, 1, maxPlayerCount)
+      megaMan.playerCount = math.wrap(megaMan.playerCount-1, 1, maxPlayerCount)
     elseif input.pressed.right1 then
-      globals.playerCount = math.wrap(globals.playerCount+1, 1, maxPlayerCount)
+      megaMan.playerCount = math.wrap(megaMan.playerCount+1, 1, maxPlayerCount)
     end
-    if old ~= globals.playerCount then
+    if old ~= megaMan.playerCount then
       megautils.playSound("cursorMove")
     end
     if input.pressed.start1 or input.pressed.jump1 then
@@ -163,9 +163,9 @@ function menuSelect:draw()
     love.graphics.print(megautils.getScale(), 96, (18*8)-1)
   end
   if self.section ~= 2 or self.timer > 10 then
-    love.graphics.print(tostring(globals.playerCount), 96, (22*8)-1)
+    love.graphics.print(tostring(megaMan.playerCount), 96, (22*8)-1)
   end
-  if globals.playerCount > 1 then
+  if megaMan.playerCount > 1 then
     love.graphics.print("S", 20*8, (22*8)-1)
   end
   if isMobile or isWeb then

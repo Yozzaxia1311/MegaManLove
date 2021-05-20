@@ -300,14 +300,14 @@ end
 
 megautils._ranFiles = {}
 
-function megautils.runFile(path, runOnce, ...)
+function megautils.runFile(path, runOnce)
   if runOnce then
     if not table.icontains(megautils._ranFiles, path) then
       megautils._ranFiles[#megautils._ranFiles+1] = path
       if love.filesystem.getInfo(path).type == "directory" then
-        return megautils._runFolderStructure(path, ...)
+        return megautils._runFolderStructure(path)
       else
-        return love.filesystem.load(path)(...)
+        return love.filesystem.load(path)()
       end
     end
   else
@@ -315,9 +315,9 @@ function megautils.runFile(path, runOnce, ...)
       megautils._ranFiles[#megautils._ranFiles+1] = path
     end
     if love.filesystem.getInfo(path).type == "directory" then
-      return megautils._runFolderStructure(path, ...)
+      return megautils._runFolderStructure(path)
     else
-      return love.filesystem.load(path)(...)
+      return love.filesystem.load(path)()
     end
   end
 end
@@ -956,6 +956,34 @@ function megautils._runFolderStructure(path, ...)
   megautils.runFSEvent(result)
 end
 
+function megautils.serDependencies()
+  local scripts = {unpack(megautils._ranFiles)}
+  local resources = {}
+  for k, v in pairs(loader.resources) do
+    resources[#resources + 1] = {path = v.path, nick = k, type = v.type, parameters = v.parameters, locked = false}
+  end
+  for k, v in pairs(loader.locked) do
+    resources[#resources + 1] = {path = v.path, nick = k, type = v.type, parameters = v.parameters, locked = false}
+  end
+  local entities = {}
+  
+  return {scripts = scripts, resources = resources, state = states.current, music = mmMusic.ser()}
+end
+
+function megautils.deserDependencies(tt)
+  megautils.queue(function(t)
+      states.set(t.state)
+      love.audio.stop()
+      for _, v in ipairs(t.scripts) do
+        megautils.runFile(v)
+      end
+      for k, v in ipairs(t.resources) do
+        loader.load(v.path, k, v.type, v.parameters, v.locked)
+      end
+      mmMusic.deser(t.music)
+    end, tt)
+end
+
 function megautils.resetGame(s, saveSfx, saveMusic)
   if not saveSfx then
     megautils.stopAllSounds()
@@ -1027,26 +1055,7 @@ function megautils.loadResource(...)
   local nick = args[2]
   local t = ""
   
-  if type(args[1]) == "number" and type(args[2]) == "number" then
-    local grid
-    t = "grid"
-    path = nil
-    if type(args[5]) == "number" then
-      nick = args[6]
-      locked = args[7]
-      grid = {args[3], args[4], args[1], args[2], args[5]}
-    elseif type(args[3]) == "number" and type(args[4]) == "number" then
-      nick = args[5]
-      locked = args[6]
-      grid = {args[3], args[4], args[1], args[2]}
-    else
-      nick = args[3]
-      locked = args[4]
-      grid = {args[1], args[2]}
-    end
-    loader.load(nil, nick, t, grid, locked)
-    return loader.get(nick)
-  elseif checkExt(path, {"anim"}) then
+  if checkExt(path, {"anim"}) then
     t = "anim"
     locked = args[3]
     loader.load(path, nick, t, nil, locked)

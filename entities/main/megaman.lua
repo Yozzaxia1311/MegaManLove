@@ -45,7 +45,12 @@ megaMan.colorOutline = {}
 megaMan.colorOne = {}
 megaMan.colorTwo = {}
 megaMan.weaponHandler = {}
+megaMan.playerCount = 1
 megaMan.allPlayers = {}
+megaMan.playerToInput = {}
+for i = 1, maxPlayerCount do
+  megaMan.playerToInput[i] = i
+end
 
 function megaMan.resources()
    mmWeaponsMenu.resources()
@@ -143,13 +148,13 @@ megautils.resetGameObjectsFuncs.megaMan = {func=function()
     megautils.setLives((megautils.getLives() > globals.startingLives) and megautils.getLives() or globals.startingLives)
     globals.checkpoint = globals.overrideCheckpoint or "start"
     globals.overrideCheckpoint = nil
-    globals.playerCount = globals.overridePlayerCount or globals.playerCount
+    megaMan.playerCount = globals.overridePlayerCount or megaMan.playerCount
     globals.overridePlayerCount = nil
     vPad.active = false
     
     megaMan.resources()
     
-    for i = 1, globals.playerCount do
+    for i = 1, megaMan.playerCount do
       megaMan.weaponHandler[i] = weaponHandler(nil, nil, 10)
       megaMan.registerWeapons(i)
     end
@@ -198,14 +203,15 @@ mapEntity.register("player", function(v)
     if v.properties.checkpoint == globals.checkpoint then
       local g = v.properties.gravMult * v.properties.gravFlip
       if v.properties.individual and v.properties.individual > 0 then
-        if v.properties.individual <= globals.playerCount then
+        if v.properties.individual <= megaMan.playerCount then
           megaMan.individualLanded[#megaMan.individualLanded+1] = v.properties.individual
           megautils.add(megaMan, v.x+2, v.y+((g >= 0) and -5 or 0),
-            v.properties.side, v.properties.drop, v.properties.individual, v.properties.gravMult, v.properties.gravFlip, v.properties.control,
+            v.properties.side, v.properties.drop, v.properties.individual,
+            v.properties.gravMult, v.properties.gravFlip, v.properties.control,
             v.properties.doReady, v.properties.teleporter)
         end
       else
-        for i=1, globals.playerCount do
+        for i=1, megaMan.playerCount do
           if not table.icontains(megaMan.individualLanded, i) then
             megautils.add(megaMan, v.x+2, v.y+((g >= 0) and -5 or 0),
               v.properties.side, v.properties.drop, i, v.properties.gravMult, v.properties.gravFlip, v.properties.control,
@@ -365,6 +371,7 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   self.x = x or 0
   self.y = y or 0
   self.player = p or 1
+  self.input = megaMan.playerToInput[self.player]
   megautils.registerPlayer(self)
   megaMan.properties(self, g, gf, c)
   self.nextWeapon = 0
@@ -719,7 +726,7 @@ function megaMan:attemptWeaponUsage()
   local w = megaMan.weaponHandler[self.player]
   local shots = {}
   
-  if (input.down["shoot" .. tostring(self.player)] or self.tShoot) and weapon.rapidFireFuncs[w.current] and
+  if (input.down["shoot" .. tostring(self.input)] or self.tShoot) and weapon.rapidFireFuncs[w.current] and
     (weapon.ignoreEnergy[w.current] or self:checkWeaponEnergy(w.current)) then
     self.rapidShotTime = math.max(self.rapidShotTime - 1, 0)
     
@@ -754,7 +761,7 @@ function megaMan:attemptWeaponUsage()
     self.rapidShotTime = 0
   end
   
-  if (input.pressed["shoot" .. tostring(self.player)] or self.tShootPressed) and weapon.shootFuncs[w.current] and
+  if (input.pressed["shoot" .. tostring(self.input)] or self.tShootPressed) and weapon.shootFuncs[w.current] and
     (weapon.ignoreEnergy[w.current] or self:checkWeaponEnergy(w.current)) then
     local e, energy = weapon.shootFuncs[w.current](self)
     
@@ -781,7 +788,7 @@ function megaMan:attemptWeaponUsage()
       end
     end
   end
-  if not (input.down["shoot" .. tostring(self.player)] or self.tShoot) and
+  if not (input.down["shoot" .. tostring(self.input)] or self.tShoot) and
     self.chargeState ~= 0 and weapon.chargeShotFuncs[w.current] and
     (weapon.ignoreEnergy[w.current] or self:checkWeaponEnergy(w.current)) and weapon.chargeColors[w.current] then
     local e, energy = weapon.chargeShotFuncs[w.current](self, self.chargeState)
@@ -810,7 +817,7 @@ function megaMan:attemptWeaponUsage()
     end
   end
   
-  if (input.down["shoot" .. tostring(self.player)] or self.tShoot) and
+  if (input.down["shoot" .. tostring(self.input)] or self.tShoot) and
     (w.current ~= "M.BUSTER" or w.current ~= "P.BUSTER" or w.current ~= "R.BUSTER" or
     checkFalse(self.canChargeBuster)) then
     self:charge()
@@ -826,18 +833,18 @@ function megaMan:attemptWeaponUsage()
 end
 
 function megaMan:attemptClimb()
-  if not checkFalse(self.canClimb) or (not (input.down["down" .. tostring(self.player)] or self.tDown) and
-    not (input.down["up" .. tostring(self.player)] or self.tUp)) then
+  if not checkFalse(self.canClimb) or (not (input.down["down" .. tostring(self.input)] or self.tDown) and
+    not (input.down["up" .. tostring(self.input)] or self.tUp)) then
     return
   end
   local lad = self:checkLadder(0, self.gravity >= 0 and 1 or -1)
   local downDown, upDown
   if self.gravity >= 0 then
-    downDown = input.down["down" .. tostring(self.player)] or self.tDown
-    upDown = input.down["up" .. tostring(self.player)] or self.tUp
+    downDown = input.down["down" .. tostring(self.input)] or self.tDown
+    upDown = input.down["up" .. tostring(self.input)] or self.tUp
   else
-    downDown = input.down["up" .. tostring(self.player)] or self.tUp
-    upDown = input.down["down" .. tostring(self.player)] or self.tDown
+    downDown = input.down["up" .. tostring(self.input)] or self.tUp
+    upDown = input.down["down" .. tostring(self.input)] or self.tDown
   end
   if lad then
     self.currentLadder = lad
@@ -937,7 +944,7 @@ function megaMan:interactedWith(o, c)
       self.noFreeze = true
       megautils.freeze("dying")
       if camera.main then
-        if self.player == 1 then
+        if self.input == 1 then
           vPad.active = false
         end
         local active = {}
@@ -1024,18 +1031,18 @@ function megaMan:code(dt)
   
   self.canIgnoreKnockback.global = false
   self.protoShielding = false
-  self.runCheck = (((input.down["left" .. tostring(self.player)] or self.tLeft) and
-    not (input.down["right" .. tostring(self.player)] or self.tRight)) or
-    ((input.down["right" .. tostring(self.player)] or self.tRight) and
-    not (input.down["left" .. tostring(self.player)] or self.tLeft)))
+  self.runCheck = (((input.down["left" .. tostring(self.input)] or self.tLeft) and
+    not (input.down["right" .. tostring(self.input)] or self.tRight)) or
+    ((input.down["right" .. tostring(self.input)] or self.tRight) and
+    not (input.down["left" .. tostring(self.input)] or self.tLeft)))
   self.blockCollision.noClip = true
   if megautils.isNoClip() then
     self.blockCollision.noClip = false
     self.velX = 0
     self.velY = 0
-    local m = (input.down["jump" .. tostring(self.player)] or self.tJump) and 2 or 1
+    local m = (input.down["jump" .. tostring(self.input)] or self.tJump) and 2 or 1
     if self.runCheck then
-      if input.down["right" .. tostring(self.player)] or self.tRight then
+      if input.down["right" .. tostring(self.input)] or self.tRight then
         self.velX = 2*m
         self.side = 1
       else
@@ -1043,11 +1050,11 @@ function megaMan:code(dt)
         self.side = -1
       end
     end
-    if (((input.down["up" .. tostring(self.player)] or self.tUp) and
-      not (input.down["down" .. tostring(self.player)] or self.tDown)) or
-      ((input.down["down" .. tostring(self.player)] or self.tDown) and
-      not (input.down["up" .. tostring(self.player)] or self.tUp))) then
-      if input.down["down" .. tostring(self.player)] or self.tDown then
+    if (((input.down["up" .. tostring(self.input)] or self.tUp) and
+      not (input.down["down" .. tostring(self.input)] or self.tDown)) or
+      ((input.down["down" .. tostring(self.input)] or self.tDown) and
+      not (input.down["up" .. tostring(self.input)] or self.tUp))) then
+      if input.down["down" .. tostring(self.input)] or self.tDown then
         self.velY = 2*m
       else
         self.velY = -2*m
@@ -1078,18 +1085,18 @@ function megaMan:code(dt)
       end
     elseif self.treble == 3 and self.hitTimer == self.maxHitTime then
       if self.runCheck then
-        self.side = (input.down["left" .. tostring(self.player)] or self.tLeft) and -1 or 1
+        self.side = (input.down["left" .. tostring(self.input)] or self.tLeft) and -1 or 1
         self.trebleVelX = math.clamp(self.trebleVelX + (self.side == 1 and 0.1 or -0.1),
           -self.maxTrebleSpeed, self.maxTrebleSpeed)
       else
         self.trebleVelX = math.approach(self.trebleVelX, 0, self.trebleDecel)
       end
-      if (((input.down["up" .. tostring(self.player)] or self.tUp) and
-        not (input.down["down" .. tostring(self.player)] or self.tDown)) or
-        ((input.down["down" .. tostring(self.player)] or self.tDown) and
-        not (input.down["up" .. tostring(self.player)] or self.tUp))) then
+      if (((input.down["up" .. tostring(self.input)] or self.tUp) and
+        not (input.down["down" .. tostring(self.input)] or self.tDown)) or
+        ((input.down["down" .. tostring(self.input)] or self.tDown) and
+        not (input.down["up" .. tostring(self.input)] or self.tUp))) then
         self.trebleVelY = math.clamp(self.trebleVelY +
-          ((input.down["down" .. tostring(self.player)] or self.tDown) and 0.1 or -0.1),
+          ((input.down["down" .. tostring(self.input)] or self.tDown) and 0.1 or -0.1),
           -self.maxTrebleSpeed, self.maxTrebleSpeed)
       else
         self.trebleVelY = math.approach(self.trebleVelY, 0, self.trebleDecel)
@@ -1138,7 +1145,7 @@ function megaMan:code(dt)
       end
     end
     collision.doCollision(self)
-    if input.down["shoot" .. tostring(self.player)] or self.tShoot then
+    if input.down["shoot" .. tostring(self.input)] or self.tShoot then
       self:charge()
     else
       self:charge(true)
@@ -1156,15 +1163,15 @@ function megaMan:code(dt)
     
     local downDown, upDown
     if self.gravity >= 0 then
-      downDown = input.down["down" .. tostring(self.player)] or self.tDown
-      upDown = input.down["up" .. tostring(self.player)] or self.tUp
+      downDown = input.down["down" .. tostring(self.input)] or self.tDown
+      upDown = input.down["up" .. tostring(self.input)] or self.tUp
     else
-      downDown = input.down["up" .. tostring(self.player)] or self.tUp
-      upDown = input.down["down" .. tostring(self.player)] or self.tDown
+      downDown = input.down["up" .. tostring(self.input)] or self.tUp
+      upDown = input.down["down" .. tostring(self.input)] or self.tDown
     end
     
     if not self.currentLadder or self.ground or
-      ((input.pressed["jump" .. tostring(self.player)] or self.tJumpPressed) and not (downDown or upDown)) or
+      ((input.pressed["jump" .. tostring(self.input)] or self.tJumpPressed) and not (downDown or upDown)) or
       self.x <= view.x-(self.collisionShape.w/2)+2 or
       self.x >= (view.x+view.w)-(self.collisionShape.w/2)-2 then
       self.climb = false
@@ -1187,16 +1194,16 @@ function megaMan:code(dt)
         self.climb = false
     else
       if self.runCheck then
-        if input.down["left" .. tostring(self.player)] or self.tLeft then
+        if input.down["left" .. tostring(self.input)] or self.tLeft then
           self.side = -1
         else
           self.side = 1
         end
       end
       self.x = self.currentLadder.x+(self.currentLadder.collisionShape.w/2)-(self.collisionShape.w/2)
-      if ((input.down["up" .. tostring(self.player)] or self.tUp) or
-        (input.down["down" .. tostring(self.player)] or self.tDown)) and self.shootFrames == 0 then
-        if input.down["up" .. tostring(self.player)] or self.tUp then
+      if ((input.down["up" .. tostring(self.input)] or self.tUp) or
+        (input.down["down" .. tostring(self.input)] or self.tDown)) and self.shootFrames == 0 then
+        if input.down["up" .. tostring(self.input)] or self.tUp then
           self.velY = self.climbUpSpeed
         else
           self.velY = self.climbDownSpeed
@@ -1227,11 +1234,11 @@ function megaMan:code(dt)
   elseif self.slide then
     collision.checkGround(self, true)
     local lastSide = self.side
-    if input.down["left" .. tostring(self.player)] or self.tLeft then
+    if input.down["left" .. tostring(self.input)] or self.tLeft then
       self.side = -1
       self.step = true
       self.stepTime = 0
-    elseif input.down["right" .. tostring(self.player)] or self.tRight then
+    elseif input.down["right" .. tostring(self.input)] or self.tRight then
       self.side = 1
       self.step = true
       self.stepTime = 0
@@ -1272,8 +1279,8 @@ function megaMan:code(dt)
         self:slideToReg()
         self.standSolidJumpTimer = -1
       elseif checkFalse(self.canJump) and checkFalse(self.canJumpOutFromDash) and
-        (input.pressed["jump" .. tostring(self.player)] or self.tJumpPressed) and not rb
-        and (self.ground or sb) and not (input.down["down" .. tostring(self.player)] or self.tDown) then
+        (input.pressed["jump" .. tostring(self.input)] or self.tJumpPressed) and not rb
+        and (self.ground or sb) and not (input.down["down" .. tostring(self.input)] or self.tDown) then
         self.slide = false
         jumped = true
         self.velY = self.jumpSpeed * (self.gravity >= 0 and 1 or -1)
@@ -1309,7 +1316,7 @@ function megaMan:code(dt)
     collision.doCollision(self)
     self.slideXColl = self.xColl
     local cd = checkFalse(self.canDashShoot)
-    if not cd and (input.down["shoot" .. tostring(self.player)] or self.tShoot) then
+    if not cd and (input.down["shoot" .. tostring(self.input)] or self.tShoot) then
       self:charge()
     elseif cd then
       self:attemptWeaponUsage()
@@ -1325,7 +1332,7 @@ function megaMan:code(dt)
     collision.doGrav(self)
     if checkFalse(self.canWalk) and not (self.stopOnShot and self.shootFrames ~= 0) then
       if self.runCheck and not self.step then
-        self.side = (input.down["left" .. tostring(self.player)] or self.tLeft) and -1 or 1
+        self.side = (input.down["left" .. tostring(self.input)] or self.tLeft) and -1 or 1
         local sv = checkFalse(self.canStep)
         if sv and self.stepTime == 0 then
           collision.shiftObject(self, (self.side == -1) and self.stepLeftSpeed or self.stepRightSpeed, 0, true)
@@ -1337,7 +1344,7 @@ function megaMan:code(dt)
         end
         self.velX = math.approach(self.velX, 0, self.side == -1 and self.leftDecel or self.rightDecel)
       elseif self.runCheck then
-        self.side = (input.down["left" .. tostring(self.player)] or self.tLeft) and -1 or 1
+        self.side = (input.down["left" .. tostring(self.input)] or self.tLeft) and -1 or 1
         self.velX = self.velX + (self.side == -1 and self.leftSpeed or self.rightSpeed)
       else
         self.velX = math.approach(self.velX, 0, self.side == -1 and self.leftDecel or self.rightDecel)
@@ -1346,16 +1353,16 @@ function megaMan:code(dt)
       end
     else
       if self.runCheck then
-        self.side = (input.down["left" .. tostring(self.player)] or self.tLeft) and -1 or 1
+        self.side = (input.down["left" .. tostring(self.input)] or self.tLeft) and -1 or 1
       end
       self.velX = math.approach(self.velX, 0, self.side == -1 and self.leftDecel or self.rightDecel)
       self.stepTime = 0
       self.step = false
     end
-    if checkFalse(self.canDash) and ((input.pressed["dash" .. tostring(self.player)] or self.tDashPressed) or
-      ((input.down[(self.gravity >= 0 and "down" or "up") .. tostring(self.player)] or
+    if checkFalse(self.canDash) and ((input.pressed["dash" .. tostring(self.input)] or self.tDashPressed) or
+      ((input.down[(self.gravity >= 0 and "down" or "up") .. tostring(self.input)] or
       self["t" .. (self.gravity >= 0 and "Down" or "Up")]) and
-      (input.pressed["jump" .. tostring(self.player)] or self.tJumpPressed))) and
+      (input.pressed["jump" .. tostring(self.input)] or self.tJumpPressed))) and
       not self:checkBasicSlideBox(self.side, 0) then
       self.slide = true
       self:regToSlide()
@@ -1363,13 +1370,13 @@ function megaMan:code(dt)
       megautils.add(slideParticle, self.x+(self.side==-1 and self.collisionShape.w-8 or 0),
         self.y+(self.gravity >= 0 and self.collisionShape.h-6 or -2), self, self.side)
     elseif checkFalse(self.canJump) and self.inStandSolid and
-      (input.down["jump" .. tostring(self.player)] or self.tJump) and
+      (input.down["jump" .. tostring(self.input)] or self.tJump) and
       self.standSolidJumpTimer ~= self.maxStandSolidJumpTime and
       self.standSolidJumpTimer ~= -1 then
       self.velY = self.jumpSpeed * (self.gravity >= 0 and 1 or -1)
       self.standSolidJumpTimer = math.min(self.standSolidJumpTimer+1, self.maxStandSolidJumpTime)
-    elseif checkFalse(self.canJump) and (input.pressed["jump" .. tostring(self.player)] or self.tJumpPressed) and
-      not ((input.down[(self.gravity >= 0 and "down" or "up") .. tostring(self.player)] or
+    elseif checkFalse(self.canJump) and (input.pressed["jump" .. tostring(self.input)] or self.tJumpPressed) and
+      not ((input.down[(self.gravity >= 0 and "down" or "up") .. tostring(self.input)] or
       self["t" .. (self.gravity >= 0 and "Down" or "Up")]) and
       self:checkBasicSlideBox(self.side, 0)) then
       self.velY = self.jumpSpeed * (self.gravity >= 0 and 1 or -1)
@@ -1378,12 +1385,12 @@ function megaMan:code(dt)
     else
       self.velY = 0
     end
-    if self.standSolidJumpTimer > 0 and (not (input.down["jump" .. tostring(self.player)] or self.tJump) or
+    if self.standSolidJumpTimer > 0 and (not (input.down["jump" .. tostring(self.input)] or self.tJump) or
       self.standSolidJumpTimer == self.maxStandSolidJumpTime) then
       self.standSolidJumpTimer = -1
       megautils.playSound("land")
     end
-    if self.standSolidJumpTimer == -1 and not (input.down["jump" .. tostring(self.player)] or self.tJump) then
+    if self.standSolidJumpTimer == -1 and not (input.down["jump" .. tostring(self.input)] or self.tJump) then
       self.standSolidJumpTimer = 0
     end
     self.velX = math.clamp(self.velX, self.maxLeftSpeed, self.maxRightSpeed)
@@ -1411,7 +1418,7 @@ function megaMan:code(dt)
     collision.doGrav(self)
     self.protoShielding = checkFalse(self.canProtoShield)
     if self.runCheck then
-      self.side = (input.down["left" .. tostring(self.player)] or self.tLeft) and -1 or 1
+      self.side = (input.down["left" .. tostring(self.input)] or self.tLeft) and -1 or 1
       self.velX = self.velX + (self.side == -1 and 
         (self.dashJump and self.slideLeftSpeed*self.dashJumpMultiplier or self.leftAirSpeed) or 
         (self.dashJump and self.slideRightSpeed*self.dashJumpMultiplier or self.rightAirSpeed))
@@ -1429,11 +1436,11 @@ function megaMan:code(dt)
       self.stepTime = 0
       self.step = false
     end
-    if (input.pressed["jump" .. tostring(self.player)] or self.tJumpPressed) and self.extraJumps < self.maxExtraJumps then
+    if (input.pressed["jump" .. tostring(self.input)] or self.tJumpPressed) and self.extraJumps < self.maxExtraJumps then
       self.extraJumps = self.extraJumps + 1
       self.velY = self.jumpSpeed * (self.gravity >= 0 and 1 or -1)
     end
-    if checkFalse(self.canStopJump) and not (input.down["jump" .. tostring(self.player)] or self.tJump) and
+    if checkFalse(self.canStopJump) and not (input.down["jump" .. tostring(self.input)] or self.tJump) and
       ((self.gravity < 0 and self.velY > 0) or (self.gravity >= 0 and self.velY < 0)) then
       self.velY = math.approach(self.velY, 0, self.jumpDecel)
     end
@@ -1497,7 +1504,7 @@ function megaMan:code(dt)
   if self.stopOnShot and self.shootFrames == 0 then
     self.stopOnShot = false
   end
-  if megaMan.mainPlayer and (input.pressed["start" .. tostring(self.player)] or self.tStartPressed) and
+  if megaMan.mainPlayer and (input.pressed["start" .. tostring(self.input)] or self.tStartPressed) and
     checkFalse(megaMan.mainPlayer.canControl) and checkFalse(megaMan.mainPlayer.canUpdate) and checkFalse(self.canPause) then
     self.weaponSwitchTimer = 70
     vPad.active = false
@@ -1573,7 +1580,7 @@ function megaMan:grav()
 end
 
 function megaMan:attemptWeaponSwitch()
-  if input.down["prev" .. tostring(self.player)] and input.down["next" .. tostring(self.player)]
+  if input.down["prev" .. tostring(self.input)] and input.down["next" .. tostring(self.input)]
     and megaMan.weaponHandler[self.player].currentSlot ~= 0 then
     self:switchWeaponSlot(0)
     local w = math.wrap(megaMan.weaponHandler[self.player].currentSlot+1, 0, megaMan.weaponHandler[self.player].slotSize)
@@ -1588,7 +1595,7 @@ function megaMan:attemptWeaponSwitch()
     self.prevWeapon = w
     self.weaponSwitchTimer = 0
     megautils.playSound("switch")
-  elseif input.pressed["next" .. tostring(self.player)] and not input.pressed["prev" .. tostring(self.player)] then
+  elseif input.pressed["next" .. tostring(self.input)] and not input.pressed["prev" .. tostring(self.input)] then
     self.prevWeapon = megaMan.weaponHandler[self.player].currentSlot
     local w = math.wrap(megaMan.weaponHandler[self.player].currentSlot+1, 0, megaMan.weaponHandler[self.player].slotSize)
     while not megaMan.weaponHandler[self.player].weapons[w] do
@@ -1602,7 +1609,7 @@ function megaMan:attemptWeaponSwitch()
     self.nextWeapon = w
     self.weaponSwitchTimer = 0
     megautils.playSound("switch")
-  elseif input.pressed["prev" .. tostring(self.player)] and not input.pressed["next" .. tostring(self.player)] then
+  elseif input.pressed["prev" .. tostring(self.input)] and not input.pressed["next" .. tostring(self.input)] then
     self.nextWeapon = megaMan.weaponHandler[self.player].currentSlot
     local w = math.wrap(megaMan.weaponHandler[self.player].currentSlot-1, 0, megaMan.weaponHandler[self.player].slotSize)
     while not megaMan.weaponHandler[self.player].weapons[w] do
@@ -1647,16 +1654,16 @@ function megaMan:bassBusterAnim(shoot)
   if not weapon.sevenWayAnim[megaMan.weaponHandler[self.player].current] then return shoot end
   local dir = shoot
   if self.shootFrames ~= 0 then
-    if input.down["up" .. tostring(self.player)] or self.tUp then
-      if (input.down["left" .. tostring(self.player)] or self.tLeft) or
-        (input.down["right" .. tostring(self.player)] or self.tRight) then
+    if input.down["up" .. tostring(self.input)] or self.tUp then
+      if (input.down["left" .. tostring(self.input)] or self.tLeft) or
+        (input.down["right" .. tostring(self.input)] or self.tRight) then
         dir = self.gravity >= 0 and "s_um" or "s_dm"
       else
         dir = self.gravity >= 0 and "s_u" or "s_dm"
       end
-    elseif input.down["down" .. tostring(self.player)] or self.tDown then
-      if self.gravity < 0 and ((input.down["left" .. tostring(self.player)] or self.tLeft) or
-        (input.down["right" .. tostring(self.player)] or self.tRight)) then
+    elseif input.down["down" .. tostring(self.input)] or self.tDown then
+      if self.gravity < 0 and ((input.down["left" .. tostring(self.input)] or self.tLeft) or
+        (input.down["right" .. tostring(self.input)] or self.tRight)) then
         dir = "s_um"
       else
         dir = self.gravity >= 0 and "s_dm" or "s_u"
@@ -1705,8 +1712,8 @@ function megaMan:animate(getDataOnly)
         else
           newAnim = self.climbTipAnimation.regular
         end
-      elseif not ((input.down["down" .. tostring(self.player)] or self.tDown) or
-        (input.down["up" .. tostring(self.player)] or self.tUp)) then
+      elseif not ((input.down["down" .. tostring(self.input)] or self.tDown) or
+        (input.down["up" .. tostring(self.input)] or self.tUp)) then
         pause = true
         if shoot == "regular" and self.anims.current ~= self.climbAnimation.regular and
           table.contains(self.climbAnimation, self.anims.current) then
@@ -1716,8 +1723,8 @@ function megaMan:animate(getDataOnly)
             newFrame = 1
           end
         end
-      elseif ((input.down["down" .. tostring(self.player)] or self.tDown) or
-        (input.down["up" .. tostring(self.player)] or self.tUp)) and self.anims:isPaused() then
+      elseif ((input.down["down" .. tostring(self.input)] or self.tDown) or
+        (input.down["up" .. tostring(self.input)] or self.tUp)) and self.anims:isPaused() then
         resume = true
       end
     elseif self.slide then
@@ -1834,7 +1841,7 @@ function megaMan:die()
   self.canControl.global = false
   self.died = true
   
-  if self.player == 1 then
+  if self.input == 1 then
     vPad.active = false
   end
   
@@ -1844,7 +1851,7 @@ function megaMan:die()
 end
 
 function megaMan:update()
-  if self.player == 1 then
+  if self.input == 1 then
     local exludeTrans = {unpack(self.canControl)}
     exludeTrans.trans = nil
     vPad.active = not self.died and not self.cameraTween and checkFalse(exludeTrans) and not self.doWeaponGet and input.usingTouch

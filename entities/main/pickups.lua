@@ -67,7 +67,7 @@ function pickup:_afterUpdate(dt)
   if checkFalse(self.autoCollision) then
     collision.doCollision(self, self.noSlope)
   end
-  for i=1, globals.playerCount do
+  for i=1, megaMan.playerCount do
     local p = megaMan.allPlayers[i]
     if self:collision(p) then
       self:taken(p)

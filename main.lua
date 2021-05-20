@@ -101,7 +101,6 @@ function initEngine()
   globals.checkpoint = "start"
   globals.lifeSegments = 7
   globals.startingLives = 2
-  globals.playerCount = 1
   globals.disclaimerState = "assets/states/menus/disclaimer.state.lua"
   globals.bossIntroState = "assets/states/menus/bossintro.state.lua"
   globals.weaponGetState = "assets/states/menus/weaponget.state.lua"

@@ -6,7 +6,6 @@ function mmMusic.ser()
       curID=mmMusic.curID,
       playing=not mmMusic.stopped(),
       volume=mmMusic.getVolume(),
-      tell=mmMusic.mTell,
       queue=mmMusic.queue,
       locked=mmMusic.locked
     }
@@ -18,7 +17,7 @@ function mmMusic.deser(t)
   mmMusic.curID = t.curID
   mmMusic._queue = t.queue
   if t.curID and t.playing then
-    mmMusic.play(t.curID, t.volume, t.tell)
+    mmMusic.play(t.curID, t.volume)
   end
   if t.paused then
     mmMusic.pause()

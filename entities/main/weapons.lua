@@ -484,10 +484,10 @@ weapon.rapidFireFuncs["B.BUSTER"] = function(player)
     if player:numberOfShots("bassBuster") < 4 then
       local dir = player.side == 1 and 0 or 180
       
-      if input.down["up" .. tostring(player.player)] or player.tUp then
-        if input.down["left" .. tostring(player.player)] or player.tLeft then
+      if input.down["up" .. tostring(player.input)] or player.tUp then
+        if input.down["left" .. tostring(player.input)] or player.tLeft then
           dir = -45+180
-        elseif input.down["right" .. tostring(player.player)] or player.tRight then
+        elseif input.down["right" .. tostring(player.input)] or player.tRight then
           dir = 45
         else
           if player.gravity >= 0 then
@@ -496,10 +496,10 @@ weapon.rapidFireFuncs["B.BUSTER"] = function(player)
             dir = player.side == 1 and 45 or -45+180
           end
         end
-      elseif input.down["down" .. tostring(player.player)] or player.tDown then
-        if input.down["left" .. tostring(player.player)] or player.tLeft then
+      elseif input.down["down" .. tostring(player.input)] or player.tDown then
+        if input.down["left" .. tostring(player.input)] or player.tLeft then
           dir = 45+180
-        elseif input.down["right" .. tostring(player.player)] or player.tRight then
+        elseif input.down["right" .. tostring(player.input)] or player.tRight then
           dir = -45
         else
           if player.gravity >= 0 then
@@ -964,9 +964,9 @@ function rushJet:update()
       self.playerOn = false
     end
     if self.playerOn and self.user then
-      if input.down["up" .. tostring(self.user.player)] or self.user.tUp then
+      if input.down["up" .. tostring(self.user.input)] or self.user.tUp then
         self.velY = -1
-      elseif input.down["down" .. tostring(self.user.player)] or self.user.tDown then
+      elseif input.down["down" .. tostring(self.user.input)] or self.user.tDown then
         self.velY = 1
       else
         self.velY = 0

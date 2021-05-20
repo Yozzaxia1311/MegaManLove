@@ -47,7 +47,7 @@ function rebinder:update()
     end
     
     if self.currentKey == table.length(self.keys) then
-      if self.player == globals.playerCount then
+      if self.player == megaMan.playerCount then
         self.done = true
         input.unbind()
         for k, v in pairs(self.data.inputBinds) do

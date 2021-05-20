@@ -75,15 +75,15 @@ function healthHandler:update(dt)
   end
   if self.player and self.player == megaMan.mainPlayer and
     checkFalse(self.player.canControl) and checkFalse(self.player.canUpdate) then
-    for i=1, globals.playerCount do
+    for i=1, megaMan.playerCount do
       if healthHandler.playerTimers[i] > -1 then
         healthHandler.playerTimers[i] = math.max(healthHandler.playerTimers[i]-1, 0)
         if healthHandler.playerTimers[i] == 0 then
           healthHandler.playerTimers[i] = -1
         end
       elseif healthHandler.playerTimers[i] == -1 and
-        (input.pressed["start" .. tostring(i)] or
-        (i == 1 and input.touchPressedOverlaps(self.x - 8, self.y + 8 - 8, 48 + 16, 8 + 16))) then
+        (input.pressed["start" .. tostring(megaMan.playerToInput[i])] or
+        (megaMan.playerToInput[i] == 1 and input.touchPressedOverlaps(self.x - 8, self.y + 8 - 8, 48 + 16, 8 + 16))) then
         if megautils.getLives() > 0 then
           healthHandler.playerTimers[i] = -2
           local p = megautils.add(megaMan, self.player.x, self.player.y, self.player.side, true, i)
@@ -125,7 +125,7 @@ function healthHandler:draw()
       love.graphics.print(tostring(megautils.getLives()), self.x, self.y)
     end
     if self.mp == self.player then
-      for i=1, globals.playerCount do
+      for i=1, megaMan.playerCount do
         if healthHandler.playerTimers[i] == -1 then
           love.graphics.setColor(0, 0, 0, 1)
           love.graphics.rectangle("fill", self.x, self.y+(i*8), (i == 1 and input.usingTouch) and 48 or 32, 8)
@@ -174,7 +174,7 @@ function healthHandler:draw()
       self.colorTwo[3]/255, 1)
     self.barTwo:draw(self.quads[bit], tx, ty, tr)
   end
-  if self.player and globals.playerCount > 1 then
+  if self.player and megaMan.playerCount > 1 then
     love.graphics.setColor(0, 0, 0, 1)
     love.graphics.rectangle("fill", self.x, self.y-(self.segments*8)-8, 8, 8)
     love.graphics.setColor(1, 1, 1, 1)

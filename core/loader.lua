@@ -4,16 +4,10 @@ function loader.ser()
   local result = {resources={}, locked={}}
   
   for k, v in pairs(loader.resources) do
-    result.resources[k] = {path=v.path, nick=v.nick, type=v.type}
-    if v.parameters then
-      result.resources[k].parameters = v.parameters
-    end
+    result.resources[k] = {path=v.path, nick=v.nick, type=v.type, parameters = v.parameters}
   end
   for k, v in pairs(loader.locked) do
-    result.locked[k] = {path=v.path, nick=v.nick, type=v.type}
-    if v.parameters then
-      result.locked[k].parameters = v.parameters
-    end
+    result.locked[k] = {path=v.path, nick=v.nick, type=v.type, parameters = v.parameters}
   end
   
   return result
@@ -76,22 +70,6 @@ function loader.load(path, nick, typ, parameters, lock)
         error("Cannot overwrite a locked resource.")
       end
       loader.resources[nick] = {data=love.audio.newSource(path, "static"), path=path, type=typ}
-      
-      return loader.resources[nick]
-    end
-  elseif typ == "grid" then
-    if lock then
-      loader.locked[nick] = {data=anim8.newGrid(parameters[1], parameters[2], parameters[3], parameters[4], parameters[5]),
-        parameters=parameters, type=typ}
-      loader.resources[nick] = nil
-      
-      return loader.locked[nick]
-    else
-      if loader.locked[nick] then
-        error("Cannot overwrite a locked resource.")
-      end
-      loader.resources[nick] = {data=anim8.newGrid(parameters[1], parameters[2], parameters[3], parameters[4], parameters[5]),
-        parameters=parameters, type=typ}
       
       return loader.resources[nick]
     end
