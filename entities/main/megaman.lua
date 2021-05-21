@@ -48,7 +48,7 @@ megaMan.weaponHandler = {}
 megaMan.playerCount = 1
 megaMan.allPlayers = {}
 megaMan.playerToInput = {}
-for i = 1, maxPlayerCount do
+for i = 1, megaMan.playerCount do
   megaMan.playerToInput[i] = i
 end
 

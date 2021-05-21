@@ -30,6 +30,12 @@ function gfx:sync(syncPos)
   return self
 end
 
+function gfx:visibility(t)
+  self.canDraw.global = t == true
+  
+  return self
+end
+
 function gfx:addGFX(name, gfx, noSync)
   if not table.icontains(self.gfx, gfx) then
     gfx.name = name or "GFX"
