@@ -1582,9 +1582,12 @@ function advancedEntity:useHealthBar(oneColor, twoColor, outlineColor, add)
   if camera.main then
     camera.main.funcs.advancedEntity = function(s)
         if megautils.groups().advancedEntity then
-          for _, v in ipairs(megautils.groups().advancedEntity) do
-            v.healthHandler.x = (v.barRelativeToView and view.x or 0) + v.barOffsetX
-            v.healthHandler.y = (v.barRelativeToView and view.y or 0) + v.barOffsetY
+          for i = 1, #megautils.groups().advancedEntity do
+            if megautils.groups().advancedEntity[i].healthHandler then
+              local v = megautils.groups().advancedEntity[i]
+              v.healthHandler.x = (v.barRelativeToView and view.x or 0) + v.barOffsetX
+              v.healthHandler.y = (v.barRelativeToView and view.y or 0) + v.barOffsetY
+            end
           end
         end
       end
