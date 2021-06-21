@@ -83,8 +83,10 @@ function menuSelect:update()
         data.eTanks = megautils.getETanks()
         data.wTanks = megautils.getWTanks()
         data.players = {}
-        for k, v in ipairs(megaMan.skins) do
-          data.players[k] = v.path
+        for i = 1, megaMan.playerCount do
+          if megaMan.getSkin(i) then
+            data.players[i] = megaMan.getSkin(i).path
+          end
         end
         save.save("save.sav", data)
         megautils.playSound("selected")
