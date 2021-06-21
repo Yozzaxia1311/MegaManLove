@@ -33,7 +33,7 @@ function disclaimer:new()
   self.bottomTextGP = "Press Start to continue" ..
     (isWeb and "\n" or "\nPress Select here for fullscreen") ..
     (isWeb and "\n" or "\nPress 1-9 to set the scale") ..
-    "\nPress RStickBtn here to rebind"
+    "\nPress Guide here to rebind"
   self.bottomTextT = "Touch or MouseBtn to continue" ..
     "\n" ..
     "\n" ..
@@ -52,26 +52,28 @@ function disclaimer:update()
     end
     if input.usingTouch and not table.contains(self.texts, self.bottomTextT) then
       self.texts[#self.texts + 1] = self.bottomTextT
+      self.tTimer = 40
     elseif not input.usingTouch and table.contains(self.texts, self.bottomTextT) then
       table.removevalue(self.texts, self.bottomTextT)
     end
     if #input.gamepads ~= 0 then
       if not table.contains(self.texts, self.bottomTextGP) then
+        self.tTimer = 40
         self.texts[#self.texts + 1] = self.bottomTextGP
-      elseif not input.usingTouch and table.contains(self.texts, self.bottomTextGP) then
-        table.removevalue(self.texts, self.bottomTextGP)
       end
       if lastPressed.input == "back" then
         megautils.setFullscreen(not megautils.getFullscreen())
         local data = save.load("main.sav") or {}
         data.fullscreen = megautils.getFullscreen()
         save.save("main.sav", data)
-      elseif lastPressed.input == "rightstick" then
+      elseif lastPressed.input == "guide" then
         globals.sendBackToDisclaimer = true
         megautils.transitionToState(globals.rebindState)
         self.check = false
         return
       end
+    elseif table.contains(self.texts, self.bottomTextGP) then
+      table.removevalue(self.texts, self.bottomTextGP)
     end
     if input.pressed.start1 or input.length(input.touchPressed) ~= 0 then
       megautils.transitionToState(globals.titleState)

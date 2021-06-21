@@ -21,10 +21,11 @@ menuSelect.invisibleToHash = true
 function menuSelect:new()
   menuSelect.super.new(self)
   self.x = 88
-  self.y = 10*8
   self.tex = megautils.getResource("menuSelect")
-  self.pick = 0
-  self.offY = self.y
+  self.pick = globals.fromOther or 0
+  self.offY = 10 * 8
+  self.y = self.offY + self.pick*16
+  globals.fromOther = nil
   self.picked = false
   self.section = 0
   self.timer = 20
@@ -106,13 +107,9 @@ function menuSelect:update()
         globals.lastStateName = megautils.getCurrentState()
         megautils.transitionToState(globals.rebindState)
       elseif self.pick == 6 then
-        if input.usingTouch then
-          megaMan.playerCount = math.wrap(megaMan.playerCount+1, 1, maxPlayerCount)
-        else
-          self.section = 2
-          self.timer = 0
-        end
-        megautils.playSound("selected")
+        self.picked = true
+        self.section = -1
+        megautils.transitionToState(globals.playerSelectState)
       elseif self.pick == 7 then
         self.picked = true
         self.section = -1
@@ -136,22 +133,6 @@ function menuSelect:update()
       self.timer = 20
       megautils.playSound("selected")
     end
-  elseif self.section == 2 then
-    self.timer = math.wrap(self.timer+1, 0, 20)
-    local old = megaMan.playerCount
-    if input.pressed.left1 then
-      megaMan.playerCount = math.wrap(megaMan.playerCount-1, 1, maxPlayerCount)
-    elseif input.pressed.right1 then
-      megaMan.playerCount = math.wrap(megaMan.playerCount+1, 1, maxPlayerCount)
-    end
-    if old ~= megaMan.playerCount then
-      megautils.playSound("cursorMove")
-    end
-    if input.pressed.start1 or input.pressed.jump1 then
-      self.section = 0
-      self.timer = 20
-      megautils.playSound("selected")
-    end
   end
 end
 
@@ -161,12 +142,6 @@ function menuSelect:draw()
   end
   if self.section ~= 1 or self.timer > 10 then
     love.graphics.print(megautils.getScale(), 96, (18*8)-1)
-  end
-  if self.section ~= 2 or self.timer > 10 then
-    love.graphics.print(tostring(megaMan.playerCount), 96, (22*8)-1)
-  end
-  if megaMan.playerCount > 1 then
-    love.graphics.print("S", 20*8, (22*8)-1)
   end
   if isMobile or isWeb then
     love.graphics.setColor(0, 0, 0, 0.5)

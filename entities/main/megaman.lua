@@ -48,7 +48,7 @@ megaMan.weaponHandler = {}
 megaMan.playerCount = 1
 megaMan.allPlayers = {}
 megaMan.playerToInput = {}
-for i = 1, megaMan.playerCount do
+for i = 1, maxPlayerCount do
   megaMan.playerToInput[i] = i
 end
 
@@ -255,7 +255,6 @@ function megaMan.properties(self, g, gf, c)
   self.maxHitTime = 32
   self.leftKnockBackSpeed = -0.5
   self.rightKnockBackSpeed = 0.5
-  self.maxNormalBusterShots = 3
   self.cameraOffsetX = 0
   self.cameraOffsetY = 0
   self.cameraWidth = 11

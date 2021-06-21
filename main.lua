@@ -107,6 +107,7 @@ function initEngine()
   globals.rebindState = "assets/states/menus/rebind.state.lua"
   globals.titleState = "assets/states/menus/title.state.lua"
   globals.menuState = "assets/states/menus/menu.state.tmx"
+  globals.playerSelectState = "assets/states/menus/players.state.lua"
   globals.stageSelectState = "assets/states/menus/stageSelect.state.tmx"
   globals.gameOverState = "assets/states/menus/cont.state.tmx"
   
@@ -353,6 +354,18 @@ function love.update(dt)
     beforeUpdate()
   end
   
+  if love.joystick then
+    if globals.axisTmp then
+      if globals.axisTmp.x and (not globals.axisTmp.y or
+        math.abs(globals.axisTmp.x[3]) > math.abs(globals.axisTmp.y[3])) then
+        lastPressed.type, lastPressed.input, lastPressed.name = globals.axisTmp.x[1], globals.axisTmp.x[2], globals.axisTmp.x[4]
+      elseif globals.axisTmp.y then
+        lastPressed.type, lastPressed.input, lastPressed.name = globals.axisTmp.y[1], globals.axisTmp.y[2], globals.axisTmp.y[4]
+      end
+      globals.axisTmp = nil
+    end
+  end
+  
   local doAgain = true
   
   while doAgain do
@@ -374,15 +387,6 @@ function love.update(dt)
   mmMusic.update()
   
   if love.joystick then
-    if globals.axisTmp then
-      if globals.axisTmp.x and (not globals.axisTmp.y or
-        math.abs(globals.axisTmp.x[3]) > math.abs(globals.axisTmp.y[3])) then
-        lastPressed = {globals.axisTmp.x[1], globals.axisTmp.x[2], globals.axisTmp.x[4]}
-      elseif globals.axisTmp.y then
-        lastPressed = {globals.axisTmp.y[1], globals.axisTmp.y[2], globals.axisTmp.y[4]}
-      end
-      globals.axisTmp = nil
-    end
     for k, _ in pairs(gamepadCheck) do
       gamepadCheck[k] = gamepadCheck[k] - 1
       if gamepadCheck[k] < 0 then

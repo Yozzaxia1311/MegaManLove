@@ -379,11 +379,11 @@ function animationSet:length(a)
   return self.anims[a or self.current]:length()
 end
 
-function animationSet:update(dt)
-  if self.anims[self.current] then
-    self.anims[self.current].useDelta = self.useDelta
-    self.anims[self.current].framerate = self.framerate
-    self.anims[self.current]:update(dt)
+function animationSet:update(dt, a)
+  if self.anims[a or self.current] then
+    self.anims[a or self.current].useDelta = self.useDelta
+    self.anims[a or self.current].framerate = self.framerate
+    self.anims[a or self.current]:update(dt)
   end
 end
 

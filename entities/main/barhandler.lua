@@ -131,10 +131,10 @@ function healthHandler:draw()
           love.graphics.rectangle("fill", self.x, self.y+(i*8), (i == 1 and input.usingTouch) and 48 or 32, 8)
           if megautils.getLives() <= 0 then
             love.graphics.setColor(1, 0.2, 0.2, 1)
-            love.graphics.print("p" .. tostring(i) .. " x", self.x, self.y+(i*8))
+            love.graphics.print("p" .. tostring(i) .. " X", self.x, self.y+(i*8))
           else
             love.graphics.setColor(0.2, 1, 0.2, 1)
-            love.graphics.print("p" .. tostring(i) .. (i == 1 and input.usingTouch and " tap" or " o"), self.x, self.y+(i*8))
+            love.graphics.print("p" .. tostring(i) .. (i == 1 and input.usingTouch and " tap" or " O"), self.x, self.y+(i*8))
           end
           love.graphics.setColor(1, 1, 1, 1)
         elseif healthHandler.playerTimers[i] > -1 then

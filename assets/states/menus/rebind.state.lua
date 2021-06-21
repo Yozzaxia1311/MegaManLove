@@ -25,18 +25,26 @@ function rebinder:new()
   self.keys = {"left", "right", "up", "down", "jump", "shoot", "dash", "prev", "next", "start", "select"}
   self.keyNames = {"left", "right", "up", "down", "jump", "shoot", "dash", "previous weapon", "next weapon", "start", "select"}
   self.currentKey = 1
-  self.player = 1
+  self.player = globals.rPlayer or 1
+  globals.rPlayer = nil
   self.done = false
   self.data = save.load("main.sav") or {}
-  self.data.inputBinds = {}
+  if not self.data.inputBinds then
+    self.data.inputBinds = {}
+  end
   self.dt = {}
 end
 
 function rebinder:update()
-  if lastPressed.input == "escape" and not self.done then
+  if (lastPressed.input == "escape" or lastPressed.input == "guide") and not self.done then
     megautils.add(fade, true, nil, nil, function(s)
-      megautils.gotoState(globals.sendBackToDisclaimer and globals.disclaimerState or globals.lastStateName)
+      if not globals.sendBackToDisclaimer and not globals.sendBackToPlayers then
+        globals.fromOther = 5
+      end
+      megautils.gotoState(globals.sendBackToDisclaimer and globals.disclaimerState or
+        (globals.sendBackToPlayers and globals.playerSelectState or globals.lastStateName))
       globals.sendBackToDisclaimer = nil
+      globals.sendBackToPlayers = nil
     end)
     return
   end
@@ -47,21 +55,25 @@ function rebinder:update()
     end
     
     if self.currentKey == table.length(self.keys) then
-      if self.player == megaMan.playerCount then
-        self.done = true
-        input.unbind()
-        for k, v in pairs(self.data.inputBinds) do
-          input.bind(v, k, table.contains(self.dt, k))
+      self.done = true
+      for k, _ in pairs(input.keys) do
+        if k:sub(-1) == tostring(self.player) then
+          input.unbind(k)
         end
-        save.save("main.sav", self.data)
-        megautils.add(fade, true, nil, nil, function(s)
-            megautils.gotoState(globals.sendBackToDisclaimer and globals.disclaimerState or globals.lastStateName)
-            globals.sendBackToDisclaimer = nil
-          end)
-      else
-        self.currentKey = 1
-        self.player = self.player + 1
       end
+      for k, v in pairs(self.data.inputBinds) do
+        input.bind(v, k, table.contains(self.dt, k))
+      end
+      save.save("main.sav", self.data)
+      megautils.add(fade, true, nil, nil, function(s)
+          if not globals.sendBackToDisclaimer and not globals.sendBackToPlayers then
+            globals.fromOther = 5
+          end
+          megautils.gotoState(globals.sendBackToDisclaimer and globals.disclaimerState or
+            (globals.sendBackToPlayers and globals.playerSelectState or globals.lastStateName))
+          globals.sendBackToDisclaimer = nil
+          globals.sendBackToPlayers = nil
+        end)
     else
       self.currentKey = math.min(self.currentKey + 1, table.length(self.keys))
     end
@@ -70,9 +82,9 @@ end
 
 function rebinder:draw()
   love.graphics.setFont(mmFont)
-  love.graphics.printf("press the player " .. tostring(self.player) .. " \n\""
+  love.graphics.printf("Press the player " .. tostring(self.player) .. " \n\""
     .. self.keyNames[self.currentKey] .. "\"!" ..
-    "\n\n(press escape to leave)", self.x, self.y, 200, "center")
+    "\n\n(press " .. (input.gamepads ~= 0 and "Escape or Guide" or "Escape") .. " to leave)", self.x, self.y, 200, "center")
 end
 
 return rebindState

@@ -16,7 +16,7 @@ function engineGlobals(whenLoveModuleIsLoaded)
     splash = "assets/misc/splash.bmp"
     borderLeft = "assets/misc/borderLeft.png"
     borderRight = "assets/misc/borderRight.png"
-    deadZone = 0.8
+    deadZone = 0.4
     defaultFPS = 60
     clampSkinShootOffsets = true
     maxPlayerCount = 4
