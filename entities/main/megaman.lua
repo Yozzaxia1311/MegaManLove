@@ -439,7 +439,7 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
     self.y = -self.collisionShape.h
     self.x = math.floor(view.w/2)-(self.collisionShape.w/2)
     self.canDraw.global = false
-  elseif (dr == nil or dr) and not self.teleporter and megaMan.mainPlayer == self and not megaMan.once then
+  elseif (dr == nil or dr) and not self.teleporter then
     self._checkDR = true
   end
   self.side = side or 1
@@ -458,7 +458,7 @@ function megaMan:added()
   
   self:addToGroup("submergable")
   
-  if self._checkDR then
+  if self._checkDR and megaMan.mainPlayer == self and not megaMan.once then
     if self.protoWhistle then
       self.ready = megautils.add(ready, nil, 32)
       if mmMusic._queue then
@@ -479,8 +479,13 @@ function megaMan:added()
     end
     
     self.healthHandler = megautils.add(healthHandler, nil, nil, nil,
-      nil, nil, globals.lifeSegments, self)
+      nil, nil, self._lSeg or globals.lifeSegments, self)
+    self._lSeg = nil
     self.healthHandler.canDraw.global = false
+    if self._lHealth then
+      self.healthHandler:instantUpdate(self._lHealth)
+      self._lHealth = nil
+    end
     
     if megaMan.weaponHandler[self.player] and not megaMan.weaponHandler[self.player].isRemoved then
       megautils.removeq(megaMan.weaponHandler[self.player])
@@ -1845,12 +1850,16 @@ function megaMan:die()
     vPad.active = false
   end
   
+  self._lHealth = nil
+  self._lSeg = nil
   megautils.removeq(self)
   megautils.playSound("dieExplode")
 end
 
 function megaMan:removed()
   megautils.unregisterPlayer(self)
+  self._lHealth = self.healthHandler and self.healthHandler.health
+  self._lSeg = self.healthHandler and self.healthHandler.segments
 end
 
 function megaMan:update()

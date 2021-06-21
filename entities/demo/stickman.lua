@@ -13,7 +13,6 @@ function stickMan:new(x, y)
   self:setRectangleCollision(12, 24)
   self.anims = animationSet("stickManAnims"):off(-4, -8)
   self:addGFX("anims", self.anims)
-  self:useHealthBar({128, 128, 128}, {255, 255, 255})
   self.flipFace = true
   
   -- Stage select exclusive
@@ -50,6 +49,11 @@ function stickMan:new(x, y)
     end
   self.defeatSlot = "stickMan"
   self.defeatSlotValue = {weaponSlot=1, weaponName="STICK W."}
+end
+
+function stickMan:added()
+  stickMan.super.added(self)
+  self:useHealthBar({128, 128, 128}, {255, 255, 255})
 end
 
 function stickMan:weaponTable(o)

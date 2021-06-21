@@ -1570,6 +1570,10 @@ function advancedEntity:added()
 end
 
 function advancedEntity:useHealthBar(oneColor, twoColor, outlineColor, add)
+  if ((add == nil) or add) and self.healthHandler and not self.healthHandler.isRemoved then
+    megautils.removeq(self.healthHandler)
+  end
+  
   if (add == nil) or add then
     self.healthHandler = megautils.add(healthHandler, oneColor or {128, 128, 128}, twoColor or {255, 255, 255}, outlineColor or {0, 0, 0},
       nil, nil, math.ceil(self.health/4))
