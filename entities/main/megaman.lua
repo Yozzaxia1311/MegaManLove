@@ -371,7 +371,6 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   self.y = y or 0
   self.player = p or 1
   self.input = megaMan.playerToInput[self.player]
-  megautils.registerPlayer(self)
   megaMan.properties(self, g, gf, c)
   self.nextWeapon = 0
   self.prevWeapon = 0
@@ -446,14 +445,6 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   self.side = side or 1
   
   self.anims:set(self.drop and "spawn" or "idle")
-  
-  for _, v in pairs(megautils.playerCreatedFuncs) do
-    if type(v) == "function" then
-      v(self)
-    else
-      v.func(self)
-    end
-  end
 end
 
 function megaMan:begin()
@@ -463,6 +454,8 @@ function megaMan:begin()
 end
 
 function megaMan:added()
+  megautils.registerPlayer(self)
+  
   self:addToGroup("submergable")
   
   if self._checkDR then
@@ -514,6 +507,14 @@ function megaMan:added()
           end
         end
       end
+    end
+  end
+  
+  for _, v in pairs(megautils.playerCreatedFuncs) do
+    if type(v) == "function" then
+      v(self)
+    else
+      v.func(self)
     end
   end
 end
@@ -1844,9 +1845,12 @@ function megaMan:die()
     vPad.active = false
   end
   
-  megautils.unregisterPlayer(self)
   megautils.removeq(self)
   megautils.playSound("dieExplode")
+end
+
+function megaMan:removed()
+  megautils.unregisterPlayer(self)
 end
 
 function megaMan:update()

@@ -1292,6 +1292,10 @@ function megautils.getAllEntities()
   return megautils.state().system.all
 end
 
+function megautils.removeAll()
+  states.currentState.system:clean()
+end
+
 function megautils.getRecycled(o, ...)
   return states.currentState.system:getRecycled(o, ...)
 end
@@ -1343,34 +1347,38 @@ function megautils.revivePlayer(p)
 end
 
 function megautils.registerPlayer(e)
-  if not megaMan.mainPlayer then
-    megaMan.mainPlayer = e
-  end
-  megaMan.allPlayers[#megaMan.allPlayers+1] = e
-  
-  if #megaMan.allPlayers > 1 then
-    local keys = {}
-    local vals = {}
-    for k, v in pairs(megaMan.allPlayers) do
-      keys[#keys+1] = v.player
-      vals[v.player] = v
-      megaMan.allPlayers[k] = nil
+  if not table.contains(megaMan.allPlayers, e) then
+    if not megaMan.mainPlayer then
+      megaMan.mainPlayer = e
     end
-    table.sort(keys)
-    for j=1, #keys do
-      megaMan.allPlayers[j] = vals[keys[j]]
+    megaMan.allPlayers[#megaMan.allPlayers+1] = e
+    
+    if #megaMan.allPlayers > 1 then
+      local keys = {}
+      local vals = {}
+      for k, v in pairs(megaMan.allPlayers) do
+        keys[#keys+1] = v.player
+        vals[v.player] = v
+        megaMan.allPlayers[k] = nil
+      end
+      table.sort(keys)
+      for j=1, #keys do
+        megaMan.allPlayers[j] = vals[keys[j]]
+      end
     end
-  end
-  
-  if e == megaMan.allPlayers[1] then
-    megaMan.mainPlayer = e
+    
+    if e == megaMan.allPlayers[1] then
+      megaMan.mainPlayer = e
+    end
   end
 end
 
 function megautils.unregisterPlayer(e)
-  table.removevaluearray(megaMan.allPlayers, e)
-  if megaMan.mainPlayer == e then
-    megaMan.mainPlayer = megaMan.allPlayers[1]
+  if table.contains(megaMan.allPlayers, e) then
+    table.removevaluearray(megaMan.allPlayers, e)
+    if megaMan.mainPlayer == e then
+      megaMan.mainPlayer = megaMan.allPlayers[1]
+    end
   end
 end
 

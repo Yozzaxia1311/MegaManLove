@@ -240,6 +240,9 @@ function love.keypressed(k, s, r)
       if k == "tab" and #console.input > 0 and #console.getCompletion(console.input) > 0 then
         console.complete()
       end
+      if k == "v" and (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl")) and love.system.getClipboardText() then
+        console.doInput(love.system.getClipboardText())
+      end
       return
     end
   end
