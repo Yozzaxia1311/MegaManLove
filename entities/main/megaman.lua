@@ -314,7 +314,13 @@ function megaMan.registerWeapons(p)
     
     for _, v in pairs(globals.defeats) do
       if type(v) == "table" then
-        megaMan.weaponHandler[p]:register(v.weaponSlot or 1, v.weaponName or "WEAPON")
+        if not v.weaponSlot and not v.weaponName and type(v[1]) == "table" then
+          for i = 1, #v do
+            megaMan.weaponHandler[p]:register(v[i].weaponSlot or 1, v[i].weaponName or "WEAPON")
+          end
+        else
+          megaMan.weaponHandler[p]:register(v.weaponSlot or 1, v.weaponName or "WEAPON")
+        end
       end
     end
   end
