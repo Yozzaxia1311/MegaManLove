@@ -452,11 +452,23 @@ function love.window.updateMode(w, h, f)
 end
 
 local lt = love.timer
-local lk = love.keyboard
+local lt_sleep = love.timer.sleep
+local lt_getTime = love.timer.getTime
+local lt_step = love.timer.step
+local lk_isDown = love.keyboard.isDown
 local le = love.event
+local le_pump = love.event.pump
+local le_poll = love.event.poll
 local lu = love.update
 local lg = love.graphics
+local lg_isActive = love.graphics.isActive
+local lg_origin = love.graphics.origin
+local lg_clear = love.graphics.clear
+local lg_getBackgroundColor = love.graphics.getBackgroundColor
+local lg_present = love.graphics.present
 local ld = love.draw
+local lh = love.handlers
+local lq = love.quit
 
 function pressingHardInputs(k)
   if megautils then
@@ -485,11 +497,11 @@ function pressingHardInputs(k)
       end
     end
 
-    return isHardKey and lk.isDown(k) and (checkMod == 0 or (checkMod == 1 and
-      (lk.isDown("ralt") or lk.isDown("lalt"))) or
-      (checkMod == 2 and (lk.isDown("rctrl") or lk.isDown("lctrl"))) or
-      (checkMod == -1 and lk.isDown("return")) or
-      (checkMod == -2 and (lk.isDown("o") or lk.isDown("p") or lk.isDown("r"))))
+    return isHardKey and lk_isDown(k) and (checkMod == 0 or (checkMod == 1 and
+      (lk_isDown("ralt") or lk_isDown("lalt"))) or
+      (checkMod == 2 and (lk_isDown("rctrl") or lk_isDown("lctrl"))) or
+      (checkMod == -1 and lk_isDown("return")) or
+      (checkMod == -2 and (lk_isDown("o") or lk_isDown("p") or lk_isDown("r"))))
   end
   
   return false
@@ -498,9 +510,9 @@ end
 function beforeUpdate()
   if lk and console and save and megautils then
     if not (useConsole and console.state == 1) then
-      if not lk.isDown("return") then
+      if not lk_isDown("return") then
         altEnterOnce = false
-      elseif (lk.isDown("ralt") or lk.isDown("lalt")) and lk.isDown("return") then
+      elseif (lk_isDown("ralt") or lk_isDown("lalt")) and lk_isDown("return") then
         if not altEnterOnce then
           megautils.setFullscreen(not megautils.getFullscreen())
           local data = save.load("main.sav") or {}
@@ -512,7 +524,7 @@ function beforeUpdate()
       
       for i=1, 9 do
         local k = tostring(i)
-        if lk.isDown(k) or lk.isDown("kp" .. k) then
+        if lk_isDown(k) or lk_isDown("kp" .. k) then
           if view.w * i ~= lg.getWidth() or
             view.h * i ~= lg.getHeight() then
             local last = megautils.getScale()
@@ -532,20 +544,20 @@ function beforeUpdate()
       end
     end
     
-    if not lk.isDown("o") and not lk.isDown("p") and not lk.isDown("r") then
+    if not lk_isDown("o") and not lk_isDown("p") and not lk_isDown("r") then
       contextOnce = false
-    elseif (lk.isDown("lctrl") or lk.isDown("rctrl")) then
-      if lk.isDown("o") then
+    elseif (lk_isDown("lctrl") or lk_isDown("rctrl")) then
+      if lk_isDown("o") then
         if not contextOnce then
           console.parse("contextsave quickContext")
         end
         contextOnce = true
-      elseif lk.isDown("p") then
+      elseif lk_isDown("p") then
         if not contextOnce then
           console.parse("contextopen quickContext")
         end
         contextOnce = true
-      elseif lk.isDown("r") then
+      elseif lk_isDown("r") then
         if not contextOnce then
           console.parse("rec")
         end
@@ -611,31 +623,31 @@ if not isWeb then
         beforeUpdate()
         
         if le then
-          le.pump()
+          le_pump()
           
-          for name, a,b,c,d,e,f in le.poll() do
+          for name, a,b,c,d,e,f in le_poll() do
             if name == "quit" then
-              if not love.quit or not love.quit() then
+              if not lq or not lq() then
                 return a or 0
               end
             end
-            love.handlers[name](a,b,c,d,e,f)
+            lh[name](a,b,c,d,e,f)
           end
         end
         
-        if lu then lu(lt and lt.step()) end
-        
-        if lg and lg.isActive() then
-          lg.origin()
-          lg.clear(lg.getBackgroundColor())
-          if ld then ld() end
-          lg.present()
-        end
+        if lu then lu(lt and lt_step()) end
         
         if lt then
-          local delta, fps = lt.getTime() - bu, 1/megautils.getFPS()
-          if delta < fps then lt.sleep(fps - delta) end
-          bu = lt.getTime()
+          local delta, fps = lt_getTime() - bu, 1/megautils.getFPS()
+          if delta < fps then lt_sleep(fps - delta) end
+          bu = lt_getTime()
+        end
+        
+        if lg and lg_isActive() then
+          lg_origin()
+          lg_clear(lg_getBackgroundColor())
+          if ld then ld() end
+          lg_present()
         end
         
         afterUpdate()

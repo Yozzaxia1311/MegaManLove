@@ -232,11 +232,13 @@ function math.approach(v, to, am)
   return v
 end
 
+local _max, _min = math.max, math.min
+
 function math.clamp(val, min, max)
   if min < max then
-    return math.max(math.min(max, val), min)
+    return _max(_min(max, val), min)
   else
-    return math.max(math.min(min, val), max)
+    return _max(_min(min, val), max)
   end
 end
 
@@ -263,8 +265,10 @@ function math.sign(x)
   return 0
 end
 
+local _floor = math.floor
+
 function math.round(x)
-  return math.floor(x + 0.5)
+  return _floor(x + 0.5)
 end
 
 function math.wrap(v, min, max)

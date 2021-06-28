@@ -418,35 +418,43 @@ function console.doWait()
   if console.wait > 0 then console.wait = console.wait - 1 end
 end
 
-function console.draw()
-  local oldFont = love.graphics.getFont()
-  local lineMax = math.floor(6.67*console.scale)
+local _floor = math.floor
+local _getFont = love.graphics.getFont
+local _setFont = love.graphics.setFont
+local _setColor = love.graphics.setColor
+local _rectangle = love.graphics.rectangle
+local _print = love.graphics.print
+local _clamp = math.clamp
 
-  love.graphics.setFont(console.font)
-  love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.setColor(0, 0, 0, 0.95)
-  love.graphics.rectangle("fill", console.x, console.y, console.w, console.h)
-  love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.rectangle("fill", console.x, console.y+console.h-1, console.w, 1)
+function console.draw()
+  local oldFont = _getFont()
+  local lineMax = _floor(6.67*console.scale)
+
+  _setFont(console.font)
+  _setColor(1, 1, 1, 1)
+  _setColor(0, 0, 0, 0.95)
+  _rectangle("fill", console.x, console.y, console.w, console.h)
+  _setColor(1, 1, 1, 1)
+  _rectangle("fill", console.x, console.y+console.h-1, console.w, 1)
   if #console.input > 0 then
-    love.graphics.setColor(1, 1, 1, 0.33)
-    love.graphics.print("$ "..console.getCompletion(console.input), console.x+2, console.y+console.h-16)
+    _setColor(1, 1, 1, 0.33)
+    _print("$ "..console.getCompletion(console.input), console.x+2, console.y+console.h-16)
   end
-  love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.print("$ "..console.input.."_", console.x+2, console.y+console.h-16)
+  _setColor(1, 1, 1, 1)
+  _print("$ "..console.input.."_", console.x+2, console.y+console.h-16)
 
   local i = #console.lines+1
-  local amt = math.clamp(#console.lines-lineMax, 1, #console.lines-lineMax)
+  local amt = _clamp(#console.lines-lineMax, 1, #console.lines-lineMax)
   while i > amt do
     if console.lines[i] then
       if amt >= 0 then
-        love.graphics.print(console.lines[i], console.x+2, (console.y-16)+((i-amt)*16))
+        _print(console.lines[i], console.x+2, (console.y-16)+((i-amt)*16))
       else
-        love.graphics.print(console.lines[i], console.x+2, (console.y-16)+((i)*16))
+        _print(console.lines[i], console.x+2, (console.y-16)+((i)*16))
       end
     end
     i = i - 1
   end
 
-  love.graphics.setFont(oldFont)
+  _setFont(oldFont)
 end
