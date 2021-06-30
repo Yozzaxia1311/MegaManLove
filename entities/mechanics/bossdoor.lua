@@ -313,6 +313,9 @@ function bossDoor:update()
         camera.main.transition = false
         camera.main.preTrans = false
         megautils.state().system.cameraUpdate = nil
+        
+        collectgarbage()
+        collectgarbage()
       end
       self.state = 0
     end

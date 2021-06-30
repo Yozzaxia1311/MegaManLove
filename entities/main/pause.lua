@@ -24,6 +24,9 @@ function mmWeaponsMenu.pause(self)
       megautils.add(mmWeaponsMenu, self)
       local ff = megautils.add(fade, false, nil, nil, fade.remove)
       megautils.removeq(s)
+      
+      collectgarbage()
+      collectgarbage()
     end)
   
   if camera.main then
@@ -163,6 +166,9 @@ function mmWeaponsMenu:removed()
   end
   
   vPad.active = self.lastVPadActive
+  
+  collectgarbage()
+  collectgarbage()
 end
 
 function mmWeaponsMenu:update(dt)

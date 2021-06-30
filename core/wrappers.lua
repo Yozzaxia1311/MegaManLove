@@ -225,5 +225,5 @@ function spriteBatch:getColor()
 end
 
 function spriteBatch:draw(x, y, r, sx, sy, ox, oy, kx, ky)
-  love.graphics.draw(self.batch, x, y, math.rad(r), sx, sy, ox, oy, kx, ky)
+  love.graphics.draw(self.batch, x, y, math.rad(r or 0), sx, sy, ox, oy, kx, ky)
 end

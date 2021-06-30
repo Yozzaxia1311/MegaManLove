@@ -144,6 +144,9 @@ function states.set(n, before, after)
     if after then after() end
   end
   
+  collectgarbage()
+  collectgarbage()
+  
   if map then
     if mapArgs.mPath then
       megautils.playMusic(mapArgs.mPath, mapArgs.mVolume)

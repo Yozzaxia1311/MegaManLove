@@ -116,7 +116,7 @@ function Layer.spritelayer:_createSpriteBatches()
 end
 
 function Layer.spritelayer:_setSprite(x, y, gid, offGrid)
-  if spriteBatchTileMaps then
+  if self.useSpriteBatch then
     self:_batchSetSprite(x, y, gid, offGrid)
   else
     -- if the gid is 0 (empty), remove the sprite at (x, y)
@@ -257,10 +257,11 @@ end
 
 function Layer.spritelayer:_init(map)
   Layer.base._init(self, map)
-
+  
+  self.useSpriteBatch = (not map.infinite and map.width * map.tilewidth <= view.w and map.height * map.tileheight <= view.h) or spriteBatchTileMaps
   self:_initAnimations()
 
-  if spriteBatchTileMaps then
+  if self.useSpriteBatch then
     self:_createSpriteBatches()
     self._sprites = {
       exists = {},
@@ -282,7 +283,7 @@ function Layer.spritelayer:_init(map)
 end
 
 function Layer.spritelayer:setDrawRange(x, y, w, h)
-  if not spriteBatchTileMaps then
+  if not self.useSpriteBatch then
     self._sprites.drawRange.x = x or self._sprites.drawRange.x
     self._sprites.drawRange.y = y or self._sprites.drawRange.y
     self._sprites.drawRange.w = w or self._sprites.drawRange.w
@@ -291,7 +292,7 @@ function Layer.spritelayer:setDrawRange(x, y, w, h)
 end
 
 function Layer.spritelayer:_updateAnimations(dt)
-  if spriteBatchTileMaps then
+  if self.useSpriteBatch then
     self:_batchUpdateAnimations(dt)
   else
     local ty = math.ceil(self._sprites.drawRange.y/self._map.tileheight)-1
@@ -367,7 +368,7 @@ function Layer.spritelayer:update(dt)
 end
 
 function Layer.spritelayer:draw()
-  if spriteBatchTileMaps then
+  if self.useSpriteBatch then
     self:_batchDraw()
   else
     love.graphics.push()
@@ -377,13 +378,18 @@ function Layer.spritelayer:draw()
     local th = math.floor(self._sprites.drawRange.h/self._map.tileheight)+1
     local tx = math.ceil(self._sprites.drawRange.x/self._map.tilewidth)-1
     local tw = math.floor(self._sprites.drawRange.w/self._map.tilewidth)+1
+    local sprites_map = self._sprites.map
+    local sprites_quad = self._sprites.quads
+    local map_images = self._map._images
+    local map_tilewidth = self._map.tilewidth
+    local map_tileheight = self._map.tileheight
 
     for y=ty, ty+th do
       for x=tx, tx+tw do
-        if self._sprites.map[y] and self._sprites.map[y][x] and self._sprites.quads[y] and self._sprites.quads[y][x] then
-          local tileset = self._map:getTileset(self._sprites.map[y][x])
-          if tileset.image then
-            self._map._images[tileset.image]:draw(self._sprites.quads[y][x], x*self._map.tilewidth, y*self._map.tileheight)
+        if sprites_map[y] and sprites_map[y][x] and sprites_quad[y] and sprites_quad[y][x] then
+          local tileset = self._map:getTileset(sprites_map[y][x]).image
+          if tileset then
+            map_images[tileset]:draw(sprites_quad[y][x], x*map_tilewidth, y*map_tileheight)
           end
         end
       end
@@ -869,7 +875,7 @@ local function finalXML2LuaTable(str, f)
   result.luaversion = "5.1"
   result.tileheight = tonumber(result.tileheight)
   result.tilewidth = tonumber(result.tilewidth)
-  local inf = result.infinite ~= "0"
+  result.infinite = result.infinite ~= "0"
   if result.backgroundcolor then
     result.backgroundcolor = result.backgroundcolor:gsub("#","")
     result.backgroundcolor = {tonumber("0x"..result.backgroundcolor:sub(1,2)),
@@ -1125,7 +1131,7 @@ local function finalXML2LuaTable(str, f)
               v.data.compression = nil
             end
 
-            if inf then
+            if result.infinite then
               if v.data.chunk then
                 if not (type(v.data.chunk[1]) == "table" and type(v.data.chunk[2]) == "table") then
                   v.data.chunk = {v.data.chunk}

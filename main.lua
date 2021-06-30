@@ -311,6 +311,7 @@ end
 function love.mousepressed(x, y, button, touch)
   if love.mouse and not touch then
     lastTouch.x, lastTouch.y = cscreen.project(x, y)
+    lastTouch.x, lastTouch.y = lastTouch.x / view.scale, lastTouch.y / view.scale
     lastTouch.id = "mousetouch"
     lastTouch.pressure = 1
     input.usingTouch = true
@@ -325,6 +326,7 @@ function love.touchpressed(id, x, y, dx, dy, pressure)
   if useConsole and console.state == 1 then return end
   
   lastTouch.x, lastTouch.y = cscreen.project(x, y)
+  lastTouch.x, lastTouch.y = lastTouch.x / view.scale, lastTouch.y / view.scale
   lastTouch.id = id
   lastTouch.pressure = pressure
   input.usingTouch = true
@@ -455,6 +457,7 @@ local lt = love.timer
 local lt_sleep = love.timer.sleep
 local lt_getTime = love.timer.getTime
 local lt_step = love.timer.step
+local lk = love.keyboard
 local lk_isDown = love.keyboard.isDown
 local le = love.event
 local le_pump = love.event.pump
@@ -507,7 +510,7 @@ function pressingHardInputs(k)
   return false
 end
 
-function beforeUpdate()
+local function beforeUpdate()
   if lk and console and save and megautils then
     if not (useConsole and console.state == 1) then
       if not lk_isDown("return") then
@@ -546,7 +549,7 @@ function beforeUpdate()
     
     if not lk_isDown("o") and not lk_isDown("p") and not lk_isDown("r") then
       contextOnce = false
-    elseif (lk_isDown("lctrl") or lk_isDown("rctrl")) then
+    elseif lk_isDown("lctrl") or lk_isDown("rctrl") then
       if lk_isDown("o") then
         if not contextOnce then
           console.parse("contextsave quickContext")
@@ -593,7 +596,7 @@ function beforeUpdate()
   end
 end
 
-function afterUpdate()
+local function afterUpdate()
   megautils.checkQueue()
   states.checkQueue()
   mmMusic.checkQueue()
@@ -619,38 +622,36 @@ if not isWeb then
     if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
     if lt then lt.step() end
     
+    assert(le and lu and lt and lg, "Manditory Love2D module / event not loaded!")
+    
     return function()
         beforeUpdate()
         
-        if le then
-          le_pump()
-          
-          for name, a,b,c,d,e,f in le_poll() do
-            if name == "quit" then
-              if not lq or not lq() then
-                return a or 0
-              end
+        le_pump()
+        
+        for name, a,b,c,d,e,f in le_poll() do
+          if name == "quit" then
+            if not lq or not lq() then
+              return a or 0
             end
-            lh[name](a,b,c,d,e,f)
           end
+          lh[name](a,b,c,d,e,f)
         end
         
-        if lu then lu(lt and lt_step()) end
+        lu(lt_step())
         
-        if lt then
-          local delta, fps = lt_getTime() - bu, 1/megautils.getFPS()
-          if delta < fps then lt_sleep(fps - delta) end
-          bu = lt_getTime()
-        end
-        
-        if lg and lg_isActive() then
+        if lg_isActive() then
           lg_origin()
           lg_clear(lg_getBackgroundColor())
-          if ld then ld() end
+          ld()
           lg_present()
         end
         
         afterUpdate()
+        
+        local delta, fps = lt_getTime() - bu, 1/megautils.getFPS()
+        if delta < fps then lt_sleep(fps - delta) end
+        bu = lt_getTime()
       end
   end
 end

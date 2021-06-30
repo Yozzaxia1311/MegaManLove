@@ -433,6 +433,9 @@ function camera:updateBounds(noBounds)
         end
       end
       self.bounds = bounds
+      
+      collectgarbage()
+      collectgarbage()
     end
   else
     self.scrollx = self.x
@@ -444,6 +447,9 @@ function camera:updateBounds(noBounds)
       self.despawnLateBounds = self.bounds
     end
     self.bounds = nil
+    
+    collectgarbage()
+    collectgarbage()
   end
 end
 

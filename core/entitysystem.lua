@@ -950,7 +950,7 @@ function basicEntity:setRectangleCollision(w, h)
     self.collisionShape = {}
   end
   
-  self.collisionShape.type = 0
+  self.collisionShape.type = 1
   self.collisionShape.w = w or 1
   self.collisionShape.h = h or 1
   
@@ -969,7 +969,7 @@ function basicEntity:setImageCollision(resource)
     self.collisionShape = {}
   end
   
-  self.collisionShape.type = 1
+  self.collisionShape.type = 2
   self.collisionShape.w = res.data:getWidth()
   self.collisionShape.h = res.data:getHeight()
   self.collisionShape.data = res.data
@@ -990,7 +990,7 @@ function basicEntity:setCircleCollision(r)
     self.collisionShape = {}
   end
   
-  self.collisionShape.type = 2
+  self.collisionShape.type = 3
   self.collisionShape.w = (r or 1) * 2
   self.collisionShape.h = (r or 1) * 2
   self.collisionShape.r = r or 1
@@ -1000,57 +1000,75 @@ function basicEntity:setCircleCollision(r)
   self:updateHash()
 end
 
+local _rectOverlapsRect = rectOverlapsRect
+local _imageOverlapsRect = imageOverlapsRect
+local _circleOverlapsRect = circleOverlapsRect
+local _imageOverlapsImage = imageOverlapsImage
+local _imageOverlapsCircle = imageOverlapsCircle
+local _circleOverlapsCircle = circleOverlapsCircle
+
+entityCollision = {
+    {
+      function(self, e, x, y)
+          return _rectOverlapsRect(self.x + (x or 0), self.y + (y or 0),
+            self.collisionShape.w, self.collisionShape.h,
+            e.x, e.y, e.collisionShape.w, e.collisionShape.h)
+        end,
+      function(self, e, x, y)
+          return _imageOverlapsRect(e.x, e.y, e.collisionShape.w, e.collisionShape.h, e.collisionShape.data,
+            self.x + (x or 0), self.y + (y or 0), self.collisionShape.w, self.collisionShape.h)
+        end,
+      function(self, e, x, y)
+          return _circleOverlapsRect(e.x, e.y, e.collisionShape.r,
+            self.x + (x or 0), self.y + (y or 0), self.collisionShape.w, self.collisionShape.h)
+        end
+    },
+    {
+      function(self, e, x, y)
+          return _imageOverlapsRect(self.x + (x or 0), self.y + (y or 0),
+            self.collisionShape.w, self.collisionShape.h, self.collisionShape.data,
+            e.x, e.y, e.collisionShape.w, e.collisionShape.h)
+        end,
+      function(self, e, x, y)
+          return _imageOverlapsImage(self.x + (x or 0), self.y + (y or 0),
+            self.collisionShape.w, self.collisionShape.h, self.collisionShape.data,
+            e.x, e.y, e.collisionShape.w, e.collisionShape.h, e.collisionShape.data)
+        end,
+      function(self, e, x, y)
+          return _imageOverlapsCircle(self.x + (x or 0), self.y + (y or 0),
+            self.collisionShape.w, self.collisionShape.h, self.collisionShape.data,
+            e.x, e.y, e.collisionShape.r)
+        end
+    },
+    {
+      function(self, e, x, y)
+          return _circleOverlapsRect(self.x + (x or 0), self.y + (y or 0), self.collisionShape.r,
+            e.x, e.y, e.collisionShape.w, e.collisionShape.h)
+        end,
+      function(self, e, x, y)
+          return _imageOverlapsCircle(e.x, e.y, e.collisionShape.w, e.collisionShape.h, e.collisionShape.data,
+            self.x + (x or 0), self.y + (y or 0), self.collisionShape.r)
+        end,
+      function(self, e, x, y)
+          return _circleOverlapsCircle(self.x + (x or 0), self.y + (y or 0), self.collisionShape.r,
+            e.x, e.y, e.collisionShape.r)
+        end
+    }
+  }
+
 function basicEntity:collision(e, x, y, notme)
-  if not e or (notme and e == self) or not self.collisionShape or not e.collisionShape then return false end
-  if self.collisionShape.type == 0 then
-    if e.collisionShape.type == 0 then
-      return rectOverlapsRect(self.x + (x or 0), self.y + (y or 0),
-        self.collisionShape.w, self.collisionShape.h,
-        e.x, e.y, e.collisionShape.w, e.collisionShape.h)
-    elseif e.collisionShape.type == 1 then
-      return imageOverlapsRect(e.x, e.y, e.collisionShape.w, e.collisionShape.h, e.collisionShape.data,
-        self.x + (x or 0), self.y + (y or 0), self.collisionShape.w, self.collisionShape.h)
-    elseif e.collisionShape.type == 2 then
-      return circleOverlapsRect(e.x, e.y, e.collisionShape.r,
-        self.x + (x or 0), self.y + (y or 0), self.collisionShape.w, self.collisionShape.h)
-    end
-  elseif self.collisionShape.type == 1 then
-    if e.collisionShape.type == 0 then
-      return imageOverlapsRect(self.x + (x or 0), self.y + (y or 0),
-        self.collisionShape.w, self.collisionShape.h, self.collisionShape.data,
-        e.x, e.y, e.collisionShape.w, e.collisionShape.h)
-    elseif e.collisionShape.type == 1 then
-      return imageOverlapsImage(self.x + (x or 0), self.y + (y or 0),
-        self.collisionShape.w, self.collisionShape.h, self.collisionShape.data,
-        e.x, e.y, e.collisionShape.w, e.collisionShape.h, e.collisionShape.data)
-    elseif e.collisionShape.type == 2 then
-      return imageOverlapsCircle(self.x + (x or 0), self.y + (y or 0),
-        self.collisionShape.w, self.collisionShape.h, self.collisionShape.data,
-        e.x, e.y, e.collisionShape.r)
-    end
-  elseif self.collisionShape.type == 2 then
-    if e.collisionShape.type == 0 then
-      return circleOverlapsRect(self.x + (x or 0), self.y + (y or 0), self.collisionShape.r,
-        e.x, e.y, e.collisionShape.w, e.collisionShape.h)
-    elseif e.collisionShape.type == 1 then
-      return imageOverlapsCircle(e.x, e.y, e.collisionShape.w, e.collisionShape.h, e.collisionShape.data,
-        self.x + (x or 0), self.y + (y or 0), self.collisionShape.r)
-    elseif e.collisionShape.type == 2 then
-      return circleOverlapsCircle(self.x + (x or 0), self.y + (y or 0), self.collisionShape.r,
-        e.x, e.y, e.collisionShape.r)
-    end
-  end
-  return false
+  return e and (not notme or e ~= self) and self.collisionShape and e.collisionShape and
+    entityCollision[self.collisionShape.type][e.collisionShape.type](self, e, x, y)
 end
 
 function basicEntity:drawCollision()
   if not self.collisionShape or megautils.outside(self) then return end
-  if self.collisionShape.type == 0 then
+  if self.collisionShape.type == 1 then
     love.graphics.rectangle("line", math.round(self.x), math.round(self.y),
       self.collisionShape.w, self.collisionShape.h)
-  elseif self.collisionShape.type == 1 then
-    self.collisionShape.image:draw(math.round(self.x), math.round(self.y))
   elseif self.collisionShape.type == 2 then
+    self.collisionShape.image:draw(math.round(self.x), math.round(self.y))
+  elseif self.collisionShape.type == 3 then
     love.graphics.circle("line", math.round(self.x), math.round(self.y), self.collisionShape.r)
   end
 end
