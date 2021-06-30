@@ -144,9 +144,6 @@ function states.set(n, before, after)
     if after then after() end
   end
   
-  collectgarbage()
-  collectgarbage()
-  
   if map then
     if mapArgs.mPath then
       megautils.playMusic(mapArgs.mPath, mapArgs.mVolume)
@@ -160,6 +157,9 @@ function states.set(n, before, after)
   end
   
   states.currentState:begin()
+  
+  collectgarbage()
+  collectgarbage()
 end
 
 function states.setq(n, before, after)
