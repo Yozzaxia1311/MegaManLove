@@ -295,9 +295,9 @@ function Layer.spritelayer:_updateAnimations(dt)
   if self.useSpriteBatch then
     self:_batchUpdateAnimations(dt)
   else
-    local ty = math.ceil(self._sprites.drawRange.y/self._map.tileheight)-1
+    local ty = math.ceil((self._sprites.drawRange.y-self.offsety)/self._map.tileheight)-1
     local th = math.floor(self._sprites.drawRange.h/self._map.tileheight)+1
-    local tx = math.ceil(self._sprites.drawRange.x/self._map.tilewidth)-1
+    local tx = math.ceil((self._sprites.drawRange.x-self.offsetx)/self._map.tilewidth)-1
     local tw = math.floor(self._sprites.drawRange.w/self._map.tilewidth)+1
     for gid, animation in pairs(self._animations) do
       -- decrement the animation timer
@@ -374,9 +374,9 @@ function Layer.spritelayer:draw()
     love.graphics.push()
     love.graphics.translate(self.offsetx, self.offsety)
     -- draw the tiles within the draw range
-    local ty = math.ceil(self._sprites.drawRange.y/self._map.tileheight)-1
+    local ty = math.ceil((self._sprites.drawRange.y-self.offsety)/self._map.tileheight)-1
     local th = math.floor(self._sprites.drawRange.h/self._map.tileheight)+1
-    local tx = math.ceil(self._sprites.drawRange.x/self._map.tilewidth)-1
+    local tx = math.ceil((self._sprites.drawRange.x-self.offsetx)/self._map.tilewidth)-1
     local tw = math.floor(self._sprites.drawRange.w/self._map.tilewidth)+1
     local sprites_map = self._sprites.map
     local sprites_quad = self._sprites.quads
