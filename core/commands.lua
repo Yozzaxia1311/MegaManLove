@@ -12,7 +12,7 @@ convar["cheats"] = {
 convar["fullscreen"] = {
   helptext = "fullscreen mode",
   flags = {"client"},
-  value = 0,
+  value = love.window.getFullscreen() and 1 or 0,
   fun = function(arg) local n = numberSanitize(arg) love.window.setFullscreen(n == 1) end
 }
 convar["fps"] = {
