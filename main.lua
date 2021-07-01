@@ -167,7 +167,7 @@ function love.load()
   local data = save.load("main.sav")
   if data then
     if data.fullscreen then
-      megautils.setFullscreen(true)
+      megautils.setFullscreen(data.fullscreen)
     end
     if data.scale then
       megautils.setScale(data.scale)
