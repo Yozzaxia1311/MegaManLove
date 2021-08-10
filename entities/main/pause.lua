@@ -23,7 +23,7 @@ function mmWeaponsMenu.pause(self)
       
       megautils.add(mmWeaponsMenu, self)
       local ff = megautils.add(fade, false, nil, nil, fade.remove)
-      megautils.removeq(s)
+      megautils.remove(s)
       
       collectgarbage()
       collectgarbage()
@@ -131,7 +131,7 @@ function mmWeaponsMenu:new(p)
   end
   
   if mmWeaponsMenu.main then
-    megautils.removeq(mmWeaponsMenu.main)
+    megautils.remove(mmWeaponsMenu.main)
   end
   mmWeaponsMenu.main = self
 end
@@ -227,8 +227,8 @@ function mmWeaponsMenu:update(dt)
     if input.pressed["start" .. tostring(self.player.input)] or
       input.touchPressedOverlaps(view.w - 48 - 8, view.h - 16 - 8, 32 + 16, 8 + 16) then
       megautils.add(fade, true, nil, nil, function(s)
-          megautils.removeq(self)
-          megautils.removeq(s)
+          megautils.remove(self)
+          megautils.remove(s)
           
           for _, v in ipairs(megautils.state().system.all) do
             if not v.visibleDuringPause then
@@ -241,7 +241,7 @@ function mmWeaponsMenu:update(dt)
                 v.canDraw.pause = nil
               end
               
-              megautils.removeq(ss)
+              megautils.remove(ss)
             end)
         end)
       self.changing = "leaving"

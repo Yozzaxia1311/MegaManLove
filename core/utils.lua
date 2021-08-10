@@ -370,6 +370,19 @@ function table.removevaluearray(t, va)
   end
 end
 
+function table.findindexarray(t, va)
+  for i=1, #t do
+    if t[i] == va then
+      return i
+    end
+  end
+end
+
+function table.quickremove(t, i)
+  t[i] = t[#t]
+  t[#t] = nil
+end
+
 function table.quickremovevaluearray(t, va)
   if t[#t] == va then t[#t] = nil return end
   

@@ -42,7 +42,7 @@ function camera:added()
   view.x, view.y = self.x, self.y
   if megautils.groups().camera then
     for _, v in ipairs(megautils.groups().camera) do
-      megautils.removeq(v)
+      megautils.remove(v)
     end
   end
   self:addToGroup("camera")
@@ -130,7 +130,7 @@ function camera:updateCam(spdx, spdy)
       if megautils.groups().removeOnTransition then
         for _, v in pairs(megautils.groups().removeOnTransition) do
           if not v.dontRemoveOnTransition then
-            megautils.removeq(v)
+            megautils.remove(v)
           end
         end
       end
@@ -221,7 +221,7 @@ function camera:updateCam(spdx, spdy)
         self:updateBounds(true)
         if self.bounds then
           for _, v in ipairs(self.bounds.group) do
-            if v.spawnEarlyDuringTransition and not v.isAdded and not megautils.inAddQueue(v) then
+            if v.spawnEarlyDuringTransition and not v.isAdded then
               megautils.adde(v)
             end
           end
@@ -336,7 +336,7 @@ function camera:doView(spdx, spdy, without)
     for _, v in ipairs(self.despawnLateBounds.group) do
       if self.bounds and not table.icontains(self.bounds.group, v) then
         if v.despawnLateDuringTransition and not v.isRemoved and not megautils.inRemoveQueue(v) then
-          megautils.removeq(v)
+          megautils.remove(v)
         end
       end
     end
@@ -504,7 +504,7 @@ end
 
 function section:activate(ignore)
   for _, v in ipairs(self.group) do
-    if not v.isAdded and not megautils.inAddQueue(v) and
+    if not v.isAdded and
       (not ignore or not table.icontains(ignore, v)) then
       megautils.adde(v)
     end
@@ -515,7 +515,7 @@ function section:deactivate(ignore)
   for _, v in ipairs(self.group) do
     if not v.isRemoved and not v.dontRemoveOnSectionChange and not megautils.inRemoveQueue(v) and
       (not ignore or not table.icontains(ignore, v)) then
-      megautils.removeq(v)
+      megautils.remove(v)
     end
   end
 end
@@ -523,7 +523,6 @@ end
 function section:initSection()
   for _, v in ipairs(self.group) do
     if not v.isRemoved then
-      megautils.stopRemoveQueue(v)
       megautils.remove(v)
     end
   end

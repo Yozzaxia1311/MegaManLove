@@ -176,7 +176,7 @@ function bossDoor:update()
           megautils.freeze("trans")
           if megautils.groups().removeOnTransition then
             for _, v in pairs(megautils.groups().removeOnTransition) do
-              megautils.removeq(v)
+              megautils.remove(v)
             end
           end
           if self.useMapTiles then

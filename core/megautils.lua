@@ -1248,26 +1248,6 @@ function megautils.remove(o)
   states.currentState.system:remove(o)
 end
 
-function megautils.removeq(o)
-  states.currentState.system:removeq(o)
-end
-
-function megautils.inAddQueue(o)
-  return table.icontains(states.currentState.system.addQueue, o)
-end
-
-function megautils.inRemoveQueue(o)
-  return table.icontains(states.currentState.system.removeQueue, o)
-end
-
-function megautils.stopAddQueue(o)
-  table.quickremovevaluearray(states.currentState.system.addQueue, o)
-end
-
-function megautils.stopRemoveQueue(o)
-  table.quickremovevaluearray(states.currentState.system.removeQueue, o)
-end
-
 function megautils.state()
   return states.currentState
 end
@@ -1278,14 +1258,6 @@ end
 
 function megautils.adde(o)
   return states.currentState.system:adde(o)
-end
-
-function megautils.addq(o, ...)
-  return states.currentState.system:addq(o, ...)
-end
-
-function megautils.addeq(o)
-  return states.currentState.system:addeq(o)
 end
 
 function megautils.getAllEntities()
@@ -1601,7 +1573,7 @@ function megautils.removeEnemyShots()
   if megautils.state().system.all then
     for _, v in ipairs(megautils.state().system.all) do
       if v.isEnemyWeapon then
-        megautils.removeq(v)
+        megautils.remove(v)
       end
     end
   end

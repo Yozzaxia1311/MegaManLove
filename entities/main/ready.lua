@@ -28,7 +28,7 @@ function ready:update(dt)
     self.canDraw.global = not self.canDraw.global
     if self.blinkCount == self.blinks then
       megautils.unfreeze("ready")
-      megautils.removeq(self)
+      megautils.remove(self)
     end
   end
 end

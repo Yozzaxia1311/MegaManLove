@@ -207,7 +207,7 @@ function stageSelect:update()
         if type(self.slots[pick]) == "function" then
           megautils.add(fade, true, nil, nil, function(f)
               f._func()
-              megautils.removeq(f)
+              megautils.remove(f)
             end)._func = self.slots[pick]
         else
           if globals.defeats[self.slots[pick].defeatSlot] then

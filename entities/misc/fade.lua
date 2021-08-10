@@ -46,5 +46,5 @@ function fade:draw()
 end
 
 function fade.remove(s)
-  megautils.removeq(s)
+  megautils.remove(s)
 end

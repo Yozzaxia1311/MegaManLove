@@ -481,7 +481,7 @@ function megaMan:added()
   
   if not self.doWeaponGet then
     if self.healthHandler and not self.healthHandler.isRemoved then
-      megautils.removeq(self.healthHandler)
+      megautils.remove(self.healthHandler)
     end
     
     self.healthHandler = megautils.add(healthHandler, nil, nil, nil,
@@ -494,7 +494,7 @@ function megaMan:added()
     end
     
     if megaMan.weaponHandler[self.player] and not megaMan.weaponHandler[self.player].isRemoved then
-      megautils.removeq(megaMan.weaponHandler[self.player])
+      megautils.remove(megaMan.weaponHandler[self.player])
     end
     
     local w = megautils.adde(megaMan.weaponHandler[self.player])
@@ -989,7 +989,7 @@ function megaMan:interactedWith(o, c)
         self.cameraTween = true
       end
       if o.pierceType == pierce.NOPIERCE and o.pierceType ~= pierce.PIERCEIFKILLING then
-        megautils.removeq(o)
+        megautils.remove(o)
       end
       return
     else
@@ -1015,7 +1015,7 @@ function megaMan:interactedWith(o, c)
       megautils.add(damageSteam, self.x+(self.collisionShape.w/2)-2.5+11,
         self.y+(self.gravity >= 0 and -8 or self.collisionShape.h), self)
       if o.pierceType == pierce.NOPIERCE or o.pierceType == pierce.PIERCEIFKILLING then
-        megautils.removeq(o)
+        megautils.remove(o)
       end
       megautils.playSound("hurt")
     end
@@ -1839,14 +1839,14 @@ function megaMan:die()
           megautils.resetGameObjects = false
           megautils.gotoState(megautils.getCurrentState())
         end
-        megautils.removeq(s)
+        megautils.remove(s)
       end)
-      megautils.removeq(t)
+      megautils.remove(t)
     end)
   else
     healthHandler.playerTimers[self.player] = 180
-    megautils.removeq(megaMan.weaponHandler[self.player])
-    megautils.removeq(self.healthHandler)
+    megautils.remove(megaMan.weaponHandler[self.player])
+    megautils.remove(self.healthHandler)
   end
   self.canDraw.global = false
   self.canControl.global = false
@@ -1858,7 +1858,7 @@ function megaMan:die()
   
   self._lHealth = nil
   self._lSeg = nil
-  megautils.removeq(self)
+  megautils.remove(self)
   megautils.playSound("dieExplode")
 end
 

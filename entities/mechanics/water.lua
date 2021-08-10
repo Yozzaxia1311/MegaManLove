@@ -26,7 +26,7 @@ function splash:update()
     self.y = self.user.y + self.offy
   end
   if not self.user or self.user.isRemoved or self:getGFXByName("anim"):looped() then
-    megautils.removeq(self)
+    megautils.remove(self)
   end
   self:getGFXByName("anim"):rot(self.rot)
 end

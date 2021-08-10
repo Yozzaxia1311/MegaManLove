@@ -1,6 +1,8 @@
 local _floor = math.floor
 local _ceil = math.ceil
 local _clamp = math.clamp
+local _min = math.min
+local _max = math.max
 
 function rectOverlapsRect(x1, y1, w1, h1, x2, y2, w2, h2)
   return x1 < x2 + w2 and
@@ -11,9 +13,9 @@ end
 
 function pointOverlapsRect(x1, y1, x2, y2, w2, h2)
   return x1 < x2 + w2 and
-  x2 < x1 and
-  y1 < y2 + h2 and
-  y2 < y1
+    x2 < x1 and
+    y1 < y2 + h2 and
+    y2 < y1
 end
 
 function pointOverlapsPoint(x1, y1, x2, y2)
@@ -33,12 +35,8 @@ end
 local _pointOverlapsRect = pointOverlapsRect
 local _pointOverlapsCircle = pointOverlapsCircle
 
-function circleOverlapsRect(x1, y1, r1, x2, y2, w2, h2)
-  return _pointOverlapsRect(x1, y1, x2, y2, w2, h2) or
-    _pointOverlapsCircle(x2, y2, x1, y1, r1) or
-    _pointOverlapsCircle(x2 + w2, y2, x1, y1, r1) or
-    _pointOverlapsCircle(x2 + w2, y2 + h2, x1, y1, r1) or
-    _pointOverlapsCircle(x2, y2 + h2, x1, y1, r1)
+local function circleOverlapsRect(x1, y1, r1, x2, y2, w2, h2)
+  return (((x1 - _max(x2, _min(x1, x2 + w2))) ^ 2) + ((y1 - _max(y2, _min(y1, y2 + h2))) ^ 2)) < r1 ^ 2
 end
 
 local _rectOverlapsRect = rectOverlapsRect

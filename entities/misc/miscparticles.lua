@@ -58,7 +58,7 @@ function particle:_afterUpdate(dt)
     collision.doCollision(self, self.noSlope)
   end
   if self.removeWhenOutside and megautils.outside(self) then
-    megautils.removeq(self)
+    megautils.remove(self)
   end
   
   self:afterUpdate(dt)
@@ -88,7 +88,7 @@ end
 function slideParticle:update()
   self:getGFXByName("anim"):flip(self.side == 1, self.gravity < 0)
   if self:getGFXByName("anim"):looped() then
-    megautils.removeq(self)
+    megautils.remove(self)
   end
 end
 
@@ -115,7 +115,7 @@ end
 function damageSteam:update()
   self:getGFXByName("anim"):flip(false, self.gravity < 0)
   if self:getGFXByName("anim"):looped() then
-    megautils.removeq(self)
+    megautils.remove(self)
   end
 end
 
@@ -152,7 +152,7 @@ function airBubble:update(dt)
     self.off = math.wrap(self.off+1, 0, 2)
   end
   if self:check() then
-    megautils.removeq(self)
+    megautils.remove(self)
   end
   self:getGFXByName("tex"):off(-self.off, 0)
 end
@@ -179,7 +179,7 @@ end
 
 function harm:update()
   if not self.user or self.user.isRemoved or self.timer == self.maxTime then
-    megautils.removeq(self)
+    megautils.remove(self)
   else
     self.x = math.floor(self.user.x)+math.floor(self.user.collisionShape.w/2)-12
     self.y = math.floor(self.user.y)+math.floor(self.user.collisionShape.h/2)-12
@@ -238,7 +238,7 @@ function absorbParticle:update()
     self.pos = math.min(self.pos + self.spd, 1)
   end
   if not self.user or self.pos == 1 or self.user.isRemoved then
-    megautils.removeq(self)
+    megautils.remove(self)
   end
 end
 
@@ -275,7 +275,7 @@ function absorb:update()
     absorbParticle.createAbsorbtion(self.user, self.spd)
   end
   if self.times == self.maxTimes or not self.user or self.user.isRemoved then
-    megautils.removeq(self)
+    megautils.remove(self)
   end
 end
 
@@ -302,7 +302,7 @@ end
 
 function smallBlast:update()
   if self:getGFXByName("anim"):looped() then
-    megautils.removeq(self)
+    megautils.remove(self)
   end
 end
 
@@ -357,6 +357,6 @@ function blast:update()
     self:check()
   end
   if self.times == self.max then
-    megautils.removeq(self)
+    megautils.remove(self)
   end
 end

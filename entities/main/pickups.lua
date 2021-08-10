@@ -75,7 +75,7 @@ function pickup:_afterUpdate(dt)
         not pickup.isBanned(self.__index, tostring(self.mapID), self.path) then
         pickup.banIDs[self.__index][#pickup.banIDs[self.__index]+1] = self.path .. "|" .. tostring(self.mapID)
       end
-      megautils.removeq(self)
+      megautils.remove(self)
       return
     end
   end
@@ -85,7 +85,7 @@ function pickup:_afterUpdate(dt)
       self.canDraw.global = math.wrap(self.timer, 0, 8) > 4
     end
     if self.timer == 400 or (self.removeWhenOutside and megautils.outside(self)) then
-      megautils.removeq(self)
+      megautils.remove(self)
     end
   end
   

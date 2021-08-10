@@ -250,7 +250,7 @@ function weapon:_afterUpdate(dt)
     end
   end
   if self.removeWhenOutside and megautils.outside(self) then
-    megautils.removeq(self)
+    megautils.remove(self)
   end
   
   self:afterUpdate(dt)
@@ -542,7 +542,7 @@ end
 function bassBuster:update()
   local col = collision.checkSolid(self, self.velX, self.velY)
   if not self.treble and not self.dinked and col then
-    megautils.removeq(self)
+    megautils.remove(self)
   end
 end
 
@@ -799,7 +799,7 @@ function trebleBoost:update()
   elseif self.s == 5 then
     self.timer = self.timer + 1
     if self.timer == 20 then
-      megautils.removeq(self)
+      megautils.remove(self)
     end
   end
 end
