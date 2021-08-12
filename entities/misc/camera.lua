@@ -335,7 +335,7 @@ function camera:doView(spdx, spdy, without)
   if self.despawnLateBounds and self.approachX == self.x and self.approachY == self.y then
     for _, v in ipairs(self.despawnLateBounds.group) do
       if self.bounds and not table.icontains(self.bounds.group, v) then
-        if v.despawnLateDuringTransition and not v.isRemoved and not megautils.inRemoveQueue(v) then
+        if v.despawnLateDuringTransition and not v.isRemoved then
           megautils.remove(v)
         end
       end
@@ -513,7 +513,7 @@ end
 
 function section:deactivate(ignore)
   for _, v in ipairs(self.group) do
-    if not v.isRemoved and not v.dontRemoveOnSectionChange and not megautils.inRemoveQueue(v) and
+    if not v.isRemoved and not v.dontRemoveOnSectionChange and
       (not ignore or not table.icontains(ignore, v)) then
       megautils.remove(v)
     end
