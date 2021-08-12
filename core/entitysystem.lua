@@ -383,19 +383,15 @@ end
 function entitySystem:makeStatic(e)
   if not e.static then
     local i = table.findindexarray(self.updates, e)
-    if i then
-      self.updates[i] = -1
-      self._updateHoles[i] = true
-    end
+    self.updates[i] = -1
+    self._updateHoles[i] = true
     
     local al = self:getLayer(e.layer)
     
     if al then
       local i = table.findindexarray(al.data, e)
-      if i then
-        al.data[i] = -1
-        al.holes[i] = true
-      end
+      al.data[i] = -1
+      al.holes[i] = true
       
       if self:_emptyOrHoles(al.data) then
         table.removevaluearray(self.layers, al)
@@ -530,10 +526,8 @@ function entitySystem:setLayer(e, l)
       
       if al then
         local i = table.findindexarray(al.data, e)
-        if i then
-          al.data[i] = -1
-          al.holes[i] = true
-        end
+        al.data[i] = -1
+        al.holes[i] = true
         
         if self:_emptyOrHoles(al.data) then
           table.removevaluearray(self.layers, al)
@@ -591,20 +585,15 @@ function entitySystem:remove(e)
   else
     if al then
       local i = table.findindexarray(al.data, e)
-      if i then
-        al.data[i] = -1
-        al.holes[i] = true
-      end
+      al.data[i] = -1
+      al.holes[i] = true
     end
     
     local i = table.findindexarray(self.updates, e)
-    if i then
-      self.updates[i] = -1
-      self._updateHoles[i] = true
-    end
+    self.updates[i] = -1
+    self._updateHoles[i] = true
   end
   
-  print(inspect(al.data), self:_emptyOrHoles(al.data))
   if not e.static and al and self:_emptyOrHoles(al.data) then
     table.removevaluearray(self.layers, al)
   end
@@ -679,6 +668,10 @@ function entitySystem:remove(e)
   e.lastHashY = nil
   e.lastHashX2 = nil
   e.lastHashY2 = nil
+  e.staticX = nil
+  e.staticY = nil
+  e.staticW = nil
+  e.staticH = nil
   e.currentHashes = nil
   
   e.isAdded = false
@@ -717,19 +710,26 @@ function entitySystem:clear()
 end
 
 function entitySystem:_emptyOrHoles(t)
+  if #t == 0 then
+    return true
+  end
+  
   for i = 1, #t do
     if t[i] ~= -1 then
       return false
     end
   end
   
-  return #t > 0
+  return true
 end
 
 function entitySystem:_removeHoles(t)
-  for i = 1, #t do
+  local i = 1
+  while i <= #t do
     if t[i] == -1 then
       table.quickremove(t, i)
+    else
+      i = i + 1
     end
   end
 end
@@ -747,16 +747,16 @@ function entitySystem:draw()
     while i <= #layer.data do
       local e = layer.data[i]
       
-      if e ~= -1 and e.draw and e.canDraw then
+      if e ~= -1 and checkFalse(e.canDraw) then
         love.graphics.setColor(1, 1, 1, 1)
         love.graphics.setFont(mmFont)
-        e:draw()
+        e:_draw()
       end
       
       i = i + 1
     end
     
-    if #layer.holes > 0 then
+    if next(layer.holes) then
       self:_removeHoles(layer.data)
       layer.holes = {}
     end
@@ -846,7 +846,7 @@ function entitySystem:update(dt)
   
   self.inLoop = false
   
-  if #self._updateHoles > 0 then
+  if next(self._updateHoles) then
     self:_removeHoles(self.updates)
     self._updateHoles = {}
   end
