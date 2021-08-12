@@ -1103,52 +1103,52 @@ local _rectOverlapsRect = rectOverlapsRect
 local _imageOverlapsRect = imageOverlapsRect
 local _roundCircleOverlapsRect = roundCircleOverlapsRect
 local _imageOverlapsImage = imageOverlapsImage
-local _roundImageOverlapsCircle = roundImageOverlapsCircle
-local _roundCircleOverlapsCircle = roundCircleOverlapsCircle
-local _round = math.round
+local _floorImageOverlapsCircle = floorImageOverlapsCircle
+local _floorCircleOverlapsCircle = floorCircleOverlapsCircle
+local _floor = math.floor
 
 entityCollision = {
     {
       function(e, other, x, y)
-          return _rectOverlapsRect(_round(e.x + (x or 0)), _round(e.y + (y or 0)),
-            _round(e.collisionShape.w), _round(e.collisionShape.h),
-            _round(other.x), _round(other.y), _round(other.collisionShape.w), _round(other.collisionShape.h))
+          return _rectOverlapsRect(_floor(e.x) + (x or 0), _floor(e.y) + (y or 0),
+            _floor(e.collisionShape.w), _floor(e.collisionShape.h),
+            _floor(other.x), _floor(other.y), _floor(other.collisionShape.w), _floor(other.collisionShape.h))
         end,
       function(e, other, x, y)
-          return _imageOverlapsRect(_round(other.x), _round(other.y), other.collisionShape.data,
-            _round(e.x + (x or 0)), _round(e.y + (y or 0)), _round(e.collisionShape.w), _round(e.collisionShape.h))
+          return _imageOverlapsRect(_floor(other.x), _floor(other.y), other.collisionShape.data,
+            _floor(e.x) + (x or 0), _floor(e.y) + (y or 0), _floor(e.collisionShape.w), _floor(e.collisionShape.h))
         end,
       function(e, other, x, y)
-          return _circleOverlapsRect(_round(other.x), _round(other.y), _round(other.collisionShape.r),
-            _round(e.x + (x or 0)), _round(e.y + (y or 0)), _round(e.collisionShape.w), _round(e.collisionShape.h))
+          return _circleOverlapsRect(_floor(other.x), _floor(other.y), _floor(other.collisionShape.r),
+            _floor(e.x) + (x or 0), _floor(e.y) + (y or 0), _floor(e.collisionShape.w), _floor(e.collisionShape.h))
         end
     },
     {
       function(e, other, x, y)
-          return _imageOverlapsRect(_round(e.x + (x or 0)), _round(e.y + (y or 0)), e.collisionShape.data,
-            _round(other.x), _round(other.y), _round(other.collisionShape.w), _round(other.collisionShape.h))
+          return _imageOverlapsRect(_floor(e.x) + (x or 0), _floor(e.y) + (y or 0), e.collisionShape.data,
+            _floor(other.x), _floor(other.y), _floor(other.collisionShape.w), _floor(other.collisionShape.h))
         end,
       function(e, other, x, y)
-          return _imageOverlapsImage(_round(e.x + (x or 0)), _round(e.y + (y or 0)), e.collisionShape.data,
-            _round(other.x), _round(other.y), other.collisionShape.data)
+          return _imageOverlapsImage(_floor(e.x) + (x or 0), _floor(e.y) + (y or 0), e.collisionShape.data,
+            _floor(other.x), _floor(other.y), other.collisionShape.data)
         end,
       function(e, other, x, y)
-          return _roundImageOverlapsCircle(_round(e.x + (x or 0)), _round(e.y + (y or 0)), e.collisionShape.data,
-            _round(other.x), _round(other.y), _round(other.collisionShape.r))
+          return _floorImageOverlapsCircle(_floor(e.x) + (x or 0), _floor(e.y) + (y or 0), e.collisionShape.data,
+            _floor(other.x), _floor(other.y), _floor(other.collisionShape.r))
         end
     },
     {
       function(e, other, x, y)
-          return _circleOverlapsRect(_round(e.x + (x or 0)), _round(e.y + (y or 0)), _round(e.collisionShape.r),
-            _round(other.x), _round(other.y), _round(other.collisionShape.w), _round(other.collisionShape.h))
+          return _circleOverlapsRect(_floor(e.x) + (x or 0), _floor(e.y) + (y or 0), _floor(e.collisionShape.r),
+            _floor(other.x), _floor(other.y), _floor(other.collisionShape.w), _floor(other.collisionShape.h))
         end,
       function(e, other, x, y)
-          return _roundImageOverlapsCircle(_round(other.x), _round(other.y), other.collisionShape.data,
-            _round(e.x + (x or 0)), _round(e.y + (y or 0)), _round(e.collisionShape.r))
+          return _floorImageOverlapsCircle(_floor(other.x), _floor(other.y), other.collisionShape.data,
+            _floor(e.x) + (x or 0), _floor(e.y) + (y or 0), _floor(e.collisionShape.r))
         end,
       function(e, other, x, y)
-          return _roundCircleOverlapsCircle(_round(e.x + (x or 0)), _round(e.y + (y or 0)), _round(e.collisionShape.r),
-            _round(other.x), _round(other.y), _round(other.collisionShape.r))
+          return _floorCircleOverlapsCircle(_floor(e.x) + (x or 0), _floor(e.y) + (y or 0), _floor(e.collisionShape.r),
+            _floor(other.x), _floor(other.y), _floor(other.collisionShape.r))
         end
     }
   }
