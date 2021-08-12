@@ -1354,8 +1354,8 @@ function megautils.unregisterPlayer(e)
   end
 end
 
-function megautils.getSurroundingEntities(x, y, w, h)
-  return megautils.state().system:getSurroundingEntities(x, y, w, h)
+function megautils.getEntitiesAt(x, y, w, h)
+  return megautils.state().system:getEntitiesAt(x, y, w, h)
 end
 
 function megautils.freeze(name)

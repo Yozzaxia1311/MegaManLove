@@ -54,7 +54,7 @@ function collision.getTable(self, dx, dy, noSlope)
     local ys = dy or 0
     local solid = {}
     local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
-    local all = self:getSurroundingEntities(xs, ys)
+    local all = self:getSurroundingEntities(math.abs(math.min(xs, 0)), math.max(xs), math.abs(math.min(ys, 0)), math.max(ys))
     local ladders = collision.getLadders(all)
     
     for i=1, #all do
@@ -94,7 +94,7 @@ function collision.checkSolid(self, dx, dy, noSlope)
     local ys = dy or 0
     local solid = {}
     local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
-    local all = self:getSurroundingEntities(xs, ys)
+    local all = self:getSurroundingEntities(math.abs(math.min(xs, 0)), math.max(xs), math.abs(math.min(ys, 0)), math.max(ys))
     local ladders = collision.getLadders(all)
     
     for i=1, #all do
@@ -138,7 +138,7 @@ function collision.entityPlatform(self)
     self.x = self._epX
     self.y = self._epY
     
-    local all = self:getSurroundingEntities(myxspeed, myyspeed)
+    local all = self:getSurroundingEntities(myxspeed, myxspeed, myyspeed, myyspeed)
     local possible = resolid ~= 0 and self.collisionShape and #all > 1
     
     if possible and myyspeed ~= 0 then
@@ -168,7 +168,7 @@ function collision.entityPlatform(self)
                 collision.checkDeath(v, 0, math.sign(v.gravity))
               end
               
-              if (resolid == 1 or (resolid == 2 and (epDir * (v.gravity >= 0 and 1 or -1))>0 and
+              if (resolid == 1 or (resolid == 2 and (epDir * (v.gravity >= 0 and 1 or -1)) > 0 and
                 (not self.ladder or self:collisionNumber(ladders, 0, v.gravity < 0 and 1 or -1, true) == 0))) and
                 v:collision(self) then
                 local step = epDir * 0.5
@@ -328,7 +328,7 @@ function collision.checkGround(self, checkAnyway, noSlope)
   local solid = {}
   local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
   local slp = (noSlope or collision.noSlope) and 1 or ((math.ceil(math.abs(self.velX)) * collision.maxSlope) + 2)
-  local all = self:getSurroundingEntities(0, cgrav * slp)
+  local all = self:getSurroundingEntities(0, 0, math.abs(math.min(cgrav * slp, 0)), math.max(cgrav * slp, 0))
   local ladders = collision.getLadders(all)
   
   if possible then
@@ -398,8 +398,8 @@ function collision.generalCollision(self, noSlope)
   local stand = {}
   local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
   local slp = math.ceil(math.abs(self.velX)) * collision.maxSlope
-  local all = (self.velX ~= 0 or self.velY ~= 0) and table.imerge({self:getSurroundingEntities(self.velX, self.velY),
-    self:getSurroundingEntities(self.velX, -cgrav * slp)}, true, true) or {}
+  local all = (self.velX ~= 0 or self.velY ~= 0) and
+    self:getSurroundingEntities(math.abs(math.min(self.velX, 0)), math.max(self.velX, 0), math.abs(math.min(self.velY, 0)), math.max(self.velY, 0)) or {}
   local ladders = collision.getLadders(all)
   local possible = self.collisionShape and #all > 1 and (self.velX ~= 0 or self.velY ~= 0) and checkFalse(self.blockCollision)
     
@@ -429,7 +429,7 @@ function collision.generalCollision(self, noSlope)
             (not v.exclusivelySolidFor or table.icontains(v.exclusivelySolidFor, self)) and
             (not v.excludeSolidFor or not table.icontains(v.excludeSolidFor, self)) and
             v.solidType == 2 and
-            (not v:collision(self) or not v:collision(self, 0, cgrav * 0.01)) and -- Oneway safe-margin, for floating-point errors.
+            not v:collision(self) and
             (not v.ladder or v:collisionNumber(ladders, 0, -cgrav, true) == 0) then
             solid[#solid+1] = v
           end
@@ -468,7 +468,7 @@ function collision.generalCollision(self, noSlope)
               (not v.excludeSolidFor or not table.icontains(v.excludeSolidFor, self)) and
               v:collision(self, -self.velX, 0) and
               not v:collision(self, -self.velX, -cgrav * slp) and
-              (not v:collision(self) or not v:collision(self, 0, cgrav * 0.01)) and -- Oneway safe-margin, for floating-point errors.
+              not v:collision(self) and
               (not v.ladder or v:collisionNumber(ladders, 0, -cgrav) == 0) then
               solid[#solid+1] = v
             else
@@ -547,7 +547,7 @@ function collision.generalCollision(self, noSlope)
 end
 
 function collision.checkDeath(self, x, y, dg)
-  local all = self:getSurroundingEntities(x, y)
+  local all = self:getSurroundingEntities(math.abs(math.min(x, 0)), math.max(x, 0), math.abs(math.min(y, 0)), math.max(y, 0))
   local possible = self.collisionShape and checkFalse(self.blockCollision) and #all > 1
   
   if possible then

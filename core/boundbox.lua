@@ -3,6 +3,8 @@ local _ceil = math.ceil
 local _clamp = math.clamp
 local _min = math.min
 local _max = math.max
+local _round = math.round
+local _dist2d = math.dist2d
 
 function rectOverlapsRect(x1, y1, w1, h1, x2, y2, w2, h2)
   return x1 < x2 + w2 and
@@ -22,28 +24,31 @@ function pointOverlapsPoint(x1, y1, x2, y2)
   return x1 == x2 and y1 == y2
 end
 
-local _dist2d = math.dist2d
-
 function circleOverlapsCircle(x1, y1, r1, x2, y2, r2)
   return _dist2d(x1, y1, x2, y2) <= r1 + r2
+end
+
+function roundCircleOverlapsCircle(x1, y1, r1, x2, y2, r2)
+  return _round(_dist2d(x1, y1, x2, y2)) <= r1 + r2
 end
 
 function pointOverlapsCircle(x1, y1, x2, y2, r2)
   return _dist2d(x1, y1, x2, y2) <= r2
 end
 
-local _pointOverlapsRect = pointOverlapsRect
-local _pointOverlapsCircle = pointOverlapsCircle
-
-local function circleOverlapsRect(x1, y1, r1, x2, y2, w2, h2)
+function circleOverlapsRect(x1, y1, r1, x2, y2, w2, h2)
   return (((x1 - _max(x2, _min(x1, x2 + w2))) ^ 2) + ((y1 - _max(y2, _min(y1, y2 + h2))) ^ 2)) < r1 ^ 2
 end
 
+local _pointOverlapsRect = pointOverlapsRect
+local _pointOverlapsCircle = pointOverlapsCircle
+local _roundCircleOverlapsCircle = roundCircleOverlapsCircle
 local _rectOverlapsRect = rectOverlapsRect
 
-function imageOverlapsRect(x, y, w, h, data, x2, y2, w2, h2)
-  if _rectOverlapsRect(x, y, w, h, x2, y2, w2, h2) then
-    local neww, newh = w-1, h-1
+function imageOverlapsRect(x, y, data, x2, y2, w2, h2)
+  if _rectOverlapsRect(x, y, data:getWidth(), data:getHeight(), x2, y2, w2, h2) then
+    local neww, newh = data:getWidth()-1, data:getHeight()-1
+    
     for xi=_clamp(_floor(x2-x), 0, neww), _clamp(_ceil(x2-x)+w2, 0, neww) do
       for yi=_clamp(_floor(y2-y), 0, newh), _clamp(_ceil(y2-y)+h2, 0, newh) do
         local _, _, _, a = data:getPixel(xi, yi)
@@ -58,9 +63,9 @@ end
 
 local _circleOverlapsRect = circleOverlapsRect
 
-function imageOverlapsCircle(x, y, w, h, data, x2, y2, r2)
-  if _circleOverlapsRect(x2, y2, r2, x, y, w, h) then
-    local neww, newh = w-1, h-1
+function imageOverlapsCircle(x, y, data, x2, y2, r2)
+  if _circleOverlapsRect(x2, y2, r2, x, y, data:getWidth(), data:getHeight()) then
+    local neww, newh = data:getWidth()-1, data:getHeight()-1
     
     for xi=_clamp(_floor(x2-x)-r2, 0, neww), _clamp(_ceil(x2-x)+r2, 0, neww) do
       for yi=_clamp(_floor(y2-y)-r2, 0, newh), _clamp(_ceil(y2-y)+r2, 0, newh) do
@@ -74,10 +79,26 @@ function imageOverlapsCircle(x, y, w, h, data, x2, y2, r2)
   return false
 end
 
-function imageOverlapsImage(x, y, w, h, data, x2, y2, w2, h2, data2)
-  if _rectOverlapsRect(x, y, w, h, x2, y2, w2, h2) then
-    local neww, newh = w-1, h-1
-    local neww2, newh2 = w2-1, h2-1
+function _roundImageOverlapsCircle(x, y, data, x2, y2, r2)
+  if _roundCircleOverlapsRect(x2, y2, r2, x, y, data:getWidth(), data:getHeight()) then
+    local neww, newh = data:getWidth()-1, data:getHeight()-1
+    
+    for xi=_clamp(_floor(x2-x)-r2, 0, neww), _clamp(_ceil(x2-x)+r2, 0, neww) do
+      for yi=_clamp(_floor(y2-y)-r2, 0, newh), _clamp(_ceil(y2-y)+r2, 0, newh) do
+        local _, _, _, a = data:getPixel(xi, yi)
+        if a > 0 and _roundCircleOverlapsRect(x2, y2, r2, x + xi, y + yi, 1, 1) then
+          return true
+        end
+      end
+    end
+  end
+  return false
+end
+
+local function _imageOverlapsImage(x, y, data, x2, y2, data2)
+  if _rectOverlapsRect(x, y, data:getWidth(), data:getHeight(), x2, y2, data2:getWidth(), data2:getHeight()) then
+    local neww, newh = data:getWidth()-1, data:getHeight()-1
+    local neww2, newh2 = data2:getWidth()-1, data2:getHeight()-1
     
     for xi=_clamp(_floor(x2-x), 0, neww), _clamp(_ceil(x2-x)+w2, 0, neww) do
       for yi=_clamp(_floor(y2-y), 0, newh), _clamp(_ceil(y2-y)+h2, 0, newh) do

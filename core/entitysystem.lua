@@ -115,7 +115,7 @@ function entitySystem:updateHashForEntity(e)
   end
 end
 
-function entitySystem:getSurroundingEntities(xx, yy, ww, hh)
+function entitySystem:getEntitiesAt(xx, yy, ww, hh)
   local hs = entitySystem.hashSize
   local result
   
@@ -1101,56 +1101,54 @@ end
 
 local _rectOverlapsRect = rectOverlapsRect
 local _imageOverlapsRect = imageOverlapsRect
-local _circleOverlapsRect = circleOverlapsRect
+local _roundCircleOverlapsRect = roundCircleOverlapsRect
 local _imageOverlapsImage = imageOverlapsImage
-local _imageOverlapsCircle = imageOverlapsCircle
-local _circleOverlapsCircle = circleOverlapsCircle
+local _roundImageOverlapsCircle = roundImageOverlapsCircle
+local _roundCircleOverlapsCircle = roundCircleOverlapsCircle
+local _round = math.round
 
 entityCollision = {
     {
-      function(self, e, x, y)
-          return _rectOverlapsRect(self.x + (x or 0), self.y + (y or 0),
-            self.collisionShape.w, self.collisionShape.h,
-            e.x, e.y, e.collisionShape.w, e.collisionShape.h)
+      function(e, other, x, y)
+          return _rectOverlapsRect(_round(e.x + (x or 0)), _round(e.y + (y or 0)),
+            _round(e.collisionShape.w), _round(e.collisionShape.h),
+            _round(other.x), _round(other.y), _round(other.collisionShape.w), _round(other.collisionShape.h))
         end,
-      function(self, e, x, y)
-          return _imageOverlapsRect(e.x, e.y, e.collisionShape.w, e.collisionShape.h, e.collisionShape.data,
-            self.x + (x or 0), self.y + (y or 0), self.collisionShape.w, self.collisionShape.h)
+      function(e, other, x, y)
+          return _imageOverlapsRect(_round(other.x), _round(other.y), other.collisionShape.data,
+            _round(e.x + (x or 0)), _round(e.y + (y or 0)), _round(e.collisionShape.w), _round(e.collisionShape.h))
         end,
-      function(self, e, x, y)
-          return _circleOverlapsRect(e.x, e.y, e.collisionShape.r,
-            self.x + (x or 0), self.y + (y or 0), self.collisionShape.w, self.collisionShape.h)
+      function(e, other, x, y)
+          return _circleOverlapsRect(_round(other.x), _round(other.y), _round(other.collisionShape.r),
+            _round(e.x + (x or 0)), _round(e.y + (y or 0)), _round(e.collisionShape.w), _round(e.collisionShape.h))
         end
     },
     {
-      function(self, e, x, y)
-          return _imageOverlapsRect(self.x + (x or 0), self.y + (y or 0),
-            self.collisionShape.w, self.collisionShape.h, self.collisionShape.data,
-            e.x, e.y, e.collisionShape.w, e.collisionShape.h)
+      function(e, other, x, y)
+          return _imageOverlapsRect(_round(e.x + (x or 0)), _round(e.y + (y or 0)), e.collisionShape.data,
+            _round(other.x), _round(other.y), _round(other.collisionShape.w), _round(other.collisionShape.h))
         end,
-      function(self, e, x, y)
-          return _imageOverlapsImage(self.x + (x or 0), self.y + (y or 0),
-            self.collisionShape.w, self.collisionShape.h, self.collisionShape.data,
-            e.x, e.y, e.collisionShape.w, e.collisionShape.h, e.collisionShape.data)
+      function(e, other, x, y)
+          return _imageOverlapsImage(_round(e.x + (x or 0)), _round(e.y + (y or 0)), e.collisionShape.data,
+            _round(other.x), _round(other.y), other.collisionShape.data)
         end,
-      function(self, e, x, y)
-          return _imageOverlapsCircle(self.x + (x or 0), self.y + (y or 0),
-            self.collisionShape.w, self.collisionShape.h, self.collisionShape.data,
-            e.x, e.y, e.collisionShape.r)
+      function(e, other, x, y)
+          return _roundImageOverlapsCircle(_round(e.x + (x or 0)), _round(e.y + (y or 0)), e.collisionShape.data,
+            _round(other.x), _round(other.y), _round(other.collisionShape.r))
         end
     },
     {
-      function(self, e, x, y)
-          return _circleOverlapsRect(self.x + (x or 0), self.y + (y or 0), self.collisionShape.r,
-            e.x, e.y, e.collisionShape.w, e.collisionShape.h)
+      function(e, other, x, y)
+          return _circleOverlapsRect(_round(e.x + (x or 0)), _round(e.y + (y or 0)), _round(e.collisionShape.r),
+            _round(other.x), _round(other.y), _round(other.collisionShape.w), _round(other.collisionShape.h))
         end,
-      function(self, e, x, y)
-          return _imageOverlapsCircle(e.x, e.y, e.collisionShape.w, e.collisionShape.h, e.collisionShape.data,
-            self.x + (x or 0), self.y + (y or 0), self.collisionShape.r)
+      function(e, other, x, y)
+          return _roundImageOverlapsCircle(_round(other.x), _round(other.y), other.collisionShape.data,
+            _round(e.x + (x or 0)), _round(e.y + (y or 0)), _round(e.collisionShape.r))
         end,
-      function(self, e, x, y)
-          return _circleOverlapsCircle(self.x + (x or 0), self.y + (y or 0), self.collisionShape.r,
-            e.x, e.y, e.collisionShape.r)
+      function(e, other, x, y)
+          return _roundCircleOverlapsCircle(_round(e.x + (x or 0)), _round(e.y + (y or 0)), _round(e.collisionShape.r),
+            _round(other.x), _round(other.y), _round(other.collisionShape.r))
         end
     }
   }
@@ -1213,20 +1211,17 @@ function basicEntity:updateHash(doAnyway)
   end
 end
 
-function basicEntity:getSurroundingEntities(dxx, dyy)
+function basicEntity:getSurroundingEntities(extentsLeft, extentsRight, extentsUp, extentsDown)
   if self.invisibleToHash then
     return {}
   end
   
-  if dxx or dyy or not self.currentHashes then
-    local dx, dy = dxx or 0, dyy or 0
-    local xx, yy, ww, hh = self.x - math.min(dx, 0), self.y - math.min(dy, 0),
-      self.collisionShape.w + math.max(dx, 0), self.collisionShape.h + math.max(dy, 0)
-    
-    return megautils.getSurroundingEntities(xx, yy, ww, hh, self)
-  end
-  
   self:updateHash()
+  
+  if extentsLeft or extentsRight or extentsUp or extentsDown or not self.currentHashes then
+    return megautils.getEntitiesAt(self.x - (extentsLeft or 0), self.y - (extentsUp or 0),
+      (extentsLeft or 0) + (extentsRight or 0), (extentsUp or 0) + (extentsDown or 0))
+  end
   
   local result = self.currentHashes[1] and {unpack(self.currentHashes[1].data)} or {}
   
