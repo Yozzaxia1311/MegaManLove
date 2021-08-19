@@ -40,7 +40,7 @@ function collision.doCollision(self, noSlope)
   end
   
   collision.checkGround(self, false, nslp)
-  collision.entityPlatform(self)
+  collision.entityPlatform(self, lx, ly, self.x - lx, self.y - ly)
   collision.checkGround(self, false, nslp)
   
   collision.checkDeath(self, lvx - (self.x - lx), (lvy - (self.y - ly)) + (self.ground and math.sign(self.gravity) or 0), lg)
@@ -124,24 +124,20 @@ function collision.checkSolid(self, dx, dy, noSlope)
   return false
 end
 
-function collision.entityPlatform(self)
-  if self.x ~= self._epX or self.y ~= self._epY then
+function collision.entityPlatform(self, oldX, oldY, vx, vy)
+  if vx ~= 0 or vy ~= 0 then
     local resolid = self.solidType
-    local xypre
+    local xypre = 0
     local epCanCrush = true
-    local myyspeed = self.y - self._epY
-    local myxspeed = self.x - self._epX
-    
     local ladders = collision.getLadders(all)
     
     self.solidType = 0
-    self.x = self._epX
-    self.y = self._epY
+    self.x, self.y = oldX, oldY
     
-    local all = self:getSurroundingEntities(myxspeed, myxspeed, myyspeed, myyspeed)
+    local all = self:getSurroundingEntities(math.abs(vx), math.abs(vx), math.abs(vy), math.abs(vy))
     local possible = resolid ~= 0 and self.collisionShape and #all > 1
     
-    if possible and myyspeed ~= 0 then
+    if possible and vy ~= 0 then
       for i=1, #all do
         local v = all[i]
         if v ~= self and checkFalse(v.blockCollision) and v.collisionShape and
@@ -150,21 +146,21 @@ function collision.entityPlatform(self)
           local epDir = math.sign(self.y + (self.collisionShape.h/2) -
             (v.y + (v.collisionShape.h/2)))
           
-          if v:collision(self, 0, -myyspeed) then
+          if v:collision(self, 0, -vy) then
             collision.performDeath(v, self)
           end
           
           if not v:collision(self) then
             local epIsPassenger = v:collision(self, 0, (v.gravity >= 0 and 1 or -1) * ((v.ground and v.snapToMovingFloor) and 1 or 0))
-            local epWillCollide = self:collision(v, 0, myyspeed)
+            local epWillCollide = self:collision(v, 0, vy)
             
             if epIsPassenger or epWillCollide then
-              self.y = self.y + myyspeed
+              self.y = self.y + vy
               
               xypre = v.y
               
               if epIsPassenger then
-                v.y = v.y + myyspeed
+                v.y = v.y + vy
                 collision.checkDeath(v, 0, math.sign(v.gravity))
               end
               
@@ -200,16 +196,16 @@ function collision.entityPlatform(self)
                 v.onMovingFloor = self
               end
               
-              self.y = self.y - myyspeed
+              self.y = self.y - vy
             end
           end
         end
       end
     end
     
-    self.y = self.y + myyspeed
+    self.y = self.y + vy
       
-    if possible and myxspeed ~= 0 then
+    if possible and vx ~= 0 then
       for i=1, #all do
         local v = all[i]
         local continue = false
@@ -217,7 +213,7 @@ function collision.entityPlatform(self)
           (not self.exclusivelySolidFor or table.icontains(self.exclusivelySolidFor, v)) and
           (not self.excludeSolidFor or not table.icontains(self.excludeSolidFor, v)) then
           
-          if v:collision(self, -myxspeed, 0) then
+          if v:collision(self, -vx, 0) then
             collision.performDeath(v, self)
           end
           
@@ -228,19 +224,19 @@ function collision.entityPlatform(self)
             
             if v:collision(self, 0, (v.gravity >= 0 and 1 or -1) * (v.ground and 1 or 0)) and
               (not self.ladder or self:collisionNumber(ladders, 0, v.gravity < 0 and 1 or -1, true) == 0) then
-              collision.shiftObject(v, myxspeed, 0, true)
+              collision.shiftObject(v, vx, 0, true)
               collision.checkDeath(v, 0, math.sign(v.gravity))
               epIsOnPlat = true
               v.onMovingFloor = self
             end
             
             if resolid == 1 then
-              self.x = self.x + myxspeed
+              self.x = self.x + vx
               
               if not epIsOnPlat and v:collision(self) then
                 xypre = v.x
                 
-                v.x = math.round(v.x + myxspeed + epDir)
+                v.x = math.round(v.x + vx + epDir)
                 local step = epDir * 0.5
                 
                 while v:collision(self) do
@@ -262,7 +258,7 @@ function collision.entityPlatform(self)
                 end
               end
               
-              self.x = self.x - myxspeed
+              self.x = self.x - vx
             end
           else
             continue = true
@@ -274,24 +270,17 @@ function collision.entityPlatform(self)
       end
     end
     
-    self.x = self.x + myxspeed
+    self.x = self.x + vx
     
     self.solidType = resolid
-    
-    self._epX = self.x
-    self._epY = self.y
   end
 end
 
 function collision.shiftObject(self, dx, dy, checkforcol, ep, noSlope)
-  local xsub = self.velX
-  local ysub = self.velY
+  local oldVX, oldVY = self.velX, self.velY
+  local oldX, oldY = self.x, self.y
   
-  self.velX = dx
-  self.velY = dy
-  
-  self._epX = self.x
-  self._epY = self.y
+  self.velX, self.velY = dx, dy
   
   if checkforcol then
     self.canStandSolid.global = false
@@ -303,11 +292,10 @@ function collision.shiftObject(self, dx, dy, checkforcol, ep, noSlope)
   end
   
   if ep == nil or ep then
-    collision.entityPlatform(self)
+    collision.entityPlatform(self, oldX, oldY, self.x - oldX, self.y - oldY)
   end
   
-  self.velX = xsub
-  self.velY = ysub
+  self.velX, self.velY = oldVX, oldVY
 end
 
 function collision.checkGround(self, checkAnyway, noSlope)

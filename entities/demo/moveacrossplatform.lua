@@ -15,7 +15,8 @@ function moveAcrossPlatform:new(x, y, toX, toY)
   self:setRectangleCollision(32, 16)
   self:addGFX("tex", image("moveAcrossPlatform", quad(0, 0, 32, 16)))
   self.applyAutoFace = false
-  self.tween = tween.new(1.5, self, {x=toX or (self.x+32), y=toY or (self.y-32)}, "inOutBack")
+  self.t = {x = self.x, y = self.y}
+  self.tween = tween.new(1, self.t, {x=toX or (self.x+32), y=toY or (self.y-32)}, "inOutBack")
   self.state = 0
   self.hurtable = false
   self.autoGravity.global = false
@@ -31,7 +32,9 @@ function moveAcrossPlatform:update()
     end
   elseif self.state == 1 then
     self.tween:update(1/60)
-    self.x = math.floor(self.x)
-    self.y = math.floor(self.y)
+    local x = math.floor(self.t.x)
+    local y = math.floor(self.t.y)
+    self.velX = x - self.x
+    self.velY = y - self.y
   end
 end

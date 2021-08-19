@@ -268,8 +268,6 @@ function entitySystem:add(c, ...)
   
   e.previousX = e.x
   e.previousY = e.y
-  e._epX = e.previousX
-  e._epY = e.previousY
   
   if e.calcGrav then
     e:calcGrav()
@@ -341,8 +339,6 @@ function entitySystem:adde(e)
   
   e.previousX = e.x
   e.previousY = e.y
-  e._epX = e.previousX
-  e._epY = e.previousY
   
   if e.calcGrav then
     e:calcGrav()
@@ -794,8 +790,6 @@ function entitySystem:update(dt)
       v.noFreeze == true or not checkTrue(self.frozen)) then
       v.previousX = v.x
       v.previousY = v.y
-      v._epX = v.previousX
-      v._epY = v.previousY
       
       if not v.isRemoved and checkFalse(v.canUpdate) then
         v:_beforeUpdate(dt)
