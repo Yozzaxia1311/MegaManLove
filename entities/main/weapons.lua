@@ -958,8 +958,8 @@ function rushJet:update()
     end
   elseif self.s == 3 then
     if self.playerOn and self.user and (not self.user.ground or
-      not (self.user:collision(self, 0, self.user.gravity >= 0 and 1 or -1) and
-      not self.user:collision(self))) then
+      (not self:collision(self.user, 0, self.user.gravity >= 0 and -1 or 1) and
+      not self:collision(self.user, 0, self.user.gravity >= 0 and 1 or -1))) then
       self.user.canWalk.rj = true
       self.playerOn = false
     end

@@ -125,17 +125,16 @@ function collision.checkSolid(self, dx, dy, noSlope)
 end
 
 function collision.entityPlatform(self, oldX, oldY, vx, vy)
-  if vx ~= 0 or vy ~= 0 then
+  if (vx ~= 0 or vy ~= 0) and self.solidType ~= 0 then
     local resolid = self.solidType
     local xypre = 0
-    local epCanCrush = true
     local ladders = collision.getLadders(all)
     
     self.solidType = 0
     self.x, self.y = oldX, oldY
     
     local all = self:getSurroundingEntities(math.abs(vx), math.abs(vx), math.abs(vy), math.abs(vy))
-    local possible = resolid ~= 0 and self.collisionShape and #all > 1
+    local possible = self.collisionShape and #all > 1
     
     if possible and vy ~= 0 then
       for i=1, #all do
@@ -180,14 +179,12 @@ function collision.entityPlatform(self, oldX, oldY, vx, vy)
               
               collision.shiftObject(v, 0, -xypre, true)
               
-              if resolid == 1 then
-                if epCanCrush and v:collision(self) then
-                  local crushing = self.crushing and self:crushing(v)
-                  if v.crushed and (crushing == nil or crushing) then
-                    if not self.invisibleToHash then self:updateHash() end
-                    v:crushed(self)
-                    if not v.invisibleToHash then v:updateHash() end
-                  end
+              if resolid == 1 and v:collision(self) then
+                local crushing = self.crushing and self:crushing(v)
+                if v.crushed and (crushing == nil or crushing) then
+                  if not self.invisibleToHash then self:updateHash() end
+                  v:crushed(self)
+                  if not v.invisibleToHash then v:updateHash() end
                 end
               end
               
@@ -208,7 +205,6 @@ function collision.entityPlatform(self, oldX, oldY, vx, vy)
     if possible and vx ~= 0 then
       for i=1, #all do
         local v = all[i]
-        local continue = false
         if v ~= self and checkFalse(v.blockCollision) and v.collisionShape and
           (not self.exclusivelySolidFor or table.icontains(self.exclusivelySolidFor, v)) and
           (not self.excludeSolidFor or not table.icontains(self.excludeSolidFor, v)) then
@@ -248,7 +244,7 @@ function collision.entityPlatform(self, oldX, oldY, vx, vy)
                 
                 collision.shiftObject(v, -xypre, 0, true)
                 
-                if epCanCrush and v:collision(self) then
+                if v:collision(self) then
                   local crushing = self.crushing and self:crushing(v)
                   if v.crushed and (crushing == nil or crushing) then
                     if not self.invisibleToHash then self:updateHash() end
@@ -260,12 +256,7 @@ function collision.entityPlatform(self, oldX, oldY, vx, vy)
               
               self.x = self.x - vx
             end
-          else
-            continue = true
           end
-        end
-        if not continue then
-          epIsOnPlat = false
         end
       end
     end
@@ -417,7 +408,7 @@ function collision.generalCollision(self, noSlope)
             (not v.exclusivelySolidFor or table.icontains(v.exclusivelySolidFor, self)) and
             (not v.excludeSolidFor or not table.icontains(v.excludeSolidFor, self)) and
             v.solidType == 2 and
-            not v:collision(self) and
+            not v:collision(self, 0, cgrav) and
             (not v.ladder or v:collisionNumber(ladders, 0, -cgrav, true) == 0) then
             solid[#solid+1] = v
           end
@@ -456,7 +447,7 @@ function collision.generalCollision(self, noSlope)
               (not v.excludeSolidFor or not table.icontains(v.excludeSolidFor, self)) and
               v:collision(self, -self.velX, 0) and
               not v:collision(self, -self.velX, -cgrav * slp) and
-              not v:collision(self) and
+              not v:collision(self, 0, cgrav) and
               (not v.ladder or v:collisionNumber(ladders, 0, -cgrav) == 0) then
               solid[#solid+1] = v
             else
