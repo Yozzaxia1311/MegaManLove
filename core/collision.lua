@@ -162,7 +162,6 @@ function collision.entityPlatform(self, vx, vy)
             
             if epIsPassenger or epWillCollide then
               self.y = self.y + vy
-              
               xypre = v.y
               
               if epIsPassenger then
@@ -181,10 +180,9 @@ function collision.entityPlatform(self, vx, vy)
                 end
               end
               
-              xypre = xypre - v.y
-              v.y = v.y + xypre
-              
-              collision.shiftObject(v, 0, -xypre, true)
+              local dy = v.y - xypre
+              v.y = xypre
+              collision.shiftObject(v, 0, dy, true)
               
               if resolid == 1 and v:collision(self) then
                 local crushing = self.crushing and self:crushing(v)
@@ -208,7 +206,7 @@ function collision.entityPlatform(self, vx, vy)
     end
     
     self.y = self.y + vy
-      
+    
     if possible and vx ~= 0 then
       for i=1, #all do
         local v = all[i]
@@ -246,10 +244,9 @@ function collision.entityPlatform(self, vx, vy)
                   v.x = v.x - step
                 end
                 
-                xypre = xypre - v.x
-                v.x = v.x + xypre
-                
-                collision.shiftObject(v, -xypre, 0, true)
+                local dx = v.x - xypre
+                v.x = xypre
+                collision.shiftObject(v, dx, 0, true)
                 
                 if v:collision(self) then
                   local crushing = self.crushing and self:crushing(v)
