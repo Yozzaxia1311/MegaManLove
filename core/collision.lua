@@ -40,7 +40,11 @@ function collision.doCollision(self, noSlope)
   end
   
   collision.checkGround(self, false, nslp)
-  collision.entityPlatform(self, lx, ly, self.x - lx, self.y - ly)
+  
+  local dx, dy = self.x - lx, self.y - ly
+  self.x, self.y = lx, ly
+  collision.entityPlatform(self, dx, dy)
+  
   collision.checkGround(self, false, nslp)
   
   collision.checkDeath(self, lvx - (self.x - lx), (lvy - (self.y - ly)) + (self.ground and math.sign(self.gravity) or 0), lg)
@@ -124,17 +128,20 @@ function collision.checkSolid(self, dx, dy, noSlope)
   return false
 end
 
-function collision.entityPlatform(self, oldX, oldY, vx, vy)
-  if (vx ~= 0 or vy ~= 0) and self.solidType ~= 0 then
+function collision.entityPlatform(self, vx, vy)
+  if vx ~= 0 or vy ~= 0 then
     local resolid = self.solidType
     local xypre = 0
-    local ladders = collision.getLadders(all)
     
     self.solidType = 0
-    self.x, self.y = oldX, oldY
     
     local all = self:getSurroundingEntities(math.abs(vx), math.abs(vx), math.abs(vy), math.abs(vy))
-    local possible = self.collisionShape and #all > 1
+    local possible = resolid ~= 0 and self.collisionShape and #all > 1
+    local ladders
+    
+    if possible then
+      ladders = collision.getLadders(all)
+    end
     
     if possible and vy ~= 0 then
       for i=1, #all do
@@ -150,7 +157,7 @@ function collision.entityPlatform(self, oldX, oldY, vx, vy)
           end
           
           if not v:collision(self) then
-            local epIsPassenger = v:collision(self, 0, (v.gravity >= 0 and 1 or -1) * ((v.ground and v.snapToMovingFloor) and 1 or 0))
+            local epIsPassenger = self:collision(v, 0, (v.gravity >= 0 and -1 or 1) * ((v.ground and v.snapToMovingFloor) and 1 or 0))
             local epWillCollide = self:collision(v, 0, vy)
             
             if epIsPassenger or epWillCollide then
@@ -167,7 +174,7 @@ function collision.entityPlatform(self, oldX, oldY, vx, vy)
                 (not self.ladder or self:collisionNumber(ladders, 0, v.gravity < 0 and 1 or -1, true) == 0))) and
                 v:collision(self) then
                 local step = epDir * 0.5
-                v.y = math.round(v.y) - step
+                v.y = math.round(v.y + epDir)
                 
                 while v:collision(self) do
                   v.y = v.y - step
@@ -232,8 +239,8 @@ function collision.entityPlatform(self, oldX, oldY, vx, vy)
               if not epIsOnPlat and v:collision(self) then
                 xypre = v.x
                 
-                v.x = math.round(v.x + vx + epDir)
                 local step = epDir * 0.5
+                v.x = math.round(v.x + vx + epDir)
                 
                 while v:collision(self) do
                   v.x = v.x - step
@@ -267,13 +274,12 @@ function collision.entityPlatform(self, oldX, oldY, vx, vy)
   end
 end
 
-function collision.shiftObject(self, dx, dy, checkforcol, ep, noSlope)
+function collision.shiftObject(self, dx, dy, checkForCol, ep, noSlope)
   local oldVX, oldVY = self.velX, self.velY
-  local oldX, oldY = self.x, self.y
-  
+  local lx, ly = self.x, self.y
   self.velX, self.velY = dx, dy
   
-  if checkforcol then
+  if checkForCol then
     self.canStandSolid.global = false
     collision.generalCollision(self, noSlope or collision.noSlope)
     self.canStandSolid.global = true
@@ -283,7 +289,9 @@ function collision.shiftObject(self, dx, dy, checkforcol, ep, noSlope)
   end
   
   if ep == nil or ep then
-    collision.entityPlatform(self, oldX, oldY, self.x - oldX, self.y - oldY)
+    local dx, dy = self.x - lx, self.y - ly
+    self.x, self.y = lx, ly
+    collision.entityPlatform(self, dx, dy)
   end
   
   self.velX, self.velY = oldVX, oldVY
@@ -317,7 +325,7 @@ function collision.checkGround(self, checkAnyway, noSlope)
         (not v.exclusivelySolidFor or table.icontains(v.exclusivelySolidFor, self)) and
         (not v.excludeSolidFor or not table.icontains(v.excludeSolidFor, self)) then
         if (v.solidType == 1 or v.solidType == 2) and
-          not v:collision(self, 0, cgrav) and ((v.solidType ~= 2) or (v:collision(self, 0, -cgrav * slp) and
+          not v:collision(self) and ((v.solidType ~= 2) or (v:collision(self, 0, -cgrav * slp) and
           (not v.ladder or v:collisionNumber(ladders, 0, -cgrav, true) == 0))) then
           solid[#solid + 1] = v
         elseif v.solidType == 3 then
@@ -408,7 +416,7 @@ function collision.generalCollision(self, noSlope)
             (not v.exclusivelySolidFor or table.icontains(v.exclusivelySolidFor, self)) and
             (not v.excludeSolidFor or not table.icontains(v.excludeSolidFor, self)) and
             v.solidType == 2 and
-            not v:collision(self, 0, cgrav) and
+            not v:collision(self, 0, cgrav * 0.01) and
             (not v.ladder or v:collisionNumber(ladders, 0, -cgrav, true) == 0) then
             solid[#solid+1] = v
           end
@@ -447,7 +455,7 @@ function collision.generalCollision(self, noSlope)
               (not v.excludeSolidFor or not table.icontains(v.excludeSolidFor, self)) and
               v:collision(self, -self.velX, 0) and
               not v:collision(self, -self.velX, -cgrav * slp) and
-              not v:collision(self, 0, cgrav) and
+              not v:collision(self, 0, cgrav * 0.01) and
               (not v.ladder or v:collisionNumber(ladders, 0, -cgrav) == 0) then
               solid[#solid+1] = v
             else

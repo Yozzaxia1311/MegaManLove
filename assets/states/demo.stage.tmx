@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.5.0" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="16" height="14" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#ffaaff" nextlayerid="6" nextobjectid="195">
+<map version="1.4" tiledversion="1.4.3" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="16" height="14" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#ffaaff" nextlayerid="6" nextobjectid="195">
  <properties>
   <property name="fadeIn" type="bool" value="true"/>
   <property name="musicPath" value="assets/sfx/music/demo.ogg"/>
@@ -531,11 +531,11 @@
    </object>
    <object id="49" template="templates/demo/moveAcrossPlatform.tx" x="224" y="48">
     <properties>
-     <property name="toX" type="int" value="390"/>
-     <property name="toY" type="int" value="49"/>
+     <property name="toX" type="int" value="225"/>
+     <property name="toY" type="int" value="170"/>
     </properties>
    </object>
-   <object id="50" template="templates/demo/met.tx" x="240" y="144"/>
+   <object id="50" template="templates/demo/met.tx" x="304" y="176"/>
    <object id="51" template="templates/demo/met.tx" x="480" y="144"/>
    <object id="52" template="templates/mechanics/gravFlip.tx" x="432" y="32" width="16" height="128">
     <properties>
