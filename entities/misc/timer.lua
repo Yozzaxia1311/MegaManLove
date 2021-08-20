@@ -103,6 +103,7 @@ function timer.absorbCutscene(func, music)
             megaMan.mainPlayer.velY = megaMan.mainPlayer.jumpSpeed * (megaMan.mainPlayer.gravity >= 0 and 1 or -1)
             megaMan.mainPlayer.ground = false
             megaMan.mainPlayer.anims:set("jump")
+            megaMan.mainPlayer.autoGravity.absorb = false
             s.cg = megaMan.mainPlayer.y
             return
           end
@@ -124,6 +125,7 @@ function timer.absorbCutscene(func, music)
       elseif s.state == 3 then
         s.timer = math.min(s.timer+1, 180)
         if s.timer == 180 then
+          megaMan.mainPlayer.autoGravity.absorb = nil
           s.timer = 0
           s.state = 4
         end

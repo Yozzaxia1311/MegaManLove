@@ -22,6 +22,8 @@ collision.maxSlope = 1
 
 function collision.doCollision(self, noSlope, noCol, noGrav)
   if not noCol and self.collisionShape and self.velX and self.velY then
+    if self.beforeCollisionFunc then self:beforeCollisionFunc() end
+    
     local lvx, lvy, lx, ly, lg =
       self.velX, self.velY, self.x, self.y, self.ground
     local nslp = noSlope or collision.noSlope
@@ -49,6 +51,7 @@ function collision.doCollision(self, noSlope, noCol, noGrav)
     collision.checkGround(self, false, nslp)
     
     collision.checkDeath(self, lvx - (self.x - lx), (lvy - (self.y - ly)) + (self.ground and math.sign(self.gravity) or 0), lg)
+    if self.afterCollisionFunc then self:afterCollisionFunc() end
   end
 end
 
@@ -134,9 +137,6 @@ function collision.entityPlatform(self, vx, vy)
   if vx ~= 0 or vy ~= 0 then
     local resolid = self.solidType
     local xypre = 0
-    
-    self.solidType = 0
-    
     local all
     local possible = false
     
@@ -146,6 +146,7 @@ function collision.entityPlatform(self, vx, vy)
     end
     
     if possible then
+      self.solidType = 0
       local ladders = collision.getLadders(all)
       
       if vy ~= 0 then
@@ -242,9 +243,9 @@ function collision.entityPlatform(self, vx, vy)
                 if not epIsOnPlat and v:collision(self) then
                   xypre = v.x
                   
-                  local step = epDir * 0.5
                   v.x = math.round(v.x + vx + epDir)
                   
+                  local step = epDir * 0.5
                   while v:collision(self) do
                     v.x = v.x - step
                   end
@@ -261,9 +262,9 @@ function collision.entityPlatform(self, vx, vy)
                       if not v.invisibleToHash then v:updateHash() end
                     end
                   end
-                  
-                  self.x = self.x - vx
                 end
+                
+                self.x = self.x - vx
               end
             end
           end
@@ -271,12 +272,12 @@ function collision.entityPlatform(self, vx, vy)
       end
       
       self.x = self.x + vx
+      
+      self.solidType = resolid
     else
       self.x = self.x + vx
       self.y = self.y + vy
     end
-
-    self.solidType = resolid
   end
 end
 

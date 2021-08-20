@@ -138,6 +138,8 @@ function camera:updateCam(spdx, spdy)
         for _, v in pairs(megaMan.allPlayers) do
           v.canControl.trans = false
           v.noFreeze = true
+          v.autoGravity.transition = false
+          v.autoCollision.transition = false
         end
         megautils.freeze("trans")
       end 
@@ -258,6 +260,8 @@ function camera:updateCam(spdx, spdy)
             for _, v in pairs(megaMan.allPlayers) do
               v.canControl.trans = nil
               v.noFreeze = nil
+              v.autoGravity.transition = nil
+              v.autoCollision.transition = nil
             end
             megautils.unfreeze("trans")
           end

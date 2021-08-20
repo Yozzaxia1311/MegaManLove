@@ -22,12 +22,11 @@ function checkTrue(w)
 end
 
 function checkFalse(w)
-  if w then
-    for _, v in pairs(w) do
-      if not v then return false end
-    end
-  else
+  if not w then
     return false
+  end
+  for _, v in pairs(w) do
+    if not v then return false end
   end
   return true
 end

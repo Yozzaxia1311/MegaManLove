@@ -16,10 +16,11 @@ function moveAcrossPlatform:new(x, y, toX, toY)
   self:addGFX("tex", image("moveAcrossPlatform", quad(0, 0, 32, 16)))
   self.applyAutoFace = false
   self.t = {x = self.x, y = self.y}
-  self.tween = tween.new(1, self.t, {x=toX or (self.x+32), y=toY or (self.y-32)})
+  self.tween = tween.new(1, self.t, {x=toX or (self.x+32), y=toY or (self.y-32)}, "inOutBack")
   self.state = 0
   self.hurtable = false
   self.autoGravity.global = false
+  self.blockCollision.global = false
 end
 
 function moveAcrossPlatform:update()

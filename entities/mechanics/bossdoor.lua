@@ -172,6 +172,8 @@ function bossDoor:update()
             megaMan.allPlayers[j].canControl.trans = false
             megaMan.allPlayers[j].doAnimation = false
             megaMan.allPlayers[j].noFreeze = true
+            megaMan.allPlayers[i].autoGravity.transition = false
+            megaMan.allPlayers[i].autoCollision.transition = false
           end
           megautils.freeze("trans")
           if megautils.groups().removeOnTransition then
@@ -307,6 +309,8 @@ function bossDoor:update()
           megaMan.allPlayers[i].canControl.trans = nil
           megaMan.allPlayers[i].doAnimation = true
           megaMan.allPlayers[i].noFreeze = nil
+          megaMan.allPlayers[i].autoGravity.transition = nil
+          megaMan.allPlayers[i].autoCollision.transition = nil
         end
         megautils.unfreeze("trans")
         camera.main.once = false

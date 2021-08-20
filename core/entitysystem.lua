@@ -792,8 +792,7 @@ function entitySystem:update(dt)
     if v ~= -1 then
       if ((type(v.noFreeze) == "table" and table.intersects(self.frozen, v.noFreeze, true)) or
         v.noFreeze or not checkTrue(self.frozen)) and not v.isRemoved and checkFalse(v.canUpdate) then
-        collision.doCollision(v, v.noSlope, v.autoCollision and not checkFalse(v.autoCollision),
-          v.autoGravity and not checkFalse(v.autoGravity))
+        collision.doCollision(v, v.noSlope, not checkFalse(v.autoCollision), not checkFalse(v.autoGravity))
         if not v.invisibleToHash then v:updateHash() end
       end
     end
@@ -1308,7 +1307,7 @@ function entity:new()
   end
   
   self.canDraw.flash = true
-  self.blockCollision = {global=false}
+  self.blockCollision = {global = false}
   self.autoCollision = {global = true}
   self.autoGravity = {global = false}
   self.ground = false
@@ -1660,6 +1659,7 @@ function advancedEntity:new()
     self.barOffsetY = 80
     self.applyAutoFace = true
     self.flipFace = false
+    self.autoGravity.global = true
     self.applyGravFace = true
     self.flipGravFace = false
     self.gravFace = self.gravity >= 0 and 1 or -1

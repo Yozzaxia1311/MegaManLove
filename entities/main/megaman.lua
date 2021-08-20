@@ -483,6 +483,8 @@ function megaMan:added()
   end
   
   if not self.doWeaponGet then
+    self.autoGravity.global = false
+    
     if self.healthHandler and not self.healthHandler.isRemoved then
       megautils.remove(self.healthHandler)
     end
@@ -1036,14 +1038,25 @@ function megaMan:crushed(other)
   end
 end
 
-function megaMan:code(dt)
+function megaMan:beforeCollisionFunc()
   if checkFalse(self.blockCollision) and megautils.groups().bossDoor then
     for _, v in ipairs(megautils.groups().bossDoor) do
       v._LST = v.solidType
       v.solidType = v.canWalkThrough and 0 or 1
     end
   end
-  
+end
+
+function megaMan:afterCollisionFunc()
+  if megautils.groups().bossDoor then
+    for _, v in ipairs(megautils.groups().bossDoor) do
+      v.solidType = v._LST
+      v._LST = nil
+    end
+  end
+end
+
+function megaMan:code(dt)
   self.canIgnoreKnockback.global = false
   self.protoShielding = false
   self.runCheck = (((input.down["left" .. tostring(self.input)] or self.tLeft) and
@@ -1455,8 +1468,6 @@ function megaMan:code(dt)
       end
     end
     
-    if self.died then return end
-    
     if self.tempShortBox and not self:checkRegBox() then
       self.tempShortBox = nil
       self:slideToReg()
@@ -1506,18 +1517,18 @@ function megaMan:code(dt)
   if self.stopOnShot and self.shootFrames == 0 then
     self.stopOnShot = false
   end
+  
+  if self.treble or self.climb or self.slide then
+    self.autoGravity.sub = false
+  else
+    self.autoGravity.sub = true
+  end
+  
   if megaMan.mainPlayer and (input.pressed["start" .. tostring(self.input)] or self.tStartPressed) and
     checkFalse(megaMan.mainPlayer.canControl) and checkFalse(megaMan.mainPlayer.canUpdate) and checkFalse(self.canPause) then
     self.weaponSwitchTimer = 70
     vPad.active = false
     mmWeaponsMenu.pause(self)
-  end
-  
-  if megautils.groups().bossDoor then
-    for _, v in ipairs(megautils.groups().bossDoor) do
-      v.solidType = v._LST
-      v._LST = nil
-    end
   end
 end
 
