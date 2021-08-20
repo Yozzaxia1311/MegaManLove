@@ -207,7 +207,7 @@ end
 
 function table.lazyShuffle(t)
   local half = math.floor(#t / 2)
-  for i = 1, half, (#t > 5 and 2 or 1) do
+  for i = 1, half, (#t >= 4 and 2 or 1) do
     local j = love.math.random(half, #t)
     t[i], t[j] = t[j], t[i]
   end
