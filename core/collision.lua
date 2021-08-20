@@ -544,55 +544,56 @@ function collision.generalCollision(self, noSlope)
 end
 
 function collision.checkDeath(self, x, y, dg)
-  local all = self:getSurroundingEntities(math.abs(math.min(x, 0)), math.max(x, 0), math.abs(math.min(y, 0)), math.max(y, 0))
-  local possible = self.collisionShape and checkFalse(self.blockCollision) and #all > 1
-  
-  if possible then
-    local death = {}
+  if self.collisionShape and checkFalse(self.blockCollision) then
+    local all = self:getSurroundingEntities(math.abs(math.min(x, 0)), math.max(x, 0), math.abs(math.min(y, 0)), math.max(y, 0))
     
-    for i=1, #all do
-      local v = all[i]
-      if v ~= self and v.collisionShape and v.death then
-        death[#death+1] = v
+    if #all > 1 then
+      local death = {}
+      
+      for i=1, #all do
+        local v = all[i]
+        if v ~= self and v.collisionShape and v.death then
+          death[#death+1] = v
+        end
       end
-    end
-    
-    local deathSolid
-    local lx, ly, lg, lxc, lyc, lss, lmf = 
-      self.x, self.y, self.ground, self.xColl, self.yColl, self.inStandSolid, self.onMovingFloor
-    
-    for i=1, #death do
-      local v = death[i]
-      v._LSTDeathCheck = v.solidType
-      v.solidType = 0
-    end
-    
-    collision.shiftObject(self, x, y, true, false)
-    
-    for i=1, #death do
-      local v = death[i]
-      v.solidType = v._LSTDeathCheck
-      v._LSTDeathCheck = nil
       
-      if not deathSolid and self:collision(v) then
-        deathSolid = v
+      local deathSolid
+      local lx, ly, lg, lxc, lyc, lss, lmf = 
+        self.x, self.y, self.ground, self.xColl, self.yColl, self.inStandSolid, self.onMovingFloor
+      
+      for i=1, #death do
+        local v = death[i]
+        v._LSTDeathCheck = v.solidType
+        v.solidType = 0
       end
-    end
-    
-    if deathSolid then
-      self.x, self.y, self.ground, self.xColl, self.yColl, self.inStandSolid, self.onMovingFloor =
-        lx, ly, lg, lxc, lyc, lss, lmf
       
-      local ld = self.dead
+      collision.shiftObject(self, x, y, true, false)
       
-      collision.performDeath(self, deathSolid)
-      
-      if not ld and self.dead and dg ~= nil then
-        self.ground = dg
+      for i=1, #death do
+        local v = death[i]
+        v.solidType = v._LSTDeathCheck
+        v._LSTDeathCheck = nil
+        
+        if not deathSolid and self:collision(v) then
+          deathSolid = v
+        end
       end
-    else
-      self.x, self.y, self.ground, self.xColl, self.yColl, self.inStandSolid, self.onMovingFloor =
-        lx, ly, lg, lxc, lyc, lss, lmf
+      
+      if deathSolid then
+        self.x, self.y, self.ground, self.xColl, self.yColl, self.inStandSolid, self.onMovingFloor =
+          lx, ly, lg, lxc, lyc, lss, lmf
+        
+        local ld = self.dead
+        
+        collision.performDeath(self, deathSolid)
+        
+        if not ld and self.dead and dg ~= nil then
+          self.ground = dg
+        end
+      else
+        self.x, self.y, self.ground, self.xColl, self.yColl, self.inStandSolid, self.onMovingFloor =
+          lx, ly, lg, lxc, lyc, lss, lmf
+      end
     end
   end
 end
