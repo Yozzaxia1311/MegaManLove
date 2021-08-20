@@ -206,8 +206,10 @@ function table.shuffle(t)
 end
 
 function table.lazyShuffle(t)
-  for i = 1, math.floor(#t / 2), love.math.random(1, math.max(math.floor(#t / 3), 1)) do
-    t[i], t[#t] = t[#t], t[i]
+  local half = math.floor(#t / 2)
+  for i = 1, half, (#t > 5 and 2 or 1) do
+    local j = love.math.random(half, #t)
+    t[i], t[j] = t[j], t[i]
   end
   
   return t
