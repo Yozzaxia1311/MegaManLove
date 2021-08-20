@@ -209,14 +209,6 @@ function weapon:_beforeUpdate(dt)
   if self.flipWithUser and self.user and self.user.gravityMultipliers then
     self:setGravityMultiplier("flipWithUser", self.user.gravityMultipliers.gravityFlip or 1)
   end
-  if checkFalse(self.autoGravity) then
-    collision.doGrav(self, self.noSlope)
-  end
-  self._didCol = false
-  if self.doAutoCollisionBeforeUpdate and checkFalse(self.autoCollision) then
-    collision.doCollision(self, self.noSlope)
-    self._didCol = true
-  end
   local s = megautils.side(self, self.user, true)
   self.autoFace = s or self.autoFace
   if self.applyAutoFace then
@@ -238,9 +230,6 @@ function weapon:_update(dt)
 end
 
 function weapon:_afterUpdate(dt)
-  if not self.doAutoCollisionBeforeUpdate and checkFalse(self.autoCollision) and not self._didCol then
-    collision.doCollision(self, self.noSlope)
-  end
   if self.autoHit then
     if self.damageType == weapon.DAMAGEENEMY or self.damageType == weapon.DAMAGEBOTH then
       self:interact(self:collisionTable(megautils.filterByGroup(self:getSurroundingEntities(), "interactable")), self.damage)

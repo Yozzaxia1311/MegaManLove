@@ -415,7 +415,6 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   self.teleporter = tp
   self.protoIdle = false
   self.protoWhistle = false
-  self.slideXColl = 0
   self.standSolidJumpTimer = -1
   self.shootOffsetXTable = {}
   self.shootOffsetYTable = {}
@@ -600,7 +599,6 @@ function megaMan:resetStates()
   if self.slide then
     self:slideToReg()
     self.slide = false
-    self.slideXColl = 0
   end
   self:useShootAnimation()
   self:animate()
@@ -1071,7 +1069,6 @@ function megaMan:code(dt)
         self.velY = -2*m
       end
     end
-    collision.doCollision(self)
     self:attemptWeaponUsage()
   elseif self.treble then
     self.hitTimer = math.min(self.hitTimer+1, self.maxHitTime)
@@ -1134,7 +1131,6 @@ function megaMan:code(dt)
         v.func(self)
       end
     end
-    collision.doCollision(self)
     if megaMan.weaponHandler[self.player].current ~= "T. BOOST" or
       (megaMan.weaponHandler[self.player].current == "T. BOOST" and
       megaMan.weaponHandler[self.player].energy[megaMan.weaponHandler[self.player].currentSlot] <= 0) then
@@ -1146,7 +1142,6 @@ function megaMan:code(dt)
       self.trebleVelY = 0
     end
   elseif self.hitTimer ~= self.maxHitTime then
-    collision.doGrav(self)
     self.hitTimer = math.min(self.hitTimer+1, self.maxHitTime)
     for _, v in pairs(megautils.playerKnockbackFuncs) do
       if type(v) == "function" then
@@ -1155,7 +1150,6 @@ function megaMan:code(dt)
         v.func(self)
       end
     end
-    collision.doCollision(self)
     if input.down["shoot" .. tostring(self.input)] or self.tShoot then
       self:charge()
     else
@@ -1235,7 +1229,6 @@ function megaMan:code(dt)
     if self.shootFrames ~= 0 then
       self.velY = 0      
     end
-    collision.doCollision(self)
     self.currentLadder = self:checkLadder()
     if not self.currentLadder then
       self.climb = false
@@ -1284,7 +1277,7 @@ function megaMan:code(dt)
       if self.slideTimer == self.maxSlideTime and not rb and (self.ground or sb) then
         self.slide = false
         self:slideToReg()
-      elseif not rb and self.slideXColl ~= 0 then
+      elseif not rb and self.xColl ~= 0 then
         self.slide = false
         self.slideTimer = self.maxSlideTime
         self:slideToReg()
@@ -1317,6 +1310,7 @@ function megaMan:code(dt)
       end
     end
     if not self.slide and not jumped then self.velY = 0 end
+    
     for _, v in pairs(megautils.playerSlideFuncs) do
       if type(v) == "function" then
         v(self)
@@ -1324,8 +1318,7 @@ function megaMan:code(dt)
         v.func(self)
       end
     end
-    collision.doCollision(self)
-    self.slideXColl = self.xColl
+    
     local cd = checkFalse(self.canDashShoot)
     if not cd and (input.down["shoot" .. tostring(self.input)] or self.tShoot) then
       self:charge()
@@ -1335,12 +1328,7 @@ function megaMan:code(dt)
       self:charge(true)
     end
     self:attemptClimb()
-    
-    if not self.slide then
-      self.slideXColl = 0
-    end
   elseif self.ground then
-    collision.doGrav(self)
     if checkFalse(self.canWalk) and not (self.stopOnShot and self.shootFrames ~= 0) then
       if self.runCheck and not self.step then
         self.side = (input.down["left" .. tostring(self.input)] or self.tLeft) and -1 or 1
@@ -1412,7 +1400,6 @@ function megaMan:code(dt)
         v.func(self)
       end
     end
-    collision.doCollision(self)
     
     if self.tempShortBox and not self:checkRegBox() then
       self.tempShortBox = nil
@@ -1426,7 +1413,6 @@ function megaMan:code(dt)
     self:attemptWeaponUsage()
     self:attemptClimb()
   else
-    collision.doGrav(self)
     self.protoShielding = checkFalse(self.canProtoShield)
     if self.runCheck then
       self.side = (input.down["left" .. tostring(self.input)] or self.tLeft) and -1 or 1
@@ -1462,7 +1448,6 @@ function megaMan:code(dt)
         v.func(self)
       end
     end
-    collision.doCollision(self)
     
     if self.died then return end
     

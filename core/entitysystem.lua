@@ -793,7 +793,6 @@ function entitySystem:update(dt)
       if ((type(v.noFreeze) == "table" and table.intersects(self.frozen, v.noFreeze, true)) or
         v.noFreeze == true or not checkTrue(self.frozen)) and not v.isRemoved and checkFalse(v.canUpdate) then
         v:_beforeUpdate(dt)
-        if not v.invisibleToHash then v:updateHash() end
       end
     end
     
@@ -811,7 +810,6 @@ function entitySystem:update(dt)
     if v ~= -1 and ((type(v.noFreeze) == "table" and table.intersects(self.frozen, v.noFreeze, true)) or
       v.noFreeze == true or not checkTrue(self.frozen)) and not v.isRemoved and checkFalse(v.canUpdate) then
       v:_update(dt)
-      if not v.invisibleToHash then v:updateHash() end
     end
     
     i = i + 1
@@ -829,7 +827,6 @@ function entitySystem:update(dt)
       if ((type(v.noFreeze) == "table" and table.intersects(self.frozen, v.noFreeze, true)) or
         v.noFreeze or not checkTrue(self.frozen)) and not v.isRemoved and checkFalse(v.canUpdate) then
         v:_afterUpdate(dt)
-        if not v.invisibleToHash then v:updateHash() end
       end
       
       v.justAddedIn = false
@@ -843,6 +840,30 @@ function entitySystem:update(dt)
   if next(self._updateHoles) then
     self:_removeHoles(self.updates)
     self._updateHoles = {}
+  end
+  
+  for i = 1, #self.updates do
+    if not self.updates[i].invisibleToHash then self.updates[i]:updateHash() end
+  end
+  
+  i = 1
+  while i <= #self.updates do
+    if states.switched then
+      return
+    end
+    
+    local v = self.updates[i]
+    
+    if v ~= -1 then
+      if ((type(v.noFreeze) == "table" and table.intersects(self.frozen, v.noFreeze, true)) or
+        v.noFreeze or not checkTrue(self.frozen)) and not v.isRemoved and checkFalse(v.canUpdate) then
+        collision.doCollision(v, v.noSlope, v.autoCollision and not checkFalse(v.autoCollision),
+          v.autoGravity and not checkFalse(v.autoGravity))
+        if not v.invisibleToHash then v:updateHash() end
+      end
+    end
+    
+    i = i + 1
   end
   
   if states.switched then
@@ -1653,7 +1674,6 @@ function advancedEntity:new()
     self.pierceType = pierce.PIERCE
     self.autoCollision = {global = true}
     self.autoGravity = {global = true}
-    self.doAutoCollisionBeforeUpdate = false
     self.crushable = true
     self.blockCollision.global = true
     self.maxFallingSpeed = 7
@@ -1745,14 +1765,6 @@ function advancedEntity:beforeUpdate()
   if self.flipWithPlayer and megaMan.mainPlayer then
     self:setGravityMultiplier("flipWithPlayer", megaMan.mainPlayer.gravityMultipliers.gravityFlip or 1)
   end
-  if checkFalse(self.autoGravity) then
-    collision.doGrav(self, self.noSlope)
-  end
-  self._didCol = false
-  if self.doAutoCollisionBeforeUpdate and checkFalse(self.autoCollision) then
-    collision.doCollision(self, self.noSlope)
-    self._didCol = true
-  end
   local s, n = megautils.side(self, megaMan.allPlayers)
   self.autoFace = s or self.autoFace
   if self.applyAutoFace then
@@ -1771,9 +1783,6 @@ function advancedEntity:beforeUpdate()
 end
 
 function advancedEntity:afterUpdate()
-  if not self.doAutoCollisionBeforeUpdate and checkFalse(self.autoCollision) and not self._didCol then
-    collision.doCollision(self, self.noSlope)
-  end
   if self.autoHitPlayer then
     self:interact(self:collisionTable(megaMan.allPlayers), self.damage)
   end
@@ -2015,8 +2024,6 @@ function bossEntity:start()
     local result = {}
     for k, v in ipairs(megaMan.allPlayers) do
       if not v.drop and not v.rise then
-        collision.doGrav(v)
-        collision.doCollision(v)
         if v.ground then
           result[k] = true
           v.anims:set("idle")

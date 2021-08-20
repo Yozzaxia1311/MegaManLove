@@ -61,12 +61,6 @@ function pickup:_afterUpdate(dt)
   if self.fwp then
     self:setGravityMultiplier("flipWithPlayer", megaMan.mainPlayer and megaMan.mainPlayer.gravityMultipliers.gravityFlip or self.gravDir)
   end
-  if checkFalse(self.autoGravity) then
-    collision.doGrav(self, self.noSlope)
-  end
-  if checkFalse(self.autoCollision) then
-    collision.doCollision(self, self.noSlope)
-  end
   for i=1, megaMan.playerCount do
     local p = megaMan.allPlayers[i]
     if self:collision(p) then
