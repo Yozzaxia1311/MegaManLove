@@ -38,8 +38,8 @@ function parallax:new(x, y, w, h, bg, a, as, aw, ah, spdMultX, spdMultY, sx, sy,
   end
   self.spdMultX = spdMultX or 0.5
   self.spdMultY = spdMultY or 0.5
-  self.velX = sx or 0
-  self.velY = sy or 0
+  self._velX = sx or 0
+  self._velY = sy or 0
   self.ox = 0
   self.oy = 0
   self.wrapX = (wrapx == nil) or wrapx
@@ -67,8 +67,8 @@ function parallax:update()
   else
     imgw, imgh = self.tex:getDimensions()
   end
-  self.ox = math.wrap(self.ox + self.velX, 0, imgw)
-  self.oy = math.wrap(self.oy + self.velY, 0, imgh)
+  self.ox = math.wrap(self.ox + self._velX, 0, imgw)
+  self.oy = math.wrap(self.oy + self._velY, 0, imgh)
 end
 
 function parallax:draw()

@@ -266,9 +266,6 @@ function entitySystem:add(c, ...)
     self.beginQueue[#self.beginQueue + 1] = e
   end
   
-  e.previousX = e.x
-  e.previousY = e.y
-  
   if e.calcGrav then
     e:calcGrav()
   end
@@ -336,9 +333,6 @@ function entitySystem:adde(e)
   else
     self.beginQueue[#self.beginQueue + 1] = e
   end
-  
-  e.previousX = e.x
-  e.previousY = e.y
   
   if e.calcGrav then
     e:calcGrav()
@@ -776,7 +770,16 @@ function entitySystem:update(dt)
     table.remove(self.beginQueue, 1)
   end
   
+  if next(self._updateHoles) then
+    self:_removeHoles(self.updates)
+    self._updateHoles = {}
+  end
+  
   self.inLoop = true
+  
+  for i = 1, #self.updates do
+    if not self.updates[i].invisibleToHash then self.updates[i]:updateHash() end
+  end
   
   local i = 1
   while i <= #self.updates do
@@ -787,9 +790,26 @@ function entitySystem:update(dt)
     local v = self.updates[i]
     
     if v ~= -1 then
-      v.previousX = v.x
-      v.previousY = v.y
-      
+      if ((type(v.noFreeze) == "table" and table.intersects(self.frozen, v.noFreeze, true)) or
+        v.noFreeze or not checkTrue(self.frozen)) and not v.isRemoved and checkFalse(v.canUpdate) then
+        collision.doCollision(v, v.noSlope, v.autoCollision and not checkFalse(v.autoCollision),
+          v.autoGravity and not checkFalse(v.autoGravity))
+        if not v.invisibleToHash then v:updateHash() end
+      end
+    end
+    
+    i = i + 1
+  end
+  
+  i = 1
+  while i <= #self.updates do
+    if states.switched then
+      return
+    end
+    
+    local v = self.updates[i]
+    
+    if v ~= -1 then
       if ((type(v.noFreeze) == "table" and table.intersects(self.frozen, v.noFreeze, true)) or
         v.noFreeze == true or not checkTrue(self.frozen)) and not v.isRemoved and checkFalse(v.canUpdate) then
         v:_beforeUpdate(dt)
@@ -836,35 +856,6 @@ function entitySystem:update(dt)
   end
   
   self.inLoop = false
-  
-  if next(self._updateHoles) then
-    self:_removeHoles(self.updates)
-    self._updateHoles = {}
-  end
-  
-  for i = 1, #self.updates do
-    if not self.updates[i].invisibleToHash then self.updates[i]:updateHash() end
-  end
-  
-  i = 1
-  while i <= #self.updates do
-    if states.switched then
-      return
-    end
-    
-    local v = self.updates[i]
-    
-    if v ~= -1 then
-      if ((type(v.noFreeze) == "table" and table.intersects(self.frozen, v.noFreeze, true)) or
-        v.noFreeze or not checkTrue(self.frozen)) and not v.isRemoved and checkFalse(v.canUpdate) then
-        collision.doCollision(v, v.noSlope, v.autoCollision and not checkFalse(v.autoCollision),
-          v.autoGravity and not checkFalse(v.autoGravity))
-        if not v.invisibleToHash then v:updateHash() end
-      end
-    end
-    
-    i = i + 1
-  end
   
   if states.switched then
     return
@@ -1213,7 +1204,7 @@ function basicEntity:updateHash(doAnyway)
     local xx, yy, ww, hh = self.x, self.y, self.collisionShape.w, self.collisionShape.h
     local hs = entitySystem.hashSize
     local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
-    local cx2, cy2 = math.floor((xx + ww + 2) / hs), math.floor((yy + hh + 2) / hs)
+    local cx2, cy2 = math.ceil((xx + ww + 2) / hs), math.ceil((yy + hh + 2) / hs)
     
     if doAnyway or self.lastHashX ~= cx or self.lastHashY ~= cy or self.lastHashX2 ~= cx2 or self.lastHashY2 ~= cy2 then
       self.lastHashX = cx
@@ -1235,7 +1226,7 @@ function basicEntity:getSurroundingEntities(extentsLeft, extentsRight, extentsUp
   
   if extentsLeft or extentsRight or extentsUp or extentsDown or not self.currentHashes then
     return megautils.getEntitiesAt(self.x - (extentsLeft or 0), self.y - (extentsUp or 0),
-      (extentsLeft or 0) + (extentsRight or 0), (extentsUp or 0) + (extentsDown or 0))
+      self.collisionShape.w + (extentsLeft or 0) + (extentsRight or 0), self.collisionShape.h + (extentsUp or 0) + (extentsDown or 0))
   end
   
   local result = self.currentHashes[1] and {unpack(self.currentHashes[1].data)} or {}
@@ -1318,6 +1309,8 @@ function entity:new()
   
   self.canDraw.flash = true
   self.blockCollision = {global=false}
+  self.autoCollision = {global = true}
+  self.autoGravity = {global = false}
   self.ground = false
   self.snapToMovingFloor = true
   self.xColl = 0
@@ -1672,8 +1665,6 @@ function advancedEntity:new()
     self.gravFace = self.gravity >= 0 and 1 or -1
     self.autoGravFace = self.gravFace
     self.pierceType = pierce.PIERCE
-    self.autoCollision = {global = true}
-    self.autoGravity = {global = true}
     self.crushable = true
     self.blockCollision.global = true
     self.maxFallingSpeed = 7

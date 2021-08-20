@@ -463,6 +463,10 @@ function megaMan:added()
   
   self:addToGroup("submergable")
   
+  if not self.drop then
+    self.autoGravity.global = true
+  end
+  
   if self._checkDR and megaMan.mainPlayer == self and not megaMan.once then
     if self.protoWhistle then
       self.ready = megautils.add(ready, nil, 32)
@@ -950,6 +954,8 @@ function megaMan:interactedWith(o, c)
   if self.changeHealth < 0 then
     if self.healthHandler.health <= 0 and not self.dead then
       self.dead = true
+      self.autoGravity.global = false
+      self.autoCollision.global = false
       self.noFreeze = true
       megautils.freeze("dying")
       if camera.main then
@@ -1971,6 +1977,7 @@ function megaMan:update()
     else
       self.runCheck = false
       if self.rise then
+        self.autoGravity.global = false
         if not self.teleportOffY then
           self.teleportOffY = 0
         end
@@ -1984,6 +1991,7 @@ function megaMan:update()
           self.teleportOffY = self.teleportOffY+self.riseSpeed
         end
       elseif self.drop then
+        self.autoGravity.global = false
         if not self.teleportOffY then
           self.teleportOffY = (not self.teleporter and self.drop) and (view.y-self.y) or 0
         end
@@ -1992,6 +2000,7 @@ function megaMan:update()
           self.dropLanded = true
           if self.anims:looped() then
             self.drop = false
+            self.autoGravity.global = true
             self.doSplashing = true
             self.teleportOffY = nil
             self.anims:set(self.ground and self.idleAnimation.regular or self.jumpAnimation.regular)

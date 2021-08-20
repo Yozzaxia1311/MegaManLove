@@ -32,10 +32,9 @@ function pickup:new(despawn, gd, fwp, id, path)
   self.despawn = despawn == nil and self.mapID == nil or despawn
   self.path = path or ""
   self.removeWhenOutside = self.despawn
-  self.autoCollision = {global = true}
-  self.autoGravity = {global = true}
   self.noSlope = false
   self.maxFallingSpeed = 7
+  self.autoGravity.global = true
   if gd or self.fwp then
     self:setGravityMultiplier("flipWithPlayer",  megaMan.mainPlayer and megaMan.mainPlayer.gravityMultipliers.gravityFlip or self.gravDir)
   end

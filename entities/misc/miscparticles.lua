@@ -16,8 +16,7 @@ function particle:new(user)
   
   if not self.recycling then
     self:setRectangleCollision(8, 8)
-    self.autoCollision = {global = true}
-    self.autoGravity = {global = false}
+    self.autoGravity.global = false
     self.blockCollision.global = false
     self.removeWhenOutside = true
     self.doAutoCollisionBeforeUpdate = true

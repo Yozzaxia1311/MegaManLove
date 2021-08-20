@@ -121,8 +121,7 @@ function weapon:new(p, enWeapon)
     self.flipWithUser = true
     self.weaponGroup = nil
     self.removeWhenOutside = true
-    self.autoCollision = {global = true}
-    self.autoGravity = {global = false}
+    self.autoGravity.global = false
     self.doAutoCollisionBeforeUpdate = true
     self.doDink = true
     self.applyAutoFace = false
