@@ -89,9 +89,6 @@ function healthHandler:update(dt)
           local p = megautils.add(megaMan, self.player.x, self.player.y, self.player.side, true, i)
           self.player:transferState(p)
           megautils.revivePlayer(i)
-          if camera.main then
-            camera.main:updateFuncs()
-          end
           if not megautils.hasInfiniteLives() then
             megautils.setLives(math.max(megautils.getLives()-1, -1))
           end
