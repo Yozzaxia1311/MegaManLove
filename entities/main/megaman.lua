@@ -415,6 +415,7 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   self.teleporter = tp
   self.protoIdle = false
   self.protoWhistle = false
+  self.slideXColl = 0
   self.standSolidJumpTimer = -1
   self.shootOffsetXTable = {}
   self.shootOffsetYTable = {}
@@ -605,6 +606,7 @@ function megaMan:resetStates()
   if self.slide then
     self:slideToReg()
     self.slide = false
+    self.slideXColl = 0
   end
   self:useShootAnimation()
   self:animate()
@@ -1054,6 +1056,8 @@ function megaMan:afterCollisionFunc()
       v._LST = nil
     end
   end
+  
+  self.slideXColl = self.xColl
 end
 
 function megaMan:code(dt)
@@ -1296,7 +1300,7 @@ function megaMan:code(dt)
       if self.slideTimer == self.maxSlideTime and not rb and (self.ground or sb) then
         self.slide = false
         self:slideToReg()
-      elseif not rb and self.xColl ~= 0 then
+      elseif not rb and self.slideXColl ~= 0 then
         self.slide = false
         self.slideTimer = self.maxSlideTime
         self:slideToReg()
@@ -1328,7 +1332,12 @@ function megaMan:code(dt)
         self:slideToReg()
       end
     end
-    if not self.slide and not jumped then self.velY = 0 end
+    if not self.slide then
+      if not jumped then
+        self.velY = 0
+      end
+      self.slideXColl = 0
+    end
     
     for _, v in pairs(megautils.playerSlideFuncs) do
       if type(v) == "function" then
