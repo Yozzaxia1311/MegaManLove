@@ -782,12 +782,13 @@ function entitySystem:update(dt)
   end
   
   local i = 1
+  local v
   while i <= #self.updates do
     if states.switched then
       return
     end
     
-    local v = self.updates[i]
+    v = self.updates[i]
     
     if v ~= -1 then
       if ((type(v.noFreeze) == "table" and table.intersects(self.frozen, v.noFreeze, true)) or
@@ -806,7 +807,7 @@ function entitySystem:update(dt)
       return
     end
     
-    local v = self.updates[i]
+    v = self.updates[i]
     
     if v ~= -1 then
       if ((type(v.noFreeze) == "table" and table.intersects(self.frozen, v.noFreeze, true)) or
@@ -824,7 +825,7 @@ function entitySystem:update(dt)
       return
     end
     
-    local v = self.updates[i]
+    v = self.updates[i]
     
     if v ~= -1 and ((type(v.noFreeze) == "table" and table.intersects(self.frozen, v.noFreeze, true)) or
       v.noFreeze == true or not checkTrue(self.frozen)) and not v.isRemoved and checkFalse(v.canUpdate) then
@@ -840,7 +841,7 @@ function entitySystem:update(dt)
       return
     end
     
-    local v = self.updates[i]
+    v = self.updates[i]
     
     if v ~= -1 then
       if ((type(v.noFreeze) == "table" and table.intersects(self.frozen, v.noFreeze, true)) or
