@@ -1981,10 +1981,6 @@ function megaMan:update()
         megautils.unfreeze("dying")
         return
       end
-      if camera.main then
-        view.x, view.y = math.round(camera.main.x), math.round(camera.main.y)
-        camera.main:updateFuncs()
-      end
     else
       self.runCheck = false
       if self.rise then

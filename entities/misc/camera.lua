@@ -125,7 +125,6 @@ function camera:updateCam(spdx, spdy)
       self.approachX = self.x
       self.approachY = self.y
       view.x, view.y = self.approachX, self.approachY
-      camera.main:updateFuncs()
     elseif not self.once then
       if megautils.groups().removeOnTransition then
         for _, v in pairs(megautils.groups().removeOnTransition) do
@@ -286,7 +285,6 @@ function camera:updateCam(spdx, spdy)
         camera.main.approachX = camera.main.x
         camera.main.approachY = camera.main.y
         view.x, view.y = camera.main.approachX, camera.main.approachY
-        camera.main:updateFuncs()
       end
     end
   else
@@ -366,8 +364,6 @@ function camera:doView(spdx, spdy, without)
       table.quickremovevaluearray(self.spawners, v)
     end
   end
-  
-  self:updateFuncs()
 end
 
 function camera:updateFuncs()

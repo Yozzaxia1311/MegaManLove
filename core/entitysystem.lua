@@ -863,6 +863,9 @@ function entitySystem:update(dt)
   if self.cameraUpdate then
     self.cameraUpdate(self)
   end
+  if camera.main then
+    camera.main:updateFuncs()
+  end
   
   if self.doSort then
     self.doSort = false
