@@ -118,14 +118,14 @@ function smallHealth:draw()
   if self.gravity < 0 then
     offy = -2
   end
-  self.t:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+  self.t:draw(self.anim, self.x, self.y+offy)
   if megaMan.mainPlayer then
     love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
-    self.tOutline:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+    self.tOutline:draw(self.anim, self.x, self.y+offy)
   else
     love.graphics.setColor(0, 0, 0, 1)
-    self.tOutline:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+    self.tOutline:draw(self.anim, self.x, self.y+offy)
   end
 end
 
@@ -162,14 +162,14 @@ function health:draw()
   if self.gravity < 0 then
     offy = -2
   end
-  self.t:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+  self.t:draw(self.anim, self.x, self.y+offy)
   if megaMan.mainPlayer then
     love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
-    self.tOutline:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+    self.tOutline:draw(self.anim, self.x, self.y+offy)
   else
     love.graphics.setColor(0, 0, 0, 1)
-    self.tOutline:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+    self.tOutline:draw(self.anim, self.x, self.y+offy)
   end
 end
 
@@ -210,20 +210,20 @@ function smallEnergy:draw()
   if megaMan.mainPlayer then
     love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255, megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
       megaMan.colorTwo[megaMan.mainPlayer.player][3]/255, 1)
-    self.texTwo:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+    self.texTwo:draw(self.anim, self.x, self.y+offy)
     love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
-    self.texOutline:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+    self.texOutline:draw(self.anim, self.x, self.y+offy)
     love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255, megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOne[megaMan.mainPlayer.player][3]/255, 1)
-    self.texOne:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+    self.texOne:draw(self.anim, self.x, self.y+offy)
   else
     love.graphics.setColor(0, 232/255, 216/255, 1)
-    self.texTwo:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+    self.texTwo:draw(self.anim, self.x, self.y+offy)
     love.graphics.setColor(0, 0, 0, 1)
-    self.texOutline:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+    self.texOutline:draw(self.anim, self.x, self.y+offy)
     love.graphics.setColor(0, 120/255, 248/255, 1)
-    self.texOne:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+    self.texOne:draw(self.anim, self.x, self.y+offy)
   end
 end
 
@@ -264,20 +264,20 @@ function energy:draw()
   if megaMan.mainPlayer then
     love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255, megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
       megaMan.colorTwo[megaMan.mainPlayer.player][3]/255, 1)
-    self.texTwo:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+    self.texTwo:draw(self.anim, self.x, self.y+offy)
     love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
-    self.texOutline:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+    self.texOutline:draw(self.anim, self.x, self.y+offy)
     love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255, megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOne[megaMan.mainPlayer.player][3]/255, 1)
-    self.texOne:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+    self.texOne:draw(self.anim, self.x, self.y+offy)
   else
     love.graphics.setColor(0, 232/255, 216/255, 1)
-    self.texTwo:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+    self.texTwo:draw(self.anim, self.x, self.y+offy)
     love.graphics.setColor(0, 0, 0, 1)
-    self.texOutline:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+    self.texOutline:draw(self.anim, self.x, self.y+offy)
     love.graphics.setColor(0, 120/255, 248/255, 1)
-    self.texOne:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+    self.texOne:draw(self.anim, self.x, self.y+offy)
   end
 end
 
@@ -317,29 +317,29 @@ function life:draw()
     local fy = self.gravity < 0
     
     love.graphics.setColor(1, 1, 1, 1)
-    skin.texture:draw(self.quad, math.floor(self.x)+ox, math.floor(self.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
+    skin.texture:draw(self.quad, self.x+ox, self.y+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
     love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
-    skin.outline:draw(self.quad, math.floor(self.x)+ox, math.floor(self.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
+    skin.outline:draw(self.quad, self.x+ox, self.y+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
     love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255, megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOne[megaMan.mainPlayer.player][3]/255, 1)
-    skin.one:draw(self.quad, math.floor(self.x)+ox, math.floor(self.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
+    skin.one:draw(self.quad, self.x+ox, self.y+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
     love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255, megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
       megaMan.colorTwo[megaMan.mainPlayer.player][3]/255, 1)
-    skin.two:draw(self.quad, math.floor(self.x)+ox, math.floor(self.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
+    skin.two:draw(self.quad, self.x+ox, self.y+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
   else
     local skin = megaMan.getSkin(1)
     
     local fy = self.gravity < 0
     
     love.graphics.setColor(1, 1, 1, 1)
-    skin.texture:draw(self.quad, math.floor(self.x)+ox, math.floor(self.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
+    skin.texture:draw(self.quad, self.x+ox, self.y+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
     love.graphics.setColor(0, 0, 0, 1)
-    skin.outline:draw(self.quad, math.floor(self.x)+ox, math.floor(self.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
+    skin.outline:draw(self.quad, self.x+ox, self.y+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
     love.graphics.setColor(0, 120/255, 248/255, 1)
-    skin.one:draw(self.quad, math.floor(self.x)+ox, math.floor(self.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
+    skin.one:draw(self.quad, self.x+ox, self.y+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
     love.graphics.setColor(0, 232/255, 216/255, 1)
-    skin.two:draw(self.quad, math.floor(self.x)+ox, math.floor(self.y)+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
+    skin.two:draw(self.quad, self.x+ox, self.y+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
   end
 end
 
@@ -384,20 +384,20 @@ function eTank:draw()
   if megaMan.mainPlayer then
     love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
-    self.texOutline:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+    self.texOutline:draw(self.anim, self.x, self.y+offy)
     love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255, megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
       megaMan.colorTwo[megaMan.mainPlayer.player][3]/255, 1)
-    self.texTwo:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+    self.texTwo:draw(self.anim, self.x, self.y+offy)
     love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255, megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOne[megaMan.mainPlayer.player][3]/255, 1)
-    self.texOne:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+    self.texOne:draw(self.anim, self.x, self.y+offy)
   else
     love.graphics.setColor(0, 0, 0, 1)
-    self.texOutline:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+    self.texOutline:draw(self.anim, self.x, self.y+offy)
     love.graphics.setColor(0, 232/255, 216/255, 1)
-    self.texTwo:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+    self.texTwo:draw(self.anim, self.x, self.y+offy)
     love.graphics.setColor(0, 120/255, 248/255, 1)
-    self.texOne:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+    self.texOne:draw(self.anim, self.x, self.y+offy)
   end
 end
 
@@ -440,20 +440,20 @@ function wTank:draw()
   if megaMan.mainPlayer then
     love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255, megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
       megaMan.colorTwo[megaMan.mainPlayer.player][3]/255, 1)
-    self.texTwo:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+    self.texTwo:draw(self.anim, self.x, self.y+offy)
     love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
-    self.texOutline:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+    self.texOutline:draw(self.anim, self.x, self.y+offy)
     love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255, megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOne[megaMan.mainPlayer.player][3]/255, 1)
-    self.texOne:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+    self.texOne:draw(self.anim, self.x, self.y+offy)
   else
     love.graphics.setColor(0, 232/255, 216/255, 1)
-    self.texTwo:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+    self.texTwo:draw(self.anim, self.x, self.y+offy)
     love.graphics.setColor(0, 0, 0, 1)
-    self.texOutline:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+    self.texOutline:draw(self.anim, self.x, self.y+offy)
     love.graphics.setColor(0, 120/255, 248/255, 1)
-    self.texOne:draw(self.anim, math.floor(self.x), math.floor(self.y)+offy)
+    self.texOne:draw(self.anim, self.x, self.y+offy)
   end
 end
 

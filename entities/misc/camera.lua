@@ -35,6 +35,8 @@ function camera:new(x, y, doScrollX, doScrollY)
   self.player = nil
   self.funcs = {}
   self.spawners = {}
+  self.alongBorderX = false
+  self.alongBorderY = false
   megautils.state().system.cameraUpdate = nil
 end
 
@@ -345,6 +347,9 @@ function camera:doView(spdx, spdy, without)
     self.despawnLateBounds = nil
   end
   
+  self.alongBorderX = self.x <= sx or self.x + self.collisionShape.w >= sx + sw
+  self.alongBorderY = self.y <= sy or self.y + self.collisionShape.h >= sy + sh
+  
   view.x, view.y = math.floor(self.approachX), math.floor(self.approachY)
   
   local se = self:getSurroundingEntities()
@@ -531,7 +536,7 @@ end
 function section.getSections(xx, yy, ww, hh)
   local result = {}
   local cx, cy = math.floor(xx/view.w), math.floor(yy/view.h)
-  local cx2, cy2 = math.floor((xx+ww)/view.w), math.floor((yy+hh)/view.h)
+  local cx2, cy2 = math.ceil((xx+ww)/view.w), math.ceil((yy+hh)/view.h)
   
   for x=cx, cx2 do
     for y=cy, cy2 do
@@ -566,7 +571,7 @@ end
 function section.addSection(s)
   local xx, yy, ww, hh = s.x, s.y, s.collisionShape.w, s.collisionShape.h
   local cx, cy = math.floor(xx/view.w), math.floor(yy/view.h)
-  local cx2, cy2 = math.floor((xx+ww)/view.w), math.floor((yy+hh)/view.h)
+  local cx2, cy2 = math.ceil((xx+ww)/view.w), math.ceil((yy+hh)/view.h)
   
   for x=cx, cx2 do
     for y=cy, cy2 do

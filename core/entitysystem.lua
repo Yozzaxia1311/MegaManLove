@@ -215,7 +215,7 @@ function entitySystem:add(c, ...)
     for i=1, #self.layers do
       local v = self.layers[i]
       if v.layer == e.layer then
-        local nextHole = next(v.holes)
+        local nextHole = not self.inLoop and next(v.holes)
         if nextHole then
           v.data[nextHole] = e
           v.holes[nextHole] = nil
@@ -232,7 +232,7 @@ function entitySystem:add(c, ...)
       self.doSort = true
     end
     
-    local nextHole = next(self._updateHoles)
+    local nextHole = not self.inLoop and next(self._updateHoles)
     if nextHole then
       self.updates[nextHole] = e
       self._updateHoles[nextHole] = nil
@@ -283,7 +283,7 @@ function entitySystem:adde(e)
     for i=1, #self.layers do
       local v = self.layers[i]
       if v.layer == e.layer then
-        local nextHole = next(v.holes)
+        local nextHole = not self.inLoop and next(v.holes)
         if nextHole then
           v.data[nextHole] = e
           v.holes[nextHole] = nil
@@ -300,7 +300,7 @@ function entitySystem:adde(e)
       self.doSort = true
     end
     
-    local nextHole = next(self._updateHoles)
+    local nextHole = not self.inLoop and next(self._updateHoles)
     if nextHole then
       self.updates[nextHole] = e
       self._updateHoles[nextHole] = nil
@@ -417,7 +417,7 @@ function entitySystem:revertFromStatic(e)
     for i=1, #self.layers do
       local v = self.layers[i]
       if v.layer == e.layer then
-        local nextHole = next(v.holes)
+        local nextHole = not self.inLoop and next(v.holes)
         if nextHole then
           v.data[nextHole] = e
           v.holes[nextHole] = nil
@@ -434,7 +434,7 @@ function entitySystem:revertFromStatic(e)
       self.doSort = true
     end
     
-    local nextHole = next(self._updateHoles)
+    local nextHole = not self.inLoop and next(self._updateHoles)
     if nextHole then
       self.updates[nextHole] = e
       self._updateHoles[nextHole] = nil
@@ -532,7 +532,7 @@ function entitySystem:setLayer(e, l)
         local v = self.layers[i]
         
         if v.layer == e.layer then
-          local nextHole = next(v.holes)
+          local nextHole = not self.inLoop and next(v.holes)
           if nextHole then
             v.data[nextHole] = e
             v.holes[nextHole] = nil
@@ -589,7 +589,11 @@ function entitySystem:remove(e)
   end
   
   table.quickremovevaluearray(self.all, e)
-  table.quickremovevaluearray(self.beginQueue, e)
+  
+  local i = table.findindexarray(self.beginQueue, e)
+  if i then
+    self.beginQueue[i] = -1
+  end
   
   if e.currentHashes then
     for _, v in ipairs(e.currentHashes) do
@@ -693,6 +697,7 @@ function entitySystem:clear()
   self._HS = {}
   self.cameraUpdate = nil
   self.doSort = false
+  self._updateHoles = {}
   self.beginQueue = {}
   
   collectgarbage()
@@ -765,9 +770,18 @@ function entitySystem:draw()
 end
 
 function entitySystem:update(dt)
-  while self.beginQueue[1] do
-    self.beginQueue[1]:begin()
-    table.remove(self.beginQueue, 1)
+  local i = 1
+  while i <= #self.beginQueue do
+    if states.switched then
+      return
+    end
+    if self.beginQueue[i] ~= -1 then
+      self.beginQueue[i]:begin()
+    end
+    i = i + 1
+  end
+  if i > 1 then
+    self.beginQueue = {}
   end
   
   if next(self._updateHoles) then
@@ -777,11 +791,11 @@ function entitySystem:update(dt)
   
   self.inLoop = true
   
-  for i = 1, #self.updates do
-    if not self.updates[i].invisibleToHash then self.updates[i]:updateHash() end
+  for j = 1, #self.updates do
+    if not self.updates[j].invisibleToHash then self.updates[j]:updateHash() end
   end
   
-  local i = 1
+  i = 1
   while i <= #self.updates do
     if states.switched then
       return

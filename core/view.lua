@@ -38,9 +38,10 @@ function view.draw()
     love.graphics.setColor(1, 1, 1, 1)
     states.currentState:draw()
   end
-  love.graphics.pop()
   megautils.updateShake()
   love.graphics.setColor(1, 1, 1, 1)
+  love.graphics.push()
+  love.graphics.translate(view.x, view.y)
   record.drawDemo()
   if megautils.isShowingEntityCount() then
     local count = #megautils.state().system.all
@@ -59,6 +60,8 @@ function view.draw()
     love.graphics.print(fps, view.w - 24, 8)
   end
   input.draw()
+  love.graphics.pop()
+  love.graphics.pop()
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.setCanvas()
   cscreen.apply()

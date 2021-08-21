@@ -1,3 +1,12 @@
+drawShader = love.graphics.newShader([[
+  uniform int pos[2];
+  
+  vec4 position(mat4 transform_projection, vec4 vertex_position)
+  {
+    return transform_projection * (vertex_position + vec4(pos[0], pos[1], 0, 0));
+  }
+]])
+
 imageWrapper = class:extend()
 
 binser.register(imageWrapper, "imageWrapper", function(o)
@@ -53,7 +62,10 @@ function imageWrapper:draw(x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, wh
       oy = vh - oy
     end
     
-    love.graphics.draw(self.image, x + offX, y + offY, math.rad(r), sx, sy, ox, oy)
+    love.graphics.setShader(drawShader)
+    drawShader:send("pos", (x + offX) * view.scale, (y + offY) * view.scale)
+    love.graphics.draw(self.image, 0, 0, math.rad(r), sx, sy, ox, oy)
+    love.graphics.setShader()
   end
 end
 
@@ -147,8 +159,7 @@ end
 function quad:draw(image, x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY)
   x,y,r,sx,sy,ox,oy,offX,offY = x or 0, y or 0, r or 0, sx or 1, sy or 1, ox or 0, oy or 0, offX or 0, offY or 0
   local vx, vy, vw, vh = self.quad:getViewport()
-    
-  self:fillFromImage(image)
+  self.quad:setViewport(vx, vy, vw, vh, image:getDimensions())
   
   if flipX then
     sx = sx * -1
@@ -160,7 +171,10 @@ function quad:draw(image, x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY)
     oy = vh - oy
   end
   
-  love.graphics.draw(image.image, self.quad, x + offX, y + offY, math.rad(r), sx, sy, ox, oy)
+  love.graphics.setShader(drawShader)
+  drawShader:send("pos", (x + offX) * view.scale, (y + offY) * view.scale)
+  love.graphics.draw(image.image, self.quad, 0, 0, math.rad(r), sx, sy, ox, oy)
+  love.graphics.setShader()
 end
 
 spriteBatch = class:extend()

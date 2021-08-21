@@ -91,9 +91,9 @@ function parallax:draw()
         for y=self.y-imgh, self.y+self.collisionShape.h, imgh do
           if rectOverlapsRect(x+self.offX, y+self.offY, imgw, imgh, view.x, view.y, view.w, view.h) then
             if self.anim then
-              self.tex:draw(self.anim, x+math.floor(self.offX), y+math.floor(self.offY))
+              self.tex:draw(self.anim, x+self.offX, y+self.offY)
             else
-              self.tex:draw(x+math.floor(self.offX), y+math.floor(self.offY))
+              self.tex:draw(x+self.offX, y+self.offY)
             end
           end
         end
@@ -107,9 +107,9 @@ function parallax:draw()
       for x=self.x-imgw, self.x+self.collisionShape.w, imgw do
         if rectOverlapsRect(x+self.offX, self.offY, imgw, imgh, view.x, view.y, view.w, view.h) then
           if self.anim then
-            self.tex:draw(self.anim, x+math.floor(self.offX), math.floor(self.offY))
+            self.tex:draw(self.anim, x+self.offX, self.offY)
           else
-            self.tex:draw(x+math.floor(self.offX), math.floor(self.offY))
+            self.tex:draw(x+self.offX, self.offY)
           end
         end
       end
@@ -122,9 +122,9 @@ function parallax:draw()
       for y=self.y-imgh, self.y+self.collisionShape.h, imgh do
         if rectOverlapsRect(self.offX, y+self.offY, imgw, imgh, view.x, view.y, view.w, view.h) then
           if self.anim then
-            self.tex:draw(self.anim, math.floor(self.offX), y+math.floor(self.offY))
+            self.tex:draw(self.anim, self.offX, y+self.offY)
           else
-            self.tex:draw(math.floor(self.offX), y+math.floor(self.offY))
+            self.tex:draw(self.offX, y+self.offY)
           end
         end
       end
@@ -137,9 +137,9 @@ function parallax:draw()
       for y=self.y-imgh, self.y+self.collisionShape.h, imgh do
         if rectOverlapsRect(self.offX, self.offY, imgw, imgh, view.x, view.y, view.w, view.h) then
           if self.anim then
-            self.tex:draw(self.anim, math.floor(self.offX), math.floor(self.offY))
+            self.tex:draw(self.anim, self.offX, self.offY)
           else
-            self.tex:draw(math.floor(self.offX), math.floor(self.offY))
+            self.tex:draw(self.offX, self.offY)
           end
         end
       end

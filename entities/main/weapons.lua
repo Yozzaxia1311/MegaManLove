@@ -441,7 +441,7 @@ function protoChargedBuster:update()
 end
 
 function protoChargedBuster:draw()
-  self.tex:draw(self.anim, math.floor(self.x), math.floor(self.y)-1,
+  self.tex:draw(self.anim, self.x, self.y-1,
     nil, nil, nil, nil, nil, nil, nil, self.side ~= 1)
 end
 
@@ -793,7 +793,7 @@ function trebleBoost:update()
 end
 
 function trebleBoost:draw()
-  self.tex:draw(self.anims, math.floor(self.x)-6, math.floor(self.y)-12+(self.gravity >= 0 and 0 or 11),
+  self.tex:draw(self.anims, self.x-6, self.y-12+(self.gravity >= 0 and 0 or 11),
     nil, nil, nil, nil, nil, nil, nil, self.side == 1, self.gravity < 0)
 end
 
@@ -1004,9 +1004,9 @@ end
 
 function rushJet:draw()
   if (self.anims.current == "spawn" or self.anims.current == "spawnLand") and self.user then
-    self.tex:draw(self.anims, math.floor(self.x)-4, math.floor(self.y)+(self.user.gravity >= 0 and -16 or -6))
+    self.tex:draw(self.anims, self.x-4, self.y+(self.user.gravity >= 0 and -16 or -6))
   else
-    self.tex:draw(self.anims, math.floor(self.x)-4, math.floor(self.y)-12,
+    self.tex:draw(self.anims, self.x-4, self.y-12,
       nil, nil, nil, nil, nil, nil, nil, self.side ~= 1, self.gravity < 0)
   end
 end
@@ -1185,7 +1185,7 @@ function rushCoil:update()
 end
 
 function rushCoil:draw()
-  self.tex:draw(self.anims, math.floor(self.x)-8, math.floor(self.y)-12+(self.gravity >= 0 and 0 or 11),
+  self.tex:draw(self.anims, self.x-8, self.y-12+(self.gravity >= 0 and 0 or 11),
     nil, nil, nil, nil, nil, nil, nil, self.side ~= 1, self.gravity < 0)
 end
 
@@ -1229,5 +1229,5 @@ function stickWeapon:new(x, y, p, dir)
 end
 
 function stickWeapon:draw()
-  self.tex:draw(math.floor(self.x), math.floor(self.y))
+  self.tex:draw(self.x, self.y)
 end

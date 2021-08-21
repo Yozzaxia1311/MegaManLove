@@ -169,8 +169,8 @@ function harm:update()
   if not self.user or self.user.isRemoved or self.timer == self.maxTime then
     megautils.remove(self)
   else
-    self.x = math.floor(self.user.x)+math.floor(self.user.collisionShape.w/2)-12
-    self.y = math.floor(self.user.y)+math.floor(self.user.collisionShape.h/2)-12
+    self.x = self.user.x+(self.user.collisionShape.w/2)-12
+    self.y = self.user.y+(self.user.collisionShape.h/2)-12
     self.timer = math.min(self.timer+1, self.maxTime)
     self.canDraw.global = not self.user.canDraw.flash
   end
