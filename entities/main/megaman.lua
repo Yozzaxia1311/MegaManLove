@@ -1078,7 +1078,7 @@ function megaMan:afterCollisionFunc()
   end
 end
 
-function megaMan:beforeUpdate()
+function megaMan:code(dt)
   if self.dieNextFrame then
     self.iFrames = 0
     for k, _ in pairs(self.canBeInvincible) do
@@ -1087,9 +1087,7 @@ function megaMan:beforeUpdate()
     self:interact(self, -99999, true)
     self.dieNextFrame = nil
   end
-end
-
-function megaMan:code(dt)
+  
   self.justDidClimb = false
   
   self.canIgnoreKnockback.global = false
