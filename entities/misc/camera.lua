@@ -366,6 +366,14 @@ function camera:doView(spdx, spdy, without)
   end
 end
 
+function camera:set(x, y)
+  local sx, sy, sw, sh = self.scrollx, self.scrolly, self.scrollw, self.scrollh
+  self.x = math.clamp(self.x + (x or 0), sx, sx+sw-self.collisionShape.w)
+  self.y = math.clamp(self.y + (y or 0), sy, sy+sh-self.collisionShape.h)
+  self.approachX, self.approachY = self.x, self.y
+  view.x, view.y = math.floor(self.approachX), math.floor(self.approachY)
+end
+
 function camera:updateFuncs()
   for _, v in pairs(self.funcs) do
     v(self)

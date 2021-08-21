@@ -982,13 +982,14 @@ function megaMan:interactedWith(o, c)
         else
           local dx, dy
           local ox, oy = camera.main.x, camera.main.y
-          camera.main:doView(nil, nil, self)
+          camera.main:doView(999, 999, self)
           dx = camera.main.x
           dy = camera.main.y
           camera.main.x = ox
           camera.main.y = oy
           camera.main.approachX = oy
           camera.main.approachY = ox
+          camera.main:set()
           self.cameraTween = tween.new(0.4, camera.main, {x=dx, y=dy, approachX=dx, approachY=dy})
         end
       else
@@ -1078,6 +1079,15 @@ function megaMan:afterCollisionFunc()
 end
 
 function megaMan:code(dt)
+  if self.dieNextFrame then
+    self.iFrames = 0
+    for k, _ in pairs(self.canBeInvincible) do
+      self.canBeInvincible[k] = false
+    end
+    self:interact(self, -99999, true)
+    self.dieNextFrame = nil
+  end
+  
   self.justDidClimb = false
   
   self.canIgnoreKnockback.global = false
@@ -1514,11 +1524,7 @@ function megaMan:code(dt)
   self.shootFrames = math.max(self.shootFrames-1, 0)
   if ((self.gravity >= 0 and self.y >= view.y+view.h) or (self.gravity < 0 and self.y+self.collisionShape.h <= view.y)) or 
     (checkFalse(self.blockCollision) and checkTrue(self.canGetCrushed) and collision.checkSolid(self)) then
-    self.iFrames = 0
-    for k, _ in pairs(self.canBeInvincible) do
-      self.canBeInvincible[k] = false
-    end
-    self:interact(self, -99999, true)
+    self.dieNextFrame = true
   end
   self:updateIFrame()
   self:updateFlash()
@@ -1984,7 +1990,11 @@ function megaMan:update()
           v.func(self)
         end
       end
-      if self.cameraTween:update(1/60) then
+      local done = self.cameraTween:update(1/60)
+      if camera.main then
+        camera.main:set()
+      end
+      if done then
         self:die()
         megautils.unfreeze("dying")
         return
