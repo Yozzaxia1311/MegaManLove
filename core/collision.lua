@@ -66,9 +66,8 @@ function collision.getTable(self, dx, dy, noSlope)
     local all = self:getSurroundingEntities(math.abs(math.min(xs, 0)), math.max(xs), math.abs(math.min(ys, 0)), math.max(ys))
     local ladders = collision.getLadders(all)
     
-    local v
     for i=1, #all do
-      v = all[i]
+      local v = all[i]
       if v ~= self and v.collisionShape and
         (not v.exclusivelySolidFor or table.icontains(v.exclusivelySolidFor, self)) and
         (not v.excludeSolidFor or not table.icontains(v.excludeSolidFor, self)) and
@@ -107,9 +106,8 @@ function collision.checkSolid(self, dx, dy, noSlope)
     local all = self:getSurroundingEntities(math.abs(math.min(xs, 0)), math.max(xs), math.abs(math.min(ys, 0)), math.max(ys))
     local ladders = collision.getLadders(all)
     
-    local v
     for i=1, #all do
-      v = all[i]
+      local v = all[i]
       if v ~= self and v.collisionShape and
         (not v.exclusivelySolidFor or table.icontains(v.exclusivelySolidFor, self)) and
         (not v.excludeSolidFor or not table.icontains(v.excludeSolidFor, self)) and
@@ -144,11 +142,10 @@ function collision.entityPlatform(self, vx, vy)
       self.solidType = 0
       local xypre = 0
       local ladders = collision.getLadders(all)
-      local v
       
       if vy ~= 0 then
         for i=1, #all do
-          v = all[i]
+          local v = all[i]
           if v ~= self and checkFalse(v.blockCollision) and v.collisionShape and
             (not self.exclusivelySolidFor or table.icontains(self.exclusivelySolidFor, v)) and
             (not self.excludeSolidFor or not table.icontains(self.excludeSolidFor, v)) then
@@ -212,7 +209,7 @@ function collision.entityPlatform(self, vx, vy)
       
       if vx ~= 0 then
         for i=1, #all do
-          v = all[i]
+          local v = all[i]
           if v ~= self and checkFalse(v.blockCollision) and v.collisionShape and
             (not self.exclusivelySolidFor or table.icontains(self.exclusivelySolidFor, v)) and
             (not self.excludeSolidFor or not table.icontains(self.excludeSolidFor, v)) then
@@ -326,9 +323,8 @@ function collision.checkGround(self, checkAnyway, noSlope)
     local all = self:getSurroundingEntities(0, 0, math.abs(math.min(cgrav * slp, 0)), math.max(cgrav * slp, 0))
     local ladders = collision.getLadders(all)
     
-    local v
     for i=1, #all do
-      v = all[i]
+      local v = all[i]
       if v ~= self and v.collisionShape and
         (not v.exclusivelySolidFor or table.icontains(v.exclusivelySolidFor, self)) and
         (not v.excludeSolidFor or not table.icontains(v.excludeSolidFor, self)) then
@@ -398,10 +394,9 @@ function collision.generalCollision(self, noSlope)
       local cgrav = self.gravity == 0 and 1 or math.sign(self.gravity or 1)
       local slp = math.ceil(math.abs(self.velX)) * collision.maxSlope
       local ladders = collision.getLadders(all)
-      local v
       
       for i=1, #all do
-        v = all[i]
+        local v = all[i]
         if v ~= self and v.collisionShape and
           (not v.exclusivelySolidFor or table.icontains(v.exclusivelySolidFor, self)) and
           (not v.excludeSolidFor or not table.icontains(v.excludeSolidFor, self)) then
@@ -418,7 +413,7 @@ function collision.generalCollision(self, noSlope)
       if self.velY ~= 0 then
         if self.velY * cgrav > 0 then
           for i = 1, #all do
-            v = all[i]
+            local v = all[i]
             if v ~= self and v.collisionShape and
               (not v.exclusivelySolidFor or table.icontains(v.exclusivelySolidFor, self)) and
               (not v.excludeSolidFor or not table.icontains(v.excludeSolidFor, self)) and
@@ -453,7 +448,7 @@ function collision.generalCollision(self, noSlope)
       if self.velX ~= 0 then
         if not nslp and slp ~= 0 then
           for i=1, #all do
-            v = all[i]
+            local v = all[i]
             if v.solidType == 2 then
               if v ~= self and v.collisionShape and
                 (not v.exclusivelySolidFor or table.icontains(v.exclusivelySolidFor, self)) and
