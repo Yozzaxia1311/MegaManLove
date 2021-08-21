@@ -1,12 +1,3 @@
-drawShader = love.graphics.newShader([[
-  uniform int pos[2];
-  
-  vec4 position(mat4 transform_projection, vec4 vertex_position)
-  {
-    return transform_projection * (vertex_position + vec4(pos[0], pos[1], 0, 0));
-  }
-]])
-
 imageWrapper = class:extend()
 
 binser.register(imageWrapper, "imageWrapper", function(o)

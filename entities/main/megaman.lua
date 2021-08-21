@@ -886,8 +886,7 @@ function megaMan:attemptClimb()
     self.climbTip = self.currentLadder and
       not self:checkLadder(0, (self.gravity >= 0) and (self.collisionShape.h * 0.4) or (self.collisionShape.h * 0.6), true)
       and not self:checkLadder(0, self.gravity >= 0 and -1 or self.collisionShape.h, true)
-    self.x = self.currentLadder.x+(self.currentLadder.collisionShape.w/2)-
-      ((self.collisionShape.w)/2)
+    self.x = self.currentLadder.x+math.floor(self.currentLadder.collisionShape.w/2)-math.floor(self.collisionShape.w/2) - 1
   end
 end
 
@@ -1046,6 +1045,8 @@ function megaMan:beforeCollisionFunc()
       v.solidType = v.canWalkThrough and 0 or 1
     end
   end
+  
+  self._lastGround = self.ground
 end
 
 function megaMan:afterCollisionFunc()
@@ -1057,9 +1058,28 @@ function megaMan:afterCollisionFunc()
   end
   
   self.slideXColl = self.xColl
+  
+  if not self.slide and self.tempShortBox and not self:checkRegBox() then
+    self.tempShortBox = nil
+    self:slideToReg()
+  end
+  
+  if not self.ground then
+    self.standSolidJumpTimer = -1
+  end
+  
+  if self.ground ~= self._lastGround and self.ground and not self.slide and
+    not self.treble and not self.cameraTween and not self.died and not self.climb and not self.justDidClimb then
+    self.dashJump = false
+    self.canStopJump.global = true
+    self.extraJumps = 0
+    megautils.playSound("land")
+  end
 end
 
 function megaMan:code(dt)
+  self.justDidClimb = false
+  
   self.canIgnoreKnockback.global = false
   self.protoShielding = false
   self.runCheck = (((input.down["left" .. tostring(self.input)] or self.tLeft) and
@@ -1202,6 +1222,7 @@ function megaMan:code(dt)
       self.x <= view.x-(self.collisionShape.w/2)+2 or
       self.x >= (view.x+view.w)-(self.collisionShape.w/2)-2 then
       self.climb = false
+      self.justDidClimb = true
     elseif upDown and ((self.gravity >= 0 and self.y+(self.collisionShape.h*0.8) < self.currentLadder.y) or 
       (self.gravity < 0 and self.y+(self.collisionShape.h*0.2) > self.currentLadder.y+self.currentLadder.collisionShape.h)) and
       not tipc then
@@ -1219,6 +1240,7 @@ function megaMan:code(dt)
           collision.shiftObject(self, 0, self.gravity >= 0 and 1 or -1, true)
         end
         self.climb = false
+        self.justDidClimb = true
     else
       if self.runCheck then
         if input.down["left" .. tostring(self.input)] or self.tLeft then
@@ -1227,7 +1249,7 @@ function megaMan:code(dt)
           self.side = 1
         end
       end
-      self.x = self.currentLadder.x+(self.currentLadder.collisionShape.w/2)-(self.collisionShape.w/2)
+      self.x = self.currentLadder.x+math.floor(self.currentLadder.collisionShape.w/2)-math.floor(self.collisionShape.w/2) - 1
       if ((input.down["up" .. tostring(self.input)] or self.tUp) or
         (input.down["down" .. tostring(self.input)] or self.tDown)) and self.shootFrames == 0 then
         if input.down["up" .. tostring(self.input)] or self.tUp then
@@ -1428,15 +1450,6 @@ function megaMan:code(dt)
       end
     end
     
-    if self.tempShortBox and not self:checkRegBox() then
-      self.tempShortBox = nil
-      self:slideToReg()
-    end
-    
-    if not self.ground then
-      self.standSolidJumpTimer = -1
-    end
-    
     self:attemptWeaponUsage()
     self:attemptClimb()
   else
@@ -1476,20 +1489,7 @@ function megaMan:code(dt)
       end
     end
     
-    if self.tempShortBox and not self:checkRegBox() then
-      self.tempShortBox = nil
-      self:slideToReg()
-    end
-    
-    if self.ground then
-      self.dashJump = false
-      self.canStopJump.global = true
-      self.extraJumps = 0
-      megautils.playSound("land")
-    else
-      self:attemptClimb()
-    end
-    
+    self:attemptClimb()
     self:attemptWeaponUsage()
   end
   if megautils.groups().enemyWeapon then
