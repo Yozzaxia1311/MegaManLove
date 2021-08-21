@@ -1525,6 +1525,7 @@ function megaMan:code(dt)
   if ((self.gravity >= 0 and self.y >= view.y+view.h) or (self.gravity < 0 and self.y+self.collisionShape.h <= view.y)) or 
     (checkFalse(self.blockCollision) and checkTrue(self.canGetCrushed) and collision.checkSolid(self)) then
     self.dieNextFrame = true
+    self.pitDeath = true
   end
   self:updateIFrame()
   self:updateFlash()
@@ -1824,7 +1825,7 @@ function megaMan:animate(getDataOnly)
 end
 
 function megaMan:die()
-  if ((self.gravity >= 0 and self.y < view.y+view.h) or (self.gravity < 0 and self.y+self.collisionShape.h > view.y)) then
+  if self.pitDeath then
     deathExplodeParticle.createExplosion(self.x+((self.collisionShape.w/2)-12),
       self.y+((self.collisionShape.h/2)-12))
   end
@@ -2051,7 +2052,7 @@ function megaMan:afterUpdate(dt)
 end
 
 function megaMan:draw()
-  if (megaMan.mainPlayer and megaMan.mainPlayer.ready) or (self.drop and megautils.checkFrozen("fade")) or self._rw then
+  if (megaMan.mainPlayer and megaMan.mainPlayer.ready) or (self.drop and megautils.checkFrozen("fade")) or self.dieNextFrame or self._rw then
     if self._rw then
       self._rw = nil
     end
