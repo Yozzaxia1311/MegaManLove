@@ -35,8 +35,6 @@ function camera:new(x, y, doScrollX, doScrollY)
   self.player = nil
   self.funcs = {}
   self.spawners = {}
-  self.alongBorderX = false
-  self.alongBorderY = false
   megautils.state().system.cameraUpdate = nil
 end
 
@@ -346,9 +344,6 @@ function camera:doView(spdx, spdy, without)
     end
     self.despawnLateBounds = nil
   end
-  
-  self.alongBorderX = self.x <= sx or self.x + self.collisionShape.w >= sx + sw
-  self.alongBorderY = self.y <= sy or self.y + self.collisionShape.h >= sy + sh
   
   view.x, view.y = math.floor(self.approachX), math.floor(self.approachY)
   

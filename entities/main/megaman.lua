@@ -2049,8 +2049,11 @@ function megaMan:draw()
   end
   
   local offsetx, offsety = math.round(self.collisionShape.w/2), (self.gravity >= 0 and self.collisionShape.h or 0) + (self.teleportOffY or 0)
-  local thisX, thisY = camera.main and camera.main.alongBorderX and self.x or math.floor(self.x),
-    camera.main and camera.main.alongBorderY and self.y or math.floor(self.y)
+  local floorX, floorY = #megaMan.allPlayers == 1 and (camera.main == nil or camera.main.transition or
+    camera.main.x <= camera.main.scrollx or camera.main.x + camera.main.collisionShape.w >= camera.main.scrollx + camera.main.scrollw),
+    #megaMan.allPlayers == 1 and (camera.main == nil or camera.main.transition or
+    camera.main.y <= camera.main.scrolly or camera.main.y + camera.main.collisionShape.h >= camera.main.scrolly + camera.main.scrollh)
+  local thisX, thisY = floorX and self.x or math.floor(self.x), floorY and self.y or math.floor(self.y)
   local fx = self.side ~= 1
   local sy = self.gravity >= 0 and 1 or -1
   
@@ -2089,5 +2092,4 @@ function megaMan:draw()
     love.graphics.setColor(1, 1, 1, 1)
     love.graphics.print(self._text:sub(0, self._textPos or 0), (view.w/2)-self._halfWidth, 142)
   end
-  --self:drawCollision()
 end
