@@ -2,7 +2,6 @@ local stageSelectState = state:extend()
 
 function stageSelectState:begin()
   megautils.add(stageSelect)
-  love.graphics.setBackgroundColor(0, 0, 0, 1)
 end
 
 megautils.loadResource("assets/misc/select.png", "mugshots")
@@ -46,6 +45,7 @@ function stageSelect:new()
   
   self.slots = {}
   self.images = {}
+  self.names = {}
   for i = 1, 9 do
     local v = globals.robotMasterEntities[i]
     if v then
@@ -56,13 +56,35 @@ function stageSelect:new()
         if self.slots[i].mugshotPath then
           self.images[i] = imageWrapper(self.slots[i].mugshotPath)
         end
+        if self.slots[i].bossIntroText then
+          local temp = self.slots[i].bossIntroText:upper():split(" ")
+          self.names[i] = temp
+        end
       end
     end
   end
+  
+  self.shader = love.graphics.newShader([[
+      extern bool invert = false;
+      vec3 black = vec3(0, 0, 0);
+      
+      vec4 effect(vec4 color, Image tex, vec2 texture_coords, vec2 screen_coords)
+      {
+        vec4 texturecolor = Texel(tex, texture_coords);
+        if (invert && texturecolor.rgb == black) {
+          texturecolor.rgb += 1;
+        }
+        return texturecolor * color;
+      }
+    ]])
 end
 
 function stageSelect:begin()
   self:updateMap()
+  
+  for _, v in ipairs(megautils.groups().map) do
+    v.shader = self.shader
+  end
 end
 
 function stageSelect:updateMap()
@@ -172,9 +194,9 @@ function stageSelect:update()
       self.timer = 0
       self.selectBlink = self.selectBlink + 1
       if math.wrap(self.selectBlink, 0, 1) == 1 then
-        love.graphics.setBackgroundColor(1, 1, 1, 1)
+        self.shader:send("invert", true)
       else
-        love.graphics.setBackgroundColor(0, 0, 0, 1)
+        self.shader:send("invert", false)
       end
       if self.selectBlink == 12 then
         self.selected = false
@@ -229,7 +251,7 @@ function stageSelect:update()
       megautils.stopMusic()
       megautils.playSound("selected")
     end
-  elseif (input.pressed.select1 or input.touchPressedOverlaps(8 - 4, (26 * 8) - 4, 32 + 8, 16 + 8)) and not self.stop then
+  elseif (input.pressed.select1 or input.touchPressedOverlaps(8 - 4, (27 * 8) - 4, 32 + 8, 16 + 8)) and not self.stop then
     self.stop = true
     megautils.transitionToState(globals.menuState)
     megautils.stopMusic()
@@ -284,6 +306,18 @@ function stageSelect:draw()
         if i ~= 5 and globals.robotMasterEntities[i] and self.slots[i] and
           self.images[i] and not globals.defeats[self.slots[i].defeatSlot] then
           self.images[i]:draw(32+(x*81), 32+(y*64))
+          
+          if self.names[i] then
+            love.graphics.setFont(menuFont)
+            love.graphics.setShader(self.shader)
+            if self.names[i][1] then
+              love.graphics.print(self.names[i][1], 22+(x*81), 72+(y*64))
+            end
+            if self.names[i][2] then
+              love.graphics.printf(self.names[i][2], -58+(x*81), 80+(y*64), 128, "right")
+            end
+            love.graphics.setShader()
+          end
         end
       end
     end

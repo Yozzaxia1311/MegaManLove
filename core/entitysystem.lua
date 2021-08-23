@@ -1437,9 +1437,12 @@ function mapEntity:begin()
     if v.draw then
       self.layers[#self.layers+1] = megautils.add(trigger, nil, function(s)
           if s.l.visible then
+            if s.mapEnt and s.mapEnt.shader then love.graphics.setShader(s.mapEnt.shader) end
             s.l:draw()
+            love.graphics.setShader()
           end
         end)
+      self.layers[#self.layers].mapEnt = self
       self.layers[#self.layers].l = v
       self.layers[#self.layers]:setLayer(v.properties.layer or (i-100))
       self.layers[#self.layers].visibleDuringPause = true

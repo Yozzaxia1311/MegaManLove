@@ -1,7 +1,7 @@
 baseClass: advancedEntity
 
-resource1: entities/demo/metBullet
-image1: assets/global/entities/met.png
+resource1: demo/metBullet
+image1: demo/met.png
 
 spawnOffY: 2
 collision: 14, 14

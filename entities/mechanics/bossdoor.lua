@@ -1,4 +1,4 @@
-megautils.loadResource("assets/global/bossDoor.png", "bossDoor", true)
+megautils.loadResource("assets/misc/bossDoor.png", "bossDoor", true)
 megautils.loadResource("assets/sfx/bossDoor.ogg", "bossDoorSfx", true)
 
 bossDoor = basicEntity:extend()

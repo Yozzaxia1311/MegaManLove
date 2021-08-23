@@ -2,7 +2,7 @@
 <template>
  <object name="met" width="16" height="16">
   <properties>
-   <property name="run" value="entities/demo/met"/>
+   <property name="run" value="demo/met"/>
   </properties>
  </object>
 </template>

@@ -11,7 +11,7 @@ if not isMobile and love.graphics then
 end
 
 drawShader = love.graphics.newShader([[
-    uniform int pos[2];
+    extern int pos[2];
     
     vec4 position(mat4 transform_projection, vec4 vertex_position)
     {
@@ -137,7 +137,7 @@ function initEngine()
   -- [RM 6] [RM 7] [RM 8]
   globals.robotMasterEntities = { -- Every value in this list should either be a function, or a `.lua` file that returns an entity.
       nil, nil, nil,
-      nil, wilyIntro, "entities/demo/stickman.lua",
+      nil, wilyIntro, "demo/stickman.lua",
       nil, nil, nil
     }
   

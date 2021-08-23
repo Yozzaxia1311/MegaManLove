@@ -4,6 +4,7 @@ function engineGlobals(whenLoveModuleIsLoaded)
     love.keyboard.setKeyRepeat(true)
     love.graphics.setDefaultFilter("nearest", "nearest")
     mmFont = love.graphics.newFont("assets/misc/mm.ttf", 8)
+    menuFont = love.graphics.newImageFont("assets/misc/menuFont.png", " ABCDEFGHIJKLMNOPQRSTUVWXYZ")
     isMobile = love.system.getOS() == "Android" or love.system.getOS() == "iOS"
     isWeb = love.system.getOS() == "Web"
     compatMusicMode = isWeb and 2 or (isMobile and 1)
