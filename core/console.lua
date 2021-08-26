@@ -367,7 +367,7 @@ function console.update(dt)
   console.h = 112*console.scale
   if console.state == 0 then
     if console.y > -console.h then
-      console.y = console.y - ((300*console.scale)*dt)
+      console.y = console.y - ((380*console.scale)*dt)
     end
     if console.y < -console.h then
       console.y = -console.h
@@ -375,7 +375,7 @@ function console.update(dt)
   end
   if console.state == 1 then
     if console.y < 0 then
-      console.y = console.y + ((300*console.scale)*dt)
+      console.y = console.y + ((380*console.scale)*dt)
     end
     if console.y > 0 then
       console.y = 0
@@ -427,15 +427,18 @@ local _print = love.graphics.print
 local _clamp = math.clamp
 
 function console.draw()
+  --if console.y <= 0 then return end
+  
   local oldFont = _getFont()
   local lineMax = _floor(6.67*console.scale)
 
   _setFont(console.font)
   _setColor(1, 1, 1, 1)
-  _setColor(0, 0, 0, 0.95)
+  _setColor(0, 0, 0, 0.7)
   _rectangle("fill", console.x, console.y, console.w, console.h)
   _setColor(1, 1, 1, 1)
   _rectangle("fill", console.x, console.y+console.h-1, console.w, 1)
+  
   if #console.input > 0 then
     _setColor(1, 1, 1, 0.33)
     _print("$ "..console.getCompletion(console.input), console.x+2, console.y+console.h-16)
@@ -455,6 +458,6 @@ function console.draw()
     end
     i = i - 1
   end
-
+  
   _setFont(oldFont)
 end
