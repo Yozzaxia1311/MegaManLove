@@ -94,7 +94,7 @@ function megaMan:setSkin(path)
       
       assert(t, "\"" .. path .. "/conf.txt\" could not be parsed")
       
-      megaMan.skinCache[path] = {path, imageWrapper((mount or path) .. "/player.png"),
+      megaMan.skinCache[path] = {path, imageWrapper(path .. "/player.png"),
         imageWrapper(path .. "/outline.png"),
         imageWrapper(path .. "/one.png"),
         imageWrapper(path .. "/two.png"), t, finfo.modtime}
@@ -205,7 +205,7 @@ mapEntity.register("player", function(v)
       if v.properties.individual and v.properties.individual > 0 then
         if v.properties.individual <= megaMan.playerCount then
           megaMan.individualLanded[#megaMan.individualLanded+1] = v.properties.individual
-          megautils.add(megaMan, v.x+2, v.y+((g >= 0) and -5 or 0),
+          megautils.add(megaMan, v.x+11, v.y+((g >= 0) and 11 or 0),
             v.properties.side, v.properties.drop, v.properties.individual,
             v.properties.gravMult, v.properties.gravFlip, v.properties.control,
             v.properties.doReady, v.properties.teleporter)
@@ -213,7 +213,7 @@ mapEntity.register("player", function(v)
       else
         for i=1, megaMan.playerCount do
           if not table.icontains(megaMan.individualLanded, i) then
-            megautils.add(megaMan, v.x+2, v.y+((g >= 0) and -5 or 0),
+            megautils.add(megaMan, v.x+11, v.y+((g >= 0) and 11 or 0),
               v.properties.side, v.properties.drop, i, v.properties.gravMult, v.properties.gravFlip, v.properties.control,
               v.properties.doReady, v.properties.teleporter)
           end
@@ -1825,7 +1825,7 @@ function megaMan:animate(getDataOnly)
 end
 
 function megaMan:die()
-  if self.pitDeath then
+  if not self.pitDeath then
     deathExplodeParticle.createExplosion(self.x+((self.collisionShape.w/2)-12),
       self.y+((self.collisionShape.h/2)-12))
   end

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <template>
- <object name="player" width="16" height="16">
+ <tileset firstgid="1" source="../templateTileset32x32.tsx"/>
+ <object name="player" gid="1" width="32" height="32">
   <properties>
    <property name="checkpoint" value="start"/>
    <property name="control" type="bool" value="true"/>

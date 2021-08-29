@@ -8,27 +8,24 @@ megautils.loadResource("assets/misc/smallEnergy.anim", "smallEnergyAnim", true)
 megautils.loadResource("assets/misc/energy.anim", "energyAnim", true)
 megautils.loadResource("assets/misc/tanks.animset", "tankAnims", true)
 
-pickup = entity:extend()
+pickUp = entity:extend()
 
-pickup.autoClean = false
+pickUp.autoClean = false
 
-pickup.banIDs = {}
+pickUp.banIDs = {}
 
-function pickup.isBanned(i, id, path)
-  return pickup.banIDs[i] and table.icontains(pickup.banIDs[i], (path or "") .. "|" .. id)
+function pickUp.isBanned(i, id, path)
+  return pickUp.banIDs[i] and table.icontains(pickUp.banIDs[i], (path or "") .. "|" .. id)
 end
 
-function pickup:new(despawn, gd, fwp, id, path)
-  pickup.super.new(self)
+function pickUp:new(despawn, gd, fwp, id, path)
+  pickUp.super.new(self)
   self:setRectangleCollision(16, 16)
   self.timer = 0
   self.blockCollision.global = true
   self.fwp = fwp == nil or fwp
   self.gravDir = gd or 1
   self.mapID = id
-  if self.mapID == -1 then
-    self.mapID = nil
-  end
   self.despawn = despawn == nil and self.mapID == nil or despawn
   self.path = path or ""
   self.removeWhenOutside = self.despawn
@@ -38,25 +35,25 @@ function pickup:new(despawn, gd, fwp, id, path)
   if gd or self.fwp then
     self:setGravityMultiplier("flipWithPlayer",  megaMan.mainPlayer and megaMan.mainPlayer.gravityMultipliers.gravityFlip or self.gravDir)
   end
-  if not pickup.banIDs[self.__index] then
-    pickup.banIDs[self.__index] = {}
+  if not pickUp.banIDs[self.__index] then
+    pickUp.banIDs[self.__index] = {}
   end
 end
 
-function pickup:added()
+function pickUp:added()
   self:addToGroup("removeOnTransition")
   if self.despawn then
     self:addToGroup("handledBySections")
   end
 end
 
-function pickup:grav()
+function pickUp:grav()
   self.velY = math.clamp(self.velY + self.gravity, -self.maxFallingSpeed, self.maxFallingSpeed)
 end
 
-function pickup:taken(p) end
+function pickUp:taken(p) end
 
-function pickup:_afterUpdate(dt)
+function pickUp:_afterUpdate(dt)
   if self.fwp then
     self:setGravityMultiplier("flipWithPlayer", megaMan.mainPlayer and megaMan.mainPlayer.gravityMultipliers.gravityFlip or self.gravDir)
   end
@@ -65,8 +62,8 @@ function pickup:_afterUpdate(dt)
     if self:collision(p) then
       self:taken(p)
       if not self.despawn and self.mapID and
-        not pickup.isBanned(self.__index, tostring(self.mapID), self.path) then
-        pickup.banIDs[self.__index][#pickup.banIDs[self.__index]+1] = self.path .. "|" .. tostring(self.mapID)
+        not pickUp.isBanned(self.__index, tostring(self.mapID), self.path) then
+        pickUp.banIDs[self.__index][#pickUp.banIDs[self.__index]+1] = self.path .. "|" .. tostring(self.mapID)
       end
       megautils.remove(self)
       return
@@ -85,14 +82,14 @@ function pickup:_afterUpdate(dt)
   self:afterUpdate(dt)
 end
 
-smallHealth = pickup:extend()
+smallHealth = pickUp:extend()
 
 smallHealth.autoClean = false
 
 mapEntity.register("smallHealth", function(v, map)
-  megautils.add(spawner, v.x+4, v.y, 8, 6, function()
-      return not pickup.isBanned(smallHealth, v.id, map.path)
-    end, smallHealth, v.x+4, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
+  megautils.add(spawner, v.x+4, v.y+4, 8, 6, function()
+      return not pickUp.isBanned(smallHealth, v.id, map.path)
+    end, smallHealth, v.x+4, v.y+4, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
 
 function smallHealth:new(x, y, despawn, gd, fwp, id, path)
@@ -129,13 +126,13 @@ function smallHealth:draw()
   end
 end
 
-health = pickup:extend()
+health = pickUp:extend()
 
 health.autoClean = false
 
 mapEntity.register("health", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 14, function()
-      return not pickup.isBanned(health, v.id, map.path)
+      return not pickUp.isBanned(health, v.id, map.path)
     end, health, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
 
@@ -173,14 +170,14 @@ function health:draw()
   end
 end
 
-smallEnergy = pickup:extend()
+smallEnergy = pickUp:extend()
 
 smallEnergy.autoClean = false
 
 mapEntity.register("smallEnergy", function(v, map)
-  megautils.add(spawner, v.x+4, v.y, 8, 6, function()
-      return not pickup.isBanned(smallEnergy, v.id, map.path)
-    end, smallEnergy, v.x+4, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
+  megautils.add(spawner, v.x+4, v.y+4, 8, 6, function()
+      return not pickUp.isBanned(smallEnergy, v.id, map.path)
+    end, smallEnergy, v.x+4, v.y+4, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
 
 function smallEnergy:new(x, y, despawn, gd, fwp, id, path)
@@ -227,13 +224,13 @@ function smallEnergy:draw()
   end
 end
 
-energy = pickup:extend()
+energy = pickUp:extend()
 
 energy.autoClean = false
 
 mapEntity.register("energy", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 10, function()
-      return not pickup.isBanned(energy, v.id, map.path)
+      return not pickUp.isBanned(energy, v.id, map.path)
     end, energy, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
 
@@ -281,13 +278,13 @@ function energy:draw()
   end
 end
 
-life = pickup:extend()
+life = pickUp:extend()
 
 life.autoClean = false
 
 mapEntity.register("life", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 15, function()
-      return not pickup.isBanned(life, v.id, map.path)
+      return not pickUp.isBanned(life, v.id, map.path)
     end, life, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
 
@@ -343,13 +340,13 @@ function life:draw()
   end
 end
 
-eTank = pickup:extend()
+eTank = pickUp:extend()
 
 eTank.autoClean = false
 
 mapEntity.register("eTank", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 15, function()
-      return not pickup.isBanned(eTank, v.id, map.path)
+      return not pickUp.isBanned(eTank, v.id, map.path)
     end, eTank, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
 
@@ -401,13 +398,13 @@ function eTank:draw()
   end
 end
 
-wTank = pickup:extend()
+wTank = pickUp:extend()
 
 wTank.autoClean = false
 
 mapEntity.register("wTank", function(v, map)
   megautils.add(spawner, v.x, v.y, 16, 15, function()
-      return not pickup.isBanned(wTank, v.id, map.path)
+      return not pickUp.isBanned(wTank, v.id, map.path)
     end, wTank, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
 
@@ -458,5 +455,5 @@ function wTank:draw()
 end
 
 megautils.resetGameObjectsFuncs.pickups = {func=function()
-    pickup.banIDs = {}
+    pickUp.banIDs = {}
   end, autoClean=false}

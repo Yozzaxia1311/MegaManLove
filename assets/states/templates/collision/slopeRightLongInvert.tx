@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <template>
- <object name="slope" width="32" height="16">
+ <tileset firstgid="1" source="../templateTileset32x16.tsx"/>
+ <object name="slope" gid="78" width="32" height="16">
   <properties>
    <property name="mask" value="slopeRightLongInvert"/>
   </properties>

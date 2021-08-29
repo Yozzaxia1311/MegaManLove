@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <template>
- <object name="left" width="16" height="16">
+ <tileset firstgid="1" source="../templateTileset16x16.tsx"/>
+ <object name="left" gid="121" width="16" height="16">
   <properties>
    <property name="doScrollX" type="bool" value="true"/>
    <property name="doScrollY" type="bool" value="true"/>
    <property name="platform" type="bool" value="false"/>
-   <property name="toSection" value=""/>
    <property name="speed" type="float" value="0.8"/>
+   <property name="toSection" value=""/>
   </properties>
  </object>
 </template>

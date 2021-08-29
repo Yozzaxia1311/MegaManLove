@@ -1248,6 +1248,7 @@ local function finalXML2LuaTable(str, f)
               j.rotation = tonumber(j.rotation) or tonumber(tf.rotation) or 0
               j.visible = j.visible == nil and (tf.visible ~= "0") or (j.visible ~= "0")
               j.id = tonumber(j.id) or tonumber(tf.id)
+              j.gid = tonumber(j.gid) or tonumber(tf.gid)
 
               if not j.point and not j.ellipse and not j.polyline and not j.polygon and not j.text then
                 j.point = tf.tmpPoint
@@ -1334,6 +1335,9 @@ local function finalXML2LuaTable(str, f)
             local tcache = {}
             for i, j in pairs(v.objects) do
               j = templateParenting(j, tcache)
+              if j.gid then
+                j.y = j.y - j.height
+              end
             end
             for i, j in pairs(v.objects) do
               j.tmpPoint = nil

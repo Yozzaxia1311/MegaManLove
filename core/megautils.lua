@@ -524,16 +524,16 @@ function megautils._runFolderStructure(path, ...)
       self.__index.super.new(self, args.user, args.enemyWeapon or self.__index._meta.enemyWeapon)
       
       if not self.recycling then
-        if self.__index._meta.autoHit then
+        if self.__index._meta.autoHit ~= nil then
           self.autoHit = self.__index._meta.autoHit
         end
         if self.__index._meta.damage then
           self.damage = self.__index._meta.damage
         end
-        if self.__index._meta.applyAutoFace then
+        if self.__index._meta.applyAutoFace ~= nil then
           self.applyAutoFace = self.__index._meta.applyAutoFace
         end
-        if self.__index._meta.flipFace then
+        if self.__index._meta.flipFace ~= nil then
           self.flipFace = self.__index._meta.flipFace
         end
         if self.__index._meta.pierceType then
@@ -545,19 +545,19 @@ function megautils._runFolderStructure(path, ...)
             self.pierceType = pierce.PIERCEIFKILLING
           end
         end
-        if self.__index._meta.autoCollision then
+        if self.__index._meta.autoCollision ~= nil then
           self.autoCollision.global = self.__index._meta.autoCollision
         end
-        if self.__index._meta.autoGravity then
+        if self.__index._meta.autoGravity ~= nil then
           self.autoGravity.global = self.__index._meta.autoGravity
         end
-        if self.__index._meta.removeWhenOutside then
+        if self.__index._meta.removeWhenOutside ~= nil then
           self.removeWhenOutside = self.__index._meta.removeWhenOutside
         end
-        if self.__index._meta.flipWithUser then
+        if self.__index._meta.flipWithUser ~= nil then
           self.flipWithUser = self.__index._meta.flipWithUser
         end
-        if self.__index._meta.blockCollision then
+        if self.__index._meta.blockCollision ~= nil then
           self.blockCollision.global = self.__index._meta.blockCollision
         end
         if self.__index._meta.maxFallingSpeed then
@@ -572,7 +572,7 @@ function megautils._runFolderStructure(path, ...)
         if self.__index._meta.weaponGroup then
           self.weaponGroup = self.__index._meta.weaponGroup
         end
-        if self.__index._meta.doDink then
+        if self.__index._meta.doDink ~= nil then
           self.doDink = self.__index._meta.doDink
         end
       end
@@ -581,13 +581,13 @@ function megautils._runFolderStructure(path, ...)
         args.flipWithPlayer or self.__index._meta.flipWithPlayer, args.id, args.map.path)
       
       if not self.recycling then
-        if self.__index._meta.autoCollision then
+        if self.__index._meta.autoCollision ~= nil then
           self.autoCollision.global = self.__index._meta.autoCollision
         end
-        if self.__index._meta.autoGravity then
+        if self.__index._meta.autoGravity ~= nil then
           self.autoGravity.global = self.__index._meta.autoGravity
         end
-        if self.__index._meta.blockCollision then
+        if self.__index._meta.blockCollision ~= nil then
           self.blockCollision.global = self.__index._meta.blockCollision
         end
         if self.__index._meta.maxFallingSpeed then
@@ -598,22 +598,22 @@ function megautils._runFolderStructure(path, ...)
       self.__index.super.new(self, args.user)
       
       if not self.recycling then
-        if self.__index._meta.removeWhenOutside then
+        if self.__index._meta.removeWhenOutside ~= nil then
           self.removeWhenOutside = self.__index._meta.removeWhenOutside
         end
-        if self.__index._meta.flipWithUser then
+        if self.__index._meta.flipWithUser ~= nil then
           self.flipWithUser = self.__index._meta.flipWithUser
         end
-        if self.__index._meta.blockCollision then
+        if self.__index._meta.blockCollision ~= nil then
           self.blockCollision.global = self.__index._meta.blockCollision
         end
         if self.__index._meta.maxFallingSpeed then
           self.maxFallingSpeed = self.__index._meta.maxFallingSpeed
         end
-        if self.__index._meta.autoCollision then
+        if self.__index._meta.autoCollision ~= nil then
           self.autoCollision.global = self.__index._meta.autoCollision
         end
-        if self.__index._meta.autoGravity then
+        if self.__index._meta.autoGravity ~= nil then
           self.autoGravity.global = self.__index._meta.autoGravity
         end
       end
@@ -638,7 +638,7 @@ function megautils._runFolderStructure(path, ...)
       if self.__index._meta.y then
         self.y = self.__index._meta.y
       end
-      if self.__index._meta.noSlope then
+      if self.__index._meta.noSlope ~= nil then
         self.noSlope = self.__index._meta.noSlope
       end
     end
@@ -665,10 +665,10 @@ function megautils._runFolderStructure(path, ...)
           elseif self.__index._meta.explosion == "death" then
             self.explosionType = advancedEntity.DEATHBLAST
           end
-          if self.__index._meta.removeOnDeath then
+          if self.__index._meta.removeOnDeath ~= nil then
             self.removeOnDeath = self.__index._meta.removeOnDeath
           end
-          if self.__index._meta.dropItem then
+          if self.__index._meta.dropItem ~= nil then
             self.dropItem = self.__index._meta.dropItem
           end
           if self.__index._meta.health then
@@ -680,22 +680,22 @@ function megautils._runFolderStructure(path, ...)
           if self.__index._meta.soundOnDeath then
             self.soundOnDeath = self.__index._meta.soundOnDeath
           end
-          if self.__index._meta.autoHit then
+          if self.__index._meta.autoHit ~= nil then
             self.autoHitPlayer = self.__index._meta.autoHit
           end
           if self.__index._meta.damage then
             self.damage = self.__index._meta.damage
           end
-          if self.__index._meta.hurtable then
+          if self.__index._meta.hurtable ~= nil then
             self.hurtable = self.__index._meta.hurtable
           end
-          if self.__index._meta.flipWithPlayer then
+          if self.__index._meta.flipWithPlayer ~= nil then
             self.flipWithPlayer = self.__index._meta.flipWithPlayer
           end
-          if self.__index._meta.removeWhenOutside then
+          if self.__index._meta.removeWhenOutside ~= nil then
             self.removeWhenOutside = self.__index._meta.removeWhenOutside
           end
-          if self.__index._meta.removeHealthBarWithSelf then
+          if self.__index._meta.removeHealthBarWithSelf ~= nil then
             self.removeHealthBarWithSelf = self.__index._meta.removeHealthBarWithSelf
           end
           if self.__index._meta.barRelativeToView then
@@ -707,10 +707,10 @@ function megautils._runFolderStructure(path, ...)
           if self.__index._meta.barOffsetY then
             self.barOffsetY = self.__index._meta.barOffsetY
           end
-          if self.__index._meta.applyAutoFace then
+          if self.__index._meta.applyAutoFace ~= nil then
             self.applyAutoFace = self.__index._meta.applyAutoFace
           end
-          if self.__index._meta.flipFace then
+          if self.__index._meta.flipFace ~= nil then
             self.flipFace = self.__index._meta.flipFace
           end
           if self.__index._meta.pierceType then
@@ -722,16 +722,16 @@ function megautils._runFolderStructure(path, ...)
               self.pierceType = pierce.PIERCEIFKILLING
             end
           end
-          if self.__index._meta.autoCollision then
+          if self.__index._meta.autoCollision ~= nil then
             self.autoCollision.global = self.__index._meta.autoCollision
           end
-          if self.__index._meta.autoGravity then
+          if self.__index._meta.autoGravity ~= nil then
             self.autoGravity.global = self.__index._meta.autoGravity
           end
-          if self.__index._meta.crushable then
+          if self.__index._meta.crushable ~= nil then
             self.crushable = self.__index._meta.crushable
           end
-          if self.__index._meta.blockCollision then
+          if self.__index._meta.blockCollision ~= nil then
             self.blockCollision.global = self.__index._meta.blockCollision
           end
           if self.__index._meta.maxFallingSpeed then
@@ -754,7 +754,7 @@ function megautils._runFolderStructure(path, ...)
       if self.__index._meta.canStandSolid then
         self.canStandSolid.global = self.__index._meta.canStandSolid
       end
-      if self.__index._meta.snapToMovingFloor then
+      if self.__index._meta.snapToMovingFloor ~= nil then
         self.snapToMovingFloor = self.__index._meta.snapToMovingFloor
       end
       

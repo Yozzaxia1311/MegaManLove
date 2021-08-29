@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <template>
- <object name="smallHealth" width="16" height="16">
+ <tileset firstgid="1" source="../templateTileset16x16.tsx"/>
+ <object name="smallHealth" gid="104" width="16" height="16">
   <properties>
    <property name="flipWithPlayer" type="bool" value="false"/>
-   <property name="id" type="int" value="-1"/>
    <property name="gravFlip" type="int" value="1"/>
   </properties>
  </object>

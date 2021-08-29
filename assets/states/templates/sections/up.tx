@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <template>
- <object name="up" width="16" height="16">
+ <tileset firstgid="1" source="../templateTileset16x16.tsx"/>
+ <object name="up" gid="123" width="16" height="16">
   <properties>
    <property name="checkLadder" type="bool" value="true"/>
    <property name="doScrollX" type="bool" value="true"/>

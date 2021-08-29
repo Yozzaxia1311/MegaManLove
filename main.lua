@@ -690,7 +690,7 @@ function ser()
       record = record.ser(),
       collision = collision.ser(),
       banner = banner and banner.ser(),
-      banIDs = pickup.banIDs,
+      banIDs = pickUp.banIDs,
       weapon = weapon.ser(),
       camera = camera.main and camera.main,
       fade = fade.main and fade.main,
@@ -743,7 +743,7 @@ function deser(from, dontChangeMusic)
   if t.banner then
     banner.deser(t.banner)
   end
-  pickup.banIDs = t.banIDs
+  pickUp.banIDs = t.banIDs
   weapon.deser(t.weapon)
   camera.main = t.camera
   fade.main = t.fade
