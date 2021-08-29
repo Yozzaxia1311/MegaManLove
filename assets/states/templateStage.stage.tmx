@@ -37,7 +37,7 @@
    <object id="3" template="templates/collision/solid.tx" x="80" y="160" width="96" height="16"/>
   </objectgroup>
   <objectgroup id="5" name="entities">
-   <object id="5" template="templates/player/player.tx" x="120" y="144"/>
+   <object id="5" template="templates/player/player.tx" x="112" y="160"/>
   </objectgroup>
  </group>
 </map>
