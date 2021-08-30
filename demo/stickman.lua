@@ -2,15 +2,11 @@ megautils.loadResource("demo/stickMan.animset", "stickManAnims")
 
 stickMan = bossEntity:extend()
 
-mapEntity.register("stickMan", function(v)
-    megautils.add(spawner, v.x, v.y+8, 12, 24, nil, stickMan, v.x, v.y+8)
-  end)
+mapEntity.register(stickMan, {collision={w=12, h=24}, spawnerType="spawner", spawnOffY=8})
 
 function stickMan:new(x, y)
   stickMan.super.new(self)
-  self.y = y or 0
-  self.x = x or 0
-  self:setRectangleCollision(12, 24)
+  
   self.anims = animationSet("stickManAnims"):off(-4, -8)
   self:addGFX("anims", self.anims)
   self.flipFace = true

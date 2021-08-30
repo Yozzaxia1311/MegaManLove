@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="16" height="14" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#ffaaff" nextlayerid="6" nextobjectid="259">
+<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="16" height="14" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#ffaaff" nextlayerid="8" nextobjectid="264">
+ <editorsettings>
+  <export target="../demo.lua" format="lua"/>
+ </editorsettings>
  <properties>
   <property name="fadeIn" type="bool" value="true"/>
   <property name="musicPath" value="demo/demo.ogg"/>
@@ -542,7 +545,7 @@
    </object>
    <object id="49" template="moveAcrossPlatform.tx" x="240" y="64">
     <properties>
-     <property name="toX" type="int" value="64"/>
+     <property name="toX" type="int" value="400"/>
      <property name="toY" type="int" value="42"/>
     </properties>
    </object>
@@ -610,4 +613,15 @@
    </object>
   </objectgroup>
  </group>
+ <objectgroup id="7" name="help">
+  <object id="261" x="64" y="-240" width="272" height="64">
+   <text pixelsize="7" wrap="1" halign="center">To get started, open the project overview (View -&gt; Views and Toolbars -&gt; Project) and template editor (View -&gt; Views and Toolbars -&gt; Template Editor), open the project (Project -&gt; Open Project...) named &quot;tiledProject.tiled-project&quot; in the game's base directory. In the project overview, navigate to &quot;assets/states/templates&quot;, where all template objects are categorized in subdirectories. Select a template object of your choice, and use the Insert Template tool (in toolbar) to place objects.</text>
+  </object>
+  <object id="262" x="64" y="-256" width="272" height="16">
+   <text pixelsize="12" wrap="1" bold="1" halign="center">How to Place Objects:</text>
+  </object>
+  <object id="263" x="128" y="112" width="96" height="16">
+   <text pixelsize="12" wrap="1" bold="1" halign="center">Tutorials ^^^</text>
+  </object>
+ </objectgroup>
 </map>

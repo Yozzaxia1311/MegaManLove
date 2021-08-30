@@ -387,7 +387,7 @@ function megautils._runFolderStructure(path, ...)
   local enemyWeapon = conf.enemyWeapon == nil or conf.enemyWeapon
   local register = conf.register == nil or conf.register
   local _spawner = conf.spawner or
-    ((not result:is(weapon) and not result:is(particle)) and "regular" or "none")
+    ((not result:is(weapon) and not result:is(particle)) and "spawner" or "none")
   if _spawner == "none" then
     _spawner = nil
   end
@@ -941,13 +941,17 @@ function megautils._runFolderStructure(path, ...)
         end
         local w, h = r.__index._meta.collision and r.__index._meta.collision.w or 16,
           r.__index._meta.collision and r.__index._meta.collision.h or 16
-        
-        if s == "regular" then
-          megautils.add(spawner, v.x + ox, v.y + oy, w, h, nil, r, args)
+        local insert = unpack({v.properties})
+        insert.x = v.x + ox
+        insert.y = v.y + oy
+          
+        if s == "spawner" then
+          megautils.add(spawner, v.x + ox, v.y + oy, w, h, nil, r, args).insert = insert
         elseif s == "interval" then
           megautils.add(intervalSpawner,
-            v.x + ox, v.y + oy, w, h, args.interval or r.__index._meta.interval, nil, r, args)
-        elseif s == "custom" then
+            v.x + ox, v.y + oy, w, h, args.interval or r.__index._meta.interval, nil, r, args).insert = insert
+        else
+          basicEntity.insertVars[#basicEntity.insertVars + 1] = insert
           megautils.add(r, args)
         end
       end, nil, nil, _spawner, result)

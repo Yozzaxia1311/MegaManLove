@@ -400,3 +400,18 @@ function animationSet:draw(image, x, y, r, sx, sy, ox, oy, offX, offY, flipX, fl
       sx or self.sx, sy or self.sy, ox or self.ox, oy or self.oy, offX or self.offX, offY or self.offY, fx, fy)
   end
 end
+
+text = gfx:extend()
+
+function text:new(_text, align, limit, x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, color, syncPos)
+  text.super.new(self, x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, color, syncPos)
+  
+  self.text = _text or ""
+  self.align = align or "left"
+  self.limit = limit or 100
+end
+
+function text:draw(x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY)
+  love.graphics.printf(self.text, (x or self.x) + (offX or self.offX), y or self.y + (offY or self.offY), self.limit, self.align,
+    r or self.r, sx or self.sx, sy or self.sy, nil, nil, ox or self.ox, oy or self.oy)
+end

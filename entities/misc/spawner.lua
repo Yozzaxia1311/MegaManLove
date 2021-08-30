@@ -28,6 +28,9 @@ function spawner:updateSpawner()
   end
   if not megautils.outside(self) and self.wasOutside and not self.instance and
     (not self.cond or self.cond(self)) and not self.isRemoved then
+    if self.insert then
+      basicEntity.insertVars[#basicEntity.insertVars + 1] = self.insert
+    end
     self.instance = megautils.add(unpack(self.stuff))
     self.wasOutside = false
   end
@@ -64,6 +67,9 @@ function intervalSpawner:updateSpawner()
     if self.timer == self.time then
       self.timer = 0
       if not self.cond or self.cond(self) then
+        if self.insert then
+          basicEntity.insertVars[#basicEntity.insertVars + 1] = self.insert
+        end
         megautils.add(unpack(self.stuff))
       end
     end

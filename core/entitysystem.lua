@@ -39,7 +39,7 @@ function entitySystem:updateHashForEntity(e)
       e.currentHashes = {}
     end
     
-    local xx, yy, ww, hh = e.x, e.y, e.collisionShape.w, e.collisionShape.h
+    local xx, yy, ww, hh = e.x - (e.collisionShape.r or 0), e.y - (e.collisionShape.r or 0), e.collisionShape.w, e.collisionShape.h
     local hs = entitySystem.hashSize
     local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
     local cx2, cy2 = math.ceil((xx + ww + 2) / hs), math.ceil((yy + hh + 2) / hs)
@@ -444,7 +444,7 @@ function entitySystem:revertFromStatic(e)
     
     if e.collisionShape and e.staticX == e.x and e.staticY == e.y and
       e.staticW == e.collisionShape.w and e.staticH == e.collisionShape.h then
-      local xx, yy, ww, hh = e.x, e.y, e.collisionShape.w, e.collisionShape.h
+      local xx, yy, ww, hh = e.x - (e.collisionShape.r or 0), e.y - (e.collisionShape.r or 0), e.collisionShape.w, e.collisionShape.h
       local hs = entitySystem.hashSize
       local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
       local cx2, cy2 = math.ceil((xx + ww + 2) / hs), math.ceil((yy + hh + 2) / hs)
@@ -615,7 +615,7 @@ function entitySystem:remove(e)
   elseif e.static then
     if e.collisionShape and e.staticX == e.x and e.staticY == e.y and
       e.staticW == e.collisionShape.w and e.staticH == e.collisionShape.h then
-      local xx, yy, ww, hh = e.x, e.y, e.collisionShape.w, e.collisionShape.h
+      local xx, yy, ww, hh = e.x - (e.collisionShape.r or 0), e.y - (e.collisionShape.r or 0), e.collisionShape.w, e.collisionShape.h
       local hs = entitySystem.hashSize
       local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
       local cx2, cy2 = math.ceil((xx + ww + 2) / hs), math.ceil((yy + hh + 2) / hs)
@@ -898,6 +898,7 @@ end
 basicEntity = class:extend()
 
 basicEntity.autoClean = false
+basicEntity.insertVars = {}
 
 function basicEntity:extend()
   local cls = {}
@@ -936,6 +937,13 @@ function basicEntity:new()
   self.changeHealth = 0
   self.canUpdate = {global=true}
   self.canDraw = {global=true}
+  
+  if #basicEntity.insertVars ~= 0 then
+    for k, v in pairs(basicEntity.insertVars[#basicEntity.insertVars]) do
+      self[k] = v ~= nil and v or self[k]
+    end
+    basicEntity.insertVars[#basicEntity.insertVars] = nil
+  end
 end
 
 function basicEntity:addGFX(name, gfx, noSync)
@@ -1216,7 +1224,7 @@ end
 
 function basicEntity:updateHash(doAnyway)
   if (doAnyway or self.isAdded) and self.collisionShape then
-    local xx, yy, ww, hh = self.x, self.y, self.collisionShape.w, self.collisionShape.h
+    local xx, yy, ww, hh = self.x - (self.collisionShape.r or 0), self.y - (self.collisionShape.r or 0), self.collisionShape.w, self.collisionShape.h
     local hs = entitySystem.hashSize
     local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
     local cx2, cy2 = math.ceil((xx + ww + 2) / hs), math.ceil((yy + hh + 2) / hs)
@@ -1541,17 +1549,32 @@ function mapEntity:draw()
 end
 
 function mapEntity.register(n, f, l, lock, ...)
-  local done = false
-  for i=1, #mapEntity.registered do
-    if mapEntity.registered[i].layer == (l or 0) then
-      mapEntity.registered[i].data[#mapEntity.registered[i].data+1] = {func=f, name=n, locked=lock, args={...}}
-      done = true
-      break
+  if type(n) == "table" and type(f) == "table" then
+    local done = false
+    for i=1, #mapEntity.registered do
+      if mapEntity.registered[i].layer == lock or 0 then
+        mapEntity.registered[i].data[#mapEntity.registered[i].data+1] = {func=n, name=megautils.getClassName(n), locked=l, args=f}
+        done = true
+        break
+      end
     end
-  end
-  if not done then
-    mapEntity.registered[#mapEntity.registered+1] = {layer=l or 0, data={{func=f, name=n, locked=lock, args={...}}}}
-    mapEntity.doSort = true
+    if not done then
+      mapEntity.registered[#mapEntity.registered+1] = {layer=l or 0, data={{func=f, name=n, locked=l, args=f}}}
+      mapEntity.doSort = true
+    end
+  else
+    local done = false
+    for i=1, #mapEntity.registered do
+      if mapEntity.registered[i].layer == (l or 0) then
+        mapEntity.registered[i].data[#mapEntity.registered[i].data+1] = {func=f, name=n, locked=lock, args={...}}
+        done = true
+        break
+      end
+    end
+    if not done then
+      mapEntity.registered[#mapEntity.registered+1] = {layer=l or 0, data={{func=f, name=n, locked=lock, args={...}}}}
+      mapEntity.doSort = true
+    end
   end
 end
 
@@ -1607,15 +1630,62 @@ function mapEntity.add(ol, map)
     mapEntity.sortReg()
     mapEntity.doSort = false
   end
+  for _, v in ipairs(ol) do
+    if v.properties.run then
+      megautils.runFile(v.properties.run, true)
+    end
+  end
   for i=1, #mapEntity.registered do
     local layer = mapEntity.registered[i]
     for _, v in ipairs(ol) do
-      if v.properties.run then
-        megautils.runFile(v.properties.run, true)
-      end
       for j=1, #layer.data do
         if layer.data[j].name == v.name then
-          layer.data[j].func(v, map, unpack(layer.data[j].args))
+          if type(layer.data[j].func) == "table" then
+            local args = layer.data[j].args
+            local ox, oy = args.spawnOffX or 0, args.spawnOffY or 0
+            local insert = unpack({v.properties})
+            insert.x = v.x + ox
+            insert.y = v.y + oy
+            
+            if args.collision then
+              insert.collisionShape = {}
+              
+              if not args.collision.type or args.collision.type == "rect" then
+                insert.collisionShape.w, insert.collisionShape.h = args.collision.w or 1, args.collision.h or 1
+                insert.collisionShape.type = 1
+              elseif args.collision.type == "circle" then
+                insert.collisionShape.r = args.collision.r or 1
+                insert.collisionShape.w, insert.collisionShape.h = insert.collisionShape.r * 2, insert.collisionShape.r * 2
+                insert.collisionShape.type = 3
+              elseif args.collision.type == "image" then
+                if not megautils.getResource(args.collision.img) then
+                  megautils.loadResource(args.collision.img, args.collision.img)
+                end
+                local res = megautils.getResourceTable(args.collision.img)
+                insert.collisionShape.w = res.data:getWidth()
+                insert.collisionShape.h = res.data:getHeight()
+                insert.collisionShape.data = res.data
+                if not basicEntity._imgCache[insert.collisionShape.data] then
+                  basicEntity._imgCache[insert.collisionShape.data] = insert.collisionShape.data:toImageWrapper()
+                end
+                insert.collisionShape.image = basicEntity._imgCache[insert.collisionShape.data]
+                insert.collisionShape.type = 2
+              end
+            end
+            
+            local w, h = insert.collisionShape.w, insert.collisionShape.h
+            
+            if args.spawnerType == "spawner" then
+              megautils.add(spawner, v.x + ox, v.y + oy, w, h, nil, layer.data[j].func).insert = insert
+            elseif args.spawnerType == "interval" then
+              megautils.add(intervalSpawner, v.x + ox, v.y + oy, w, h, args.interval, nil, r).insert = insert
+            else
+              basicEntity.insertVars[#basicEntity.insertVars + 1] = insert
+              megautils.add(layer.data[j].func)
+            end
+          else
+            layer.data[j].func(v, map, unpack(layer.data[j].args))
+          end
         end
       end
     end
@@ -1658,7 +1728,6 @@ function advancedEntity:new()
   advancedEntity.super.new(self)
   
   if not self.recycling then
-    self:setRectangleCollision(16, 16)
     self.explosionType = advancedEntity.SMALLBLAST
     self.removeOnDeath = true
     self.dropItem = true

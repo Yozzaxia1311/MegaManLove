@@ -2,21 +2,15 @@ megautils.loadResource("demo/moveAcrossPlatform.png", "moveAcrossPlatform")
 
 moveAcrossPlatform = advancedEntity:extend()
 
-mapEntity.register("moveAcrossPlatform", function(v)
-    megautils.add(spawner, v.x, v.y, 32, 16, nil,
-      moveAcrossPlatform, v.x, v.y, v.properties.toX, v.properties.toY)
-  end)
+mapEntity.register(moveAcrossPlatform, {collision={w=32, h=16}, spawnerType="spawner"})
 
-function moveAcrossPlatform:new(x, y, toX, toY)
+function moveAcrossPlatform:new(toX, toY)
   moveAcrossPlatform.super.new(self)
   self.solidType = collision.SOLID
-  self.x = x or 0
-  self.y = y or 0
-  self:setRectangleCollision(32, 16)
   self:addGFX("tex", image("moveAcrossPlatform", quad(0, 0, 32, 16)))
   self.applyAutoFace = false
   self.t = {x = self.x, y = self.y}
-  self.tween = tween.new(1, self.t, {x=toX or (self.x+32), y=toY or (self.y-32)}, "inOutBack")
+  self.tween = tween.new(1, self.t, {x=self.toX or toX or (self.x+32), y=self.toY or toY or (self.y-32)}, "inOutBack")
   self.state = 0
   self.hurtable = false
   self.autoGravity.global = false

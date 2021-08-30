@@ -295,9 +295,10 @@ function Layer.spritelayer:_updateAnimations(dt)
   if self.useSpriteBatch then
     self:_batchUpdateAnimations(dt)
   else
-    local ty = math.ceil((self._sprites.drawRange.y-self.offsety)/self._map.tileheight)-1
+    local vw, vh = view.w / 2, view.h / 2
+    local ty = math.ceil(((self._sprites.drawRange.y-self.offsety-view.y-vh) + ((view.y+vh) * (self.parallaxy or 1)))/self._map.tileheight)-1
     local th = math.floor(self._sprites.drawRange.h/self._map.tileheight)+1
-    local tx = math.ceil((self._sprites.drawRange.x-self.offsetx)/self._map.tilewidth)-1
+    local tx = math.ceil(((self._sprites.drawRange.x-self.offsetx-view.x-vw) + ((view.x+vw) * (self.parallaxx or 1)))/self._map.tilewidth)-1
     local tw = math.floor(self._sprites.drawRange.w/self._map.tilewidth)+1
     for gid, animation in pairs(self._animations) do
       -- decrement the animation timer
@@ -372,11 +373,17 @@ function Layer.spritelayer:draw()
     self:_batchDraw()
   else
     love.graphics.push()
+    local sx, sy = (self.parallaxx or 1) * (self.parentParallaxX or 1), (self.parallaxy or 1) * (self.parentParallaxY or 1)
+    local vw, vh = view.w / 2, view.h / 2
+    if sx ~= 1 or sy ~= 1 then
+      love.graphics.translate(view.x + vw, view.y + vh)
+      love.graphics.translate((-view.x - vw) * sx, (-view.y - vh) * sy)
+    end
     love.graphics.translate(self.offsetx, self.offsety)
     -- draw the tiles within the draw range
-    local ty = math.ceil((self._sprites.drawRange.y-self.offsety)/self._map.tileheight)-1
+    local ty = math.ceil(((self._sprites.drawRange.y-self.offsety-view.y-vh) + ((view.y+vh) * sy))/self._map.tileheight)-1
     local th = math.floor(self._sprites.drawRange.h/self._map.tileheight)+1
-    local tx = math.ceil((self._sprites.drawRange.x-self.offsetx)/self._map.tilewidth)-1
+    local tx = math.ceil(((self._sprites.drawRange.x-self.offsetx-view.x-vw) + ((view.x+vw) * sx))/self._map.tilewidth)-1
     local tw = math.floor(self._sprites.drawRange.w/self._map.tilewidth)+1
     local sprites_map = self._sprites.map
     local sprites_quad = self._sprites.quads
@@ -400,6 +407,11 @@ end
 
 function Layer.spritelayer:_batchDraw()
   love.graphics.push()
+  if ((self.parallaxx or 1) ~= 1 or (self.parallaxy or 1) ~= 1) then
+    local vx, vy = view.x + (view.w / 2), view.y + (view.h / 2)
+    love.graphics.translate(vx, vy)
+    love.graphics.translate(-vx * (self.parallaxx or 1), -vy * (self.parallaxy or 1))
+  end
   love.graphics.translate(self.offsetx, self.offsety)
   -- draw the sprite batches
   for _, spriteBatch in pairs(self._spriteBatches) do
@@ -625,6 +637,8 @@ end
 
 function Layer.group:draw()
   for _, layer in ipairs(self.layers) do
+    layer.parentParallaxX = self.parallaxx * (self.parentParallaxX or 1)
+    layer.parentParallaxY = self.parallaxy * (self.parentParallaxY or 1)
     if layer.visible and layer.draw then layer:draw() end
   end
 end
@@ -1117,6 +1131,8 @@ local function finalXML2LuaTable(str, f)
           v.opacity = tonumber(v.opacity) or 1
           v.offsetx = tonumber(v.offsetx) or 0
           v.offsety = tonumber(v.offsety) or 0
+          v.parallaxx = tonumber(v.parallaxx) or 1
+          v.parallaxy = tonumber(v.parallaxy) or 1
           v.width = tonumber(v.width) or 0
           v.height = tonumber(v.height) or 0
           v.id = tonumber(v.id)
@@ -1295,7 +1311,15 @@ local function finalXML2LuaTable(str, f)
               elseif j.text then
                 j.tmpText = j.text
                 j.shape = "text"
-                j.wrap = j.wrap ~= "0"
+                j.wrap = j.text.wrap == "1"
+                j.halign = j.text.halign
+                j.valign = j.text.valign
+                j.fontfamily = j.text.fontfamily
+                if j.text.color then
+                  j.color = j.text.color:gsub("#","")
+                  j.color = {tonumber("0x"..j.color:sub(1,2)),
+                    tonumber("0x"..j.color:sub(3,4)), tonumber("0x"..j.color:sub(5,6))}
+                end
                 j.text = j.text[1]
               else
                 j.shape = "rectangle"
@@ -1362,6 +1386,8 @@ local function finalXML2LuaTable(str, f)
           v.opacity = tonumber(v.opacity) or 1
           v.offsetx = tonumber(v.offsetx) or 0
           v.offsety = tonumber(v.offsety) or 0
+          v.parallaxx = tonumber(v.parallaxx) or 1
+          v.parallaxy = tonumber(v.parallaxy) or 1
 
           layerGroupParenting(v)
         end
