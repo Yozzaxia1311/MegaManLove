@@ -938,6 +938,17 @@ function basicEntity:new()
   self.canUpdate = {global=true}
   self.canDraw = {global=true}
   
+  if mapEntity.useCol[self.__index] then
+    local col = mapEntity.useCol[self.__index]
+    if not col.type or col.type == "rect" then
+      self:setRectangleCollision(col.w or 1, col.h or 1)
+    elseif col.type == "circle" then
+      self:setCircleCollision(col.r or 1)
+    elseif col.type == "image" then
+      self:setImageCollision(col.img)
+    end
+  end
+  
   if #basicEntity.insertVars ~= 0 then
     for k, v in pairs(basicEntity.insertVars[#basicEntity.insertVars]) do
       self[k] = v ~= nil and v or self[k]
@@ -1422,6 +1433,7 @@ function mapEntity.deser(t)
 end
 
 mapEntity.registered = {}
+mapEntity.useCol = {}
 mapEntity.doSort = false
 
 function mapEntity:new(map, x, y)
@@ -1554,12 +1566,14 @@ function mapEntity.register(n, f, l, lock, ...)
     for i=1, #mapEntity.registered do
       if mapEntity.registered[i].layer == lock or 0 then
         mapEntity.registered[i].data[#mapEntity.registered[i].data+1] = {func=n, name=megautils.getClassName(n), locked=l, args=f}
+        mapEntity.useCol[n] = f.collision
         done = true
         break
       end
     end
     if not done then
-      mapEntity.registered[#mapEntity.registered+1] = {layer=l or 0, data={{func=f, name=n, locked=l, args=f}}}
+      mapEntity.registered[#mapEntity.registered+1] = {layer=l or 0, data={{func=n, name=n, locked=l, args=f}}}
+      mapEntity.useCol[n] = f.collision
       mapEntity.doSort = true
     end
   else
@@ -1646,34 +1660,21 @@ function mapEntity.add(ol, map)
             local insert = unpack({v.properties})
             insert.x = v.x + ox
             insert.y = v.y + oy
+            insert.regValues = insert
             
+            local w, h = 16, 16
             if args.collision then
-              insert.collisionShape = {}
-              
               if not args.collision.type or args.collision.type == "rect" then
-                insert.collisionShape.w, insert.collisionShape.h = args.collision.w or 1, args.collision.h or 1
-                insert.collisionShape.type = 1
+                w, h = args.collision.w or 1, args.collision.h or 1
               elseif args.collision.type == "circle" then
-                insert.collisionShape.r = args.collision.r or 1
-                insert.collisionShape.w, insert.collisionShape.h = insert.collisionShape.r * 2, insert.collisionShape.r * 2
-                insert.collisionShape.type = 3
+                w, h = (args.collision.r or 1) * 2, (args.collision.r or 1) * 2
               elseif args.collision.type == "image" then
                 if not megautils.getResource(args.collision.img) then
-                  megautils.loadResource(args.collision.img, args.collision.img)
+                  megautils.loadResource(args.collision.img, args.collision.img, not layer.data[j].func.autoClean)
                 end
-                local res = megautils.getResourceTable(args.collision.img)
-                insert.collisionShape.w = res.data:getWidth()
-                insert.collisionShape.h = res.data:getHeight()
-                insert.collisionShape.data = res.data
-                if not basicEntity._imgCache[insert.collisionShape.data] then
-                  basicEntity._imgCache[insert.collisionShape.data] = insert.collisionShape.data:toImageWrapper()
-                end
-                insert.collisionShape.image = basicEntity._imgCache[insert.collisionShape.data]
-                insert.collisionShape.type = 2
+                w, h = megautils.getResourceTable(args.collision.img).data:getDimensions()
               end
             end
-            
-            local w, h = insert.collisionShape.w, insert.collisionShape.h
             
             if args.spawnerType == "spawner" then
               megautils.add(spawner, v.x + ox, v.y + oy, w, h, nil, layer.data[j].func).insert = insert
@@ -1701,6 +1702,7 @@ megautils.cleanFuncs.mapEntity = {func=function()
               table.quickremovevaluearray(mapEntity.registered, mapEntity.registered[i])
             end
           end
+          mapEntity.useCol[r] = nil
         end
       end, -1)
   end, autoClean=false}

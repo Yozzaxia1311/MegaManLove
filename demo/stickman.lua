@@ -1,11 +1,15 @@
 megautils.loadResource("demo/stickMan.animset", "stickManAnims")
 
 stickMan = bossEntity:extend()
-
 mapEntity.register(stickMan, {collision={w=12, h=24}, spawnerType="spawner", spawnOffY=8})
 
 function stickMan:new(x, y)
   stickMan.super.new(self)
+  
+  if not self.regValues then
+    self.x = x or 0
+    self.y = y or 0
+  end
   
   self.anims = animationSet("stickManAnims"):off(-4, -8)
   self:addGFX("anims", self.anims)

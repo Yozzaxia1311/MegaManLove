@@ -1,5 +1,10 @@
 local self, super, args = ...
 
+if not self.regValues then
+  self.x = args.x or 0
+  self.y = args.y or 0
+end
+
 self.damage = megautils.diffValue(-2, {easy=-1, normal=-2, hard=-3})
 
 self.safeQuad = quad(0, 0, 18, 15)

@@ -944,6 +944,7 @@ function megautils._runFolderStructure(path, ...)
         local insert = unpack({v.properties})
         insert.x = v.x + ox
         insert.y = v.y + oy
+        insert.regValues = insert
           
         if s == "spawner" then
           megautils.add(spawner, v.x + ox, v.y + oy, w, h, nil, r, args).insert = insert
