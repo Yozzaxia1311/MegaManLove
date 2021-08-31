@@ -377,7 +377,7 @@ function megautils._runFolderStructure(path, ...)
   local result = _G[name]
   
   iterateDirs(function(ff, pp)
-      if ff:split("%.")[1] == name then
+      if ff:split("%.")[1] == name and checkExt(pp, {"lua"}) then
         megautils._fsCache[pp] = love.filesystem.load(pp)
       end
     end, path, true)
