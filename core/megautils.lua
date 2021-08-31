@@ -810,6 +810,13 @@ function megautils._runFolderStructure(path, ...)
   function result:added()
     self.__index.super.added(self)
     
+    local conf = self.__index._meta
+    local i = 1
+    while conf["group" .. tostring(i)] do
+      self:addToGroup(conf["group" .. tostring(i)])
+      i = i + 1
+    end
+    
     megautils.runFSEvent(self, "added")
   end
   
