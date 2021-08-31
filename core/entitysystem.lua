@@ -169,6 +169,7 @@ function entitySystem:getRecycled(c, ...)
   if vr and #vr > 0 then
     e = vr[#vr]
     e.recycling = true
+    e.regValues = nil
     e:new(...)
     e.recycling = false
     vr[#vr] = nil
