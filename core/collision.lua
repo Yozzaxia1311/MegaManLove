@@ -480,7 +480,7 @@ function collision.generalCollision(self, noSlope)
           
           if not nslp and self.xColl ~= 0 and slp ~= 0 then
             local xsl = self.xColl - (self.x - xprev)
-            if math.sign(self.xColl) == math.sign(xsl) then
+            if math.sign(self.xColl) == math.sign(xsl) and self:collisionNumber(solid, 0, slp * cgrav) ~= 0 then
               local yStep = 1
               local xStep = 0
               local dst = math.abs(xsl)

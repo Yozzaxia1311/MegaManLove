@@ -3,7 +3,7 @@
  <object name="water" width="16" height="16">
   <properties>
    <property name="grav" type="float" value="0.4"/>
-   <property name="run" value="entities/mechanics/water.lua"/>
+   <property name="run" type="file" value="../../../../entities/mechanics/water.lua"/>
   </properties>
  </object>
 </template>

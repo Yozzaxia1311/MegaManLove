@@ -2,7 +2,7 @@
 <template>
  <object name="ice" width="16" height="16">
   <properties>
-   <property name="run" type="string" value="entities/mechanics/ice.lua"/>
+   <property name="run" type="file" value="../../../../entities/mechanics/ice.lua"/>
   </properties>
  </object>
 </template>

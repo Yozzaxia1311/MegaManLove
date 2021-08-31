@@ -31,6 +31,40 @@ function checkFalse(w)
   return true
 end
 
+function string:getDirectory()
+  local parts = self:split("/")
+  local result = ""
+  
+  if #parts[#parts]:split("%.") > 1 then
+    parts[#parts] = nil
+  end
+  for k, v in ipairs(parts) do
+    result = result .. v .. (next(parts, k) and "/" or "")
+  end
+  
+  return result
+end
+
+function string:getAbsolutePath(base)
+  local parts = self:split("/")
+  local tmpTable = base:split("/")
+  local result = ""
+  
+  for _, v in ipairs(parts) do
+    if v == ".." then
+      tmpTable[#tmpTable] = nil
+    else
+      tmpTable[#tmpTable + 1] = v
+    end
+  end
+  
+  for k, v in ipairs(tmpTable) do
+    result = result .. v .. (next(tmpTable, k) and "/" or "")
+  end
+  
+  return result
+end
+
 function parseConf(path)
   assert(love.filesystem.getInfo(path), "\"" .. path .. "\" does not exist")
   

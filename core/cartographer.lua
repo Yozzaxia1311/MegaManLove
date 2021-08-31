@@ -910,6 +910,8 @@ local function finalXML2LuaTable(str, f)
         result.properties[p.name] = tonumber(p.value)
       elseif p.type == "bool" then
         result.properties[p.name] = p.value == "true"
+      elseif p.type == "file" then
+        result.properties[p.name] = p.value:getAbsolutePath(path)
       else
         result.properties[p.name] = p.value
       end
@@ -926,38 +928,14 @@ local function finalXML2LuaTable(str, f)
     for k, v in pairs(result.tilesets) do
       v.firstgid = tonumber(v.firstgid)
       local ts
+      local usePath = path
       if v.source then
-        local base = path:split("/")
-        local test = v.source:split("/")
-        local newPath = ""
-        local tr = 0
-
-        for i=#test, 1, -1 do
-          if test[i] == ".." then
-            table.remove(test, i)
-            tr = tr + 1
-          end
-        end
-        if tr ~= 0 then
-          for i=1, tr do
-            base[#base] = nil
-          end
-        end
-        for i=1, #base do
-          newPath = newPath .. base[i] .. "/"
-        end
-        for i=1, #test do
-          newPath = newPath .. test[i]
-          if i ~= #test then
-            newPath = newPath .. "/"
-          end
-        end
-
-        if not love.filesystem.getInfo(newPath) then
+        usePath = v.source:getAbsolutePath(path)
+        if not love.filesystem.getInfo(usePath) then
           error("No such tileset '" .. v.source .. "'")
         end
-
-        ts = xml2lua:parse(love.filesystem.read(newPath)).tileset
+        ts = xml2lua:parse(love.filesystem.read(usePath)).tileset
+        usePath = usePath:getDirectory()
       else
         ts = v
       end
@@ -1014,6 +992,8 @@ local function finalXML2LuaTable(str, f)
             ts.properties[p.name] = tonumber(p.value)
           elseif p.type == "bool" then
             ts.properties[p.name] = p.value == "true"
+          elseif p.type == "file" then
+            ts.properties[p.name] = p.value:getAbsolutePath(usePath)
           else
             ts.properties[p.name] = p.value
           end
@@ -1045,6 +1025,8 @@ local function finalXML2LuaTable(str, f)
                 p.properties[p2.name] = tonumber(p2.value)
               elseif p2.type == "bool" then
                 p.properties[p2.name] = p2.value == "true"
+              elseif p2.type == "file" then
+                p.properties[p2.name] = p2.value:getAbsolutePath(usePath)
               else
                 p.properties[p2.name] = p2.value
               end
@@ -1079,6 +1061,8 @@ local function finalXML2LuaTable(str, f)
                 p.properties[p2.name] = tonumber(p2.value)
               elseif p2.type == "bool" then
                 p.properties[p2.name] = p2.value == "true"
+              elseif p2.type == "file" then
+                p.properties[p2.name] = p2.value:getAbsolutePath(usePath)
               else
                 p.properties[p2.name] = p2.value
               end
@@ -1202,6 +1186,27 @@ local function finalXML2LuaTable(str, f)
               end
             end
           end
+          
+          v.properties = v.properties or {}
+          local ref = v.properties
+          v.properties = {}
+          if ref.property then
+            if not (type(ref.property[1]) == "table" and type(ref.property[2]) == "table") then
+              ref.property = {ref.property}
+            end
+
+            for i, j in pairs(ref.property) do
+              if j.type == "int" or j.type == "float" or j.type == "object" then
+                v.properties[j.name] = tonumber(j.value)
+              elseif j.type == "bool" then
+                v.properties[j.name] = j.value == "true"
+              elseif j.type == "file" then
+                v.properties[j.name] = j.value:getAbsolutePath(path)
+              else
+                v.properties[j.name] = j.value
+              end
+            end
+          end
         elseif v.type == "objectgroup" then
           v.id = tonumber(v.id)
           v.visible = v.visible ~= "0"
@@ -1218,39 +1223,16 @@ local function finalXML2LuaTable(str, f)
 
             local function templateParenting(j, fcache)
               local tf = {}
+              local usePath = path
 
               if j.template then
                 if not fcache[path .. j.template] then
-                  local base = path:split("/")
-                  local test = j.template:split("/")
-                  local newPath = ""
-                  local tr = 0
-
-                  for i=#test, 1, -1 do
-                    if test[i] == ".." then
-                      table.remove(test, i)
-                      tr = tr + 1
-                    end
-                  end
-                  if tr ~= 0 then
-                    for i=1, tr do
-                      base[#base] = nil
-                    end
-                  end
-                  for i=1, #base do
-                    newPath = newPath .. base[i] .. "/"
-                  end
-                  for i=1, #test do
-                    newPath = newPath .. test[i]
-                    if i ~= #test then
-                      newPath = newPath .. "/"
-                    end
-                  end
-
-                  if not love.filesystem.getInfo(newPath) then
+                  usePath = j.template:getAbsolutePath(path)
+                  if not love.filesystem.getInfo(usePath) then
                     error("No such template file '" .. j.template .. "'")
                   end
-                  fcache[path .. j.template] = xml2lua:parse(love.filesystem.read(newPath)).template.object
+                  fcache[path .. j.template] = xml2lua:parse(love.filesystem.read(usePath)).template.object
+                  usePath = usePath:getDirectory()
                 end
                 tf = templateParenting(table.clone(fcache[path .. j.template]), fcache)
               end
@@ -1339,6 +1321,8 @@ local function finalXML2LuaTable(str, f)
                     j.properties[p.name] = tonumber(p.value)
                   elseif p.type == "bool" then
                     j.properties[p.name] = p.value == "true"
+                  elseif p.type == "file" then
+                    j.properties[p.name] = p.value:getAbsolutePath(usePath)
                   else
                     j.properties[p.name] = p.value
                   end
@@ -1404,6 +1388,8 @@ local function finalXML2LuaTable(str, f)
               v.properties[j.name] = tonumber(j.value)
             elseif j.type == "bool" then
               v.properties[j.name] = j.value == "true"
+            elseif j.type == "file" then
+              v.properties[j.name] = j.value:getAbsolutePath(path)
             else
               v.properties[j.name] = j.value
             end
