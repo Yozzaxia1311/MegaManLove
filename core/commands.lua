@@ -9,17 +9,20 @@ convar["cheats"] = {
       end
     end
 }
+
 convar["fullscreen"] = {
   helptext = "fullscreen mode",
   flags = {"client"},
   value = love.window.getFullscreen() and 1 or 0,
   fun = function(arg) local n = numberSanitize(arg) love.window.setFullscreen(n == 1) end
 }
+
 convar["fps"] = {
   helptext = "fps",
   flags = {"cheat", "client"},
   value = defaultFPS,
 }
+
 convar["volume"] = {
   helptext = "game volume",
   flags = {"client"},
@@ -30,6 +33,7 @@ convar["volume"] = {
     love.audio.setVolume(n)
   end
 }
+
 convar["showcollision"] = {
   helptext = "draw hitboxes",
   flags = {"cheat", "client"},
@@ -286,7 +290,9 @@ concmd["opendir"] = {
   flags = {"client"},
   fun = function(cmd)
     if not record.demo then
-      love.system.openURL(love.filesystem.getSaveDirectory())
+      love.system.openURL(nativefs and
+        (love.filesystem.getSourceBaseDirectory() .. "/" .. love.filesystem.getIdentity() .. "_saveDir") or
+        love.filesystem.getSaveDirectory())
     end
   end
 }

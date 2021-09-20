@@ -1,4 +1,5 @@
 ffi = not isWeb and require("ffi")
+nativefs = not isWeb and not isMobile and require("core/nativefs")
 binser = require("core/binser")
 local x2l = require("core/xml2lua")
 xml2lua = x2l.parser(require("core/xmlhandler/tree"))

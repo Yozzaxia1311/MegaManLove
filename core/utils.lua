@@ -45,6 +45,12 @@ function string:getDirectory()
   return result
 end
 
+function string:getFile()
+  local parts = self:split("/")
+  
+  return parts[#parts]
+end
+
 function string:getAbsolutePath(base)
   local parts = self:split("/")
   local tmpTable = base:split("/")

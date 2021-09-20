@@ -1,18 +1,23 @@
+if nativefs and not nativefs.getInfo(love.filesystem.getSourceBaseDirectory() .. "/" .. love.filesystem.getIdentity() .. "_saveDir") then
+  nativefs.createDirectory(love.filesystem.getSourceBaseDirectory() .. "/" .. love.filesystem.getIdentity() .. "_saveDir")
+end
+
 save = {}
 
 function save.createDirChain(p)
   local part = p:split("/")
   local whole = ""
+  local fs = nativefs or love.filesystem
   
   if #part > 0 then
     for i=1, #part do
       if part[i]:find("%.") then break end
       if part[i] ~= "" then
-        local f = love.filesystem.getInfo(whole .. (i == 1 and "" or "/") .. part[i])
+        local f = fs.getInfo(whole .. (i == 1 and "" or "/") .. part[i])
         if f and f.type == "directory" then
           whole = whole .. (i == 1 and "" or "/") .. part[i]
         else
-          love.filesystem.createDirectory(whole .. (i>1 and "/" or "") .. part[i])
+          fs.createDirectory(whole .. (i>1 and "/" or "") .. part[i])
           whole = whole .. (i == 1 and "" or "/") .. part[i]
         end
       end
@@ -21,23 +26,25 @@ function save.createDirChain(p)
 end
 
 function save.save(file, data)
-  if record.demo or record.recordInput then
-    error("Cannot save during recordings")
-  end
+  assert(not isWeb, "Web cannot save! (Another frustating web bug)")
+  assert(not (record.demo or record.recordInput), "Cannot save during recordings")
   
+  local baseDir = nativefs and (love.filesystem.getSourceBaseDirectory() .. "/" .. love.filesystem.getIdentity() .. "_saveDir/") or ""
+  local fs = nativefs or love.filesystem
   local sv = binser.serialize(data)
   
-  save.createDirChain(file)
+  save.createDirChain(baseDir .. file)
   
-  love.filesystem.write(file, sv)
+  fs.write(baseDir .. file, sv)
 end
 
 function save.load(file)
-  if record.demo or record.recordInput then
-    error("Cannot load during recordings")
-  end
+  assert(not isWeb, "Web cannot load save! (Another frustating web bug)")
+  assert(not (record.demo or record.recordInput), "Cannot load during recordings")
   
-  local sv = love.filesystem.getInfo(file) and love.filesystem.read(file)
+  local baseDir = nativefs and (love.filesystem.getSourceBaseDirectory() .. "/" .. love.filesystem.getIdentity() .. "_saveDir/") or ""
+  local fs = nativefs or love.filesystem
+  local sv = fs.getInfo(baseDir .. file) and fs.read(baseDir .. file)
   
   if not sv then
     return
