@@ -167,7 +167,7 @@ function initEngine()
   
   megautils.runFile("init.lua")
   
-  if nativefs then
+  if mountExternalData and nativefs then
     local didIt = false
     local baseDir = love.filesystem.getSourceBaseDirectory()
     
