@@ -10,6 +10,9 @@ function engineGlobals(whenLoveModuleIsLoaded)
     compatMusicMode = isWeb and 2 or (isMobile and 1)
     spriteBatchTileMaps = isWeb
     useConsole = not isMobile and not isWeb
+    canDoFullscreenShortcut = not isMobile and not isWeb
+    canDoScaleShortcuts = not isMobile and not isWeb
+    canDoContextAndRecordShortcuts = not isMobile
   else
     gameWidth = 256
     gameHeight = 224

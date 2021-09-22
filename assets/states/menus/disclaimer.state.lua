@@ -27,12 +27,12 @@ function disclaimer:new()
     "various contributors.\n\nIt is not for sale.\n\n" .. 
     "Have fun!"
   self.bottomText = "Press Start to continue" ..
-    (isWeb and "\n" or "\nPress Alt+Enter for fullscreen") ..
-    (isWeb and "\n" or "\nPress 1-9 to set the scale") ..
+    (canDoFullscreenShortcut and "\nPress Alt+Enter for fullscreen" or "\n") ..
+    (canDoScaleShortcuts and "\nPress 1-9 to set the scale" or "\n") ..
     "\nPress Escape here to rebind"
   self.bottomTextGP = "Press Start to continue" ..
-    (isWeb and "\n" or "\nPress Select here for fullscreen") ..
-    (isWeb and "\n" or "\nPress 1-9 to set the scale") ..
+    (canDoFullscreenShortcut and "\nPress Select here for fullscreen" or "\n") ..
+    (canDoScaleShortcuts and "\nPress 1-9 to set the scale" or "\n") ..
     "\nPress Guide here to rebind"
   self.bottomTextT = "Touch or MouseBtn to continue" ..
     "\n" ..

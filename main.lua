@@ -523,58 +523,64 @@ end
 local function beforeUpdate()
   if lk and console and save and megautils then
     if not (useConsole and console.state == 1) then
-      if not lk_isDown("return") then
-        altEnterOnce = false
-      elseif (lk_isDown("ralt") or lk_isDown("lalt")) and lk_isDown("return") then
-        if not altEnterOnce then
-          megautils.setFullscreen(not megautils.getFullscreen())
-          local data = save.load("main.sav") or {}
-          data.fullscreen = megautils.getFullscreen()
-          save.save("main.sav", data)
+      if canDoFullscreenShortcut then
+        if not lk_isDown("return") then
+          altEnterOnce = false
+        elseif (lk_isDown("ralt") or lk_isDown("lalt")) and lk_isDown("return") then
+          if not altEnterOnce then
+            megautils.setFullscreen(not megautils.getFullscreen())
+            local data = save.load("main.sav") or {}
+            data.fullscreen = megautils.getFullscreen()
+            save.save("main.sav", data)
+          end
+          altEnterOnce = true
         end
-        altEnterOnce = true
       end
       
-      for i=1, 9 do
-        local k = tostring(i)
-        if lk_isDown(k) or lk_isDown("kp" .. k) then
-          if view.w * i ~= lg.getWidth() or
-            view.h * i ~= lg.getHeight() then
-            local last = megautils.getScale()
-            megautils.setScale(i)
-            if i ~= last then
-              if not scaleOnce[i] then
-                local data = save.load("main.sav") or {}
-                data.scale = megautils.getScale()
-                save.save("main.sav", data)
+      if canDoScaleShortcuts then
+        for i=1, 9 do
+          local k = tostring(i)
+          if lk_isDown(k) or lk_isDown("kp" .. k) then
+            if view.w * i ~= lg.getWidth() or
+              view.h * i ~= lg.getHeight() then
+              local last = megautils.getScale()
+              megautils.setScale(i)
+              if i ~= last then
+                if not scaleOnce[i] then
+                  local data = save.load("main.sav") or {}
+                  data.scale = megautils.getScale()
+                  save.save("main.sav", data)
+                end
+                scaleOnce[i] = true
               end
-              scaleOnce[i] = true
             end
+          else
+            scaleOnce[i] = false
           end
-        else
-          scaleOnce[i] = false
         end
       end
     end
     
-    if not lk_isDown("o") and not lk_isDown("p") and not lk_isDown("r") then
-      contextOnce = false
-    elseif lk_isDown("lctrl") or lk_isDown("rctrl") then
-      if lk_isDown("o") then
-        if not contextOnce then
-          console.parse("contextsave quickContext")
+    if canDoContextAndRecordShortcuts then
+      if not lk_isDown("o") and not lk_isDown("p") and not lk_isDown("r") then
+        contextOnce = false
+      elseif lk_isDown("lctrl") or lk_isDown("rctrl") then
+        if lk_isDown("o") then
+          if not contextOnce then
+            console.parse("contextsave quickContext")
+          end
+          contextOnce = true
+        elseif lk_isDown("p") then
+          if not contextOnce then
+            console.parse("contextopen quickContext")
+          end
+          contextOnce = true
+        elseif lk_isDown("r") then
+          if not contextOnce then
+            console.parse("rec")
+          end
+          contextOnce = true
         end
-        contextOnce = true
-      elseif lk_isDown("p") then
-        if not contextOnce then
-          console.parse("contextopen quickContext")
-        end
-        contextOnce = true
-      elseif lk_isDown("r") then
-        if not contextOnce then
-          console.parse("rec")
-        end
-        contextOnce = true
       end
     end
   end
