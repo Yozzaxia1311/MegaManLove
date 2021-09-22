@@ -1545,6 +1545,14 @@ function megaMan:code(dt)
     vPad.active = false
     mmWeaponsMenu.pause(self)
   end
+  
+  for _, v in pairs(megautils.playerControlUpdateFuncs) do
+    if type(v) == "function" then
+      v(self)
+    else
+      v.func(self)
+    end
+  end
 end
 
 function megaMan:resetCharge()

@@ -25,6 +25,7 @@ function megautils.ser()
       "playerDeathFuncs",
       "playerAttemptWeaponFuncs",
       "playerPauseFuncs",
+      "playerControlUpdateFuncs"
     }
   
   for _, v in ipairs(callbacks) do
@@ -68,6 +69,7 @@ function megautils.deser(t)
       "playerDeathFuncs",
       "playerAttemptWeaponFuncs",
       "playerPauseFuncs",
+      "playerControlUpdateFuncs"
     }
   
   for _, v in ipairs(callbacks) do
@@ -131,6 +133,7 @@ megautils.playerInteractedWithFuncs = {}  --megautils.playerInteractedWithFuncs.
 megautils.playerDeathFuncs = {}           --megautils.playerDeathFuncs.exampleFunc = function(player) end
 megautils.playerAttemptWeaponFuncs = {}   --megautils.playerAttemptWeaponFuncs.exampleFunc = function(player, shotsInTable) end
 megautils.playerPauseFuncs = {}           --megautils.playerPauseFuncs.exampleFunc = function(player) end
+megautils.playerControlUpdateFuncs = {}
 
 function megautils.cleanCallbacks()
   local callbacks = {
@@ -156,6 +159,7 @@ function megautils.cleanCallbacks()
       "playerDeathFuncs",
       "playerAttemptWeaponFuncs",
       "playerPauseFuncs",
+      "playerControlUpdateFuncs"
     }
   
   for i=1, #callbacks do
