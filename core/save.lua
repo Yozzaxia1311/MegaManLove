@@ -29,7 +29,7 @@ function save.save(file, data)
   assert(not isWeb, "Web cannot save! (Another frustating web bug)")
   assert(not (record.demo or record.recordInput), "Cannot save during recordings")
   
-  local baseDir = nativefs and (love.filesystem.getSourceBaseDirectory() .. "/" .. love.filesystem.getIdentity() .. "_saveDir/") or ""
+  local baseDir = nativefs and (nativeSaveDir .. "/") or ""
   local fs = nativefs or love.filesystem
   local sv = binser.serialize(data)
   
@@ -42,7 +42,7 @@ function save.load(file)
   assert(not isWeb, "Web cannot load save! (Another frustating web bug)")
   assert(not (record.demo or record.recordInput), "Cannot load during recordings")
   
-  local baseDir = nativefs and (love.filesystem.getSourceBaseDirectory() .. "/" .. love.filesystem.getIdentity() .. "_saveDir/") or ""
+  local baseDir = nativefs and (nativeSaveDir .. "/") or ""
   local fs = nativefs or love.filesystem
   local sv = fs.getInfo(baseDir .. file) and fs.read(baseDir .. file)
   

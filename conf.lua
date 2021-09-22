@@ -13,6 +13,8 @@ function engineGlobals(whenLoveModuleIsLoaded)
     canDoFullscreenShortcut = not isMobile and not isWeb
     canDoScaleShortcuts = not isMobile and not isWeb
     canDoContextAndRecordShortcuts = not isMobile
+    nativeSaveDir = love.filesystem.getSourceBaseDirectory() .. "/" .. love.filesystem.getIdentity() .. "_saveDir"
+    mountExternalData = not isMobile and not isWeb
   else
     gameWidth = 256
     gameHeight = 224
