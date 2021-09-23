@@ -166,23 +166,6 @@ function initEngine()
   megautils.setDifficulty("normal")
   
   megautils.runFile("init.lua")
-  
-  if mountExternalData and nativefs then
-    local didIt = false
-    local baseDir = love.filesystem.getSourceBaseDirectory()
-    
-    if nativefs.getInfo(baseDir .. "/gameData.zip") then
-      nativefs.mount(baseDir .. "/gameData.zip", "gameData")
-      didIt = true
-    elseif nativefs.getInfo(baseDir .. "/gameData") then
-      nativefs.mount(baseDir .. "/gameData", "gameData")
-      didIt = true
-    end
-    
-    if didIt and love.filesystem.getInfo("gameData/init.lua") then
-      megautils.runFile("gameData/init.lua")
-    end
-  end
 end
 
 function love.load()
