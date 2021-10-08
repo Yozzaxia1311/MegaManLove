@@ -614,14 +614,11 @@
   </objectgroup>
  </group>
  <objectgroup id="7" name="help">
-  <object id="261" x="64" y="-240" width="272" height="64">
+  <object id="261" x="128" y="80" width="272" height="64">
    <text pixelsize="7" wrap="1" halign="center">To get started, open the project overview (View -&gt; Views and Toolbars -&gt; Project) and template editor (View -&gt; Views and Toolbars -&gt; Template Editor), open the project (Project -&gt; Open Project...) named &quot;tiledProject.tiled-project&quot; in the game's base directory. In the project overview, navigate to &quot;assets/states/templates&quot;, where all template objects are categorized in subdirectories. Select a template object of your choice, and use the Insert Template tool (in toolbar) to place objects.</text>
   </object>
-  <object id="262" x="64" y="-256" width="272" height="16">
+  <object id="262" x="128" y="64" width="272" height="16">
    <text pixelsize="12" wrap="1" bold="1" halign="center">How to Place Objects:</text>
-  </object>
-  <object id="263" x="128" y="112" width="96" height="16">
-   <text pixelsize="12" wrap="1" bold="1" halign="center">Tutorials ^^^</text>
   </object>
  </objectgroup>
 </map>
