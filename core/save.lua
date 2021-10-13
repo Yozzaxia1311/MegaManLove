@@ -1,7 +1,3 @@
-if nativefs and not nativefs.getInfo(love.filesystem.getSourceBaseDirectory() .. "/" .. love.filesystem.getIdentity() .. "_saveDir") then
-  nativefs.createDirectory(love.filesystem.getSourceBaseDirectory() .. "/" .. love.filesystem.getIdentity() .. "_saveDir")
-end
-
 save = {}
 
 function save.createDirChain(p)
