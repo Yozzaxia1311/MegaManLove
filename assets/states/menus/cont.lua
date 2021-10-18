@@ -22,7 +22,7 @@ function contPanels:new()
     self.mq = mmMusic._queue
     megautils.stopMusic()
   end
-  megautils.playMusic("assets/sfx/music/gameOver.ogg")
+  megautils.playMusic("assets/sfx/mm5.nsf", nil, 18)
 end
 
 function contPanels:update()

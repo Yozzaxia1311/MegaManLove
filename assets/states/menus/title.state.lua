@@ -36,7 +36,7 @@ function title:update()
     self.oneOff = 0
     self.twoOff = 0
     self.drawText = true
-    megautils.playMusic("assets/sfx/music/title.ogg")
+    megautils.playMusic("assets/sfx/mm5.nsf", nil, 73)
     return
   end
   if self.s == 0 then
@@ -48,7 +48,7 @@ function title:update()
     self.twoOff = math.min(self.twoOff+8, 0)
     if self.twoOff == 0 then
       self.s = 2
-      megautils.playMusic("assets/sfx/music/title.ogg")
+      megautils.playMusic("assets/sfx/mm5.nsf", nil, 73)
     end
   elseif self.s == 2 then
     self.s = 3

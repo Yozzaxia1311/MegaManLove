@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="32" height="28" tilewidth="8" tileheight="8" infinite="0" nextlayerid="7" nextobjectid="36">
  <properties>
-  <property name="musicPath" value="assets/sfx/music/select.ogg"/>
+  <property name="gmeTrack" type="int" value="13"/>
+  <property name="musicPath" value="assets/sfx/mm5.nsf"/>
  </properties>
  <tileset firstgid="1" source="../tilesets/menuTiled.tsx"/>
  <layer id="2" name="bg" width="32" height="28">

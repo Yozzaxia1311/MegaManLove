@@ -7,7 +7,7 @@ function playersState:begin()
   megautils.add(fade, false, nil, nil, fade.remove)
   
   love.graphics.setBackgroundColor(0, 0.5, 136/255, 1)
-  megautils.playMusic("assets/sfx/music/menu.ogg")
+  megautils.playMusic("assets/sfx/mm5.nsf", nil, 19)
 end
 
 function playersState:switching()

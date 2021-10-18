@@ -5,7 +5,8 @@
  </editorsettings>
  <properties>
   <property name="fadeIn" type="bool" value="true"/>
-  <property name="musicPath" value="demo/demo.ogg"/>
+  <property name="gmeTrack" type="int" value="8"/>
+  <property name="musicPath" value="assets/sfx/mm5.nsf"/>
   <property name="musicVolume" type="float" value="1"/>
   <property name="state" value=""/>
  </properties>

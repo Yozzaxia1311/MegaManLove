@@ -2005,10 +2005,8 @@ function bossEntity:new()
     end
   self.skipStart = false
   self.replayMusicWhenContinuing = true
-  self.lastMusic = mmMusic.curID
-  self.lastVol = mmMusic.vol
-  self:setMusic("assets/sfx/music/boss.ogg")
-  self:setBossIntroMusic("assets/sfx/music/stageStart.ogg")
+  self:setMusic("assets/sfx/mm5.nsf", nil, 10)
+  self:setBossIntroMusic("assets/sfx/mm5.nsf", nil, 14)
 end
 
 function bossEntity:added()
@@ -2018,20 +2016,25 @@ function bossEntity:added()
   self.canBeInvincible.firstFrame = true
   self.autoCollision.firstFrame = false
   self.autoGravity.firstFrame = false
+  self.lastMusic = mmMusic.curID
+  self.lastVol = mmMusic.vol
+  self.lastGMETrack = mmMusic.track
 end
 
 function bossEntity:useHealthBar(oneColor, twoColor, outlineColor, add)
   bossEntity.super.useHealthBar(self, oneColor, twoColor, outlineColor, add or add ~= nil)
 end
 
-function bossEntity:setMusic(p, v)
+function bossEntity:setMusic(p, v, track)
   self.musicPath = p
   self.musicVolume = v or 1
+  self.gmeTrack = track or 0
 end
 
-function bossEntity:setBossIntroMusic(p, v)
+function bossEntity:setBossIntroMusic(p, v, track)
   self.musicBIPath = p
   self.musicBIVolume = v or 1
+  self.gmeBITrack = track or 0
 end
 
 function bossEntity:intro()
@@ -2118,7 +2121,7 @@ function bossEntity:start()
     end
     if not table.contains(result, false) then
       self._subState = 2
-      megautils.playMusic(self.musicPath, self.musicVolume)
+      megautils.playMusic(self.musicPath, self.musicVolume, self.gmeTrack)
       self.canDraw.intro = nil
       if not self.doIntro or self:intro() then
         self._subState = 3
@@ -2168,7 +2171,7 @@ function bossEntity:die(o)
     end
     if self.replayMusicWhenContinuing and not self._onceReplay then
       self._onceReplay = true
-      megautils.playMusic(self.lastMusic, self.lastVol)
+      megautils.playMusic(self.lastMusic, self.lastVol, self.lastGMETrack)
     end
   end
 end
@@ -2193,7 +2196,7 @@ function bossEntity:bossIntro()
     self._subState = 1
     self._halfWidth = love.graphics.newText(mmFont, self.bossIntroText):getWidth()/2
     if self.musicBIPath then
-      megautils.playMusic(self.musicBIPath, self.musicBIVolume)
+      megautils.playMusic(self.musicBIPath, self.musicBIVolume, self.gmeBITrack)
     end
   elseif self._subState == 1 then
     self.y = math.min(self.y+10, math.floor(view.h/2)-(self.collisionShape.h/2))
@@ -2238,7 +2241,7 @@ function bossEntity:_update()
           end
         end
         if self.musicPath then
-          megautils.playMusic(self.musicPath, self.musicVolume)
+          megautils.playMusic(self.musicPath, self.musicVolume, self.gmeTrack)
         end
       end
     end
