@@ -345,7 +345,7 @@ function mmMusic.update()
       end
     end
   elseif mmMusic.type == 3 then
-    mmMusic.music:update()
+    mmMusic.gme:update()
   end
 end
 
