@@ -290,9 +290,7 @@ concmd["opendir"] = {
   flags = {"client"},
   fun = function(cmd)
     if not record.demo then
-      love.system.openURL(nativefs and
-        (love.filesystem.getSourceBaseDirectory() .. "/" .. love.filesystem.getIdentity() .. "_saveDir") or
-        love.filesystem.getSaveDirectory())
+      love.system.openURL(love.filesystem.getSaveDirectory())
     end
   end
 }
