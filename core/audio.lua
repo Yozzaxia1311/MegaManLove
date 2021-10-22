@@ -337,16 +337,24 @@ function mmMusic.play(path, vol, track)
     mmMusic.setLock(mmMusic.locked)
     mmMusic.music:play()
   elseif mmMusic.type == 3 then
-    assert(not isWeb and not isMobile, "libgme is desktop only")
-    assert(ffi, "FFI is required for libgme")
-    mmMusic.music = mmMusic.gme
-    mmMusic.music:loadFile(mmMusic.curID)
-    for voice, bool in pairs(mmMusic._mutes) do
-      mmMusic.muteGMEVoice(voice, bool)
+    if compatMusicMode then
+      assert(love.filesystem.getInfo(mmMusic.curID .. ".txt"), "Backup music conf does not exist")
+      local bConf = parseConf(mmMusic.curID .. ".txt")
+      assert(bConf["backup" .. mmMusic.track], "Backup music not listed in conf")
+      mmMusic.play(bConf["backup" .. mmMusic.track], mmMusic.vol)
+      return
+    else
+      assert(not isWeb and not isMobile, "libgme is desktop only")
+      assert(ffi, "FFI is required for libgme")
+      mmMusic.music = mmMusic.gme
+      mmMusic.music:loadFile(mmMusic.curID)
+      for voice, bool in pairs(mmMusic._mutes) do
+        mmMusic.muteGMEVoice(voice, bool)
+      end
+      mmMusic.music:setTrack(mmMusic.track)
+      mmMusic.music:play()
+      mmMusic.setLock(mmMusic.locked)
     end
-    mmMusic.music:setTrack(mmMusic.track)
-    mmMusic.music:play()
-    mmMusic.setLock(mmMusic.locked)
   end
   
   collectgarbage()

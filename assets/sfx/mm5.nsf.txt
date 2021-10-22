@@ -1,0 +1,9 @@
+backup8: compatMusic/proto1.ogg
+backup10: compatMusic/boss.ogg
+backup13: compatMusic/select.ogg
+backup14: compatMusic/stageStart.ogg
+backup17: compatMusic/win.ogg
+backup18: compatMusic/gameOver.ogg
+backup19: compatMusic/menu.ogg
+backup20: compatMusic/get.ogg
+backup73: compatMusic/title.ogg
