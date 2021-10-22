@@ -6,7 +6,6 @@ typedef const char* gme_err_t;
 typedef struct Music_Emu Music_Emu;
 gme_err_t gme_open_file( const char path [], Music_Emu** out, int sample_rate );
 gme_err_t gme_open_data( void const* data, long size, Music_Emu** out, int sample_rate );
-void gme_delete( Music_Emu* );
 int gme_track_count( Music_Emu const* );
 
 gme_err_t gme_start_track( Music_Emu*, int index );
@@ -46,6 +45,8 @@ int gme_voice_count( Music_Emu const* );
 const char* gme_voice_name( Music_Emu const*, int i );
 void gme_mute_voice( Music_Emu*, int index, int mute );
 void gme_mute_voices( Music_Emu*, int muting_mask );
+
+void gme_delete( Music_Emu* );
 ]]
 
 local gme = ffi.load("libgme")
