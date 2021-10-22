@@ -169,7 +169,7 @@ function mmMusic.muteGMEVoice(v, b)
   
   if mmMusic.gme and mmMusic._mutes then
     mmMusic._mutes[v] = not not b
-    if mmMusic.gme.voice_count > 0 then
+    if mmMusic.type == 3 and mmMusic.gme.voice_count > 0 then
       mmMusic.gme:muteVoice(v, not not b)
     end
   end
