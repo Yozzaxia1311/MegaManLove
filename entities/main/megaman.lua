@@ -1074,7 +1074,9 @@ function megaMan:afterCollisionFunc()
     self.dashJump = false
     self.canStopJump.global = true
     self.extraJumps = 0
-    megautils.playSound("land")
+    if checkFalse(self.canControl) then
+      megautils.playSound("land")
+    end
   end
 end
 

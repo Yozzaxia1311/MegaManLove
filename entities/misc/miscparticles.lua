@@ -308,7 +308,7 @@ function blast:new(x, y, p, hurt, damage, times)
   self.times = 0
   self.max = times or 4
   self.autoCollision.global = false
-  self.hurt = hurt == true
+  self.hurt = not not hurt
   self.damage = damage or -2
 end
 

@@ -1457,7 +1457,7 @@ function mapEntity:begin()
     if v.draw then
       self.layers[#self.layers+1] = megautils.add(trigger, nil, function(s)
           if s.l.visible then
-            if s.mapEnt and s.mapEnt.shader then love.graphics.setShader(s.mapEnt.shader) end
+            if meShader then love.graphics.setShader(meShader) end
             s.l:draw()
             love.graphics.setShader()
           end

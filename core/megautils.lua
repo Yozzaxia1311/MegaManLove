@@ -1093,13 +1093,23 @@ function megautils.loadResource(...)
       return loader.get(nick)
     end
   elseif checkExt(path, {"ogg", "mp3", "wav", "flac", "oga", "ogv", "xm", "it",
-      "mod", "mid", "669", "amf", "ams", "dbm", "dmf", "dsm", "far",
-      "j2b", "mdl", "med", "mt2", "mtm", "okt", "psm", "s3m", "stm", "ult", "umx", "abc", "pat"}) then
+    "mod", "mid", "669", "amf", "ams", "dbm", "dmf", "dsm", "far",
+    "j2b", "mdl", "med", "mt2", "mtm", "okt", "psm", "s3m", "stm", "ult", "umx", "abc", "pat"}) then
     if type(args[3]) == "string" then
       t = args[3]
       locked = args[4]
     else
       t = "sound"
+      locked = args[3]
+    end
+    loader.load(path, nick, t, nil, locked)
+    return loader.get(nick)
+  elseif checkExt(path, {"ay", "gbs", "gym", "hes", "kss", "nsf", "nsfe", "sap", "spc", "vgm", "vgz"}) then
+    if type(args[3]) == "string" then
+      t = args[3]
+      locked = args[4]
+    else
+      t = "gme"
       locked = args[3]
     end
     loader.load(path, nick, t, nil, locked)
@@ -1157,14 +1167,52 @@ function megautils.musicIsLooping()
   return mmMusic.isLooping()
 end
 
-function megautils.playSound(p, l, v, stack)
+function megautils.muteGMEVoice(v, b)
+  mmMusic.muteGMEVoice(v, b)
+end
+
+function megautils.isGMEVoiceMute(v)
+  return mmMusic.isGMEVoiceMute(v)
+end
+
+function megautils.GMEPushMuteVoice(v)
+  mmMusic.GMEPushMuteVoice(v)
+end
+
+megautils._cachedMutes = {}
+
+function megautils.updateGMEVoiceMutes()
+  for voice, sfx in pairs(megautils._cachedMutes) do
+    if not sfx:isPlaying() then
+      megautils._cachedMutes[voice] = nil
+    else
+      megautils.GMEPushMuteVoice(voice)
+    end
+  end
+end
+
+function megautils.playSound(p, l, v, stack, muteGMEVoices)
   if megautils.getResource(p) then
     if not stack then
       megautils.getResource(p):stop()
     end
-    megautils.getResource(p):setLooping(l or false)
-    megautils.getResource(p):setVolume(v or 1)
-    megautils.getResource(p):play()
+    local resTable = megautils.getResourceTable(p)
+    if resTable.conf and resTable.conf.muteGMEVoices then
+      if type(resTable.conf.muteGMEVoices) == "number" then
+        megautils._cachedMutes[resTable.conf.muteGMEVoices] = resTable.data
+        megautils.GMEPushMuteVoice(resTable.conf.muteGMEVoices)
+      else
+        for _, voice in pairs(resTable.conf.muteGMEVoices) do
+          megautils._cachedMutes[voice] = resTable.data
+          megautils.GMEPushMuteVoice(voice)
+        end
+      end
+    end
+    resTable.data:setLooping(l or false)
+    resTable.data:setVolume(v or 1)
+    resTable.data:play()
+    
+    return resTable.data
   else
     error("Sound \"" .. p .. "\" doesn't exist.")
   end
@@ -1182,12 +1230,27 @@ function megautils.playSoundFromFile(p, l, v, stack)
       s:release()
     end
     s = love.audio.newSource(p, "static")
+    
+    megautils._curS.conf = love.filesystem.getInfo(p .. ".txt") and parseConf(p .. ".txt")
+    if megautils._curS.conf and megautils._curS.conf.muteGMEVoices then
+      if type(megautils._curS.conf.muteGMEVoices) == "number" then
+        megautils._cachedMutes[megautils._curS.conf.muteGMEVoices] = s
+        megautils.GMEPushMuteVoice(megautils._curS.conf.muteGMEVoices)
+      else
+        for _, voice in pairs(megautils._curS.conf.muteGMEVoices) do
+          megautils._cachedMutes[voice] = s
+          megautils.GMEPushMuteVoice(voice)
+        end
+      end
+    end
   end
-  s:setLooping(l == true)
+  s:setLooping(not not l)
   s:setVolume(v or 1)
   s:play()
   megautils._curS.id = p
   megautils._curS.sfx = s
+  
+  return s
 end
 
 function megautils.stopSound(s)

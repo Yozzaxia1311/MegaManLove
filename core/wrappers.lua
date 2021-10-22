@@ -34,12 +34,12 @@ function imageWrapper:draw(x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, wh
   if type(x) == "table" then
     local draw = x
     x,y,r,sx,sy,ox,oy,offX,offY,flipX,flipY =
-      y or 0, r or 0, sx or 0, sy or 1, ox or 1, oy or 0, offX or 0, offY or 0, flipX or 0, flipY == true, what == true
+      y or 0, r or 0, sx or 0, sy or 1, ox or 1, oy or 0, offX or 0, offY or 0, flipX or 0, not not flipY, not not what
     
     draw:draw(self, x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY)
   else
     x,y,r,sx,sy,ox,oy,offX,offY,flipX,flipY =
-      x or 0, y or 0, r or 0, sx or 1, sy or 1, ox or 0, oy or 0, offX or 0, offY or 0, flipX == true, flipY == true
+      x or 0, y or 0, r or 0, sx or 1, sy or 1, ox or 0, oy or 0, offX or 0, offY or 0, not not flipX, not not flipY
     
     local vw, vh = self.image:getDimensions()
     

@@ -11,6 +11,20 @@ megautils.loadResource("assets/players/mug.animset", "mugAnims")
 
 stageSelect = basicEntity:extend()
 
+slShader = love.graphics.newShader([[
+    extern bool invert = false;
+    vec3 black = vec3(0, 0, 0);
+    
+    vec4 effect(vec4 color, Image tex, vec2 texture_coords, vec2 screen_coords)
+    {
+      vec4 texturecolor = Texel(tex, texture_coords);
+      if (invert && texturecolor.rgb == black) {
+        texturecolor.rgb += 1;
+      }
+      return texturecolor * color;
+    }
+  ]])
+
 stageSelect.invisibleToHash = true
 
 function stageSelect:new()
@@ -63,28 +77,12 @@ function stageSelect:new()
       end
     end
   end
-  
-  self.shader = love.graphics.newShader([[
-      extern bool invert = false;
-      vec3 black = vec3(0, 0, 0);
-      
-      vec4 effect(vec4 color, Image tex, vec2 texture_coords, vec2 screen_coords)
-      {
-        vec4 texturecolor = Texel(tex, texture_coords);
-        if (invert && texturecolor.rgb == black) {
-          texturecolor.rgb += 1;
-        }
-        return texturecolor * color;
-      }
-    ]])
 end
 
 function stageSelect:begin()
   self:updateMap()
   
-  for _, v in ipairs(megautils.groups().map) do
-    v.shader = self.shader
-  end
+  meShader = slShader
 end
 
 function stageSelect:updateMap()
@@ -102,6 +100,10 @@ function stageSelect:updateMap()
 end
 
 function stageSelect:removed()
+  slShader:release()
+  slShader = nil
+  meShader:release()
+  meShader = nil
   love.graphics.setBackgroundColor(0, 0, 0, 1)
   for i=1, 9 do
     if self.images[i] then
@@ -194,9 +196,9 @@ function stageSelect:update()
       self.timer = 0
       self.selectBlink = self.selectBlink + 1
       if math.wrap(self.selectBlink, 0, 1) == 1 then
-        self.shader:send("invert", true)
+        slShader:send("invert", true)
       else
-        self.shader:send("invert", false)
+        slShader:send("invert", false)
       end
       if self.selectBlink == 12 then
         self.selected = false
@@ -309,7 +311,7 @@ function stageSelect:draw()
           
           if self.names[i] then
             love.graphics.setFont(menuFont)
-            love.graphics.setShader(self.shader)
+            love.graphics.setShader(slShader)
             if self.names[i][1] then
               love.graphics.print(self.names[i][1], 22+(x*81), 72+(y*64))
             end

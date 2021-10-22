@@ -10,6 +10,8 @@ int gme_track_count( Music_Emu const* );
 
 gme_err_t gme_start_track( Music_Emu*, int index );
 gme_err_t gme_play( Music_Emu*, int count, short out [] );
+int gme_tell( Music_Emu const* );
+gme_err_t gme_seek( Music_Emu*, int msec );
 
 void gme_set_tempo( Music_Emu*, double tempo);
 void gme_enable_accuracy( Music_Emu*, int enabled);
@@ -192,6 +194,16 @@ end
 
 function LoveGme:getVolume(v)
   return self.source:getVolume()
+end
+
+function LoveGme:seek(secs)
+  self.source:seek(self.source:getDuration()+1)
+  gme.gme_seek(self.emu[0], math.floor(secs / 1000))
+  self:update()
+end
+
+function LoveGme:tell()
+  return gme.gme_tell(self.emu[0]) * 1000
 end
 
 function LoveGme:release()

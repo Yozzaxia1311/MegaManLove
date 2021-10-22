@@ -8,7 +8,9 @@ function mmMusic.ser()
       volume=mmMusic.getVolume(),
       queue=mmMusic.queue,
       locked=mmMusic.locked,
-      track=mmMusic.track
+      track=mmMusic.track,
+      mutes=mmMusic._mutes,
+      pushMute=mmMusic._pushMute
     }
 end
 
@@ -17,8 +19,17 @@ function mmMusic.deser(t)
   mmMusic.stop()
   mmMusic.curID = t.curID
   mmMusic._queue = t.queue
+  if t.mutes then
+    mmMusic._mutes = t.mutes
+    for v, b in pairs(mmMusic._mutes) do
+      mmMusic.muteGMEVoice(v, b)
+    end
+  end
+  if t.pushMute then
+    mmMusic._pushMute = t.pushMute
+  end
   if t.curID and t.playing then
-    mmMusic.play(t.curID, t.volume, mmMusic.track)
+    mmMusic.play(t.curID, t.volume, t.track)
   end
   if t.paused then
     mmMusic.pause()
@@ -39,6 +50,8 @@ mmMusic._queue = nil
 if ffi and not isWeb and not isMobile then
   mmMusic.gme = require("core/lovegme")()
   mmMusic.track = nil
+  mmMusic._mutes = {}
+  mmMusic._pushMute = {}
 end
 
 function mmMusic.setVolume(v)
@@ -151,8 +164,35 @@ function mmMusic.tell()
   end
 end
 
+function mmMusic.muteGMEVoice(v, b)
+  if mmMusic.locked then return end
+  
+  if mmMusic.gme and mmMusic._mutes then
+    mmMusic._mutes[v] = not not b
+    if mmMusic.gme.voice_count > 0 then
+      mmMusic.gme:muteVoice(v, not not b)
+    end
+  end
+end
+
+function mmMusic.isGMEVoiceMute(v)
+  return mmMusic._mutes and mmMusic._mutes[v]
+end
+
+function mmMusic.GMEPushMuteVoice(v)
+  if mmMusic.locked then return end
+  
+  if mmMusic._pushMute then
+    if not mmMusic._pushMute[v] then
+      mmMusic._pushMute[v] = {1}
+    else
+      mmMusic._pushMute[v][1] = 1
+    end
+  end
+end
+
 function mmMusic.setLock(w)
-  mmMusic.locked = w == true
+  mmMusic.locked = not not w
   if not compatMusicMode and mmMusic.thread:isRunning() then
     mmMusic.threadChannel:push("lock")
     mmMusic.threadChannel:push(mmMusic.locked)
@@ -206,6 +246,7 @@ function mmMusic.play(path, vol, track)
   mmMusic.paused = false
   mmMusic._ml = nil
   mmMusic.music = nil
+  mmMusic.track = track or 0
   
   if mmMusic.type == 1 then
     if compatMusicMode == 1 then
@@ -300,6 +341,9 @@ function mmMusic.play(path, vol, track)
     assert(ffi, "FFI is required for libgme")
     mmMusic.music = mmMusic.gme
     mmMusic.music:loadFile(mmMusic.curID)
+    for voice, bool in pairs(mmMusic._mutes) do
+      mmMusic.muteGMEVoice(voice, bool)
+    end
     mmMusic.music:setTrack(mmMusic.track)
     mmMusic.music:play()
     mmMusic.setLock(mmMusic.locked)
@@ -345,6 +389,23 @@ function mmMusic.update()
       end
     end
   elseif mmMusic.type == 3 then
+    for voice, data in pairs(mmMusic._pushMute) do
+      if data[1] == 1 then
+        mmMusic._pushMute[voice][1] = 0
+        if not mmMusic._pushMute[voice][3] then
+          mmMusic._pushMute[voice][2] = mmMusic._mutes[voice]
+          mmMusic.muteGMEVoice(voice, true)
+          mmMusic._pushMute[voice][3] = true
+        end
+      elseif data[1] == 0 then
+        if mmMusic._pushMute[voice][2] == nil then
+          mmMusic.muteGMEVoice(voice, false)
+        else
+          mmMusic.muteGMEVoice(voice, mmMusic._pushMute[voice][2])
+        end
+        mmMusic._pushMute[voice] = nil
+      end
+    end
     mmMusic.gme:update()
   end
 end
@@ -445,6 +506,8 @@ function mmMusic._threadUpdate()
     
     if stop then
       mmMusic._threadStop()
+    elseif not mmMusic.stopping and not mmMusic.paused then
+      mmMusic.music:play()
     end
   end
 end

@@ -616,6 +616,7 @@ end
 local function afterUpdate()
   megautils.checkQueue()
   states.checkQueue()
+  megautils.updateGMEVoiceMutes()
   mmMusic.checkQueue()
   console.doWait()
   record.anyPressed = false

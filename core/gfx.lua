@@ -12,8 +12,8 @@ function gfx:new(x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, color, syncP
   self.oy = oy or 0
   self.offX = offX or 0
   self.offY = offY or 0
-  self.flipX = flipX == true
-  self.flipY = flipY == true
+  self.flipX = not not flipX
+  self.flipY = not not flipY
   self.color = color
   
   self.gfx = {}
@@ -31,7 +31,7 @@ function gfx:sync(syncPos)
 end
 
 function gfx:visibility(t)
-  self.canDraw.global = t == true
+  self.canDraw.global = not not t
   
   return self
 end
@@ -103,10 +103,10 @@ end
 
 function gfx:flip(flipX, flipY)
   if flipX ~= nil then
-    self.flipX = flipX == true
+    self.flipX = not not flipX
   end
   if flipY ~= nil then
-    self.flipY = flipY == true
+    self.flipY = not not flipY
   end
   
   return self
@@ -220,7 +220,7 @@ function animation:new(res, useDelta, framerate,
   
   self.anim = anim8.newAnimation(rt.data(unpack(rt.frames)), rt.durations or 1, rt.onLoop)
   self.image = rt.img
-  self.useDelta = useDelta == true
+  self.useDelta = not not useDelta
   self.framerate = framerate or 1/60
 end
 
@@ -296,7 +296,7 @@ function animationSet:new(res, useDelta, framerate,
   self.anims = {}
   self.current = nil
   self.image = rt.img
-  self.useDelta = useDelta == true
+  self.useDelta = not not useDelta
   self.framerate = framerate or 1/60
   
   for k, v in pairs(rt.sets) do

@@ -61,7 +61,8 @@ function loader.load(path, nick, typ, parameters, lock)
     end
   elseif typ == "sound" then
     if lock then
-      loader.locked[nick] = {data=love.audio.newSource(path, "static"), path=path, type=typ}
+      loader.locked[nick] = {data=love.audio.newSource(path, "static"), path=path, type=typ,
+        conf=love.filesystem.getInfo(path .. ".txt") and parseConf(path .. ".txt")}
       loader.resources[nick] = nil
       
       return loader.locked[nick]
@@ -69,7 +70,8 @@ function loader.load(path, nick, typ, parameters, lock)
       if loader.locked[nick] then
         error("Cannot overwrite a locked resource.")
       end
-      loader.resources[nick] = {data=love.audio.newSource(path, "static"), path=path, type=typ}
+      loader.resources[nick] = {data=love.audio.newSource(path, "static"), path=path, type=typ,
+        conf=love.filesystem.getInfo(path .. ".txt") and parseConf(path .. ".txt")}
       
       return loader.resources[nick]
     end
