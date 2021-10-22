@@ -194,6 +194,10 @@ function LoveGme:getVolume(v)
   return self.source:getVolume()
 end
 
+function LoveGme:release()
+  gme.gme_delete(self.emu[0])
+end
+
 function LoveGme:voice_error_check(voice)
   if voice < 0 or voice > self.voice_count-1 then
     error("attempt to use voice " .. voice ..

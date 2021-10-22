@@ -434,6 +434,7 @@ end
 function love.quit()
   if mmMusic then
     mmMusic.stop()
+    if mmMusic.gme then mmMusic.gme:release() end
   end
 end
 
