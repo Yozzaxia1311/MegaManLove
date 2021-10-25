@@ -1,4 +1,5 @@
 ffi = not isWeb and require("ffi")
+loveGME = canUseGME and require("core/lovegme")
 binser = require("core/binser")
 local x2l = require("core/xml2lua")
 xml2lua = x2l.parser(require("core/xmlhandler/tree"))

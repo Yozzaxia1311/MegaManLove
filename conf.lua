@@ -8,6 +8,7 @@ function engineGlobals(whenLoveModuleIsLoaded)
     isMobile = love.system.getOS() == "Android" or love.system.getOS() == "iOS"
     isWeb = love.system.getOS() == "Web"
     compatMusicMode = isWeb and 2 or (isMobile and 1)
+    canUseGME = not isWeb and not isMobile 
     spriteBatchTileMaps = isWeb
     useConsole = not isMobile and not isWeb
     canDoFullscreenShortcut = not isMobile and not isWeb

@@ -47,8 +47,8 @@ mmMusic.vol = 1
 mmMusic.type = 1
 mmMusic._queue = nil
 
-if ffi and not isWeb and not isMobile then
-  mmMusic.gme = require("core/lovegme")()
+if canUseGME then
+  mmMusic.gme = loveGME()
   mmMusic.track = nil
   mmMusic._mutes = {}
   mmMusic._pushMute = {}
@@ -337,7 +337,7 @@ function mmMusic.play(path, vol, track)
     mmMusic.setLock(mmMusic.locked)
     mmMusic.music:play()
   elseif mmMusic.type == 3 then
-    if not ffi then
+    if not canUseGME then
       assert(love.filesystem.getInfo(mmMusic.curID .. ".txt"), "Backup music conf does not exist")
       local bConf = parseConf(mmMusic.curID .. ".txt")
       assert(bConf["backup" .. mmMusic.track], "Backup music not listed in conf")

@@ -1,5 +1,9 @@
+local status, gme = pcall(ffi.load, "libgme")
 
-local ffi = require "ffi"
+if not status then
+  canUseGME = false
+  return
+end
 
 ffi.cdef[[
 typedef const char* gme_err_t;
@@ -50,8 +54,6 @@ void gme_mute_voices( Music_Emu*, int muting_mask );
 
 void gme_delete( Music_Emu* );
 ]]
-
-local gme = ffi.load("libgme")
 
 ffi.metatype("Music_Emu", {
     __gc = function (emu)
