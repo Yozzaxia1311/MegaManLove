@@ -337,7 +337,7 @@ function mmMusic.play(path, vol, track)
     mmMusic.setLock(mmMusic.locked)
     mmMusic.music:play()
   elseif mmMusic.type == 3 then
-    if compatMusicMode then
+    if not ffi then
       assert(love.filesystem.getInfo(mmMusic.curID .. ".txt"), "Backup music conf does not exist")
       local bConf = parseConf(mmMusic.curID .. ".txt")
       assert(bConf["backup" .. mmMusic.track], "Backup music not listed in conf")
