@@ -973,33 +973,6 @@ function megautils._runFolderStructure(path, ...)
   megautils.runFSEvent(result)
 end
 
-function megautils.serDependencies()
-  local scripts = {unpack(megautils._ranFiles)}
-  local resources = {}
-  for k, v in pairs(loader.resources) do
-    resources[#resources + 1] = {path = v.path, nick = k, type = v.type, parameters = v.parameters, locked = false}
-  end
-  for k, v in pairs(loader.locked) do
-    resources[#resources + 1] = {path = v.path, nick = k, type = v.type, parameters = v.parameters, locked = false}
-  end
-  local entities = {}
-  
-  return {scripts = scripts, resources = resources, music = mmMusic.ser()}
-end
-
-function megautils.deserDependencies(tt)
-  megautils.queue(function(t)
-      love.audio.stop()
-      for _, v in ipairs(t.scripts) do
-        megautils.runFile(v)
-      end
-      for k, v in ipairs(t.resources) do
-        loader.load(v.path, k, v.type, v.parameters, v.locked)
-      end
-      mmMusic.deser(t.music)
-    end, tt)
-end
-
 function megautils.resetGame(s, saveSfx, saveMusic)
   if not saveSfx then
     megautils.stopAllSounds()
