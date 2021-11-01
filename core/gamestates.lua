@@ -104,7 +104,7 @@ function states.set(n, before, after)
   states.current = nick
   
   if megautils.reloadState then
-    for _, v in pairs(megautils.reloadStateFuncs) do
+    for _, v in safepairs(megautils.reloadStateFuncs) do
       if type(v) == "function" then
         v()
       else
@@ -123,7 +123,7 @@ function states.set(n, before, after)
     end
     
     if isStage then
-      for _, v in pairs(megautils.resetGameObjectsFuncs) do
+      for _, v in safepairs(megautils.resetGameObjectsFuncs) do
         if type(v) == "function" then
           v()
         else

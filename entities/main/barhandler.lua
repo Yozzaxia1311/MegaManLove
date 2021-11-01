@@ -247,9 +247,9 @@ end
 
 function weaponHandler:removeWeaponShots()
   if weapon.removeGroups[self.current] then
-    for _, i in ipairs(weapon.removeGroups[self.current]) do
+    for _, i in safeipairs(weapon.removeGroups[self.current]) do
       if megautils.groups()[i .. tostring(self.id)] then
-        for _, v in ipairs(megautils.groups()[i .. tostring(self.id)]) do
+        for _, v in safeipairs(megautils.groups()[i .. tostring(self.id)]) do
           megautils.remove(v)
         end
       end

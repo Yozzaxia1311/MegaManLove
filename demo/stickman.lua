@@ -1,15 +1,14 @@
 megautils.loadResource("demo/stickMan.animset", "stickManAnims")
 
 stickMan = bossEntity:extend()
-mapEntity.register(stickMan, {collision={w=12, h=24}, spawnerType="spawner", spawnOffY=8})
+mapEntity.register(stickMan, nil, nil, 0, 8, 12, 24)
 
-function stickMan:new(x, y)
+function stickMan:new(overrideX, overrideY)
   stickMan.super.new(self)
   
-  if not self.regValues then
-    self.x = x or 0
-    self.y = y or 0
-  end
+  self.x = overrideX or self.x or 0
+  self.y = overrideY or self.y or 0
+  self:setRectangleCollision(12, 24)
   
   self.anims = animationSet("stickManAnims"):off(-4, -8)
   self:addGFX("anims", self.anims)

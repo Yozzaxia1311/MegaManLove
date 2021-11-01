@@ -145,7 +145,7 @@ function initEngine()
       globals.startingLives = (d == "easy") and 3 or 2
     end, autoClean=false}
   
-  for _, v in pairs(megautils.cleanFuncs) do
+  for _, v in safepairs(megautils.cleanFuncs) do
     if type(v) == "function" then
       v()
     else
@@ -155,7 +155,7 @@ function initEngine()
   
   megautils.unloadAllResources()
   
-  for _, v in pairs(megautils.initEngineFuncs) do
+  for _, v in safepairs(megautils.initEngineFuncs) do
     if type(v) == "function" then
       v()
     else
@@ -402,7 +402,7 @@ function love.update(dt)
   mmMusic.update()
   
   if love.joystick then
-    for k, _ in pairs(gamepadCheck) do
+    for k, _ in safepairs(gamepadCheck) do
       gamepadCheck[k] = gamepadCheck[k] - 1
       if gamepadCheck[k] < 0 then
         gamepadCheck[k] = nil
@@ -410,7 +410,7 @@ function love.update(dt)
     end
   end
   if love.keyboard then
-    for k, _ in pairs(keyboardCheck) do
+    for k, _ in safepairs(keyboardCheck) do
       keyboardCheck[k] = keyboardCheck[k] - 1
       if keyboardCheck[k] < 0 then
         keyboardCheck[k] = nil

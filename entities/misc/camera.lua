@@ -41,7 +41,7 @@ end
 function camera:added()
   view.x, view.y = self.x, self.y
   if megautils.groups().camera then
-    for _, v in ipairs(megautils.groups().camera) do
+    for _, v in safeipairs(megautils.groups().camera) do
       megautils.remove(v)
     end
   end
@@ -57,7 +57,7 @@ function camera:added()
     end
   end
   
-  for _, v in ipairs(self.spawners) do
+  for _, v in safeipairs(self.spawners) do
     if v.static then
       v:updateSpawner()
     end
@@ -71,7 +71,7 @@ end
 function camera:removed()
   local se = self:getSurroundingEntities()
   
-  for _, v in ipairs(self.spawners) do
+  for _, v in safeipairs(self.spawners) do
     if not table.icontains(se, v) then
       v:updateSpawner()
     end
@@ -127,7 +127,7 @@ function camera:updateCam(spdx, spdy)
       view.x, view.y = self.approachX, self.approachY
     elseif not self.once then
       if megautils.groups().removeOnTransition then
-        for _, v in pairs(megautils.groups().removeOnTransition) do
+        for _, v in safepairs(megautils.groups().removeOnTransition) do
           if not v.dontRemoveOnTransition then
             megautils.remove(v)
           end
@@ -221,7 +221,7 @@ function camera:updateCam(spdx, spdy)
         self.curBoundName = sn
         self:updateBounds(true)
         if self.bounds then
-          for _, v in ipairs(self.bounds.group) do
+          for _, v in safeipairs(self.bounds.group) do
             if v.spawnEarlyDuringTransition and not v.isAdded then
               megautils.adde(v)
             end
@@ -234,9 +234,7 @@ function camera:updateCam(spdx, spdy)
       if self.player.onMovingFloor then
         self.flx = self.player.onMovingFloor.x - self.player.x
         self.player.onMovingFloor._oldDontRemoveOnTransition = self.player.onMovingFloor.dontRemoveOnTransition
-        self.player.onMovingFloor._oldDontRemoveOnSectionChange = self.player.onMovingFloor.dontRemoveOnSectionChange
         self.player.onMovingFloor.dontRemoveOnTransition = true
-        self.player.onMovingFloor.dontRemoveOnSectionChange = true
       end
       self.once = true
       megautils.state().system.cameraUpdate = function(s)
@@ -266,9 +264,7 @@ function camera:updateCam(spdx, spdy)
           end
           if camera.main.player and camera.main.player.onMovingFloor then
             camera.main.player.onMovingFloor.dontRemoveOnTransition = camera.main.player.onMovingFloor._oldDontRemoveOnTransition
-            camera.main.player.onMovingFloor.dontRemoveOnSectionChange = camera.main.player.onMovingFloor._oldDontRemoveOnSectionChange
             camera.main.player.onMovingFloor._oldDontRemoveOnTransition = nil
-            camera.main.player.onMovingFloor._oldDontRemoveOnSectionChange = nil
           end
           for i=1, #megaMan.allPlayers do
             if megaMan.allPlayers[i] ~= camera.main.player then
@@ -335,7 +331,7 @@ function camera:doView(spdx, spdy, without)
   self.approachY = math.approach(self.approachY, self.y, spdy or 8)
   
   if self.despawnLateBounds and self.approachX == self.x and self.approachY == self.y then
-    for _, v in ipairs(self.despawnLateBounds.group) do
+    for _, v in safeipairs(self.despawnLateBounds.group) do
       if self.bounds and not table.icontains(self.bounds.group, v) then
         if v.despawnLateDuringTransition and not v.isRemoved then
           megautils.remove(v)
@@ -355,7 +351,7 @@ function camera:doView(spdx, spdy, without)
     end
   end
   
-  for _, v in ipairs(self.spawners) do
+  for _, v in safeipairs(self.spawners) do
     if v.static then
       v:updateSpawner()
     end
@@ -375,7 +371,7 @@ function camera:set(x, y)
 end
 
 function camera:updateFuncs()
-  for _, v in pairs(self.funcs) do
+  for _, v in safepairs(self.funcs) do
     v(self)
   end
 end
@@ -410,7 +406,8 @@ function camera:updateBounds(noBounds)
       if self:collision(s) then
         local left, top, right, bottom = s.x, s.y, s.x+s.collisionShape.w, s.y+s.collisionShape.h
         local cleft, ctop, cright, cbottom = self.x, self.y, self.x+self.collisionShape.w, self.y+self.collisionShape.h
-        local area = math.max(0, math.min(right, cright) - math.max(left, cleft)) * math.max(0, math.min(bottom, cbottom) - math.max(top, ctop))
+        local area = math.max(0, math.min(right, cright) - math.max(left, cleft)) *
+          math.max(0, math.min(bottom, cbottom) - math.max(top, ctop))
         
         if area > biggestArea then
           biggestArea = area
@@ -432,7 +429,7 @@ function camera:updateBounds(noBounds)
           self.despawnLateBounds = self.bounds
         end
         bounds:activate(self.bounds and self.bounds.group)
-        for _, v in pairs(megautils.sectionChangeFuncs) do
+        for _, v in safepairs(megautils.sectionChangeFuncs) do
           if type(v) == "function" then
             v()
           else
@@ -489,7 +486,7 @@ mapEntity.register("section", function(v)
 
 mapEntity.register("section", function(v)
     if #section.init ~= 0 then
-      for _, v in ipairs(section.init) do
+      for _, v in safeipairs(section.init) do
         v:initSection()
       end
       section.init = {}
@@ -511,7 +508,7 @@ function section:new(x, y, w, h, n)
 end
 
 function section:activate(ignore)
-  for _, v in ipairs(self.group) do
+  for _, v in safeipairs(self.group) do
     if not v.isAdded and
       (not ignore or not table.icontains(ignore, v)) then
       megautils.adde(v)
@@ -520,8 +517,8 @@ function section:activate(ignore)
 end
 
 function section:deactivate(ignore)
-  for _, v in ipairs(self.group) do
-    if not v.isRemoved and not v.dontRemoveOnSectionChange and
+  for _, v in safeipairs(self.group) do
+    if not v.isRemoved and not v.dontRemoveOnTransition and
       (not ignore or not table.icontains(ignore, v)) then
       megautils.remove(v)
     end
@@ -529,7 +526,7 @@ function section:deactivate(ignore)
 end
 
 function section:initSection()
-  for _, v in ipairs(self.group) do
+  for _, v in safeipairs(self.group) do
     if not v.isRemoved then
       megautils.remove(v)
     end
@@ -591,11 +588,11 @@ function section.addSection(s)
 end
 
 function section.iterate(func)
-  for x, _ in pairs(section.hash) do
-    for y, _ in pairs(section.hash[x]) do
+  for x, _ in safepairs(section.hash) do
+    for y, _ in safepairs(section.hash[x]) do
       if section.hash[x][y] then
-        for _, s in pairs(section.hash[x][y]) do
-          for _, v in pairs(s.group) do
+        for _, s in safepairs(section.hash[x][y]) do
+          for _, v in safepairs(s.group) do
             func(v)
           end
         end
@@ -606,7 +603,7 @@ end
 
 function section.removeEntity(e)
   if e and e.actualSectionGroups then
-    for k, v in ipairs(e.actualSectionGroups) do
+    for k, v in safeipairs(e.actualSectionGroups) do
       table.quickremovevaluearray(e.actualSectionGroups[k], e)
       table.quickremovevaluearray(e.actualSectionGroups, v)
     end

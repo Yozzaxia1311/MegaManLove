@@ -348,7 +348,7 @@ function collision.checkGround(self, checkAnyway, noSlope)
         
         for yStep = 1, slp do
           if self:collisionNumber(solid, 0, yStep * cgrav) ~= 0 then
-            for _, v in ipairs(solid) do
+            for _, v in safeipairs(solid) do
               if v.solidType == 3 then
                 table.quickremovevaluearray(solid, v)
               end

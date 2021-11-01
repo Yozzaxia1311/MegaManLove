@@ -87,7 +87,7 @@ function weapon.drawIcon(p, on, x, y)
 end
 
 megautils.cleanFuncs.weaponAutoCleaner = {func=function()
-    for k, v in pairs(weapon.autoCleanWeaponData) do
+    for k, v in safepairs(weapon.autoCleanWeaponData) do
       if v then
         weapon.removeGroups[k] = nil
         weapon.resources[k] = nil

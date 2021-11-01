@@ -103,7 +103,7 @@ convar["diff"] = {
   flags = {"cheat"},
   value = "normal",
   fun = function(arg)
-      for _, v in pairs(megautils.difficultyChangeFuncs) do
+      for _, v in safepairs(megautils.difficultyChangeFuncs) do
         if type(v) == "function" then
           v(arg, convar.getValue("diff"))
         else
@@ -519,7 +519,7 @@ concmd["kill"] = {
   helptext = "kill all players",
   flags = {},
   fun = function(cmd)
-      for _, v in ipairs(megaMan.allPlayers) do
+      for _, v in safeipairs(megaMan.allPlayers) do
         v.iFrames = 0
         for i, j in pairs(v.canBeInvincible) do
           v.canBeInvincible[i] = false

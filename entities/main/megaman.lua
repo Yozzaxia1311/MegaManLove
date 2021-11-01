@@ -69,7 +69,7 @@ function megaMan:setSkin(path)
   local player = (type(self) == "number") and self or self.player
   
   if table.length(megaMan.skinCache) > maxPlayerCount + 1 then
-    for p, skin in pairs(megaMan.skinCache) do
+    for p, skin in safepairs(megaMan.skinCache) do
       if not table.contains(megaMan.skins, skin) then
         megaMan.skinCache[p][2]:release()
         megaMan.skinCache[p][3]:release()
@@ -111,7 +111,7 @@ function megaMan:setSkin(path)
     self:syncPlayerSkin()
   end
   
-  for _, v in pairs(megautils.skinChangeFuncs) do
+  for _, v in safepairs(megautils.skinChangeFuncs) do
     v(player, path, self)
     if type(v) == "function" then
       v(player, path, self)
@@ -526,7 +526,7 @@ function megaMan:added()
     end
   end
   
-  for _, v in pairs(megautils.playerCreatedFuncs) do
+  for _, v in safepairs(megautils.playerCreatedFuncs) do
     if type(v) == "function" then
       v(self)
     else
@@ -576,7 +576,7 @@ function megaMan:transferState(to)
     to:regBox()
     to.slide = false
   end
-  for _, v in pairs(megautils.playerTransferFuncs) do
+  for _, v in safepairs(megautils.playerTransferFuncs) do
     if type(v) == "function" then
       v(self, to)
     else
@@ -839,7 +839,7 @@ function megaMan:attemptWeaponUsage()
     self:charge()
   end
   
-  for _, v in pairs(megautils.playerAttemptWeaponFuncs) do
+  for _, v in safepairs(megautils.playerAttemptWeaponFuncs) do
     if type(v) == "function" then
       v(self, shots)
     else
@@ -945,7 +945,7 @@ function megaMan:interactedWith(o, c)
       end
     end
   end
-  for _, v in pairs(megautils.playerInteractedWithFuncs) do
+  for _, v in safepairs(megautils.playerInteractedWithFuncs) do
     if type(v) == "function" then
       v(self, o)
     else
@@ -1178,7 +1178,7 @@ function megaMan:code(dt)
       
       self:attemptWeaponUsage()
     end
-    for _, v in pairs(megautils.playerTrebleFuncs) do
+    for _, v in safepairs(megautils.playerTrebleFuncs) do
       if type(v) == "function" then
         v(self)
       else
@@ -1197,7 +1197,7 @@ function megaMan:code(dt)
     end
   elseif self.hitTimer ~= self.maxHitTime then
     self.hitTimer = math.min(self.hitTimer+1, self.maxHitTime)
-    for _, v in pairs(megautils.playerKnockbackFuncs) do
+    for _, v in safepairs(megautils.playerKnockbackFuncs) do
       if type(v) == "function" then
         v(self)
       else
@@ -1274,7 +1274,7 @@ function megaMan:code(dt)
         self.velY = self.velY + self.currentLadder.velY
       end
     end
-    for _, v in pairs(megautils.playerClimbFuncs) do
+    for _, v in safepairs(megautils.playerClimbFuncs) do
       if type(v) == "function" then
         v(self)
       else
@@ -1372,7 +1372,7 @@ function megaMan:code(dt)
       self.slideXColl = 0
     end
     
-    for _, v in pairs(megautils.playerSlideFuncs) do
+    for _, v in safepairs(megautils.playerSlideFuncs) do
       if type(v) == "function" then
         v(self)
       else
@@ -1454,7 +1454,7 @@ function megaMan:code(dt)
       self.standSolidJumpTimer = 0
     end
     self.velX = math.clamp(self.velX, self.maxLeftSpeed, self.maxRightSpeed)
-    for _, v in pairs(megautils.playerGroundFuncs) do
+    for _, v in safepairs(megautils.playerGroundFuncs) do
       if type(v) == "function" then
         v(self)
       else
@@ -1493,7 +1493,7 @@ function megaMan:code(dt)
       ((self.gravity < 0 and self.velY > 0) or (self.gravity >= 0 and self.velY < 0)) then
       self.velY = math.approach(self.velY, 0, self.jumpDecel)
     end
-    for _, v in pairs(megautils.playerAirFuncs) do
+    for _, v in safepairs(megautils.playerAirFuncs) do
       if type(v) == "function" then
         v(self)
       else
@@ -1505,7 +1505,7 @@ function megaMan:code(dt)
     self:attemptWeaponUsage()
   end
   if megautils.groups().enemyWeapon then
-    for _, v in ipairs(megautils.groups().enemyWeapon) do
+    for _, v in safeipairs(megautils.groups().enemyWeapon) do
       if self.protoShielding and not v.dinked and v.dink and self:checkProtoShield(v, self.side) then
         v:dink(self)
         v.pierceType = pierce.NOPIERCE
@@ -1548,7 +1548,7 @@ function megaMan:code(dt)
     mmWeaponsMenu.pause(self)
   end
   
-  for _, v in pairs(megautils.playerControlUpdateFuncs) do
+  for _, v in safepairs(megautils.playerControlUpdateFuncs) do
     if type(v) == "function" then
       v(self)
     else
@@ -1994,7 +1994,7 @@ function megaMan:update()
       self.teleportOffY = nil
       self._rw = true
     elseif self.dead then
-      for _, v in pairs(megautils.playerDeathFuncs) do
+      for _, v in safepairs(megautils.playerDeathFuncs) do
         if type(v) == "function" then
           v(self)
         else

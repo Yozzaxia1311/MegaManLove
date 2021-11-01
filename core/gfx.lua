@@ -408,10 +408,11 @@ function text:new(_text, align, limit, x, y, r, sx, sy, ox, oy, offX, offY, flip
   
   self.text = _text or ""
   self.align = align or "left"
-  self.limit = limit or 100
+  self.limit = limit or math.huge
 end
 
 function text:draw(x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY)
-  love.graphics.printf(self.text, (x or self.x) + (offX or self.offX), y or self.y + (offY or self.offY), self.limit, self.align,
+  love.graphics.printf(tostring(self.text),
+    (x or self.x) + (offX or self.offX), y or self.y + (offY or self.offY), self.limit, self.align,
     r or self.r, sx or self.sx, sy or self.sy, nil, nil, ox or self.ox, oy or self.oy)
 end

@@ -56,7 +56,7 @@ function rebinder:update()
     
     if self.currentKey == table.length(self.keys) then
       self.done = true
-      for k, _ in pairs(input.keys) do
+      for k, _ in safepairs(input.keys) do
         if k:sub(-1) == tostring(self.player) then
           input.unbind(k)
         end

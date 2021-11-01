@@ -21,7 +21,7 @@ function mmMusic.deser(t)
   mmMusic._queue = t.queue
   if t.mutes then
     mmMusic._mutes = t.mutes
-    for v, b in pairs(mmMusic._mutes) do
+    for v, b in safepairs(mmMusic._mutes) do
       mmMusic.muteGMEVoice(v, b)
     end
   end
@@ -348,7 +348,7 @@ function mmMusic.play(path, vol, track)
       assert(ffi, "FFI is required for libgme")
       mmMusic.music = mmMusic.gme
       mmMusic.music:loadFile(mmMusic.curID)
-      for voice, bool in pairs(mmMusic._mutes) do
+      for voice, bool in safepairs(mmMusic._mutes) do
         mmMusic.muteGMEVoice(voice, bool)
       end
       mmMusic.music:setTrack(mmMusic.track)
@@ -397,7 +397,7 @@ function mmMusic.update()
       end
     end
   elseif mmMusic.type == 3 then
-    for voice, data in pairs(mmMusic._pushMute) do
+    for voice, data in safepairs(mmMusic._pushMute) do
       if data[1] == 1 then
         mmMusic._pushMute[voice][1] = 0
         if not mmMusic._pushMute[voice][3] then

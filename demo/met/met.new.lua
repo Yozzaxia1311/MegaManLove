@@ -1,9 +1,7 @@
 local self, super, args = ...
 
-if not self.regValues then
-  self.x = args.x or 0
-  self.y = args.y or 0
-end
+self.x = args.x or self.x or 0
+self.y = args.y or self.y or 0
 
 self.damage = megautils.diffValue(-2, {easy=-1, normal=-2, hard=-3})
 

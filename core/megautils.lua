@@ -164,7 +164,7 @@ function megautils.cleanCallbacks()
   
   for i=1, #callbacks do
     local name = callbacks[i]
-    for k, v in pairs(megautils[name]) do
+    for k, v in safepairs(megautils[name]) do
       if type(v) == "function" or (type(v) == "table" and (v.autoClean == nil or v.autoClean)) then
         megautils[name][k] = nil
       end
@@ -444,6 +444,8 @@ function megautils._runFolderStructure(path, ...)
   local invincible = conf.invincible
   local canStandSolid = conf.canStandSolid
   local snapToMovingFloor = conf.snapToMovingFloor
+  local spawnerWidth = conf.spawnerWidth
+  local spawnerHeight = conf.spawnerHeight
   
   if conf.collision then
     if type(conf.collision) == "table" then
@@ -510,7 +512,9 @@ function megautils._runFolderStructure(path, ...)
       spawnOffY = spawnOffY,
       invincible = invincible,
       canStandSolid = canStandSolid,
-      snapToMovingFloor = snapToMovingFloor
+      snapToMovingFloor = snapToMovingFloor,
+      spawnerWidth = spawnerWidth,
+      spawnerHeight = spawnerHeight
     }
   
   for k, v in pairs(conf) do
@@ -946,25 +950,22 @@ function megautils._runFolderStructure(path, ...)
   if register then
     mapEntity.register(name, function(v, map, s, r)
         local ox, oy = r.__index._meta.spawnOffX or 0, r.__index._meta.spawnOffY or 0
-        local args = {x = v.x + ox, y = v.y + oy, width = v.width, height = v.height, id = v.id, map = map}
-        for k, v in pairs(v.properties) do
-          args[k] = v
-        end
-        local w, h = r.__index._meta.collision and r.__index._meta.collision.w or 16,
-          r.__index._meta.collision and r.__index._meta.collision.h or 16
+        local w, h = r.__index._meta.spawnerWidth or (r.__index._meta.collision and r.__index._meta.collision.w or 16),
+          r.__index._meta.spawnerHeight or (r.__index._meta.collision and r.__index._meta.collision.h or 16)
         local insert = unpack({v.properties})
+        insert.id = v.id
         insert.x = v.x + ox
         insert.y = v.y + oy
         insert.regValues = insert
           
         if s == "spawner" then
-          megautils.add(spawner, v.x + ox, v.y + oy, w, h, nil, r, args).insert = insert
+          megautils.add(spawner, v.x + ox, v.y + oy, w, h, nil, r).insert = insert
         elseif s == "interval" then
           megautils.add(intervalSpawner,
-            v.x + ox, v.y + oy, w, h, args.interval or r.__index._meta.interval, nil, r, args).insert = insert
+            v.x + ox, v.y + oy, w, h, args.interval or r.__index._meta.interval, nil, r).insert = insert
         else
           basicEntity.insertVars[#basicEntity.insertVars + 1] = insert
-          megautils.add(r, args)
+          megautils.add(r)
         end
       end, nil, nil, _spawner, result)
   end
@@ -1182,7 +1183,7 @@ end
 megautils._cachedMutes = {}
 
 function megautils.updateGMEVoiceMutes()
-  for voice, sfx in pairs(megautils._cachedMutes) do
+  for voice, sfx in safepairs(megautils._cachedMutes) do
     if not sfx:isPlaying() then
       megautils._cachedMutes[voice] = nil
     else
@@ -1279,7 +1280,7 @@ function megautils.stopAllSounds()
 end
 
 function megautils.unload()
-  for _, v in pairs(megautils.cleanFuncs) do
+  for _, v in safepairs(megautils.cleanFuncs) do
     if type(v) == "function" then
       v()
     else
@@ -1407,7 +1408,7 @@ function megautils.registerPlayer(e)
     if #megaMan.allPlayers > 1 then
       local keys = {}
       local vals = {}
-      for k, v in pairs(megaMan.allPlayers) do
+      for k, v in safepairs(megaMan.allPlayers) do
         keys[#keys+1] = v.player
         vals[v.player] = v
         megaMan.allPlayers[k] = nil
@@ -1559,11 +1560,11 @@ function megautils.side(e, to, single)
   local closest = megautils.closest(e, to, single)
   local side
   if closest then
-    if closest.x+closest.collisionShape.w/2 >
-      e.x+e.collisionShape.w/2 then
+    if closest.x+(closest.collisionShape and closest.collisionShape.w or 0)/2 >
+      e.x+(e.collisionShape and e.collisionShape.w or 0)/2 then
       side = 1
-    elseif closest.x+closest.collisionShape.w/2 <
-      e.x+e.collisionShape.w/2 then
+    elseif closest.x+(closest.collisionShape and closest.collisionShape.w or 0)/2 <
+      e.x+(e.collisionShape and e.collisionShape.w or 0)/2 then
       side = -1
     end
   end
@@ -1650,7 +1651,7 @@ end
 
 function megautils.removeEnemyShots()
   if megautils.state().system.all then
-    for _, v in ipairs(megautils.state().system.all) do
+    for _, v in safeipairs(megautils.state().system.all) do
       if v.isEnemyWeapon then
         megautils.remove(v)
       end
@@ -1660,7 +1661,7 @@ end
 
 function megautils.removePlayerShots()
   if megaMan.allPlayers and megaMan.weaponHandler then
-    for _, v in ipairs(megaMan.allPlayers) do
+    for _, v in safeipairs(megaMan.allPlayers) do
       megaMan.weaponHandler[v.player]:removeWeaponShots()
     end
   end

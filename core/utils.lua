@@ -1,3 +1,11 @@
+function safepairs(t)
+  return next, table.clone(t, true)
+end
+
+function safeipairs(a)
+  return ipairs({unpack(a)})
+end
+
 function toboolean(v)
   if type(v) == "string" then
     if v == "true" then
@@ -396,6 +404,7 @@ function table.removevalue(t, value)
   for k, v in pairs(t) do
     if v == value then
       t[k] = nil
+      break
     end
   end
 end

@@ -438,7 +438,7 @@ function sectionPrioritySetterArea:check()
     if self.inName == j.inName then
       local sx, sy, sw, sh = j.x-1, j.y-1, j.collisionShape.w+2, j.collisionShape.h+2
       
-      for k, v in pairs(checker) do
+      for k, v in safepairs(checker) do
         local x, y, w, h = v.x, v.y, v.collisionShape.w, v.collisionShape.h
         if pointOverlapsRect(x, y, sx, sy, sw, sh) and pointOverlapsRect(x+w, y, sx, sy, sw, sh) and
           pointOverlapsRect(x+w, y+h, sx, sy, sw, sh) and pointOverlapsRect(x, y+h, sx, sy, sw, sh) then

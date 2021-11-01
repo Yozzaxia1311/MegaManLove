@@ -366,7 +366,7 @@ function input.poll()
 end
 
 function input.flush()
-  for k, _ in pairs(input._pressedTable) do
+  for k, _ in safepairs(input._pressedTable) do
     if not input._down(k) then
       input._pressedTable[k] = nil
     end

@@ -70,7 +70,7 @@ function entitySystem:updateHashForEntity(e)
     end
     
     if not emptyBefore then
-      for _, v in ipairs(e.currentHashes) do
+      for _, v in safeipairs(e.currentHashes) do
         if v.isRemoved or not table.icontains(check, v) then
           if not v.isRemoved then
             table.quickremovevaluearray(v.data, e)
@@ -184,7 +184,7 @@ function entitySystem:sortLayers()
   local keys = {}
   local vals = {}
   
-  for k, v in pairs(self.layers) do
+  for k, v in safepairs(self.layers) do
     keys[#keys + 1] = v.layer
     vals[v.layer] = v
     self.layers[k] = nil
@@ -366,7 +366,7 @@ function entitySystem:removeFromGroup(e, g)
 end
 
 function entitySystem:removeFromAllGroups(e)
-  for k, _ in pairs(self.groups) do
+  for k, _ in safepairs(self.groups) do
     self:removeFromGroup(e, k)
   end
 end
@@ -469,8 +469,8 @@ function entitySystem:revertFromStatic(e)
         end
       end
     else
-      for x, xt in pairs(self.hashes) do
-        for y, yt in pairs(xt) do
+      for x, xt in safepairs(self.hashes) do
+        for y, yt in safepairs(xt) do
           if table.icontains(yt.data, e) then
             table.quickremovevaluearray(yt.data, e)
           end
@@ -597,7 +597,7 @@ function entitySystem:remove(e)
   end
   
   if e.currentHashes then
-    for _, v in ipairs(e.currentHashes) do
+    for _, v in safeipairs(e.currentHashes) do
       if not v.isRemoved then
         table.quickremovevaluearray(v.data, e)
         
@@ -640,8 +640,8 @@ function entitySystem:remove(e)
         end
       end
     else
-      for x, xt in pairs(self.hashes) do
-        for y, yt in pairs(xt) do
+      for x, xt in safepairs(self.hashes) do
+        for y, yt in safepairs(xt) do
           table.quickremovevaluearray(yt.data, e)
           
           if #yt.data == 0 and not yt.isRemoved then
@@ -682,7 +682,7 @@ function entitySystem:remove(e)
 end
 
 function entitySystem:clear()
-  for _, v in ipairs(self.all) do
+  for _, v in safeipairs(self.all) do
     self:remove(v)
   end
   
@@ -738,7 +738,7 @@ function entitySystem:draw()
   
   self.inLoop = true
   
-  for _, layer in ipairs(self.layers) do
+  for _, layer in safeipairs(self.layers) do
     local i = 1
     while i <= #layer.data do
       local e = layer.data[i]
@@ -938,17 +938,6 @@ function basicEntity:new()
   self.changeHealth = 0
   self.canUpdate = {global=true}
   self.canDraw = {global=true}
-  
-  if mapEntity.useCol[self.__index] then
-    local col = mapEntity.useCol[self.__index]
-    if not col.type or col.type == "rect" then
-      self:setRectangleCollision(col.w or 1, col.h or 1)
-    elseif col.type == "circle" then
-      self:setCircleCollision(col.r or 1)
-    elseif col.type == "image" then
-      self:setImageCollision(col.img)
-    end
-  end
   
   if #basicEntity.insertVars ~= 0 then
     for k, v in pairs(basicEntity.insertVars[#basicEntity.insertVars]) do
@@ -1313,10 +1302,14 @@ end
 megautils.cleanFuncs.autoCleaner = {func=function()
     basicEntity._imgCache = {}
     
+    local removed = {}
     for k, v in pairs(_G) do
       if type(v) == "table" and tostring(v) == "_Ent" and v.autoClean then
-        _G[k] = nil
+        removed[#removed + 1] = k
       end
+    end
+    for i = 1, #removed do
+      _G[removed[i]] = nil
     end
   end, autoClean=false}
 
@@ -1469,7 +1462,7 @@ function mapEntity:begin()
     end
   end
   
-  for _, v in pairs(megautils.addMapFuncs) do
+  for _, v in safepairs(megautils.addMapFuncs) do
     if type(v) == "function" then
       v(self)
     else
@@ -1479,11 +1472,11 @@ function mapEntity:begin()
 end
 
 function mapEntity:removed()
-  for _, v in ipairs(self.layers) do
+  for _, v in safeipairs(self.layers) do
     megautils.remove(v)
   end
   
-  for _, v in pairs(megautils.removeMapFuncs) do
+  for _, v in safepairs(megautils.removeMapFuncs) do
     if type(v) == "function" then
       v(self)
     else
@@ -1532,7 +1525,7 @@ end
 
 function mapEntity:addObjects()
   mapEntity.add(self:recursiveObjectFinder(self.map), self.map)
-  for _, v in pairs(megautils.postAddObjectsFuncs) do
+  for _, v in safepairs(megautils.postAddObjectsFuncs) do
     if type(v) == "function" then
       v(self)
     else
@@ -1561,33 +1554,35 @@ function mapEntity:draw()
   love.graphics.pop()
 end
 
-function mapEntity.register(n, f, l, lock, ...)
-  if type(n) == "table" and type(f) == "table" then
+function mapEntity.register(n, f, l, lock, spawnOffY, spawnWidth, spawnHeight, ...)
+  if type(n) == "table" then
     local done = false
     for i=1, #mapEntity.registered do
-      if mapEntity.registered[i].layer == lock or 0 then
-        mapEntity.registered[i].data[#mapEntity.registered[i].data+1] = {func=n, name=megautils.getClassName(n), locked=l, args=f}
-        mapEntity.useCol[n] = f.collision
+      if mapEntity.registered[i].layer == f or 0 then
+        mapEntity.registered[i].data[#mapEntity.registered[i].data+1] = {func=n, name=megautils.getClassName(n),
+          locked=l, spawnInfo={lock, spawnOffY, spawnWidth, spawnHeight}}
         done = true
         break
       end
     end
     if not done then
-      mapEntity.registered[#mapEntity.registered+1] = {layer=l or 0, data={{func=n, name=n, locked=l, args=f}}}
-      mapEntity.useCol[n] = f.collision
+      mapEntity.registered[#mapEntity.registered+1] = {layer=f or 0, data={{func=n, name=megautils.getClassName(n),
+        locked=l, spawnInfo={lock, spawnOffY, spawnWidth, spawnHeight}}}}
       mapEntity.doSort = true
     end
   else
     local done = false
     for i=1, #mapEntity.registered do
       if mapEntity.registered[i].layer == (l or 0) then
-        mapEntity.registered[i].data[#mapEntity.registered[i].data+1] = {func=f, name=n, locked=lock, args={...}}
+        mapEntity.registered[i].data[#mapEntity.registered[i].data+1] = {func=f, name=n, locked=lock,
+          args={spawnOffY, spawnWidth, spawnHeight, ...}}
         done = true
         break
       end
     end
     if not done then
-      mapEntity.registered[#mapEntity.registered+1] = {layer=l or 0, data={{func=f, name=n, locked=lock, args={...}}}}
+      mapEntity.registered[#mapEntity.registered+1] = {layer=l or 0, data={{func=f, name=n, locked=lock,
+        args={spawnOffY, spawnWidth, spawnHeight, ...}}}}
       mapEntity.doSort = true
     end
   end
@@ -1596,7 +1591,7 @@ end
 function mapEntity.sortReg()
   local keys = {}
   local vals = {}
-  for k, v in pairs(mapEntity.registered) do
+  for k, v in safepairs(mapEntity.registered) do
     keys[#keys+1] = v.layer
     vals[v.layer] = v
     mapEntity.registered[k] = nil
@@ -1656,32 +1651,18 @@ function mapEntity.add(ol, map)
       for j=1, #layer.data do
         if layer.data[j].name == v.name then
           if type(layer.data[j].func) == "table" then
-            local args = layer.data[j].args
-            local ox, oy = args.spawnOffX or 0, args.spawnOffY or 0
+            local ox, oy, w, h, typ = unpack(layer.data[j].spawnInfo)
+            ox, oy, w, h = ox or 0, oy or 0, w or 16, h or 16
             local insert = unpack({v.properties})
             insert.x = v.x + ox
             insert.y = v.y + oy
             insert.regValues = insert
             
-            local w, h = 16, 16
-            if args.collision then
-              if not args.collision.type or args.collision.type == "rect" then
-                w, h = args.collision.w or 1, args.collision.h or 1
-              elseif args.collision.type == "circle" then
-                w, h = (args.collision.r or 1) * 2, (args.collision.r or 1) * 2
-              elseif args.collision.type == "image" then
-                if not megautils.getResource(args.collision.img) then
-                  megautils.loadResource(args.collision.img, args.collision.img, not layer.data[j].func.autoClean)
-                end
-                w, h = megautils.getResourceTable(args.collision.img).data:getDimensions()
-              end
-            end
-            
-            if args.spawnerType == "spawner" then
+            if typ == nil or typ == "spawner" then
               megautils.add(spawner, v.x + ox, v.y + oy, w, h, nil, layer.data[j].func).insert = insert
-            elseif args.spawnerType == "interval" then
-              megautils.add(intervalSpawner, v.x + ox, v.y + oy, w, h, args.interval, nil, r).insert = insert
-            else
+            elseif typ == "interval" then
+              megautils.add(intervalSpawner, v.x + ox, v.y + oy, w, h, args.interval, nil, layer.data[j].func).insert = insert
+            elseif typ == "none" then
               basicEntity.insertVars[#basicEntity.insertVars + 1] = insert
               megautils.add(layer.data[j].func)
             end
