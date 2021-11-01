@@ -1,5 +1,9 @@
 function safepairs(t)
-  return next, table.clone(t, true)
+  local new = {}
+  for k, v in pairs(t) do
+    new[k] = v
+  end
+  return next, new
 end
 
 function safeipairs(a)
