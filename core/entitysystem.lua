@@ -1427,7 +1427,6 @@ function mapEntity.deser(t)
 end
 
 mapEntity.registered = {}
-mapEntity.useCol = {}
 mapEntity.doSort = false
 
 function mapEntity:new(map, x, y)
@@ -1678,13 +1677,12 @@ end
 megautils.cleanFuncs.mapEntity = {func=function()
     mapEntity.iterReg(function(r)
         if not r.locked then
-          for i=1, #mapEntity.registered do
-            table.quickremovevaluearray(mapEntity.registered[i].data, r)
-            if #mapEntity.registered[i].data == 0 then
-              table.quickremovevaluearray(mapEntity.registered, mapEntity.registered[i])
+          for _, v in safeipairs(mapEntity.registered) do
+            table.quickremovevaluearray(v.data, r)
+            if #v.data == 0 then
+              table.quickremovevaluearray(mapEntity.registered, v)
             end
           end
-          mapEntity.useCol[r] = nil
         end
       end, -1)
   end, autoClean=false}
