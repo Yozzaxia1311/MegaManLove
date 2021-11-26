@@ -1,4 +1,8 @@
+function nothing() end
+
 function safepairs(t)
+  if next(t) == nil then return nothing end
+  
   local new = {}
   for k, v in pairs(t) do
     new[k] = v
@@ -7,6 +11,7 @@ function safepairs(t)
 end
 
 function safeipairs(a)
+  if #a == 0 then return nothing end
   return ipairs({unpack(a)})
 end
 
@@ -134,26 +139,6 @@ function table.intersects(t, t2, fully)
     end
   end
   return false
-end
-
-function table.convert2Dto1D(t)
-  local tmp = {}
-  for y=1, table.length(t) do
-    for x=1, table.length(t[y]) do
-      tmp[table.length(tmp) + 1] = t[y][x]
-    end
-  end
-  return tmp
-end
-
-function table.convert1Dto2D(t, w)
-  local tmp = {}
-  for i=1, #t do
-    local x, y = math.wrap(i, 1, w), math.ceil(i / w)
-    if tmp[y] == nil then tmp[y] = {} end
-    tmp[y][x] = t[i]
-  end
-  return tmp
 end
 
 function iterateDirs(func, path, noAppdata)
