@@ -1,4 +1,4 @@
-function nothing() end
+local function nothing() end
 
 function safepairs(t)
   if next(t) == nil then return nothing end
