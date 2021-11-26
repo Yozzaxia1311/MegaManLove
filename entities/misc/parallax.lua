@@ -67,8 +67,8 @@ function parallax:update()
   else
     imgw, imgh = self.tex:getDimensions()
   end
-  self.ox = math.wrap(self.ox + self._velX, 0, imgw)
-  self.oy = math.wrap(self.oy + self._velY, 0, imgh)
+  self.ox = math.wrap(self.ox + self._velX, 0, imgw-1)
+  self.oy = math.wrap(self.oy + self._velY, 0, imgh-1)
 end
 
 function parallax:draw()
@@ -84,9 +84,9 @@ function parallax:draw()
     end
     if self.wrapX and self.wrapY then
       self.offX = math.wrap(self.ox + (((view.x+(view.w/2)) - (self.x+(self.collisionShape.w/2)))*self.spdMultX) +
-        self.x + (self.collisionShape.w/2) - (imgw/2) + self.centerOffX, 0, imgw)
+        self.x + (self.collisionShape.w/2) - (imgw/2) + self.centerOffX, 0, imgw-1)
       self.offY = math.wrap(self.oy + (((view.y+(view.h/2)) - (self.y+(self.collisionShape.h/2)))*self.spdMultY) +
-        self.y + (self.collisionShape.h/2) - (imgh/2) + self.centerOffY, 0, imgh)
+        self.y + (self.collisionShape.h/2) - (imgh/2) + self.centerOffY, 0, imgh-1)
       for x=self.x-imgw, self.x+self.collisionShape.w, imgw do
         for y=self.y-imgh, self.y+self.collisionShape.h, imgh do
           if rectOverlapsRect(x+self.offX, y+self.offY, imgw, imgh, view.x, view.y, view.w, view.h) then
@@ -100,7 +100,7 @@ function parallax:draw()
       end
     elseif self.wrapX and not self.wrapY then
       self.offX = math.wrap(self.ox + (((view.x+(view.w/2)) - (self.x+(self.collisionShape.w/2)))*self.spdMultX) +
-        self.x + (self.collisionShape.w/2) - (imgw/2) + self.centerOffX, 0, imgw)
+        self.x + (self.collisionShape.w/2) - (imgw/2) + self.centerOffX, 0, imgw-1)
       self.offY = self.oy + (((view.y+(view.h/2)) - (self.y+(self.collisionShape.h/2)))*self.spdMultY) +
         self.y + (self.collisionShape.h/2) - (imgh/2) + self.centerOffY
       
@@ -117,7 +117,7 @@ function parallax:draw()
       self.offX = self.ox + (((view.x+(view.w/2)) - (self.x+(self.collisionShape.w/2)))*self.spdMultX) +
         self.x + (self.collisionShape.w/2) - (imgw/2) + self.centerOffX
       self.offY = math.wrap(self.oy + (((view.y+(view.h/2)) - (self.y+(self.collisionShape.h/2)))*self.spdMultY) +
-        self.y + (self.collisionShape.h/2) - (imgh/2) + self.centerOffY, 0, imgh)
+        self.y + (self.collisionShape.h/2) - (imgh/2) + self.centerOffY, 0, imgh-1)
       
       for y=self.y-imgh, self.y+self.collisionShape.h, imgh do
         if rectOverlapsRect(self.offX, y+self.offY, imgw, imgh, view.x, view.y, view.w, view.h) then
