@@ -1655,6 +1655,9 @@ function mapEntity.add(ol, map)
             local insert = unpack({v.properties})
             insert.x = v.x + ox
             insert.y = v.y + oy
+            insert.widthProperty = v.width
+            insert.heightProperty = v.height
+            insert.rotationProperty = v.rotation
             insert.regValues = insert
             
             if typ == nil or typ == "spawner" then

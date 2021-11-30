@@ -956,6 +956,9 @@ function megautils._runFolderStructure(path, ...)
         insert.id = v.id
         insert.x = v.x + ox
         insert.y = v.y + oy
+        insert.widthProperty = v.width
+        insert.heightProperty = v.height
+        insert.rotationProperty = v.rotation
         insert.regValues = insert
           
         if s == "spawner" then
