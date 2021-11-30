@@ -1653,6 +1653,7 @@ function mapEntity.add(ol, map)
             local ox, oy, w, h, typ = unpack(layer.data[j].spawnInfo)
             ox, oy, w, h = ox or 0, oy or 0, w or 16, h or 16
             local insert = unpack({v.properties})
+            insert.id = v.id
             insert.x = v.x + ox
             insert.y = v.y + oy
             insert.widthProperty = v.width
