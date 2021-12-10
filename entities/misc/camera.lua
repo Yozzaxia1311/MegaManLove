@@ -429,13 +429,7 @@ function camera:updateBounds(noBounds)
           self.despawnLateBounds = self.bounds
         end
         bounds:activate(self.bounds and self.bounds.group)
-        for _, v in safepairs(megautils.sectionChangeFuncs) do
-          if type(v) == "function" then
-            v()
-          else
-            v.func()
-          end
-        end
+        megautils.runCallback(megautils.sectionChangeFuncs)
       end
       self.bounds = bounds
       

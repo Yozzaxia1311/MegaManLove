@@ -104,13 +104,7 @@ function states.set(n, before, after)
   states.current = nick
   
   if megautils.reloadState then
-    for _, v in safepairs(megautils.reloadStateFuncs) do
-      if type(v) == "function" then
-        v()
-      else
-        v.func()
-      end
-    end
+    megautils.runCallback(megautils.reloadStateFuncs)
   end
   
   if not nextState then
@@ -123,13 +117,7 @@ function states.set(n, before, after)
     end
     
     if isStage then
-      for _, v in safepairs(megautils.resetGameObjectsFuncs) do
-        if type(v) == "function" then
-          v()
-        else
-          v.func()
-        end
-      end
+      megautils.runCallback(megautils.resetGameObjectsFuncs)
     end
     
     states.currentState = nextState()

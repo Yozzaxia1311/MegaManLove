@@ -145,27 +145,11 @@ function initEngine()
       globals.startingLives = (d == "easy") and 3 or 2
     end, autoClean=false}
   
-  for _, v in safepairs(megautils.cleanFuncs) do
-    if type(v) == "function" then
-      v()
-    else
-      v.func()
-    end
-  end
-  
+  megautils.runCallback(megautils.cleanFuncs)
   megautils.unloadAllResources()
-  
-  for _, v in safepairs(megautils.initEngineFuncs) do
-    if type(v) == "function" then
-      v()
-    else
-      v.func()
-    end
-  end
-  
   megautils.setDifficulty("normal")
-  
   megautils.runFile("init.lua")
+  megautils.runCallback(megautils.initEngineFuncs)
 end
 
 function love.load()

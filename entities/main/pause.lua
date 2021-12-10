@@ -13,13 +13,7 @@ function mmWeaponsMenu.pause(self)
   megautils.freeze("pause")
   
   megautils.add(fade, true, nil, nil, function(s)
-      for _, v in safepairs(megautils.playerPauseFuncs) do
-        if type(v) == "function" then
-          v(self)
-        else
-          v.func(self)
-        end
-      end
+      megautils.runCallback(megautils.playerPauseFuncs, self)
       
       megautils.add(mmWeaponsMenu, self)
       local ff = megautils.add(fade, false, nil, nil, fade.remove)

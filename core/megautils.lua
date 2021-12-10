@@ -302,6 +302,18 @@ function megautils.disableConsole()
   useConsole = false
 end
 
+function megautils.runCallback(tab, ...)
+  if next(tab) ~= nil then
+    for _, v in safepairs(tab) do
+      if type(v) == "function" then
+        v(...)
+      else
+        v.func(...)
+      end
+    end
+  end
+end
+
 megautils._ranFiles = {}
 
 function megautils.runFile(path, runOnce)
@@ -1256,13 +1268,7 @@ function megautils.stopAllSounds()
 end
 
 function megautils.unload()
-  for _, v in safepairs(megautils.cleanFuncs) do
-    if type(v) == "function" then
-      v()
-    else
-      v.func()
-    end
-  end
+  megautils.runCallback(megautils.cleanFuncs)
   megautils.cleanCallbacks()
   megautils.unloadAllResources()
   megautils._ranFiles = {}

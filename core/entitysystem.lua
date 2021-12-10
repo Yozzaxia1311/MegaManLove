@@ -1461,13 +1461,7 @@ function mapEntity:begin()
     end
   end
   
-  for _, v in safepairs(megautils.addMapFuncs) do
-    if type(v) == "function" then
-      v(self)
-    else
-      v.func(self)
-    end
-  end
+  megautils.runCallback(megautils.addMapFuncs, self)
 end
 
 function mapEntity:removed()
@@ -1475,14 +1469,7 @@ function mapEntity:removed()
     megautils.remove(v)
   end
   
-  for _, v in safepairs(megautils.removeMapFuncs) do
-    if type(v) == "function" then
-      v(self)
-    else
-      v.func(self)
-    end
-  end
-  
+  megautils.runCallback(megautils.removeMapFuncs, self)
   self.map:release()
 end
 
@@ -1524,13 +1511,7 @@ end
 
 function mapEntity:addObjects()
   mapEntity.add(self:recursiveObjectFinder(self.map), self.map)
-  for _, v in safepairs(megautils.postAddObjectsFuncs) do
-    if type(v) == "function" then
-      v(self)
-    else
-      v.func(self)
-    end
-  end
+  megautils.runCallback(megautils.postAddObjectsFuncs, self)
 end
 
 function mapEntity:update()

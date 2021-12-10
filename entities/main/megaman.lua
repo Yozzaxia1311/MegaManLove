@@ -111,14 +111,7 @@ function megaMan:setSkin(path)
     self:syncPlayerSkin()
   end
   
-  for _, v in safepairs(megautils.skinChangeFuncs) do
-    v(player, path, self)
-    if type(v) == "function" then
-      v(player, path, self)
-    else
-      v.func(player, path, self)
-    end
-  end
+  megautils.runCallback(megautils.skinChangeFuncs, player, path, self)
 end
 
 function megaMan:getSkin()
@@ -526,13 +519,7 @@ function megaMan:added()
     end
   end
   
-  for _, v in safepairs(megautils.playerCreatedFuncs) do
-    if type(v) == "function" then
-      v(self)
-    else
-      v.func(self)
-    end
-  end
+  megautils.runCallback(megautils.playerCreatedFuncs, self)
 end
 
 function megaMan:useShootAnimation()
@@ -576,13 +563,7 @@ function megaMan:transferState(to)
     to:regBox()
     to.slide = false
   end
-  for _, v in safepairs(megautils.playerTransferFuncs) do
-    if type(v) == "function" then
-      v(self, to)
-    else
-      v.func(self, to)
-    end
-  end
+  megautils.runCallback(megautils.playerTransferFuncs, self, to)
 end
 
 function megaMan:resetStates()
@@ -740,7 +721,7 @@ function megaMan:attemptWeaponUsage()
   if not checkFalse(self.canShoot) then return end
   
   local w = megaMan.weaponHandler[self.player]
-  local shots = {}
+  local shots = next(megautils.playerAttemptWeaponFuncs) ~= nil and {}
   
   if (input.down["shoot" .. tostring(self.input)] or self.tShoot) and weapon.rapidFireFuncs[w.current] and
     (weapon.ignoreEnergy[w.current] or self:checkWeaponEnergy(w.current)) then
@@ -759,7 +740,7 @@ function megaMan:attemptWeaponUsage()
         end
         self.stopOnShot = weapon.stopOnShot[w.current]
         self:resetCharge()
-        if type(e) == "table" then
+        if shots and type(e) == "table" then
           if type(e.is) == "function" and e:is(weapon) then
             shots[#shots + 1] = e
           else
@@ -790,7 +771,7 @@ function megaMan:attemptWeaponUsage()
       end
       self.stopOnShot = weapon.stopOnShot[w.current]
       self:resetCharge()
-      if type(e) == "table" then
+      if shots and type(e) == "table" then
         if type(e.is) == "function" and e:is(weapon) then
           shots[#shots + 1] = e
         else
@@ -818,7 +799,7 @@ function megaMan:attemptWeaponUsage()
       end
       self.stopOnShot = weapon.stopOnShot[w.current]
       self:resetCharge()
-      if type(e) == "table" then
+      if shots and type(e) == "table" then
         if type(e.is) == "function" and e:is(weapon) then
           shots[#shots + 1] = e
         else
@@ -839,13 +820,7 @@ function megaMan:attemptWeaponUsage()
     self:charge()
   end
   
-  for _, v in safepairs(megautils.playerAttemptWeaponFuncs) do
-    if type(v) == "function" then
-      v(self, shots)
-    else
-      v.func(self, shots)
-    end
-  end
+  megautils.runCallback(megautils.playerAttemptWeaponFuncs, self, shots)
 end
 
 function megaMan:attemptClimb()
@@ -945,13 +920,7 @@ function megaMan:interactedWith(o, c)
       end
     end
   end
-  for _, v in safepairs(megautils.playerInteractedWithFuncs) do
-    if type(v) == "function" then
-      v(self, o)
-    else
-      v.func(self, o)
-    end
-  end
+  megautils.runCallback(megautils.playerInteractedWithFuncs, self, o, self.changeHealth)
   self.healthHandler:updateThis(self.healthHandler.health + self.changeHealth)
   if self.changeHealth < 0 then
     if self.healthHandler.health <= 0 and not self.dead then
@@ -1178,13 +1147,9 @@ function megaMan:code(dt)
       
       self:attemptWeaponUsage()
     end
-    for _, v in safepairs(megautils.playerTrebleFuncs) do
-      if type(v) == "function" then
-        v(self)
-      else
-        v.func(self)
-      end
-    end
+    
+    megautils.runCallback(megautils.playerTrebleFuncs, self)
+
     if megaMan.weaponHandler[self.player].current ~= "T. BOOST" or
       (megaMan.weaponHandler[self.player].current == "T. BOOST" and
       megaMan.weaponHandler[self.player].energy[megaMan.weaponHandler[self.player].currentSlot] <= 0) then
@@ -1197,13 +1162,7 @@ function megaMan:code(dt)
     end
   elseif self.hitTimer ~= self.maxHitTime then
     self.hitTimer = math.min(self.hitTimer+1, self.maxHitTime)
-    for _, v in safepairs(megautils.playerKnockbackFuncs) do
-      if type(v) == "function" then
-        v(self)
-      else
-        v.func(self)
-      end
-    end
+    megautils.runCallback(megautils.playerKnockbackFuncs, self, self.hitTimer)
     if input.down["shoot" .. tostring(self.input)] or self.tShoot then
       self:charge()
     else
@@ -1274,13 +1233,9 @@ function megaMan:code(dt)
         self.velY = self.velY + self.currentLadder.velY
       end
     end
-    for _, v in safepairs(megautils.playerClimbFuncs) do
-      if type(v) == "function" then
-        v(self)
-      else
-        v.func(self)
-      end
-    end
+    
+    megautils.runCallback(megautils.playerClimbFuncs, self)
+    
     self:attemptWeaponUsage()
     if self.shootFrames ~= 0 then
       self.velY = 0      
@@ -1372,13 +1327,7 @@ function megaMan:code(dt)
       self.slideXColl = 0
     end
     
-    for _, v in safepairs(megautils.playerSlideFuncs) do
-      if type(v) == "function" then
-        v(self)
-      else
-        v.func(self)
-      end
-    end
+    megautils.runCallback(megautils.playerSlideFuncs, self)
     
     local cd = checkFalse(self.canDashShoot)
     if not cd and (input.down["shoot" .. tostring(self.input)] or self.tShoot) then
@@ -1454,13 +1403,8 @@ function megaMan:code(dt)
       self.standSolidJumpTimer = 0
     end
     self.velX = math.clamp(self.velX, self.maxLeftSpeed, self.maxRightSpeed)
-    for _, v in safepairs(megautils.playerGroundFuncs) do
-      if type(v) == "function" then
-        v(self)
-      else
-        v.func(self)
-      end
-    end
+    
+    megautils.runCallback(megautils.playerGroundFuncs, self)
     
     self:attemptWeaponUsage()
     self:attemptClimb()
@@ -1493,13 +1437,8 @@ function megaMan:code(dt)
       ((self.gravity < 0 and self.velY > 0) or (self.gravity >= 0 and self.velY < 0)) then
       self.velY = math.approach(self.velY, 0, self.jumpDecel)
     end
-    for _, v in safepairs(megautils.playerAirFuncs) do
-      if type(v) == "function" then
-        v(self)
-      else
-        v.func(self)
-      end
-    end
+    
+    megautils.runCallback(megautils.playerAirFuncs, self)
     
     self:attemptClimb()
     self:attemptWeaponUsage()
@@ -1548,13 +1487,7 @@ function megaMan:code(dt)
     mmWeaponsMenu.pause(self)
   end
   
-  for _, v in safepairs(megautils.playerControlUpdateFuncs) do
-    if type(v) == "function" then
-      v(self)
-    else
-      v.func(self)
-    end
-  end
+  megautils.runCallback(megautils.playerControlUpdateFuncs, self)
 end
 
 function megaMan:resetCharge()
@@ -1994,13 +1927,7 @@ function megaMan:update()
       self.teleportOffY = nil
       self._rw = true
     elseif self.dead then
-      for _, v in safepairs(megautils.playerDeathFuncs) do
-        if type(v) == "function" then
-          v(self)
-        else
-          v.func(self)
-        end
-      end
+      megautils.runCallback(megautils.playerDeathFuncs, self)
       local done = self.cameraTween:update(1/60)
       if camera.main then
         camera.main:set()

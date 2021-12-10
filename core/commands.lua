@@ -103,13 +103,7 @@ convar["diff"] = {
   flags = {"cheat"},
   value = "normal",
   fun = function(arg)
-      for _, v in safepairs(megautils.difficultyChangeFuncs) do
-        if type(v) == "function" then
-          v(arg, convar.getValue("diff"))
-        else
-          v.func(arg, convar.getValue("diff"))
-        end
-      end
+      megautils.runCallback(megautils.difficultyChangeFuncs, arg, convar.getValue("diff"))
     end
 }
 
