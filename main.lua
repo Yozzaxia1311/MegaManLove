@@ -10,13 +10,10 @@ if not isMobile and love.graphics then
   s:release()
 end
 
-drawShader = love.graphics.newShader([[
-    uniform int z_index = 0;
-    
+drawShader = love.graphics.newShader([[    
     vec4 position(mat4 transform_projection, vec4 vertex_position)
     {
       vertex_position.xy = floor(vertex_position.xy);
-      vertex_position.z -= z_index;
       return transform_projection * vertex_position;
     }
   ]])
