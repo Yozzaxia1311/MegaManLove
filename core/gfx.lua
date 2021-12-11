@@ -412,7 +412,9 @@ function text:new(_text, align, limit, x, y, r, sx, sy, ox, oy, offX, offY, flip
 end
 
 function text:draw(x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY)
+  love.graphics.setShader(drawShader)
   love.graphics.printf(tostring(self.text),
     (x or self.x) + (offX or self.offX), y or self.y + (offY or self.offY), self.limit, self.align,
     r or self.r, sx or self.sx, sy or self.sy, nil, nil, ox or self.ox, oy or self.oy)
+  love.graphics.setShader()
 end
