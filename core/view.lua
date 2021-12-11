@@ -15,8 +15,8 @@ function view.deser(t)
   view.y = t.y
   view.w = t.w
   view.h = t.h
-  csreen.deser(t.cscr)
-  view.canvas = love.graphics.newCanvas(view.w, view.h)
+  cscreen.deser(t.cscr)
+  view.resize(love.graphics.getDimensions())
 end
 
 function view.init(sw, sh, s)
@@ -29,15 +29,18 @@ function view.init(sw, sh, s)
 end
 
 function view.resize(w, h)
+  if view.canvas then view.canvas:release() end
+  
   local nw, nh = math.floor(w / view.w), math.floor(h / view.h)
   if nw >= nh then
     view.canvas = love.graphics.newCanvas(view.w * nh, view.h * nh)
-    view._scale = nh
+    view.canvasScale = nh
   else
     view.canvas = love.graphics.newCanvas(view.w * nw, view.h * nw)
-    view._scale = nw
+    view.canvasScale = nw
   end
-  cscreen.resizeGame(view.w * view._scale, view.h * view._scale)
+  
+  cscreen.resizeGame(view.w * view.canvasScale, view.h * view.canvasScale)
   cscreen.update(w, h)
 end
 
@@ -45,7 +48,7 @@ function view.draw()
   love.graphics.setCanvas(view.canvas)
   love.graphics.clear(love.graphics.getBackgroundColor())
   love.graphics.push()
-  love.graphics.scale(view._scale)
+  love.graphics.scale(view.canvasScale)
   love.graphics.translate(-view.x, -view.y)
   if states.currentState then
     love.graphics.setColor(1, 1, 1, 1)
