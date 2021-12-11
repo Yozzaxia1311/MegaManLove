@@ -6,14 +6,16 @@ function view.ser()
       y=view.y,
       w=view.w,
       h=view.h,
-      scale=view.scale
+      cscr=cscreen.ser()
     }
 end
 
 function view.deser(t)
-  view.init(t.w, t.h, t.scale)
   view.x = t.x
   view.y = t.y
+  view.w = t.w
+  view.h = t.h
+  csreen.deser(t.cscr)
 end
 
 function view.init(sw, sh, s)
@@ -21,18 +23,13 @@ function view.init(sw, sh, s)
   view.y = 0
   view.w = sw or 1
   view.h = sh or 1
-  view.scale = s or 1
-  view.canvas = love.graphics.newCanvas(view.w*view.scale, view.h*view.scale)
-  if isMobile then
-    view.canvas:setFilter("linear", "linear")
-  end
+  cscreen.init(view.w, view.h, borderLeft, borderRight)
 end
 
 function view.draw()
-  love.graphics.setCanvas(view.canvas)
+  cscreen.apply()
+  love.graphics.setShader(drawShader)
   love.graphics.clear(love.graphics.getBackgroundColor())
-  love.graphics.push()
-  love.graphics.scale(view.scale)
   love.graphics.translate(-view.x, -view.y)
   if states.currentState then
     love.graphics.setColor(1, 1, 1, 1)
@@ -40,7 +37,6 @@ function view.draw()
   end
   megautils.updateShake()
   love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.push()
   love.graphics.translate(view.x, view.y)
   record.drawDemo()
   if megautils.isShowingEntityCount() then
@@ -60,11 +56,7 @@ function view.draw()
     love.graphics.print(fps, view.w - 24, 8)
   end
   input.draw()
-  love.graphics.pop()
-  love.graphics.pop()
   love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.setCanvas()
-  cscreen.apply()
-  love.graphics.draw(view.canvas)
+  love.graphics.setShader()
   cscreen.cease()
 end

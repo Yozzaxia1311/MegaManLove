@@ -54,8 +54,7 @@ function imageWrapper:draw(x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, wh
     end
     
     love.graphics.setShader(drawShader)
-    drawShader:send("pos", (x + offX) * view.scale, (y + offY) * view.scale)
-    love.graphics.draw(self.image, 0, 0, math.rad(r), sx, sy, ox, oy)
+    love.graphics.draw(self.image, x + offX, y + offY, math.rad(r), sx, sy, ox, oy)
     love.graphics.setShader()
   end
 end
@@ -163,8 +162,7 @@ function quad:draw(image, x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY)
   end
   
   love.graphics.setShader(drawShader)
-  drawShader:send("pos", (x + offX) * view.scale, (y + offY) * view.scale)
-  love.graphics.draw(image.image, self.quad, 0, 0, math.rad(r), sx, sy, ox, oy)
+  love.graphics.draw(image.image, self.quad, x + offX, y + offY, math.rad(r), sx, sy, ox, oy)
   love.graphics.setShader()
 end
 

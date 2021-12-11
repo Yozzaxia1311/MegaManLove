@@ -12,7 +12,7 @@ megautils.loadResource("assets/players/mug.animset", "mugAnims")
 stageSelect = basicEntity:extend()
 
 slShader = love.graphics.newShader([[
-    extern bool invert = false;
+    uniform bool invert = false;
     vec3 black = vec3(0, 0, 0);
     
     vec4 effect(vec4 color, Image tex, vec2 texture_coords, vec2 screen_coords)

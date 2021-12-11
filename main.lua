@@ -11,11 +11,13 @@ if not isMobile and love.graphics then
 end
 
 drawShader = love.graphics.newShader([[
-    extern int pos[2];
+    uniform int z_index = 0;
     
     vec4 position(mat4 transform_projection, vec4 vertex_position)
     {
-      return transform_projection * (vertex_position + vec4(pos[0], pos[1], 0, 0));
+      vertex_position.xy = floor(vertex_position.xy);
+      vertex_position.z -= z_index;
+      return transform_projection * vertex_position;
     }
   ]])
 
@@ -102,8 +104,7 @@ function initEngine()
   record.init()
   vPad.init()
   globals = {}
-  view.init(gameWidth, gameHeight, 2)
-  cscreen.init(view.w*view.scale, view.h*view.scale, borderLeft, borderRight)
+  view.init(gameWidth, gameHeight)
   
   megautils.runFile("core/commands.lua")
   
@@ -305,7 +306,6 @@ end
 function love.mousepressed(x, y, button, touch)
   if love.mouse and not touch then
     lastTouch.x, lastTouch.y = cscreen.project(x, y)
-    lastTouch.x, lastTouch.y = lastTouch.x / view.scale, lastTouch.y / view.scale
     lastTouch.id = "mousetouch"
     lastTouch.pressure = 1
     input.usingTouch = true
@@ -320,7 +320,6 @@ function love.touchpressed(id, x, y, dx, dy, pressure)
   if useConsole and console.state == 1 then return end
   
   lastTouch.x, lastTouch.y = cscreen.project(x, y)
-  lastTouch.x, lastTouch.y = lastTouch.x / view.scale, lastTouch.y / view.scale
   lastTouch.id = id
   lastTouch.pressure = pressure
   input.usingTouch = true
@@ -670,7 +669,6 @@ function ser()
       spriteBatchTileMaps = spriteBatchTileMaps,
       input = input.ser(),
       vPad = vPad.ser(),
-      cscreen = cscreen.ser(),
       view = view.ser(),
       megautils = megautils.ser(),
       state = states.ser(),
@@ -719,7 +717,6 @@ function deser(from, dontChangeMusic)
   spriteBatchTileMaps = t.spriteBatchTileMaps
   input.deser(t.input)
   vPad.deser(t.vPad)
-  cscreen.deser(t.cscreen)
   view.deser(t.view)
   megautils.deser(t.megautils)
   states.deser(t.state)

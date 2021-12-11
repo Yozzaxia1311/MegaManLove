@@ -158,6 +158,18 @@ function CScreen.project(x, y)
 	return math.floor((x - tx) / fsv), math.floor((y - ty) / fsv)
 end
 
+function CScreen.unproject(x, y)
+	return (tx + x) * fsv, (ty + y) * fsv
+end
+
+function CScreen.getScale()
+  return fsv
+end
+
+function CScreen.getOffsets()
+  return tx, ty
+end
+
 -- Change letterbox color
 function CScreen.setColor(r, g, b)
 	cr = r
