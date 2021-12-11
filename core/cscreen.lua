@@ -91,6 +91,11 @@ function CScreen.init(tw, th, l, r)
 	CScreen.update(love.graphics.getWidth(), love.graphics.getHeight())
 end
 
+function CScreen.resizeGame(tw, th)
+  rx = tw or rx
+	ry = th or ry
+end
+
 -- Draws letterbox borders
 function CScreen.cease()
   local pr, pg, pb, pa = love.graphics.getColor()
