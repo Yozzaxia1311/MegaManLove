@@ -481,9 +481,7 @@ if not compatMusicMode then
           run = false
         end
         
-        if timer then
-          timer.sleep(0.05)
-        end
+        timer.sleep(0.03)
       end
       
       mmMusic._threadStop()
@@ -514,8 +512,6 @@ function mmMusic._threadUpdate()
     
     if stop then
       mmMusic._threadStop()
-    elseif not mmMusic.stopping and not mmMusic.paused then
-      mmMusic.music:play()
     end
   end
 end
@@ -535,7 +531,7 @@ function mmMusic._threadPlay(curID, loop, loopPoint, time, vol)
     mmMusic.buffers = mmMusic.buffers + 1
   end
   mmMusic.music = love.audio.newQueueableSource(
-    mmMusic._dec:getSampleRate(), mmMusic._dec:getBitDepth(), mmMusic._dec:getChannelCount(), mmMusic.buffers + 3)
+    mmMusic._dec:getSampleRate(), mmMusic._dec:getBitDepth(), mmMusic._dec:getChannelCount(), mmMusic.buffers + 4)
   mmMusic.loopPoint = loopPoint
   mmMusic.loop = loop
   mmMusic._threadSetVolume(mmMusic.vol)
