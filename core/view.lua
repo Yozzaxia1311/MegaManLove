@@ -29,18 +29,16 @@ function view.init(sw, sh, s)
 end
 
 function view.resize(w, h)
-  if view.canvas then view.canvas:release() end
-  
+  local lastScale = view.canvasScale
   local nw, nh = math.floor(w / view.w), math.floor(h / view.h)
-  if nw >= nh then
-    view.canvas = love.graphics.newCanvas(view.w * nh, view.h * nh)
-    view.canvasScale = nh
-  else
-    view.canvas = love.graphics.newCanvas(view.w * nw, view.h * nw)
-    view.canvasScale = nw
+  view.canvasScale = math.min((nw >= nh) and nh or nw, 3)
+  
+  if lastScale ~= view.canvasScale then
+    if view.canvas then view.canvas:release() end
+    view.canvas = love.graphics.newCanvas(view.w * view.canvasScale, view.h * view.canvasScale)
+    cscreen.resizeGame(view.w * view.canvasScale, view.h * view.canvasScale)
   end
   
-  cscreen.resizeGame(view.w * view.canvasScale, view.h * view.canvasScale)
   cscreen.update(w, h)
 end
 
@@ -54,7 +52,6 @@ function view.draw()
     love.graphics.setColor(1, 1, 1, 1)
     states.currentState:draw()
   end
-  megautils.updateShake()
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.translate(view.x, view.y)
   record.drawDemo()
@@ -79,6 +76,7 @@ function view.draw()
   
   love.graphics.setCanvas()
   love.graphics.setColor(1, 1, 1, 1)
+  megautils.updateShake()
   cscreen.apply()
   love.graphics.draw(view.canvas)
   cscreen.cease()
