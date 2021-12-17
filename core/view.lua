@@ -29,55 +29,114 @@ function view.init(sw, sh, s)
 end
 
 function view.resize(w, h)
-  local lastScale = view.canvasScale
+  local lastScale = view._canvasScale
   local nw, nh = math.floor(w / view.w), math.floor(h / view.h)
-  view.canvasScale = math.min((nw >= nh) and nh or nw, 3)
   
-  if lastScale ~= view.canvasScale then
-    if view.canvas then view.canvas:release() end
-    view.canvas = love.graphics.newCanvas(view.w * view.canvasScale, view.h * view.canvasScale)
-    cscreen.resizeGame(view.w * view.canvasScale, view.h * view.canvasScale)
+  if nw == w / view.w and nh == h / view.h then
+    if view.canvas then
+      view.canvas:release()
+      view.canvas = nil
+    end
+    view._canvasScale = nw
+    cscreen.resizeGame(view.w, view.h)
+  else
+    view._canvasScale = math.min((nw >= nh) and nh or nw, isMobile and 2 or 3)
+    
+    if lastScale ~= view._canvasScale then
+      if view.canvas then view.canvas:release() end
+      view.canvas = love.graphics.newCanvas(view.w * view._canvasScale, view.h * view._canvasScale)
+      cscreen.resizeGame(view.w * view._canvasScale, view.h * view._canvasScale)
+    end
   end
   
   cscreen.update(w, h)
 end
 
 function view.draw()
-  love.graphics.setCanvas(view.canvas)
-  love.graphics.clear(love.graphics.getBackgroundColor())
-  love.graphics.push()
-  love.graphics.scale(view.canvasScale)
-  love.graphics.translate(-view.x, -view.y)
-  if states.currentState then
+  if not view.canvas then
+    love.graphics.clear(love.graphics.getBackgroundColor())
+    cscreen.apply()
+    megautils.updateShake()
+    love.graphics.translate(-view.x, -view.y)
+    if states.currentState then
+      love.graphics.setColor(1, 1, 1, 1)
+      states.currentState:draw()
+    end
     love.graphics.setColor(1, 1, 1, 1)
-    states.currentState:draw()
+    love.graphics.translate(view.x, view.y)
+    record.drawDemo()
+    if megautils.isShowingEntityCount() then
+      local count = #megautils.state().system.all
+      love.graphics.setFont(mmFont)
+      love.graphics.setColor(0, 0, 0, 0.4)
+      love.graphics.rectangle("fill", view.w - 24 - 8, 23, 32, 10)
+      love.graphics.setColor(1, 1, 1, 0.8)
+      love.graphics.print(count, view.w - 24, 24)
+    end
+    if megautils.isShowingFPS() then
+      local fps = love.timer.getFPS()
+      love.graphics.setFont(mmFont)
+      love.graphics.setColor(0, 0, 0, 0.4)
+      love.graphics.rectangle("fill", view.w - 24 - 8, 7, 32, 10)
+      love.graphics.setColor(1, 1, 1, 0.8)
+      love.graphics.print(fps, view.w - 24, 8)
+    end
+    input.draw()
+    love.graphics.setColor(1, 1, 1, 1)
+    cscreen.cease()
+  else
+    love.graphics.setCanvas(view.canvas)
+    love.graphics.clear(love.graphics.getBackgroundColor())
+    love.graphics.push()
+    love.graphics.scale(view._canvasScale)
+    love.graphics.translate(-view.x, -view.y)
+    megautils.updateShake()
+    if states.currentState then
+      love.graphics.setColor(1, 1, 1, 1)
+      states.currentState:draw()
+    end
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.translate(view.x, view.y)
+    record.drawDemo()
+    if megautils.isShowingEntityCount() then
+      local count = #megautils.state().system.all
+      love.graphics.setFont(mmFont)
+      love.graphics.setColor(0, 0, 0, 0.4)
+      love.graphics.rectangle("fill", view.w - 24 - 8, 23, 32, 10)
+      love.graphics.setColor(1, 1, 1, 0.8)
+      love.graphics.print(count, view.w - 24, 24)
+    end
+    if megautils.isShowingFPS() then
+      local fps = love.timer.getFPS()
+      love.graphics.setFont(mmFont)
+      love.graphics.setColor(0, 0, 0, 0.4)
+      love.graphics.rectangle("fill", view.w - 24 - 8, 7, 32, 10)
+      love.graphics.setColor(1, 1, 1, 0.8)
+      love.graphics.print(fps, view.w - 24, 8)
+    end
+    input.draw()
+    love.graphics.pop()
+    
+    love.graphics.setCanvas()
+    love.graphics.setColor(1, 1, 1, 1)
+    cscreen.apply()
+    love.graphics.draw(view.canvas)
+    cscreen.cease()
   end
-  love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.translate(view.x, view.y)
-  record.drawDemo()
-  if megautils.isShowingEntityCount() then
-    local count = #megautils.state().system.all
-    love.graphics.setFont(mmFont)
-    love.graphics.setColor(0, 0, 0, 0.4)
-    love.graphics.rectangle("fill", view.w - 24 - 8, 23, 32, 10)
-    love.graphics.setColor(1, 1, 1, 0.8)
-    love.graphics.print(count, view.w - 24, 24)
+end
+
+local lgss = love.graphics.setScissor
+local lggs = love.graphics.getScissor
+
+function view.setScissor(x, y, w, h)
+  if x == nil and y == nil and w == nil and h == nil then
+    return lgss()
   end
-  if megautils.isShowingFPS() then
-    local fps = love.timer.getFPS()
-    love.graphics.setFont(mmFont)
-    love.graphics.setColor(0, 0, 0, 0.4)
-    love.graphics.rectangle("fill", view.w - 24 - 8, 7, 32, 10)
-    love.graphics.setColor(1, 1, 1, 0.8)
-    love.graphics.print(fps, view.w - 24, 8)
-  end
-  input.draw()
-  love.graphics.pop()
   
-  love.graphics.setCanvas()
-  love.graphics.setColor(1, 1, 1, 1)
-  megautils.updateShake()
-  cscreen.apply()
-  love.graphics.draw(view.canvas)
-  cscreen.cease()
+  lgss(x * view._canvasScale, y * view._canvasScale, w * view._canvasScale, h * view._canvasScale)
+end
+
+function view.getScissor()
+  local x, y, w, h = lggs()
+  return x / view._canvasScale, y / view._canvasScale, w / view._canvasScale, h / view._canvasScale
 end

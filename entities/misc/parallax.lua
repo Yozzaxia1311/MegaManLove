@@ -73,8 +73,7 @@ end
 
 function parallax:draw()
   if not megautils.outside(self) then
-    love.graphics.setScissor((self.x - view.x) * view.canvasScale, (self.y - view.y) * view.canvasScale,
-      self.collisionShape.w * view.canvasScale, self.collisionShape.h * view.canvasScale)
+    view.setScissor(self.x - view.x, self.y - view.y, self.collisionShape.w, self.collisionShape.h)
     local imgw, imgh
     if self.anim then
       imgw = self.animWidth
@@ -144,6 +143,6 @@ function parallax:draw()
         end
       end
     end
-    love.graphics.setScissor()
+    view.setScissor()
   end
 end
