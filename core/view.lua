@@ -52,6 +52,15 @@ function view.resize(w, h)
   cscreen.update(w, h)
 end
 
+function view.project(x, y)
+  if view.canvas then
+    local nx, ny = cscreen.project(x, y)
+    return nx / view._canvasScale, ny / view._canvasScale
+  else
+    return x / view._canvasScale, y / view._canvasScale
+  end
+end
+
 function view.draw()
   if not view.canvas then
     love.graphics.clear(love.graphics.getBackgroundColor())
