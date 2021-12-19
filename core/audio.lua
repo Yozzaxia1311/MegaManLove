@@ -499,13 +499,12 @@ function mmMusic._threadUpdate()
     local stop = false
     
     while mmMusic.music:getFreeBufferCount() > mmMusic.buffers do
-      if mmMusic.music:getDuration() == 0 then
-        mmMusic._threadDecode()
-      end
-      mmMusic._time = math.min(mmMusic._time + mmMusic._rate, mmMusic._dec:getDuration())
       local sd = mmMusic._threadDecode()
-      if not sd and not mmMusic.loop and mmMusic.music:tell() == 0 and mmMusic._time ~= 0 then
-        stop = true
+      if not sd then
+        if not mmMusic.loop and mmMusic.music:getFreeBufferCount() == mmMusic.buffers + 3 then
+          stop = true
+        end
+        
         break
       end
     end
@@ -531,7 +530,7 @@ function mmMusic._threadPlay(curID, loop, loopPoint, time, vol)
     mmMusic.buffers = mmMusic.buffers + 1
   end
   mmMusic.music = love.audio.newQueueableSource(
-    mmMusic._dec:getSampleRate(), mmMusic._dec:getBitDepth(), mmMusic._dec:getChannelCount(), mmMusic.buffers + 4)
+    mmMusic._dec:getSampleRate(), mmMusic._dec:getBitDepth(), mmMusic._dec:getChannelCount(), mmMusic.buffers + 3)
   mmMusic.loopPoint = loopPoint
   mmMusic.loop = loop
   mmMusic._threadSetVolume(mmMusic.vol)
@@ -544,12 +543,11 @@ function mmMusic._threadDecode()
   local sd = mmMusic._dec:decode()
   if sd then
     mmMusic.music:queue(sd)
-  else
-    if mmMusic.loop then
-      mmMusic._dec:seek(mmMusic.loopPoint)
-      mmMusic.music:queue(mmMusic._dec:decode())
-      mmMusic._time = mmMusic.loopPoint
-    end
+    mmMusic._time = math.min(mmMusic._time + mmMusic._rate, mmMusic._dec:getDuration())
+  elseif mmMusic.loop then
+    mmMusic._dec:seek(mmMusic.loopPoint)
+    mmMusic.music:queue(mmMusic._dec:decode())
+    mmMusic._time = mmMusic.loopPoint + mmMusic._rate
   end
   
   return sd
