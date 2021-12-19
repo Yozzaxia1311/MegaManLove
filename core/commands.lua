@@ -14,7 +14,19 @@ convar["fullscreen"] = {
   helptext = "fullscreen mode",
   flags = {"client"},
   value = love.window.getFullscreen() and 1 or 0,
-  fun = function(arg) local n = numberSanitize(arg) love.window.setFullscreen(n == 1) end
+  fun = function(arg)
+      if record.demo then return end
+      local n = numberSanitize(arg)
+      local last = love.window.getFullscreen()
+      if n == 1 then
+        oldWindowSize = {love.graphics.getDimensions()}
+      end
+      love.window.setFullscreen(n == 1)
+      if last then
+        love.window.updateMode(unpack(oldWindowSize))
+        oldWindowSize = nil
+      end
+    end
 }
 
 convar["fps"] = {
@@ -28,6 +40,7 @@ convar["volume"] = {
   flags = {"client"},
   value = 1,
   fun = function(arg)
+    if record.demo then return end
     local n = math.clamp(numberSanitize(arg), 0, 1)
     convar.setValue("volume", n, false)
     love.audio.setVolume(n)
@@ -112,6 +125,7 @@ convar["scale"] = {
   flags = {"client"},
   value = math.ceil(love.graphics.getWidth() / view.w),
   fun = function(arg)
+      if record.demo then return end
       local n = math.ceil(numberSanitize(arg))
       local w, h = love.graphics.getDimensions()
       
@@ -120,7 +134,6 @@ convar["scale"] = {
         console.print("window scale must be a positive integer")
       else
         if view.w * n ~= love.graphics.getWidth() or view.h * n ~= love.graphics.getHeight() then
-          local width, height = love.graphics.getDimensions()
           love.window.updateMode(n * view.w, n * view.h)
         end
       end
