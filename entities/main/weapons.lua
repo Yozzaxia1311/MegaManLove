@@ -1034,7 +1034,7 @@ weapon.ignoreEnergy["RUSH C."] = true -- Rush Coil's energy is handled by the ob
 
 weapon.shootFuncs["RUSH C."] = function(player)
     if player:checkWeaponEnergy("RUSH C.") and player:numberOfShots("rushCoil") < 1 then
-      return megautils.add(rushCoil, player.x + player:shootOffX(16), player.y + player:shootOffY(-16), player, player.side, "rush")
+      return megautils.add(rushCoil, player.x + player:shootOffX(16), player.y + player:shootOffY(-8), player, player.side, "rush")
     elseif player:numberOfShots("megaBuster") < 3 then
       return megautils.add(megaBuster, player.x + player:shootOffX(), player.y + player:shootOffY(), player, player.side)
     end
@@ -1063,7 +1063,7 @@ weapon.ignoreEnergy["PROTO C."] = true -- Proto Coil's energy is handled by the 
 
 weapon.shootFuncs["PROTO C."] = function(player)
     if player:checkWeaponEnergy("PROTO C.") and player:numberOfShots("rushCoil") < 1 then
-      return megautils.add(rushCoil, player.x + player:shootOffX(16), player.y + player:shootOffY(-16), player, player.side, "protoRush")
+      return megautils.add(rushCoil, player.x + player:shootOffX(16), player.y + player:shootOffY(-8), player, player.side, "protoRush")
     elseif player:numberOfShots("megaBuster") < 3 then
       return megautils.add(megaBuster, player.x + player:shootOffX(), player.y + player:shootOffY(), player, player.side)
     end
@@ -1092,7 +1092,7 @@ weapon.ignoreEnergy["TANGO C."] = true -- Tango Coil's energy is handled by the 
 
 weapon.shootFuncs["TANGO C."] = function(player)
     if player:checkWeaponEnergy("TANGO C.") and player:numberOfShots("rushCoil") < 1 then
-      return megautils.add(rushCoil, player.x + player:shootOffX(16), player.y + player:shootOffY(-16), player, player.side, "tango")
+      return megautils.add(rushCoil, player.x + player:shootOffX(16), player.y + player:shootOffY(-8), player, player.side, "tango")
     elseif player:numberOfShots("megaBuster") < 3 then
       return megautils.add(megaBuster, player.x + player:shootOffX(), player.y + player:shootOffY(), player, player.side)
     end
