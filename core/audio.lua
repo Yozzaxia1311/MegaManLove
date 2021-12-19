@@ -338,7 +338,13 @@ function mmMusic.play(path, vol, track)
     mmMusic.music:play()
   elseif mmMusic.type == 3 then
     if not canUseGME then
-      assert(love.filesystem.getInfo(mmMusic.curID .. ".txt"), "Backup music conf does not exist")
+      local exists = love.filesystem.getInfo(mmMusic.curID .. ".txt")
+      if love.system.getOS() == "Linux" then
+        assert(love.filesystem.getInfo(mmMusic.curID .. ".txt"), "No backup music or libgme." ..
+          "(Install libgme with 'sudo apt install libgme-dev')")
+      else
+        assert(love.filesystem.getInfo(mmMusic.curID .. ".txt"), "Backup music conf does not exist")
+      end
       local bConf = parseConf(mmMusic.curID .. ".txt")
       assert(bConf["backup" .. mmMusic.track], "Backup music not listed in conf")
       mmMusic.play(bConf["backup" .. mmMusic.track], mmMusic.vol)
