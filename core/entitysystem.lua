@@ -739,17 +739,12 @@ function entitySystem:draw()
   self.inLoop = true
   
   for _, layer in safeipairs(self.layers) do
-    local i = 1
-    while i <= #layer.data do
-      local e = layer.data[i]
-      
+    for _, e in ipairs(layer.data) do
       if e ~= -1 and checkFalse(e.canDraw) then
         love.graphics.setColor(1, 1, 1, 1)
         love.graphics.setFont(mmFont)
         e:_draw()
       end
-      
-      i = i + 1
     end
     
     if next(layer.holes) then
@@ -771,17 +766,15 @@ function entitySystem:draw()
 end
 
 function entitySystem:update(dt)
-  local i = 1
-  while i <= #self.beginQueue do
+  for _, e in ipairs(self.beginQueue) do
     if states.switched then
       return
     end
-    if self.beginQueue[i] ~= -1 then
-      self.beginQueue[i]:begin()
+    if e ~= -1 then
+      e:begin()
     end
-    i = i + 1
   end
-  if i > 1 then
+  if #self.beginQueue > 0 then
     self.beginQueue = {}
   end
   
@@ -796,90 +789,67 @@ function entitySystem:update(dt)
     if not self.updates[j].invisibleToHash then self.updates[j]:updateHash() end
   end
   
-  i = 1
-  while i <= #self.updates do
+  for _, e in ipairs(self.updates) do
+    if e ~= -1 and ((type(e.noFreeze) == "table" and table.intersects(self.frozen, e.noFreeze, true)) or
+      e.noFreeze or not checkTrue(self.frozen)) and not e.isRemoved and checkFalse(e.canUpdate) then
+      collision.doCollision(e, e.noSlope, not checkFalse(e.autoCollision), not checkFalse(e.autoGravity))
+      if not e.invisibleToHash then e:updateHash() end
+    end
+    
     if states.switched then
       return
     end
-    
-    local v = self.updates[i]
-    
-    if v ~= -1 then
-      if ((type(v.noFreeze) == "table" and table.intersects(self.frozen, v.noFreeze, true)) or
-        v.noFreeze or not checkTrue(self.frozen)) and not v.isRemoved and checkFalse(v.canUpdate) then
-        collision.doCollision(v, v.noSlope, not checkFalse(v.autoCollision), not checkFalse(v.autoGravity))
-        if not v.invisibleToHash then v:updateHash() end
-      end
-    end
-    
-    i = i + 1
   end
   
-  i = 1
-  while i <= #self.updates do
+  for _, e in ipairs(self.updates) do
+    if e ~= -1 and ((type(e.noFreeze) == "table" and table.intersects(self.frozen, e.noFreeze, true)) or
+      e.noFreeze == true or not checkTrue(self.frozen)) and not e.isRemoved and checkFalse(e.canUpdate) then
+      e:_beforeUpdate(dt)
+    end
+    
     if states.switched then
       return
     end
-    
-    local v = self.updates[i]
-    
-    if v ~= -1 then
-      if ((type(v.noFreeze) == "table" and table.intersects(self.frozen, v.noFreeze, true)) or
-        v.noFreeze == true or not checkTrue(self.frozen)) and not v.isRemoved and checkFalse(v.canUpdate) then
-        v:_beforeUpdate(dt)
-      end
-    end
-    
-    i = i + 1
   end
   
-  i = 1
-  while i <= #self.updates do
+  for _, e in ipairs(self.updates) do
+    
+    if e ~= -1 and ((type(e.noFreeze) == "table" and table.intersects(self.frozen, e.noFreeze, true)) or
+      e.noFreeze == true or not checkTrue(self.frozen)) and not e.isRemoved and checkFalse(e.canUpdate) then
+      e:_update(dt)
+    end
+    
     if states.switched then
       return
     end
-    
-    local v = self.updates[i]
-    
-    if v ~= -1 and ((type(v.noFreeze) == "table" and table.intersects(self.frozen, v.noFreeze, true)) or
-      v.noFreeze == true or not checkTrue(self.frozen)) and not v.isRemoved and checkFalse(v.canUpdate) then
-      v:_update(dt)
-    end
-    
-    i = i + 1
   end
   
-  i = 1
-  while i <= #self.updates do
-    if states.switched then
-      return
-    end
-    
-    local v = self.updates[i]
-    
-    if v ~= -1 then
-      if ((type(v.noFreeze) == "table" and table.intersects(self.frozen, v.noFreeze, true)) or
-        v.noFreeze or not checkTrue(self.frozen)) and not v.isRemoved and checkFalse(v.canUpdate) then
-        v:_afterUpdate(dt)
+  for _, e in ipairs(self.updates) do
+    if e ~= -1 then
+      if ((type(e.noFreeze) == "table" and table.intersects(self.frozen, e.noFreeze, true)) or
+        e.noFreeze or not checkTrue(self.frozen)) and not e.isRemoved and checkFalse(e.canUpdate) then
+        e:_afterUpdate(dt)
       end
       
-      v.justAddedIn = false
+      e.justAddedIn = false
     end
     
-    i = i + 1
+    if states.switched then
+      return
+    end
   end
   
   self.inLoop = false
-  
-  if states.switched then
-    return
-  end
   
   if self.cameraUpdate then
     self.cameraUpdate(self)
   end
   if camera.main then
     camera.main:updateFuncs()
+  end
+  
+  if states.switched then
+    return
   end
   
   if self.doSort then

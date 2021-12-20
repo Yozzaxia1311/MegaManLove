@@ -17,14 +17,19 @@ convar["fullscreen"] = {
   fun = function(arg)
       if record.demo then return end
       local n = numberSanitize(arg)
-      local last = love.window.getFullscreen()
-      if n == 1 then
-        oldWindowSize = {love.graphics.getDimensions()}
-      end
-      love.window.setFullscreen(n == 1)
-      if last then
-        love.window.updateMode(unpack(oldWindowSize))
-        oldWindowSize = nil
+      local os = love.system.getOS()
+      if os ~= "Windows" then
+        local last = love.window.getFullscreen()
+        if n == 1 then
+          oldWindowSize = {love.graphics.getDimensions()}
+        end
+        love.window.setFullscreen(n == 1)
+        if last then
+          love.window.updateMode(unpack(oldWindowSize))
+          oldWindowSize = nil
+        end
+      else
+        love.window.setFullscreen(n == 1)
       end
     end
 }
