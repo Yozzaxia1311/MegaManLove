@@ -282,6 +282,9 @@ function camera:updateCam(spdx, spdy)
         camera.main.approachY = camera.main.y
         view.x, view.y = camera.main.approachX, camera.main.approachY
       end
+      
+      collectgarbage()
+      collectgarbage()
     end
   else
     self:doView(spdx, spdy)
