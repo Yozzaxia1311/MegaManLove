@@ -42,7 +42,7 @@ function view.resize(w, h)
   else
     view._canvasScale = math.min((nw >= nh) and nh or nw, isMobile and 2 or 3)
     
-    if lastScale ~= view._canvasScale then
+    if not view.canvas or lastScale ~= view._canvasScale then
       if view.canvas then view.canvas:release() end
       view.canvas = love.graphics.newCanvas(view.w * view._canvasScale, view.h * view._canvasScale)
       cscreen.resizeGame(view.w * view._canvasScale, view.h * view._canvasScale)

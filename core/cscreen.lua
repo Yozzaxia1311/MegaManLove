@@ -32,7 +32,7 @@ local CScreen = {}
 local rx, ry, ctr = 800, 600, true
 local rxv, ryv, fsv, fsvr = 800, 600, 1.0, 1.0
 local tx, ty, rwf, rhf = 0, 0, 800, 600
-local cr, cg, cb = 60/255, 188/255, 1
+local cr, cg, cb = 0, 0, 0
 local ir, ig, ib = 1, 1, 1
 local imgl, imgr, imglp, imgrp
 local fadeAlpha, toFade = 0, 1
@@ -102,15 +102,17 @@ function CScreen.cease()
   love.graphics.scale(fsvr, fsvr)
 
   if tx ~= 0 then
+    if not (imgl or imgr) or fadeAlpha ~= 1 then
+      love.graphics.setColor(cr, cg, cb, 1)
+      love.graphics.rectangle("fill", -tx, 0, tx, rhf)
+      love.graphics.rectangle("fill", rxv, 0, tx, rhf)
+    end
     if imgl then
       love.graphics.setColor(ir, ig, ib, fadeAlpha)
       love.graphics.setScissor(0, 0, tx, rhf)
       local ratio = math.max(tx/imgl:getWidth(), rhf/imgl:getHeight())
       love.graphics.draw(imgl, 0, rhf/2, 0, ratio, ratio, imgl:getWidth(), imgl:getHeight()/2)
       love.graphics.setScissor()
-    else
-      love.graphics.setColor(cr, cg, cb, fadeAlpha)
-      love.graphics.rectangle("fill", -tx, 0, tx, rhf)
     end
     if imgr then
       love.graphics.setColor(ir, ig, ib, fadeAlpha)
@@ -118,12 +120,9 @@ function CScreen.cease()
       local ratio = math.max(tx/imgr:getWidth(), rhf/imgr:getHeight())
       love.graphics.draw(imgr, rxv, rhf/2, 0, ratio, ratio, 0, imgr:getHeight()/2)
       love.graphics.setScissor()
-    else
-      love.graphics.setColor(cr, cg, cb, fadeAlpha)
-      love.graphics.rectangle("fill", rxv, 0, tx, rhf)
     end
   elseif ty ~= 0 then
-    love.graphics.setColor(cr, cg, cb, fadeAlpha)
+    love.graphics.setColor(cr, cg, cb, 1)
     love.graphics.rectangle("fill", 0, -ty, rwf, ty)
     love.graphics.rectangle("fill", 0, ryv, rwf, ty)
   end
