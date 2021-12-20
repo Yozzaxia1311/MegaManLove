@@ -1,9 +1,9 @@
 local continueState = state:extend()
 
 function continueState:begin()
-  megautils.loadResource("assets/misc/cont.png", "cont")
-  megautils.loadResource("assets/misc/menuSelect.png", "menuSelect")
-  megautils.loadResource("assets/sfx/cursorMove.ogg", "cursorMove")
+  loader.load("assets/misc/cont.png", "cont")
+  loader.load("assets/misc/menuSelect.png", "menuSelect")
+  loader.load("assets/sfx/cursorMove.ogg", "cursorMove")
   megautils.add(contPanels)
 end
 
@@ -13,7 +13,7 @@ contPanels.invisibleToHash = true
 
 function contPanels:new()
   contPanels.super.new(self)
-  self.tex = megautils.getResource("cont")
+  self.tex = loader.get("cont")
   self.quadOne = quad(0, 0, 176, 48)
   self.quadTwo = quad(0, 48, 160, 56)
   self.state = 0
@@ -50,7 +50,7 @@ function contSelect:new()
   contSelect.super.new(self)
   self.x = 64
   self.y = 144
-  self.tex = megautils.getResource("menuSelect")
+  self.tex = loader.get("menuSelect")
   self.pick = 0
   self.offY = self.y
   self.picked = false

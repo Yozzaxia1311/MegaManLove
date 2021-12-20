@@ -1,7 +1,7 @@
-megautils.loadResource("assets/misc/particles.png", "particles", true)
-megautils.loadResource("assets/misc/slideParticle.anim", "slideParticleAnim", true)
-megautils.loadResource("assets/misc/deathExplodeParticle.anim", "deathExplodeParticleAnim", true)
-megautils.loadResource("assets/misc/damageSteam.anim", "damageSteamAnim", true)
+loader.load("assets/misc/particles.png", "particles", true)
+loader.load("assets/misc/slideParticle.anim", "slideParticleAnim", true)
+loader.load("assets/misc/deathExplodeParticle.anim", "deathExplodeParticleAnim", true)
+loader.load("assets/misc/damageSteam.anim", "damageSteamAnim", true)
 
 particle = entity:extend()
 
@@ -281,7 +281,7 @@ function smallBlast:new(x, y, p)
     self:getGFXByName("anim"):gotoFrame(1)
   else
     self:setRectangleCollision(24, 24)
-    self.tex = megautils.getResource("particles")
+    self.tex = loader.get("particles")
     self:addGFX("anim", animation("deathExplodeParticleAnim"))
     self.autoCollision.global = false
     self.recycle = true

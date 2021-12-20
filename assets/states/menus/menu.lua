@@ -10,9 +10,9 @@ function menuState:begin()
   end
 end
 
-megautils.loadResource("assets/misc/menuSelect.png", "menuSelect")
-megautils.loadResource("assets/sfx/cursorMove.ogg", "cursorMove")
-megautils.loadResource("assets/sfx/selected.ogg", "selected")
+loader.load("assets/misc/menuSelect.png", "menuSelect")
+loader.load("assets/sfx/cursorMove.ogg", "cursorMove")
+loader.load("assets/sfx/selected.ogg", "selected")
 
 menuSelect = basicEntity:extend()
 
@@ -21,7 +21,7 @@ menuSelect.invisibleToHash = true
 function menuSelect:new()
   menuSelect.super.new(self)
   self.x = 88
-  self.tex = megautils.getResource("menuSelect")
+  self.tex = loader.get("menuSelect")
   self.pick = globals.fromOther or 0
   self.offY = 10 * 8
   self.y = self.offY + self.pick*16

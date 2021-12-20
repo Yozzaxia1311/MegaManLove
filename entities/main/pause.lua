@@ -3,10 +3,10 @@ mmWeaponsMenu = basicEntity:extend()
 mmWeaponsMenu.autoClean = false
 
 function mmWeaponsMenu.resources()
-  megautils.loadResource("assets/misc/weaponSelect.png", "weaponSelectBG")
-  megautils.loadResource("assets/sfx/pause.ogg", "pause")
-  megautils.loadResource("assets/sfx/selected.ogg", "selected")
-  megautils.loadResource("assets/sfx/cursorMove.ogg", "cursorMove")
+  loader.load("assets/misc/weaponSelect.png", "weaponSelectBG")
+  loader.load("assets/sfx/pause.ogg", "pause")
+  loader.load("assets/sfx/selected.ogg", "selected")
+  loader.load("assets/sfx/cursorMove.ogg", "cursorMove")
 end
   
 function mmWeaponsMenu.pause(self)
@@ -32,11 +32,11 @@ end
 
 function mmWeaponsMenu:new(p)
   mmWeaponsMenu.super.new(self)
-  self.bg = megautils.getResource("weaponSelectBG")
-  self.tex = megautils.getResource("particles")
-  self.texOutline = megautils.getResource("particlesOutline")
-  self.texOne = megautils.getResource("particlesOne")
-  self.texTwo = megautils.getResource("particlesTwo")
+  self.bg = loader.get("weaponSelectBG")
+  self.tex = loader.get("particles")
+  self.texOutline = loader.get("particlesOutline")
+  self.texOne = loader.get("particlesOne")
+  self.texTwo = loader.get("particlesTwo")
   self.quadE = quad(72, 12, 16, 16)
   self.quadW = quad(88, 12, 16, 16)
   self.headQuad = quad(203, 398, 63, 62)

@@ -1,4 +1,4 @@
-megautils.loadResource("assets/sfx/gravityFlip.ogg", "gravityFlip")
+loader.load("assets/sfx/gravityFlip.ogg", "gravityFlip")
 
 gravFlip = basicEntity:extend()
 

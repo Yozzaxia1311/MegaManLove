@@ -144,7 +144,7 @@ function initEngine()
     end, autoClean=false}
   
   megautils.runCallback(megautils.cleanFuncs)
-  megautils.unloadAllResources()
+  loader.clear()
   megautils.setDifficulty("normal")
   megautils.runFile("init.lua")
   megautils.runCallback(megautils.initEngineFuncs)

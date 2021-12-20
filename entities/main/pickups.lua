@@ -1,12 +1,12 @@
-megautils.loadResource("assets/misc/particles.png", "particles", true)
-megautils.loadResource("assets/misc/particlesOutline.png", "particlesOutline", true)
-megautils.loadResource("assets/misc/particlesOne.png", "particlesOne", true)
-megautils.loadResource("assets/misc/particlesTwo.png", "particlesTwo", true)
-megautils.loadResource("assets/misc/smallHealth.anim", "smallHealthAnim", true)
-megautils.loadResource("assets/misc/health.anim", "healthAnim", true)
-megautils.loadResource("assets/misc/smallEnergy.anim", "smallEnergyAnim", true)
-megautils.loadResource("assets/misc/energy.anim", "energyAnim", true)
-megautils.loadResource("assets/misc/tanks.animset", "tankAnims", true)
+loader.load("assets/misc/particles.png", "particles", true)
+loader.load("assets/misc/particlesOutline.png", "particlesOutline", true)
+loader.load("assets/misc/particlesOne.png", "particlesOne", true)
+loader.load("assets/misc/particlesTwo.png", "particlesTwo", true)
+loader.load("assets/misc/smallHealth.anim", "smallHealthAnim", true)
+loader.load("assets/misc/health.anim", "healthAnim", true)
+loader.load("assets/misc/smallEnergy.anim", "smallEnergyAnim", true)
+loader.load("assets/misc/energy.anim", "energyAnim", true)
+loader.load("assets/misc/tanks.animset", "tankAnims", true)
 
 pickUp = entity:extend()
 
@@ -97,8 +97,8 @@ function smallHealth:new(x, y, despawn, gd, fwp, id, path)
   self.x = x or 0
   self.y = y or 0
   self:setRectangleCollision(8, 6)
-  self.t = megautils.getResource("particles")
-  self.tOutline = megautils.getResource("particlesOutline")
+  self.t = loader.get("particles")
+  self.tOutline = loader.get("particlesOutline")
   self.anim = animation("smallHealthAnim")
 end
 
@@ -141,8 +141,8 @@ function health:new(x, y, despawn, gd, fwp, id, path)
   self.x = x or 0
   self.y = y or 0
   self:setRectangleCollision(16, 14)
-  self.t = megautils.getResource("particles")
-  self.tOutline = megautils.getResource("particlesOutline")
+  self.t = loader.get("particles")
+  self.tOutline = loader.get("particlesOutline")
   self.anim = animation("healthAnim")
 end
 
@@ -186,9 +186,9 @@ function smallEnergy:new(x, y, despawn, gd, fwp, id, path)
   self.y = y or 0
   self:setRectangleCollision(8, 6)
   self.anim = animation("smallEnergyAnim")
-  self.texOutline = megautils.getResource("particlesOutline")
-  self.texOne = megautils.getResource("particlesOne")
-  self.texTwo = megautils.getResource("particlesTwo")
+  self.texOutline = loader.get("particlesOutline")
+  self.texOne = loader.get("particlesOne")
+  self.texTwo = loader.get("particlesTwo")
 end
 
 function smallEnergy:taken(p)
@@ -240,9 +240,9 @@ function energy:new(x, y, despawn, gd, fwp, id, path)
   self.y = y or 0
   self:setRectangleCollision(16, 10)
   self.anim = animation("energyAnim")
-  self.texOutline = megautils.getResource("particlesOutline")
-  self.texOne = megautils.getResource("particlesOne")
-  self.texTwo = megautils.getResource("particlesTwo")
+  self.texOutline = loader.get("particlesOutline")
+  self.texOne = loader.get("particlesOne")
+  self.texTwo = loader.get("particlesTwo")
 end
 
 function energy:taken(p)
@@ -359,9 +359,9 @@ function eTank:new(x, y, despawn, gd, fwp, id, path)
   self:setRectangleCollision(16, 15)
   self.anim = animationSet("tankAnims")
   self.anim:set("eTank")
-  self.texOutline = megautils.getResource("particlesOutline")
-  self.texOne = megautils.getResource("particlesOne")
-  self.texTwo = megautils.getResource("particlesTwo")
+  self.texOutline = loader.get("particlesOutline")
+  self.texOne = loader.get("particlesOne")
+  self.texTwo = loader.get("particlesTwo")
 end
 
 function eTank:taken(p)
@@ -415,9 +415,9 @@ function wTank:new(x, y, despawn, gd, fwp, id, path)
   self:setRectangleCollision(16, 15)
   self.anim = animationSet("tankAnims")
   self.anim:set("wTank")
-  self.texOutline = megautils.getResource("particlesOutline")
-  self.texOne = megautils.getResource("particlesOne")
-  self.texTwo = megautils.getResource("particlesTwo")
+  self.texOutline = loader.get("particlesOutline")
+  self.texOne = loader.get("particlesOne")
+  self.texTwo = loader.get("particlesTwo")
 end
 
 function wTank:taken(p)

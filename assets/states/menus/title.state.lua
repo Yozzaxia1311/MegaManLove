@@ -5,7 +5,7 @@ function titleState:begin()
   megautils.setMusicLock(false)
 end
 
-megautils.loadResource("assets/misc/title.png", "title")
+loader.load("assets/misc/title.png", "title")
 
 title = basicEntity:extend()
 
@@ -13,7 +13,7 @@ title.invisibleToHash = true
 
 function title:new()
   title.super.new(self)
-  self.tex = megautils.getResource("title")
+  self.tex = loader.get("title")
   self.textTimer = 0
   self.drawText = false
   self.cont = false

@@ -1,5 +1,5 @@
-megautils.loadResource("assets/sfx/splash.ogg", "splash")
-megautils.loadResource("assets/misc/splash.anim", "splashAnim")
+loader.load("assets/sfx/splash.ogg", "splash")
+loader.load("assets/misc/splash.anim", "splashAnim")
 
 splash = particle:extend()
 

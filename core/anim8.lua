@@ -30,8 +30,6 @@ anim8 = {
 
 local Grid = {}
 
-local _frames = {}
-
 local function assertPositiveInteger(value, name)
   if type(value) ~= 'number' then error(("%s should be a number, was %q"):format(name, tostring(value))) end
   if value < 1 then error(("%s should be a positive number, was %d"):format(name, value)) end
@@ -41,8 +39,8 @@ end
 local function createFrame(self, x, y)
   local fw, fh = self.frameWidth, self.frameHeight
   local result = quad(
-    self.left + self.border + (x-1) * (fw + (self.border * 2)),
-    self.top + self.border + (y-1) * (fh + (self.border * 2)),
+    self.left + self.border + (x - 1) * (fw + (self.border * 2)),
+    self.top + self.border + (y - 1) * (fh + (self.border * 2)),
     fw,
     fh
   )
@@ -57,10 +55,10 @@ end
 
 local function getOrCreateFrame(self, x, y)
   local key = self.key
-  _frames[key]       = _frames[key]       or {}
-  _frames[key][x]    = _frames[key][x]    or {}
-  _frames[key][x][y] = _frames[key][x][y] or createFrame(self, x, y)
-  return _frames[key][x][y]
+  self._frames[key]       = self._frames[key]       or {}
+  self._frames[key][x]    = self._frames[key][x]    or {}
+  self._frames[key][x][y] = self._frames[key][x][y] or createFrame(self, x, y)
+  return self._frames[key][x][y]
 end
 
 local function parseInterval(str)
@@ -88,6 +86,18 @@ function Grid:getFrames(...)
   end
 
   return result
+end
+
+function Grid:release()
+  for _, key in pairs(self._frames) do
+    for _, rows in pairs(key) do
+      for _, data in pairs(rows) do
+        data:release()
+      end
+    end
+  end
+  
+  self.frames = {}
 end
 
 Gridmt = {
@@ -125,7 +135,8 @@ local function newGrid(frameWidth, frameHeight, left, top, border)
       left        = left,
       top         = top,
       border      = border,
-      key        = key
+      key         = key,
+      _frames      = {}
     },
     Gridmt
   )

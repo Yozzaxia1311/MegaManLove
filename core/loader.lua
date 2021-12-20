@@ -1,33 +1,10 @@
 loader = {}
 
-function loader.ser()
-  local result = {resources={}, locked={}}
-  
-  for k, v in pairs(loader.resources) do
-    result.resources[k] = {path=v.path, nick=v.nick, type=v.type, parameters = v.parameters}
-  end
-  for k, v in pairs(loader.locked) do
-    result.locked[k] = {path=v.path, nick=v.nick, type=v.type, parameters = v.parameters}
-  end
-  
-  return result
-end
-
-function loader.deser(t)
-  loader.resource = {}
-  for k, v in pairs(t.resources) do
-    loader.load(v.path, k, v.type, v.parameters, false)
-  end
-  loader.locked = {}
-  for k, v in pairs(t.locked) do
-    loader.load(v.path, k, v.type, v.parameters, true)
-  end
-end
-
 loader.resources = {}
 loader.locked = {}
 
-function loader.load(path, nick, typ, parameters, lock)
+-- Internal loader used in `loader.load`. DO NOT USE!
+local function _load(path, nick, typ, parameters, lock)
   if not nick then
     error("Specify nickname for resource \"" .. path .. "\".")
   end
@@ -87,7 +64,7 @@ function loader.load(path, nick, typ, parameters, lock)
       end
       local img
       if c.image and not loader.get(c.image) then
-        loader.load(c.image, c.image, "texture", nil, lock)
+        _load(c.image, c.image, "texture", nil, lock)
       end
       img = loader.get(c.image)
       loader.locked[nick] = {path=path, data=anim8.newGrid(fw, fh, fx, fy, fb),
@@ -110,7 +87,7 @@ function loader.load(path, nick, typ, parameters, lock)
       end
       local img
       if c.image and not loader.get(c.image) then
-        loader.load(c.image, c.image, "texture", nil, lock)
+        _load(c.image, c.image, "texture", nil, lock)
       end
       img = loader.get(c.image)
       loader.resources[nick] = {path=path, data=anim8.newGrid(fw, fh, fx, fy, fb),
@@ -160,7 +137,7 @@ function loader.load(path, nick, typ, parameters, lock)
       end
       local img
       if c.image and not loader.get(c.image) then
-        loader.load(c.image, c.image, "texture", nil, lock)
+        _load(c.image, c.image, "texture", nil, lock)
       end
       img = loader.get(c.image)
       loader.locked[nick] = {path=path, data=grid,
@@ -211,7 +188,7 @@ function loader.load(path, nick, typ, parameters, lock)
       end
       local img
       if c.image and not loader.get(c.image) then
-        loader.load(c.image, c.image, "texture", nil, lock)
+        _load(c.image, c.image, "texture", nil, lock)
       end
       img = loader.get(c.image)
       loader.resources[nick] = {path=path, data=grid,
@@ -219,6 +196,81 @@ function loader.load(path, nick, typ, parameters, lock)
       
       return loader.resources[nick]
     end
+  end
+end
+
+function loader.ser()
+  local result = {resources={}, locked={}}
+  
+  for k, v in pairs(loader.resources) do
+    result.resources[k] = {path=v.path, nick=v.nick, type=v.type, parameters = v.parameters}
+  end
+  for k, v in pairs(loader.locked) do
+    result.locked[k] = {path=v.path, nick=v.nick, type=v.type, parameters = v.parameters}
+  end
+  
+  return result
+end
+
+function loader.deser(t)
+  loader.resource = {}
+  for k, v in pairs(t.resources) do
+    _load(v.path, k, v.type, v.parameters, false)
+  end
+  loader.locked = {}
+  for k, v in pairs(t.locked) do
+    _load(v.path, k, v.type, v.parameters, true)
+  end
+end
+
+-- Possible image args:
+-- * absoluteFilePath:string, nickname:any.
+-- * absoluteFilePath:string, nickname:any, loadAsCollisionMask:boolean (not required), isLocked:boolean (not required).
+
+-- Possible sound/animation/animation set args:
+-- * absoluteFilePath:string, nickname:any.
+-- * absoluteFilePath:string, nickname:any, isLocked:boolean (not required).
+
+-- Note: resource type are detected automatically via file extension.
+function loader.load(...)
+  local args = {...}
+  if #args < 2 then error("`loader.load` takes at least two arguments") end
+  local locked = false
+  local path = args[1]
+  local nick = args[2]
+  local t = ""
+  
+  if checkExt(path, {"anim"}) then
+    t = "anim"
+    locked = args[3]
+    _load(path, nick, t, nil, locked)
+    return loader.get(nick)
+  elseif checkExt(path, {"animset"}) then
+    t = "animSet"
+    locked = args[3]
+    _load(path, nick, t, nil, locked)
+    return loader.get(nick)
+  elseif checkExt(path, {"png", "jpeg", "jpg", "bmp", "tga", "hdr", "pic", "exr"}) then
+    local ext = t
+    t = "texture"
+    if #args == 4 then
+      locked = args[4]
+      _load(path, nick, t, {args[3]}, locked)
+      return loader.get(nick)
+    else
+      locked = args[3]
+      _load(path, nick, t, nil, locked)
+      return loader.get(nick)
+    end
+  elseif checkExt(path, {"ogg", "mp3", "wav", "flac", "oga", "ogv", "xm", "it",
+    "mod", "mid", "669", "amf", "ams", "dbm", "dmf", "dsm", "far",
+    "j2b", "mdl", "med", "mt2", "mtm", "okt", "psm", "s3m", "stm", "ult", "umx", "abc", "pat"}) then
+    t = "sound"
+    locked = args[3]
+    _load(path, nick, t, nil, locked)
+    return loader.get(nick)
+  else
+    error("Could not detect resource type of \"" .. nick .. "\" based on given info.")
   end
 end
 
@@ -242,15 +294,24 @@ end
 
 function loader.unload(nick)
   if loader.resources[nick] then
-    if loader.resources[nick].img then
-      loader.resources[nick].img:release()
-    elseif loader.resources[nick].data.type then
-      if loader.resources[nick].data:type() == "Image" then
-        loader.resources[nick].data:release()
-      elseif loader.resources[nick].data:type() == "Source" then
-        loader.resources[nick].data:stop()
-        loader.resources[nick].data:release()
+    if loader.resources[nick].type == "texture" then
+      loader.resources[nick].data:release()
+      if loader.resources[nick].img then
+        loader.resources[nick].img:release()
       end
+    elseif loader.resources[nick].type == "anim" then
+      loader.resources[nick].data:release()
+      if loader.resources[nick].img then
+        loader.resources[nick].img:release()
+      end
+    elseif loader.resources[nick].type == "animSet" then
+      loader.resources[nick].data:release()
+      if loader.resources[nick].img then
+        loader.resources[nick].img:release()
+      end
+    elseif loader.resources[nick].type == "sound" then
+      loader.resources[nick].data:stop()
+      loader.resources[nick].data:release()
     end
     loader.resources[nick] = nil
   end
@@ -258,6 +319,28 @@ end
 
 function loader.getTable(nick)
   return loader.resources[nick] or loader.locked[nick]
+end
+
+function loader.getAll()
+  local all = {}
+  for k, v in pairs(loader.locked) do
+    all[k] = v.data
+  end
+  for k, v in pairs(loader.resources) do
+    all[k] = v.data
+  end
+  return all
+end
+
+function loader.getAllTables()
+  local all = {}
+  for k, v in pairs(loader.locked) do
+    all[k] = v
+  end
+  for k, v in pairs(loader.resources) do
+    all[k] = v
+  end
+  return all
 end
 
 function loader.clear()

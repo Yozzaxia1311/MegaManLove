@@ -1,4 +1,4 @@
-megautils.loadResource("demo/moveAcrossPlatform/moveAcrossPlatform.png", "moveAcrossPlatform")
+loader.load("demo/moveAcrossPlatform/moveAcrossPlatform.png", "moveAcrossPlatform")
 
 moveAcrossPlatform = advancedEntity:extend()
 mapEntity.register(moveAcrossPlatform, nil, nil, 0, 0, 32, 16)

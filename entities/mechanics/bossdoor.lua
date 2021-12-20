@@ -1,5 +1,5 @@
-megautils.loadResource("assets/misc/bossDoor.png", "bossDoor", true)
-megautils.loadResource("assets/sfx/bossDoor.ogg", "bossDoorSfx", true)
+loader.load("assets/misc/bossDoor.png", "bossDoor", true)
+loader.load("assets/sfx/bossDoor.ogg", "bossDoorSfx", true)
 
 bossDoor = basicEntity:extend()
 
@@ -19,7 +19,7 @@ function bossDoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt, n, tw, th, ts)
   self.x = x or 0
   self.y = y or 0
   self:setLayer(-1)
-  self.tex = megautils.getResource("bossDoor")
+  self.tex = loader.get("bossDoor")
   self.scrollx = scrollx
   self.scrolly = scrolly
   self.quad = quad(0, 0, 32, 16)

@@ -1,4 +1,4 @@
-megautils.loadResource("demo/met/met.png", "met")
+loader.load("demo/met/met.png", "met")
 
 met = advancedEntity:extend()
 

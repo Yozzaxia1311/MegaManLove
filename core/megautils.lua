@@ -347,109 +347,6 @@ function megautils.resetGame(s, saveSfx, saveMusic)
   states.set(s or globals.disclaimerState)
 end
 
-function megautils.getResource(nick)
-  return loader.get(nick)
-end
-
-function megautils.getResourceTable(nick)
-  return loader.getTable(nick)
-end
-
-function megautils.getAllResources()
-  local all = {}
-  for k, v in pairs(loader.locked) do
-    all[k] = v[1]
-  end
-  for k, v in pairs(loader.resources) do
-    all[k] = v[1]
-  end
-  return all
-end
-
-function megautils.getAllResourceTables()
-  local all = {}
-  for k, v in pairs(loader.locked) do
-    all[k] = v
-  end
-  for k, v in pairs(loader.resources) do
-    all[k] = v
-  end
-  return all
-end
-
-function megautils.unloadResource(nick)
-  loader.unload(nick)
-end
-
-function megautils.unloadAllResources()
-  loader.clear()
-end
-
-function megautils.setResourceLock(nick, w)
-  if w then
-    loader.lock(nick)
-  else
-    loader.unlock(nick)
-  end
-end
-
-function megautils.loadResource(...)
-  local args = {...}
-  if #args < 2 then error("megautils.loadResource takes at least two arguments") end
-  local locked = false
-  local path = args[1]
-  local nick = args[2]
-  local t = ""
-  
-  if checkExt(path, {"anim"}) then
-    t = "anim"
-    locked = args[3]
-    loader.load(path, nick, t, nil, locked)
-    return loader.get(nick)
-  elseif checkExt(path, {"animset"}) then
-    t = "animSet"
-    locked = args[3]
-    loader.load(path, nick, t, nil, locked)
-    return loader.get(nick)
-  elseif checkExt(path, {"png", "jpeg", "jpg", "bmp", "tga", "hdr", "pic", "exr"}) then
-    local ext = t
-    t = "texture"
-    if #args == 4 then
-      locked = args[4]
-      loader.load(path, nick, t, {args[3]}, locked)
-      return loader.get(nick)
-    else
-      locked = args[3]
-      loader.load(path, nick, t, nil, locked)
-      return loader.get(nick)
-    end
-  elseif checkExt(path, {"ogg", "mp3", "wav", "flac", "oga", "ogv", "xm", "it",
-    "mod", "mid", "669", "amf", "ams", "dbm", "dmf", "dsm", "far",
-    "j2b", "mdl", "med", "mt2", "mtm", "okt", "psm", "s3m", "stm", "ult", "umx", "abc", "pat"}) then
-    if type(args[3]) == "string" then
-      t = args[3]
-      locked = args[4]
-    else
-      t = "sound"
-      locked = args[3]
-    end
-    loader.load(path, nick, t, nil, locked)
-    return loader.get(nick)
-  elseif checkExt(path, {"ay", "gbs", "gym", "hes", "kss", "nsf", "nsfe", "sap", "spc", "vgm", "vgz"}) then
-    if type(args[3]) == "string" then
-      t = args[3]
-      locked = args[4]
-    else
-      t = "gme"
-      locked = args[3]
-    end
-    loader.load(path, nick, t, nil, locked)
-    return loader.get(nick)
-  else
-    error("Could not detect resource type of \"" .. nick .. "\" based on given info.")
-  end
-end
-
 function megautils.setMusicLock(w)
   mmMusic.setLock(w)
 end
@@ -523,11 +420,11 @@ function megautils.updateGMEVoiceMutes()
 end
 
 function megautils.playSound(p, l, v, stack, muteGMEVoices)
-  if megautils.getResource(p) then
+  if loader.get(p) then
     if not stack then
-      megautils.getResource(p):stop()
+      loader.get(p):stop()
     end
-    local resTable = megautils.getResourceTable(p)
+    local resTable = loader.getTable(p)
     if resTable.conf and resTable.conf.muteGMEVoices then
       if type(resTable.conf.muteGMEVoices) == "number" then
         megautils._cachedMutes[resTable.conf.muteGMEVoices] = resTable.data
@@ -585,8 +482,8 @@ function megautils.playSoundFromFile(p, l, v, stack)
 end
 
 function megautils.stopSound(s)
-  if megautils.getResource(s) then
-    megautils.getResource(s):stop()
+  if loader.get(s) then
+    loader.get(s):stop()
   end
   if s == megautils._curS.id and megautils._curS.sfx then
     megautils._curS.sfx:stop()
@@ -612,7 +509,7 @@ end
 function megautils.unload()
   megautils.runCallback(megautils.cleanFuncs)
   megautils.cleanCallbacks()
-  megautils.unloadAllResources()
+  loader.clear()
   megautils._ranFiles = {}
   megautils._fsCache = {}
 end

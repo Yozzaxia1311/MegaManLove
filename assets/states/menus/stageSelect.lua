@@ -4,10 +4,10 @@ function stageSelectState:begin()
   megautils.add(stageSelect)
 end
 
-megautils.loadResource("assets/misc/select.png", "mugshots")
-megautils.loadResource("assets/sfx/ascend.ogg", "selected")
-megautils.loadResource("assets/sfx/cursorMove.ogg", "cursorMove")
-megautils.loadResource("assets/players/mug.animset", "mugAnims")
+loader.load("assets/misc/select.png", "mugshots")
+loader.load("assets/sfx/ascend.ogg", "selected")
+loader.load("assets/sfx/cursorMove.ogg", "cursorMove")
+loader.load("assets/players/mug.animset", "mugAnims")
 
 stageSelect = basicEntity:extend()
 
@@ -44,7 +44,7 @@ function stageSelect:new()
   
   self.wilyQuad = quad(0, 0, 32, 32)
   
-  self.tex = megautils.getResource("mugshots")
+  self.tex = loader.get("mugshots")
   self.timer = 0
   self.oldX = self.x
   self.oldY = self.y

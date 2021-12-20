@@ -55,14 +55,14 @@ end
 function megaMan.resources()
    mmWeaponsMenu.resources()
   
-  megautils.loadResource("assets/sfx/mmLand.ogg", "land")
-  megautils.loadResource("assets/sfx/mmHurt.ogg", "hurt")
-  megautils.loadResource("assets/sfx/mmStart.ogg", "start")
-  megautils.loadResource("assets/sfx/mmHeal.ogg", "heal")
-  megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-  megautils.loadResource("assets/sfx/switch.ogg", "switch")
-  megautils.loadResource("assets/sfx/treble.ogg", "trebleStart")
-  megautils.loadResource("assets/players/player.animset", "playerAnims")
+  loader.load("assets/sfx/mmLand.ogg", "land")
+  loader.load("assets/sfx/mmHurt.ogg", "hurt")
+  loader.load("assets/sfx/mmStart.ogg", "start")
+  loader.load("assets/sfx/mmHeal.ogg", "heal")
+  loader.load("assets/sfx/ascend.ogg", "ascend")
+  loader.load("assets/sfx/switch.ogg", "switch")
+  loader.load("assets/sfx/treble.ogg", "trebleStart")
+  loader.load("assets/players/player.animset", "playerAnims")
 end
 
 function megaMan:setSkin(path)

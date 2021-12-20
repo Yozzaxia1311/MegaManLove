@@ -1,5 +1,5 @@
-megautils.loadResource("assets/misc/starField.png", "starField")
-megautils.loadResource("assets/misc/starFieldOne.png", "starFieldOne")
+loader.load("assets/misc/starField.png", "starField")
+loader.load("assets/misc/starFieldOne.png", "starFieldOne")
 
 banner = basicEntity:extend()
 
@@ -27,8 +27,8 @@ function banner:new()
   banner.super.new(self)
   self.x = 0
   self.y = 240
-  self.tTwo = megautils.getResource("starField")
-  self.tOne = megautils.getResource("starFieldOne")
+  self.tTwo = loader.get("starField")
+  self.tOne = loader.get("starFieldOne")
   self.quad = quad(0, 0, 256, 103)
   self:setLayer(0)
   self.noFreeze = true
@@ -53,7 +53,7 @@ function smallStar:new(x, y, angle, spd)
   smallStar.super.new(self)
   self.x = x or 0
   self.y = y or 0
-  self.t = megautils.getResource("starField")
+  self.t = loader.get("starField")
   self.quad = quad(25, 120, 3, 3)
   self.velX = 0
   self.velY = 0
@@ -80,7 +80,7 @@ function star:new(x, y, angle, spd)
   star.super.new(self)
   self.x = x or 0
   self.y = y or 0
-  self.t = megautils.getResource("starField")
+  self.t = loader.get("starField")
   self.quad = quad(0, 120, 10, 6)
   self.velX = 0
   self.velY = 0
@@ -107,7 +107,7 @@ function largeStar:new(x, y, angle, spd)
   largeStar.super.new(self)
   self.x = x or 0
   self.y = y or 0
-  self.t = megautils.getResource("starField")
+  self.t = loader.get("starField")
   self.quad = quad(10, 120, 15, 11)
   self.velX = 0
   self.velY = 0

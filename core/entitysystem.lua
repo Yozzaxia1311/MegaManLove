@@ -1063,7 +1063,7 @@ end
 basicEntity._imgCache = {}
 
 function basicEntity:setImageCollision(resource)
-  local res = megautils.getResourceTable(resource)
+  local res = loader.getTable(resource)
   
   if not self.collisionShape then
     self.collisionShape = {}
@@ -1648,10 +1648,10 @@ pierce.NOPIERCE = 0
 pierce.PIERCE = 1
 pierce.PIERCEIFKILLING = 2
 
-megautils.loadResource("assets/sfx/enemyHit.ogg", "enemyHit", true)
-megautils.loadResource("assets/sfx/enemyExplode.ogg", "enemyExplode", true)
-megautils.loadResource("assets/sfx/hugeExplode.ogg", "enemyHugeExplode", true)
-megautils.loadResource("assets/sfx/dieExplode.ogg", "dieExplode", true)
+loader.load("assets/sfx/enemyHit.ogg", "enemyHit", true)
+loader.load("assets/sfx/enemyExplode.ogg", "enemyExplode", true)
+loader.load("assets/sfx/hugeExplode.ogg", "enemyHugeExplode", true)
+loader.load("assets/sfx/dieExplode.ogg", "dieExplode", true)
 
 advancedEntity = entity:extend()
 
@@ -1870,7 +1870,7 @@ function advancedEntity:interactedWith(o, c)
       megautils.remove(self)
     end
     if self.soundOnDeath then
-      if megautils.getResource(self.soundOnDeath) then
+      if loader.get(self.soundOnDeath) then
         megautils.playSound(self.soundOnDeath)
       else
         megautils.playSoundFromFile(self.soundOnDeath)
@@ -1887,7 +1887,7 @@ function advancedEntity:interactedWith(o, c)
       megautils.remove(o)
     end
     if self.soundOnHit then
-      if megautils.getResource(self.soundOnHit) then
+      if loader.get(self.soundOnHit) then
         megautils.playSound(self.soundOnHit)
       else
         megautils.playSoundFromFile(self.soundOnHit)

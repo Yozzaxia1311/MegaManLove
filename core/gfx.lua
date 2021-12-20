@@ -164,7 +164,7 @@ image = gfx:extend()
 function image:new(res, quad, x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, color, syncPos)
   image.super.new(self, x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, color, syncPos)
   
-  self.image = type(res) == "string" and megautils.getResource(res) or res
+  self.image = type(res) == "string" and loader.get(res) or res
   self.path = self.image.path
   self.quad = quad
 end
@@ -216,7 +216,7 @@ function animation:new(res, useDelta, framerate,
     x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, color, syncPos)
   animation.super.new(self, x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, color, syncPos)
   
-  local rt = type(res) == "string" and megautils.getResourceTable(res) or res
+  local rt = type(res) == "string" and loader.getTable(res) or res
   
   self.anim = anim8.newAnimation(rt.data(unpack(rt.frames)), rt.durations or 1, rt.onLoop)
   self.image = rt.img
@@ -291,7 +291,7 @@ function animationSet:new(res, useDelta, framerate,
     x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, color, syncPos)
   animationSet.super.new(self, x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, color, syncPos)
   
-  local rt = type(res) == "string" and megautils.getResourceTable(res) or res
+  local rt = type(res) == "string" and loader.getTable(res) or res
   
   self.anims = {}
   self.current = nil

@@ -1,4 +1,4 @@
-megautils.loadResource("demo/stickMan/stickMan.animset", "stickManAnims")
+loader.load("demo/stickMan/stickMan.animset", "stickManAnims")
 
 stickMan = bossEntity:extend()
 mapEntity.register(stickMan, nil, nil, 0, 8, 12, 24)

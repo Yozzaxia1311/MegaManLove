@@ -1,7 +1,7 @@
-megautils.loadResource("assets/misc/barOne.png", "barOne", false, true)
-megautils.loadResource("assets/misc/barTwo.png", "barTwo", false, true)
-megautils.loadResource("assets/misc/barOutline.png", "barOutline", false, true)
-megautils.loadResource("assets/sfx/error.ogg", "error", true)
+loader.load("assets/misc/barOne.png", "barOne", false, true)
+loader.load("assets/misc/barTwo.png", "barTwo", false, true)
+loader.load("assets/misc/barOutline.png", "barOutline", false, true)
+loader.load("assets/sfx/error.ogg", "error", true)
 
 healthHandler = basicEntity:extend()
 
@@ -21,9 +21,9 @@ megautils.resetGameObjectsFuncs.barHandler = {func=function()
 
 function healthHandler:new(colorOne, colorTwo, colorOutline, side, r, segments, player)
   healthHandler.super.new(self)
-  self.barOne = megautils.getResource("barOne")
-  self.barTwo = megautils.getResource("barTwo")
-  self.barOutline = megautils.getResource("barOutline")
+  self.barOne = loader.get("barOne")
+  self.barTwo = loader.get("barTwo")
+  self.barOutline = loader.get("barOutline")
   self.colorOne = colorOne or {252, 224, 168}
   self.colorTwo = colorTwo or {255, 255, 255}
   self.colorOutline = {0, 0, 0}
@@ -191,10 +191,10 @@ function weaponHandler:new(side, r, slots)
   self.weapons = {}
   self.energy = {}
   self.slots = {}
-  self.iconTex = megautils.getResource("weaponSelect")
-  self.barOne = megautils.getResource("barOne")
-  self.barTwo = megautils.getResource("barTwo")
-  self.barOutline = megautils.getResource("barOutline")
+  self.iconTex = loader.get("weaponSelect")
+  self.barOne = loader.get("barOne")
+  self.barTwo = loader.get("barTwo")
+  self.barOutline = loader.get("barOutline")
   self.quads = {}
   self.quads[0] = quad(0, 48, 8, 8)
   self.quads[1] = quad(8, 48, 8, 8)
@@ -227,7 +227,7 @@ function weaponHandler:register(slot, name, noRefill)
   end
   
   if weapon.resources[name] then
-    megautils.loadResource(weapon.icons[name], weapon.icons[name])
+    loader.load(weapon.icons[name], weapon.icons[name])
     weapon.resources[name]()
   end
 end

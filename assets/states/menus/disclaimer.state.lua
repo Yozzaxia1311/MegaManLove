@@ -2,7 +2,7 @@ local disclaimerState = state:extend()
 
 function disclaimerState:begin()
   megautils.stopMusic()
-  megautils.loadResource("assets/misc/disclaimerFace.png", "face")
+  loader.load("assets/misc/disclaimerFace.png", "face")
   megautils.add(disclaimer)
   megautils.add(fade, false, nil, nil, fade.remove)
 end
@@ -15,7 +15,7 @@ function disclaimer:new()
   disclaimer.super.new(self)
   self.x = 0
   self.y = 0
-  self.t = megautils.getResource("face")
+  self.t = loader.get("face")
   self.timer = 0
   self.alpha = 0
   self.otherTimer = 5

@@ -1,7 +1,7 @@
 local bossIntroState = state:extend()
 
 function bossIntroState:begin()
-  megautils.loadResource("assets/misc/title.png", "title")
+  loader.load("assets/misc/title.png", "title")
   megautils.runFile("entities/misc/starfield.lua")
   megautils.add(banner)
   megautils.add(smallStar, 32, 32, 180, 2)

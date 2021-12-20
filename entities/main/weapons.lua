@@ -1,5 +1,5 @@
-megautils.loadResource("assets/sfx/buster.ogg", "buster", true)
-megautils.loadResource("assets/sfx/reflect.ogg", "dink", true)
+loader.load("assets/sfx/buster.ogg", "buster", true)
+loader.load("assets/sfx/reflect.ogg", "dink", true)
 
 weapon = entity:extend()
 
@@ -78,7 +78,7 @@ weapon._activeQuad = quad(0, 0, 16, 16)
 weapon._inactiveQuad = quad(16, 0, 16, 16)
 
 function weapon.drawIcon(p, on, x, y)
-  local tex = megautils.getResource(weapon.icons[p])
+  local tex = loader.get(weapon.icons[p])
   if on == nil or on then
     tex:draw(weapon._activeQuad, x, y)
   else
@@ -163,7 +163,7 @@ function weapon:added()
     self:addToGroup("playerWeapon")
   end
   if self.sound then
-    if megautils.getResource(self.sound) then
+    if loader.get(self.sound) then
       megautils.playSound(self.sound)
     else
       megautils.playSoundFromFile(self.sound)
@@ -189,7 +189,7 @@ function weapon:dink(e)
     self.blockCollision.global = false
     self.damageType = self.damageTypeOnDink
     if self.soundOnDink then
-      if megautils.getResource(self.soundOnDink) then
+      if loader.get(self.soundOnDink) then
         megautils.playSound(self.soundOnDink)
       else
         megautils.playSoundFromFile(self.soundOnDink)
@@ -247,12 +247,12 @@ end
 weapon.removeGroups["P.BUSTER"] = {"megaBuster", "protoChargedBuster"}
 
 weapon.resources["P.BUSTER"] = function()
-    megautils.loadResource("assets/misc/weapons/buster.png", "busterTex")
-    megautils.loadResource("assets/misc/weapons/protoBuster.png", "protoBuster")
-    megautils.loadResource("assets/sfx/semi.ogg", "semiCharged")
-    megautils.loadResource("assets/sfx/protoCharge.ogg", "protoCharge")
-    megautils.loadResource("assets/sfx/protoCharged.ogg", "protoCharged")
-    megautils.loadResource("assets/misc/weapons/protoBuster.anim", "protoBusterAnim")
+    loader.load("assets/misc/weapons/buster.png", "busterTex")
+    loader.load("assets/misc/weapons/protoBuster.png", "protoBuster")
+    loader.load("assets/sfx/semi.ogg", "semiCharged")
+    loader.load("assets/sfx/protoCharge.ogg", "protoCharge")
+    loader.load("assets/sfx/protoCharged.ogg", "protoCharged")
+    loader.load("assets/misc/weapons/protoBuster.anim", "protoBusterAnim")
   end
 
 weapon.icons["P.BUSTER"] = "assets/misc/weapons/icons/protoBuster.png"
@@ -322,12 +322,12 @@ weapon.chargeShotFuncs["P.BUSTER"] = function(player, charge)
 weapon.removeGroups["R.BUSTER"] = {"megaBuster", "protoChargedBuster"}
 
 weapon.resources["R.BUSTER"] = function()
-    megautils.loadResource("assets/misc/weapons/buster.png", "busterTex")
-    megautils.loadResource("assets/misc/weapons/rollBuster.png", "rollBuster")
-    megautils.loadResource("assets/sfx/semi.ogg", "semiCharged")
-    megautils.loadResource("assets/sfx/charge.ogg", "charge")
-    megautils.loadResource("assets/sfx/protoCharged.ogg", "protoCharged")
-    megautils.loadResource("assets/misc/weapons/protoBuster.anim", "protoBusterAnim")
+    loader.load("assets/misc/weapons/buster.png", "busterTex")
+    loader.load("assets/misc/weapons/rollBuster.png", "rollBuster")
+    loader.load("assets/sfx/semi.ogg", "semiCharged")
+    loader.load("assets/sfx/charge.ogg", "charge")
+    loader.load("assets/sfx/protoCharged.ogg", "protoCharged")
+    loader.load("assets/misc/weapons/protoBuster.anim", "protoBusterAnim")
   end
 
 weapon.icons["R.BUSTER"] = "assets/misc/weapons/icons/rollBuster.png"
@@ -422,7 +422,7 @@ function protoChargedBuster:new(x, y, p, dir, skin)
   self.y = (y or 0) - 4
   self:setRectangleCollision(29, 8)
   self.skin = skin
-  self.tex = megautils.getResource(self.skin)
+  self.tex = loader.get(self.skin)
   self.anim = animation("protoBusterAnim")
   self.side = dir or 1
   self.velX = self.side * 6
@@ -448,7 +448,7 @@ end
 weapon.removeGroups["B.BUSTER"] = {"bassBuster"}
 
 weapon.resources["B.BUSTER"] = function()
-    megautils.loadResource("assets/misc/weapons/bassBuster.png", "bassBuster")
+    loader.load("assets/misc/weapons/bassBuster.png", "bassBuster")
   end
 
 weapon.icons["B.BUSTER"] = "assets/misc/weapons/icons/bassBuster.png"
@@ -537,12 +537,12 @@ end
 weapon.removeGroups["M.BUSTER"] = {"megaBuster", "megaChargedBuster"}
 
 weapon.resources["M.BUSTER"] = function()
-    megautils.loadResource("assets/misc/weapons/buster.png", "busterTex")
-    megautils.loadResource("assets/sfx/semi.ogg", "semiCharged")
-    megautils.loadResource("assets/sfx/charge.ogg", "charge")
-    megautils.loadResource("assets/sfx/charged.ogg", "charged")
-    megautils.loadResource("assets/misc/weapons/megaChargedBuster.anim", "megaChargedBusterAnim")
-    megautils.loadResource("assets/misc/weapons/megaSemiBuster.anim", "megaSemiBuster")
+    loader.load("assets/misc/weapons/buster.png", "busterTex")
+    loader.load("assets/sfx/semi.ogg", "semiCharged")
+    loader.load("assets/sfx/charge.ogg", "charge")
+    loader.load("assets/sfx/charged.ogg", "charged")
+    loader.load("assets/misc/weapons/megaChargedBuster.anim", "megaChargedBusterAnim")
+    loader.load("assets/misc/weapons/megaSemiBuster.anim", "megaSemiBuster")
   end
 
 weapon.icons["M.BUSTER"] = "assets/misc/weapons/icons/megaBuster.png"
@@ -679,12 +679,12 @@ end
 weapon.removeGroups["T. BOOST"] = {"trebleBoost", "bassBuster"}
 
 weapon.resources["T. BOOST"] = function()
-    megautils.loadResource("assets/misc/weapons/bassBuster.png", "bassBuster")
-    megautils.loadResource("assets/misc/weapons/treble.png", "trebleTex")
-    megautils.loadResource("assets/sfx/treble.ogg", "treble")
-    megautils.loadResource("assets/sfx/mmStart.ogg", "start")
-    megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource("assets/misc/weapons/treble.animset", "trebleAnims")    
+    loader.load("assets/misc/weapons/bassBuster.png", "bassBuster")
+    loader.load("assets/misc/weapons/treble.png", "trebleTex")
+    loader.load("assets/sfx/treble.ogg", "treble")
+    loader.load("assets/sfx/mmStart.ogg", "start")
+    loader.load("assets/sfx/ascend.ogg", "ascend")
+    loader.load("assets/misc/weapons/treble.animset", "trebleAnims")    
   end
 
 weapon.icons["T. BOOST"] = "assets/misc/weapons/icons/trebleBoost.png"
@@ -726,7 +726,7 @@ function trebleBoost:new(x, y, p, side)
   self.y = view.y-8
   self.toY = (y or 0) - 9
   self:setRectangleCollision(20, 19)
-  self.tex = megautils.getResource("trebleTex")
+  self.tex = loader.get("trebleTex")
   self.anims = animationSet("trebleAnims")
   self.side = side or -1
   self.s = 0
@@ -800,10 +800,10 @@ end
 weapon.removeGroups["RUSH JET"] = {"rushJet", "megaBuster"}
 
 weapon.resources["RUSH JET"] = function()
-    megautils.loadResource("assets/misc/weapons/rush.png", "rush")
-    megautils.loadResource("assets/sfx/mmStart.ogg", "start")
-    megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource("assets/misc/weapons/rush.animset", "rushAnims")
+    loader.load("assets/misc/weapons/rush.png", "rush")
+    loader.load("assets/sfx/mmStart.ogg", "start")
+    loader.load("assets/sfx/ascend.ogg", "ascend")
+    loader.load("assets/misc/weapons/rush.animset", "rushAnims")
     
     weapon.resources["M.BUSTER"]() -- So it's possible to use the Mega Buster shots even if the weapon wasn't already loaded in for some reason...
   end
@@ -829,10 +829,10 @@ weapon.shootFuncs["RUSH JET"] = function(player)
 weapon.removeGroups["PROTO JET"] = {"rushJet", "megaBuster"}
 
 weapon.resources["PROTO JET"] = function()
-    megautils.loadResource("assets/misc/weapons/protoRush.png", "protoRush")
-    megautils.loadResource("assets/sfx/mmStart.ogg", "start")
-    megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource("assets/misc/weapons/rush.animset", "rushAnims")
+    loader.load("assets/misc/weapons/protoRush.png", "protoRush")
+    loader.load("assets/sfx/mmStart.ogg", "start")
+    loader.load("assets/sfx/ascend.ogg", "ascend")
+    loader.load("assets/misc/weapons/rush.animset", "rushAnims")
     
     weapon.resources["P.BUSTER"]()
   end
@@ -858,10 +858,10 @@ weapon.shootFuncs["PROTO JET"] = function(player)
 weapon.removeGroups["TANGO JET"] = {"rushJet", "megaBuster"}
 
 weapon.resources["TANGO JET"] = function()
-    megautils.loadResource("assets/misc/weapons/tango.png", "tango")
-    megautils.loadResource("assets/sfx/mmStart.ogg", "start")
-    megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource("assets/misc/weapons/rush.animset", "rushAnims")
+    loader.load("assets/misc/weapons/tango.png", "tango")
+    loader.load("assets/sfx/mmStart.ogg", "start")
+    loader.load("assets/sfx/ascend.ogg", "ascend")
+    loader.load("assets/misc/weapons/rush.animset", "rushAnims")
     
     weapon.resources["R.BUSTER"]()
   end
@@ -895,7 +895,7 @@ function rushJet:new(x, y, p, side, skin)
   self.toY = (y or 0) - 4
   self:setRectangleCollision(27, 8)
   self.skin = skin
-  self.tex = megautils.getResource(skin)
+  self.tex = loader.get(skin)
   self.anims = animationSet("rushAnims")
   self.side = side or 1
   self.s = 0
@@ -1014,10 +1014,10 @@ end
 weapon.removeGroups["RUSH C."] = {"rushCoil", "megaBuster"}
 
 weapon.resources["RUSH C."] = function()
-    megautils.loadResource("assets/misc/weapons/rush.png", "rush")
-    megautils.loadResource("assets/sfx/mmStart.ogg", "start")
-    megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource("assets/misc/weapons/rush.animset", "rushAnims")
+    loader.load("assets/misc/weapons/rush.png", "rush")
+    loader.load("assets/sfx/mmStart.ogg", "start")
+    loader.load("assets/sfx/ascend.ogg", "ascend")
+    loader.load("assets/misc/weapons/rush.animset", "rushAnims")
     
     weapon.resources["M.BUSTER"]() -- So it's possible to use the Mega Buster shots even if the weapon wasn't already loaded in for some reason...
   end
@@ -1043,10 +1043,10 @@ weapon.shootFuncs["RUSH C."] = function(player)
 weapon.removeGroups["PROTO C."] = {"rushCoil", "megaBuster"}
 
 weapon.resources["PROTO C."] = function()
-    megautils.loadResource("assets/misc/weapons/protoRush.png", "protoRush")
-    megautils.loadResource("assets/sfx/mmStart.ogg", "start")
-    megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource("assets/misc/weapons/rush.animset", "rushAnims")
+    loader.load("assets/misc/weapons/protoRush.png", "protoRush")
+    loader.load("assets/sfx/mmStart.ogg", "start")
+    loader.load("assets/sfx/ascend.ogg", "ascend")
+    loader.load("assets/misc/weapons/rush.animset", "rushAnims")
     
     weapon.resources["P.BUSTER"]()
   end
@@ -1072,10 +1072,10 @@ weapon.shootFuncs["PROTO C."] = function(player)
 weapon.removeGroups["TANGO C."] = {"rushCoil", "megaBuster"}
 
 weapon.resources["TANGO C."] = function()
-    megautils.loadResource("assets/misc/weapons/tango.png", "tango")
-    megautils.loadResource("assets/sfx/mmStart.ogg", "start")
-    megautils.loadResource("assets/sfx/ascend.ogg", "ascend")
-    megautils.loadResource("assets/misc/weapons/rush.animset", "rushAnims")
+    loader.load("assets/misc/weapons/tango.png", "tango")
+    loader.load("assets/sfx/mmStart.ogg", "start")
+    loader.load("assets/sfx/ascend.ogg", "ascend")
+    loader.load("assets/misc/weapons/rush.animset", "rushAnims")
     
     weapon.resources["R.BUSTER"]()
   end
@@ -1109,7 +1109,7 @@ function rushCoil:new(x, y, p, side, skin)
   self.toY = (y or 0) - 9
   self:setRectangleCollision(20, 19)
   self.skin = skin
-  self.tex = megautils.getResource(skin)
+  self.tex = loader.get(skin)
   self.anims = animationSet("rushAnims")
   self.side = side or 1
   self.s = 0
@@ -1192,7 +1192,7 @@ end
 weapon.removeGroups["STICK W."] = {"stickWeapon"}
 
 weapon.resources["STICK W."] = function()
-    megautils.loadResource("assets/misc/weapons/stickWeapon.png", "stickWeapon")
+    loader.load("assets/misc/weapons/stickWeapon.png", "stickWeapon")
   end
 
 weapon.icons["STICK W."] = "assets/misc/weapons/icons/stickWeapon.png"
@@ -1222,7 +1222,7 @@ function stickWeapon:new(x, y, p, dir)
   self.x = (x or 0) - 4
   self.y = (y or 0) - 3
   self:setRectangleCollision(8, 6)
-  self.tex = megautils.getResource("stickWeapon")
+  self.tex = loader.get("stickWeapon")
   self.side = dir or 1
   self.velX = self.side * 8
   self.weaponGroup = "stickWeapon"

@@ -14,10 +14,10 @@ function playersState:switching()
   love.graphics.setBackgroundColor(0, 0, 0, 1)
 end
 
-megautils.loadResource("assets/players/mug.animset", "mugAnims")
-megautils.loadResource("assets/players/player.animset", "playerAnims")
-megautils.loadResource("assets/misc/playerSelect.png", "playerSelect")
-megautils.loadResource("assets/misc/playerSelectOutline.png", "playerSelectOutline")
+loader.load("assets/players/mug.animset", "mugAnims")
+loader.load("assets/players/player.animset", "playerAnims")
+loader.load("assets/misc/playerSelect.png", "playerSelect")
+loader.load("assets/misc/playerSelectOutline.png", "playerSelectOutline")
 
 smash = basicEntity:extend()
 
@@ -26,8 +26,8 @@ smash.invisibleToHash = true
 function smash:new()
   smash.super.new(self)
   
-  self.psTex = megautils.getResource("playerSelect")
-  self.psoTex = megautils.getResource("playerSelectOutline")
+  self.psTex = loader.get("playerSelect")
+  self.psoTex = loader.get("playerSelectOutline")
   self.players = {"assets/players/megaMan", "assets/players/protoMan", "assets/players/bass", "assets/players/roll"}
   self.colors = {}
   self.names = {}
@@ -62,10 +62,10 @@ function smash:new()
           }
         }
       
-      megautils.loadResource(self.players[i] .. "/player.png", self.players[i])
-      megautils.loadResource(self.players[i] .. "/one.png", self.players[i] .. "one")
-      megautils.loadResource(self.players[i] .. "/two.png", self.players[i] .. "two")
-      megautils.loadResource(self.players[i] .. "/outline.png", self.players[i] .. "outline")
+      loader.load(self.players[i] .. "/player.png", self.players[i])
+      loader.load(self.players[i] .. "/one.png", self.players[i] .. "one")
+      loader.load(self.players[i] .. "/two.png", self.players[i] .. "two")
+      loader.load(self.players[i] .. "/outline.png", self.players[i] .. "outline")
     else
       table.remove(self.players, i)
     end
@@ -84,7 +84,7 @@ function smash:new()
 end
 
 function smash:dm(i, x, y)
-  megautils.getResource(self.roles[i]):draw(self.anims, x, y)
+  loader.get(self.roles[i]):draw(self.anims, x, y)
 end
 
 function smash:dp(i, x, y)
@@ -94,13 +94,13 @@ function smash:dp(i, x, y)
     self.playerAnims.current = "idle"
   end
   love.graphics.setColor(1, 1, 1, 1)
-  megautils.getResource(self.players[i]):draw(self.playerAnims, x, y)
+  loader.get(self.players[i]):draw(self.playerAnims, x, y)
   love.graphics.setColor(unpack(self.colors[i].outline))
-  megautils.getResource(self.players[i] .. "outline"):draw(self.playerAnims, x, y)
+  loader.get(self.players[i] .. "outline"):draw(self.playerAnims, x, y)
   love.graphics.setColor(unpack(self.colors[i].one))
-  megautils.getResource(self.players[i] .. "one"):draw(self.playerAnims, x, y)
+  loader.get(self.players[i] .. "one"):draw(self.playerAnims, x, y)
   love.graphics.setColor(unpack(self.colors[i].two))
-  megautils.getResource(self.players[i] .. "two"):draw(self.playerAnims, x, y)
+  loader.get(self.players[i] .. "two"):draw(self.playerAnims, x, y)
   love.graphics.setColor(1, 1, 1, 1)
 end
 
