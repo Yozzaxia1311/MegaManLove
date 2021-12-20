@@ -1,4 +1,4 @@
-megautils.loadResource("demo/stickMan.animset", "stickManAnims")
+megautils.loadResource("demo/stickMan/stickMan.animset", "stickManAnims")
 
 stickMan = bossEntity:extend()
 mapEntity.register(stickMan, nil, nil, 0, 8, 12, 24)
@@ -15,7 +15,7 @@ function stickMan:new(overrideX, overrideY)
   self.flipFace = true
   
   -- Stage select and boss intro exclusive.
-  self.mugshotPath = "demo/stickManMug.png"
+  self.mugshotPath = "demo/stickMan/stickManMug.png"
   self.bossIntroText = "STICK MAN"
   self.stageState = "demo/demo.stage.tmx"
   
@@ -53,10 +53,10 @@ function stickMan:added()
   self:useHealthBar({128, 128, 128}, {255, 255, 255})
 end
 
-function stickMan:weaponTable(o)
-  if o:is(stickWeapon) then -- The weakness
+function stickMan:weaponTable(other)
+  if other:is(stickWeapon) then -- The weakness
     return -8
-  elseif o:is(megaChargedBuster) then -- Semi-weakness
+  elseif other:is(megaChargedBuster) then -- Semi-weakness
     return -3
   elseif self.changeHealth < 0 then
     return -1

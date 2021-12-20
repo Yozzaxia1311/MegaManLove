@@ -135,7 +135,7 @@ function initEngine()
   -- [RM 6] [RM 7] [RM 8]
   globals.robotMasterEntities = { -- Every value in this list should either be a function, or a `.lua` file that returns an entity.
       nil, nil, nil,
-      nil, wilyIntro, "demo/stickman.lua",
+      nil, wilyIntro, "demo/stickMan/stickman.lua",
       nil, nil, nil
     }
   

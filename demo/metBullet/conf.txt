@@ -1,9 +1,0 @@
-baseClass: weapon
-
-image1: demo/met.png
-image1Quad: 36, 0, 6, 6
-
-collision: 6, 6
-recycle: true
-enemyWeapon: true
-damage: -2

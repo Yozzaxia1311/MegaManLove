@@ -3,7 +3,7 @@
  <tileset firstgid="1" source="demoTemplateTilesetStickMan.tsx"/>
  <object name="stickMan" gid="39" width="21" height="32">
   <properties>
-   <property name="run" type="file" value="stickman.lua"/>
+   <property name="run" type="file" value="../stickMan/stickman.lua"/>
   </properties>
  </object>
 </template>

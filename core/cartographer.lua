@@ -1221,20 +1221,20 @@ local function finalXML2LuaTable(str, f)
             v.objects = v.object
             v.object = nil
 
-            local function templateParenting(j, fcache)
+            local function templateParenting(j, fcache, p)
               local tf = {}
-              local usePath = path
+              local usePath = p
 
               if j.template then
+                usePath = j.template:getAbsolutePath(usePath)
                 if not fcache[path .. j.template] then
-                  usePath = j.template:getAbsolutePath(path)
                   if not love.filesystem.getInfo(usePath) then
                     error("No such template file '" .. j.template .. "'")
                   end
                   fcache[path .. j.template] = xml2lua:parse(love.filesystem.read(usePath)).template.object
-                  usePath = usePath:getDirectory()
                 end
-                tf = templateParenting(table.clone(fcache[path .. j.template]), fcache)
+                usePath = usePath:getDirectory()
+                tf = templateParenting(table.clone(fcache[path .. j.template]), fcache, usePath)
               end
 
               j.type = j.type == nil and (tf.type == nil and "" or tf.type) or j.type
@@ -1342,7 +1342,7 @@ local function finalXML2LuaTable(str, f)
 
             local tcache = {}
             for i, j in pairs(v.objects) do
-              j = templateParenting(j, tcache)
+              j = templateParenting(j, tcache, path)
               if j.gid then
                 j.y = j.y - j.height
               end
@@ -1363,7 +1363,7 @@ local function finalXML2LuaTable(str, f)
           v.opacity = tonumber(v.opacity) or 1
           v.offsetx = tonumber(v.offsetx) or 0
           v.offsety = tonumber(v.offsety) or 0
-          v.image = v.image.source
+          v.image = v.image.source:getAbsolutePath(path)
         elseif v.type == "group" then
           v.id = tonumber(v.id)
           v.visible = v.visible ~= "0"

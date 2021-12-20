@@ -12,9 +12,9 @@
  </properties>
  <tileset firstgid="1" source="../assets/states/tilesets/testTileset.tsx"/>
  <tileset firstgid="29" source="../assets/states/templates/templateTileset32x32.tsx"/>
- <tileset firstgid="479" source="demoTemplateTilesetMet.tsx"/>
- <tileset firstgid="2107" source="demoTemplateTilesetStickMan.tsx"/>
- <tileset firstgid="2791" source="demoTemplateTilesetMoveAcrossPlatform.tsx"/>
+ <tileset firstgid="479" source="templates/demoTemplateTilesetMet.tsx"/>
+ <tileset firstgid="2107" source="templates/demoTemplateTilesetStickMan.tsx"/>
+ <tileset firstgid="2791" source="templates/demoTemplateTilesetMoveAcrossPlatform.tsx"/>
  <tileset firstgid="3716" source="../assets/states/templates/templateTileset16x16.tsx"/>
  <tileset firstgid="5566" source="../assets/states/templates/templateTileset32x16.tsx"/>
  <layer id="1" name="layout" width="16" height="14">
@@ -441,8 +441,8 @@
      <property name="dir" value="down"/>
     </properties>
    </object>
-   <object id="168" template="stickMan.tx" x="464" y="864"/>
-   <object id="169" template="stickMan.tx" x="848" y="864"/>
+   <object id="168" template="templates/stickMan.tx" x="464" y="864"/>
+   <object id="169" template="templates/stickMan.tx" x="848" y="864"/>
   </objectgroup>
   <objectgroup id="4" name="collision">
    <object id="3" template="../assets/states/templates/collision/solid.tx" x="48" y="160" width="224" height="64"/>
@@ -544,27 +544,27 @@
      <property name="dir" type="int" value="-1"/>
     </properties>
    </object>
-   <object id="49" template="moveAcrossPlatform.tx" x="240" y="64">
+   <object id="49" template="templates/moveAcrossPlatform.tx" x="240" y="64">
     <properties>
      <property name="toX" type="int" value="400"/>
      <property name="toY" type="int" value="42"/>
     </properties>
    </object>
-   <object id="50" template="met.tx" x="240" y="160"/>
-   <object id="51" template="met.tx" x="480" y="160"/>
+   <object id="50" template="templates/met.tx" x="240" y="160"/>
+   <object id="51" template="templates/met.tx" x="480" y="160"/>
    <object id="52" template="../assets/states/templates/mechanics/gravFlip.tx" x="432" y="32" width="16" height="128">
     <properties>
      <property name="dir" type="int" value="1"/>
     </properties>
    </object>
-   <object id="53" template="moveAcrossPlatform.tx" x="512" y="144">
+   <object id="53" template="templates/moveAcrossPlatform.tx" x="512" y="144">
     <properties>
      <property name="toX" type="int" value="560"/>
      <property name="toY" type="int" value="96"/>
     </properties>
    </object>
-   <object id="65" template="met.tx" x="880" y="-144"/>
-   <object id="66" template="met.tx" x="592" y="-144"/>
+   <object id="65" template="templates/met.tx" x="880" y="-144"/>
+   <object id="66" template="templates/met.tx" x="592" y="-144"/>
    <object id="113" template="../assets/states/templates/player/checkpoint.tx" x="688" y="-208">
     <properties>
      <property name="name" value="one"/>
@@ -616,10 +616,10 @@
  </group>
  <objectgroup id="7" name="help">
   <object id="261" x="128" y="80" width="272" height="64">
-   <text pixelsize="7" wrap="1" halign="center">To get started, open the project overview (View -&gt; Views and Toolbars -&gt; Project) and template editor (View -&gt; Views and Toolbars -&gt; Template Editor), open the project (Project -&gt; Open Project...) named &quot;tiledProject.tiled-project&quot; in the game's base directory. In the project overview, navigate to &quot;assets/states/templates&quot;, where all template objects are categorized in subdirectories. Select a template object of your choice, and use the Insert Template tool (in toolbar) to place objects.</text>
+   <text pixelsize="7" wrap="1" halign="center">Display the project overview (View -&gt; Views and Toolbars -&gt; Project) and template editor (View -&gt; Views and Toolbars -&gt; Template Editor), open the project (Project -&gt; Open Project...) named &quot;tiledProject.tiled-project&quot; in the game's base directory. In the project overview, navigate to &quot;assets/states/templates&quot;, where all template objects are categorized in subdirectories. Select a template object of your choice, and use the Insert Template tool (in toolbar) to place objects.</text>
   </object>
   <object id="262" x="128" y="64" width="272" height="16">
-   <text pixelsize="12" wrap="1" bold="1" halign="center">How to Place Objects:</text>
+   <text pixelsize="12" wrap="1" bold="1" halign="center">How to Place Template Objects:</text>
   </object>
  </objectgroup>
 </map>
