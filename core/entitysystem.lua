@@ -2202,7 +2202,9 @@ function bossEntity:_update()
   self.autoGravity.firstFrame = nil
 end
 
-function bossEntity:draw()
+function bossEntity:_draw()
+  bossEntity.super._draw(self)
+  
   if self.doBossIntro and self.bossIntroText and self._halfWidth then
     love.graphics.print(self.bossIntroText:sub(0, self._textPos or 0), (view.w/2)-self._halfWidth, 142)
   end
