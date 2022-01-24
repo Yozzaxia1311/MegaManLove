@@ -280,52 +280,54 @@ end
 function stageSelect:draw()
   if not self:checkRequirements() then
     megaMan.getSkin(1).texture:draw(self.anims, 32+(1*81), 32+(1*64), 0, 1, 1, 16, 15)
-    
-    for x=0, 2 do
-      for y=0, 2 do
-        local i = 1
-        
-        if x == 0 and y == 0 then
-          i = 1
-        elseif x == 1 and y == 0 then
-          i = 2
-        elseif x == 2 and y == 0 then
-          i = 3
-        elseif x == 0 and y == 1 then
-          i = 4
-        elseif x == 1 and y == 1 then
-          i = 5
-        elseif x == 2 and y == 1 then
-          i = 6
-        elseif x == 0 and y == 2 then
-          i = 7
-        elseif x == 1 and y == 2 then
-          i = 8
-        elseif x == 2 and y == 2 then
-          i = 9
-        end
-        
-        if i ~= 5 and globals.robotMasterEntities[i] and self.slots[i] and
-          self.images[i] and not globals.defeats[self.slots[i].defeatSlot] then
-          self.images[i]:draw(32+(x*81), 32+(y*64))
-          
-          if self.names[i] then
-            love.graphics.setFont(menuFont)
-            love.graphics.setShader(slShader)
-            if self.names[i][1] then
-              love.graphics.print(self.names[i][1], 22+(x*81), 72+(y*64))
-            end
-            if self.names[i][2] then
-              love.graphics.printf(self.names[i][2], -58+(x*81), 80+(y*64), 128, "right")
-            end
-            love.graphics.setShader()
-          end
-        end
-      end
-    end
   else
     self.tex:draw(self.wilyQuad, 32+(1*81), 32+(1*64))
   end
+  
+  for x=0, 2 do
+    for y=0, 2 do
+      local i = 1
+      
+      if x == 0 and y == 0 then
+        i = 1
+      elseif x == 1 and y == 0 then
+        i = 2
+      elseif x == 2 and y == 0 then
+        i = 3
+      elseif x == 0 and y == 1 then
+        i = 4
+      elseif x == 1 and y == 1 then
+        i = 5
+      elseif x == 2 and y == 1 then
+        i = 6
+      elseif x == 0 and y == 2 then
+        i = 7
+      elseif x == 1 and y == 2 then
+        i = 8
+      elseif x == 2 and y == 2 then
+        i = 9
+      end
+      
+      if i ~= 5 and globals.robotMasterEntities[i] and self.slots[i] then
+        if self.images[i] and not globals.defeats[self.slots[i].defeatSlot] then
+          self.images[i]:draw(32+(x*81), 32+(y*64))
+        end
+        
+        if self.names[i] then
+          love.graphics.setFont(menuFont)
+          love.graphics.setShader(slShader)
+          if self.names[i][1] then
+            love.graphics.print(self.names[i][1], 22+(x*81), 72+(y*64))
+          end
+          if self.names[i][2] then
+            love.graphics.printf(self.names[i][2], -58+(x*81), 80+(y*64), 128, "right")
+          end
+          love.graphics.setShader()
+        end
+      end
+    end
+  end
+  
   if (self.blink and not self.stop) or self.selected then
     self.tex:draw(self.blinkQuad, self.x, self.y)
   end
