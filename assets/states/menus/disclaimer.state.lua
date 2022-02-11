@@ -22,7 +22,7 @@ function disclaimer:new()
   self.check = false
   self.cycler = 1
   self.colors = {{0, 70, 90}, {0, 120, 248}, {60, 188, 252}, {255, 255, 255}}
-  self.disclaimerText = "Mega Man and all related content © Capcom 2021." .. 
+  self.disclaimerText = "Mega Man and all related content © Capcom 2022." .. 
     "\n\n\n\nThe Mega Man Love engine is a non-profit fan-made engine created by " .. 
     "various contributors.\n\nIt is not for sale.\n\n" .. 
     "Have fun!"
