@@ -151,7 +151,7 @@ function stageSelect:update()
   
   if oldx ~= self.sx or oldy ~= self.sy then
     if not input.usingTouch then
-      megautils.playSound("cursorMove")
+      sfx.play("cursorMove")
     end
     local newx, newy = 0, 0
     if self.sx == 0 and self.sy == 0 then
@@ -250,13 +250,13 @@ function stageSelect:update()
       self.timer = 0
       self.x = self.oldX + self.sx*80
       self.y = self.oldY + self.sy*64
-      megautils.stopMusic()
-      megautils.playSound("selected")
+      music.stop()
+      sfx.play("selected")
     end
   elseif (input.pressed.select1 or input.touchPressedOverlaps(8 - 4, (27 * 8) - 4, 32 + 8, 16 + 8)) and not self.stop then
     self.stop = true
     megautils.transitionToState(globals.menuState)
-    megautils.stopMusic()
+    music.stop()
   else
     self.timer = math.wrap(self.timer+1, 0, 14)
     self.blink = self.timer < 7

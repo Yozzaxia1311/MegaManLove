@@ -1,233 +1,332 @@
-mmMusic = {}
+sfx = {}
 
-function mmMusic.ser()
+sfx._cachedMutes = {}
+sfx.curS = {}
+
+function sfx.updateGMEVoiceMutes()
+  for voice, s in safepairs(sfx._cachedMutes) do
+    if not s:isPlaying() then
+      sfx._cachedMutes[voice] = nil
+    else
+      music.GMEPushMuteVoice(voice)
+    end
+  end
+end
+
+function sfx.play(p, l, v, stack, muteGMEVoices)
+  if loader.get(p) then
+    if not stack then
+      loader.get(p):stop()
+    end
+    local resTable = loader.getTable(p)
+    if resTable.conf and resTable.conf.muteGMEVoices then
+      if type(resTable.conf.muteGMEVoices) == "number" then
+        sfx._cachedMutes[resTable.conf.muteGMEVoices] = resTable.data
+        music.GMEPushMuteVoice(resTable.conf.muteGMEVoices)
+      else
+        for _, voice in pairs(resTable.conf.muteGMEVoices) do
+          sfx._cachedMutes[voice] = resTable.data
+          music.GMEPushMuteVoice(voice)
+        end
+      end
+    end
+    resTable.data:setLooping(l or false)
+    resTable.data:setVolume(v or 1)
+    resTable.data:play()
+    
+    return resTable.data
+  else
+    error("Sound \"" .. p .. "\" doesn't exist.")
+  end
+end
+
+function sfx.playFromFile(p, l, v, stack)
+  local s = sfx.curS.data
+  if s and not stack then
+    s:stop()
+  end
+  if not s or sfx.curS.id ~= p then
+    if s then
+      s:release()
+    end
+    s = love.audio.newSource(p, "static")
+    
+    sfx.curS.conf = love.filesystem.getInfo(p .. ".txt") and parseConf(p .. ".txt")
+    if sfx.curS.conf and sfx.curS.conf.muteGMEVoices then
+      if type(megautils._curS.conf.muteGMEVoices) == "number" then
+        sfx._cachedMutes[sfx.curS.conf.muteGMEVoices] = s
+        music.GMEPushMuteVoice(sfx.curS.conf.muteGMEVoices)
+      else
+        for _, voice in pairs(sfx.curS.conf.muteGMEVoices) do
+          sfx._cachedMutes[voice] = s
+          music.GMEPushMuteVoice(voice)
+        end
+      end
+    end
+  end
+  s:setLooping(not not l)
+  s:setVolume(v or 1)
+  s:play()
+  sfx.curS.id = p
+  sfx.curS.data = s
+  
+  return s
+end
+
+function sfx.stop(s)
+  if loader.get(s) then
+    loader.get(s):stop()
+  end
+  if s == sfx.curS.id and sfx.curS.data then
+    sfx.curS.data:stop()
+  end
+end
+
+function sfx.stopAll()
+  for _, v in pairs(loader.resources) do
+    if v.type == "sound" then
+      v.data:stop()
+    end
+  end
+  for _, v in pairs(loader.locked) do
+    if v.type == "sound" then
+      v.data:stop()
+    end
+  end
+  if sfx.curS.data then
+    sfx.curS.data:stop()
+  end
+end
+
+music = {}
+
+function music.ser()
   return {
-      paused=mmMusic.paused,
-      curID=mmMusic.curID,
-      playing=not mmMusic.stopped(),
-      volume=mmMusic.getVolume(),
-      queue=mmMusic.queue,
-      locked=mmMusic.locked,
-      track=mmMusic.track,
-      mutes=mmMusic._mutes,
-      pushMute=mmMusic._pushMute
+      paused=music.paused,
+      curID=music.curID,
+      playing=not music.stopped(),
+      volume=music.getVolume(),
+      queue=music.queue,
+      locked=music.locked,
+      track=music.track,
+      mutes=music._mutes,
+      pushMute=music._pushMute,
+      tell=music.tell()
     }
 end
 
-function mmMusic.deser(t)
-  mmMusic.locked = false
-  mmMusic.stop()
-  mmMusic.curID = t.curID
-  mmMusic._queue = t.queue
+function music.deser(t)
+  music.locked = false
+  music.stop()
+  music.curID = t.curID
+  music._queue = t.queue
   if t.mutes then
-    mmMusic._mutes = t.mutes
-    for v, b in safepairs(mmMusic._mutes) do
-      mmMusic.muteGMEVoice(v, b)
+    music._mutes = t.mutes
+    for v, b in safepairs(music._mutes) do
+      music.muteGMEVoice(v, b)
     end
   end
   if t.pushMute then
-    mmMusic._pushMute = t.pushMute
+    music._pushMute = t.pushMute
   end
   if t.curID and t.playing then
-    mmMusic.play(t.curID, t.volume, t.track)
+    music.play(t.curID, t.volume, t.track, t.tell)
   end
   if t.paused then
-    mmMusic.pause()
+    music.pause()
   end
-  mmMusic.locked = t.locked
+  music.locked = t.locked
 end
 
-mmMusic.music = nil
-mmMusic.curID = nil
-mmMusic.locked = false
-mmMusic.loop = true
-mmMusic.paused = true
-mmMusic.stopping = true
-mmMusic.vol = 1
-mmMusic.type = 1
-mmMusic._queue = nil
+music.music = nil
+music.curID = nil
+music.locked = false
+music.loop = true
+music.paused = true
+music.stopping = true
+music.vol = 1
+music.type = 1
+music._queue = nil
 
 if canUseGME then
-  mmMusic.gme = loveGME()
-  mmMusic.track = nil
-  mmMusic._mutes = {}
-  mmMusic._pushMute = {}
+  music.gme = loveGME()
+  music.track = nil
+  music._mutes = {}
+  music._pushMute = {}
 end
 
-function mmMusic.setVolume(v)
-  if mmMusic.locked then return end
+function music.setVolume(v)
+  if music.locked then return end
   
-  if compatMusicMode or mmMusic.type ~= 1 then
-    if mmMusic.music then
-      mmMusic.music:setVolume(v or mmMusic.vol)
+  if compatMusicMode or music.type ~= 1 then
+    if music.music then
+      music.music:setVolume(v or music.vol)
     end
-  elseif mmMusic.thread:isRunning() then
-    mmMusic.threadChannel:push("vol")
-    mmMusic.threadChannel:push(v or mmMusic.vol)
+  elseif music.thread:isRunning() then
+    music.threadChannel:push("vol")
+    music.threadChannel:push(v or music.vol)
   end
   
-  mmMusic.vol = v or mmMusic.vol
+  music.vol = v or music.vol
 end
 
-function mmMusic.getVolume()
-  return mmMusic.vol
+function music.getVolume()
+  return music.vol
 end
 
-function mmMusic.stop()
-  if mmMusic.locked then return end
+function music.stop()
+  if music.locked then return end
   
-  if not compatMusicMode and mmMusic.thread:isRunning() then
-    mmMusic.threadChannel:push("stop")
-    mmMusic.thread:wait()
+  if not compatMusicMode and music.thread:isRunning() then
+    music.threadChannel:push("stop")
+    music.thread:wait()
   end
   
-  mmMusic.curID = nil
-  mmMusic._queue = nil
+  music.curID = nil
+  music._queue = nil
   
-  if compatMusicMode or mmMusic.type ~= 1 then
-    mmMusic.loopPoint = 0
-    mmMusic._time = 0
-    mmMusic._tell = 0
-    mmMusic.stopping = true
-    mmMusic.vol = 1
-    mmMusic.loopEndPoint = nil
-    mmMusic.loopEndOffset = nil
-    mmMusic.track = nil
-    if mmMusic.music then
-      mmMusic.music:stop()
-      if mmMusic.music ~= mmMusic.gme then mmMusic.music:release() end
-      mmMusic.music = nil
+  if compatMusicMode or music.type ~= 1 then
+    music.loopPoint = 0
+    music._time = 0
+    music._tell = nil
+    music.stopping = true
+    music.vol = 1
+    music.loopEndPoint = nil
+    music.loopEndOffset = nil
+    music.track = nil
+    if music.music then
+      music.music:stop()
+      if music.music ~= music.gme then music.music:release() end
+      music.music = nil
     end
-    if mmMusic._ml then
-      mmMusic._ml:release()
-      mmMusic._ml = nil
+    if music._ml then
+      music._ml:release()
+      music._ml = nil
     end
   end
 end
 
-function mmMusic.stopped()
-  if compatMusicMode or mmMusic.type ~= 1 then
-    return mmMusic.stopping
+function music.stopped()
+  if compatMusicMode or music.type ~= 1 then
+    return music.stopping
   else
-    return not mmMusic.thread:isRunning()
+    return not music.thread:isRunning()
   end
 end
 
-function mmMusic.pause()
-  if mmMusic.locked then return end
+function music.pause()
+  if music.locked then return end
   
-  if (compatMusicMode or mmMusic.type ~= 1) then
-    if not mmMusic.paused and mmMusic.music then
-      mmMusic.music:pause()
-      mmMusic.paused = true
+  if (compatMusicMode or music.type ~= 1) then
+    if not music.paused and music.music then
+      music.music:pause()
+      music.paused = true
     end
-  elseif mmMusic.thread:isRunning() and not mmMusic.paused then
-    mmMusic.threadChannel:push("pause")
-    mmMusic.paused = true
+  elseif music.thread:isRunning() and not music.paused then
+    music.threadChannel:push("pause")
+    music.paused = true
   end
 end
 
-function mmMusic.unpause()
-  if mmMusic.locked then return end
+function music.unpause()
+  if music.locked then return end
   
-  if (compatMusicMode or mmMusic.type ~= 1) then
-    if mmMusic.paused and mmMusic.music then
-      mmMusic.music:play()
-      mmMusic.paused = false
+  if (compatMusicMode or music.type ~= 1) then
+    if music.paused and music.music then
+      music.music:play()
+      music.paused = false
     end
-  elseif mmMusic.thread:isRunning() and mmMusic.paused then
-    mmMusic.threadChannel:push("unpause")
-    mmMusic.paused = false
+  elseif music.thread:isRunning() and music.paused then
+    music.threadChannel:push("unpause")
+    music.paused = false
   end
 end
 
-function mmMusic.seek(s)
-  if mmMusic.locked then return end
+function music.seek(s)
+  if music.locked then return end
   
-  if compatMusicMode == 1 or mmMusic.type == 2 then
-    if mmMusic.music then
-      mmMusic.music:seek(s)
+  if compatMusicMode or music.type == 2 or music.type == 3 then
+    if music.music then
+      music.music:seek(s)
     end
-  elseif compatMusicMode == 2 then
-    error("Compatibility music mode 2 cannot seek audio. (Too buggy for web!)")
-  elseif mmMusic.thread:isRunning() then
-    mmMusic.threadChannel:push("seek")
-    mmMusic.threadChannel:push(s)
+  elseif music.thread:isRunning() then
+    music.threadChannel:push("seek")
+    music.threadChannel:push(s)
   end
 end
 
-function mmMusic.tell()
-  if compatMusicMode == 1 or mmMusic.type == 2 then
-    return mmMusic.music and mmMusic.music:tell()
+function music.tell()
+  if compatMusicMode or music.type == 2 or music.type == 3 then
+    return music.music and music.music:tell()
   else
-    return mmMusic._tell
+    return music._tell
   end
 end
 
-function mmMusic.muteGMEVoice(v, b)
-  if mmMusic.locked then return end
+function music.muteGMEVoice(v, b)
+  if music.locked then return end
   
-  if mmMusic.gme and mmMusic._mutes then
-    mmMusic._mutes[v] = not not b
-    if mmMusic.type == 3 and mmMusic.gme.voice_count > 0 then
-      mmMusic.gme:muteVoice(v, not not b)
+  if music.gme and music._mutes then
+    music._mutes[v] = not not b
+    if music.type == 3 and music.gme.voice_count > 0 then
+      music.gme:muteVoice(v, not not b)
     end
   end
 end
 
-function mmMusic.isGMEVoiceMute(v)
-  return mmMusic._mutes and mmMusic._mutes[v]
+function music.isGMEVoiceMute(v)
+  return music._mutes and music._mutes[v]
 end
 
-function mmMusic.GMEPushMuteVoice(v)
-  if mmMusic.locked then return end
+function music.GMEPushMuteVoice(v)
+  if music.locked then return end
   
-  if mmMusic._pushMute then
-    if not mmMusic._pushMute[v] then
-      mmMusic._pushMute[v] = {1}
+  if music._pushMute then
+    if not music._pushMute[v] then
+      music._pushMute[v] = {1}
     else
-      mmMusic._pushMute[v][1] = 1
+      music._pushMute[v][1] = 1
     end
   end
 end
 
-function mmMusic.setLock(w)
-  mmMusic.locked = not not w
-  if not compatMusicMode and mmMusic.thread:isRunning() then
-    mmMusic.threadChannel:push("lock")
-    mmMusic.threadChannel:push(mmMusic.locked)
+function music.setLock(w)
+  music.locked = not not w
+  if not compatMusicMode and music.thread:isRunning() then
+    music.threadChannel:push("lock")
+    music.threadChannel:push(music.locked)
   end
 end
 
-function mmMusic.isLocked()
-  return mmMusic.locked
+function music.isLocked()
+  return music.locked
 end
 
-function mmMusic.checkQueue()
-  if mmMusic._queue then
-    mmMusic.play(mmMusic._queue[1], mmMusic._queue[2], mmMusic._queue[3])
-    mmMusic._queue = nil
+function music.checkQueue()
+  if music._queue then
+    music.play(music._queue[1], music._queue[2], music._queue[3])
+    music._queue = nil
   end
 end
 
-function mmMusic.playq(path, vol, from)
-  mmMusic._queue = {path, vol, from}
+function music.playq(path, vol, track, from)
+  music._queue = {path, vol, track, from}
 end
 
-function mmMusic.play(path, vol, track)
-  if mmMusic.locked or (mmMusic.curID == path and mmMusic.track == track and not mmMusic.stopped()) then return end
+function music.play(path, vol, track, from)
+  if music.locked or (music.curID == path and music.track == track and not music.stopped()) then return end
   
-  mmMusic.stop()
+  music.stop()
   
-  mmMusic.type = 1
+  music.type = 1
   if checkExt(path, {"699", "amf", "ams", "dbm", "dmf", "dsm", "far", "it", "j2b",
     "mdl", "med", "mod", "mt2", "mtm", "okt", "psm", ".3m", "stm", "ult", "umx", "xm",
     "abc", "mid", "pat"}) then
-    mmMusic.type = 2
+    music.type = 2
   elseif checkExt(path, {"ay", "gbs", "gym", "hes", "kss", "nsf", "nsfe", "sap", "spc",
     "vgm", "vgz"}) then
-    mmMusic.type = 3
-    mmMusic.track = track or 0
+    music.type = 3
+    music.track = track or 0
   end
   
   local t = {}
@@ -236,25 +335,25 @@ function mmMusic.play(path, vol, track)
     t = parseConf(path .. ".txt")
   end
   
-  mmMusic.curID = path
-  mmMusic._time = 0
-  mmMusic._tell = mmMusic._time
-  mmMusic.loopPoint = t.loopPoint or 0
-  mmMusic.loop = t.loop == nil or t.loop
-  mmMusic.vol = vol or mmMusic.vol
-  mmMusic.stopping = false
-  mmMusic.paused = false
-  mmMusic._ml = nil
-  mmMusic.music = nil
-  mmMusic.track = track or 0
+  music.curID = path
+  music._time = from or 0
+  music._tell = music._time
+  music.loopPoint = t.loopPoint or 0
+  music.loop = t.loop == nil or t.loop
+  music.vol = vol or music.vol
+  music.stopping = false
+  music.paused = false
+  music._ml = nil
+  music.music = nil
+  music.track = track or 0
   
-  if mmMusic.type == 1 then
-    if compatMusicMode == 1 then
-      if mmMusic.loop and mmMusic.loopPoint > 0 then
-        local tmp = love.sound.newSoundData(mmMusic.curID)
-        local lpSamples = mmMusic.loopPoint * tmp:getSampleRate()
-        mmMusic.loopEndPoint = tmp:getDuration()
-        mmMusic.loopEndOffset = mmMusic.loopEndPoint - mmMusic.loopPoint
+  if music.type == 1 then
+    if compatMusicMode then
+      if music.loop and music.loopPoint > 0 then
+        local tmp = love.sound.newSoundData(music.curID)
+        local lpSamples = music.loopPoint * tmp:getSampleRate()
+        music.loopEndPoint = tmp:getDuration()
+        music.loopEndOffset = music.loopEndPoint - music.loopPoint
         local nm = love.sound.newSoundData(tmp:getSampleCount() + tmp:getSampleRate(),
           tmp:getSampleRate(), tmp:getBitDepth(), tmp:getChannelCount())
         
@@ -275,91 +374,53 @@ function mmMusic.play(path, vol, track)
           end
         end
         
-        mmMusic.music = love.audio.newSource(nm)
+        music.music = love.audio.newSource(nm)
         tmp:release()
         tmp = nil
       else
-        mmMusic.music = love.audio.newSource(mmMusic.curID, "static")
+        music.music = love.audio.newSource(music.curID, "static")
       end
-      if mmMusic.loop then
-        mmMusic.music:setLooping(mmMusic.loopPoint == 0)
+      if music.loop then
+        music.music:setLooping(music.loopPoint == 0)
       else
-        mmMusic.music:setLooping(false)
+        music.music:setLooping(false)
       end
-      mmMusic.setVolume(mmMusic.vol)
-      mmMusic.seek(mmMusic._time)
-      mmMusic.music:play()
-    elseif compatMusicMode == 2 then
-      if mmMusic.loop and mmMusic.loopPoint > 0 then
-        error("Compatibility music mode 2 cannot have audio with intros. (FRUSTRATING WEB BUG)")
-        
-        local tmp = love.sound.newSoundData(mmMusic.curID)
-        local intro = love.sound.newSoundData(math.floor(mmMusic.loopPoint * tmp:getSampleRate()), tmp:getSampleRate(),
-          tmp:getBitDepth(), tmp:getChannelCount())
-        local music = love.sound.newSoundData(tmp:getSampleCount() - intro:getSampleCount(), tmp:getSampleRate(),
-          tmp:getBitDepth(), tmp:getChannelCount())
-        
-        for ch = 1, tmp:getChannelCount() do
-          for i = 0, intro:getSampleCount() - 1 do
-            intro:setSample(i, ch, tmp:getSample(i, ch))
-          end
-        end
-        local lps = intro:getSampleCount()
-        for ch = 1, tmp:getChannelCount() do
-          for i = 0, music:getSampleCount() - 1 do
-            music:setSample(i, ch, tmp:getSample(lps + i, ch))
-          end
-        end
-        
-        mmMusic.music = love.audio.newQueueableSource(tmp:getSampleRate(), tmp:getBitDepth(), tmp:getChannelCount(), 3)
-        mmMusic.setVolume(mmMusic.vol)
-        mmMusic._ml = music
-        mmMusic.music:queue(intro)
-        mmMusic.music:queue(music)
-        
-        tmp:release()
-        tmp = nil
-        
-        mmMusic.music:play()
-      else
-        mmMusic.music = love.audio.newSource(mmMusic.curID, "static")
-        mmMusic.music:setLooping(mmMusic.loop)
-        mmMusic.setVolume(mmMusic.vol)
-        mmMusic.music:play()
-      end
+      music.setVolume(music.vol)
+      music.seek(music._time)
+      music.music:play()
     else
-      mmMusic.thread:start(mmMusic.curID, mmMusic.loop, mmMusic.loopPoint, mmMusic._time, mmMusic.vol, mmMusic.type)
-      mmMusic.setLock(mmMusic.locked)
+      music.thread:start(music.curID, music.loop, music.loopPoint, music._time, music.vol, music.type)
+      music.setLock(music.locked)
     end
-  elseif mmMusic.type == 2 then
-    mmMusic.music = love.audio.newSource(mmMusic.curID, "stream")
-    mmMusic.setVolume(mmMusic.vol)
-    mmMusic.setLock(mmMusic.locked)
-    mmMusic.music:play()
-  elseif mmMusic.type == 3 then
+  elseif music.type == 2 then
+    music.music = love.audio.newSource(music.curID, "stream")
+    music.setVolume(music.vol)
+    music.setLock(music.locked)
+    music.music:play()
+  elseif music.type == 3 then
     if not canUseGME then
-      local exists = love.filesystem.getInfo(mmMusic.curID .. ".txt")
+      local exists = love.filesystem.getInfo(music.curID .. ".txt")
       if love.system.getOS() == "Linux" then
-        assert(love.filesystem.getInfo(mmMusic.curID .. ".txt"), "No backup music or libgme." ..
-          "(Install libgme with 'sudo apt install libgme-dev')")
+        assert(love.filesystem.getInfo(music.curID .. ".txt"), "No backup music or libgme. " ..
+          "(Install 'libgme-dev' with your package manager)")
       else
-        assert(love.filesystem.getInfo(mmMusic.curID .. ".txt"), "Backup music conf does not exist")
+        assert(love.filesystem.getInfo(music.curID .. ".txt"), "Backup music conf does not exist")
       end
-      local bConf = parseConf(mmMusic.curID .. ".txt")
-      assert(bConf["backup" .. mmMusic.track], "Backup music not listed in conf")
-      mmMusic.play(bConf["backup" .. mmMusic.track], mmMusic.vol)
+      local bConf = parseConf(music.curID .. ".txt")
+      assert(bConf["backup" .. music.track], "Backup music not listed in conf")
+      music.play(bConf["backup" .. music.track], music.vol)
       return
     else
-      assert(not isWeb and not isMobile, "libgme is desktop only")
-      assert(ffi, "FFI is required for libgme")
-      mmMusic.music = mmMusic.gme
-      mmMusic.music:loadFile(mmMusic.curID)
-      for voice, bool in safepairs(mmMusic._mutes) do
-        mmMusic.muteGMEVoice(voice, bool)
+      assert(loveGME, "LoveGME could not be loaded.")
+      music.music = music.gme
+      music.music:loadFile(music.curID)
+      for voice, bool in safepairs(music._mutes) do
+        music.muteGMEVoice(voice, bool)
       end
-      mmMusic.music:setTrack(mmMusic.track)
-      mmMusic.music:play()
-      mmMusic.setLock(mmMusic.locked)
+      music.music:setTrack(music.track)
+      music.music:seek(music._time)
+      music.music:play()
+      music.setLock(music.locked)
     end
   end
   
@@ -367,76 +428,79 @@ function mmMusic.play(path, vol, track)
   collectgarbage()
 end
 
-function mmMusic.update()
-  if mmMusic.type == 1 then
-    if compatMusicMode == 1 then
-      if mmMusic.music and mmMusic.loop and not mmMusic.stopping and not mmMusic.paused and mmMusic.music:isPlaying() and
-        mmMusic.loopPoint > 0 and mmMusic.music:tell() > mmMusic.loopEndPoint then
-        mmMusic.music:seek(mmMusic.music:tell() - mmMusic.loopEndOffset)
-      end
-    elseif compatMusicMode == 2 then
-      if mmMusic._ml and mmMusic.music and not mmMusic.stopping and not mmMusic.paused then
-        while mmMusic.music:getFreeBufferCount() ~= 0 do
-          mmMusic.music:queue(mmMusic._ml)
-        end
+function music.update()
+  if music.type == 1 then
+    if compatMusicMode then
+      if music.music and music.loop and not music.stopping and not music.paused and music.music:isPlaying() and
+        music.loopPoint > 0 and music.music:tell() > music.loopEndPoint then
+        music.music:seek(music.music:tell() - music.loopEndOffset)
       end
     else
-      while not mmMusic.stopping do
-        local value = mmMusic.mainChannel:pop()
+      while not music.stopping do
+        local value = music.mainChannel:pop()
         if value ~= nil then
           if value == "time" then
-            mmMusic._time = mmMusic.mainChannel:pop()
+            music._time = music.mainChannel:pop()
           elseif value == "tell" then
-            mmMusic._tell = mmMusic.mainChannel:pop()
+            music._tell = music.mainChannel:pop()
           elseif value == "vol" then
-            mmMusic.vol = mmMusic.mainChannel:pop()
+            music.vol = music.mainChannel:pop()
           elseif value == "stop" then
-            mmMusic.loopPoint = 0
-            mmMusic._time = 0
-            mmMusic._tell = 0
-            mmMusic.stopping = true
-            mmMusic.vol = 1
+            music.loopPoint = 0
+            music._time = 0
+            music._tell = nil
+            music.stopping = true
+            music.vol = 1
           end
         else
           break
         end
       end
     end
-  elseif mmMusic.type == 3 then
-    for voice, data in safepairs(mmMusic._pushMute) do
+  elseif music.type == 3 then
+    for voice, data in safepairs(music._pushMute) do
       if data[1] == 1 then
-        mmMusic._pushMute[voice][1] = 0
-        if not mmMusic._pushMute[voice][3] then
-          mmMusic._pushMute[voice][2] = mmMusic._mutes[voice]
-          mmMusic.muteGMEVoice(voice, true)
-          mmMusic._pushMute[voice][3] = true
+        music._pushMute[voice][1] = 0
+        if not music._pushMute[voice][3] then
+          music._pushMute[voice][2] = music._mutes[voice]
+          music.muteGMEVoice(voice, true)
+          music._pushMute[voice][3] = true
         end
       elseif data[1] == 0 then
-        if mmMusic._pushMute[voice][2] == nil then
-          mmMusic.muteGMEVoice(voice, false)
+        if music._pushMute[voice][2] == nil then
+          music.muteGMEVoice(voice, false)
         else
-          mmMusic.muteGMEVoice(voice, mmMusic._pushMute[voice][2])
+          music.muteGMEVoice(voice, music._pushMute[voice][2])
         end
-        mmMusic._pushMute[voice] = nil
+        music._pushMute[voice] = nil
       end
     end
-    mmMusic.gme:update()
+    music.gme:update()
   end
+end
+
+function music.clean()
+  music.stop()
+  if music.gme then music.gme:release() end
 end
 
 -- Sample streaming
 
-if not compatMusicMode then
-  mmMusic.loopPoint = 0
-  mmMusic._time = 0
-  mmMusic._tell = 0
-  mmMusic._dec = nil
-  mmMusic._rate = 0
-  mmMusic.buffers = 3
-  mmMusic.threadChannel = love.thread.getChannel("mmMusicThread")
-  mmMusic.mainChannel = love.thread.getChannel("mmMusicMain")
+if compatMusicMode then
+  music.loopEndPoint = nil
+  music.loopEndOffset = nil
+else
+  music.loopPoint = 0
+  music._time = 0
+  music._tell = nil
+  music._dec = nil
+  music._rate = 0
+  music._queueLengths = {}
+  music.buffers = 3
+  music.threadChannel = love.thread.getChannel("musicThread")
+  music.mainChannel = love.thread.getChannel("musicMain")
 
-  mmMusic.thread = love.thread.newThread([[
+  music.thread = love.thread.newThread([[
       require("love.timer")
       require("love.sound")
       require("love.audio")
@@ -446,14 +510,14 @@ if not compatMusicMode then
       local curID, loop, loopPoint, time, vol, typ = ...
       
       local timer = love.timer
-      local threadChannel = mmMusic.threadChannel
-      local mainChannel = mmMusic.mainChannel
+      local threadChannel = music.threadChannel
+      local mainChannel = music.mainChannel
       local run = true
       
-      mmMusic._threadPlay(curID, loop, loopPoint, time, vol, typ)
+      music._threadPlay(curID, loop, loopPoint, time, vol, typ)
       
       while run do
-        mmMusic._threadUpdate()
+        music._threadUpdate()
         
         while true do
           local value = threadChannel:pop()
@@ -461,15 +525,15 @@ if not compatMusicMode then
             if value == "stop" then
               run = false
             elseif value == "pause" then
-              mmMusic._threadPause()
+              music._threadPause()
             elseif value == "unpause" then
-              mmMusic._threadUnpause()
+              music._threadUnpause()
             elseif value == "seek" then
-              mmMusic._threadSeek(threadChannel:pop())
+              music._threadSeek(threadChannel:pop())
             elseif value == "lock" then
-              mmMusic.locked = threadChannel:pop()
+              music.locked = threadChannel:pop()
             elseif value == "vol" then
-              mmMusic._threadSetVolume(threadChannel:pop())
+              music._threadSetVolume(threadChannel:pop())
             end
           else
             break
@@ -477,37 +541,37 @@ if not compatMusicMode then
         end
         
         mainChannel:push("time")
-        mainChannel:push(mmMusic._time)
-        if mmMusic.music then
+        mainChannel:push(music._time)
+        if music.music then
           mainChannel:push("tell")
-          mainChannel:push(mmMusic._threadTell())
+          mainChannel:push(music._threadTell())
         end
         
-        if mmMusic._threadStopped() then
+        if music._threadStopped() then
           run = false
         end
         
         timer.sleep(0.03)
       end
       
-      mmMusic._threadStop()
+      music._threadStop()
       mainChannel:push("stop")
     ]])
-elseif compatMusicMode == 1 then
-  mmMusic.loopEndPoint = nil
-  mmMusic.loopEndOffset = nil
-elseif compatMusicMode == 2 then
-  mmMusic._ml = nil
 end
 
-function mmMusic._threadUpdate()
-  if mmMusic.music then
+function music._threadUpdate()
+  if music.music then
     local stop = false
     
-    while mmMusic.music:getFreeBufferCount() > mmMusic.buffers do
-      local sd = mmMusic._threadDecode()
-      if not sd then
-        if not mmMusic.loop and mmMusic.music:getFreeBufferCount() == mmMusic.buffers + 3 then
+    while music.music:getFreeBufferCount() >= music.buffers do
+      local sd = music._threadDecode()
+      if sd then
+        music._queueLengths[#music._queueLengths + 1] = sd:getDuration()
+        if #music._queueLengths > music.buffers then
+          table.remove(music._queueLengths, 1)
+        end
+      else
+        if not music.loop and music.music:getFreeBufferCount() == music.buffers + 3 then
           stop = true
         end
         
@@ -516,105 +580,113 @@ function mmMusic._threadUpdate()
     end
     
     if stop then
-      mmMusic._threadStop()
+      music._threadStop()
     end
   end
 end
 
-function mmMusic._threadPlay(curID, loop, loopPoint, time, vol)
-  if mmMusic.locked or (mmMusic.music and mmMusic.curID == curID and not mmMusic._threadStopped()) then return end
+function music._threadPlay(curID, loop, loopPoint, time, vol)
+  if music.locked or (music.music and music.curID == curID and not music._threadStopped()) then return end
   
-  mmMusic._threadStop()
+  music._threadStop()
   
-  mmMusic.curID = curID
-  mmMusic.type = typ
-  mmMusic._time = time or 0
-  mmMusic._dec = love.sound.newDecoder(curID, 1024*24)
-  mmMusic._rate = ((1024*24) / ((mmMusic._dec:getBitDepth() / 8) * mmMusic._dec:getChannelCount())) / mmMusic._dec:getSampleRate()
-  mmMusic.buffers = 4
-  while mmMusic._dec:getDuration() * mmMusic.buffers < mmMusic._rate do -- incase of unbelievably short "music".
-    mmMusic.buffers = mmMusic.buffers + 1
+  music.curID = curID
+  music.type = typ
+  music._time = time or 0
+  music._dec = love.sound.newDecoder(curID, 1024*24)
+  music._rate = ((1024*24) / ((music._dec:getBitDepth() / 8) * music._dec:getChannelCount())) / music._dec:getSampleRate()
+  music._queueLengths = {}
+  music.buffers = 4
+  while music._dec:getDuration() * music.buffers < music._rate do -- incase of unbelievably short "music".
+    music.buffers = music.buffers + 1
   end
-  mmMusic.music = love.audio.newQueueableSource(
-    mmMusic._dec:getSampleRate(), mmMusic._dec:getBitDepth(), mmMusic._dec:getChannelCount(), mmMusic.buffers + 3)
-  mmMusic.loopPoint = loopPoint
-  mmMusic.loop = loop
-  mmMusic._threadSetVolume(mmMusic.vol)
-  mmMusic._threadUpdate()
-  mmMusic.music:play()
+  music.music = love.audio.newQueueableSource(
+    music._dec:getSampleRate(), music._dec:getBitDepth(), music._dec:getChannelCount(), music.buffers + 3)
+  music.loopPoint = loopPoint
+  music.loop = loop
+  music._threadSetVolume(music.vol)
+  music._threadUpdate()
+  music.music:play()
 end
 
-function mmMusic._threadDecode()
-  mmMusic._dec:seek(mmMusic._time)
-  local sd = mmMusic._dec:decode()
+function music._threadDecode()
+  music._dec:seek(music._time)
+  local sd = music._dec:decode()
   if sd then
-    mmMusic.music:queue(sd)
-    mmMusic._time = math.min(mmMusic._time + mmMusic._rate, mmMusic._dec:getDuration())
-  elseif mmMusic.loop then
-    mmMusic._dec:seek(mmMusic.loopPoint)
-    mmMusic.music:queue(mmMusic._dec:decode())
-    mmMusic._time = mmMusic.loopPoint + mmMusic._rate
+    music.music:queue(sd)
+    music._time = math.min(music._time + music._rate, music._dec:getDuration())
+  elseif music.loop then
+    music._dec:seek(music.loopPoint)
+    music.music:queue(music._dec:decode())
+    music._time = music.loopPoint + music._rate
   end
   
   return sd
 end
 
-function mmMusic._threadTell()
-  if mmMusic.music then
-    return math.max(mmMusic._time + mmMusic.music:tell() - mmMusic._rate, 0)
+function music._threadTell()
+  if music.music then
+    local queueLength = 0
+    for i = 1, #music._queueLengths do
+      queueLength = queueLength + music._queueLengths[i]
+    end
+    return math.max((music._time - queueLength) + music.music:tell(), 0)
   end
   
   return 0
 end
 
-function mmMusic._threadSeek(s)
-  if s and mmMusic._time ~= s and mmMusic.music and mmMusic._dec then
-    mmMusic.music:seek(mmMusic.music:getDuration()+1)
-    mmMusic._time = s
-    mmMusic._threadUpdate()
+function music._threadSeek(s)
+  if s and music._time ~= s and music.music and music._dec then
+    music.music:seek(music.music:getDuration()+1)
+    music._queueLengths = {}
+    music._time = s
+    music._threadUpdate()
+    music.music:play()
   end
 end
 
-function mmMusic._threadUnpause()
-  if mmMusic.music and mmMusic.paused then
-    mmMusic.music:play()
-    mmMusic.paused = false
+function music._threadUnpause()
+  if music.music and music.paused then
+    music.music:play()
+    music.paused = false
   end
 end
 
-function mmMusic._threadPause()
-  if mmMusic.music and not mmMusic.paused then
-    mmMusic.music:pause()
-    mmMusic.paused = true
+function music._threadPause()
+  if music.music and not music.paused then
+    music.music:pause()
+    music.paused = true
   end
 end
 
-function mmMusic._threadStopped()
-  return mmMusic.music and not mmMusic.music:isPlaying()
+function music._threadStopped()
+  return music.music and not music.music:isPlaying()
 end
 
-function mmMusic._threadStop()
-  if mmMusic.music then
-    mmMusic.curID = nil
-    mmMusic.loopPoint = 0
-    mmMusic._time = 0
-    mmMusic._tell = 0
-    mmMusic._queue = nil
-    mmMusic.music:stop()
-    mmMusic.music:release()
-    mmMusic.music = nil
-    mmMusic._dec:release()
-    mmMusic._dec = nil
+function music._threadStop()
+  if music.music then
+    music.curID = nil
+    music.loopPoint = 0
+    music._time = 0
+    music._tell = nil
+    music._queue = nil
+    music._queueLengths = {}
+    music.music:stop()
+    music.music:release()
+    music.music = nil
+    music._dec:release()
+    music._dec = nil
   end
 end
 
-function mmMusic._threadSetVolume(v)
-  if mmMusic.music and v then
-    mmMusic.vol = math.clamp(v, 0, 1)
-    mmMusic.music:setVolume(mmMusic.vol)
+function music._threadSetVolume(v)
+  if music.music and v then
+    music.vol = math.clamp(v, 0, 1)
+    music.music:setVolume(music.vol)
   end
 end
 
-function mmMusic._threadGetVolume()
-  return mmMusic.vol
+function music._threadGetVolume()
+  return music.vol
 end

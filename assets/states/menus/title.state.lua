@@ -2,7 +2,6 @@ local titleState = state:extend()
 
 function titleState:begin()
   megautils.add(title)
-  megautils.setMusicLock(false)
 end
 
 loader.load("assets/misc/title.png", "title")
@@ -36,7 +35,7 @@ function title:update()
     self.oneOff = 0
     self.twoOff = 0
     self.drawText = true
-    megautils.playMusic("assets/sfx/mm5.nsf", nil, 73)
+    music.play("assets/sfx/mm5.nsf", nil, 73)
     return
   end
   if self.s == 0 then
@@ -48,7 +47,7 @@ function title:update()
     self.twoOff = math.min(self.twoOff+8, 0)
     if self.twoOff == 0 then
       self.s = 2
-      megautils.playMusic("assets/sfx/mm5.nsf", nil, 73)
+      music.play("assets/sfx/mm5.nsf", nil, 73)
     end
   elseif self.s == 2 then
     self.s = 3
@@ -66,7 +65,7 @@ function title:update()
     if self.timer == 400 then
       states.openRecord = "assets/demo.rd"
       megautils.add(fade, true, nil, nil, function(s)
-          megautils.setMusicLock(true)
+          music.setLock(true)
           record.drawDemoFunc = function()
               if record.demo and math.wrap(record.recPos, 0, 40) < 20 then
                 love.graphics.setFont(mmFont)
@@ -74,12 +73,15 @@ function title:update()
               end
             end
           record.returning = function()
-              megautils.add(fade, true, nil, nil, function(s) megautils.resetGame("assets/states/menus/title.state.lua", false, true) end)
+              megautils.add(fade, true, nil, nil, function(s)
+                  megautils.resetGame("assets/states/menus/title.state.lua", false, true)
+                  music.setLock(false)
+                end)
             end
           megautils.gotoState()
         end)
     elseif input.pressed.start1 or input.length(input.touchPressed) ~= 0 then
-      megautils.stopMusic()
+      music.stop()
       self.drawText = false
       megautils.transitionToState(globals.menuState)
     end

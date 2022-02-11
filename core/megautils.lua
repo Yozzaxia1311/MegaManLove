@@ -332,10 +332,10 @@ end
 
 function megautils.resetGame(s, saveSfx, saveMusic)
   if not saveSfx then
-    megautils.stopAllSounds()
+    sfx.stopAll()
   end
   if not saveMusic then
-    megautils.stopMusic()
+    music.stop()
   end
   if not saveSfx and not saveMusic then
     love.audio.stop()
@@ -345,165 +345,6 @@ function megautils.resetGame(s, saveSfx, saveMusic)
   megautils.unload()
   initEngine()
   states.set(s or globals.disclaimerState)
-end
-
-function megautils.setMusicLock(w)
-  mmMusic.setLock(w)
-end
-
-function megautils.isMusicLocked()
-  return mmMusic.locked
-end
-
-function megautils.setMusicVolume(v)
-  mmMusic.setVolume(v)
-end
-
-function megautils.getMusicVolume()
-  return mmMusic.getVolume()
-end
-
-function megautils.getCurrentMusic()
-  return mmMusic.music
-end
-
-function megautils.playMusic(...)
-  mmMusic.playq(...)
-end
-
-function megautils.stopMusic()
-  mmMusic.stop()
-end
-
-function megautils.musicIsStopped()
-  return mmMusic.stopped()
-end
-
-function megautils.pauseMusic()
-  mmMusic.pause()
-end
-
-function megautils.unpauseMusic()
-  mmMusic.unpause()
-end
-
-function megautils.setMusicLooping(w)
-  mmMusic.setLooping(w)
-end
-
-function megautils.musicIsLooping()
-  return mmMusic.isLooping()
-end
-
-function megautils.muteGMEVoice(v, b)
-  mmMusic.muteGMEVoice(v, b)
-end
-
-function megautils.isGMEVoiceMute(v)
-  return mmMusic.isGMEVoiceMute(v)
-end
-
-function megautils.GMEPushMuteVoice(v)
-  mmMusic.GMEPushMuteVoice(v)
-end
-
-megautils._cachedMutes = {}
-
-function megautils.updateGMEVoiceMutes()
-  for voice, sfx in safepairs(megautils._cachedMutes) do
-    if not sfx:isPlaying() then
-      megautils._cachedMutes[voice] = nil
-    else
-      megautils.GMEPushMuteVoice(voice)
-    end
-  end
-end
-
-function megautils.playSound(p, l, v, stack, muteGMEVoices)
-  if loader.get(p) then
-    if not stack then
-      loader.get(p):stop()
-    end
-    local resTable = loader.getTable(p)
-    if resTable.conf and resTable.conf.muteGMEVoices then
-      if type(resTable.conf.muteGMEVoices) == "number" then
-        megautils._cachedMutes[resTable.conf.muteGMEVoices] = resTable.data
-        megautils.GMEPushMuteVoice(resTable.conf.muteGMEVoices)
-      else
-        for _, voice in pairs(resTable.conf.muteGMEVoices) do
-          megautils._cachedMutes[voice] = resTable.data
-          megautils.GMEPushMuteVoice(voice)
-        end
-      end
-    end
-    resTable.data:setLooping(l or false)
-    resTable.data:setVolume(v or 1)
-    resTable.data:play()
-    
-    return resTable.data
-  else
-    error("Sound \"" .. p .. "\" doesn't exist.")
-  end
-end
-
-megautils._curS = {}
-
-function megautils.playSoundFromFile(p, l, v, stack)
-  local s = megautils._curS.sfx
-  if s and not stack then
-    s:stop()
-  end
-  if not s or megautils._curS.id ~= p then
-    if s then
-      s:release()
-    end
-    s = love.audio.newSource(p, "static")
-    
-    megautils._curS.conf = love.filesystem.getInfo(p .. ".txt") and parseConf(p .. ".txt")
-    if megautils._curS.conf and megautils._curS.conf.muteGMEVoices then
-      if type(megautils._curS.conf.muteGMEVoices) == "number" then
-        megautils._cachedMutes[megautils._curS.conf.muteGMEVoices] = s
-        megautils.GMEPushMuteVoice(megautils._curS.conf.muteGMEVoices)
-      else
-        for _, voice in pairs(megautils._curS.conf.muteGMEVoices) do
-          megautils._cachedMutes[voice] = s
-          megautils.GMEPushMuteVoice(voice)
-        end
-      end
-    end
-  end
-  s:setLooping(not not l)
-  s:setVolume(v or 1)
-  s:play()
-  megautils._curS.id = p
-  megautils._curS.sfx = s
-  
-  return s
-end
-
-function megautils.stopSound(s)
-  if loader.get(s) then
-    loader.get(s):stop()
-  end
-  if s == megautils._curS.id and megautils._curS.sfx then
-    megautils._curS.sfx:stop()
-  end
-end
-
-function megautils.stopAllSounds()
-  for _, v in pairs(loader.resources) do
-    if v.type == "sound" then
-      v.data:stop()
-    end
-  end
-  for _, v in pairs(loader.locked) do
-    if v.type == "sound" then
-      v.data:stop()
-    end
-  end
-  if megautils._curS.sfx then
-    megautils._curS.sfx:stop()
-  end
 end
 
 function megautils.unload()

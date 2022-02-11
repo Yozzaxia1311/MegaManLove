@@ -259,7 +259,7 @@ function absorb:update()
   if self.timer == 60 then
     self.timer = 0
     self.times = self.times + 1
-    megautils.playSoundFromFile("assets/sfx/absorb.ogg")
+    sfx.playFromFile("assets/sfx/absorb.ogg")
     absorbParticle.createAbsorbtion(self.user, self.spd)
   end
   if self.times == self.maxTimes or not self.user or self.user.isRemoved then

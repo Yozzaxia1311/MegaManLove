@@ -6,7 +6,7 @@ function menuState:begin()
   megautils.add(parallax, 0, -32, view.w, view.h+32, "assets/states/menus/menuParallax.png", nil, nil, nil, nil, 1, 1, -0.4, 0.4, true, true)
   if globals.wgsToMenu then
     globals.wgsToMenu = nil
-    mmMusic._queue = nil
+    music._queue = nil
   end
 end
 
@@ -52,13 +52,13 @@ function menuSelect:update()
       end
     end
     if old ~= self.pick and not input.usingTouch then
-      megautils.playSound("cursorMove")
+      sfx.play("cursorMove")
     end
     if (input.pressed.start1 or input.pressed.jump1 or touched) and not self.picked then
       if self.pick == 0 then
         self.picked = true
         self.section = -1
-        megautils.stopMusic()
+        music.stop()
         megautils.transitionToState(globals.stageSelectState)
       elseif self.pick == 1 then
         local data = save.load("save.sav")
@@ -73,7 +73,7 @@ function menuSelect:update()
             megaMan.setSkin(k, v)
           end
         end
-        megautils.playSound("selected")
+        sfx.play("selected")
       elseif self.pick == 2 then
         local data = save.load("save.sav") or {}
         data.defeats = globals.defeats
@@ -89,7 +89,7 @@ function menuSelect:update()
           end
         end
         save.save("save.sav", data)
-        megautils.playSound("selected")
+        sfx.play("selected")
       elseif self.pick == 3 and not isMobile and not isWeb then
         megautils.setFullscreen(not megautils.getFullscreen())
         local data = save.load("main.sav") or {}
@@ -102,7 +102,7 @@ function menuSelect:update()
           self.section = 1
           self.timer = 0
         end
-        megautils.playSound("selected")
+        sfx.play("selected")
       elseif self.pick == 5 then
         self.picked = true
         self.section = -1
@@ -115,7 +115,7 @@ function menuSelect:update()
       elseif self.pick == 7 then
         self.picked = true
         self.section = -1
-        megautils.stopMusic()
+        music.stop()
         megautils.transitionToState(globals.titleState)
       end
     end
@@ -124,16 +124,16 @@ function menuSelect:update()
     self.timer = math.wrap(self.timer+1, 0, 20)
     local old = megautils.getScale()
     if input.pressed.left1 then
-      megautils.playSound("selected")
+      sfx.play("selected")
       megautils.setScale(math.wrap(megautils.getScale()-1, 1, 8))
     elseif input.pressed.right1 then
-      megautils.playSound("selected")
+      sfx.play("selected")
       megautils.setScale(math.wrap(megautils.getScale()+1, 1, 8))
     end
     if input.pressed.start1 or input.pressed.jump1 then
       self.section = 0
       self.timer = 20
-      megautils.playSound("selected")
+      sfx.play("selected")
     end
   end
 end

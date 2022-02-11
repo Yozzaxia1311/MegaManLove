@@ -32,7 +32,7 @@ function gravFlip:update(dt)
     end
     if ds then
       megautils.add(fade, false, 4, {255, 255, 255}, fade.remove)
-      megautils.playSound("gravityFlip")
+      sfx.play("gravityFlip")
     end
   end
 end

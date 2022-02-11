@@ -789,7 +789,9 @@ function entitySystem:update(dt)
     if not self.updates[j].invisibleToHash then self.updates[j]:updateHash() end
   end
   
-  for _, e in ipairs(self.updates) do
+  for i = 1, #self.updates do
+    local e = self.updates[i]
+    
     if e ~= -1 and ((type(e.noFreeze) == "table" and table.intersects(self.frozen, e.noFreeze, true)) or
       e.noFreeze or not checkTrue(self.frozen)) and not e.isRemoved and checkFalse(e.canUpdate) then
       collision.doCollision(e, e.noSlope, not checkFalse(e.autoCollision), not checkFalse(e.autoGravity))
@@ -801,7 +803,9 @@ function entitySystem:update(dt)
     end
   end
   
-  for _, e in ipairs(self.updates) do
+  for i = 1, #self.updates do
+    local e = self.updates[i]
+    
     if e ~= -1 and ((type(e.noFreeze) == "table" and table.intersects(self.frozen, e.noFreeze, true)) or
       e.noFreeze == true or not checkTrue(self.frozen)) and not e.isRemoved and checkFalse(e.canUpdate) then
       e:_beforeUpdate(dt)
@@ -812,7 +816,8 @@ function entitySystem:update(dt)
     end
   end
   
-  for _, e in ipairs(self.updates) do
+  for i = 1, #self.updates do
+    local e = self.updates[i]
     
     if e ~= -1 and ((type(e.noFreeze) == "table" and table.intersects(self.frozen, e.noFreeze, true)) or
       e.noFreeze == true or not checkTrue(self.frozen)) and not e.isRemoved and checkFalse(e.canUpdate) then
@@ -824,7 +829,9 @@ function entitySystem:update(dt)
     end
   end
   
-  for _, e in ipairs(self.updates) do
+  for i = 1, #self.updates do
+    local e = self.updates[i]
+    
     if e ~= -1 then
       if ((type(e.noFreeze) == "table" and table.intersects(self.frozen, e.noFreeze, true)) or
         e.noFreeze or not checkTrue(self.frozen)) and not e.isRemoved and checkFalse(e.canUpdate) then
@@ -1871,9 +1878,9 @@ function advancedEntity:interactedWith(o, c)
     end
     if self.soundOnDeath then
       if loader.get(self.soundOnDeath) then
-        megautils.playSound(self.soundOnDeath)
+        sfx.play(self.soundOnDeath)
       else
-        megautils.playSoundFromFile(self.soundOnDeath)
+        sfx.playFromFile(self.soundOnDeath)
       end
     end
   elseif self.changeHealth < 0 then
@@ -1888,9 +1895,9 @@ function advancedEntity:interactedWith(o, c)
     end
     if self.soundOnHit then
       if loader.get(self.soundOnHit) then
-        megautils.playSound(self.soundOnHit)
+        sfx.play(self.soundOnHit)
       else
-        megautils.playSoundFromFile(self.soundOnHit)
+        sfx.playFromFile(self.soundOnHit)
       end
     end
   elseif self.changeHealth > 0 then
@@ -1950,9 +1957,9 @@ function bossEntity:added()
   self.canBeInvincible.firstFrame = true
   self.autoCollision.firstFrame = false
   self.autoGravity.firstFrame = false
-  self.lastMusic = mmMusic.curID
-  self.lastVol = mmMusic.vol
-  self.lastGMETrack = mmMusic.track
+  self.lastMusic = music.curID
+  self.lastVol = music.vol
+  self.lastGMETrack = music.track
 end
 
 function bossEntity:useHealthBar(oneColor, twoColor, outlineColor, add)
@@ -2014,7 +2021,7 @@ function bossEntity:skip()
         megautils.resetGameObjects = true
         megautils.gotoState(self.skipBossState)
       end)
-    megautils.stopMusic()
+    music.stop()
   end
   megautils.remove(self)
   return true
@@ -2038,7 +2045,7 @@ function bossEntity:start()
     self.autoCollision.intro = false
     self.autoGravity.intro = false
     
-    megautils.stopMusic()
+    music.stop()
   elseif self._subState == 1 then
     local result = {}
     for k, v in ipairs(megaMan.allPlayers) do
@@ -2055,7 +2062,7 @@ function bossEntity:start()
     end
     if not table.contains(result, false) then
       self._subState = 2
-      megautils.playMusic(self.musicPath, self.musicVolume, self.gmeTrack)
+      music.play(self.musicPath, self.musicVolume, self.gmeTrack)
       self.canDraw.intro = nil
       if not self.doIntro or self:intro() then
         self._subState = 3
@@ -2096,7 +2103,7 @@ function bossEntity:die(o)
         megautils.resetGameObjects = true
         megautils.gotoState(self.afterDeathState)
       end)
-    megautils.stopMusic()
+    music.stop()
   else
     if megautils.groups().bossDoor then
       for _, v in ipairs(megautils.groups().bossDoor) do
@@ -2105,7 +2112,7 @@ function bossEntity:die(o)
     end
     if self.replayMusicWhenContinuing and not self._onceReplay then
       self._onceReplay = true
-      megautils.playMusic(self.lastMusic, self.lastVol, self.lastGMETrack)
+      music.play(self.lastMusic, self.lastVol, self.lastGMETrack)
     end
   end
 end
@@ -2130,7 +2137,7 @@ function bossEntity:bossIntro()
     self._subState = 1
     self._halfWidth = love.graphics.newText(mmFont, self.bossIntroText):getWidth()/2
     if self.musicBIPath then
-      megautils.playMusic(self.musicBIPath, self.musicBIVolume, self.gmeBITrack)
+      music.play(self.musicBIPath, self.musicBIVolume, self.gmeBITrack)
     end
   elseif self._subState == 1 then
     self.y = math.min(self.y+10, math.floor(view.h/2)-(self.collisionShape.h/2))
@@ -2175,7 +2182,7 @@ function bossEntity:_update()
           end
         end
         if self.musicPath then
-          megautils.playMusic(self.musicPath, self.musicVolume, self.gmeTrack)
+          music.play(self.musicPath, self.musicVolume, self.gmeTrack)
         end
       end
     end

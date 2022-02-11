@@ -345,7 +345,7 @@ concmd["state"] = {
         map = cmd[2] .. ".stage.tmx"
       end
       if not map then console.print("No such state \""..cmd[2].."\"") return end
-      megautils.stopMusic()
+      music.stop()
       love.audio.stop()
       megautils.resetGameObjects = true
       megautils.reloadState = true
@@ -360,7 +360,7 @@ concmd["resetstate"] = {
   helptext = "reset current state",
   flags = {"cheat"},
   fun = function(cmd)
-      megautils.stopMusic()
+      music.stop()
       love.audio.stop()
       megautils.resetGameObjects = true
       megautils.reloadState = true
@@ -518,9 +518,9 @@ concmd["flip"] = {
         megaMan.allPlayers[i]:setGravityMultiplier("gravityFlip", -megaMan.allPlayers[i].gravityMultipliers.gravityFlip)
         if i == 1 then
           if loader.get("gravityFlip") then
-            megautils.playSound("gravityFlip")
+            sfx.play("gravityFlip")
           else
-            megautils.playSoundFromFile("assets/sfx/gravityFlip.ogg")
+            sfx.playFromFile("assets/sfx/gravityFlip.ogg")
           end
         end
       end

@@ -164,9 +164,9 @@ function weapon:added()
   end
   if self.sound then
     if loader.get(self.sound) then
-      megautils.playSound(self.sound)
+      sfx.play(self.sound)
     else
-      megautils.playSoundFromFile(self.sound)
+      sfx.playFromFile(self.sound)
     end
   end
 end
@@ -190,9 +190,9 @@ function weapon:dink(e)
     self.damageType = self.damageTypeOnDink
     if self.soundOnDink then
       if loader.get(self.soundOnDink) then
-        megautils.playSound(self.soundOnDink)
+        sfx.play(self.soundOnDink)
       else
-        megautils.playSoundFromFile(self.soundOnDink)
+        sfx.playFromFile(self.soundOnDink)
       end
     end
   end
@@ -770,7 +770,7 @@ function trebleBoost:update()
     if self.anims:looped() then
       self.anims:set("idle")
       self.s = 3
-      megautils.playSound("start")
+      sfx.play("start")
     end
   elseif self.s == 3 then
     if self.user and not self.user.climb and self.user.ground and self.user:collision(self) then
@@ -934,7 +934,7 @@ function rushJet:update()
       self.anims:set("jet")
       self.s = 2
       self.solidType = collision.ONEWAY
-      megautils.playSound("start")
+      sfx.play("start")
     end
   elseif self.s == 2 then
     if self.user and self.user.ground and self.user:collision(self, 0, self.user.gravity >= 0 and 1 or -1) and
@@ -978,7 +978,7 @@ function rushJet:update()
       self.solidType = collision.NONE
       self.velX = 0
       self.velY = 0
-      megautils.playSound("ascend")
+      sfx.play("ascend")
     end
     self.timer = math.min(self.timer+1, 60)
     if self.timer == 60 then
@@ -1151,7 +1151,7 @@ function rushCoil:update()
     if self.anims:looped() then
       self.anims:set("idle")
       self.s = 3
-      megautils.playSound("start")
+      sfx.play("start")
     end
   elseif self.s == 3 then
     if self.user and not self.user.climb and
@@ -1173,7 +1173,7 @@ function rushCoil:update()
       self.anims:set("spawnLand")
       self.autoGravity.global = false
       self.blockCollision.global = false
-      megautils.playSound("ascend")
+      sfx.play("ascend")
     end
   elseif self.s == 5 then
     if self.anims:looped() then

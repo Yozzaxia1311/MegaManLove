@@ -27,7 +27,7 @@ function mmWeaponsMenu.pause(self)
     camera.main:doView()
   end
   
-  megautils.playSound("pause")
+  sfx.play("pause")
 end
 
 function mmWeaponsMenu:new(p)
@@ -239,7 +239,7 @@ function mmWeaponsMenu:update(dt)
             end)
         end)
       self.changing = "leaving"
-      megautils.playSound("selected")
+      sfx.play("selected")
       return
     elseif input.pressed["right" .. tostring(self.player.input)] then
       self.sx = math.clamp(self.sx+1, 1, 2)
@@ -334,7 +334,7 @@ function mmWeaponsMenu:update(dt)
           self.sx = 1
           self.sy = 1
           self.cur = self.last[1]
-          megautils.playSound("cursorMove")
+          sfx.play("cursorMove")
          return
         end
         self.sy = math.clamp(self.sy+1, 1, 6)
@@ -370,7 +370,7 @@ function mmWeaponsMenu:update(dt)
     end
     if olx ~= self.sx or oly ~= self.sy then
       self.cur = self.list[self.sy][self.sx]
-      megautils.playSound("cursorMove")
+      sfx.play("cursorMove")
     end
   elseif self.section == 1 then
     local olx, oly = self.sx, self.sy
@@ -410,7 +410,7 @@ function mmWeaponsMenu:update(dt)
       self.sx = 1
     end
     if olx ~= self.sx or oly ~= self.sy then
-      megautils.playSound("cursorMove")
+      sfx.play("cursorMove")
     end
     for _, v in pairs(self.fills) do
       for _, j in pairs(v) do

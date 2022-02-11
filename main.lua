@@ -379,7 +379,7 @@ function love.update(dt)
     doAgain = states.switched
   end
   
-  mmMusic.update()
+  music.update()
   
   if love.joystick then
     for k, _ in safepairs(gamepadCheck) do
@@ -412,10 +412,7 @@ function love.draw()
 end
 
 function love.quit()
-  if mmMusic then
-    mmMusic.stop()
-    if mmMusic.gme then mmMusic.gme:release() end
-  end
+  if music and music.clean() then end
 end
 
 -- Love2D doesn't fire the resize event for several functions, so here's some hacks.
@@ -596,8 +593,8 @@ end
 local function afterUpdate()
   megautils.checkQueue()
   states.checkQueue()
-  megautils.updateGMEVoiceMutes()
-  mmMusic.checkQueue()
+  sfx.updateGMEVoiceMutes()
+  music.checkQueue()
   console.doWait()
   record.anyPressed = false
   record.anyPressedDuringRec = false
@@ -663,6 +660,7 @@ function ser()
       isMobile = isMobile,
       isWeb = isWeb,
       compatMusicMode = compatMusicMode,
+      canUseGME = canUseGME,
       spriteBatchTileMaps = spriteBatchTileMaps,
       input = input.ser(),
       vPad = vPad.ser(),
@@ -673,7 +671,7 @@ function ser()
       entitySystem = entitySystem.ser(),
       section = section.ser(),
       loader = loader.ser(),
-      music = mmMusic.ser(),
+      music = music.ser(),
       record = record.ser(),
       collision = collision.ser(),
       banner = banner and banner.ser(),
@@ -702,6 +700,8 @@ end
 -- Load state
 function deser(from, dontChangeMusic)
   love.audio.stop()
+  sfx._cachedMutes = {}
+  sfx.curS = {}
   
   local t = binser.deserialize(from)
   
@@ -711,6 +711,7 @@ function deser(from, dontChangeMusic)
   isMobile = t.isMobile
   isWeb = t.isWeb
   compatMusicMode = t.compatMusicMode
+  canUseGME = t.canUseGME
   spriteBatchTileMaps = t.spriteBatchTileMaps
   input.deser(t.input)
   vPad.deser(t.vPad)
@@ -722,7 +723,7 @@ function deser(from, dontChangeMusic)
   section.deser(t.section)
   loader.deser(t.loader)
   if not dontChangeMusic then
-    mmMusic.deser(t.music)
+    music.deser(t.music)
   end
   record.deser(t.record)
   collision.deser(t.collision)

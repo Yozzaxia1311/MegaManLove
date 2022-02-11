@@ -18,11 +18,11 @@ function contPanels:new()
   self.quadTwo = quad(0, 48, 160, 56)
   self.state = 0
   self.timer = 0
-  if mmMusic._queue then
-    self.mq = mmMusic._queue
-    megautils.stopMusic()
+  if music._queue then
+    self.mq = music._queue
+    music.stop()
   end
-  megautils.playMusic("assets/sfx/mm5.nsf", nil, 18)
+  music.play("assets/sfx/mm5.nsf", nil, 18)
 end
 
 function contPanels:update()
@@ -31,7 +31,7 @@ function contPanels:update()
     self.state = 1
     megautils.add(contSelect)
     if self.mq then
-      megautils.playMusic(unpack(self.mq))
+      music.play(unpack(self.mq))
       self.mq = nil
     end
   end
@@ -77,13 +77,13 @@ function contSelect:update()
     end
   end
   if old ~= self.pick and not input.usingTouch then
-    megautils.playSound("cursorMove")
+    sfx.play("cursorMove")
   end
   if (input.pressed.start1 or input.pressed.jump1 or touched) and not self.picked then
     if self.pick == 1 then
       self.picked = true
       self.canDraw.global = false
-      megautils.stopMusic()
+      music.stop()
       megautils.transitionToState(globals.gameOverContinueState)
       globals.gameOverContinueState = nil
     elseif self.pick == 0 then

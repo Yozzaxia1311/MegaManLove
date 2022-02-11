@@ -199,13 +199,17 @@ function LoveGme:getVolume(v)
 end
 
 function LoveGme:seek(secs)
-  self.source:seek(self.source:getDuration()+1)
-  gme.gme_seek(self.emu[0], math.floor(secs / 1000))
-  self:update()
+  if self.playing then
+    self.source:seek(self.source:getDuration()+1)
+  end
+  gme.gme_seek(self.emu[0], math.floor(secs * 1000))
+  if self.playing then
+    self:update()
+  end
 end
 
 function LoveGme:tell()
-  return gme.gme_tell(self.emu[0]) * 1000
+  return gme.gme_tell(self.emu[0]) / 1000
 end
 
 function LoveGme:release()

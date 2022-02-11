@@ -465,11 +465,11 @@ function megaMan:added()
   if self._checkDR and megaMan.mainPlayer == self and not megaMan.once then
     if self.protoWhistle then
       self.ready = megautils.add(ready, nil, 32)
-      if mmMusic._queue then
-        self.mq = mmMusic._queue
-        megautils.stopMusic()
+      if music._queue then
+        self.mq = music._queue
+        music.stop()
       end
-      megautils.playSoundFromFile((self.protoWhistle == true) and "assets/sfx/protoReady.ogg" or self.protoWhistle)
+      sfx.playFromFile((self.protoWhistle == true) and "assets/sfx/protoReady.ogg" or self.protoWhistle)
     else
       self.ready = megautils.add(ready)
     end
@@ -947,7 +947,7 @@ function megaMan:interactedWith(o, c)
           end
           self.cameraTween = timer((((self.gravity >= 0 and self.y < view.y+view.h) or
             (self.gravity < 0 and self.y+self.collisionShape.h > view.y)) and 28 or 0))
-          megautils.stopMusic()
+          music.stop()
         else
           local dx, dy
           local ox, oy = camera.main.x, camera.main.y
@@ -993,7 +993,7 @@ function megaMan:interactedWith(o, c)
       if o.pierceType == pierce.NOPIERCE or o.pierceType == pierce.PIERCEIFKILLING then
         megautils.remove(o)
       end
-      megautils.playSound("hurt")
+      sfx.play("hurt")
     end
   end
 end
@@ -1044,7 +1044,7 @@ function megaMan:afterCollisionFunc()
     self.canStopJump.global = true
     self.extraJumps = 0
     if checkFalse(self.canControl) then
-      megautils.playSound("land")
+      sfx.play("land")
     end
   end
 end
@@ -1106,7 +1106,7 @@ function megaMan:code(dt)
       if self.anims.current == self.trebleAnimation.start then
         if self.anims:frame() == 4 and self.trebleTimer == 0 then
           self.trebleTimer = 1
-          megautils.playSound("trebleStart")
+          sfx.play("trebleStart")
         end
         if self.anims:looped() then
           self.treble = 3
@@ -1397,7 +1397,7 @@ function megaMan:code(dt)
     if self.standSolidJumpTimer > 0 and (not (input.down["jump" .. tostring(self.input)] or self.tJump) or
       self.standSolidJumpTimer == self.maxStandSolidJumpTime) then
       self.standSolidJumpTimer = -1
-      megautils.playSound("land")
+      sfx.play("land")
     end
     if self.standSolidJumpTimer == -1 and not (input.down["jump" .. tostring(self.input)] or self.tJump) then
       self.standSolidJumpTimer = 0
@@ -1499,7 +1499,7 @@ function megaMan:resetCharge()
   megaMan.colorOutline[self.player] = weapon.colors[w.current].outline
   megaMan.colorOne[self.player] = weapon.colors[w.current].one
   megaMan.colorTwo[self.player] = weapon.colors[w.current].two
-  megautils.stopSound(weapon.chargeSounds[w.current])
+  sfx.stop(weapon.chargeSounds[w.current])
 end
 
 function megaMan:charge(animOnly)
@@ -1521,7 +1521,7 @@ function megaMan:charge(animOnly)
       self.chargeTimer = 0
       self.chargeFrame = 1
       if self.chargeState == 0 then
-        megautils.playSound(weapon.chargeSounds[w.current])
+        sfx.play(weapon.chargeSounds[w.current])
       end
       if not animOnly then
         self.chargeState = math.min(self.chargeState+1, 
@@ -1565,7 +1565,7 @@ function megaMan:attemptWeaponSwitch()
     end
     self.prevWeapon = w
     self.weaponSwitchTimer = 0
-    megautils.playSound("switch")
+    sfx.play("switch")
   elseif input.pressed["next" .. tostring(self.input)] and not input.pressed["prev" .. tostring(self.input)] then
     self.prevWeapon = megaMan.weaponHandler[self.player].currentSlot
     local w = math.wrap(megaMan.weaponHandler[self.player].currentSlot+1, 0, megaMan.weaponHandler[self.player].slotSize)
@@ -1579,7 +1579,7 @@ function megaMan:attemptWeaponSwitch()
     end
     self.nextWeapon = w
     self.weaponSwitchTimer = 0
-    megautils.playSound("switch")
+    sfx.play("switch")
   elseif input.pressed["prev" .. tostring(self.input)] and not input.pressed["next" .. tostring(self.input)] then
     self.nextWeapon = megaMan.weaponHandler[self.player].currentSlot
     local w = math.wrap(megaMan.weaponHandler[self.player].currentSlot-1, 0, megaMan.weaponHandler[self.player].slotSize)
@@ -1593,7 +1593,7 @@ function megaMan:attemptWeaponSwitch()
     end
     self.prevWeapon = w
     self.weaponSwitchTimer = 0
-    megautils.playSound("switch")
+    sfx.play("switch")
   end
 end
 
@@ -1819,7 +1819,7 @@ function megaMan:die()
   self._lHealth = nil
   self._lSeg = nil
   megautils.remove(self)
-  megautils.playSound("dieExplode")
+  sfx.play("dieExplode")
 end
 
 function megaMan:removed()
@@ -1920,7 +1920,7 @@ function megaMan:update()
       if megaMan.mainPlayer == self and self.ready.isRemoved then
         self.ready = nil
         if self.mq then
-          megautils.playMusic(unpack(self.mq))
+          music.playq(unpack(self.mq))
           self.mq = nil
         end
       end
@@ -1948,7 +1948,7 @@ function megaMan:update()
           self.dropLanded = not self.anims:looped()
           if not self.dropLanded then
             self.doSplashing = false
-            megautils.playSound("ascend")
+            sfx.play("ascend")
           end
         else
           self.teleportOffY = self.teleportOffY+self.riseSpeed
@@ -1967,7 +1967,7 @@ function megaMan:update()
             self.doSplashing = true
             self.teleportOffY = nil
             self.anims:set(self.ground and self.idleAnimation.regular or self.jumpAnimation.regular)
-            megautils.playSound("start")
+            sfx.play("start")
           end
         end
       elseif checkFalse(self.canControl) then

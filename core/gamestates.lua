@@ -135,7 +135,7 @@ function states.set(n, before, after)
   
   if map then
     if mapArgs.mPath then
-      megautils.playMusic(mapArgs.mPath, mapArgs.mVolume, mapArgs.mTrack)
+      music.playq(mapArgs.mPath, mapArgs.mVolume, mapArgs.mTrack)
     end
     
     states.currentState.system:adde(map):addObjects()

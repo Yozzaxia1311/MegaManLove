@@ -1,7 +1,7 @@
 local disclaimerState = state:extend()
 
 function disclaimerState:begin()
-  megautils.stopMusic()
+  music.stop()
   loader.load("assets/misc/disclaimerFace.png", "face")
   megautils.add(disclaimer)
   megautils.add(fade, false, nil, nil, fade.remove)

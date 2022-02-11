@@ -237,7 +237,7 @@ function bossDoor:update()
           end
         end
       end
-      megautils.playSound("bossDoorSfx")
+      sfx.play("bossDoorSfx")
     end
     if self.segments <= 0 then
       self.state = 2
@@ -293,7 +293,7 @@ function bossDoor:update()
           end
         end
       end
-      megautils.playSound("bossDoorSfx")
+      sfx.play("bossDoorSfx")
     end
     if self.segments >= self.maxSegments then
       self.timer = 0

@@ -108,16 +108,16 @@ function water:update()
           
           if dir == 1 then
             megautils.add(splash, (v.x-self.x)+(v.collisionShape.w/2), 0, self, 0)
-            megautils.playSound("splash")
+            sfx.play("splash")
           elseif dir == 2 then
             megautils.add(splash, (v.x-self.x)+(v.collisionShape.w/2), self.collisionShape.h, self, 180)
-            megautils.playSound("splash")
+            sfx.play("splash")
           elseif dir == 3 then
             megautils.add(splash, 0, (v.y-self.y)+(v.collisionShape.h/2), self, 270)
-            megautils.playSound("splash")
+            sfx.play("splash")
           elseif dir == 4 then
             megautils.add(splash, self.collisionShape.w, (v.y-self.y)+(v.collisionShape.h/2), self, 90)
-            megautils.playSound("splash")
+            sfx.play("splash")
           end
         end
         
@@ -154,16 +154,16 @@ function water:update()
         
         if dir == 1 then
           megautils.add(splash, (v.x-self.x)+(v.collisionShape.w/2), 0, self, 0)
-          megautils.playSound("splash")
+          sfx.play("splash")
         elseif dir == 2 then
           megautils.add(splash, (v.x-self.x)+(v.collisionShape.w/2), self.collisionShape.h, self, 180)
-          megautils.playSound("splash")
+          sfx.play("splash")
         elseif dir == 3 then
           megautils.add(splash, 0, (v.y-self.y)+(v.collisionShape.h/2), self, 270)
-          megautils.playSound("splash")
+          sfx.play("splash")
         elseif dir == 4 then
           megautils.add(splash, self.collisionShape.w, (v.y-self.y)+(v.collisionShape.h/2), self, 90)
-          megautils.playSound("splash")
+          sfx.play("splash")
         end
         
         v.inWater = false

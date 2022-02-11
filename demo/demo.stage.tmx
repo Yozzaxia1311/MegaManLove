@@ -463,7 +463,7 @@
    <object id="74" template="../assets/states/templates/mechanics/water.tx" x="288" y="256" width="80" height="64"/>
    <object id="75" template="../assets/states/templates/mechanics/water.tx" x="336" y="320" width="64" height="96"/>
    <object id="76" template="../assets/states/templates/mechanics/water.tx" x="496" y="288" width="80" height="96"/>
-   <object id="77" template="../assets/states/templates/mechanics/water.tx" x="736" y="304" width="176" height="144"/>
+   <object id="77" template="../assets/states/templates/mechanics/water.tx" x="736" y="304" width="176" height="160"/>
    <object id="79" template="../assets/states/templates/mechanics/space.tx" x="624" y="224" width="48" height="192"/>
    <object id="80" template="../assets/states/templates/collision/ladder.tx" x="496" y="288" width="16" height="128"/>
    <object id="81" template="../assets/states/templates/collision/solid.tx" x="576" y="208" width="48" height="176"/>

@@ -7,7 +7,7 @@ function playersState:begin()
   megautils.add(fade, false, nil, nil, fade.remove)
   
   love.graphics.setBackgroundColor(0, 0.5, 136/255, 1)
-  megautils.playMusic("assets/sfx/mm5.nsf", nil, 19)
+  music.play("assets/sfx/mm5.nsf", nil, 19)
 end
 
 function playersState:switching()
@@ -142,7 +142,7 @@ function smash:update()
       self.cursors[nextP] = {x = (i * 64) - 38, y = view.h - 64, input = megaMan.playerToInput[nextP],
         color = self.colors[nsi].one, name = self.names[nsi]}
       megaMan.playerCount = nextP
-      megautils.playSoundFromFile("assets/sfx/selected.ogg")
+      sfx.playFromFile("assets/sfx/selected.ogg")
     end
   end
   
@@ -184,7 +184,7 @@ function smash:update()
           self.cursors[i].color = self.colors[j].one
           self.cursors[i].name = self.names[j]
           megaMan.setSkin(i, self.players[j])
-          megautils.playSoundFromFile("assets/sfx/selected.ogg")
+          sfx.playFromFile("assets/sfx/selected.ogg")
           break
         end
       end

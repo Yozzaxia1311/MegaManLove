@@ -65,11 +65,11 @@ function healthHandler:update(dt)
     if self.riseTimer == 4 then
       self.riseTimer = 0
       self.renderedHealth = math.approach(self.renderedHealth, self.health, 1)
-      megautils.playSound("heal")
+      sfx.play("heal")
       if self.renderedHealth == self.health then
         megautils.unfreeze("hb")
         self.rise = 0
-        megautils.stopSound("heal")
+        sfx.stop("heal")
       end
     end
   end
@@ -94,9 +94,9 @@ function healthHandler:update(dt)
           end
           self.t2 = nil
           self.tween = nil
-          megautils.playSoundFromFile("assets/sfx/selected.ogg")
+          sfx.playFromFile("assets/sfx/selected.ogg")
         else
-          megautils.playSound("error")
+          sfx.play("error")
         end
       end
     end
@@ -304,10 +304,10 @@ function weaponHandler:update(dt)
       if self.riseTimer == 4 then
         self.renderedWE[self.currentSlot] = math.approach(self.renderedWE[self.currentSlot], self.energy[self.currentSlot], 1)
         self.riseTimer = 0
-        megautils.playSound("heal")
+        sfx.play("heal")
         if self.renderedWE[self.currentSlot] == self.energy[self.currentSlot] then
           megautils.unfreeze("wb")
-          megautils.stopSound("heal")
+          sfx.stop("heal")
         end
       end
     end

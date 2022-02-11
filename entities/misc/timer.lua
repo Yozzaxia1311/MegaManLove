@@ -24,7 +24,7 @@ function timer.winCutscene(func)
       if megaMan.mainPlayer then
         s.timer = 0
         s.state = 1
-        megautils.stopMusic()
+        music.stop()
         megaMan.mainPlayer:resetStates()
         megaMan.mainPlayer.velX = 0
         megaMan.mainPlayer.canControl.global = false
@@ -81,7 +81,7 @@ function timer.absorbCutscene(func, music)
           s.timer = 0
         end
         megautils.removePlayerShots()
-        megautils.playMusic(music or "assets/sfx/mm5.nsf", nil, 17)
+        music.playq(music or "assets/sfx/mm5.nsf", nil, 17)
       elseif s.state == 1 then
         s.timer = math.min(s.timer+1, 300)
         if s.timer == 300 then

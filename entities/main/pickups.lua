@@ -301,7 +301,7 @@ function life:taken(p)
     self:interact(p, 9999, true)
   else
     megautils.setLives(math.min(megautils.getLives()+1, maxLives))
-    megautils.playSoundFromFile("assets/sfx/life.ogg")
+    sfx.playFromFile("assets/sfx/life.ogg")
   end
 end
 
@@ -366,7 +366,7 @@ end
 
 function eTank:taken(p)
   megautils.setETanks(math.min(megautils.getETanks()+1, maxETanks))
-  megautils.playSoundFromFile("assets/sfx/life.ogg")
+  sfx.playFromFile("assets/sfx/life.ogg")
 end
 
 function eTank:update()
@@ -422,7 +422,7 @@ end
 
 function wTank:taken(p)
   megautils.setWTanks(math.min(megautils.getWTanks()+1, maxWTanks))
-  megautils.playSoundFromFile("assets/sfx/life.ogg")
+  sfx.playFromFile("assets/sfx/life.ogg")
 end
 
 function wTank:update()
