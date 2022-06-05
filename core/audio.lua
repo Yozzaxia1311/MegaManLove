@@ -53,7 +53,7 @@ function sfx.playFromFile(p, l, v, stack)
     
     sfx.curS.conf = love.filesystem.getInfo(p .. ".txt") and parseConf(p .. ".txt")
     if sfx.curS.conf and sfx.curS.conf.muteGMEVoices then
-      if type(megautils._curS.conf.muteGMEVoices) == "number" then
+      if type(sfx.curS.conf.muteGMEVoices) == "number" then
         sfx._cachedMutes[sfx.curS.conf.muteGMEVoices] = s
         music.GMEPushMuteVoice(sfx.curS.conf.muteGMEVoices)
       else
