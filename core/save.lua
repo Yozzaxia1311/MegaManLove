@@ -9,7 +9,7 @@ function save.createDirChain(p)
       if part[i]:find("%.") then break end
       if part[i] ~= "" then
         local f = love.filesystem.getInfo(whole .. (i == 1 and "" or "/") .. part[i])
-        if f and f.type == "directory" then
+        if f and (f.type == "directory" or f.type == "symlink") then
           whole = whole .. (i == 1 and "" or "/") .. part[i]
         else
           fs.createDirectory(whole .. (i>1 and "/" or "") .. part[i])

@@ -191,7 +191,7 @@ function console.init()
   console.print("Run \"findcvar\" for a list of console variables")
   console.print("Press Control + R to start recording")
   console.print("DO NOT OPEN A CONTEXT OR RECORDING FROM A SOURCE YOU DO NOT TRUST!")
-  console.print(".ctx FILES CAN AND WILL EXECUTE POTENTIALLY DANGEROUS LUA CODE!")
+  console.print(".ctx FILES MAY EXECUTE POTENTIALLY MALICIOUS LUA CODE!")
 end
 
 function console.open()
