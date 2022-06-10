@@ -271,7 +271,7 @@ concmd["recs"] = {
         check = cmd[2]
         if not love.filesystem.getInfo(check) then console.print("No such directory \""..cmd[2].."\"") return end
       end
-      local result = iterateDirs(function(f)
+      local result = iterateFiles(function(f)
           return f:sub(-3) == ".rd"
         end, check)
       if #result == 0 then
@@ -380,7 +380,7 @@ concmd["states"] = {
         check = cmd[2]
         if not love.filesystem.getInfo(check) then console.print("No such directory \""..cmd[2].."\"") return end
       end
-      local result = iterateDirs(function(f)
+      local result = iterateFiles(function(f)
           return f:sub(-10) == ".state.lua" or f:sub(-10) == ".state.tmx" or f:sub(-10) == ".stage.lua" or f:sub(-10) == ".stage.tmx"
         end, check)
       if #result == 0 then
@@ -445,7 +445,7 @@ concmd["contexts"] = {
         check = cmd[2]
         if not love.filesystem.getInfo(check) then console.print("No such directory \""..cmd[2].."\"") return end
       end
-      local result = iterateDirs(function(f)
+      local result = iterateFiles(function(f)
           return f:sub(-5) == ".cntx"
         end, check)
       if #result == 0 then

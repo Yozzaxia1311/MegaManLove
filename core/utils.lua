@@ -153,8 +153,33 @@ function iterateDirs(func, path, noAppdata)
       local info = love.filesystem.getInfo(p)
       
       if v:sub(1, 1) ~= "." then
-        if not no and info.type == "directory" then
+        if info.type == "directory" then
+          results[#results + 1] = p
           results = table.merge({results, iterateDirs(func, p, noAppdata)})
+        end
+      end
+    end
+  end
+  
+  table.sort(results)
+  
+  return results
+end
+
+function iterateFiles(func, path, noAppdata)
+  local results = {}
+  
+  path = path or ""
+  
+  for _, v in pairs(love.filesystem.getDirectoryItems(path)) do
+    local p = path .. (path ~= "" and "/" or path) .. v
+    
+    if not noAppdata or love.filesystem.getRealDirectory(p) ~= love.filesystem.getAppdataDirectory() then
+      local info = love.filesystem.getInfo(p)
+      
+      if v:sub(1, 1) ~= "." then
+        if info.type == "directory" then
+          results = table.merge({results, iterateFiles(func, p, noAppdata)})
         elseif not func or func(v, p) then
           results[#results+1] = p
         end
