@@ -710,11 +710,3 @@ function megautils.removeAllShots()
   megautils.removeEnemyShots()
   megautils.removePlayerShots()
 end
-
-function megautils.getClassName(e)
-  for k, v in pairs(_G) do
-    if e.__index == v then
-      return k
-    end
-  end
-end

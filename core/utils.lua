@@ -1,4 +1,111 @@
+local _max, _min = math.max, math.min
+local _floor = math.floor
+local _sqrt = math.sqrt
 local function nothing() end
+
+function getClassName(e)
+  for k, v in pairs(_G) do
+    if e.__index == v then
+      return k
+    end
+  end
+end
+
+function iterateDirs(func, path, noAppdata)
+  local results = {}
+  
+  path = path or ""
+  
+  for _, v in pairs(love.filesystem.getDirectoryItems(path)) do
+    local p = path .. (path ~= "" and "/" or path) .. v
+    
+    if not noAppdata or love.filesystem.getRealDirectory(p) ~= love.filesystem.getAppdataDirectory() then
+      local info = love.filesystem.getInfo(p)
+      
+      if v:sub(1, 1) ~= "." then
+        if info.type == "directory" then
+          results[#results + 1] = p
+          results = table.merge({results, iterateDirs(func, p, noAppdata)})
+        end
+      end
+    end
+  end
+  
+  table.sort(results)
+  
+  return results
+end
+
+function iterateFiles(func, path, noAppdata)
+  local results = {}
+  
+  path = path or ""
+  
+  for _, v in pairs(love.filesystem.getDirectoryItems(path)) do
+    local p = path .. (path ~= "" and "/" or path) .. v
+    
+    if not noAppdata or love.filesystem.getRealDirectory(p) ~= love.filesystem.getAppdataDirectory() then
+      local info = love.filesystem.getInfo(p)
+      
+      if v:sub(1, 1) ~= "." then
+        if info.type == "directory" then
+          results = table.merge({results, iterateFiles(func, p, noAppdata)})
+        elseif not func or func(v, p) then
+          results[#results+1] = p
+        end
+      end
+    end
+  end
+  
+  table.sort(results)
+  
+  return results
+end
+
+function checkExt(path, list)
+  local p = path:split("%.")
+  p = p[#p]:lower()
+  
+  for _, v in ipairs(list) do
+    if v:lower() == p then
+      return true
+    end
+  end
+  return false
+end
+
+function parseConf(path)
+  assert(love.filesystem.getInfo(path), "\"" .. path .. "\" does not exist")
+  
+  local result
+  
+  for line in love.filesystem.lines(path) do
+    if line ~= "" and line:match(":") and not line:match("<>") then
+      local data = line:split(":")
+      local v = data[2]:trimmed()
+      v = tonumber(v) or (toboolean(v) == nil and v) or toboolean(v)
+      
+      if type(v) == "string" and line:match(",") then
+        local od = v:split(",")
+        
+        for i = 1, #od do
+          od[i] = od[i]:trimmed()
+          od[i] = tonumber(od[i]) or (toboolean(od[i]) == nil and od[i]) or toboolean(od[i])
+        end
+        
+        v = od
+      end
+      
+      if not result then
+        result = {}
+      end
+      
+      result[data[1]] = v
+    end
+  end
+  
+  return result
+end
 
 function safepairs(t)
   if next(t) == nil then return nothing end
@@ -88,39 +195,6 @@ function string:getAbsolutePath(base)
   return result
 end
 
-function parseConf(path)
-  assert(love.filesystem.getInfo(path), "\"" .. path .. "\" does not exist")
-  
-  local result
-  
-  for line in love.filesystem.lines(path) do
-    if line ~= "" and line:match(":") and not line:match("<>") then
-      local data = line:split(":")
-      local v = data[2]:trimmed()
-      v = tonumber(v) or (toboolean(v) == nil and v) or toboolean(v)
-      
-      if type(v) == "string" and line:match(",") then
-        local od = v:split(",")
-        
-        for i = 1, #od do
-          od[i] = od[i]:trimmed()
-          od[i] = tonumber(od[i]) or (toboolean(od[i]) == nil and od[i]) or toboolean(od[i])
-        end
-        
-        v = od
-      end
-      
-      if not result then
-        result = {}
-      end
-      
-      result[data[1]] = v
-    end
-  end
-  
-  return result
-end
-
 function table.intersects(t, t2, fully)
   if fully then
     for _, v in pairs(t) do
@@ -136,69 +210,6 @@ function table.intersects(t, t2, fully)
           return true
         end
       end
-    end
-  end
-  return false
-end
-
-function iterateDirs(func, path, noAppdata)
-  local results = {}
-  
-  path = path or ""
-  
-  for _, v in pairs(love.filesystem.getDirectoryItems(path)) do
-    local p = path .. (path ~= "" and "/" or path) .. v
-    
-    if not noAppdata or love.filesystem.getRealDirectory(p) ~= love.filesystem.getAppdataDirectory() then
-      local info = love.filesystem.getInfo(p)
-      
-      if v:sub(1, 1) ~= "." then
-        if info.type == "directory" then
-          results[#results + 1] = p
-          results = table.merge({results, iterateDirs(func, p, noAppdata)})
-        end
-      end
-    end
-  end
-  
-  table.sort(results)
-  
-  return results
-end
-
-function iterateFiles(func, path, noAppdata)
-  local results = {}
-  
-  path = path or ""
-  
-  for _, v in pairs(love.filesystem.getDirectoryItems(path)) do
-    local p = path .. (path ~= "" and "/" or path) .. v
-    
-    if not noAppdata or love.filesystem.getRealDirectory(p) ~= love.filesystem.getAppdataDirectory() then
-      local info = love.filesystem.getInfo(p)
-      
-      if v:sub(1, 1) ~= "." then
-        if info.type == "directory" then
-          results = table.merge({results, iterateFiles(func, p, noAppdata)})
-        elseif not func or func(v, p) then
-          results[#results+1] = p
-        end
-      end
-    end
-  end
-  
-  table.sort(results)
-  
-  return results
-end
-
-function checkExt(path, list)
-  local p = path:split("%.")
-  p = p[#p]:lower()
-  
-  for _, v in ipairs(list) do
-    if v:lower() == p then
-      return true
     end
   end
   return false
@@ -268,7 +279,7 @@ function table.shuffle(t)
 end
 
 function table.lazyShuffle(t)
-  local half = math.floor(#t / 2)
+  local half = _floor(#t / 2)
   for i = 1, half, (#t >= 4 and 2 or 1) do
     local j = love.math.random(half, #t)
     t[i], t[j] = t[j], t[i]
@@ -282,20 +293,18 @@ function math.even(n)
 end
 
 function math.dist2d(x, y, x2, y2)
-  return math.sqrt(((x - x2) ^ 2) + ((y - y2) ^ 2))
+  return _sqrt(((x - x2) ^ 2) + ((y - y2) ^ 2))
 end
 
 function math.approach(v, to, am)
   if v < to then 
-    return math.min(v + am, to)
+    return _min(v + am, to)
   elseif v > to then
-    return math.max(v - am, to)
+    return _max(v - am, to)
   end
   
   return v
 end
-
-local _max, _min = math.max, math.min
 
 function math.clamp(val, min, max)
   if min < max then
@@ -307,7 +316,7 @@ end
 
 function math.roundDecimal(num, decimalPlaces)
   local mult = 10 ^ (decimalPlaces or 0)
-  return math.floor(num * mult + 0.5) / mult
+  return _floor(num * mult + 0.5) / mult
 end
 
 function math.between(val, min, max)
@@ -321,8 +330,6 @@ end
 function math.sign(x)
   return x > 0 and 1 or (x < 0 and -1 or 0)
 end
-
-local _floor = math.floor
 
 function math.round(x)
   return _floor(x + 0.5)
