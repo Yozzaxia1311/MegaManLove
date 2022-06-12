@@ -22,23 +22,41 @@ function met:new(overrideX, overrideY)
 end
 
 function met:weaponTable(other)
-  if other:is(megaSemiBuster) then
-    return megautils.diffValue(-1, {easy=-2})
-  elseif other:is(megaChargedBuster) then
-    return megautils.diffValue(-2, {easy=-3})
-  elseif other:is(protoSemiBuster) then
-    return megautils.diffValue(-1, {easy=-2})
-  elseif other:is(protoChargedBuster) then
-    return megautils.diffValue(-2, {easy=-3})
-  elseif other:is(bassBuster) then
-    if other.treble then
-      return megautils.diffValue(-1, {easy=-2})
-    else
-      return megautils.diffValue(-0.5, {easy=-1})
+  if megautils.getDifficulty() == "easy" then
+    if other:is(megaSemiBuster) then
+      return -2
+    elseif other:is(megaChargedBuster) then
+      return -3
+    elseif other:is(protoSemiBuster) then
+      return -2
+    elseif other:is(protoChargedBuster) then
+      return -3
+    elseif other:is(bassBuster) then
+      if other.treble then
+        return -2
+      else
+        return -1
+      end
+    end
+  else
+    if other:is(megaSemiBuster) then
+      return -1
+    elseif other:is(megaChargedBuster) then
+      return -2
+    elseif other:is(protoSemiBuster) then
+      return -1
+    elseif other:is(protoChargedBuster) then
+      return -2
+    elseif other:is(bassBuster) then
+      if other.treble then
+        return -1
+      else
+        return -0.5
+      end
     end
   end
   
-  return -1
+  return other.damage
 end
 
 function met:update()

@@ -11,7 +11,7 @@ function death:new(x, y, w, h, damage)
   self.x = x or 0
   self.y = y or 0
   self:setRectangleCollision(w or 16, h or 16)
-  self.damage = damage or -99999
+  self.damage = damage
   self.damage = -math.abs(self.damage)
   self.solidType = collision.SOLID
   self.death = true

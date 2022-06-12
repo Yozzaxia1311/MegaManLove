@@ -260,7 +260,7 @@ function megaMan.properties(self, g, gf, c)
   self.maxExtraJumps = 0
   self.maxTrebleSpeed = 2
   self.trebleDecel = 0.1
-  if megautils.diff("easy") then
+  if megautils.getDifficulty() == "easy" then
     self.protoShieldLeftCollision = {x=-7, y=0, w=8, h=20, goy=2}
     self.protoShieldRightCollision = {x=10, y=0, w=8, h=20, goy=2}
   else
@@ -420,7 +420,7 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   self.idleAnimation = {regular="idle", shoot="idleShoot", s_dm="idleShootDM", s_um="idleShootUM", s_u="idleShootU", proto="protoIdle"}
   self.nudgeAnimation = {regular="nudge", shoot="idleShoot", s_dm="idleShootDM", s_um="idleShootUM", s_u="idleShootU"}
   self.jumpAnimation = {regular="jump", shoot="jumpShoot", s_dm="jumpShootDM", s_um="jumpShootUM", s_u="jumpShootU",
-    ps=megautils.diff("easy") and "jumpProtoShield2" or "jumpProtoShield"}
+    ps=(megautils.getDifficulty() == "easy") and "jumpProtoShield2" or "jumpProtoShield"}
   self.runAnimation = {regular="run", shoot="runShoot"}
   self.climbAnimation = {regular="climb", shoot="climbShoot", s_dm="climbShootDM", s_um="climbShootUM", s_u="climbShootU"}
   self.climbTipAnimation = {regular="climbTip"}
@@ -892,8 +892,8 @@ function megaMan:checkProtoShield(e, side)
 end
 
 function megaMan:weaponTable(o)
-  if o.death then
-    return megautils.diffValue(o.damage, {easy=-14})
+  if o.death and megautils.getDifficulty() == "easy" then
+    return -14
   end
 end
 

@@ -161,8 +161,8 @@ function collision.entityPlatform(self, vx, vy)
             local epDir = _sign(self.y + (self.collisionShape.h/2) -
               (v.y + (v.collisionShape.h/2)))
             
-            if v:collision(self, 0, -vy) then
-              collision.performDeath(v, self)
+            if v:collision(self, 0, -vy) and self.death then
+              self:interact(v, self.damage or -99999, true)
             end
             
             if not v:collision(self) then
@@ -223,8 +223,8 @@ function collision.entityPlatform(self, vx, vy)
             (not self.exclusivelySolidFor or _icontains(self.exclusivelySolidFor, v)) and
             (not self.excludeSolidFor or not _icontains(self.excludeSolidFor, v)) then
             
-            if v:collision(self, -vx, 0) then
-              collision.performDeath(v, self)
+            if v:collision(self, -vx, 0) and self.death then
+              self:interact(v, self.damage or -99999, true)
             end
             
             if not v:collision(self) then
@@ -589,7 +589,7 @@ function collision.checkDeath(self, x, y, dg)
         
         local ld = self.dead
         
-        collision.performDeath(self, deathSolid)
+        deathSolid:interact(self, deathSolid.damage or -99999, true)
         
         if not ld and self.dead and dg ~= nil then
           self.ground = dg
@@ -602,10 +602,18 @@ function collision.checkDeath(self, x, y, dg)
   end
 end
 
-function collision.performDeath(self, death)
-  if death.death then
-    death:interact(self, death.damage or -99999, true)
+function collision.getDeath(t)
+  local result = {}
+  local all = t or megautils.getAllEntities()
+  
+  for i=1, #all do
+    local v = all[i]
+    if v.death then
+      result[#result+1] = v
+    end
   end
+  
+  return result
 end
 
 function collision.getLadders(t)

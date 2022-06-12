@@ -670,24 +670,6 @@ function megautils.arcXVel(yvel, grav, x, y, tox, toy)
   return result
 end
 
-function megautils.diff(...)
-  for _, v in pairs({...}) do
-    if v == convar.getString("diff") then
-      return true
-    end
-  end
-  return false
-end
-
-function megautils.diffValue(def, t)
-  for k, v in pairs(t) do
-    if k == convar.getString("diff") then
-      return v
-    end
-  end
-  return def
-end
-
 function megautils.removeEnemyShots()
   if states.currentStateObject.system.all then
     for _, v in safeipairs(states.currentStateObject.system.all) do
