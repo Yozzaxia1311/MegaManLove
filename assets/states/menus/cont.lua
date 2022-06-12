@@ -84,12 +84,12 @@ function contSelect:update()
       self.picked = true
       self.canDraw.global = false
       music.stop()
-      megautils.transitionToState(globals.gameOverContinueState)
+      states.fadeToState(globals.gameOverContinueState)
       globals.gameOverContinueState = nil
     elseif self.pick == 0 then
       self.picked = true
       self.canDraw.global = false
-      megautils.transitionToState(globals.menuState)
+      states.fadeToState(globals.menuState)
     end
   end
   self.y = self.offY + self.pick*16

@@ -352,7 +352,7 @@ concmd["state"] = {
       if cmd[3] then globals.overrideCheckpoint = cmd[3] end
       if cmd[4] then globals.overridePlayerCount = numberSanitize(cmd[4]) end
       cscreen.setFade(1)
-      megautils.gotoState(map)
+      states.setq(map)
     end
 }
 
@@ -367,7 +367,7 @@ concmd["resetstate"] = {
       if cmd[2] then globals.overrideCheckpoint = cmd[2] end
       if cmd[3] then globals.overridePlayerCount = numberSanitize(cmd[3]) end
       cscreen.setFade(1)
-      megautils.gotoState(megautils.getCurrentState())
+      states.setq(states.currentStatePath)
     end
 }
 

@@ -235,10 +235,10 @@ function stageSelect:update()
             end)._func = self.slots[pick]
         else
           if globals.defeats[self.slots[pick].defeatSlot] then
-            megautils.transitionToState(self.slots[pick].stageState)
+            states.fadeToState(self.slots[pick].stageState)
           else
             globals.bossIntroBoss = globals.robotMasterEntities[pick]
-            megautils.transitionToState("assets/states/menus/bossintro.state.lua")
+            states.fadeToState("assets/states/menus/bossintro.state.lua")
           end
         end
       end
@@ -255,7 +255,7 @@ function stageSelect:update()
     end
   elseif (input.pressed.select1 or input.touchPressedOverlaps(8 - 4, (27 * 8) - 4, 32 + 8, 16 + 8)) and not self.stop then
     self.stop = true
-    megautils.transitionToState(globals.menuState)
+    states.fadeToState(globals.menuState)
     music.stop()
   else
     self.timer = math.wrap(self.timer+1, 0, 14)

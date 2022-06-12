@@ -35,7 +35,7 @@ function camera:new(x, y, doScrollX, doScrollY)
   self.player = nil
   self.funcs = {}
   self.spawners = {}
-  megautils.state().system.cameraUpdate = nil
+  states.currentStateObject.system.cameraUpdate = nil
 end
 
 function camera:added()
@@ -237,7 +237,7 @@ function camera:updateCam(spdx, spdy)
         self.player.onMovingFloor.dontRemoveOnTransition = true
       end
       self.once = true
-      megautils.state().system.cameraUpdate = function(s)
+      states.currentStateObject.system.cameraUpdate = function(s)
         for i=1, #megaMan.allPlayers do
           camera.main.tween2[i]:update(1/60)
         end
@@ -251,7 +251,7 @@ function camera:updateCam(spdx, spdy)
             camera.main.once = false
             camera.main.preTrans = false
             camera.main.tweenFinished = false
-            megautils.state().system.cameraUpdate = nil
+            states.currentStateObject.system.cameraUpdate = nil
           end
           if camera.main.freeze then
             for _, v in pairs(megaMan.allPlayers) do

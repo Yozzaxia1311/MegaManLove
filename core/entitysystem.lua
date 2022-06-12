@@ -976,16 +976,16 @@ end
 function basicEntity:interactedWith(other, c) end
 
 function basicEntity:setLayer(l)
-  if megautils.state() and megautils.state().system then
-    megautils.state().system:setLayer(self, l)
+  if states.currentStateObject and states.currentStateObject.system then
+    states.currentStateObject.system:setLayer(self, l)
   else
     self.layer = l
   end
 end
 
 function basicEntity:makeStatic()
-  if megautils.state() and megautils.state().system then
-    megautils.state().system:makeStatic(self)
+  if states.currentStateObject and states.currentStateObject.system then
+    states.currentStateObject.system:makeStatic(self)
   else
     self.static = true
     self.staticX = self.x
@@ -1006,8 +1006,8 @@ function basicEntity:makeStatic()
 end
 
 function basicEntity:revertFromStatic()
-  if megautils.state() and megautils.state().system then
-    megautils.state().system:revertFromStatic(self)
+  if states.currentStateObject and states.currentStateObject.system then
+    states.currentStateObject.system:revertFromStatic(self)
   else
     self.static = false
     self.staticX = nil
@@ -1025,8 +1025,8 @@ function basicEntity:revertFromStatic()
 end
 
 function basicEntity:removeFromGroup(g)
-  if megautils.state() and megautils.state().system then
-    megautils.state().system:removeFromGroup(self, g)
+  if states.currentStateObject and states.currentStateObject.system then
+    states.currentStateObject.system:removeFromGroup(self, g)
   else
     table.quickremovevaluearray(self.groupNames, g)
   end
@@ -1037,16 +1037,16 @@ function basicEntity:inGroup(g)
 end
 
 function basicEntity:removeFromAllGroups()
-  if megautils.state() and megautils.state().system then
-    megautils.state().system:removeFromAllGroups(self, g)
+  if states.currentStateObject and states.currentStateObject.system then
+    states.currentStateObject.system:removeFromAllGroups(self, g)
   else
     self.groupNames = {}
   end
 end
 
 function basicEntity:addToGroup(g)
-  if megautils.state() and megautils.state().system then
-    megautils.state().system:addToGroup(self, g)
+  if states.currentStateObject and states.currentStateObject.system then
+    states.currentStateObject.system:addToGroup(self, g)
   elseif not table.icontains(self.groupNames, g) then
     self.groupNames[#self.groupNames + 1] = g
   end
@@ -1213,7 +1213,7 @@ function basicEntity:updateHash(doAnyway)
       self.lastHashX2 = cx2
       self.lastHashY2 = cy2
       
-      megautils.state().system:updateHashForEntity(self)
+      states.currentStateObject.system:updateHashForEntity(self)
     end
   end
 end
@@ -1933,7 +1933,7 @@ function bossEntity:new()
   self.continueAfterDeath = false
   self.afterDeathState = globals.weaponGetState
   self.weaponGetMenuState = globals.menuState
-  self.doBossIntro = megautils.getCurrentState() == globals.bossIntroState
+  self.doBossIntro = states.currentStatePath == globals.bossIntroState
   self.bossIntroText = nil
   self.weaponGetText = "WEAPON GET... (NAME HERE)"
   self.stageState = nil
@@ -2019,7 +2019,7 @@ function bossEntity:skip()
     timer.winCutscene(function()
         megautils.reloadState = true
         megautils.resetGameObjects = true
-        megautils.gotoState(self.skipBossState)
+        states.setq(self.skipBossState)
       end)
     music.stop()
   end
@@ -2101,7 +2101,7 @@ function bossEntity:die(o)
         end
         megautils.reloadState = true
         megautils.resetGameObjects = true
-        megautils.gotoState(self.afterDeathState)
+        states.setq(self.afterDeathState)
       end)
     music.stop()
   else
@@ -2159,7 +2159,7 @@ function bossEntity:bossIntro()
         end
       end
     else
-      megautils.transitionToState(self.stageState)
+      states.fadeToState(self.stageState)
     end
   end
 end

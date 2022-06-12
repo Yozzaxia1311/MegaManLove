@@ -127,7 +127,7 @@ function initEngine()
   
   local wilyIntro = function()
       error("Placeholder for Wily")
-      --megautils.gotoState("WILY INTRO HERE")
+      --states.setq("WILY INTRO HERE")
     end
   
   -- [RM 1] [RM 2] [RM 3]
@@ -168,7 +168,7 @@ function love.load()
     save.save("main.sav", {})
   end
   
-  megautils.gotoState(globals.disclaimerState)
+  states.setq(globals.disclaimerState)
   
   console.parse("exec autoexec")
 end

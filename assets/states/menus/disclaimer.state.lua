@@ -68,7 +68,7 @@ function disclaimer:update()
         save.save("main.sav", data)
       elseif lastPressed.input == "guide" then
         globals.sendBackToDisclaimer = true
-        megautils.transitionToState(globals.rebindState)
+        states.fadeToState(globals.rebindState)
         self.check = false
         return
       end
@@ -76,12 +76,12 @@ function disclaimer:update()
       table.removevalue(self.texts, self.bottomTextGP)
     end
     if input.pressed.start1 or input.length(input.touchPressed) ~= 0 then
-      megautils.transitionToState(globals.titleState)
+      states.fadeToState(globals.titleState)
       self.check = false
       return
     elseif lastPressed.input == "escape" then
       globals.sendBackToDisclaimer = true
-      megautils.transitionToState(globals.rebindState)
+      states.fadeToState(globals.rebindState)
       self.check = false
       return
     end

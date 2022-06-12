@@ -150,7 +150,7 @@ function mmWeaponsMenu:removed()
   end
   
   if not self.ff or self.ff.isRemoved then
-    for _, v in ipairs(megautils.state().system.all) do
+    for _, v in ipairs(states.currentStateObject.system.all) do
       v.canDraw.pause = nil
     end
   end
@@ -224,14 +224,14 @@ function mmWeaponsMenu:update(dt)
           megautils.remove(self)
           megautils.remove(s)
           
-          for _, v in ipairs(megautils.state().system.all) do
+          for _, v in ipairs(states.currentStateObject.system.all) do
             if not v.visibleDuringPause then
               v.canDraw.pause = false
             end
           end
           
           self.ff = megautils.add(fade, false, nil, nil, function(ss)
-              for _, v in ipairs(megautils.state().system.all) do
+              for _, v in ipairs(states.currentStateObject.system.all) do
                 v.canDraw.pause = nil
               end
               

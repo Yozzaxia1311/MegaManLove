@@ -41,7 +41,7 @@ function rebinder:update()
       if not globals.sendBackToDisclaimer and not globals.sendBackToPlayers then
         globals.fromOther = 5
       end
-      megautils.gotoState(globals.sendBackToDisclaimer and globals.disclaimerState or
+      states.setq(globals.sendBackToDisclaimer and globals.disclaimerState or
         (globals.sendBackToPlayers and globals.playerSelectState or globals.lastStateName))
       globals.sendBackToDisclaimer = nil
       globals.sendBackToPlayers = nil
@@ -69,7 +69,7 @@ function rebinder:update()
           if not globals.sendBackToDisclaimer and not globals.sendBackToPlayers then
             globals.fromOther = 5
           end
-          megautils.gotoState(globals.sendBackToDisclaimer and globals.disclaimerState or
+          states.setq(globals.sendBackToDisclaimer and globals.disclaimerState or
             (globals.sendBackToPlayers and globals.playerSelectState or globals.lastStateName))
           globals.sendBackToDisclaimer = nil
           globals.sendBackToPlayers = nil

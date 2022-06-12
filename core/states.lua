@@ -2,8 +2,8 @@ states = {}
 
 function states.ser()
   return {
-      currentState = states.currentState,
-      current = states.current,
+      currentState = states.currentStateObject,
+      current = states.currentStatePath,
       switched = states.switched,
       recordOnSwitch = states.recordOnSwitch,
       openRecord = states.openRecord,
@@ -12,59 +12,54 @@ function states.ser()
 end
 
 function states.deser(t)
-  states.currentState = t.currentState
-  states.current = t.current
+  states.currentStateObject = t.currentState
+  states.currentStatePath = t.current
   states.switched = t.switched
   states.recordOnSwitch = t.recordOnSwitch
   states.openRecord = t.openRecord
   states.queue = t.queue
 end
 
-states.currentState = nil
-states.current = nil
+states.currentStateObject = nil
+states.currentStatePath = nil
 states.queue = nil
 
-baseState = class:extend()
+state = class:extend()
 
-function baseState:begin() end
-function baseState:update(dt) end
-function baseState:draw() end
-function baseState:switching() end
-function baseState:unload() end
-function baseState:init() end
-
-state = baseState:extend()
+function state:init() end
+function state:begin() end
 
 function state:update(dt)
   self.system:update(dt)
 end
+
 function state:draw()
   self.system:draw()
 end
+
 function state:switching()
   self.system:clear()
 end
-function state:unload()
-  megautils.unload()
-end
 
-function states.set(n, before, after)
+function state:unload() end
+
+function states.set(p, before, after)
   states.switched = false
   if before then before() end
   
-  local nick = n
-  local isStage = nick and (nick:sub(-10) == ".stage.lua" or nick:sub(-10) == ".stage.tmx")
+  local path = p
+  local isStage = path and (path:sub(-10) == ".stage.lua" or path:sub(-10) == ".stage.tmx")
   local map
   local mapArgs = {}
   local sp = "|???|"
   
-  if nick then
-    if nick:sub(-10) == ".state.tmx" or nick:sub(-10) == ".stage.tmx" then
-      map = megautils.createMapEntity(nick)
+  if path then
+    if path:sub(-10) == ".state.tmx" or path:sub(-10) == ".stage.tmx" then
+      map = megautils.createMapEntity(path)
       local p = map.map.properties
       
       if p then
-        local otherp = nick:sub(0, -11)
+        local otherp = path:sub(0, -11)
         if p.state and p.state ~= "" then
           sp = p.state
         elseif love.filesystem.getInfo(otherp .. ".lua") then
@@ -78,11 +73,11 @@ function states.set(n, before, after)
         mapArgs.fadeIn = p.fadeIn == nil or p.fadeIn
       end
     else
-      sp = nick
+      sp = path
     end
   end
   
-  local lastState = states.currentState
+  local lastState = states.currentStateObject
   
   if lastState then
     lastState:switching()
@@ -91,9 +86,9 @@ function states.set(n, before, after)
   view.x, view.y = 0, 0
   states.switched = true
   
-  local nextState = states.currentChunk
+  local nextState = states.currentStatePathChunk
   
-  if not nextState or states.current ~= sp then
+  if not nextState or states.currentStatePath ~= sp then
     if sp == "|???|" then
       nextState = state:extend()
     else
@@ -101,34 +96,35 @@ function states.set(n, before, after)
     end
   end
   
-  states.current = nick
+  states.currentStatePath = path
   
   if megautils.reloadState then
     megautils.runCallback(megautils.reloadStateFuncs)
   end
   
   if not nextState then
-    error("State does not exist: \"" .. tostring(states.current) .. "\"")
+    error("State does not exist: \"" .. tostring(states.currentStatePath) .. "\"")
   end
   
   if megautils.reloadState and megautils.resetGameObjects then
     if lastState then
       lastState:unload()
+      megautils.unload()
     end
     
     if isStage then
       megautils.runCallback(megautils.resetGameObjectsFuncs)
     end
     
-    states.currentState = nextState()
-    states.currentState.system = entitySystem()
+    states.currentStateObject = nextState()
+    states.currentStateObject.system = entitySystem()
     
     if after then after() end
     
-    states.currentState:init()
+    states.currentStateObject:init()
   else
-    states.currentState = nextState()
-    states.currentState.system = entitySystem()
+    states.currentStateObject = nextState()
+    states.currentStateObject.system = entitySystem()
     
     if after then after() end
   end
@@ -138,14 +134,14 @@ function states.set(n, before, after)
       music.playq(mapArgs.mPath, mapArgs.mVolume, mapArgs.mTrack)
     end
     
-    states.currentState.system:adde(map):addObjects()
+    states.currentStateObject.system:adde(map):addObjects()
     
     if mapArgs.fadeIn then
-      states.currentState.system:add(fade, false):setAfter(fade.remove)
+      states.currentStateObject.system:add(fade, false):setAfter(fade.remove)
     end
   end
   
-  states.currentState:begin()
+  states.currentStateObject:begin()
   
   collectgarbage()
   collectgarbage()
@@ -163,12 +159,23 @@ function states.checkQueue()
   end
 end
 
+function states.fadeToState(path, before, after)
+  local tmp = fade(true, gap, nil, function(se)
+      states.setq(se._path, se._before, se._after)
+    end)
+  tmp._path = path
+  tmp._before = before
+  tmp._after = after
+  
+  megautils.adde(tmp)
+end
+
 function states.update(dt)
-  if not states.currentState then return end
-  states.currentState:update(dt)
+  if not states.currentStateObject then return end
+  states.currentStateObject:update(dt)
 end
 
 function states.draw()
-  if not states.currentState then return end
-  states.currentState:draw()
+  if not states.currentStateObject then return end
+  states.currentStateObject:draw()
 end

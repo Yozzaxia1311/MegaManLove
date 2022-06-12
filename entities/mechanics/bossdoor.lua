@@ -300,7 +300,7 @@ function bossDoor:update()
       self.tileList = {}
       camera.main.freeze = true
       camera.main.dontUpdateSections = false
-      megautils.state().system.cameraUpdate = function()
+      states.currentStateObject.system.cameraUpdate = function()
         camera.main.curBoundName = camera.main.toSection.name
         camera.main.toSection = nil
         camera.main:updateBounds()
@@ -316,7 +316,7 @@ function bossDoor:update()
         camera.main.once = false
         camera.main.transition = false
         camera.main.preTrans = false
-        megautils.state().system.cameraUpdate = nil
+        states.currentStateObject.system.cameraUpdate = nil
         
         collectgarbage()
         collectgarbage()

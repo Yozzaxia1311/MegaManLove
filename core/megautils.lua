@@ -363,63 +363,40 @@ function megautils.createMapEntity(path)
   return mapEntity(cartographer.load(path))
 end
 
-function megautils.getCurrentState()
-  return states.current
-end
-
-function megautils.transitionToState(s, before, after, gap)
-  local tmp = fade(true, gap, nil, function(se)
-      megautils.gotoState(se._state, se._before, se._after)
-    end)
-  tmp._state = s
-  tmp._before = before
-  tmp._after = after
-  
-  megautils.adde(tmp)
-end
-
-function megautils.gotoState(st, before, after)
-  states.setq(st, before, after)
-end
-
 function megautils.setLayerFlicker(l, b)
-  states.currentState.system:setLayerFlicker(l, b)
+  states.currentStateObject.system:setLayerFlicker(l, b)
 end
 
 function megautils.remove(o)
-  states.currentState.system:remove(o)
-end
-
-function megautils.state()
-  return states.currentState
+  states.currentStateObject.system:remove(o)
 end
 
 function megautils.add(o, ...)
-  return states.currentState.system:add(o, ...)
+  return states.currentStateObject.system:add(o, ...)
 end
 
 function megautils.adde(o)
-  return states.currentState.system:adde(o)
+  return states.currentStateObject.system:adde(o)
 end
 
 function megautils.getAllEntities()
-  return megautils.state().system.all
+  return states.currentStateObject.system.all
 end
 
 function megautils.removeAll()
-  states.currentState.system:clean()
+  states.currentStateObject.system:clean()
 end
 
 function megautils.getRecycled(o, ...)
-  return states.currentState.system:getRecycled(o, ...)
+  return states.currentStateObject.system:getRecycled(o, ...)
 end
 
 function megautils.emptyRecycling(c, num)
-  states.currentState.system:emptyRecycling(c, num)
+  states.currentStateObject.system:emptyRecycling(c, num)
 end
 
 function megautils.groups()
-  return states.currentState.system.groups
+  return states.currentStateObject.system.groups
 end
 
 function megautils.filterByGroup(g, groupName)
@@ -497,19 +474,19 @@ function megautils.unregisterPlayer(e)
 end
 
 function megautils.getEntitiesAt(x, y, w, h)
-  return megautils.state().system:getEntitiesAt(x, y, w, h)
+  return states.currentStateObject.system:getEntitiesAt(x, y, w, h)
 end
 
 function megautils.freeze(name)
-  megautils.state().system:freeze(name)
+  states.currentStateObject.system:freeze(name)
 end
 
 function megautils.unfreeze(name)
-  megautils.state().system:unfreeze(name)
+  states.currentStateObject.system:unfreeze(name)
 end
 
 function megautils.checkFrozen(name)
-  for _, v in ipairs(megautils.state().system.frozen) do
+  for _, v in ipairs(states.currentStateObject.system.frozen) do
     if v == name then
       return true
     end
@@ -712,8 +689,8 @@ function megautils.diffValue(def, t)
 end
 
 function megautils.removeEnemyShots()
-  if megautils.state().system.all then
-    for _, v in safeipairs(megautils.state().system.all) do
+  if states.currentStateObject.system.all then
+    for _, v in safeipairs(states.currentStateObject.system.all) do
       if v.isEnemyWeapon then
         megautils.remove(v)
       end

@@ -59,7 +59,7 @@ function menuSelect:update()
         self.picked = true
         self.section = -1
         music.stop()
-        megautils.transitionToState(globals.stageSelectState)
+        states.fadeToState(globals.stageSelectState)
       elseif self.pick == 1 then
         local data = save.load("save.sav")
         if data then
@@ -106,17 +106,17 @@ function menuSelect:update()
       elseif self.pick == 5 then
         self.picked = true
         self.section = -1
-        globals.lastStateName = megautils.getCurrentState()
-        megautils.transitionToState(globals.rebindState)
+        globals.lastStateName = states.currentStatePath
+        states.fadeToState(globals.rebindState)
       elseif self.pick == 6 then
         self.picked = true
         self.section = -1
-        megautils.transitionToState(globals.playerSelectState)
+        states.fadeToState(globals.playerSelectState)
       elseif self.pick == 7 then
         self.picked = true
         self.section = -1
         music.stop()
-        megautils.transitionToState(globals.titleState)
+        states.fadeToState(globals.titleState)
       end
     end
     self.y = self.offY + self.pick*16

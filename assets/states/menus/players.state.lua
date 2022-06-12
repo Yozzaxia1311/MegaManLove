@@ -187,7 +187,7 @@ end
 function smash:update()
   if input.pressed.select1 then
     globals.fromOther = 6
-    megautils.transitionToState(globals.menuState)
+    states.fadeToState(globals.menuState)
     return
   end
   
@@ -239,7 +239,7 @@ function smash:update()
           rectOverlapsRect(128 + (j * 16) - 16, 144, 8, 8, self.cursors[i].x, self.cursors[i].y, 2, 2) then
           globals.rPlayer = j
           globals.sendBackToPlayers = true
-          megautils.transitionToState(globals.rebindState)
+          states.fadeToState(globals.rebindState)
           return
         end
         

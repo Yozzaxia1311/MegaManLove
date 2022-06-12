@@ -365,7 +365,7 @@ end
 function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   megaMan.resources()
   megaMan.super.new(self)
-  self.doWeaponGet = megautils.getCurrentState() == globals.weaponGetState
+  self.doWeaponGet = states.currentStatePath == globals.weaponGetState
   self.x = x or 0
   self.y = y or 0
   self.player = p or 1
@@ -1792,12 +1792,12 @@ function megaMan:die()
         if not megautils.hasInfiniteLives() and megautils.getLives() < 0 then
           megautils.reloadState = true
           megautils.resetGameObjects = true
-          globals.gameOverContinueState = megautils.getCurrentState()
-          megautils.gotoState(globals.gameOverState)
+          globals.gameOverContinueState = states.currentStatePath
+          states.setq(globals.gameOverState)
         else
           megautils.reloadState = true
           megautils.resetGameObjects = false
-          megautils.gotoState(megautils.getCurrentState())
+          states.setq(states.currentStatePath)
         end
         megautils.remove(s)
       end)
@@ -1908,7 +1908,7 @@ function megaMan:update()
       if self._timer == 120 then
         self._subState = 4
         globals.wgsToMenu = true
-        megautils.transitionToState(self._wgs)
+        states.fadeToState(self._wgs)
       end
     end
     self.anims:update(1/60)

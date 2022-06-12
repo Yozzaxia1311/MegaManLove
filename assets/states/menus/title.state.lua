@@ -78,12 +78,12 @@ function title:update()
                   music.setLock(false)
                 end)
             end
-          megautils.gotoState()
+          states.setq()
         end)
     elseif input.pressed.start1 or input.length(input.touchPressed) ~= 0 then
       music.stop()
       self.drawText = false
-      megautils.transitionToState(globals.menuState)
+      states.fadeToState(globals.menuState)
     end
   end
 end

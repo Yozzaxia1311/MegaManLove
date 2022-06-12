@@ -67,15 +67,15 @@ function view.draw()
     cscreen.apply()
     megautils.updateShake()
     love.graphics.translate(-view.x, -view.y)
-    if states.currentState then
+    if states.currentStateObject then
       love.graphics.setColor(1, 1, 1, 1)
-      states.currentState:draw()
+      states.currentStateObject:draw()
     end
     love.graphics.setColor(1, 1, 1, 1)
     love.graphics.translate(view.x, view.y)
     record.drawDemo()
     if megautils.isShowingEntityCount() then
-      local count = #megautils.state().system.all
+      local count = #states.currentStateObject.system.all
       love.graphics.setFont(mmFont)
       love.graphics.setColor(0, 0, 0, 0.4)
       love.graphics.rectangle("fill", view.w - 24 - 8, 23, 32, 10)
@@ -100,15 +100,15 @@ function view.draw()
     love.graphics.scale(view._canvasScale)
     love.graphics.translate(-view.x, -view.y)
     megautils.updateShake()
-    if states.currentState then
+    if states.currentStateObject then
       love.graphics.setColor(1, 1, 1, 1)
-      states.currentState:draw()
+      states.currentStateObject:draw()
     end
     love.graphics.setColor(1, 1, 1, 1)
     love.graphics.translate(view.x, view.y)
     record.drawDemo()
     if megautils.isShowingEntityCount() then
-      local count = #megautils.state().system.all
+      local count = #states.currentStateObject.system.all
       love.graphics.setFont(mmFont)
       love.graphics.setColor(0, 0, 0, 0.4)
       love.graphics.rectangle("fill", view.w - 24 - 8, 23, 32, 10)
