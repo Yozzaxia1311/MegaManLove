@@ -56,7 +56,7 @@ convar["showcollision"] = {
   helptext = "draw hitboxes",
   flags = {"cheat", "client"},
   value = 0,
-  fun = function(arg) local n = numberSanitize(arg) entitySystem.drawCollision = n == 1 end
+  fun = function(arg) local n = numberSanitize(arg) entities.drawCollision = n == 1 end
 }
 
 convar["showfps"] = {
@@ -590,7 +590,7 @@ concmd["give"] = {
               args[#arg+1] = tonumber(cmd[i]) or toboolean(cmd[i]) or cmd[i]
             end
           end
-          megautils.add(unpack(args))
+          entities.add(unpack(args))
         else
           console.print("Entity \"" .. cmd[2] .. "\" does not exist in global context.")
         end

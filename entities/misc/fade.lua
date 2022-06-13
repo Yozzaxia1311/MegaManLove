@@ -16,7 +16,7 @@ function fade:new(fadeToColor, gap, color, after)
 end
 
 function fade:begin()
-  megautils.freeze("fade")
+  entities.freeze("fade")
   fade.main = self
 end
 
@@ -30,7 +30,7 @@ function fade:update(dt)
   if ((self.alpha == 255 and self.fadeToColor) or (self.alpha == 0 and not self.fadeToColor)) then
     if self.timer == self.gap and not self.once2 then
       self.once2 = true
-      megautils.unfreeze("fade")
+      entities.unfreeze("fade")
       self.after(self)
     end
   end
@@ -46,5 +46,5 @@ function fade:draw()
 end
 
 function fade.remove(s)
-  megautils.remove(s)
+  entities.remove(s)
 end

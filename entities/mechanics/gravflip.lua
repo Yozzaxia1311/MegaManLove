@@ -5,7 +5,7 @@ gravFlip = basicEntity:extend()
 gravFlip.invisibleToHash = true
 
 mapEntity.register("gravFlip", function(v)
-    megautils.add(gravFlip, v.x, v.y, v.width, v.height, v.properties.dir)
+    entities.add(gravFlip, v.x, v.y, v.width, v.height, v.properties.dir)
   end)
 
 function gravFlip:new(x, y, w, h, dir)
@@ -31,7 +31,7 @@ function gravFlip:update(dt)
       end
     end
     if ds then
-      megautils.add(fade, false, 4, {255, 255, 255}, fade.remove)
+      entities.add(fade, false, 4, {255, 255, 255}, fade.remove)
       sfx.play("gravityFlip")
     end
   end

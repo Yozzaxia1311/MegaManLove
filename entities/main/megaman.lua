@@ -173,7 +173,7 @@ mapEntity.register("player", function(v)
     if megaMan.once then return end
     if v.properties.checkpoint == globals.checkpoint and not camera.once then
       camera.once = true
-      megautils.add(camera, v.x, v.y, v.properties.doScrollX, v.properties.doScrollY)
+      entities.add(camera, v.x, v.y, v.properties.doScrollX, v.properties.doScrollY)
     end
   end, -1, true)
 
@@ -198,7 +198,7 @@ mapEntity.register("player", function(v)
       if v.properties.individual and v.properties.individual > 0 then
         if v.properties.individual <= megaMan.playerCount then
           megaMan.individualLanded[#megaMan.individualLanded+1] = v.properties.individual
-          megautils.add(megaMan, v.x+11, v.y+((g >= 0) and 11 or 0),
+          entities.add(megaMan, v.x+11, v.y+((g >= 0) and 11 or 0),
             v.properties.side, v.properties.drop, v.properties.individual,
             v.properties.gravMult, v.properties.gravFlip, v.properties.control,
             v.properties.doReady, v.properties.teleporter)
@@ -206,7 +206,7 @@ mapEntity.register("player", function(v)
       else
         for i=1, megaMan.playerCount do
           if not table.icontains(megaMan.individualLanded, i) then
-            megautils.add(megaMan, v.x+11, v.y+((g >= 0) and 11 or 0),
+            entities.add(megaMan, v.x+11, v.y+((g >= 0) and 11 or 0),
               v.properties.side, v.properties.drop, i, v.properties.gravMult, v.properties.gravFlip, v.properties.control,
               v.properties.doReady, v.properties.teleporter)
           end
@@ -464,14 +464,14 @@ function megaMan:added()
   
   if self._checkDR and megaMan.mainPlayer == self and not megaMan.once then
     if self.protoWhistle then
-      self.ready = megautils.add(ready, nil, 32)
+      self.ready = entities.add(ready, nil, 32)
       if music._queue then
         self.mq = music._queue
         music.stop()
       end
       sfx.playFromFile((self.protoWhistle == true) and "assets/sfx/protoReady.ogg" or self.protoWhistle)
     else
-      self.ready = megautils.add(ready)
+      self.ready = entities.add(ready)
     end
     
     self._checkDR = nil
@@ -479,10 +479,10 @@ function megaMan:added()
   
   if not self.doWeaponGet then
     if self.healthHandler and not self.healthHandler.isRemoved then
-      megautils.remove(self.healthHandler)
+      entities.remove(self.healthHandler)
     end
     
-    self.healthHandler = megautils.add(healthHandler, nil, nil, nil,
+    self.healthHandler = entities.add(healthHandler, nil, nil, nil,
       nil, nil, self._lSeg or globals.lifeSegments, self)
     self._lSeg = nil
     self.healthHandler.canDraw.global = false
@@ -492,10 +492,10 @@ function megaMan:added()
     end
     
     if megaMan.weaponHandler[self.player] and not megaMan.weaponHandler[self.player].isRemoved then
-      megautils.remove(megaMan.weaponHandler[self.player])
+      entities.remove(megaMan.weaponHandler[self.player])
     end
     
-    local w = megautils.adde(megaMan.weaponHandler[self.player])
+    local w = entities.adde(megaMan.weaponHandler[self.player])
     megaMan.colorOutline[self.player] = weapon.colors[w.current].outline
     megaMan.colorOne[self.player] = weapon.colors[w.current].one
     megaMan.colorTwo[self.player] = weapon.colors[w.current].two
@@ -681,7 +681,7 @@ end
 
 function megaMan:numberOfShots(n)
   local w = megaMan.weaponHandler[self.player]
-  return megautils.groups()[n .. tostring(w.id)] and #megautils.groups()[n .. tostring(w.id)] or 0
+  return entities.groups[n .. tostring(w.id)] and #entities.groups[n .. tostring(w.id)] or 0
 end
 
 function megaMan:checkWeaponEnergy(n)
@@ -928,7 +928,7 @@ function megaMan:interactedWith(o, c)
       self.autoGravity.global = false
       self.autoCollision.global = false
       self.noFreeze = true
-      megautils.freeze("dying")
+      entities.freeze("dying")
       if camera.main then
         if self.input == 1 then
           vPad.active = false
@@ -965,7 +965,7 @@ function megaMan:interactedWith(o, c)
         self.cameraTween = true
       end
       if o.pierceType == pierce.NOPIERCE and o.pierceType ~= pierce.PIERCEIFKILLING then
-        megautils.remove(o)
+        entities.remove(o)
       end
       return
     else
@@ -983,15 +983,15 @@ function megaMan:interactedWith(o, c)
       end
       self.climb = false
       self.dashJump = false
-      megautils.add(harm, self)
-      megautils.add(damageSteam, self.x+(self.collisionShape.w/2)-2.5-11,
+      entities.add(harm, self)
+      entities.add(damageSteam, self.x+(self.collisionShape.w/2)-2.5-11,
         self.y+(self.gravity >= 0 and -8 or self.collisionShape.h), self)
-      megautils.add(damageSteam, self.x+(self.collisionShape.w/2)-2.5,
+      entities.add(damageSteam, self.x+(self.collisionShape.w/2)-2.5,
         self.y+(self.gravity >= 0 and -8 or self.collisionShape.h), self)
-      megautils.add(damageSteam, self.x+(self.collisionShape.w/2)-2.5+11,
+      entities.add(damageSteam, self.x+(self.collisionShape.w/2)-2.5+11,
         self.y+(self.gravity >= 0 and -8 or self.collisionShape.h), self)
       if o.pierceType == pierce.NOPIERCE or o.pierceType == pierce.PIERCEIFKILLING then
-        megautils.remove(o)
+        entities.remove(o)
       end
       sfx.play("hurt")
     end
@@ -1009,8 +1009,8 @@ function megaMan:crushed(other)
 end
 
 function megaMan:beforeCollisionFunc()
-  if checkFalse(self.blockCollision) and megautils.groups().bossDoor then
-    for _, v in ipairs(megautils.groups().bossDoor) do
+  if checkFalse(self.blockCollision) and entities.groups.bossDoor then
+    for _, v in ipairs(entities.groups.bossDoor) do
       v._LST = v.solidType
       v.solidType = v.canWalkThrough and 0 or 1
     end
@@ -1020,8 +1020,8 @@ function megaMan:beforeCollisionFunc()
 end
 
 function megaMan:afterCollisionFunc()
-  if megautils.groups().bossDoor then
-    for _, v in ipairs(megautils.groups().bossDoor) do
+  if entities.groups.bossDoor then
+    for _, v in ipairs(entities.groups.bossDoor) do
       v.solidType = v._LST
       v._LST = nil
     end
@@ -1376,7 +1376,7 @@ function megaMan:code(dt)
       self.slide = true
       self:regToSlide()
       self.slideTimer = 0
-      megautils.add(slideParticle, self.x+(self.side==-1 and self.collisionShape.w-8 or 0),
+      entities.add(slideParticle, self.x+(self.side==-1 and self.collisionShape.w-8 or 0),
         self.y+(self.gravity >= 0 and self.collisionShape.h-6 or -2), self, self.side)
     elseif checkFalse(self.canJump) and self.inStandSolid and
       (input.down["jump" .. tostring(self.input)] or self.tJump) and
@@ -1443,19 +1443,19 @@ function megaMan:code(dt)
     self:attemptClimb()
     self:attemptWeaponUsage()
   end
-  if megautils.groups().enemyWeapon then
-    for _, v in safeipairs(megautils.groups().enemyWeapon) do
+  if entities.groups.enemyWeapon then
+    for _, v in safeipairs(entities.groups.enemyWeapon) do
       if self.protoShielding and not v.dinked and v.dink and self:checkProtoShield(v, self.side) then
         v:dink(self)
         v.pierceType = pierce.NOPIERCE
       end
     end
   end
-  if self:collisionNumber(megautils.groups().water) ~= 0 then
+  if self:collisionNumber(entities.groups.water) ~= 0 then
     self.bubbleTimer = math.min(self.bubbleTimer+1, self.maxBubbleTime)
     if self.bubbleTimer == self.maxBubbleTime then
       self.bubbleTimer = 0
-      megautils.add(airBubble, self.x+(self.side==-1 and -4 or self.collisionShape.w), self.y+4, self)
+      entities.add(airBubble, self.x+(self.side==-1 and -4 or self.collisionShape.w), self.y+4, self)
     end
   end
   self.x = math.clamp(self.x, view.x+(-self.collisionShape.w/2)+2,
@@ -1783,8 +1783,8 @@ function megaMan:die()
       healthHandler.playerTimers[i] = -2
     end
     
-    megautils.add(timer, 160, function(t)
-      megautils.add(fade, true, nil, nil, function(s)
+    entities.add(timer, 160, function(t)
+      entities.add(fade, true, nil, nil, function(s)
         megautils.reloadState = true
         if not megautils.hasInfiniteLives() then
           megautils.setLives(math.max(megautils.getLives()-1, -1))
@@ -1799,14 +1799,14 @@ function megaMan:die()
           megautils.resetGameObjects = false
           states.setq(states.currentStatePath)
         end
-        megautils.remove(s)
+        entities.remove(s)
       end)
-      megautils.remove(t)
+      entities.remove(t)
     end)
   else
     healthHandler.playerTimers[self.player] = 180
-    megautils.remove(megaMan.weaponHandler[self.player])
-    megautils.remove(self.healthHandler)
+    entities.remove(megaMan.weaponHandler[self.player])
+    entities.remove(self.healthHandler)
   end
   self.canDraw.global = false
   self.canControl.global = false
@@ -1818,7 +1818,7 @@ function megaMan:die()
   
   self._lHealth = nil
   self._lSeg = nil
-  megautils.remove(self)
+  entities.remove(self)
   sfx.play("dieExplode")
 end
 
@@ -1934,7 +1934,7 @@ function megaMan:update()
       end
       if done then
         self:die()
-        megautils.unfreeze("dying")
+        entities.unfreeze("dying")
         return
       end
     else
@@ -1989,7 +1989,8 @@ function megaMan:afterUpdate(dt)
 end
 
 function megaMan:draw()
-  if (megaMan.mainPlayer and megaMan.mainPlayer.ready) or (self.drop and megautils.checkFrozen("fade")) or self.dieNextFrame or self._rw then
+  if (megaMan.mainPlayer and megaMan.mainPlayer.ready) or (self.drop and entities.checkFrozen("fade")) or
+    self.dieNextFrame or self._rw then
     if self._rw then
       self._rw = nil
     end

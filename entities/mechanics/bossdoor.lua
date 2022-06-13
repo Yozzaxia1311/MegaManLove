@@ -8,7 +8,7 @@ bossDoor.autoClean = false
 mapEntity.register("bossDoor", function(v)
   local seg = (v.properties.dir=="up" or v.properties.dir=="down") and 
     math.round(v.width/v.properties.tileWidth) or math.round(v.height/v.properties.tileHeight)
-  megautils.add(bossDoor, v.x, v.y, seg, v.properties.dir,
+  entities.add(bossDoor, v.x, v.y, seg, v.properties.dir,
     v.properties.doScrollX, v.properties.doScrollY, v.properties.speed,
     v.properties.tileLayer, v.properties.toSection, v.properties.tileWidth, v.properties.tileHeight,
     v.properties.tileSpeed)
@@ -175,16 +175,16 @@ function bossDoor:update()
             megaMan.allPlayers[i].autoGravity.transition = false
             megaMan.allPlayers[i].autoCollision.transition = false
           end
-          megautils.freeze("trans")
-          if megautils.groups().removeOnTransition then
-            for _, v in pairs(megautils.groups().removeOnTransition) do
-              megautils.remove(v)
+          entities.freeze("trans")
+          if entities.groups.removeOnTransition then
+            for _, v in pairs(entities.groups.removeOnTransition) do
+              entities.remove(v)
             end
           end
           if self.useMapTiles then
             self.tileList = {}
-            if megautils.groups().map then
-              for _, v in ipairs(megautils.groups().map) do
+            if entities.groups.map then
+              for _, v in ipairs(entities.groups.map) do
                 local layer = v:getLayerByName(self.useMapTiles)
                 if layer then
                   local oldx
@@ -220,8 +220,8 @@ function bossDoor:update()
         end
         self.segments = math.max(self.segments-1, 0)
         if self.useMapTiles then
-          if megautils.groups().map then
-            for _, v in ipairs(megautils.groups().map) do
+          if entities.groups.map then
+            for _, v in ipairs(entities.groups.map) do
               local layer = v:getLayerByName(self.useMapTiles)
               if layer then
                 layer:setTileAtPixelPosition((self.dir=="right" or self.dir=="left") and
@@ -268,8 +268,8 @@ function bossDoor:update()
         end
         self.segments = math.min(self.segments+1, self.maxSegments)
         if self.useMapTiles then
-          if megautils.groups().map then
-            for _, v in ipairs(megautils.groups().map) do
+          if entities.groups.map then
+            for _, v in ipairs(entities.groups.map) do
               local layer = v:getLayerByName(self.useMapTiles)
               if layer and self.tileList[v] then
                 layer
@@ -300,7 +300,7 @@ function bossDoor:update()
       self.tileList = {}
       camera.main.freeze = true
       camera.main.dontUpdateSections = false
-      states.currentStateObject.system.cameraUpdate = function()
+      entities.cameraUpdate = function()
         camera.main.curBoundName = camera.main.toSection.name
         camera.main.toSection = nil
         camera.main:updateBounds()
@@ -312,11 +312,11 @@ function bossDoor:update()
           megaMan.allPlayers[i].autoGravity.transition = nil
           megaMan.allPlayers[i].autoCollision.transition = nil
         end
-        megautils.unfreeze("trans")
+        entities.unfreeze("trans")
         camera.main.once = false
         camera.main.transition = false
         camera.main.preTrans = false
-        states.currentStateObject.system.cameraUpdate = nil
+        entities.cameraUpdate = nil
         
         collectgarbage()
         collectgarbage()

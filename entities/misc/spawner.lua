@@ -31,7 +31,7 @@ function spawner:updateSpawner()
     if self.insert then
       basicEntity.insertVars[#basicEntity.insertVars + 1] = self.insert
     end
-    self.instance = megautils.add(unpack(self.stuff))
+    self.instance = entities.add(unpack(self.stuff))
     self.wasOutside = false
   end
 end
@@ -70,7 +70,7 @@ function intervalSpawner:updateSpawner()
         if self.insert then
           basicEntity.insertVars[#basicEntity.insertVars + 1] = self.insert
         end
-        megautils.add(unpack(self.stuff))
+        entities.add(unpack(self.stuff))
       end
     end
   else

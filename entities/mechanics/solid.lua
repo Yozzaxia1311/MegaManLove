@@ -3,7 +3,7 @@ solid = basicEntity:extend()
 solid.autoClean = false
 
 mapEntity.register("solid", function(v)
-  megautils.add(solid, v.x, v.y, v.width, v.height)
+  entities.add(solid, v.x, v.y, v.width, v.height)
 end, 0, true)
 
 function solid:new(x, y, w, h)
@@ -41,7 +41,7 @@ slope = basicEntity:extend()
 slope.autoClean = false
 
 mapEntity.register("slope", function(v)
-  megautils.add(slope, v.x, v.y, v.properties.mask)
+  entities.add(slope, v.x, v.y, v.properties.mask)
 end, 0, true)
 
 function slope:new(x, y, mask)
@@ -58,5 +58,5 @@ function slope:added()
 end
 
 mapEntity.register("oneway", function(v)
-  megautils.add(solid, v.x, v.y, v.width, v.height).solidType = collision.ONEWAY
+  entities.add(solid, v.x, v.y, v.width, v.height).solidType = collision.ONEWAY
 end, 0, true)

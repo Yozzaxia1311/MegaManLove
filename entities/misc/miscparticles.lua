@@ -46,7 +46,7 @@ end
 
 function particle:_afterUpdate(dt)
   if self.removeWhenOutside and megautils.outside(self) then
-    megautils.remove(self)
+    entities.remove(self)
   end
   
   self:afterUpdate(dt)
@@ -76,7 +76,7 @@ end
 function slideParticle:update()
   self:getGFXByName("anim"):flip(self.side == 1, self.gravity < 0)
   if self:getGFXByName("anim"):looped() then
-    megautils.remove(self)
+    entities.remove(self)
   end
 end
 
@@ -103,7 +103,7 @@ end
 function damageSteam:update()
   self:getGFXByName("anim"):flip(false, self.gravity < 0)
   if self:getGFXByName("anim"):looped() then
-    megautils.remove(self)
+    entities.remove(self)
   end
 end
 
@@ -130,7 +130,7 @@ end
 
 function airBubble:check()
   return collision.checkSolid(self) or
-    self:collisionNumber(megautils.groups().water, 0, -4) == 0
+    self:collisionNumber(entities.groups.water, 0, -4) == 0
 end
 
 function airBubble:update(dt)
@@ -140,7 +140,7 @@ function airBubble:update(dt)
     self.off = math.wrap(self.off+1, 0, 2)
   end
   if self:check() then
-    megautils.remove(self)
+    entities.remove(self)
   end
   self:getGFXByName("tex"):off(-self.off, 0)
 end
@@ -167,7 +167,7 @@ end
 
 function harm:update()
   if not self.user or self.user.isRemoved or self.timer == self.maxTime then
-    megautils.remove(self)
+    entities.remove(self)
   else
     self.x = self.user.x+(self.user.collisionShape.w/2)-12
     self.y = self.user.y+(self.user.collisionShape.h/2)-12
@@ -194,7 +194,7 @@ end
 function deathExplodeParticle.createExplosion(x, y, p)
   for j=1, 2 do
     for i=1, 8 do
-      megautils.add(deathExplodeParticle, x, y, p, i*45, j*1.8)
+      entities.add(deathExplodeParticle, x, y, p, i*45, j*1.8)
     end
   end
 end
@@ -226,15 +226,15 @@ function absorbParticle:update()
     self.pos = math.min(self.pos + self.spd, 1)
   end
   if not self.user or self.pos == 1 or self.user.isRemoved then
-    megautils.remove(self)
+    entities.remove(self)
   end
 end
 
 function absorbParticle.createAbsorbtion(towards, spd)
   for i=1, 8 do
-    megautils.add(absorbParticle, (view.x+view.w/2)+megautils.calcX(i*45)*view.w,
+    entities.add(absorbParticle, (view.x+view.w/2)+megautils.calcX(i*45)*view.w,
         (view.y+view.h/2)+megautils.calcY(i*45)*view.w, towards, (spd or 0.02))
-    megautils.add(absorbParticle, (view.x+view.w/2)+megautils.calcX(i*45)*view.w,
+    entities.add(absorbParticle, (view.x+view.w/2)+megautils.calcX(i*45)*view.w,
         (view.y+view.h/2)+megautils.calcY(i*45)*view.w, towards, ((spd or 0.02)*1.5))
   end
 end
@@ -263,7 +263,7 @@ function absorb:update()
     absorbParticle.createAbsorbtion(self.user, self.spd)
   end
   if self.times == self.maxTimes or not self.user or self.user.isRemoved then
-    megautils.remove(self)
+    entities.remove(self)
   end
 end
 
@@ -290,7 +290,7 @@ end
 
 function smallBlast:update()
   if self:getGFXByName("anim"):looped() then
-    megautils.remove(self)
+    entities.remove(self)
   end
 end
 
@@ -315,7 +315,7 @@ end
 function blast:added()
   blast.super.added(self)
   
-  megautils.add(smallBlast, self.x, self.y, self.user)
+  entities.add(smallBlast, self.x, self.y, self.user)
 end
 
 function blast:check()
@@ -334,9 +334,9 @@ function blast:update()
   self.timer = math.min(self.timer+1, 5)
   if self.timer == 5 then
     self.timer = 0
-    megautils.add(smallBlast, megautils.circlePathX(self.x, self.deg, 20), 
+    entities.add(smallBlast, megautils.circlePathX(self.x, self.deg, 20), 
       megautils.circlePathY(self.y, self.deg, 20), self.user)
-    megautils.add(smallBlast, megautils.circlePathX(self.x, self.deg-180, 20), 
+    entities.add(smallBlast, megautils.circlePathX(self.x, self.deg-180, 20), 
       megautils.circlePathY(self.y, self.deg-180, 20), self.user)
     self.deg = math.wrap(self.deg+360/6, 0, 360)
     self.times = self.times + 1
@@ -345,6 +345,6 @@ function blast:update()
     self:check()
   end
   if self.times == self.max then
-    megautils.remove(self)
+    entities.remove(self)
   end
 end

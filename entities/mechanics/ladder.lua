@@ -3,7 +3,7 @@ ladder = basicEntity:extend()
 ladder.autoClean = false
 
 mapEntity.register("ladder", function(v)
-    megautils.add(ladder, v.x, v.y, v.width, v.height)
+    entities.add(ladder, v.x, v.y, v.width, v.height)
   end, 0, true)
 
 function ladder:new(x, y, w, h)

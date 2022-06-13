@@ -10,14 +10,14 @@ function mmWeaponsMenu.resources()
 end
   
 function mmWeaponsMenu.pause(self)
-  megautils.freeze("pause")
+  entities.freeze("pause")
   
-  megautils.add(fade, true, nil, nil, function(s)
+  entities.add(fade, true, nil, nil, function(s)
       megautils.runCallback(megautils.playerPauseFuncs, self)
       
-      megautils.add(mmWeaponsMenu, self)
-      local ff = megautils.add(fade, false, nil, nil, fade.remove)
-      megautils.remove(s)
+      entities.add(mmWeaponsMenu, self)
+      local ff = entities.add(fade, false, nil, nil, fade.remove)
+      entities.remove(s)
       
       collectgarbage()
       collectgarbage()
@@ -94,7 +94,7 @@ function mmWeaponsMenu:new(p)
   self.cur = w.currentSlot
   self.last = {w.currentSlot, megaMan.colorOutline[self.player.player], megaMan.colorOne[self.player.player], megaMan.colorTwo[self.player.player]}
   self.inactiveTankColor = {{0, 0, 0}, {188, 188, 188}, {255, 255, 255}}
-  self.trig = megautils.add(trigger, function(s, dt)
+  self.trig = entities.add(trigger, function(s, dt)
     for _, v in pairs(s.fills) do
       for _, j in pairs(v) do
         j:update(dt)
@@ -125,14 +125,14 @@ function mmWeaponsMenu:new(p)
   end
   
   if mmWeaponsMenu.main then
-    megautils.remove(mmWeaponsMenu.main)
+    entities.remove(mmWeaponsMenu.main)
   end
   mmWeaponsMenu.main = self
 end
 
 function mmWeaponsMenu:removed()
   mmWeaponsMenu.main = nil
-  megautils.unfreeze("pause")
+  entities.unfreeze("pause")
   for _, v in pairs(self.fills) do
     for _, j in pairs(v) do
       if j.wid ~= 0 then
@@ -150,13 +150,13 @@ function mmWeaponsMenu:removed()
   end
   
   if not self.ff or self.ff.isRemoved then
-    for _, v in ipairs(states.currentStateObject.system.all) do
+    for _, v in ipairs(entities.all) do
       v.canDraw.pause = nil
     end
   end
   
   if self.trig then
-    megautils.remove(self.trig)
+    entities.remove(self.trig)
   end
   
   vPad.active = self.lastVPadActive
@@ -220,22 +220,22 @@ function mmWeaponsMenu:update(dt)
     end
     if input.pressed["start" .. tostring(self.player.input)] or
       input.touchPressedOverlaps(view.w - 48 - 8, view.h - 16 - 8, 32 + 16, 8 + 16) then
-      megautils.add(fade, true, nil, nil, function(s)
-          megautils.remove(self)
-          megautils.remove(s)
+      entities.add(fade, true, nil, nil, function(s)
+          entities.remove(self)
+          entities.remove(s)
           
-          for _, v in ipairs(states.currentStateObject.system.all) do
+          for _, v in ipairs(entities.all) do
             if not v.visibleDuringPause then
               v.canDraw.pause = false
             end
           end
           
-          self.ff = megautils.add(fade, false, nil, nil, function(ss)
-              for _, v in ipairs(states.currentStateObject.system.all) do
+          self.ff = entities.add(fade, false, nil, nil, function(ss)
+              for _, v in ipairs(entities.all) do
                 v.canDraw.pause = nil
               end
               
-              megautils.remove(ss)
+              entities.remove(ss)
             end)
         end)
       self.changing = "leaving"

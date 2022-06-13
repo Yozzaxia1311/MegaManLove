@@ -4,7 +4,7 @@ right.autoClean = false
 right.invisibleToHash = true
 
 mapEntity.register("right", function(v)
-  megautils.add(right, v.x, v.y, v.height,
+  entities.add(right, v.x, v.y, v.height,
     v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.platform, v.properties.toSection)
 end, 0, true)
 
@@ -66,7 +66,7 @@ left.autoClean = false
 left.invisibleToHash = true
 
 mapEntity.register("left", function(v)
-  megautils.add(left, v.x, v.y, v.height,
+  entities.add(left, v.x, v.y, v.height,
     v.properties.doScrollX, v.properties.doScrollY, v.properties.speed, v.properties.platform, v.properties.toSection)
 end, 0, true)
 
@@ -128,7 +128,7 @@ down.autoClean = false
 down.invisibleToHash = true
 
 mapEntity.register("down", function(v)
-  megautils.add(down, v.x, v.y, v.width,
+  entities.add(down, v.x, v.y, v.width,
     v.properties.doScrollX, v.properties.doScrollY, v.properties.speed,
     v.properties.platform, v.properties.toSection, v.properties.checkLadder)
 end, 0, true)
@@ -193,7 +193,7 @@ up.autoClean = false
 up.invisibleToHash = true
 
 mapEntity.register("up", function(v)
-  megautils.add(up, v.x, v.y, v.width,
+  entities.add(up, v.x, v.y, v.width,
     v.properties.doScrollX, v.properties.doScrollY, v.properties.speed,
     v.properties.platform, v.properties.toSection, v.properties.checkLadder)
 end, 0, true)
@@ -258,7 +258,7 @@ sectionPrioritySetter.autoClean = false
 sectionPrioritySetter.invisibleToHash = true
 
 mapEntity.register("sectionPrioritySetter", function(v)
-  megautils.add(sectionPrioritySetter, v.x, v.y, v.width, v.height, v.properties.toSection)
+  entities.add(sectionPrioritySetter, v.x, v.y, v.width, v.height, v.properties.toSection)
 end, 0, true)
 
 function sectionPrioritySetter:new(x, y, w, h, name)
@@ -303,7 +303,7 @@ sectionPrioritySetterXBorder.autoClean = false
 sectionPrioritySetterXBorder.invisibleToHash = true
 
 mapEntity.register("sectionPrioritySetterXBorder", function(v)
-  megautils.add(sectionPrioritySetterXBorder, v.x, v.y, v.height, v.properties.lname, v.properties.rname)
+  entities.add(sectionPrioritySetterXBorder, v.x, v.y, v.height, v.properties.lname, v.properties.rname)
 end, 0, true)
 
 function sectionPrioritySetterXBorder:new(x, y, h, lname, rname)
@@ -354,7 +354,7 @@ sectionPrioritySetterYBorder.autoClean = false
 sectionPrioritySetterYBorder.invisibleToHash = true
 
 mapEntity.register("sectionPrioritySetterYBorder", function(v)
-  megautils.add(sectionPrioritySetterYBorder, v.x, v.y, v.width, v.properties.uname, v.properties.dname)
+  entities.add(sectionPrioritySetterYBorder, v.x, v.y, v.width, v.properties.uname, v.properties.dname)
 end, 0, true)
 
 function sectionPrioritySetterYBorder:new(x, y, w, uname, dname)
@@ -405,7 +405,7 @@ sectionPrioritySetterArea.autoClean = false
 sectionPrioritySetterArea.invisibleToHash = true
 
 mapEntity.register("sectionPrioritySetterArea", function(v)
-  megautils.add(sectionPrioritySetterArea, v.x, v.y, v.width, v.height, v.properties.inname, v.properties.outname)
+  entities.add(sectionPrioritySetterArea, v.x, v.y, v.width, v.height, v.properties.inname, v.properties.outname)
 end, 0, true)
 
 function sectionPrioritySetterArea:new(x, y, w, h, name, name2)
@@ -434,7 +434,7 @@ function sectionPrioritySetterArea:check()
   for i=1, #megaMan.allPlayers do
     checker[i] = megaMan.allPlayers[i]
   end
-  for _, j in ipairs(megautils.groups().sectionPriorityArea) do
+  for _, j in ipairs(entities.groups.sectionPriorityArea) do
     if self.inName == j.inName then
       local sx, sy, sw, sh = j.x-1, j.y-1, j.collisionShape.w+2, j.collisionShape.h+2
       

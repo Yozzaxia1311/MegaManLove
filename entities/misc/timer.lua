@@ -19,7 +19,7 @@ function timer:update(dt)
 end
 
 function timer.winCutscene(func)
-  megautils.add(timer, 100, function(s)
+  entities.add(timer, 100, function(s)
     if not s.state then
       if megaMan.mainPlayer then
         s.timer = 0
@@ -54,14 +54,14 @@ function timer.winCutscene(func)
       s.timer = math.min(s.timer+1, 80)
       if s.timer == 80 then
         s.state = -1
-        megautils.add(fade, true, nil, nil, func)
+        entities.add(fade, true, nil, nil, func)
       end
     end
   end)
 end
 
 function timer.absorbCutscene(func, mus)
-  megautils.add(timer, 150, function(s)
+  entities.add(timer, 150, function(s)
       if not s.state then
         if megaMan.mainPlayer then
           s.state = 1
@@ -119,7 +119,7 @@ function timer.absorbCutscene(func, mus)
         megaMan.mainPlayer.velY = math.approach(megaMan.mainPlayer.velY, 0, 0.25)
         megaMan.mainPlayer:moveBy(megaMan.mainPlayer.velX, megaMan.mainPlayer.velY)
         if megaMan.mainPlayer.velY == 0 then
-          megautils.add(absorb, megaMan.mainPlayer)
+          entities.add(absorb, megaMan.mainPlayer)
           s.state = 3
           s.timer = 0
         end
@@ -142,7 +142,7 @@ function timer.absorbCutscene(func, mus)
         s.timer = math.min(s.timer+1, 80)
         if s.timer == 80 then
           s.state = -1
-          megautils.add(fade, true, nil, nil, func)
+          entities.add(fade, true, nil, nil, func)
         end
       end
     end)

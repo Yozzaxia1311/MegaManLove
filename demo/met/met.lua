@@ -77,11 +77,11 @@ function met:update()
     if self.timer == 20 then
       self.timer = 0
       self.state = 2
-      megautils.add(metBullet, self.x + 4, self.y + 4, self,
+      entities.add(metBullet, self.x + 4, self.y + 4, self,
         self.side * megautils.calcX(45) * 2, -megautils.calcY(45) * 2)
-      megautils.add(metBullet, self.x + 4, self.y + 4, self,
+      entities.add(metBullet, self.x + 4, self.y + 4, self,
         self.side * megautils.calcX(45) * 2, megautils.calcY(45) * 2)
-      megautils.add(metBullet, self.x + 4, self.y + 4, self,
+      entities.add(metBullet, self.x + 4, self.y + 4, self,
         self.side * 2, 0)
     end
   elseif self.state == 2 then

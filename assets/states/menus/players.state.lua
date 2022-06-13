@@ -1,10 +1,10 @@
 local playersState = state:extend()
 
 function playersState:begin()
-  megautils.add(smash)
-  megautils.add(parallax, 0, 0, view.w, view.h, "assets/states/menus/menuParallax.png", nil, nil, nil, nil, 1, 1, 0.4, 0.4, true, true)
-  megautils.add(parallax, 0, -32, view.w, view.h+32, "assets/states/menus/menuParallax.png", nil, nil, nil, nil, 1, 1, -0.4, 0.4, true, true)
-  megautils.add(fade, false, nil, nil, fade.remove)
+  entities.add(smash)
+  entities.add(parallax, 0, 0, view.w, view.h, "assets/states/menus/menuParallax.png", nil, nil, nil, nil, 1, 1, 0.4, 0.4, true, true)
+  entities.add(parallax, 0, -32, view.w, view.h+32, "assets/states/menus/menuParallax.png", nil, nil, nil, nil, 1, 1, -0.4, 0.4, true, true)
+  entities.add(fade, false, nil, nil, fade.remove)
   
   love.graphics.setBackgroundColor(0, 0.5, 136/255, 1)
   music.play("assets/sfx/mm5.nsf", nil, 19)

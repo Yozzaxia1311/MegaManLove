@@ -4,7 +4,7 @@ function continueState:begin()
   loader.load("assets/misc/cont.png", "cont")
   loader.load("assets/misc/menuSelect.png", "menuSelect")
   loader.load("assets/sfx/cursorMove.ogg", "cursorMove")
-  megautils.add(contPanels)
+  entities.add(contPanels)
 end
 
 contPanels = basicEntity:extend()
@@ -29,7 +29,7 @@ function contPanels:update()
   self.timer = math.min(self.timer+1, 199)
   if self.timer == 198 then
     self.state = 1
-    megautils.add(contSelect)
+    entities.add(contSelect)
     if self.mq then
       music.play(unpack(self.mq))
       self.mq = nil

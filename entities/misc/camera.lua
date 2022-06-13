@@ -35,14 +35,14 @@ function camera:new(x, y, doScrollX, doScrollY)
   self.player = nil
   self.funcs = {}
   self.spawners = {}
-  states.currentStateObject.system.cameraUpdate = nil
+  entities.cameraUpdate = nil
 end
 
 function camera:added()
   view.x, view.y = self.x, self.y
-  if megautils.groups().camera then
-    for _, v in safeipairs(megautils.groups().camera) do
-      megautils.remove(v)
+  if entities.groups.camera then
+    for _, v in safeipairs(entities.groups.camera) do
+      entities.remove(v)
     end
   end
   self:addToGroup("camera")
@@ -87,8 +87,8 @@ function camera:updateCam(spdx, spdy)
     if not self.preTrans then
       if not self.once then
         self.once = true
-        for i = 1, #megautils.getAllEntities() do
-          local v = megautils.getAllEntities()[i]
+        for i = 1, #entities.all do
+          local v = entities.all[i]
           
           if v.updateFlash then
             v:updateFlash()
@@ -126,10 +126,10 @@ function camera:updateCam(spdx, spdy)
       self.approachY = self.y
       view.x, view.y = self.approachX, self.approachY
     elseif not self.once then
-      if megautils.groups().removeOnTransition then
-        for _, v in safepairs(megautils.groups().removeOnTransition) do
+      if entities.groups.removeOnTransition then
+        for _, v in safepairs(entities.groups.removeOnTransition) do
           if not v.dontRemoveOnTransition then
-            megautils.remove(v)
+            entities.remove(v)
           end
         end
       end
@@ -140,7 +140,7 @@ function camera:updateCam(spdx, spdy)
           v.autoGravity.transition = false
           v.autoCollision.transition = false
         end
-        megautils.freeze("trans")
+        entities.freeze("trans")
       end 
       if self.player then
         local sx, sy, sw, sh, sn
@@ -215,7 +215,8 @@ function camera:updateCam(spdx, spdy)
           end
         end
         local lx, ly = self.x, self.y
-        local lsx, lsy, lsw, lsh, lb, lbn = self.scrollx, self.scrolly, self.scrollw, self.scrollh, self.bounds, self.curBoundName
+        local lsx, lsy, lsw, lsh, lb, lbn = self.scrollx, self.scrolly, self.scrollw, self.scrollh,
+          self.bounds, self.curBoundName
         self.x = nx
         self.y = ny
         self.curBoundName = sn
@@ -223,7 +224,7 @@ function camera:updateCam(spdx, spdy)
         if self.bounds then
           for _, v in safeipairs(self.bounds.group) do
             if v.spawnEarlyDuringTransition and not v.isAdded then
-              megautils.adde(v)
+              entities.adde(v)
             end
           end
         end
@@ -237,7 +238,7 @@ function camera:updateCam(spdx, spdy)
         self.player.onMovingFloor.dontRemoveOnTransition = true
       end
       self.once = true
-      states.currentStateObject.system.cameraUpdate = function(s)
+      entities.cameraUpdate = function(s)
         for i=1, #megaMan.allPlayers do
           camera.main.tween2[i]:update(1/60)
         end
@@ -251,7 +252,7 @@ function camera:updateCam(spdx, spdy)
             camera.main.once = false
             camera.main.preTrans = false
             camera.main.tweenFinished = false
-            states.currentStateObject.system.cameraUpdate = nil
+            entities.cameraUpdate = nil
           end
           if camera.main.freeze then
             for _, v in pairs(megaMan.allPlayers) do
@@ -260,7 +261,7 @@ function camera:updateCam(spdx, spdy)
               v.autoGravity.transition = nil
               v.autoCollision.transition = nil
             end
-            megautils.unfreeze("trans")
+            entities.unfreeze("trans")
           end
           if camera.main.player and camera.main.player.onMovingFloor then
             camera.main.player.onMovingFloor.dontRemoveOnTransition = camera.main.player.onMovingFloor._oldDontRemoveOnTransition
@@ -337,7 +338,7 @@ function camera:doView(spdx, spdy, without)
     for _, v in safeipairs(self.despawnLateBounds.group) do
       if self.bounds and not table.icontains(self.bounds.group, v) then
         if v.despawnLateDuringTransition and not v.isRemoved then
-          megautils.remove(v)
+          entities.remove(v)
         end
       end
     end
@@ -500,7 +501,7 @@ function section:new(x, y, w, h, n)
     section.names[self.name] = self
   end
   self.cells = {}
-  self.group = self:collisionTable(megautils.groups().handledBySections)
+  self.group = self:collisionTable(entities.groups.handledBySections)
   section.init[#section.init+1] = self
 end
 
@@ -508,7 +509,7 @@ function section:activate(ignore)
   for _, v in safeipairs(self.group) do
     if not v.isAdded and
       (not ignore or not table.icontains(ignore, v)) then
-      megautils.adde(v)
+      entities.adde(v)
     end
   end
 end
@@ -517,7 +518,7 @@ function section:deactivate(ignore)
   for _, v in safeipairs(self.group) do
     if not v.isRemoved and not v.dontRemoveOnTransition and
       (not ignore or not table.icontains(ignore, v)) then
-      megautils.remove(v)
+      entities.remove(v)
     end
   end
 end
@@ -525,7 +526,7 @@ end
 function section:initSection()
   for _, v in safeipairs(self.group) do
     if not v.isRemoved then
-      megautils.remove(v)
+      entities.remove(v)
     end
   end
 end

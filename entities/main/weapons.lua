@@ -230,15 +230,17 @@ end
 
 function weapon:_afterUpdate(dt)
   if self.autoHit then
-    if self.damageType == weapon.DAMAGEENEMY or self.damageType == weapon.DAMAGEBOTH then
-      self:interact(self:collisionTable(megautils.filterByGroup(self:getSurroundingEntities(), "interactable")), self.damage)
+    if (self.damageType == weapon.DAMAGEENEMY or self.damageType == weapon.DAMAGEBOTH) and
+      entities.groups.interactable then
+      self:interact(self:collisionTable(table.ifilter(self:getSurroundingEntities(),
+        entities.groups.interactable)), self.damage)
     end
     if self.damageType == weapon.DAMAGEPLAYER or self.damageType == weapon.DAMAGEBOTH then
       self:interact(self:collisionTable(megaMan.allPlayers), self.damage)
     end
   end
   if self.removeWhenOutside and megautils.outside(self) then
-    megautils.remove(self)
+    entities.remove(self)
   end
   
   self:afterUpdate(dt)
@@ -305,16 +307,16 @@ weapon.chargeColors["P.BUSTER"] = {
 
 weapon.shootFuncs["P.BUSTER"] = function(player)
     if player:numberOfShots("megaBuster") < 3 and player:numberOfShots("protoChargedBuster") < 1 then
-      return megautils.add(megaBuster, player.x + player:shootOffX(), player.y + player:shootOffY(), player, player.side)
+      return entities.add(megaBuster, player.x + player:shootOffX(), player.y + player:shootOffY(), player, player.side)
     end
   end
 
 weapon.chargeShotFuncs["P.BUSTER"] = function(player, charge)
     if player:numberOfShots("megaBuster") < 3 then
       if charge == 1 then
-        return megautils.add(protoSemiBuster, player.x + player:shootOffX(2), player.y + player:shootOffY(), player, player.side, "protoBuster")
+        return entities.add(protoSemiBuster, player.x + player:shootOffX(2), player.y + player:shootOffY(), player, player.side, "protoBuster")
       elseif charge == 2 and player:numberOfShots("protoChargedBuster") < 1 then
-        return megautils.add(protoChargedBuster, player.x + player:shootOffX(8), player.y + player:shootOffY(), player, player.side, "protoBuster")
+        return entities.add(protoChargedBuster, player.x + player:shootOffX(8), player.y + player:shootOffY(), player, player.side, "protoBuster")
       end
     end
   end
@@ -380,16 +382,16 @@ weapon.chargeColors["R.BUSTER"] = {
 
 weapon.shootFuncs["R.BUSTER"] = function(player)
     if player:numberOfShots("megaBuster") < 3 and player:numberOfShots("protoChargedBuster") < 1 then
-      return megautils.add(megaBuster, player.x + player:shootOffX(), player.y + player:shootOffY(), player, player.side)
+      return entities.add(megaBuster, player.x + player:shootOffX(), player.y + player:shootOffY(), player, player.side)
     end
   end
 
 weapon.chargeShotFuncs["R.BUSTER"] = function(player, charge)
     if player:numberOfShots("megaBuster") < 3 then
       if charge == 1 then
-        return megautils.add(protoSemiBuster, player.x + player:shootOffX(2), player.y + player:shootOffY(), player, player.side, "rollBuster")
+        return entities.add(protoSemiBuster, player.x + player:shootOffX(2), player.y + player:shootOffY(), player, player.side, "rollBuster")
       elseif charge == 2 and player:numberOfShots("protoChargedBuster") < 1 then
-        return megautils.add(protoChargedBuster, player.x + player:shootOffX(8), player.y + player:shootOffY(), player, player.side, "rollBuster")
+        return entities.add(protoChargedBuster, player.x + player:shootOffX(8), player.y + player:shootOffY(), player, player.side, "rollBuster")
       end
     end
   end
@@ -498,7 +500,7 @@ weapon.rapidFireFuncs["B.BUSTER"] = function(player)
         end
       end
       
-      return megautils.add(bassBuster, player.x+player:shootOffX(tx), player.y+player:shootOffY(ty), player, dir)
+      return entities.add(bassBuster, player.x+player:shootOffX(tx), player.y+player:shootOffY(ty), player, dir)
     end
   end
 
@@ -530,7 +532,7 @@ end
 function bassBuster:update()
   local col = collision.checkSolid(self, self.velX, self.velY)
   if not self.treble and not self.dinked and col then
-    megautils.remove(self)
+    entities.remove(self)
   end
 end
 
@@ -595,16 +597,16 @@ weapon.ignoreEnergy["M.BUSTER"] = true
 
 weapon.shootFuncs["M.BUSTER"] = function(player)
     if player:numberOfShots("megaBuster") < 3 and player:numberOfShots("megaChargedBuster") < 1 then
-      return megautils.add(megaBuster, player.x + player:shootOffX(), player.y + player:shootOffY(), player, player.side)
+      return entities.add(megaBuster, player.x + player:shootOffX(), player.y + player:shootOffY(), player, player.side)
     end
   end
 
 weapon.chargeShotFuncs["M.BUSTER"] = function(player, charge)
     if player:numberOfShots("megaBuster") < 3 then
       if charge == 1 then
-        return megautils.add(megaSemiBuster, player.x + player:shootOffX(2), player.y + player:shootOffY(), player, player.side)
+        return entities.add(megaSemiBuster, player.x + player:shootOffX(2), player.y + player:shootOffY(), player, player.side)
       elseif charge == 2 and player:numberOfShots("megaChargedBuster") < 1 then
-        return megautils.add(megaChargedBuster, player.x + player:shootOffX(4), player.y + player:shootOffY(), player, player.side)
+        return entities.add(megaChargedBuster, player.x + player:shootOffX(4), player.y + player:shootOffY(), player, player.side)
       end
     end
   end
@@ -702,16 +704,16 @@ weapon.shootFuncs["T. BOOST"] = function(player)
       if player:numberOfShots("bassBuster") < 1 then
         local ox, oy = player:shootOffX(), player:shootOffY()
         return {
-            megautils.add(bassBuster, player.x + ox, player.y + oy,
+            entities.add(bassBuster, player.x + ox, player.y + oy,
               player, player.side==1 and 0 or 180, true),
-            megautils.add(bassBuster, player.x + ox, player.y + oy,
+            entities.add(bassBuster, player.x + ox, player.y + oy,
               player, player.side==1 and 45 or 180+45, true),
-            megautils.add(bassBuster, player.x + ox, player.y + oy,
+            entities.add(bassBuster, player.x + ox, player.y + oy,
               player, player.side==1 and -45 or 180-45, true)
           }
       end
     elseif player:checkWeaponEnergy("T. BOOST") and player:numberOfShots("trebleBoost") < 1 then
-      return megautils.add(trebleBoost, player.x + player:shootOffX(16), 
+      return entities.add(trebleBoost, player.x + player:shootOffX(16), 
         player.y + player:shootOffY(-16), player, player.side)
     end
   end
@@ -787,7 +789,7 @@ function trebleBoost:update()
   elseif self.s == 5 then
     self.timer = self.timer + 1
     if self.timer == 20 then
-      megautils.remove(self)
+      entities.remove(self)
     end
   end
 end
@@ -820,9 +822,9 @@ weapon.ignoreEnergy["RUSH JET"] = true -- Rush Jet's energy is handled by the ob
 
 weapon.shootFuncs["RUSH JET"] = function(player)
     if player:checkWeaponEnergy("RUSH JET") and player:numberOfShots("rushJet") < 1 then
-      return megautils.add(rushJet, player.x + player:shootOffX(16), player.y + player:shootOffY(), player, player.side, "rush")
+      return entities.add(rushJet, player.x + player:shootOffX(16), player.y + player:shootOffY(), player, player.side, "rush")
     elseif player:numberOfShots("megaBuster") < 3 then
-      return megautils.add(megaBuster, player.x + player:shootOffX(), player.y + player:shootOffY(), player, player.side)
+      return entities.add(megaBuster, player.x + player:shootOffX(), player.y + player:shootOffY(), player, player.side)
     end
   end
 
@@ -849,9 +851,9 @@ weapon.ignoreEnergy["PROTO JET"] = true -- Proto Jet's energy is handled by the 
 
 weapon.shootFuncs["PROTO JET"] = function(player)
     if player:checkWeaponEnergy("PROTO JET") and player:numberOfShots("rushJet") < 1 then
-      return megautils.add(rushJet, player.x + player:shootOffX(16), player.y + player:shootOffY(), player, player.side, "protoRush")
+      return entities.add(rushJet, player.x + player:shootOffX(16), player.y + player:shootOffY(), player, player.side, "protoRush")
     elseif player:numberOfShots("megaBuster") < 3 then
-      return megautils.add(megaBuster, player.x + player:shootOffX(), player.y + player:shootOffY(), player, player.side)
+      return entities.add(megaBuster, player.x + player:shootOffX(), player.y + player:shootOffY(), player, player.side)
     end
   end
 
@@ -878,9 +880,9 @@ weapon.ignoreEnergy["TANGO JET"] = true -- Tango Jet's energy is handled by the 
 
 weapon.shootFuncs["TANGO JET"] = function(player)
     if player:checkWeaponEnergy("TANGO JET") and player:numberOfShots("rushJet") < 1 then
-      return megautils.add(rushJet, player.x + player:shootOffX(16), player.y + player:shootOffY(), player, player.side, "tango")
+      return entities.add(rushJet, player.x + player:shootOffX(16), player.y + player:shootOffY(), player, player.side, "tango")
     elseif player:numberOfShots("megaBuster") < 3 then
-      return megautils.add(megaBuster, player.x + player:shootOffX(), player.y + player:shootOffY(), player, player.side)
+      return entities.add(megaBuster, player.x + player:shootOffX(), player.y + player:shootOffY(), player, player.side)
     end
   end
 
@@ -1034,9 +1036,9 @@ weapon.ignoreEnergy["RUSH C."] = true -- Rush Coil's energy is handled by the ob
 
 weapon.shootFuncs["RUSH C."] = function(player)
     if player:checkWeaponEnergy("RUSH C.") and player:numberOfShots("rushCoil") < 1 then
-      return megautils.add(rushCoil, player.x + player:shootOffX(16), player.y + player:shootOffY(-8), player, player.side, "rush")
+      return entities.add(rushCoil, player.x + player:shootOffX(16), player.y + player:shootOffY(-8), player, player.side, "rush")
     elseif player:numberOfShots("megaBuster") < 3 then
-      return megautils.add(megaBuster, player.x + player:shootOffX(), player.y + player:shootOffY(), player, player.side)
+      return entities.add(megaBuster, player.x + player:shootOffX(), player.y + player:shootOffY(), player, player.side)
     end
   end
 
@@ -1063,9 +1065,9 @@ weapon.ignoreEnergy["PROTO C."] = true -- Proto Coil's energy is handled by the 
 
 weapon.shootFuncs["PROTO C."] = function(player)
     if player:checkWeaponEnergy("PROTO C.") and player:numberOfShots("rushCoil") < 1 then
-      return megautils.add(rushCoil, player.x + player:shootOffX(16), player.y + player:shootOffY(-8), player, player.side, "protoRush")
+      return entities.add(rushCoil, player.x + player:shootOffX(16), player.y + player:shootOffY(-8), player, player.side, "protoRush")
     elseif player:numberOfShots("megaBuster") < 3 then
-      return megautils.add(megaBuster, player.x + player:shootOffX(), player.y + player:shootOffY(), player, player.side)
+      return entities.add(megaBuster, player.x + player:shootOffX(), player.y + player:shootOffY(), player, player.side)
     end
   end
 
@@ -1092,9 +1094,9 @@ weapon.ignoreEnergy["TANGO C."] = true -- Tango Coil's energy is handled by the 
 
 weapon.shootFuncs["TANGO C."] = function(player)
     if player:checkWeaponEnergy("TANGO C.") and player:numberOfShots("rushCoil") < 1 then
-      return megautils.add(rushCoil, player.x + player:shootOffX(16), player.y + player:shootOffY(-8), player, player.side, "tango")
+      return entities.add(rushCoil, player.x + player:shootOffX(16), player.y + player:shootOffY(-8), player, player.side, "tango")
     elseif player:numberOfShots("megaBuster") < 3 then
-      return megautils.add(megaBuster, player.x + player:shootOffX(), player.y + player:shootOffY(), player, player.side)
+      return entities.add(megaBuster, player.x + player:shootOffX(), player.y + player:shootOffY(), player, player.side)
     end
   end
 
@@ -1209,7 +1211,7 @@ weapon.throwAnim["STICK W."] = true
 
 weapon.shootFuncs["STICK W."] = function(player)
     if player:numberOfShots("stickWeapon") < 1 then
-      return megautils.add(stickWeapon, player.x + player:shootOffX(), player.y + player:shootOffY(), player, player.side), -2
+      return entities.add(stickWeapon, player.x + player:shootOffX(), player.y + player:shootOffY(), player, player.side), -2
     end
   end
 

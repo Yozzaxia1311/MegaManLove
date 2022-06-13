@@ -1,7 +1,7 @@
 local titleState = state:extend()
 
 function titleState:begin()
-  megautils.add(title)
+  entities.add(title)
 end
 
 loader.load("assets/misc/title.png", "title")
@@ -64,7 +64,7 @@ function title:update()
     end
     if self.timer == 400 then
       states.openRecord = "assets/demo.rd"
-      megautils.add(fade, true, nil, nil, function(s)
+      entities.add(fade, true, nil, nil, function(s)
           music.setLock(true)
           record.drawDemoFunc = function()
               if record.demo and math.wrap(record.recPos, 0, 40) < 20 then
@@ -73,8 +73,8 @@ function title:update()
               end
             end
           record.returning = function()
-              megautils.add(fade, true, nil, nil, function(s)
-                  megautils.resetGame("assets/states/menus/title.state.lua", false, true)
+              entities.add(fade, true, nil, nil, function(s)
+                  megautils.resetGame("assets/states/menus/title.state.lua", true)
                   music.setLock(false)
                 end)
             end

@@ -98,6 +98,12 @@ function sfx.stopAll()
   end
 end
 
+function sfx.clear()
+  sfx.stopAll()
+  sfx._cachedMutes = {}
+  sfx.curS = {}
+end
+
 music = {}
 
 function music.ser()

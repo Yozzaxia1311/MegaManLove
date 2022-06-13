@@ -2,8 +2,8 @@ local rebindState = state:extend()
 
 function rebindState:begin()
   doCheckDelay = true
-  megautils.add(rebinder)
-  megautils.add(fade, false, nil, nil, fade.remove)
+  entities.add(rebinder)
+  entities.add(fade, false, nil, nil, fade.remove)
 end
 
 function rebindState:switching()
@@ -37,7 +37,7 @@ end
 
 function rebinder:update()
   if (lastPressed.input == "escape" or lastPressed.input == "guide") and not self.done then
-    megautils.add(fade, true, nil, nil, function(s)
+    entities.add(fade, true, nil, nil, function(s)
       if not globals.sendBackToDisclaimer and not globals.sendBackToPlayers then
         globals.fromOther = 5
       end
@@ -65,7 +65,7 @@ function rebinder:update()
         input.bind(v, k, table.contains(self.dt, k))
       end
       save.save("main.sav", self.data)
-      megautils.add(fade, true, nil, nil, function(s)
+      entities.add(fade, true, nil, nil, function(s)
           if not globals.sendBackToDisclaimer and not globals.sendBackToPlayers then
             globals.fromOther = 5
           end

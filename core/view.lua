@@ -72,10 +72,11 @@ function view.draw()
       states.currentStateObject:draw()
     end
     love.graphics.setColor(1, 1, 1, 1)
+    entities.draw()
     love.graphics.translate(view.x, view.y)
     record.drawDemo()
     if megautils.isShowingEntityCount() then
-      local count = #states.currentStateObject.system.all
+      local count = #entities.all
       love.graphics.setFont(mmFont)
       love.graphics.setColor(0, 0, 0, 0.4)
       love.graphics.rectangle("fill", view.w - 24 - 8, 23, 32, 10)
@@ -105,10 +106,12 @@ function view.draw()
       states.currentStateObject:draw()
     end
     love.graphics.setColor(1, 1, 1, 1)
+    entities.draw()
+    love.graphics.setColor(1, 1, 1, 1)
     love.graphics.translate(view.x, view.y)
     record.drawDemo()
     if megautils.isShowingEntityCount() then
-      local count = #states.currentStateObject.system.all
+      local count = #entities.all
       love.graphics.setFont(mmFont)
       love.graphics.setColor(0, 0, 0, 0.4)
       love.graphics.rectangle("fill", view.w - 24 - 8, 23, 32, 10)

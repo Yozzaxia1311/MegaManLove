@@ -96,6 +96,7 @@ function initEngine()
   gamepadCheck = {}
   doCheckDelay = false
   love.graphics.setFont(mmFont)
+  entities.init()
   input.init()
   loadBinds()
   record.init()
@@ -372,6 +373,7 @@ function love.update(dt)
     record.update()
     if useConsole then console.update(dt) end
     states.update(dt)
+    entities.update(dt)
     megautils.checkQueue()
     states.checkQueue()
     input.flush()
@@ -668,7 +670,7 @@ function ser()
       megautils = megautils.ser(),
       state = states.ser(),
       basicEntity = basicEntity.basicEntityImgCache,
-      entitySystem = entitySystem.ser(),
+      entities = entities.ser(),
       section = section.ser(),
       loader = loader.ser(),
       music = music.ser(),
@@ -718,8 +720,8 @@ function deser(from, dontChangeMusic)
   view.deser(t.view)
   megautils.deser(t.megautils)
   states.deser(t.state)
+  entities.deser(t.entities)
   basicEntity._imgCache = t.basicEntityImgCache
-  entitySystem.deser(t.entitySystem)
   section.deser(t.section)
   loader.deser(t.loader)
   if not dontChangeMusic then

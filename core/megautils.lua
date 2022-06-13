@@ -330,10 +330,7 @@ function megautils.runFile(path, runOnce)
   end
 end
 
-function megautils.resetGame(s, saveSfx, saveMusic)
-  if not saveSfx then
-    sfx.stopAll()
-  end
+function megautils.resetGame(s, saveMusic)
   if not saveMusic then
     music.stop()
   end
@@ -350,65 +347,18 @@ end
 function megautils.unload()
   megautils.runCallback(megautils.cleanFuncs)
   megautils.cleanCallbacks()
+  sfx.clear()
   loader.clear()
   megautils._ranFiles = {}
   megautils._fsCache = {}
 end
 
 function megautils.addMapEntity(path)
-  return megautils.add(mapEntity, cartographer.load(path))
+  return entities.add(mapEntity, cartographer.load(path))
 end
 
 function megautils.createMapEntity(path)
   return mapEntity(cartographer.load(path))
-end
-
-function megautils.setLayerFlicker(l, b)
-  states.currentStateObject.system:setLayerFlicker(l, b)
-end
-
-function megautils.remove(o)
-  states.currentStateObject.system:remove(o)
-end
-
-function megautils.add(o, ...)
-  return states.currentStateObject.system:add(o, ...)
-end
-
-function megautils.adde(o)
-  return states.currentStateObject.system:adde(o)
-end
-
-function megautils.getAllEntities()
-  return states.currentStateObject.system.all
-end
-
-function megautils.removeAll()
-  states.currentStateObject.system:clean()
-end
-
-function megautils.getRecycled(o, ...)
-  return states.currentStateObject.system:getRecycled(o, ...)
-end
-
-function megautils.emptyRecycling(c, num)
-  states.currentStateObject.system:emptyRecycling(c, num)
-end
-
-function megautils.groups()
-  return states.currentStateObject.system.groups
-end
-
-function megautils.filterByGroup(g, groupName)
-  local result = {}
-  
-  for i = 1, #g do
-    if table.icontains(g[i].groupNames, groupName) then
-      result[#result + 1] = g[i]
-    end
-  end
-  
-  return result
 end
 
 function megautils.calcX(angle)
@@ -473,30 +423,9 @@ function megautils.unregisterPlayer(e)
   end
 end
 
-function megautils.getEntitiesAt(x, y, w, h)
-  return states.currentStateObject.system:getEntitiesAt(x, y, w, h)
-end
-
-function megautils.freeze(name)
-  states.currentStateObject.system:freeze(name)
-end
-
-function megautils.unfreeze(name)
-  states.currentStateObject.system:unfreeze(name)
-end
-
-function megautils.checkFrozen(name)
-  for _, v in ipairs(states.currentStateObject.system.frozen) do
-    if v == name then
-      return true
-    end
-  end
-  
-  return false
-end
-
 function megautils.outside(o, ex, ey)
-  return o.collisionShape and not rectOverlapsRect(view.x-(ex or 0), view.y-(ey or 0), view.w+((ex or 0)*2), view.h+((ey or 0)*2), 
+  return o.collisionShape and not rectOverlapsRect(view.x-(ex or 0), view.y-(ey or 0),
+    view.w+((ex or 0)*2), view.h+((ey or 0)*2), 
     o.x, o.y, o.collisionShape.w, o.collisionShape.h)
 end
 
@@ -548,23 +477,23 @@ function megautils.dropItem(x, y)
   if math.between(rnd, 0, 39) then
     local rnd2 = love.math.random(0, 2)
     if rnd2 == 0 then
-      return megautils.add(life, x, y, true)
+      return entities.add(life, x, y, true)
     elseif rnd2 == 1 then
-      return megautils.add(eTank, x, y, true)
+      return entities.add(eTank, x, y, true)
     else
-      return megautils.add(wTank, x, y, true)
+      return entities.add(wTank, x, y, true)
     end
   elseif math.between(rnd, 50, 362) then
     if love.math.random(0, 1) == 0 then
-      return megautils.add(health, x, y, true)
+      return entities.add(health, x, y, true)
     else
-      return megautils.add(energy, x, y, true)
+      return entities.add(energy, x, y, true)
     end
   elseif math.between(rnd, 370, 995) then
     if love.math.random(0, 1) == 0 then
-      return megautils.add(smallHealth, x, y, true)
+      return entities.add(smallHealth, x, y, true)
     else
-      return megautils.add(smallEnergy, x, y, true)
+      return entities.add(smallEnergy, x, y, true)
     end
   end
 end
@@ -671,11 +600,9 @@ function megautils.arcXVel(yvel, grav, x, y, tox, toy)
 end
 
 function megautils.removeEnemyShots()
-  if states.currentStateObject.system.all then
-    for _, v in safeipairs(states.currentStateObject.system.all) do
-      if v.isEnemyWeapon then
-        megautils.remove(v)
-      end
+  for _, v in safeipairs(entities.all) do
+    if v.isEnemyWeapon then
+      entities.remove(v)
     end
   end
 end

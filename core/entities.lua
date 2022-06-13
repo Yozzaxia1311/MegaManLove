@@ -1,46 +1,102 @@
-entitySystem = class:extend()
+local function tableIsEmptyOrHoles(t)
+  if #t == 0 then
+    return true
+  end
+  
+  for i = 1, #t do
+    if t[i] ~= -1 then
+      return false
+    end
+  end
+  
+  return true
+end
 
-function entitySystem.ser()
+local function removeTableHoles(t)
+  local i = 1
+  while i <= #t do
+    if t[i] == -1 then
+      table.quickremove(t, i)
+    else
+      i = i + 1
+    end
+  end
+end
+
+entities = {}
+
+function entities.ser()
   return {
-      drawCollision = entitySystem.drawCollision,
-      doDrawFlicker = entitySystem.doDrawFlicker
+      layers = entities.layers,
+      updates = entities.updates,
+      groups = entities.groups,
+      static = entities.static,
+      all = entities.all,
+      beginQueue = entities.beginQueue,
+      recycle = entities.recycle,
+      frozen = entities.frozen,
+      hashes = entities.hashes,
+      _HS = entities._HS,
+      _updateHoles = entities._updateHoles,
+      doSort = entities.doSort,
+      inLoop = entities.inLoop,
+      drawCollision = entities.drawCollision,
+      doDrawFlicker = entities.doDrawFlicker,
+      hashSize = entities.hashSize,
     }
 end
 
-function entitySystem.deser(t)
-  entitySystem.drawCollision = t.drawCollision
-  entitySystem.doDrawFlicker = t.doDrawFlicker
+function entities.deser(t)
+  entities.layers = t.layers
+  entities.updates = t.updates
+  entities.groups = t.groups
+  entities.static = t.static
+  entities.all = t.all
+  entities.beginQueue = t.beginQueue
+  entities.recycle = t.recycle
+  entities.frozen = t.frozen
+  entities.hashes = t.hashes
+  entities._HS = t._HS
+  entities._updateHoles = t._updateHoles
+  entities.doSort = t.doSort
+  entities.inLoop = t.inLoop
+  entities.drawCollision = t.drawCollision
+  entities.doDrawFlicker = t.doDrawFlicker
+  entities.hashSize = t.hashSize
 end
 
-entitySystem.drawCollision = false
-entitySystem.doDrawFlicker = true
+entities.hashes = {}
+local _hashes = entities.hashes
 
-entitySystem.hashSize = 96
-
-function entitySystem:new()
-  self.layers = {}
-  self.updates = {}
-  self.groups = {}
-  self.static = {}
-  self.all = {}
-  self.beginQueue = {}
-  self.recycle = {}
-  self.frozen = {}
-  self.hashes = {}
-  self._HS =  {}
-  self._updateHoles = {}
-  self.doSort = false
-  self.inLoop = false
+function entities.init()
+  entities.layers = {}
+  entities.updates = {}
+  entities.groups = {}
+  entities.static = {}
+  entities.all = {}
+  entities.beginQueue = {}
+  entities.recycle = {}
+  entities.frozen = {}
+  entities.hashes = {}
+  _hashes = entities.hashes
+  entities._HS = {}
+  entities._updateHoles = {}
+  entities.doSort = false
+  entities.inLoop = false
+  entities.drawCollision = false
+  entities.doDrawFlicker = true
+  entities.hashSize = 96
 end
 
-function entitySystem:updateHashForEntity(e)
+function entities.updateHashForEntity(e)
   if e.collisionShape and not e.invisibleToHash then
     if not e.currentHashes then
       e.currentHashes = {}
     end
     
-    local xx, yy, ww, hh = e.x - (e.collisionShape.r or 0), e.y - (e.collisionShape.r or 0), e.collisionShape.w, e.collisionShape.h
-    local hs = entitySystem.hashSize
+    local xx, yy, ww, hh = e.x - (e.collisionShape.r or 0), e.y - (e.collisionShape.r or 0),
+      e.collisionShape.w, e.collisionShape.h
+    local hs = entities.hashSize
     local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
     local cx2, cy2 = math.ceil((xx + ww + 2) / hs), math.ceil((yy + hh + 2) / hs)
     local emptyBefore = #e.currentHashes == 0
@@ -48,23 +104,23 @@ function entitySystem:updateHashForEntity(e)
     
     for x = cx, cx2 do
       for y = cy, cy2 do
-        if not self.hashes[x] then
-          self.hashes[x] = {[y] = {x = x, y = y, data = {e}, isRemoved = false}}
-          self._HS[x] = 1
-        elseif not self.hashes[x][y] then
-          self.hashes[x][y] = {x = x, y = y, data = {e}, isRemoved = false}
-          self._HS[x] = self._HS[x] + 1
-        elseif not table.icontains(self.hashes[x][y].data, e) then
-          self.hashes[x][y].data[#self.hashes[x][y].data+1] = e
-          self.hashes[x][y].data[#self.hashes[x][y].data].isRemoved = false
+        if not _hashes[x] then
+          _hashes[x] = {[y] = {x = x, y = y, data = {e}, isRemoved = false}}
+          entities._HS[x] = 1
+        elseif not _hashes[x][y] then
+          _hashes[x][y] = {x = x, y = y, data = {e}, isRemoved = false}
+          entities._HS[x] = entities._HS[x] + 1
+        elseif not table.icontains(_hashes[x][y].data, e) then
+          _hashes[x][y].data[#_hashes[x][y].data+1] = e
+          _hashes[x][y].data[#_hashes[x][y].data].isRemoved = false
         end
         
-        if not table.icontains(e.currentHashes, self.hashes[x][y]) then
-          e.currentHashes[#e.currentHashes+1] = self.hashes[x][y]
+        if not table.icontains(e.currentHashes, _hashes[x][y]) then
+          e.currentHashes[#e.currentHashes+1] = _hashes[x][y]
         end
         
-        if self.hashes[x] and self.hashes[x][y] then
-          check[#check + 1] = self.hashes[x][y]
+        if _hashes[x] and _hashes[x][y] then
+          check[#check + 1] = _hashes[x][y]
         end
       end
     end
@@ -77,12 +133,12 @@ function entitySystem:updateHashForEntity(e)
             
             if #v.data == 0 then
               v.isRemoved = true
-              self.hashes[v.x][v.y] = nil
-              self._HS[v.x] = self._HS[v.x] - 1
+              _hashes[v.x][v.y] = nil
+              entities._HS[v.x] = entities._HS[v.x] - 1
               
-              if self._HS[v.x] == 0 then
-                self.hashes[v.x] = nil
-                self._HS[v.x] = nil
+              if entities._HS[v.x] == 0 then
+                _hashes[v.x] = nil
+                entities._HS[v.x] = nil
               end
             end
           end
@@ -100,12 +156,12 @@ function entitySystem:updateHashForEntity(e)
         
         if #v.data == 0 then
           v.isRemoved = true
-          self.hashes[v.x][v.y] = nil
-          self._HS[v.x] = self._HS[v.x] - 1
+          _hashes[v.x][v.y] = nil
+          entities._HS[v.x] = entities._HS[v.x] - 1
           
-          if self._HS[v.x] == 0 then
-            self.hashes[v.x] = nil
-            self._HS[v.x] = nil
+          if entities._HS[v.x] == 0 then
+            _hashes[v.x] = nil
+            entities._HS[v.x] = nil
           end
         end
       end
@@ -115,14 +171,14 @@ function entitySystem:updateHashForEntity(e)
   end
 end
 
-function entitySystem:getEntitiesAt(xx, yy, ww, hh)
-  local hs = entitySystem.hashSize
+function entities.getEntitiesAt(xx, yy, ww, hh)
+  local hs = entities.hashSize
   local result
   
   for x = math.floor((xx - 2) / hs), math.floor((xx + ww + 2) / hs) do
     for y = math.ceil((yy - 2) / hs), math.ceil((yy + hh + 2) / hs) do
-      if self.hashes[x] and self.hashes[x][y] then
-        local hash = self.hashes[x][y]
+      if _hashes[x] and _hashes[x][y] then
+        local hash = _hashes[x][y]
         
         if not result and #hash.data > 0 then
           result = {unpack(hash.data)}
@@ -140,31 +196,41 @@ function entitySystem:getEntitiesAt(xx, yy, ww, hh)
   return result or {}
 end
 
-function entitySystem:freeze(n)
-  if not table.icontains(self.frozen, n or "global") then
-    self.frozen[#self.frozen + 1] = n or "global"
+function entities.freeze(n)
+  if not table.icontains(entities.frozen, n or "global") then
+    entities.frozen[#entities.frozen + 1] = n or "global"
   end
 end
 
-function entitySystem:unfreeze(n)
-  table.quickremovevaluearray(self.frozen, n or "global")
+function entities.unfreeze(n)
+  table.quickremovevaluearray(entities.frozen, n or "global")
 end
 
-function entitySystem:emptyRecycling(c, num)
+function entities.checkFrozen(name)
+  for _, v in ipairs(entities.frozen) do
+    if v == name then
+      return true
+    end
+  end
+  
+  return false
+end
+
+function entities.emptyRecycling(c, num)
   if not num or num < 1 then
-    self.recycling[c] = {}
-  elseif num < self.recycling[c] then
-    for i=num, #self.recycling[c] do
-      self.recycling[c][i] = nil
+    entities.recycle[c] = {}
+  elseif num < entities.recycle[c] then
+    for i=num, #entities.recycle[c] do
+      entities.recycle[c][i] = nil
     end
   end
 end
 
-function entitySystem:getRecycled(c, ...)
+function entities.getRecycled(c, ...)
   if not c then error("Class does not exist.") end
   
   local e
-  local vr = self.recycle[c]
+  local vr = entities.recycle[c]
   
   if vr and #vr > 0 then
     e = vr[#vr]
@@ -180,26 +246,26 @@ function entitySystem:getRecycled(c, ...)
   return e
 end
 
-function entitySystem:sortLayers()
+function entities._sortLayers()
   local keys = {}
   local vals = {}
   
-  for k, v in safepairs(self.layers) do
+  for k, v in safepairs(entities.layers) do
     keys[#keys + 1] = v.layer
     vals[v.layer] = v
-    self.layers[k] = nil
+    entities.layers[k] = nil
   end
   
   table.sort(keys)
   
   for i=1, #keys do
-    self.layers[i] = vals[keys[i]]
+    entities.layers[i] = vals[keys[i]]
   end
 end
 
-function entitySystem:getLayer(l)
-  for i=1, #self.layers do
-    local v = self.layers[i]
+function entities.getLayer(l)
+  for i=1, #entities.layers do
+    local v = entities.layers[i]
     
     if v.layer == l then
       return v
@@ -207,16 +273,70 @@ function entitySystem:getLayer(l)
   end
 end
 
-function entitySystem:add(c, ...)
-  local e = self:getRecycled(c, ...)
+function entities.setLayer(e, l)
+  if e.layer ~= l then
+    if not e.isAdded or e.static then
+      e.layer = l
+    else
+      local al = entities.getLayer(e.layer)
+      
+      if al then
+        local i = table.findindexarray(al.data, e)
+        al.data[i] = -1
+        al.holes[i] = true
+        
+        if tableIsEmptyOrHoles(al.data) then
+          table.removevaluearray(entities.layers, al)
+        end
+      end
+      
+      e.layer = l
+      
+      local done = false
+      
+      for i=1, #entities.layers do
+        local v = entities.layers[i]
+        
+        if v.layer == e.layer then
+          local nextHole = not entities.inLoop and next(v.holes)
+          if nextHole then
+            v.data[nextHole] = e
+            v.holes[nextHole] = nil
+          else
+            v.data[#v.data + 1] = e
+          end
+          done = true
+          break
+        end
+      end
+      
+      if not done then
+        entities.layers[#entities.layers + 1] = {layer = e.layer, data = {e}, flicker = true, holes = {}}
+        entities.doSort = true
+      end
+    end
+  end
+end
+
+function entities.setLayerFlicker(l, b)
+  for i=1, #entities.layers do
+    if entities.layers[i].layer == l then
+      entities.layers[i].flicker = b
+      break
+    end
+  end
+end
+
+function entities.add(c, ...)
+  local e = entities.getRecycled(c, ...)
   
   if not e.static then
     local done = false
     
-    for i=1, #self.layers do
-      local v = self.layers[i]
+    for i=1, #entities.layers do
+      local v = entities.layers[i]
       if v.layer == e.layer then
-        local nextHole = not self.inLoop and next(v.holes)
+        local nextHole = not entities.inLoop and next(v.holes)
         if nextHole then
           v.data[nextHole] = e
           v.holes[nextHole] = nil
@@ -229,25 +349,25 @@ function entitySystem:add(c, ...)
     end
     
     if not done then
-      self.layers[#self.layers + 1] = {layer = e.layer, data = {e}, flicker = true, holes = {}}
-      self.doSort = true
+      entities.layers[#entities.layers + 1] = {layer = e.layer, data = {e}, flicker = true, holes = {}}
+      entities.doSort = true
     end
     
-    local nextHole = not self.inLoop and next(self._updateHoles)
+    local nextHole = not entities.inLoop and next(entities._updateHoles)
     if nextHole then
-      self.updates[nextHole] = e
-      self._updateHoles[nextHole] = nil
+      entities.updates[nextHole] = e
+      entities._updateHoles[nextHole] = nil
     else
-      self.updates[#self.updates + 1] = e
+      entities.updates[#entities.updates + 1] = e
     end
   else
-    self.static[#self.static + 1] = e
+    entities.static[#entities.static + 1] = e
   end
   
-  self.all[#self.all+1] = e
+  entities.all[#entities.all + 1] = e
   
   for i = 1, #e.groupNames do
-    self:addToGroup(e, e.groupNames[i])
+    entities.addToGroup(e, e.groupNames[i])
   end
   
   e.isRemoved = false
@@ -261,10 +381,10 @@ function entitySystem:add(c, ...)
   if not e.invisibleToHash then e:updateHash(true) end
   e:added()
   
-  if self.inLoop then
+  if entities.inLoop then
     e:begin()
   else
-    self.beginQueue[#self.beginQueue + 1] = e
+    entities.beginQueue[#entities.beginQueue + 1] = e
   end
   
   if e.calcGrav then
@@ -274,17 +394,17 @@ function entitySystem:add(c, ...)
   return e
 end
 
-function entitySystem:adde(e)
+function entities.adde(e)
   if e.isAdded then return e end
   if not e then return end
   
   if not e.static then
     local done = false
     
-    for i=1, #self.layers do
-      local v = self.layers[i]
+    for i=1, #entities.layers do
+      local v = entities.layers[i]
       if v.layer == e.layer then
-        local nextHole = not self.inLoop and next(v.holes)
+        local nextHole = not entities.inLoop and next(v.holes)
         if nextHole then
           v.data[nextHole] = e
           v.holes[nextHole] = nil
@@ -297,25 +417,25 @@ function entitySystem:adde(e)
     end
     
     if not done then
-      self.layers[#self.layers + 1] = {layer = e.layer, data = {e}, flicker = true, holes = {}}
-      self.doSort = true
+      entities.layers[#entities.layers + 1] = {layer = e.layer, data = {e}, flicker = true, holes = {}}
+      entities.doSort = true
     end
     
-    local nextHole = not self.inLoop and next(self._updateHoles)
+    local nextHole = not entities.inLoop and next(entities._updateHoles)
     if nextHole then
-      self.updates[nextHole] = e
-      self._updateHoles[nextHole] = nil
+      entities.updates[nextHole] = e
+      entities._updateHoles[nextHole] = nil
     else
-      self.updates[#self.updates + 1] = e
+      entities.updates[#entities.updates + 1] = e
     end
   else
-    self.static[#self.static + 1] = e
+    entities.static[#entities.static + 1] = e
   end
   
-  self.all[#self.all+1] = e
+  entities.all[#entities.all + 1] = e
   
   for i = 1, #e.groupNames do
-    self:addToGroup(e, e.groupNames[i])
+    entities.addToGroup(e, e.groupNames[i])
   end
   
   e.isRemoved = false
@@ -329,10 +449,10 @@ function entitySystem:adde(e)
   if not e.invisibleToHash then e:updateHash(true) end
   e:added()
   
-  if self.inLoop then
+  if entities.inLoop then
     e:begin()
   else
-    self.beginQueue[#self.beginQueue + 1] = e
+    entities.beginQueue[#entities.beginQueue + 1] = e
   end
   
   if e.calcGrav then
@@ -342,13 +462,13 @@ function entitySystem:adde(e)
   return e
 end
 
-function entitySystem:addToGroup(e, g)
-  if not self.groups[g] then
-    self.groups[g] = {}
+function entities.addToGroup(e, g)
+  if not entities.groups[g] then
+    entities.groups[g] = {}
   end
   
-  if not table.icontains(self.groups[g], e) then
-    self.groups[g][#self.groups[g] + 1] = e
+  if not table.icontains(entities.groups[g], e) then
+    entities.groups[g][#entities.groups[g] + 1] = e
   end
   
   if not table.icontains(e.groupNames, g) then
@@ -356,40 +476,40 @@ function entitySystem:addToGroup(e, g)
   end
 end
 
-function entitySystem:removeFromGroup(e, g)
-  table.quickremovevaluearray(self.groups[g], e)
+function entities.removeFromGroup(e, g)
+  table.quickremovevaluearray(entities.groups[g], e)
   table.quickremovevaluearray(e.groupNames, g)
   
-  if #self.groups[g] == 0 then
-    self.groups[g] = nil
+  if #entities.groups[g] == 0 then
+    entities.groups[g] = nil
   end
 end
 
-function entitySystem:removeFromAllGroups(e)
-  for k, _ in safepairs(self.groups) do
-    self:removeFromGroup(e, k)
+function entities.removeFromAllGroups(e)
+  for k, _ in safepairs(entities.groups) do
+    entities.removeFromGroup(e, k)
   end
 end
 
-function entitySystem:makeStatic(e)
+function entities.makeStatic(e)
   if not e.static then
-    local i = table.findindexarray(self.updates, e)
-    self.updates[i] = -1
-    self._updateHoles[i] = true
+    local i = table.findindexarray(entities.updates, e)
+    entities.updates[i] = -1
+    entities._updateHoles[i] = true
     
-    local al = self:getLayer(e.layer)
+    local al = entities.getLayer(e.layer)
     
     if al then
       local i = table.findindexarray(al.data, e)
       al.data[i] = -1
       al.holes[i] = true
       
-      if self:_emptyOrHoles(al.data) then
-        table.removevaluearray(self.layers, al)
+      if tableIsEmptyOrHoles(al.data) then
+        table.removevaluearray(entities.layers, al)
       end
     end
     
-    self.static[#self.static + 1] = e
+    entities.static[#entities.static + 1] = e
     
     e.static = true
     e.staticX = e.x
@@ -409,16 +529,16 @@ function entitySystem:makeStatic(e)
   end
 end
 
-function entitySystem:revertFromStatic(e)
+function entities.revertFromStatic(e)
   if e.static then
-    table.quickremovevaluearray(self.static, e)
+    table.quickremovevaluearray(entities.static, e)
     
     local done = false
     
-    for i=1, #self.layers do
-      local v = self.layers[i]
+    for i=1, #entities.layers do
+      local v = entities.layers[i]
       if v.layer == e.layer then
-        local nextHole = not self.inLoop and next(v.holes)
+        local nextHole = not entities.inLoop and next(v.holes)
         if nextHole then
           v.data[nextHole] = e
           v.holes[nextHole] = nil
@@ -431,45 +551,46 @@ function entitySystem:revertFromStatic(e)
     end
     
     if not done then
-      self.layers[#self.layers + 1] = {layer = e.layer, data = {e}, flicker = true, holes = {}}
-      self.doSort = true
+      entities.layers[#entities.layers + 1] = {layer = e.layer, data = {e}, flicker = true, holes = {}}
+      entities.doSort = true
     end
     
-    local nextHole = not self.inLoop and next(self._updateHoles)
+    local nextHole = not entities.inLoop and next(entities._updateHoles)
     if nextHole then
-      self.updates[nextHole] = e
-      self._updateHoles[nextHole] = nil
+      entities.updates[nextHole] = e
+      entities._updateHoles[nextHole] = nil
     else
-      self.updates[#self.updates + 1] = e
+      entities.updates[#entities.updates + 1] = e
     end
     
     if e.collisionShape and e.staticX == e.x and e.staticY == e.y and
       e.staticW == e.collisionShape.w and e.staticH == e.collisionShape.h then
-      local xx, yy, ww, hh = e.x - (e.collisionShape.r or 0), e.y - (e.collisionShape.r or 0), e.collisionShape.w, e.collisionShape.h
-      local hs = entitySystem.hashSize
+      local xx, yy, ww, hh = e.x - (e.collisionShape.r or 0), e.y - (e.collisionShape.r or 0),
+        e.collisionShape.w, e.collisionShape.h
+      local hs = entities.hashSize
       local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
       local cx2, cy2 = math.ceil((xx + ww + 2) / hs), math.ceil((yy + hh + 2) / hs)
       
       for x = cx, cx2 do
         for y = cy, cy2 do
-          if self.hashes[x] and self.hashes[x][y] and not self.hashes[x][y].isRemoved then
-            table.quickremovevaluearray(self.hashes[x][y].data, e)
+          if _hashes[x] and _hashes[x][y] and not _hashes[x][y].isRemoved then
+            table.quickremovevaluearray(_hashes[x][y].data, e)
             
-            if #self.hashes[x][y].data == 0 then
-              self.hashes[x][y].isRemoved = true
-              self.hashes[x][y] = nil
-              self._HS[x] = self._HS[x] - 1
+            if #_hashes[x][y].data == 0 then
+              _hashes[x][y].isRemoved = true
+              _hashes[x][y] = nil
+              entities._HS[x] = entities._HS[x] - 1
               
-              if self._HS[x] == 0 then
-                self.hashes[x] = nil
-                self._HS[x] = nil
+              if entities._HS[x] == 0 then
+                _hashes[x] = nil
+                entities._HS[x] = nil
               end
             end
           end
         end
       end
     else
-      for x, xt in safepairs(self.hashes) do
+      for x, xt in safepairs(_hashes) do
         for y, yt in safepairs(xt) do
           if table.icontains(yt.data, e) then
             table.quickremovevaluearray(yt.data, e)
@@ -477,12 +598,12 @@ function entitySystem:revertFromStatic(e)
           
           if #yt.data == 0 and not yt.isRemoved then
             yt.isRemoved = true
-            self.hashes[x][y] = nil
-            self._HS[x] = self._HS[x] - 1
+            _hashes[x][y] = nil
+            entities._HS[x] = entities._HS[x] - 1
             
-            if self._HS[x] == 0 then
-              self.hashes[x] = nil
-              self._HS[x] = nil
+            if entities._HS[x] == 0 then
+              _hashes[x] = nil
+              entities._HS[x] = nil
             end
           end
         end
@@ -508,71 +629,17 @@ function entitySystem:revertFromStatic(e)
   end
 end
 
-function entitySystem:setLayer(e, l)
-  if e.layer ~= l then
-    if not e.isAdded or e.static then
-      e.layer = l
-    else
-      local al = self:getLayer(e.layer)
-      
-      if al then
-        local i = table.findindexarray(al.data, e)
-        al.data[i] = -1
-        al.holes[i] = true
-        
-        if self:_emptyOrHoles(al.data) then
-          table.removevaluearray(self.layers, al)
-        end
-      end
-      
-      e.layer = l
-      
-      local done = false
-      
-      for i=1, #self.layers do
-        local v = self.layers[i]
-        
-        if v.layer == e.layer then
-          local nextHole = not self.inLoop and next(v.holes)
-          if nextHole then
-            v.data[nextHole] = e
-            v.holes[nextHole] = nil
-          else
-            v.data[#v.data + 1] = e
-          end
-          done = true
-          break
-        end
-      end
-      
-      if not done then
-        self.layers[#self.layers + 1] = {layer = e.layer, data = {e}, flicker = true, holes = {}}
-        self.doSort = true
-      end
-    end
-  end
-end
-
-function entitySystem:setLayerFlicker(l, b)
-  for i=1, #self.layers do
-    if self.layers[i].layer == l then
-      self.layers[i].flicker = b
-      break
-    end
-  end
-end
-
-function entitySystem:remove(e)
+function entities.remove(e)
   if not e or e.isRemoved then return end
   
   e.isRemoved = true
   e:removed()
-  self:removeFromAllGroups(e)
+  entities.removeFromAllGroups(e)
   
-  local al = self:getLayer(e.layer)
+  local al = entities.getLayer(e.layer)
   
   if e.static then
-    table.quickremovevaluearray(self.static, e)
+    table.quickremovevaluearray(entities.static, e)
   else
     if al then
       local i = table.findindexarray(al.data, e)
@@ -580,20 +647,20 @@ function entitySystem:remove(e)
       al.holes[i] = true
     end
     
-    local i = table.findindexarray(self.updates, e)
-    self.updates[i] = -1
-    self._updateHoles[i] = true
+    local i = table.findindexarray(entities.updates, e)
+    entities.updates[i] = -1
+    entities._updateHoles[i] = true
   end
   
-  if not e.static and al and self:_emptyOrHoles(al.data) then
-    table.removevaluearray(self.layers, al)
+  if not e.static and al and tableIsEmptyOrHoles(al.data) then
+    table.removevaluearray(entities.layers, al)
   end
   
-  table.quickremovevaluearray(self.all, e)
+  table.quickremovevaluearray(entities.all, e)
   
-  local i = table.findindexarray(self.beginQueue, e)
+  local i = table.findindexarray(entities.beginQueue, e)
   if i then
-    self.beginQueue[i] = -1
+    entities.beginQueue[i] = -1
   end
   
   if e.currentHashes then
@@ -603,12 +670,12 @@ function entitySystem:remove(e)
         
         if #v.data == 0 then
           v.isRemoved = true
-          self.hashes[v.x][v.y] = nil
-          self._HS[v.x] = self._HS[v.x] - 1
+          _hashes[v.x][v.y] = nil
+          entities._HS[v.x] = entities._HS[v.x] - 1
           
-          if self._HS[v.x] == 0 then
-            self.hashes[v.x] = nil
-            self._HS[v.x] = nil
+          if entities._HS[v.x] == 0 then
+            _hashes[v.x] = nil
+            entities._HS[v.x] = nil
           end
         end
       end
@@ -616,42 +683,43 @@ function entitySystem:remove(e)
   elseif e.static then
     if e.collisionShape and e.staticX == e.x and e.staticY == e.y and
       e.staticW == e.collisionShape.w and e.staticH == e.collisionShape.h then
-      local xx, yy, ww, hh = e.x - (e.collisionShape.r or 0), e.y - (e.collisionShape.r or 0), e.collisionShape.w, e.collisionShape.h
-      local hs = entitySystem.hashSize
+      local xx, yy, ww, hh = e.x - (e.collisionShape.r or 0), e.y - (e.collisionShape.r or 0),
+        e.collisionShape.w, e.collisionShape.h
+      local hs = entities.hashSize
       local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
       local cx2, cy2 = math.ceil((xx + ww + 2) / hs), math.ceil((yy + hh + 2) / hs)
       
       for x = cx, cx2 do
         for y = cy, cy2 do
-          if self.hashes[x] and self.hashes[x][y] and not self.hashes[x][y].isRemoved then
-            table.quickremovevaluearray(self.hashes[x][y].data, e)
+          if _hashes[x] and _hashes[x][y] and not _hashes[x][y].isRemoved then
+            table.quickremovevaluearray(_hashes[x][y].data, e)
             
-            if #self.hashes[x][y].data == 0 then
-              self.hashes[x][y].isRemoved = true
-              self.hashes[x][y] = nil
-              self._HS[x] = self._HS[x] - 1
+            if #_hashes[x][y].data == 0 then
+              _hashes[x][y].isRemoved = true
+              _hashes[x][y] = nil
+              entities._HS[x] = entities._HS[x] - 1
               
-              if self._HS[x] == 0 then
-                self.hashes[x] = nil
-                self._HS[x] = nil
+              if entities._HS[x] == 0 then
+                _hashes[x] = nil
+                entities._HS[x] = nil
               end
             end
           end
         end
       end
     else
-      for x, xt in safepairs(self.hashes) do
+      for x, xt in safepairs(_hashes) do
         for y, yt in safepairs(xt) do
           table.quickremovevaluearray(yt.data, e)
           
           if #yt.data == 0 and not yt.isRemoved then
             yt.isRemoved = true
-            self.hashes[x][y] = nil
-            self._HS[x] = self._HS[x] - 1
+            _hashes[x][y] = nil
+            entities._HS[x] = entities._HS[x] - 1
             
-            if self._HS[x] == 0 then
-              self.hashes[x] = nil
-              self._HS[x] = nil
+            if entities._HS[x] == 0 then
+              _hashes[x] = nil
+              entities._HS[x] = nil
             end
           end
         end
@@ -673,72 +741,49 @@ function entitySystem:remove(e)
   e.justAddedIn = false
   
   if e.recycle then
-    if not self.recycle[e.__index] then
-      self.recycle[e.__index] = {e}
-    elseif not table.icontains(self.recycle[e.__index], e) then
-      self.recycle[e.__index][#self.recycle[e.__index] + 1] = e
+    if not entities.recycle[e.__index] then
+      entities.recycle[e.__index] = {e}
+    elseif not table.icontains(entities.recycle[e.__index], e) then
+      entities.recycle[e.__index][#entities.recycle[e.__index] + 1] = e
     end
   end
 end
 
-function entitySystem:clear()
-  for _, v in safeipairs(self.all) do
-    self:remove(v)
+function entities.clear()
+  for _, v in safeipairs(entities.all) do
+    entities.remove(v)
   end
   
-  self.all = {}
-  section.sections = {}
-  section.current = nil
-  self.layers = {}
-  self.updates = {}
-  self.groups = {}
-  self.static = {}
-  self.frozen = {}
-  self.hashes = {}
-  self._HS = {}
-  self.cameraUpdate = nil
-  self.doSort = false
-  self._updateHoles = {}
-  self.beginQueue = {}
+  entities.recycle = {}
+  entities.all = {}
+  entities.sections = {}
+  entities.current = nil
+  entities.layers = {}
+  entities.updates = {}
+  entities.groups = {}
+  entities.static = {}
+  entities.frozen = {}
+  entities.hashes = {}
+  _hashes = entities.hashes
+  entities._HS = {}
+  entities.cameraUpdate = nil
+  entities.doSort = false
+  entities._updateHoles = {}
+  entities.beginQueue = {}
   
   collectgarbage()
   collectgarbage()
 end
 
-function entitySystem:_emptyOrHoles(t)
-  if #t == 0 then
-    return true
+function entities.draw()
+  if entities._doSort then
+    entities._doSort = false
+    entities:_sortLayers()
   end
   
-  for i = 1, #t do
-    if t[i] ~= -1 then
-      return false
-    end
-  end
+  entities.inLoop = true
   
-  return true
-end
-
-function entitySystem:_removeHoles(t)
-  local i = 1
-  while i <= #t do
-    if t[i] == -1 then
-      table.quickremove(t, i)
-    else
-      i = i + 1
-    end
-  end
-end
-
-function entitySystem:draw()
-  if self._doSort then
-    self._doSort = false
-    self:_sortLayers()
-  end
-  
-  self.inLoop = true
-  
-  for _, layer in safeipairs(self.layers) do
+  for _, layer in safeipairs(entities.layers) do
     for _, e in ipairs(layer.data) do
       if e ~= -1 and checkFalse(e.canDraw) then
         love.graphics.setColor(1, 1, 1, 1)
@@ -748,25 +793,25 @@ function entitySystem:draw()
     end
     
     if next(layer.holes) then
-      self:_removeHoles(layer.data)
+      removeTableHoles(layer.data)
       layer.holes = {}
     end
   end
   
-  if entitySystem.drawCollision then
+  if entities.drawCollision then
     love.graphics.setColor(1, 1, 1, 1)
-    for i = 1, #self.layers do
-      for j = 1, #self.layers[i].data do
-        self.layers[i].data[j]:drawCollision()
+    for i = 1, #entities.layers do
+      for j = 1, #entities.layers[i].data do
+        entities.layers[i].data[j]:drawCollision()
       end
     end
   end
   
-  self.inLoop = false
+  entities.inLoop = false
 end
 
-function entitySystem:update(dt)
-  for _, e in ipairs(self.beginQueue) do
+function entities.update(dt)
+  for _, e in ipairs(entities.beginQueue) do
     if states.switched then
       return
     end
@@ -774,26 +819,26 @@ function entitySystem:update(dt)
       e:begin()
     end
   end
-  if #self.beginQueue > 0 then
-    self.beginQueue = {}
+  if #entities.beginQueue > 0 then
+    entities.beginQueue = {}
   end
   
-  if next(self._updateHoles) then
-    self:_removeHoles(self.updates)
-    self._updateHoles = {}
+  if next(entities._updateHoles) then
+    removeTableHoles(entities.updates)
+    entities._updateHoles = {}
   end
   
-  self.inLoop = true
+  entities.inLoop = true
   
-  for j = 1, #self.updates do
-    if not self.updates[j].invisibleToHash then self.updates[j]:updateHash() end
+  for j = 1, #entities.updates do
+    if not entities.updates[j].invisibleToHash then entities.updates[j]:updateHash() end
   end
   
-  for i = 1, #self.updates do
-    local e = self.updates[i]
+  for i = 1, #entities.updates do
+    local e = entities.updates[i]
     
-    if e ~= -1 and ((type(e.noFreeze) == "table" and table.intersects(self.frozen, e.noFreeze, true)) or
-      e.noFreeze or not checkTrue(self.frozen)) and not e.isRemoved and checkFalse(e.canUpdate) then
+    if e ~= -1 and ((type(e.noFreeze) == "table" and table.intersects(entities.frozen, e.noFreeze, true)) or
+      e.noFreeze or not checkTrue(entities.frozen)) and not e.isRemoved and checkFalse(e.canUpdate) then
       collision.doCollision(e, e.noSlope, not checkFalse(e.autoCollision), not checkFalse(e.autoGravity))
       if not e.invisibleToHash then e:updateHash() end
     end
@@ -803,11 +848,11 @@ function entitySystem:update(dt)
     end
   end
   
-  for i = 1, #self.updates do
-    local e = self.updates[i]
+  for i = 1, #entities.updates do
+    local e = entities.updates[i]
     
-    if e ~= -1 and ((type(e.noFreeze) == "table" and table.intersects(self.frozen, e.noFreeze, true)) or
-      e.noFreeze == true or not checkTrue(self.frozen)) and not e.isRemoved and checkFalse(e.canUpdate) then
+    if e ~= -1 and ((type(e.noFreeze) == "table" and table.intersects(entities.frozen, e.noFreeze, true)) or
+      e.noFreeze == true or not checkTrue(entities.frozen)) and not e.isRemoved and checkFalse(e.canUpdate) then
       e:_beforeUpdate(dt)
     end
     
@@ -816,11 +861,11 @@ function entitySystem:update(dt)
     end
   end
   
-  for i = 1, #self.updates do
-    local e = self.updates[i]
+  for i = 1, #entities.updates do
+    local e = entities.updates[i]
     
-    if e ~= -1 and ((type(e.noFreeze) == "table" and table.intersects(self.frozen, e.noFreeze, true)) or
-      e.noFreeze == true or not checkTrue(self.frozen)) and not e.isRemoved and checkFalse(e.canUpdate) then
+    if e ~= -1 and ((type(e.noFreeze) == "table" and table.intersects(entities.frozen, e.noFreeze, true)) or
+      e.noFreeze == true or not checkTrue(entities.frozen)) and not e.isRemoved and checkFalse(e.canUpdate) then
       e:_update(dt)
     end
     
@@ -829,12 +874,12 @@ function entitySystem:update(dt)
     end
   end
   
-  for i = 1, #self.updates do
-    local e = self.updates[i]
+  for i = 1, #entities.updates do
+    local e = entities.updates[i]
     
     if e ~= -1 then
-      if ((type(e.noFreeze) == "table" and table.intersects(self.frozen, e.noFreeze, true)) or
-        e.noFreeze or not checkTrue(self.frozen)) and not e.isRemoved and checkFalse(e.canUpdate) then
+      if ((type(e.noFreeze) == "table" and table.intersects(entities.frozen, e.noFreeze, true)) or
+        e.noFreeze or not checkTrue(entities.frozen)) and not e.isRemoved and checkFalse(e.canUpdate) then
         e:_afterUpdate(dt)
       end
       
@@ -846,10 +891,10 @@ function entitySystem:update(dt)
     end
   end
   
-  self.inLoop = false
+  entities.inLoop = false
   
-  if self.cameraUpdate then
-    self.cameraUpdate(self)
+  if entities.cameraUpdate then
+    entities.cameraUpdate(entities)
   end
   if camera.main then
     camera.main:updateFuncs()
@@ -859,15 +904,15 @@ function entitySystem:update(dt)
     return
   end
   
-  if self.doSort then
-    self.doSort = false
-    self:sortLayers()
+  if entities.doSort then
+    entities.doSort = false
+    entities._sortLayers()
   end
   
-  if entitySystem.doDrawFlicker then
-    for i=1, #self.layers do
-      if self.layers[i].flicker and #self.layers[i].data > 1 then
-        table.lazyShuffle(self.layers[i].data)
+  if entities.doDrawFlicker then
+    for i=1, #entities.layers do
+      if entities.layers[i].flicker and #entities.layers[i].data > 1 then
+        table.lazyShuffle(entities.layers[i].data)
       end
     end
   end
@@ -976,60 +1021,19 @@ end
 function basicEntity:interactedWith(other, c) end
 
 function basicEntity:setLayer(l)
-  if states.currentStateObject and states.currentStateObject.system then
-    states.currentStateObject.system:setLayer(self, l)
-  else
-    self.layer = l
-  end
+  entities.setLayer(self, l)
 end
 
 function basicEntity:makeStatic()
-  if states.currentStateObject and states.currentStateObject.system then
-    states.currentStateObject.system:makeStatic(self)
-  else
-    self.static = true
-    self.staticX = self.x
-    self.staticY = self.y
-    if self.collisionShape then
-      self.staticW = self.collisionShape.w
-      self.staticH = self.collisionShape.h
-    end
-    
-    self.lastHashX = nil
-    self.lastHashY = nil
-    self.lastHashX2 = nil
-    self.lastHashY2 = nil
-    self.currentHashes = nil
-    
-    self:staticToggled()
-  end
+  entities.makeStatic(self)
 end
 
 function basicEntity:revertFromStatic()
-  if states.currentStateObject and states.currentStateObject.system then
-    states.currentStateObject.system:revertFromStatic(self)
-  else
-    self.static = false
-    self.staticX = nil
-    self.staticY = nil
-    self.staticW = nil
-    self.staticH = nil
-    self.lastHashX = nil
-    self.lastHashY = nil
-    self.lastHashX2 = nil
-    self.lastHashY2 = nil
-    self.currentHashes = nil
-    
-    self:staticToggled()
-  end
+  entities.revertFromStatic(self)
 end
 
 function basicEntity:removeFromGroup(g)
-  if states.currentStateObject and states.currentStateObject.system then
-    states.currentStateObject.system:removeFromGroup(self, g)
-  else
-    table.quickremovevaluearray(self.groupNames, g)
-  end
+  entities.removeFromGroup(self, g)
 end
 
 function basicEntity:inGroup(g)
@@ -1037,19 +1041,11 @@ function basicEntity:inGroup(g)
 end
 
 function basicEntity:removeFromAllGroups()
-  if states.currentStateObject and states.currentStateObject.system then
-    states.currentStateObject.system:removeFromAllGroups(self, g)
-  else
-    self.groupNames = {}
-  end
+  entities.removeFromAllGroups(self)
 end
 
 function basicEntity:addToGroup(g)
-  if states.currentStateObject and states.currentStateObject.system then
-    states.currentStateObject.system:addToGroup(self, g)
-  elseif not table.icontains(self.groupNames, g) then
-    self.groupNames[#self.groupNames + 1] = g
-  end
+  entities.addToGroup(self, g)
 end
 
 function basicEntity:setRectangleCollision(w, h)
@@ -1203,7 +1199,7 @@ end
 function basicEntity:updateHash(doAnyway)
   if (doAnyway or self.isAdded) and self.collisionShape then
     local xx, yy, ww, hh = self.x - (self.collisionShape.r or 0), self.y - (self.collisionShape.r or 0), self.collisionShape.w, self.collisionShape.h
-    local hs = entitySystem.hashSize
+    local hs = entities.hashSize
     local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
     local cx2, cy2 = math.ceil((xx + ww + 2) / hs), math.ceil((yy + hh + 2) / hs)
     
@@ -1213,7 +1209,7 @@ function basicEntity:updateHash(doAnyway)
       self.lastHashX2 = cx2
       self.lastHashY2 = cy2
       
-      states.currentStateObject.system:updateHashForEntity(self)
+      entities.updateHashForEntity(self)
     end
   end
 end
@@ -1226,7 +1222,7 @@ function basicEntity:getSurroundingEntities(extentsLeft, extentsRight, extentsUp
   self:updateHash()
   
   if extentsLeft or extentsRight or extentsUp or extentsDown or not self.currentHashes then
-    return megautils.getEntitiesAt(self.x - (extentsLeft or 0), self.y - (extentsUp or 0),
+    return entities.getEntitiesAt(self.x - (extentsLeft or 0), self.y - (extentsUp or 0),
       self.collisionShape.w + (extentsLeft or 0) + (extentsRight or 0), self.collisionShape.h + (extentsUp or 0) + (extentsDown or 0))
   end
   
@@ -1424,7 +1420,7 @@ function mapEntity:begin()
   for i=1, #self.map.layers do
     local v = self.map.layers[i]
     if v.draw then
-      self.layers[#self.layers+1] = megautils.add(trigger, nil, function(s)
+      self.layers[#self.layers+1] = entities.add(trigger, nil, function(s)
           if s.l.visible then
             if meShader then love.graphics.setShader(meShader) end
             s.l:draw()
@@ -1443,7 +1439,7 @@ end
 
 function mapEntity:removed()
   for _, v in safeipairs(self.layers) do
-    megautils.remove(v)
+    entities.remove(v)
   end
   
   megautils.runCallback(megautils.removeMapFuncs, self)
@@ -1620,12 +1616,13 @@ function mapEntity.add(ol, map)
             insert.regValues = insert
             
             if typ == nil or typ == "spawner" then
-              megautils.add(spawner, v.x + ox, v.y + oy, w, h, nil, layer.data[j].func).insert = insert
+              entities.add(spawner, v.x + ox, v.y + oy, w, h, nil, layer.data[j].func).insert = insert
             elseif typ == "interval" then
-              megautils.add(intervalSpawner, v.x + ox, v.y + oy, w, h, args.interval, nil, layer.data[j].func).insert = insert
+              entities.add(intervalSpawner, v.x + ox, v.y + oy, w, h,
+                args.interval, nil, layer.data[j].func).insert = insert
             elseif typ == "none" then
               basicEntity.insertVars[#basicEntity.insertVars + 1] = insert
-              megautils.add(layer.data[j].func)
+              entities.add(layer.data[j].func)
             end
           else
             layer.data[j].func(v, map, unpack(layer.data[j].args))
@@ -1720,11 +1717,11 @@ end
 
 function advancedEntity:useHealthBar(oneColor, twoColor, outlineColor, add)
   if ((add == nil) or add) and self.healthHandler and not self.healthHandler.isRemoved then
-    megautils.remove(self.healthHandler)
+    entities.remove(self.healthHandler)
   end
   
   if (add == nil) or add then
-    self.healthHandler = megautils.add(healthHandler, oneColor or {128, 128, 128}, twoColor or {255, 255, 255}, outlineColor or {0, 0, 0},
+    self.healthHandler = entities.add(healthHandler, oneColor or {128, 128, 128}, twoColor or {255, 255, 255}, outlineColor or {0, 0, 0},
       nil, nil, math.ceil(self.health/4))
   else
     self.healthHandler = healthHandler(oneColor or {128, 128, 128}, twoColor or {255, 255, 255}, outlineColor or {0, 0, 0},
@@ -1734,10 +1731,10 @@ function advancedEntity:useHealthBar(oneColor, twoColor, outlineColor, add)
   self.health = nil
   if camera.main then
     camera.main.funcs.advancedEntity = function(s)
-        if megautils.groups().advancedEntity then
-          for i = 1, #megautils.groups().advancedEntity do
-            if megautils.groups().advancedEntity[i].healthHandler then
-              local v = megautils.groups().advancedEntity[i]
+        if entities.groups.advancedEntity then
+          for i = 1, #entities.groups.advancedEntity do
+            if entities.groups.advancedEntity[i].healthHandler then
+              local v = entities.groups.advancedEntity[i]
               v.healthHandler.x = (v.barRelativeToView and view.x or 0) + v.barOffsetX
               v.healthHandler.y = (v.barRelativeToView and view.y or 0) + v.barOffsetY
             end
@@ -1750,7 +1747,7 @@ end
 function advancedEntity:removed()
   if self.removeHealthBarWithSelf and self.healthHandler then
     if not self.healthHandler.isRemoved then
-      megautils.remove(self.healthHandler)
+      entities.remove(self.healthHandler)
     end
   end
 end
@@ -1810,7 +1807,7 @@ function advancedEntity:afterUpdate()
     self:interact(self:collisionTable(megaMan.allPlayers), self.damage)
   end
   if self.removeWhenOutside and megautils.outside(self) then
-    megautils.remove(self)
+    entities.remove(self)
   end
 end
 
@@ -1833,7 +1830,7 @@ function advancedEntity:interactedWith(o, c)
   
   if self.changeHealth < 0 then
     if o.pierceType == pierce.NOPIERCE or (o.pierceType == pierce.PIERCEIFKILLING and health + self.changeHealth > 0) then
-      megautils.remove(o)
+      entities.remove(o)
     end
     if self.iFrames <= 0 then
       self.iFrames = self:determineIFrames(o)
@@ -1854,9 +1851,9 @@ function advancedEntity:interactedWith(o, c)
       globals.defeats[self.defeatSlot] = self.defeatSlotValue or true
     end
     if self.explosionType == advancedEntity.SMALLBLAST then
-      megautils.add(smallBlast, self.x+(self.collisionShape.w/2)-12, self.y+(self.collisionShape.h/2)-12, self)
+      entities.add(smallBlast, self.x+(self.collisionShape.w/2)-12, self.y+(self.collisionShape.h/2)-12, self)
     elseif self.explosionType == advancedEntity.BIGBLAST then
-      megautils.add(blast, self.x+(self.collisionShape.w/2)-12, self.y+(self.collisionShape.h/2)-12, self)
+      entities.add(blast, self.x+(self.collisionShape.w/2)-12, self.y+(self.collisionShape.h/2)-12, self)
     elseif self.explosionType == advancedEntity.DEATHBLAST then
       deathExplodeParticle.createExplosion(self.x+((self.collisionShape.w/2)-12),
         self.y+((self.collisionShape.h/2)-12), self)
@@ -1866,7 +1863,7 @@ function advancedEntity:interactedWith(o, c)
       if self.dropItem == true then
         item = megautils.dropItem(self.x, self.y)
       else
-        item = megautils.adde(self.dropItem)
+        item = entities.adde(self.dropItem)
       end
       if item then
         item.x = self.x+(self.collisionShape.w/2)-(item.collisionShape.w/2)
@@ -1874,7 +1871,7 @@ function advancedEntity:interactedWith(o, c)
       end
     end
     if self.removeOnDeath then
-      megautils.remove(self)
+      entities.remove(self)
     end
     if self.soundOnDeath then
       if loader.get(self.soundOnDeath) then
@@ -1891,7 +1888,7 @@ function advancedEntity:interactedWith(o, c)
     end
     self:hit(o)
     if o.pierceIfKilling then
-      megautils.remove(o)
+      entities.remove(o)
     end
     if self.soundOnHit then
       if loader.get(self.soundOnHit) then
@@ -1980,7 +1977,7 @@ end
 
 function bossEntity:intro()
   if not self.ds then
-    self.screen = megautils.add(trigger, nil, function(s)
+    self.screen = entities.add(trigger, nil, function(s)
         love.graphics.setColor(0, 0, 0, s.o)
         love.graphics.rectangle("fill", view.x-1, view.y-1, view.w+2, view.h+2)
       end)
@@ -2000,7 +1997,7 @@ function bossEntity:intro()
   elseif self.ds == 2 then
     self.screen.o = math.max(self.screen.o-0.05, 0)
     if self.screen.o == 0 then
-      megautils.remove(self.screen)
+      entities.remove(self.screen)
       self.screen = nil
       self.dOff = nil
       self.oldY = nil
@@ -2023,7 +2020,7 @@ function bossEntity:skip()
       end)
     music.stop()
   end
-  megautils.remove(self)
+  entities.remove(self)
   return true
 end
 
@@ -2105,8 +2102,8 @@ function bossEntity:die(o)
       end)
     music.stop()
   else
-    if megautils.groups().bossDoor then
-      for _, v in ipairs(megautils.groups().bossDoor) do
+    if entities.groups.bossDoor then
+      for _, v in ipairs(entities.groups.bossDoor) do
         v.isLocked.boss = nil
       end
     end
@@ -2122,7 +2119,7 @@ function bossEntity:determineIFrames(o)
 end
 
 function bossEntity:hit(o)
-  megautils.add(harm, self, 50)
+  entities.add(harm, self, 50)
 end
 
 function bossEntity:bossIntro()
@@ -2176,8 +2173,8 @@ function bossEntity:_update()
           return
         end
       else
-        if self.lockBossDoors and megautils.groups().bossDoor then
-          for _, v in ipairs(megautils.groups().bossDoor) do
+        if self.lockBossDoors and entities.groups.bossDoor then
+          for _, v in ipairs(entities.groups.bossDoor) do
             v.isLocked.boss = true
           end
         end
@@ -2196,7 +2193,7 @@ function bossEntity:_update()
         self.healthHandler:updateThis(lh)
       
         if not self.healthHandler.isAdded then
-          megautils.adde(self.healthHandler)
+          entities.adde(self.healthHandler)
         end
       end
     elseif self.didIntro then

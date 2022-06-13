@@ -1,7 +1,7 @@
 ice = basicEntity:extend()
 
 mapEntity.register("ice", function(v)
-  megautils.add(ice, v.x, v.y, v.width, v.height)
+  entities.add(ice, v.x, v.y, v.width, v.height)
 end)
 
 function ice:new(x, y, w, h)
@@ -29,7 +29,7 @@ function ice.elseFunc(s)
 end
   
 function ice.gFunc(s)
-  local doIce = megautils.groups().ice and s:collisionNumber(megautils.groups().ice, 0, s.gravity >= 0 and 1 or -1) ~= 0
+  local doIce = entities.groups.ice and s:collisionNumber(entities.groups.ice, 0, s.gravity >= 0 and 1 or -1) ~= 0
   if doIce then
     if not s.nonIceLeftDecel then
       s.nonIceLeftDecel = s.leftDecel

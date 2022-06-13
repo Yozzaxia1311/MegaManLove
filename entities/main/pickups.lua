@@ -65,7 +65,7 @@ function pickUp:_afterUpdate(dt)
         not pickUp.isBanned(self.__index, tostring(self.mapID), self.path) then
         pickUp.banIDs[self.__index][#pickUp.banIDs[self.__index]+1] = self.path .. "|" .. tostring(self.mapID)
       end
-      megautils.remove(self)
+      entities.remove(self)
       return
     end
   end
@@ -75,7 +75,7 @@ function pickUp:_afterUpdate(dt)
       self.canDraw.global = math.wrap(self.timer, 0, 8) > 4
     end
     if self.timer == 400 or (self.removeWhenOutside and megautils.outside(self)) then
-      megautils.remove(self)
+      entities.remove(self)
     end
   end
   
@@ -87,7 +87,7 @@ smallHealth = pickUp:extend()
 smallHealth.autoClean = false
 
 mapEntity.register("smallHealth", function(v, map)
-  megautils.add(spawner, v.x+4, v.y+4, 8, 6, function()
+  entities.add(spawner, v.x+4, v.y+4, 8, 6, function()
       return not pickUp.isBanned(smallHealth, v.id, map.path)
     end, smallHealth, v.x+4, v.y+4, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
@@ -131,7 +131,7 @@ health = pickUp:extend()
 health.autoClean = false
 
 mapEntity.register("health", function(v, map)
-  megautils.add(spawner, v.x, v.y, 16, 14, function()
+  entities.add(spawner, v.x, v.y, 16, 14, function()
       return not pickUp.isBanned(health, v.id, map.path)
     end, health, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
@@ -175,7 +175,7 @@ smallEnergy = pickUp:extend()
 smallEnergy.autoClean = false
 
 mapEntity.register("smallEnergy", function(v, map)
-  megautils.add(spawner, v.x+4, v.y+4, 8, 6, function()
+  entities.add(spawner, v.x+4, v.y+4, 8, 6, function()
       return not pickUp.isBanned(smallEnergy, v.id, map.path)
     end, smallEnergy, v.x+4, v.y+4, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
@@ -229,7 +229,7 @@ energy = pickUp:extend()
 energy.autoClean = false
 
 mapEntity.register("energy", function(v, map)
-  megautils.add(spawner, v.x, v.y, 16, 10, function()
+  entities.add(spawner, v.x, v.y, 16, 10, function()
       return not pickUp.isBanned(energy, v.id, map.path)
     end, energy, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
@@ -283,7 +283,7 @@ life = pickUp:extend()
 life.autoClean = false
 
 mapEntity.register("life", function(v, map)
-  megautils.add(spawner, v.x, v.y, 16, 15, function()
+  entities.add(spawner, v.x, v.y, 16, 15, function()
       return not pickUp.isBanned(life, v.id, map.path)
     end, life, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
@@ -345,7 +345,7 @@ eTank = pickUp:extend()
 eTank.autoClean = false
 
 mapEntity.register("eTank", function(v, map)
-  megautils.add(spawner, v.x, v.y, 16, 15, function()
+  entities.add(spawner, v.x, v.y, 16, 15, function()
       return not pickUp.isBanned(eTank, v.id, map.path)
     end, eTank, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)
@@ -403,7 +403,7 @@ wTank = pickUp:extend()
 wTank.autoClean = false
 
 mapEntity.register("wTank", function(v, map)
-  megautils.add(spawner, v.x, v.y, 16, 15, function()
+  entities.add(spawner, v.x, v.y, 16, 15, function()
       return not pickUp.isBanned(wTank, v.id, map.path)
     end, wTank, v.x, v.y, false, v.properties.gravDir, v.properties.flipWithPlayer, v.id, map.path)
 end, 0, true)

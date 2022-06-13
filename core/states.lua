@@ -28,19 +28,9 @@ state = class:extend()
 
 function state:init() end
 function state:begin() end
-
-function state:update(dt)
-  self.system:update(dt)
-end
-
-function state:draw()
-  self.system:draw()
-end
-
-function state:switching()
-  self.system:clear()
-end
-
+function state:update(dt) end
+function state:draw() end
+function state:switching() end
 function state:unload() end
 
 function states.set(p, before, after)
@@ -81,12 +71,13 @@ function states.set(p, before, after)
   
   if lastState then
     lastState:switching()
+    entities.clear()
   end
   
   view.x, view.y = 0, 0
   states.switched = true
   
-  local nextState = states.currentStatePathChunk
+  local nextState = states.currentStateChunk
   
   if not nextState or states.currentStatePath ~= sp then
     if sp == "|???|" then
@@ -117,14 +108,12 @@ function states.set(p, before, after)
     end
     
     states.currentStateObject = nextState()
-    states.currentStateObject.system = entitySystem()
     
     if after then after() end
     
     states.currentStateObject:init()
   else
     states.currentStateObject = nextState()
-    states.currentStateObject.system = entitySystem()
     
     if after then after() end
   end
@@ -134,10 +123,10 @@ function states.set(p, before, after)
       music.playq(mapArgs.mPath, mapArgs.mVolume, mapArgs.mTrack)
     end
     
-    states.currentStateObject.system:adde(map):addObjects()
+    entities.adde(map):addObjects()
     
     if mapArgs.fadeIn then
-      states.currentStateObject.system:add(fade, false):setAfter(fade.remove)
+      entities.add(fade, false):setAfter(fade.remove)
     end
   end
   
@@ -167,7 +156,7 @@ function states.fadeToState(path, before, after)
   tmp._before = before
   tmp._after = after
   
-  megautils.adde(tmp)
+  entities.adde(tmp)
 end
 
 function states.update(dt)

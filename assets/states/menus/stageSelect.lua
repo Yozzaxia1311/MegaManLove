@@ -1,7 +1,7 @@
 local stageSelectState = state:extend()
 
 function stageSelectState:begin()
-  megautils.add(stageSelect)
+  entities.add(stageSelect)
 end
 
 loader.load("assets/misc/select.png", "mugshots")
@@ -86,8 +86,8 @@ function stageSelect:begin()
 end
 
 function stageSelect:updateMap()
-  if megautils.groups().map then
-    for _, v in ipairs(megautils.groups().map) do
+  if entities.groups.map then
+    for _, v in ipairs(entities.groups.map) do
       if input.usingTouch then
         v:getLayerByName("start").visible = false
         v:getLayerByName("touch").visible = true
@@ -229,9 +229,9 @@ function stageSelect:update()
         end
         
         if type(self.slots[pick]) == "function" then
-          megautils.add(fade, true, nil, nil, function(f)
+          entities.add(fade, true, nil, nil, function(f)
               f._func()
-              megautils.remove(f)
+              entities.remove(f)
             end)._func = self.slots[pick]
         else
           if globals.defeats[self.slots[pick].defeatSlot] then

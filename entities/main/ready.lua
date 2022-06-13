@@ -17,7 +17,7 @@ function ready:new(text, blinks)
 end
 
 function ready:added()
-  megautils.freeze("ready")
+  entities.freeze("ready")
 end
 
 function ready:update(dt)
@@ -27,8 +27,8 @@ function ready:update(dt)
     self.blinkCount = self.blinkCount + 1
     self.canDraw.global = not self.canDraw.global
     if self.blinkCount == self.blinks then
-      megautils.unfreeze("ready")
-      megautils.remove(self)
+      entities.unfreeze("ready")
+      entities.remove(self)
     end
   end
 end

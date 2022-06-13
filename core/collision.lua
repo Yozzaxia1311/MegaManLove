@@ -604,7 +604,7 @@ end
 
 function collision.getDeath(t)
   local result = {}
-  local all = t or megautils.getAllEntities()
+  local all = t or entities.all
   
   for i=1, #all do
     local v = all[i]
@@ -618,7 +618,7 @@ end
 
 function collision.getLadders(t)
   local result = {}
-  local all = t or megautils.getAllEntities()
+  local all = t or entities.all
   
   for i=1, #all do
     local v = all[i]

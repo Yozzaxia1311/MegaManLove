@@ -29,7 +29,8 @@ local function _load(path, nick, typ, parameters, lock)
       end
       if parameters and parameters[1] then
         local imgData = imageData(path)
-        loader.resources[nick] = {data=imgData, path=path, img=imgData:toImageWrapper(), type=typ, parameters=parameters}
+        loader.resources[nick] = {data=imgData, path=path, img=imgData:toImageWrapper(),
+          type=typ, parameters=parameters}
       else
         loader.resources[nick] = {data=imageWrapper(path), path=path, type=typ}
       end
@@ -63,10 +64,9 @@ local function _load(path, nick, typ, parameters, lock)
         fy = 0
       end
       local img
-      if c.image and not loader.get(c.image) then
-        _load(c.image, c.image, "texture", nil, lock)
+      if c.image then
+        img = imageWrapper(c.image)
       end
-      img = loader.get(c.image)
       loader.locked[nick] = {path=path, data=anim8.newGrid(fw, fh, fx, fy, fb),
         parameters=parameters, type=typ, frames=c.frames, durations=c.durations,
         onLoop=c.onLoop, img=img}
@@ -86,10 +86,9 @@ local function _load(path, nick, typ, parameters, lock)
         fy = 0
       end
       local img
-      if c.image and not loader.get(c.image) then
-        _load(c.image, c.image, "texture", nil, lock)
+      if c.image then
+        img = imageWrapper(c.image)
       end
-      img = loader.get(c.image)
       loader.resources[nick] = {path=path, data=anim8.newGrid(fw, fh, fx, fy, fb),
         parameters=parameters, type=typ, frames=c.frames, durations=c.durations,
         onLoop=c.onLoop, img=img}
@@ -136,10 +135,9 @@ local function _load(path, nick, typ, parameters, lock)
         v.data = grid
       end
       local img
-      if c.image and not loader.get(c.image) then
-        _load(c.image, c.image, "texture", nil, lock)
+      if c.image then
+        img = imageWrapper(c.image)
       end
-      img = loader.get(c.image)
       loader.locked[nick] = {path=path, data=grid,
         parameters=parameters, type=typ, sets=data, default=c.default, img=img}
       loader.resources[nick] = nil
@@ -187,10 +185,9 @@ local function _load(path, nick, typ, parameters, lock)
         v.data = grid
       end
       local img
-      if c.image and not loader.get(c.image) then
-        _load(c.image, c.image, "texture", nil, lock)
+      if c.image then
+        img = imageWrapper(c.image)
       end
-      img = loader.get(c.image)
       loader.resources[nick] = {path=path, data=grid,
         parameters=parameters, type=typ, sets=data, default=c.default, img=img}
       

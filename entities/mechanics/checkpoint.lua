@@ -3,7 +3,7 @@ checkpoint = basicEntity:extend()
 checkpoint.autoClean = false
 
 mapEntity.register("checkpoint", function(v)
-  megautils.add(checkpoint, v.x, v.y, v.width, v.height, v.properties.name)
+  entities.add(checkpoint, v.x, v.y, v.width, v.height, v.properties.name)
 end, 0, true)
 
 function checkpoint:new(x, y, w, h, c)
@@ -29,7 +29,7 @@ collisionCheckpoint = basicEntity:extend()
 collisionCheckpoint.autoClean = false
 
 mapEntity.register("collisionCheckpoint", function(v)
-  megautils.add(collisionCheckpoint, v.x, v.y, v.width, v.height, v.properties.name)
+  entities.add(collisionCheckpoint, v.x, v.y, v.width, v.height, v.properties.name)
 end, 0, true)
 
 function collisionCheckpoint:new(x, y, w, h, c)

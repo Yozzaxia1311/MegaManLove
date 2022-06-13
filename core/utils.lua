@@ -195,26 +195,6 @@ function string:getAbsolutePath(base)
   return result
 end
 
-function table.intersects(t, t2, fully)
-  if fully then
-    for _, v in pairs(t) do
-      if not table.contains(t2, v) then
-        return false
-      end
-    end
-    return true
-  else
-    for _, v in pairs(t) do
-      for _, v2 in pairs(t2) do
-        if v == v2 then
-          return true
-        end
-      end
-    end
-  end
-  return false
-end
-
 function string:trimmed()
   return self:match("^%s*(.-)%s*$")
 end
@@ -243,6 +223,38 @@ function string:split(inSplitPattern, outResults)
   table.insert(outResults, self:sub(theStart))
   
   return outResults
+end
+
+function table.intersects(t, t2, fully)
+  if fully then
+    for _, v in pairs(t) do
+      if not table.contains(t2, v) then
+        return false
+      end
+    end
+    return true
+  else
+    for _, v in pairs(t) do
+      for _, v2 in pairs(t2) do
+        if v == v2 then
+          return true
+        end
+      end
+    end
+  end
+  return false
+end
+
+function table.ifilter(t, filter)
+  local result = {}
+  
+  for i = 1, #t do
+    if table.icontains(filter, t[i]) then
+      result[#result + 1] = t[i]
+    end
+  end
+  
+  return result
 end
 
 function table.merge(tables)

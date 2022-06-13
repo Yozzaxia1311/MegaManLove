@@ -45,7 +45,7 @@ end
 
 function healthHandler:updateThis(newHealth)
   if newHealth > self.health and self.health < 4*self.segments then
-    megautils.freeze("hb")
+    entities.freeze("hb")
     self.health = math.min(newHealth, 4*self.segments)
     self.riseTimer = 0
   elseif newHealth < self.health then
@@ -67,7 +67,7 @@ function healthHandler:update(dt)
       self.renderedHealth = math.approach(self.renderedHealth, self.health, 1)
       sfx.play("heal")
       if self.renderedHealth == self.health then
-        megautils.unfreeze("hb")
+        entities.unfreeze("hb")
         self.rise = 0
         sfx.stop("heal")
       end
@@ -86,7 +86,7 @@ function healthHandler:update(dt)
         (megaMan.playerToInput[i] == 1 and input.touchPressedOverlaps(self.x - 8, self.y + 8 - 8, 48 + 16, 8 + 16))) then
         if megautils.getLives() > 0 then
           healthHandler.playerTimers[i] = -2
-          local p = megautils.add(megaMan, self.player.x, self.player.y, self.player.side, true, i)
+          local p = entities.add(megaMan, self.player.x, self.player.y, self.player.side, true, i)
           self.player:transferState(p)
           megautils.revivePlayer(i)
           if not megautils.hasInfiniteLives() then
@@ -104,7 +104,7 @@ function healthHandler:update(dt)
 end
 
 function healthHandler:removed()
-  megautils.unfreeze("hb")
+  entities.unfreeze("hb")
 end
 
 function healthHandler:draw()
@@ -248,9 +248,9 @@ end
 function weaponHandler:removeWeaponShots()
   if weapon.removeGroups[self.current] then
     for _, i in safeipairs(weapon.removeGroups[self.current]) do
-      if megautils.groups()[i .. tostring(self.id)] then
-        for _, v in safeipairs(megautils.groups()[i .. tostring(self.id)]) do
-          megautils.remove(v)
+      if entities.groups[i .. tostring(self.id)] then
+        for _, v in safeipairs(entities.groups[i .. tostring(self.id)]) do
+          entities.remove(v)
         end
       end
     end
@@ -279,7 +279,7 @@ end
 function weaponHandler:updateCurrent(newWE)
   if self.current and self.energy[self.currentSlot] then
     if newWE > self.energy[self.currentSlot] and self.energy[self.currentSlot] < 4*(weapon.segments[self.current] or 7) then
-      megautils.freeze("wb")
+      entities.freeze("wb")
       self.energy[self.currentSlot] = math.min(newWE, 4*(weapon.segments[self.current] or 7))
       self.riseTimer = 0
     elseif newWE < self.energy[self.currentSlot] then
@@ -306,7 +306,7 @@ function weaponHandler:update(dt)
         self.riseTimer = 0
         sfx.play("heal")
         if self.renderedWE[self.currentSlot] == self.energy[self.currentSlot] then
-          megautils.unfreeze("wb")
+          entities.unfreeze("wb")
           sfx.stop("heal")
         end
       end
@@ -315,7 +315,7 @@ function weaponHandler:update(dt)
 end
 
 function weaponHandler:removed()
-  megautils.unfreeze("wb")
+  entities.unfreeze("wb")
 end
 
 function weaponHandler:draw()
