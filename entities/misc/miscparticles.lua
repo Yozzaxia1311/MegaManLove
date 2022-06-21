@@ -1,7 +1,7 @@
-loader.load("assets/misc/particles.png", "particles", true)
-loader.load("assets/misc/slideParticle.anim", "slideParticleAnim", true)
-loader.load("assets/misc/deathExplodeParticle.anim", "deathExplodeParticleAnim", true)
-loader.load("assets/misc/damageSteam.anim", "damageSteamAnim", true)
+loader.load("assets/misc/particles.png", true)
+loader.load("assets/misc/slideParticle.anim", true)
+loader.load("assets/misc/deathExplodeParticle.anim", true)
+loader.load("assets/misc/damageSteam.anim", true)
 
 particle = entity:extend()
 
@@ -67,7 +67,7 @@ function slideParticle:new(x, y, p, side)
     self:getGFXByName("anim"):gotoFrame(1)
   else
     self:setRectangleCollision(8, 8)
-    self:addGFX("anim", animation("slideParticleAnim"):flip(self.side == 1, self.gravity < 0))
+    self:addGFX("anim", animation("assets/misc/slideParticle.anim"):flip(self.side == 1, self.gravity < 0))
     self.autoCollision.global = false
     self.recycle = true
   end
@@ -94,7 +94,7 @@ function damageSteam:new(x, y, p)
     self:getGFXByName("anim"):gotoFrame(1)
   else
     self:setRectangleCollision(5, 8)
-    self:addGFX("anim", animation("damageSteamAnim"):flip(false, self.gravity < 0))
+    self:addGFX("anim", animation("assets/misc/damageSteam.anim"):flip(false, self.gravity < 0))
     self.autoCollision.global = false
     self.recycle = true
   end
@@ -116,7 +116,7 @@ function airBubble:new(x, y, p)
   
   if not self.recycling then
     self:setRectangleCollision(2, 8)
-    self:addGFX("tex", image("particles", quad(104, 28, 4, 4)))
+    self:addGFX("tex", image("assets/misc/particles.png", quad(104, 28, 4, 4)))
     self.recycle = true
   end
   
@@ -159,7 +159,7 @@ function harm:new(p, time)
   end
   
   self:setRectangleCollision(24, 24)
-  self:addGFX("tex", image("particles", quad(0, 22, 24, 24)))
+  self:addGFX("tex", image("assets/misc/particles.png", quad(0, 22, 24, 24)))
   self.timer = 0
   self.maxTime = time or 32
   self.autoCollision.global = false
@@ -186,7 +186,7 @@ function deathExplodeParticle:new(x, y, p, angle, spd)
   self.x = x or 0
   self.y = y or 0
   self:setRectangleCollision(24, 24)
-  self:addGFX("anim", animation("deathExplodeParticleAnim"))
+  self:addGFX("anim", animation("assets/misc/deathExplodeParticle.anim"))
   self.velX = megautils.calcX(angle or 0)*(spd or 1)
   self.velY = megautils.calcY(angle or 0)*(spd or 1)
 end
@@ -209,7 +209,7 @@ function absorbParticle:new(x, y, p, spd)
   self.x = x or 0
   self.y = y or 0
   self:setRectangleCollision(24, 24)
-  self:addGFX("anim", animation("deathExplodeParticleAnim"):origin(12, 12))
+  self:addGFX("anim", animation("assets/misc/deathExplodeParticle.anim"):origin(12, 12))
   self.startX = x
   self.startY = y
   self.pos = 0
@@ -281,8 +281,8 @@ function smallBlast:new(x, y, p)
     self:getGFXByName("anim"):gotoFrame(1)
   else
     self:setRectangleCollision(24, 24)
-    self.tex = loader.get("particles")
-    self:addGFX("anim", animation("deathExplodeParticleAnim"))
+    self.tex = loader.get("assets/misc/particles.png")
+    self:addGFX("anim", animation("assets/misc/deathExplodeParticle.anim"))
     self.autoCollision.global = false
     self.recycle = true
   end

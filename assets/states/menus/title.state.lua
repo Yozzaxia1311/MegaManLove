@@ -4,7 +4,7 @@ function titleState:begin()
   entities.add(title)
 end
 
-loader.load("assets/misc/title.png", "title")
+loader.load("assets/misc/title.png")
 
 title = basicEntity:extend()
 
@@ -12,7 +12,7 @@ title.invisibleToHash = true
 
 function title:new()
   title.super.new(self)
-  self.tex = loader.get("title")
+  self.tex = loader.get("assets/misc/title.png")
   self.textTimer = 0
   self.drawText = false
   self.cont = false

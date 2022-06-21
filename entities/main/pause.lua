@@ -3,10 +3,10 @@ mmWeaponsMenu = basicEntity:extend()
 mmWeaponsMenu.autoClean = false
 
 function mmWeaponsMenu.resources()
-  loader.load("assets/misc/weaponSelect.png", "weaponSelectBG")
-  loader.load("assets/sfx/pause.ogg", "pause")
-  loader.load("assets/sfx/selected.ogg", "selected")
-  loader.load("assets/sfx/cursorMove.ogg", "cursorMove")
+  loader.load("assets/misc/weaponSelect.png")
+  loader.load("assets/sfx/pause.ogg")
+  loader.load("assets/sfx/selected.ogg")
+  loader.load("assets/sfx/cursorMove.ogg")
 end
   
 function mmWeaponsMenu.pause(self)
@@ -27,16 +27,16 @@ function mmWeaponsMenu.pause(self)
     camera.main:doView()
   end
   
-  sfx.play("pause")
+  sfx.play("assets/sfx/pause.ogg")
 end
 
 function mmWeaponsMenu:new(p)
   mmWeaponsMenu.super.new(self)
-  self.bg = loader.get("weaponSelectBG")
-  self.tex = loader.get("particles")
-  self.texOutline = loader.get("particlesOutline")
-  self.texOne = loader.get("particlesOne")
-  self.texTwo = loader.get("particlesTwo")
+  self.bg = loader.get("assets/misc/weaponSelect.png")
+  self.tex = loader.get("assets/misc/particles.png")
+  self.texOutline = loader.get("assets/misc/particlesOutline.png")
+  self.texOne = loader.get("assets/misc/particlesOne.png")
+  self.texTwo = loader.get("assets/misc/particlesTwo.png")
   self.quadE = quad(72, 12, 16, 16)
   self.quadW = quad(88, 12, 16, 16)
   self.headQuad = quad(203, 398, 63, 62)
@@ -239,7 +239,7 @@ function mmWeaponsMenu:update(dt)
             end)
         end)
       self.changing = "leaving"
-      sfx.play("selected")
+      sfx.play("assets/sfx/selected.ogg")
       return
     elseif input.pressed["right" .. tostring(self.player.input)] then
       self.sx = math.clamp(self.sx+1, 1, 2)
@@ -334,7 +334,7 @@ function mmWeaponsMenu:update(dt)
           self.sx = 1
           self.sy = 1
           self.cur = self.last[1]
-          sfx.play("cursorMove")
+          sfx.play("assets/sfx/cursorMove.ogg")
          return
         end
         self.sy = math.clamp(self.sy+1, 1, 6)
@@ -370,7 +370,7 @@ function mmWeaponsMenu:update(dt)
     end
     if olx ~= self.sx or oly ~= self.sy then
       self.cur = self.list[self.sy][self.sx]
-      sfx.play("cursorMove")
+      sfx.play("assets/sfx/cursorMove.ogg")
     end
   elseif self.section == 1 then
     local olx, oly = self.sx, self.sy
@@ -410,7 +410,7 @@ function mmWeaponsMenu:update(dt)
       self.sx = 1
     end
     if olx ~= self.sx or oly ~= self.sy then
-      sfx.play("cursorMove")
+      sfx.play("assets/sfx/cursorMove.ogg")
     end
     for _, v in pairs(self.fills) do
       for _, j in pairs(v) do

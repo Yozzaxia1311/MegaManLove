@@ -161,10 +161,16 @@ end
 
 image = gfx:extend()
 
-function image:new(res, quad, x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, color, syncPos)
+function image:new(path, quad, x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, color, syncPos)
   image.super.new(self, x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, color, syncPos)
   
-  self.image = type(res) == "string" and loader.get(res) or res
+  if type(path) == "string" then
+    assert(loader.get(path), "Image \"" .. path .. "\" is not loaded. Use `loader.load` first")
+    self.image = loader.get(path)
+  else
+    self.image = path
+  end
+  
   self.path = self.image.path
   self.quad = quad
 end
@@ -212,11 +218,17 @@ end
 
 animation = gfx:extend()
 
-function animation:new(res, useDelta, framerate,
+function animation:new(path, useDelta, framerate,
     x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, color, syncPos)
   animation.super.new(self, x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, color, syncPos)
   
-  local rt = type(res) == "string" and loader.getTable(res) or res
+  local rt
+  if type(path) == "string" then
+    assert(loader.get(path), "Animation \"" .. path .. "\" is not loaded. Use `loader.load` first")
+    rt = loader.getTable(path)
+  else
+    rt = path
+  end
   
   self.anim = anim8.newAnimation(rt.data(unpack(rt.frames)), rt.durations or 1, rt.onLoop)
   self.image = rt.img
@@ -287,11 +299,17 @@ end
 
 animationSet = gfx:extend()
 
-function animationSet:new(res, useDelta, framerate,
+function animationSet:new(path, useDelta, framerate,
     x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, color, syncPos)
   animationSet.super.new(self, x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, color, syncPos)
   
-  local rt = type(res) == "string" and loader.getTable(res) or res
+  local rt
+  if type(path) == "string" then
+    assert(loader.get(path), "Animation Set \"" .. path .. "\" is not loaded. Use `loader.load` first")
+    rt = loader.getTable(path)
+  else
+    rt = path
+  end
   
   self.anims = {}
   self.current = nil
@@ -403,16 +421,18 @@ end
 
 text = gfx:extend()
 
-function text:new(_text, align, limit, x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, color, syncPos)
+function text:new(_text, font, align, limit, x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, color, syncPos)
   text.super.new(self, x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, color, syncPos)
   
   self.text = _text or ""
+  self.font = font or mmFont
   self.align = align or "left"
   self.limit = limit or math.huge
 end
 
-function text:draw(x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY)
+function text:draw(x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, font)
   love.graphics.setShader(drawShader)
+  love.graphics.setFont(font or self.font)
   love.graphics.printf(tostring(self.text),
     (x or self.x) + (offX or self.offX), y or self.y + (offY or self.offY), self.limit, self.align,
     r or self.r, sx or self.sx, sy or self.sy, nil, nil, ox or self.ox, oy or self.oy)

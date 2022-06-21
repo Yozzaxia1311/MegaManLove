@@ -1,4 +1,4 @@
-loader.load("assets/sfx/gravityFlip.ogg", "gravityFlip")
+loader.load("assets/sfx/gravityFlip.ogg")
 
 gravFlip = basicEntity:extend()
 
@@ -32,7 +32,7 @@ function gravFlip:update(dt)
     end
     if ds then
       entities.add(fade, false, 4, {255, 255, 255}, fade.remove)
-      sfx.play("gravityFlip")
+      sfx.play("assets/sfx/gravityFlip.ogg")
     end
   end
 end

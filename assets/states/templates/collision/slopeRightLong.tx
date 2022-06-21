@@ -3,7 +3,7 @@
  <tileset firstgid="1" source="../templateTileset32x16.tsx"/>
  <object name="slope" gid="79" width="32" height="16">
   <properties>
-   <property name="mask" value="slopeRightLong"/>
+   <property name="mask" value="assets/misc/slopes/slopeRightLong.data.png"/>
   </properties>
  </object>
 </template>

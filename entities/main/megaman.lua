@@ -55,14 +55,14 @@ end
 function megaMan.resources()
    mmWeaponsMenu.resources()
   
-  loader.load("assets/sfx/mmLand.ogg", "land")
-  loader.load("assets/sfx/mmHurt.ogg", "hurt")
-  loader.load("assets/sfx/mmStart.ogg", "start")
-  loader.load("assets/sfx/mmHeal.ogg", "heal")
-  loader.load("assets/sfx/ascend.ogg", "ascend")
-  loader.load("assets/sfx/switch.ogg", "switch")
-  loader.load("assets/sfx/treble.ogg", "trebleStart")
-  loader.load("assets/players/player.animset", "playerAnims")
+  loader.load("assets/sfx/mmLand.ogg")
+  loader.load("assets/sfx/mmHurt.ogg")
+  loader.load("assets/sfx/mmStart.ogg")
+  loader.load("assets/sfx/mmHeal.ogg")
+  loader.load("assets/sfx/ascend.ogg")
+  loader.load("assets/sfx/switch.ogg")
+  loader.load("assets/sfx/treble.ogg")
+  loader.load("assets/players/player.animset")
 end
 
 function megaMan:setSkin(path)
@@ -428,7 +428,7 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   self.dashAnimation = {regular="dash", shoot="dashShoot"}
   self.trebleAnimation = {regular="treble", shoot="trebleShoot", start="trebleStart"}
   
-  self.anims = animationSet("playerAnims")
+  self.anims = animationSet("assets/players/player.animset")
   
   self:syncPlayerSkin()
   
@@ -993,7 +993,7 @@ function megaMan:interactedWith(o, c)
       if o.pierceType == pierce.NOPIERCE or o.pierceType == pierce.PIERCEIFKILLING then
         entities.remove(o)
       end
-      sfx.play("hurt")
+      sfx.play("assets/sfx/mmHurt.ogg")
     end
   end
 end
@@ -1044,7 +1044,7 @@ function megaMan:afterCollisionFunc()
     self.canStopJump.global = true
     self.extraJumps = 0
     if checkFalse(self.canControl) then
-      sfx.play("land")
+      sfx.play("assets/sfx/mmLand.ogg")
     end
   end
 end
@@ -1106,7 +1106,7 @@ function megaMan:code(dt)
       if self.anims.current == self.trebleAnimation.start then
         if self.anims:frame() == 4 and self.trebleTimer == 0 then
           self.trebleTimer = 1
-          sfx.play("trebleStart")
+          sfx.play("assets/sfx/treble.ogg")
         end
         if self.anims:looped() then
           self.treble = 3
@@ -1397,7 +1397,7 @@ function megaMan:code(dt)
     if self.standSolidJumpTimer > 0 and (not (input.down["jump" .. tostring(self.input)] or self.tJump) or
       self.standSolidJumpTimer == self.maxStandSolidJumpTime) then
       self.standSolidJumpTimer = -1
-      sfx.play("land")
+      sfx.play("assets/sfx/mmLand.ogg")
     end
     if self.standSolidJumpTimer == -1 and not (input.down["jump" .. tostring(self.input)] or self.tJump) then
       self.standSolidJumpTimer = 0
@@ -1565,7 +1565,7 @@ function megaMan:attemptWeaponSwitch()
     end
     self.prevWeapon = w
     self.weaponSwitchTimer = 0
-    sfx.play("switch")
+    sfx.play("assets/sfx/switch.ogg")
   elseif input.pressed["next" .. tostring(self.input)] and not input.pressed["prev" .. tostring(self.input)] then
     self.prevWeapon = megaMan.weaponHandler[self.player].currentSlot
     local w = math.wrap(megaMan.weaponHandler[self.player].currentSlot+1, 0, megaMan.weaponHandler[self.player].slotSize)
@@ -1579,7 +1579,7 @@ function megaMan:attemptWeaponSwitch()
     end
     self.nextWeapon = w
     self.weaponSwitchTimer = 0
-    sfx.play("switch")
+    sfx.play("assets/sfx/switch.ogg")
   elseif input.pressed["prev" .. tostring(self.input)] and not input.pressed["next" .. tostring(self.input)] then
     self.nextWeapon = megaMan.weaponHandler[self.player].currentSlot
     local w = math.wrap(megaMan.weaponHandler[self.player].currentSlot-1, 0, megaMan.weaponHandler[self.player].slotSize)
@@ -1593,7 +1593,7 @@ function megaMan:attemptWeaponSwitch()
     end
     self.prevWeapon = w
     self.weaponSwitchTimer = 0
-    sfx.play("switch")
+    sfx.play("assets/sfx/switch.ogg")
   end
 end
 
@@ -1819,7 +1819,7 @@ function megaMan:die()
   self._lHealth = nil
   self._lSeg = nil
   entities.remove(self)
-  sfx.play("dieExplode")
+  sfx.play("assets/sfx/dieExplode.ogg")
 end
 
 function megaMan:removed()
@@ -1948,7 +1948,7 @@ function megaMan:update()
           self.dropLanded = not self.anims:looped()
           if not self.dropLanded then
             self.doSplashing = false
-            sfx.play("ascend")
+            sfx.play("assets/sfx/ascend.ogg")
           end
         else
           self.teleportOffY = self.teleportOffY+self.riseSpeed
@@ -1967,7 +1967,7 @@ function megaMan:update()
             self.doSplashing = true
             self.teleportOffY = nil
             self.anims:set(self.ground and self.idleAnimation.regular or self.jumpAnimation.regular)
-            sfx.play("start")
+            sfx.play("assets/sfx/mmStart.ogg")
           end
         end
       elseif checkFalse(self.canControl) then

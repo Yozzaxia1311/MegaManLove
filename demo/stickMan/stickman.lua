@@ -1,4 +1,4 @@
-loader.load("demo/stickMan/stickMan.animset", "stickManAnims")
+loader.load("demo/stickMan/stickMan.animset")
 
 stickMan = bossEntity:extend()
 mapEntity.register(stickMan, nil, nil, 0, 8, 12, 24)
@@ -10,7 +10,7 @@ function stickMan:new(overrideX, overrideY)
   self.y = overrideY or self.y or 0
   self:setRectangleCollision(12, 24)
   
-  self.anims = animationSet("stickManAnims"):off(-4, -8)
+  self.anims = animationSet("demo/stickMan/stickMan.animset"):off(-4, -8)
   self:addGFX("anims", self.anims)
   self.flipFace = true
   

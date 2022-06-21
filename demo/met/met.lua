@@ -1,4 +1,4 @@
-loader.load("demo/met/met.png", "met")
+loader.load("demo/met/met.png")
 
 met = advancedEntity:extend()
 
@@ -12,7 +12,7 @@ function met:new(overrideX, overrideY)
   self:setRectangleCollision(14, 14)
   
   self.quads = {safe = quad(0, 0, 18, 15), attack = quad(18, 0, 18, 15)}
-  self:addGFX("metImage", image("met", self.quads.safe))
+  self:addGFX("metImage", image("demo/met/met.png", self.quads.safe))
   
   self.health = 2
   self.canBeInvincible.global = true
@@ -108,7 +108,7 @@ function metBullet:new(x, y, user, vx, vy)
   self.recycle = true
   
   if not self.recycling then
-    self:addGFX("bullet", image("met", quad(36, 0, 6, 6)))
+    self:addGFX("bullet", image("demo/met/met.png", quad(36, 0, 6, 6)))
     self.damage = -2
   end
 end

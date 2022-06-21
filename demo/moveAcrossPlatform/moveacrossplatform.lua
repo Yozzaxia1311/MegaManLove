@@ -1,4 +1,4 @@
-loader.load("demo/moveAcrossPlatform/moveAcrossPlatform.png", "moveAcrossPlatform")
+loader.load("demo/moveAcrossPlatform/moveAcrossPlatform.png")
 
 moveAcrossPlatform = advancedEntity:extend()
 mapEntity.register(moveAcrossPlatform, nil, nil, 0, 0, 32, 16)
@@ -11,7 +11,7 @@ function moveAcrossPlatform:new(overrideX, overrideY, overrideToX, overrideToY)
   self:setRectangleCollision(32, 16)
   
   self.solidType = collision.SOLID
-  self:addGFX("tex", image("moveAcrossPlatform", quad(0, 0, 32, 16)))
+  self:addGFX("tex", image("demo/moveAcrossPlatform/moveAcrossPlatform.png", quad(0, 0, 32, 16)))
   self.applyAutoFace = false
   self.t = {x = self.x, y = self.y}
   self.tween = tween.new(1, self.t, {x=overrideToX or self.toX or (self.x+32),

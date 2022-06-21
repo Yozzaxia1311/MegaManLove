@@ -16,7 +16,10 @@ function parallax:new(x, y, w, h, bg, a, as, aw, ah, spdMultX, spdMultY, sx, sy,
   self.y = y or 0
   self:setRectangleCollision(w or 64, h or 64)
   self.bg = bg
-  self.tex = loader.load(self.bg, self.bg)
+  if not loader.get(self.bg) then
+    loader.load(self.bg)
+  end
+  self.tex = loader.get(self.bg)
   if a then
     local frames = {}
     for y=1, math.floor(self.tex:getHeight()/ah) do
@@ -29,7 +32,8 @@ function parallax:new(x, y, w, h, bg, a, as, aw, ah, spdMultX, spdMultY, sx, sy,
       loader.resources[self.bg .. "Anim"] = {
           data = anim8.newGrid(aw, ah),
           frames = frames,
-          durations = as or 0.5
+          durations = as or 0.5,
+          type = "animation"
         }
     end
     self.animWidth = aw

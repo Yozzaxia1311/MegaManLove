@@ -2,10 +2,12 @@ local disclaimerState = state:extend()
 
 function disclaimerState:begin()
   music.stop()
-  loader.load("assets/misc/disclaimerFace.png", "face")
+  
   entities.add(disclaimer)
   entities.add(fade, false, nil, nil, fade.remove)
 end
+
+loader.load("assets/misc/disclaimerFace.png")
 
 disclaimer = basicEntity:extend()
 
@@ -15,7 +17,7 @@ function disclaimer:new()
   disclaimer.super.new(self)
   self.x = 0
   self.y = 0
-  self.t = loader.get("face")
+  self.t = loader.get("assets/misc/disclaimerFace.png")
   self.timer = 0
   self.alpha = 0
   self.otherTimer = 5

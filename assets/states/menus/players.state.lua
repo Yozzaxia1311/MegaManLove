@@ -14,11 +14,11 @@ function playersState:switching()
   love.graphics.setBackgroundColor(0, 0, 0, 1)
 end
 
-loader.load("assets/players/mug.animset", "mugAnims")
-loader.load("assets/players/player.animset", "playerAnims")
-loader.load("assets/misc/playerSelect.png", "playerSelect")
-loader.load("assets/misc/playerSelectOutline.png", "playerSelectOutline")
-loader.load("assets/sfx/cursorMove.ogg", "cursorMove")
+loader.load("assets/players/mug.animset")
+loader.load("assets/players/player.animset")
+loader.load("assets/misc/playerSelect.png")
+loader.load("assets/misc/playerSelectOutline.png")
+loader.load("assets/sfx/cursorMove.ogg")
 
 smash = basicEntity:extend()
 
@@ -29,8 +29,8 @@ function smash:new()
   
   self.selectionOffset = 0
   
-  self.psTex = loader.get("playerSelect")
-  self.psoTex = loader.get("playerSelectOutline")
+  self.psTex = loader.get("assets/misc/playerSelect.png")
+  self.psoTex = loader.get("assets/misc/playerSelectOutline.png")
   
   self.players = {}
   self.colors = {}
@@ -77,8 +77,8 @@ function smash:new()
   
   self.hasMoreSkins = #self.players > 4
   
-  self.anims = animationSet("mugAnims")
-  self.playerAnims = animationSet("playerAnims")
+  self.anims = animationSet("assets/players/mug.animset")
+  self.playerAnims = animationSet("assets/players/player.animset")
 end
 
 function smash:isValidSkin(path)
@@ -129,10 +129,10 @@ function smash:registerSkin(_path)
           }
         }
       
-      loader.load(path .. "/player.png", path)
-      loader.load(path .. "/one.png", path .. "one")
-      loader.load(path .. "/two.png", path .. "two")
-      loader.load(path .. "/outline.png", path .. "outline")
+      loader.load(path .. "/player.png")
+      loader.load(path .. "/one.png")
+      loader.load(path .. "/two.png")
+      loader.load(path .. "/outline.png")
       
       self.players[i] = path
     else
@@ -144,7 +144,7 @@ function smash:registerSkin(_path)
 end
 
 function smash:drawMug(i, x, y)
-  loader.get(self.roles[i]):draw(self.anims, x, y)
+  loader.get(self.roles[i] .. "/player.png"):draw(self.anims, x, y)
 end
 
 function smash:drawPlayer(i, x, y)
@@ -154,13 +154,13 @@ function smash:drawPlayer(i, x, y)
     self.playerAnims.current = "idle"
   end
   love.graphics.setColor(1, 1, 1, 1)
-  loader.get(self.players[i]):draw(self.playerAnims, x, y)
+  loader.get(self.players[i] .. "/player.png"):draw(self.playerAnims, x, y)
   love.graphics.setColor(unpack(self.colors[i].outline))
-  loader.get(self.players[i] .. "outline"):draw(self.playerAnims, x, y)
+  loader.get(self.players[i] .. "/outline.png"):draw(self.playerAnims, x, y)
   love.graphics.setColor(unpack(self.colors[i].one))
-  loader.get(self.players[i] .. "one"):draw(self.playerAnims, x, y)
+  loader.get(self.players[i] .. "/one.png"):draw(self.playerAnims, x, y)
   love.graphics.setColor(unpack(self.colors[i].two))
-  loader.get(self.players[i] .. "two"):draw(self.playerAnims, x, y)
+  loader.get(self.players[i] .. "/two.png"):draw(self.playerAnims, x, y)
   love.graphics.setColor(1, 1, 1, 1)
 end
 
@@ -246,11 +246,11 @@ function smash:update()
         if self.hasMoreSkins then
           if rectOverlapsRect(40, 56, 40, 8, self.cursors[i].x, self.cursors[i].y, 2, 2) then
             self.selectionOffset = math.wrap(self.selectionOffset - 1, 0, math.ceil(#self.players / 4) - 1)
-            sfx.play("cursorMove")
+            sfx.play("assets/sfx/cursorMove.ogg")
             return
           elseif rectOverlapsRect(176, 56, 40, 8, self.cursors[i].x, self.cursors[i].y, 2, 2) then
             self.selectionOffset = math.wrap(self.selectionOffset + 1, 0, math.ceil(#self.players / 4) - 1)
-            sfx.play("cursorMove")
+            sfx.play("assets/sfx/cursorMove.ogg")
             return
           end
         end

@@ -1,5 +1,5 @@
-loader.load("assets/sfx/splash.ogg", "splash")
-loader.load("assets/misc/splash.anim", "splashAnim")
+loader.load("assets/sfx/splash.ogg")
+loader.load("assets/misc/splash.anim")
 
 splash = particle:extend()
 
@@ -17,7 +17,7 @@ function splash:new(offx, offy, p, rot)
   end
   self.autoCollision.global = false
   
-  self:addGFX("anim", animation("splashAnim"):origin(16, 16):rot(self.rot))
+  self:addGFX("anim", animation("assets/misc/splash.anim"):origin(16, 16):rot(self.rot))
 end
 
 function splash:update()
@@ -108,16 +108,16 @@ function water:update()
           
           if dir == 1 then
             entities.add(splash, (v.x-self.x)+(v.collisionShape.w/2), 0, self, 0)
-            sfx.play("splash")
+            sfx.play("assets/sfx/splash.ogg")
           elseif dir == 2 then
             entities.add(splash, (v.x-self.x)+(v.collisionShape.w/2), self.collisionShape.h, self, 180)
-            sfx.play("splash")
+            sfx.play("assets/sfx/splash.ogg")
           elseif dir == 3 then
             entities.add(splash, 0, (v.y-self.y)+(v.collisionShape.h/2), self, 270)
-            sfx.play("splash")
+            sfx.play("assets/sfx/splash.ogg")
           elseif dir == 4 then
             entities.add(splash, self.collisionShape.w, (v.y-self.y)+(v.collisionShape.h/2), self, 90)
-            sfx.play("splash")
+            sfx.play("assets/sfx/splash.ogg")
           end
         end
         
@@ -154,16 +154,16 @@ function water:update()
         
         if dir == 1 then
           entities.add(splash, (v.x-self.x)+(v.collisionShape.w/2), 0, self, 0)
-          sfx.play("splash")
+          sfx.play("assets/sfx/splash.ogg")
         elseif dir == 2 then
           entities.add(splash, (v.x-self.x)+(v.collisionShape.w/2), self.collisionShape.h, self, 180)
-          sfx.play("splash")
+          sfx.play("assets/sfx/splash.ogg")
         elseif dir == 3 then
           entities.add(splash, 0, (v.y-self.y)+(v.collisionShape.h/2), self, 270)
-          sfx.play("splash")
+          sfx.play("assets/sfx/splash.ogg")
         elseif dir == 4 then
           entities.add(splash, self.collisionShape.w, (v.y-self.y)+(v.collisionShape.h/2), self, 90)
-          sfx.play("splash")
+          sfx.play("assets/sfx/splash.ogg")
         end
         
         v.inWater = false

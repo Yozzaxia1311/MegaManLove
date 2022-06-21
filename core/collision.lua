@@ -166,7 +166,8 @@ function collision.entityPlatform(self, vx, vy)
             end
             
             if not v:collision(self) then
-              local epIsPassenger = self:collision(v, 0, (v.gravity >= 0 and -1 or 1) * ((v.ground and v.snapToMovingFloor) and 1 or 0))
+              local epIsPassenger = self:collision(v, 0, (v.gravity >= 0 and -1 or 1) *
+                ((v.ground and v.snapToMovingFloor) and 1 or 0))
               local epWillCollide = self:collision(v, 0, vy)
               
               if epIsPassenger or epWillCollide then
@@ -196,9 +197,9 @@ function collision.entityPlatform(self, vx, vy)
                 if resolid == 1 and v:collision(self) then
                   local crushing = self.crushing and self:crushing(v)
                   if v.crushed and (crushing == nil or crushing) then
-                    if not self.invisibleToHash then self:updateHash() end
+                    if not self.invisibleToHash then entities.updateHashForEntity(self) end
                     v:crushed(self)
-                    if not v.invisibleToHash then v:updateHash() end
+                    if not v.invisibleToHash then entities.updateHashForEntity(v) end
                   end
                 end
                 
@@ -260,9 +261,9 @@ function collision.entityPlatform(self, vx, vy)
                   if v:collision(self) then
                     local crushing = self.crushing and self:crushing(v)
                     if v.crushed and (crushing == nil or crushing) then
-                      if not self.invisibleToHash then self:updateHash() end
+                      if not self.invisibleToHash then entities.updateHashForEntity(self) end
                       v:crushed(self)
-                      if not v.invisibleToHash then v:updateHash() end
+                      if not v.invisibleToHash then entities.updateHashForEntity(v) end
                     end
                   end
                 end

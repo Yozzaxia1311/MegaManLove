@@ -1,5 +1,5 @@
-loader.load("assets/misc/bossDoor.png", "bossDoor", true)
-loader.load("assets/sfx/bossDoor.ogg", "bossDoorSfx", true)
+loader.load("assets/misc/bossDoor.png", true)
+loader.load("assets/sfx/bossDoor.ogg", true)
 
 bossDoor = basicEntity:extend()
 
@@ -19,7 +19,7 @@ function bossDoor:new(x, y, seg, dir, scrollx, scrolly, spd, umt, n, tw, th, ts)
   self.x = x or 0
   self.y = y or 0
   self:setLayer(-1)
-  self.tex = loader.get("bossDoor")
+  self.tex = loader.get("assets/misc/bossDoor.png")
   self.scrollx = scrollx
   self.scrolly = scrolly
   self.quad = quad(0, 0, 32, 16)
@@ -190,9 +190,11 @@ function bossDoor:update()
                   local oldx
                   local oldy
                   self.tileList[v] = {}
-                  for x=1, (self.dir=="right" or self.dir=="left") and (2*self.tileWidth) or (self.maxSegments*self.tileHeight) do
+                  for x=1, (self.dir=="right" or self.dir=="left") and (2*self.tileWidth) or
+                    (self.maxSegments*self.tileHeight) do
                     self.tileList[v][x] = {}
-                    for y=1, (self.dir=="right" or self.dir=="left") and (self.maxSegments*self.tileWidth) or (2*self.tileHeight) do
+                    for y=1, (self.dir=="right" or self.dir=="left") and (self.maxSegments*self.tileWidth)
+                      or (2*self.tileHeight) do
                       local gid = layer:getTileAtPixelPosition(self.x+(x*self.tileWidth)-self.tileWidth,
                         self.y+(y*self.tileHeight)-self.tileHeight)
                       if gid >= 0 and (oldx ~= math.floor((x/self.tileWidth)*self.tileWidth) or
@@ -237,7 +239,7 @@ function bossDoor:update()
           end
         end
       end
-      sfx.play("bossDoorSfx")
+      sfx.play("assets/sfx/bossDoor.ogg")
     end
     if self.segments <= 0 then
       self.state = 2
@@ -293,7 +295,7 @@ function bossDoor:update()
           end
         end
       end
-      sfx.play("bossDoorSfx")
+      sfx.play("assets/sfx/bossDoor.ogg")
     end
     if self.segments >= self.maxSegments then
       self.timer = 0

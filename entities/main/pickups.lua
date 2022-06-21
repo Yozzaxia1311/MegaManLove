@@ -1,12 +1,12 @@
-loader.load("assets/misc/particles.png", "particles", true)
-loader.load("assets/misc/particlesOutline.png", "particlesOutline", true)
-loader.load("assets/misc/particlesOne.png", "particlesOne", true)
-loader.load("assets/misc/particlesTwo.png", "particlesTwo", true)
-loader.load("assets/misc/smallHealth.anim", "smallHealthAnim", true)
-loader.load("assets/misc/health.anim", "healthAnim", true)
-loader.load("assets/misc/smallEnergy.anim", "smallEnergyAnim", true)
-loader.load("assets/misc/energy.anim", "energyAnim", true)
-loader.load("assets/misc/tanks.animset", "tankAnims", true)
+loader.load("assets/misc/particles.png", true)
+loader.load("assets/misc/particlesOutline.png", true)
+loader.load("assets/misc/particlesOne.png", true)
+loader.load("assets/misc/particlesTwo.png", true)
+loader.load("assets/misc/smallHealth.anim", true)
+loader.load("assets/misc/health.anim", true)
+loader.load("assets/misc/smallEnergy.anim", true)
+loader.load("assets/misc/energy.anim", true)
+loader.load("assets/misc/tanks.animset", true)
 
 pickUp = entity:extend()
 
@@ -97,9 +97,9 @@ function smallHealth:new(x, y, despawn, gd, fwp, id, path)
   self.x = x or 0
   self.y = y or 0
   self:setRectangleCollision(8, 6)
-  self.t = loader.get("particles")
-  self.tOutline = loader.get("particlesOutline")
-  self.anim = animation("smallHealthAnim")
+  self.t = loader.get("assets/misc/particles.png")
+  self.tOutline = loader.get("assets/misc/particlesOutline.png")
+  self.anim = animation("assets/misc/smallHealth.anim")
 end
 
 function smallHealth:taken(p)
@@ -117,7 +117,8 @@ function smallHealth:draw()
   end
   self.t:draw(self.anim, self.x, self.y+offy)
   if megaMan.mainPlayer then
-    love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
+    love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255,
+      megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
     self.tOutline:draw(self.anim, self.x, self.y+offy)
   else
@@ -141,9 +142,9 @@ function health:new(x, y, despawn, gd, fwp, id, path)
   self.x = x or 0
   self.y = y or 0
   self:setRectangleCollision(16, 14)
-  self.t = loader.get("particles")
-  self.tOutline = loader.get("particlesOutline")
-  self.anim = animation("healthAnim")
+  self.t = loader.get("assets/misc/particles.png")
+  self.tOutline = loader.get("assets/misc/particlesOutline.png")
+  self.anim = animation("assets/misc/health.anim")
 end
 
 function health:taken(p)
@@ -161,7 +162,8 @@ function health:draw()
   end
   self.t:draw(self.anim, self.x, self.y+offy)
   if megaMan.mainPlayer then
-    love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
+    love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255,
+      megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
     self.tOutline:draw(self.anim, self.x, self.y+offy)
   else
@@ -185,10 +187,10 @@ function smallEnergy:new(x, y, despawn, gd, fwp, id, path)
   self.x = x or 0
   self.y = y or 0
   self:setRectangleCollision(8, 6)
-  self.anim = animation("smallEnergyAnim")
-  self.texOutline = loader.get("particlesOutline")
-  self.texOne = loader.get("particlesOne")
-  self.texTwo = loader.get("particlesTwo")
+  self.anim = animation("assets/misc/smallEnergy.anim")
+  self.texOutline = loader.get("assets/misc/particlesOutline.png")
+  self.texOne = loader.get("assets/misc/particlesOne.png")
+  self.texTwo = loader.get("assets/misc/particlesTwo.png")
 end
 
 function smallEnergy:taken(p)
@@ -205,13 +207,16 @@ function smallEnergy:draw()
     offy = -2
   end
   if megaMan.mainPlayer then
-    love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255, megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
+    love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255,
+      megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
       megaMan.colorTwo[megaMan.mainPlayer.player][3]/255, 1)
     self.texTwo:draw(self.anim, self.x, self.y+offy)
-    love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
+    love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255,
+      megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
     self.texOutline:draw(self.anim, self.x, self.y+offy)
-    love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255, megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
+    love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255,
+      megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOne[megaMan.mainPlayer.player][3]/255, 1)
     self.texOne:draw(self.anim, self.x, self.y+offy)
   else
@@ -239,10 +244,10 @@ function energy:new(x, y, despawn, gd, fwp, id, path)
   self.x = x or 0
   self.y = y or 0
   self:setRectangleCollision(16, 10)
-  self.anim = animation("energyAnim")
-  self.texOutline = loader.get("particlesOutline")
-  self.texOne = loader.get("particlesOne")
-  self.texTwo = loader.get("particlesTwo")
+  self.anim = animation("assets/misc/energy.anim")
+  self.texOutline = loader.get("assets/misc/particlesOutline.png")
+  self.texOne = loader.get("assets/misc/particlesOne.png")
+  self.texTwo = loader.get("assets/misc/particlesTwo.png")
 end
 
 function energy:taken(p)
@@ -259,13 +264,16 @@ function energy:draw()
     offy = -2
   end
   if megaMan.mainPlayer then
-    love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255, megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
+    love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255,
+      megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
       megaMan.colorTwo[megaMan.mainPlayer.player][3]/255, 1)
     self.texTwo:draw(self.anim, self.x, self.y+offy)
-    love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
+    love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255,
+      megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
     self.texOutline:draw(self.anim, self.x, self.y+offy)
-    love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255, megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
+    love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255,
+      megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOne[megaMan.mainPlayer.player][3]/255, 1)
     self.texOne:draw(self.anim, self.x, self.y+offy)
   else
@@ -315,13 +323,16 @@ function life:draw()
     
     love.graphics.setColor(1, 1, 1, 1)
     skin.texture:draw(self.quad, self.x+ox, self.y+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
-    love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
+    love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255,
+      megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
     skin.outline:draw(self.quad, self.x+ox, self.y+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
-    love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255, megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
+    love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255,
+      megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOne[megaMan.mainPlayer.player][3]/255, 1)
     skin.one:draw(self.quad, self.x+ox, self.y+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
-    love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255, megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
+    love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255,
+      megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
       megaMan.colorTwo[megaMan.mainPlayer.player][3]/255, 1)
     skin.two:draw(self.quad, self.x+ox, self.y+oy, 0, 1, 1, 31, 37, nil, nil, nil, fy)
   else
@@ -357,11 +368,11 @@ function eTank:new(x, y, despawn, gd, fwp, id, path)
   self.x = x or 0
   self.y = y or 0
   self:setRectangleCollision(16, 15)
-  self.anim = animationSet("tankAnims")
+  self.anim = animationSet("assets/misc/tank.animset")
   self.anim:set("eTank")
-  self.texOutline = loader.get("particlesOutline")
-  self.texOne = loader.get("particlesOne")
-  self.texTwo = loader.get("particlesTwo")
+  self.texOutline = loader.get("assets/misc/particlesOutline.png")
+  self.texOne = loader.get("assets/misc/particlesOne.png")
+  self.texTwo = loader.get("assets/misc/particlesTwo.png")
 end
 
 function eTank:taken(p)
@@ -379,13 +390,16 @@ function eTank:draw()
     offy = -1
   end
   if megaMan.mainPlayer then
-    love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
+    love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255,
+      megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
     self.texOutline:draw(self.anim, self.x, self.y+offy)
-    love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255, megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
+    love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255,
+      megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
       megaMan.colorTwo[megaMan.mainPlayer.player][3]/255, 1)
     self.texTwo:draw(self.anim, self.x, self.y+offy)
-    love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255, megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
+    love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255,
+      megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOne[megaMan.mainPlayer.player][3]/255, 1)
     self.texOne:draw(self.anim, self.x, self.y+offy)
   else
@@ -413,11 +427,11 @@ function wTank:new(x, y, despawn, gd, fwp, id, path)
   self.x = x or 0
   self.y = y or 0
   self:setRectangleCollision(16, 15)
-  self.anim = animationSet("tankAnims")
+  self.anim = animationSet("assets/misc/tank.animset")
   self.anim:set("wTank")
-  self.texOutline = loader.get("particlesOutline")
-  self.texOne = loader.get("particlesOne")
-  self.texTwo = loader.get("particlesTwo")
+  self.texOutline = loader.get("assets/misc/particlesOutline.png")
+  self.texOne = loader.get("assets/misc/particlesOne.png")
+  self.texTwo = loader.get("assets/misc/particlesTwo.png")
 end
 
 function wTank:taken(p)
@@ -435,13 +449,16 @@ function wTank:draw()
     offy = -1
   end
   if megaMan.mainPlayer then
-    love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255, megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
+    love.graphics.setColor(megaMan.colorTwo[megaMan.mainPlayer.player][1]/255,
+      megaMan.colorTwo[megaMan.mainPlayer.player][2]/255,
       megaMan.colorTwo[megaMan.mainPlayer.player][3]/255, 1)
     self.texTwo:draw(self.anim, self.x, self.y+offy)
-    love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255, megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
+    love.graphics.setColor(megaMan.colorOutline[megaMan.mainPlayer.player][1]/255,
+      megaMan.colorOutline[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOutline[megaMan.mainPlayer.player][3]/255, 1)
     self.texOutline:draw(self.anim, self.x, self.y+offy)
-    love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255, megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
+    love.graphics.setColor(megaMan.colorOne[megaMan.mainPlayer.player][1]/255,
+      megaMan.colorOne[megaMan.mainPlayer.player][2]/255,
       megaMan.colorOne[megaMan.mainPlayer.player][3]/255, 1)
     self.texOne:draw(self.anim, self.x, self.y+offy)
   else

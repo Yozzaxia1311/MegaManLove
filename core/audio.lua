@@ -14,30 +14,31 @@ function sfx.updateGMEVoiceMutes()
 end
 
 function sfx.play(p, l, v, stack, muteGMEVoices)
-  if loader.get(p) then
-    if not stack then
-      loader.get(p):stop()
-    end
-    local resTable = loader.getTable(p)
-    if resTable.conf and resTable.conf.muteGMEVoices then
-      if type(resTable.conf.muteGMEVoices) == "number" then
-        sfx._cachedMutes[resTable.conf.muteGMEVoices] = resTable.data
-        music.GMEPushMuteVoice(resTable.conf.muteGMEVoices)
-      else
-        for _, voice in pairs(resTable.conf.muteGMEVoices) do
-          sfx._cachedMutes[voice] = resTable.data
-          music.GMEPushMuteVoice(voice)
-        end
+  assert(loader.get(p), "Sound \"" .. p .. "\" is not loaded. Use `loader.load` first")
+  
+  if not stack then
+    loader.get(p):stop()
+  end
+  
+  local resTable = loader.getTable(p)
+  
+  if resTable.conf and resTable.conf.muteGMEVoices then
+    if type(resTable.conf.muteGMEVoices) == "number" then
+      sfx._cachedMutes[resTable.conf.muteGMEVoices] = resTable.data
+      music.GMEPushMuteVoice(resTable.conf.muteGMEVoices)
+    else
+      for _, voice in pairs(resTable.conf.muteGMEVoices) do
+        sfx._cachedMutes[voice] = resTable.data
+        music.GMEPushMuteVoice(voice)
       end
     end
-    resTable.data:setLooping(l or false)
-    resTable.data:setVolume(v or 1)
-    resTable.data:play()
-    
-    return resTable.data
-  else
-    error("Sound \"" .. p .. "\" doesn't exist.")
   end
+  
+  resTable.data:setLooping(l or false)
+  resTable.data:setVolume(v or 1)
+  resTable.data:play()
+  
+  return resTable.data
 end
 
 function sfx.playFromFile(p, l, v, stack)

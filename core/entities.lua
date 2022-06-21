@@ -1,3 +1,6 @@
+local _floor, _ceil = math.floor, math.ceil
+local _icontains, _quickremovevaluearray = table.icontains, table.quickremovevaluearray
+
 local function tableIsEmptyOrHoles(t)
   if #t == 0 then
     return true
@@ -65,9 +68,6 @@ function entities.deser(t)
   entities.hashSize = t.hashSize
 end
 
-entities.hashes = {}
-local _hashes = entities.hashes
-
 function entities.init()
   entities.layers = {}
   entities.updates = {}
@@ -78,7 +78,6 @@ function entities.init()
   entities.recycle = {}
   entities.frozen = {}
   entities.hashes = {}
-  _hashes = entities.hashes
   entities._HS = {}
   entities._updateHoles = {}
   entities.doSort = false
@@ -88,80 +87,98 @@ function entities.init()
   entities.hashSize = 96
 end
 
-function entities.updateHashForEntity(e)
+function entities.updateHashForEntity(e, doAnyway)
+  local hashes = entities.hashes
+  local HS = entities._HS
+  
   if e.collisionShape and not e.invisibleToHash then
-    if not e.currentHashes then
-      e.currentHashes = {}
-    end
-    
     local xx, yy, ww, hh = e.x - (e.collisionShape.r or 0), e.y - (e.collisionShape.r or 0),
       e.collisionShape.w, e.collisionShape.h
-    local hs = entities.hashSize
-    local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
-    local cx2, cy2 = math.ceil((xx + ww + 2) / hs), math.ceil((yy + hh + 2) / hs)
-    local emptyBefore = #e.currentHashes == 0
-    local check = {}
+    local hashSize = entities.hashSize
+    local cx, cy = _floor((xx - 2) / hashSize), _floor((yy - 2) / hashSize)
+    local cx2, cy2 = _ceil((xx + ww + 2) / hashSize), _ceil((yy + hh + 2) / hashSize)
     
-    for x = cx, cx2 do
-      for y = cy, cy2 do
-        if not _hashes[x] then
-          _hashes[x] = {[y] = {x = x, y = y, data = {e}, isRemoved = false}}
-          entities._HS[x] = 1
-        elseif not _hashes[x][y] then
-          _hashes[x][y] = {x = x, y = y, data = {e}, isRemoved = false}
-          entities._HS[x] = entities._HS[x] + 1
-        elseif not table.icontains(_hashes[x][y].data, e) then
-          _hashes[x][y].data[#_hashes[x][y].data+1] = e
-          _hashes[x][y].data[#_hashes[x][y].data].isRemoved = false
-        end
-        
-        if not table.icontains(e.currentHashes, _hashes[x][y]) then
-          e.currentHashes[#e.currentHashes+1] = _hashes[x][y]
-        end
-        
-        if _hashes[x] and _hashes[x][y] then
-          check[#check + 1] = _hashes[x][y]
-        end
+    if doAnyway or e._lastHashX ~= cx or e._lastHashY ~= cy or e._lastHashX2 ~= cx2 or e._lastHashY2 ~= cy2 then
+      e._lastHashX = cx
+      e._lastHashY = cy
+      e._lastHashX2 = cx2
+      e._lastHashY2 = cy2
+      
+      if not e.currentHashes then
+        e.currentHashes = {}
       end
-    end
-    
-    if not emptyBefore then
-      for _, v in safeipairs(e.currentHashes) do
-        if v.isRemoved or not table.icontains(check, v) then
-          if not v.isRemoved then
-            table.quickremovevaluearray(v.data, e)
-            
-            if #v.data == 0 then
-              v.isRemoved = true
-              _hashes[v.x][v.y] = nil
-              entities._HS[v.x] = entities._HS[v.x] - 1
-              
-              if entities._HS[v.x] == 0 then
-                _hashes[v.x] = nil
-                entities._HS[v.x] = nil
-              end
-            end
+      
+      local emptyBefore = #e.currentHashes == 0
+      local check = {}
+      
+      for x = cx, cx2 do
+        for y = cy, cy2 do
+          if not hashes[x] then
+            hashes[x] = {[y] = {x = x, y = y, data = {e}, isRemoved = false}}
+            HS[x] = 1
+          elseif not hashes[x][y] then
+            hashes[x][y] = {x = x, y = y, data = {e}, isRemoved = false}
+            HS[x] = HS[x] + 1
+          elseif not _icontains(hashes[x][y].data, e) then
+            hashes[x][y].data[#hashes[x][y].data+1] = e
+            hashes[x][y].data[#hashes[x][y].data].isRemoved = false
           end
           
-          table.quickremovevaluearray(e.currentHashes, v)
+          if not _icontains(e.currentHashes, hashes[x][y]) then
+            e.currentHashes[#e.currentHashes+1] = hashes[x][y]
+          end
+          
+          if hashes[x] and hashes[x][y] then
+            check[#check + 1] = hashes[x][y]
+          end
+        end
+      end
+      
+      if not emptyBefore then
+        for _, v in safeipairs(e.currentHashes) do
+          if v.isRemoved or not _icontains(check, v) then
+            if not v.isRemoved then
+              _quickremovevaluearray(v.data, e)
+              
+              if #v.data == 0 then
+                v.isRemoved = true
+                hashes[v.x][v.y] = nil
+                HS[v.x] = HS[v.x] - 1
+                
+                if HS[v.x] == 0 then
+                  hashes[v.x] = nil
+                  HS[v.x] = nil
+                end
+              end
+            end
+            
+            _quickremovevaluearray(e.currentHashes, v)
+          end
         end
       end
     end
-  elseif e.currentHashes and #e.currentHashes ~= 0 then -- If there's no collision, then remove from hash.
-    for i = 1, #e.currentHashes do
-      local v = e.currentHashes[i]
-      
-      if not v.isRemoved then
-        table.quickremovevaluearray(v.data, e)
+  elseif e.currentHashes then -- If there's no collision, then remove from hash.
+    e._lastHashX = nil
+    e._lastHashY = nil
+    e._lastHashX2 = nil
+    e._lastHashY2 = nil
+    
+    if #e.currentHashes ~= 0 then
+      for i = 1, #e.currentHashes do
+        local v = e.currentHashes[i]
         
-        if #v.data == 0 then
-          v.isRemoved = true
-          _hashes[v.x][v.y] = nil
-          entities._HS[v.x] = entities._HS[v.x] - 1
+        if not v.isRemoved then
+          _quickremovevaluearray(v.data, e)
           
-          if entities._HS[v.x] == 0 then
-            _hashes[v.x] = nil
-            entities._HS[v.x] = nil
+          if #v.data == 0 then
+            v.isRemoved = true
+            hashes[v.x][v.y] = nil
+            HS[v.x] = HS[v.x] - 1
+            
+            if HS[v.x] == 0 then
+              hashes[v.x] = nil
+              HS[v.x] = nil
+            end
           end
         end
       end
@@ -172,19 +189,19 @@ function entities.updateHashForEntity(e)
 end
 
 function entities.getEntitiesAt(xx, yy, ww, hh)
-  local hs = entities.hashSize
+  local hashSize = entities.hashSize
   local result
   
-  for x = math.floor((xx - 2) / hs), math.floor((xx + ww + 2) / hs) do
-    for y = math.ceil((yy - 2) / hs), math.ceil((yy + hh + 2) / hs) do
-      if _hashes[x] and _hashes[x][y] then
-        local hash = _hashes[x][y]
+  for x = _floor((xx - 2) / hashSize), _floor((xx + ww + 2) / hashSize) do
+    for y = _ceil((yy - 2) / hashSize), _ceil((yy + hh + 2) / hashSize) do
+      if entities.hashes[x] and entities.hashes[x][y] then
+        local hash = entities.hashes[x][y]
         
         if not result and #hash.data > 0 then
           result = {unpack(hash.data)}
-        else
+        else 
           for i = 1, #hash.data do
-            if not table.icontains(result, hash.data[i]) then
+            if not _icontains(result, hash.data[i]) then
               result[#result+1] = hash.data[i]
             end
           end
@@ -197,13 +214,13 @@ function entities.getEntitiesAt(xx, yy, ww, hh)
 end
 
 function entities.freeze(n)
-  if not table.icontains(entities.frozen, n or "global") then
+  if not _icontains(entities.frozen, n or "global") then
     entities.frozen[#entities.frozen + 1] = n or "global"
   end
 end
 
 function entities.unfreeze(n)
-  table.quickremovevaluearray(entities.frozen, n or "global")
+  _quickremovevaluearray(entities.frozen, n or "global")
 end
 
 function entities.checkFrozen(name)
@@ -373,12 +390,14 @@ function entities.add(c, ...)
   e.isRemoved = false
   e.isAdded = true
   e.justAddedIn = true
-  e.lastHashX = nil
-  e.lastHashY = nil
-  e.lastHashX2 = nil
-  e.lastHashY2 = nil
+  e._lastHashX = nil
+  e._lastHashY = nil
+  e._lastHashX2 = nil
+  e._lastHashY2 = nil
   e.currentHashes = nil
-  if not e.invisibleToHash then e:updateHash(true) end
+  if not e.invisibleToHash then
+    entities.updateHashForEntity(e, true)
+  end
   e:added()
   
   if entities.inLoop then
@@ -441,12 +460,14 @@ function entities.adde(e)
   e.isRemoved = false
   e.isAdded = true
   e.justAddedIn = true
-  e.lastHashX = nil
-  e.lastHashY = nil
-  e.lastHashX2 = nil
-  e.lastHashY2 = nil
+  e._lastHashX = nil
+  e._lastHashY = nil
+  e._lastHashX2 = nil
+  e._lastHashY2 = nil
   e.currentHashes = nil
-  if not e.invisibleToHash then e:updateHash(true) end
+  if not e.invisibleToHash then
+    entities.updateHashForEntity(e, true)
+  end
   e:added()
   
   if entities.inLoop then
@@ -467,18 +488,18 @@ function entities.addToGroup(e, g)
     entities.groups[g] = {}
   end
   
-  if not table.icontains(entities.groups[g], e) then
+  if not _icontains(entities.groups[g], e) then
     entities.groups[g][#entities.groups[g] + 1] = e
   end
   
-  if not table.icontains(e.groupNames, g) then
+  if not _icontains(e.groupNames, g) then
     e.groupNames[#e.groupNames + 1] = g
   end
 end
 
 function entities.removeFromGroup(e, g)
-  table.quickremovevaluearray(entities.groups[g], e)
-  table.quickremovevaluearray(e.groupNames, g)
+  _quickremovevaluearray(entities.groups[g], e)
+  _quickremovevaluearray(e.groupNames, g)
   
   if #entities.groups[g] == 0 then
     entities.groups[g] = nil
@@ -512,17 +533,17 @@ function entities.makeStatic(e)
     entities.static[#entities.static + 1] = e
     
     e.static = true
-    e.staticX = e.x
-    e.staticY = e.y
+    e._staticX = e.x
+    e._staticY = e.y
     if e.collisionShape then
-      e.staticW = e.collisionShape.w
-      e.staticH = e.collisionShape.h
+      e._staticW = e.collisionShape.w
+      e._staticH = e.collisionShape.h
     end
     
-    e.lastHashX = nil
-    e.lastHashY = nil
-    e.lastHashX2 = nil
-    e.lastHashY2 = nil
+    e._lastHashX = nil
+    e._lastHashY = nil
+    e._lastHashX2 = nil
+    e._lastHashY2 = nil
     e.currentHashes = nil
     
     e:staticToggled()
@@ -531,7 +552,7 @@ end
 
 function entities.revertFromStatic(e)
   if e.static then
-    table.quickremovevaluearray(entities.static, e)
+    _quickremovevaluearray(entities.static, e)
     
     local done = false
     
@@ -563,47 +584,50 @@ function entities.revertFromStatic(e)
       entities.updates[#entities.updates + 1] = e
     end
     
-    if e.collisionShape and e.staticX == e.x and e.staticY == e.y and
-      e.staticW == e.collisionShape.w and e.staticH == e.collisionShape.h then
+    local hashes = entities.hashes
+    local HS = entities._HS
+    
+    if e.collisionShape and e._staticX == e.x and e._staticY == e.y and
+      e._staticW == e.collisionShape.w and e._staticH == e.collisionShape.h then
       local xx, yy, ww, hh = e.x - (e.collisionShape.r or 0), e.y - (e.collisionShape.r or 0),
         e.collisionShape.w, e.collisionShape.h
-      local hs = entities.hashSize
-      local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
-      local cx2, cy2 = math.ceil((xx + ww + 2) / hs), math.ceil((yy + hh + 2) / hs)
+      local hashSize = entities.hashSize
+      local cx, cy = _floor((xx - 2) / hashSize), _floor((yy - 2) / hashSize)
+      local cx2, cy2 = _ceil((xx + ww + 2) / hashSize), _ceil((yy + hh + 2) / hashSize)
       
       for x = cx, cx2 do
         for y = cy, cy2 do
-          if _hashes[x] and _hashes[x][y] and not _hashes[x][y].isRemoved then
-            table.quickremovevaluearray(_hashes[x][y].data, e)
+          if hashes[x] and hashes[x][y] and not hashes[x][y].isRemoved then
+            _quickremovevaluearray(hashes[x][y].data, e)
             
-            if #_hashes[x][y].data == 0 then
-              _hashes[x][y].isRemoved = true
-              _hashes[x][y] = nil
-              entities._HS[x] = entities._HS[x] - 1
+            if #hashes[x][y].data == 0 then
+              hashes[x][y].isRemoved = true
+              hashes[x][y] = nil
+              HS[x] = HS[x] - 1
               
-              if entities._HS[x] == 0 then
-                _hashes[x] = nil
-                entities._HS[x] = nil
+              if HS[x] == 0 then
+                hashes[x] = nil
+                HS[x] = nil
               end
             end
           end
         end
       end
     else
-      for x, xt in safepairs(_hashes) do
+      for x, xt in safepairs(hashes) do
         for y, yt in safepairs(xt) do
-          if table.icontains(yt.data, e) then
-            table.quickremovevaluearray(yt.data, e)
+          if _icontains(yt.data, e) then
+            _quickremovevaluearray(yt.data, e)
           end
           
           if #yt.data == 0 and not yt.isRemoved then
             yt.isRemoved = true
-            _hashes[x][y] = nil
-            entities._HS[x] = entities._HS[x] - 1
+            hashes[x][y] = nil
+            HS[x] = HS[x] - 1
             
-            if entities._HS[x] == 0 then
-              _hashes[x] = nil
-              entities._HS[x] = nil
+            if HS[x] == 0 then
+              hashes[x] = nil
+              HS[x] = nil
             end
           end
         end
@@ -611,18 +635,18 @@ function entities.revertFromStatic(e)
     end
     
     e.static = false
-    e.staticX = nil
-    e.staticY = nil
-    e.staticW = nil
-    e.staticH = nil
-    e.lastHashX = nil
-    e.lastHashY = nil
-    e.lastHashX2 = nil
-    e.lastHashY2 = nil
+    e._staticX = nil
+    e._staticY = nil
+    e._staticW = nil
+    e._staticH = nil
+    e._lastHashX = nil
+    e._lastHashY = nil
+    e._lastHashX2 = nil
+    e._lastHashY2 = nil
     e.currentHashes = nil
     
     if not e.invisibleToHash then
-      e:updateHash()
+      entities.updateHashForEntity(e)
     end
     
     e:staticToggled()
@@ -639,7 +663,7 @@ function entities.remove(e)
   local al = entities.getLayer(e.layer)
   
   if e.static then
-    table.quickremovevaluearray(entities.static, e)
+    _quickremovevaluearray(entities.static, e)
   else
     if al then
       local i = table.findindexarray(al.data, e)
@@ -656,70 +680,73 @@ function entities.remove(e)
     table.removevaluearray(entities.layers, al)
   end
   
-  table.quickremovevaluearray(entities.all, e)
+  _quickremovevaluearray(entities.all, e)
   
   local i = table.findindexarray(entities.beginQueue, e)
   if i then
     entities.beginQueue[i] = -1
   end
   
+  local hashes = entities.hashes
+  local HS = entities._HS
+  
   if e.currentHashes then
     for _, v in safeipairs(e.currentHashes) do
       if not v.isRemoved then
-        table.quickremovevaluearray(v.data, e)
+        _quickremovevaluearray(v.data, e)
         
         if #v.data == 0 then
           v.isRemoved = true
-          _hashes[v.x][v.y] = nil
-          entities._HS[v.x] = entities._HS[v.x] - 1
+          hashes[v.x][v.y] = nil
+          HS[v.x] = HS[v.x] - 1
           
-          if entities._HS[v.x] == 0 then
-            _hashes[v.x] = nil
-            entities._HS[v.x] = nil
+          if HS[v.x] == 0 then
+            hashes[v.x] = nil
+            HS[v.x] = nil
           end
         end
       end
     end
   elseif e.static then
-    if e.collisionShape and e.staticX == e.x and e.staticY == e.y and
-      e.staticW == e.collisionShape.w and e.staticH == e.collisionShape.h then
+    if e.collisionShape and e._staticX == e.x and e._staticY == e.y and
+      e._staticW == e.collisionShape.w and e._staticH == e.collisionShape.h then
       local xx, yy, ww, hh = e.x - (e.collisionShape.r or 0), e.y - (e.collisionShape.r or 0),
         e.collisionShape.w, e.collisionShape.h
-      local hs = entities.hashSize
-      local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
-      local cx2, cy2 = math.ceil((xx + ww + 2) / hs), math.ceil((yy + hh + 2) / hs)
+      local hashSize = entities.hashSize
+      local cx, cy = _floor((xx - 2) / hashSize), _floor((yy - 2) / hashSize)
+      local cx2, cy2 = _ceil((xx + ww + 2) / hashSize), _ceil((yy + hh + 2) / hashSize)
       
       for x = cx, cx2 do
         for y = cy, cy2 do
-          if _hashes[x] and _hashes[x][y] and not _hashes[x][y].isRemoved then
-            table.quickremovevaluearray(_hashes[x][y].data, e)
+          if hashes[x] and hashes[x][y] and not hashes[x][y].isRemoved then
+            _quickremovevaluearray(hashes[x][y].data, e)
             
-            if #_hashes[x][y].data == 0 then
-              _hashes[x][y].isRemoved = true
-              _hashes[x][y] = nil
-              entities._HS[x] = entities._HS[x] - 1
+            if #hashes[x][y].data == 0 then
+              hashes[x][y].isRemoved = true
+              hashes[x][y] = nil
+              HS[x] = HS[x] - 1
               
-              if entities._HS[x] == 0 then
-                _hashes[x] = nil
-                entities._HS[x] = nil
+              if HS[x] == 0 then
+                hashes[x] = nil
+                HS[x] = nil
               end
             end
           end
         end
       end
     else
-      for x, xt in safepairs(_hashes) do
+      for x, xt in safepairs(hashes) do
         for y, yt in safepairs(xt) do
-          table.quickremovevaluearray(yt.data, e)
+          _quickremovevaluearray(yt.data, e)
           
           if #yt.data == 0 and not yt.isRemoved then
             yt.isRemoved = true
-            _hashes[x][y] = nil
-            entities._HS[x] = entities._HS[x] - 1
+            hashes[x][y] = nil
+            HS[x] = HS[x] - 1
             
-            if entities._HS[x] == 0 then
-              _hashes[x] = nil
-              entities._HS[x] = nil
+            if HS[x] == 0 then
+              hashes[x] = nil
+              HS[x] = nil
             end
           end
         end
@@ -727,14 +754,14 @@ function entities.remove(e)
     end
   end
   
-  e.lastHashX = nil
-  e.lastHashY = nil
-  e.lastHashX2 = nil
-  e.lastHashY2 = nil
-  e.staticX = nil
-  e.staticY = nil
-  e.staticW = nil
-  e.staticH = nil
+  e._lastHashX = nil
+  e._lastHashY = nil
+  e._lastHashX2 = nil
+  e._lastHashY2 = nil
+  e._staticX = nil
+  e._staticY = nil
+  e._staticW = nil
+  e._staticH = nil
   e.currentHashes = nil
   
   e.isAdded = false
@@ -743,7 +770,7 @@ function entities.remove(e)
   if e.recycle then
     if not entities.recycle[e.__index] then
       entities.recycle[e.__index] = {e}
-    elseif not table.icontains(entities.recycle[e.__index], e) then
+    elseif not _icontains(entities.recycle[e.__index], e) then
       entities.recycle[e.__index][#entities.recycle[e.__index] + 1] = e
     end
   end
@@ -764,7 +791,6 @@ function entities.clear()
   entities.static = {}
   entities.frozen = {}
   entities.hashes = {}
-  _hashes = entities.hashes
   entities._HS = {}
   entities.cameraUpdate = nil
   entities.doSort = false
@@ -831,7 +857,9 @@ function entities.update(dt)
   entities.inLoop = true
   
   for j = 1, #entities.updates do
-    if not entities.updates[j].invisibleToHash then entities.updates[j]:updateHash() end
+    if not entities.updates[j].invisibleToHash then
+      entities.updateHashForEntity(entities.updates[j])
+    end
   end
   
   for i = 1, #entities.updates do
@@ -840,7 +868,9 @@ function entities.update(dt)
     if e ~= -1 and ((type(e.noFreeze) == "table" and table.intersects(entities.frozen, e.noFreeze, true)) or
       e.noFreeze or not checkTrue(entities.frozen)) and not e.isRemoved and checkFalse(e.canUpdate) then
       collision.doCollision(e, e.noSlope, not checkFalse(e.autoCollision), not checkFalse(e.autoGravity))
-      if not e.invisibleToHash then e:updateHash() end
+      if not e.invisibleToHash then
+        entities.updateHashForEntity(e)
+      end
     end
     
     if states.switched then
@@ -1048,6 +1078,10 @@ function basicEntity:addToGroup(g)
   entities.addToGroup(self, g)
 end
 
+function basicEntity:updateHash(doAnyway)
+  
+end
+
 function basicEntity:setRectangleCollision(w, h)
   if not self.collisionShape then
     self.collisionShape = {}
@@ -1060,13 +1094,11 @@ function basicEntity:setRectangleCollision(w, h)
   self.collisionShape.r = nil
   self.collisionShape.data = nil
   
-  self:updateHash()
+  entities.updateHashForEntity(self)
 end
 
-basicEntity._imgCache = {}
-
-function basicEntity:setImageCollision(resource)
-  local res = loader.getTable(resource)
+function basicEntity:setImageCollision(path)
+  local res = loader.getTable(path)
   
   if not self.collisionShape then
     self.collisionShape = {}
@@ -1076,16 +1108,11 @@ function basicEntity:setImageCollision(resource)
   self.collisionShape.w = res.data:getWidth()
   self.collisionShape.h = res.data:getHeight()
   self.collisionShape.data = res.data
-  
-  if not basicEntity._imgCache[self.collisionShape.data] then
-    basicEntity._imgCache[self.collisionShape.data] = self.collisionShape.data:toImageWrapper()
-  end
-  
-  self.collisionShape.image = basicEntity._imgCache[self.collisionShape.data]
+  self.collisionShape.image = res.img
   
   self.collisionShape.r = nil
   
-  self:updateHash()
+  entities.updateHashForEntity(self)
 end
 
 function basicEntity:setCircleCollision(r)
@@ -1100,7 +1127,7 @@ function basicEntity:setCircleCollision(r)
   
   self.collisionShape.data = nil
   
-  self:updateHash()
+  entities.updateHashForEntity(self)
 end
 
 local _rectOverlapsRect = rectOverlapsRect
@@ -1197,21 +1224,7 @@ function basicEntity:collisionNumber(t, x, y, notme, func)
 end
 
 function basicEntity:updateHash(doAnyway)
-  if (doAnyway or self.isAdded) and self.collisionShape then
-    local xx, yy, ww, hh = self.x - (self.collisionShape.r or 0), self.y - (self.collisionShape.r or 0), self.collisionShape.w, self.collisionShape.h
-    local hs = entities.hashSize
-    local cx, cy = math.floor((xx - 2) / hs), math.floor((yy - 2) / hs)
-    local cx2, cy2 = math.ceil((xx + ww + 2) / hs), math.ceil((yy + hh + 2) / hs)
-    
-    if doAnyway or self.lastHashX ~= cx or self.lastHashY ~= cy or self.lastHashX2 ~= cx2 or self.lastHashY2 ~= cy2 then
-      self.lastHashX = cx
-      self.lastHashY = cy
-      self.lastHashX2 = cx2
-      self.lastHashY2 = cy2
-      
-      entities.updateHashForEntity(self)
-    end
-  end
+  entities.updateHashForEntity(e, doAnyway)
 end
 
 function basicEntity:getSurroundingEntities(extentsLeft, extentsRight, extentsUp, extentsDown)
@@ -1219,11 +1232,12 @@ function basicEntity:getSurroundingEntities(extentsLeft, extentsRight, extentsUp
     return {}
   end
   
-  self:updateHash()
+  entities.updateHashForEntity(self)
   
   if extentsLeft or extentsRight or extentsUp or extentsDown or not self.currentHashes then
     return entities.getEntitiesAt(self.x - (extentsLeft or 0), self.y - (extentsUp or 0),
-      self.collisionShape.w + (extentsLeft or 0) + (extentsRight or 0), self.collisionShape.h + (extentsUp or 0) + (extentsDown or 0))
+      self.collisionShape.w + (extentsLeft or 0) + (extentsRight or 0),
+      self.collisionShape.h + (extentsUp or 0) + (extentsDown or 0))
   end
   
   local result = self.currentHashes[1] and {unpack(self.currentHashes[1].data)} or {}
@@ -1273,8 +1287,6 @@ function basicEntity:_draw()
 end
 
 megautils.cleanFuncs.autoCleaner = {func=function()
-    basicEntity._imgCache = {}
-    
     local removed = {}
     for k, v in pairs(_G) do
       if type(v) == "table" and tostring(v) == "_Ent" and v.autoClean then
@@ -1652,10 +1664,10 @@ pierce.NOPIERCE = 0
 pierce.PIERCE = 1
 pierce.PIERCEIFKILLING = 2
 
-loader.load("assets/sfx/enemyHit.ogg", "enemyHit", true)
-loader.load("assets/sfx/enemyExplode.ogg", "enemyExplode", true)
-loader.load("assets/sfx/hugeExplode.ogg", "enemyHugeExplode", true)
-loader.load("assets/sfx/dieExplode.ogg", "dieExplode", true)
+loader.load("assets/sfx/enemyHit.ogg", true)
+loader.load("assets/sfx/enemyExplode.ogg", true)
+loader.load("assets/sfx/hugeExplode.ogg", true)
+loader.load("assets/sfx/dieExplode.ogg", true)
 
 advancedEntity = entity:extend()
 
@@ -1673,8 +1685,8 @@ function advancedEntity:new()
     self.removeOnDeath = true
     self.dropItem = true
     self.health = 1
-    self.soundOnHit = "enemyHit"
-    self.soundOnDeath = "enemyExplode"
+    self.soundOnHit = "assets/sfx/enemyHit.ogg"
+    self.soundOnDeath = "assets/sfx/enemyExplode.ogg"
     self.autoHitPlayer = true
     self.damage = -1
     self.hurtable = true
@@ -1914,7 +1926,7 @@ bossEntity.autoClean = false
 
 function bossEntity:new()
   bossEntity.super.new(self)
-  self.soundOnDeath = "dieExplode"
+  self.soundOnDeath = "assets/sfx/dieExplode.ogg"
   self.dropItem = false
   self.explosionType = advancedEntity.DEATHBLAST
   self.defeatSlot = nil

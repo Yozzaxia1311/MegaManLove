@@ -3,7 +3,7 @@
  <tileset firstgid="1" source="../templateTileset16x16.tsx"/>
  <object name="slope" gid="116" width="16" height="16">
   <properties>
-   <property name="mask" value="slopeRightHalfUpperInvert"/>
+   <property name="mask" value="assets/misc/slopes/slopeRightHalfUpperInvert.data.png"/>
   </properties>
  </object>
 </template>

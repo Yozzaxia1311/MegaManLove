@@ -3,207 +3,307 @@ loader = {}
 loader.resources = {}
 loader.locked = {}
 
--- Internal loader used in `loader.load`. DO NOT USE!
-local function _load(path, nick, typ, parameters, lock)
-  if not nick then
-    error("Specify nickname for resource \"" .. path .. "\".")
-  end
-  
-  if (loader.resources[nick] and loader.resources[nick][2] == path and not lock) or
-    (loader.locked[nick] and loader.locked[nick][2] == path) then return end
-  if typ == "texture" then
-    if lock then
-      if parameters and parameters[1] then
-        local imgData = imageData(path)
-        loader.locked[nick] = {data=imgData, path=path, img=imgData:toImageWrapper(), type=typ, parameters=parameters}
-      else
-        loader.locked[nick] = {data=imageWrapper(path), path=path, type=typ}
-      end
-      
-      loader.resources[nick] = nil
-      
-      return loader.locked[nick]
-    else
-      if loader.locked[nick] then
-        error("Cannot overwrite a locked resource.")
-      end
-      if parameters and parameters[1] then
-        local imgData = imageData(path)
-        loader.resources[nick] = {data=imgData, path=path, img=imgData:toImageWrapper(),
-          type=typ, parameters=parameters}
-      else
-        loader.resources[nick] = {data=imageWrapper(path), path=path, type=typ}
-      end
-      
-      return loader.resources[nick]
-    end
-  elseif typ == "sound" then
-    if lock then
-      loader.locked[nick] = {data=love.audio.newSource(path, "static"), path=path, type=typ,
-        conf=love.filesystem.getInfo(path .. ".txt") and parseConf(path .. ".txt")}
-      loader.resources[nick] = nil
-      
-      return loader.locked[nick]
-    else
-      if loader.locked[nick] then
-        error("Cannot overwrite a locked resource.")
-      end
-      loader.resources[nick] = {data=love.audio.newSource(path, "static"), path=path, type=typ,
-        conf=love.filesystem.getInfo(path .. ".txt") and parseConf(path .. ".txt")}
-      
-      return loader.resources[nick]
-    end
-  elseif typ == "anim" then
-    if lock then
-      local c = parseConf(path)
-      local fx, fy, fw, fh, fb = unpack(c.quad)
-      if not fw or not fh then
-        fw = fx
-        fh = fy
-        fx = 0
-        fy = 0
-      end
-      local img
-      if c.image then
-        img = imageWrapper(c.image)
-      end
-      loader.locked[nick] = {path=path, data=anim8.newGrid(fw, fh, fx, fy, fb),
-        parameters=parameters, type=typ, frames=c.frames, durations=c.durations,
-        onLoop=c.onLoop, img=img}
-      loader.resources[nick] = nil
-      
-      return loader.locked[nick]
-    else
-      if loader.locked[nick] then
-        error("Cannot overwrite a locked resource.")
-      end
-      local c = parseConf(path)
-      local fx, fy, fw, fh, fb = unpack(c.quad)
-      if not fw or not fh then
-        fw = fx
-        fh = fy
-        fx = 0
-        fy = 0
-      end
-      local img
-      if c.image then
-        img = imageWrapper(c.image)
-      end
-      loader.resources[nick] = {path=path, data=anim8.newGrid(fw, fh, fx, fy, fb),
-        parameters=parameters, type=typ, frames=c.frames, durations=c.durations,
-        onLoop=c.onLoop, img=img}
-      
-      return loader.resources[nick]
-    end
-  elseif typ == "animSet" then
-    if lock then
-      local c = parseConf(path)
-      local data = {}
-      for k, v in pairs(c) do
-        if k:sub(-6) == "Frames" then
-          local l = k:sub(0, k:len() - 6)
-          if not data[l] then
-            data[l] = {frames = v}
-          else
-            data[l].frames = v
+loader.loaders = {
+    imageData = function(path, lock)
+        if lock then
+          if loader.resources[path] then
+            loader.locked[path] = loader.resources[path]
+            loader.resources[path] = nil
+          elseif not loader.locked[path] then
+            local imgData = imageData(path)
+            loader.locked[path] = {data = imgData, type = "imageData", img = imgData:toImageWrapper()}
           end
-        elseif k:sub(-9) == "Durations" then
-          local l = k:sub(0, k:len() - 9)
-          if not data[l] then
-            data[l] = {durations = v}
-          else
-            data[l].durations = v
+        else
+          if not loader.resources[path] and not loader.locked[path] then
+            local imgData = imageData(path)
+            loader.resources[path] = {data = imgData, type = "imageData", img = imgData:toImageWrapper()}
           end
-        elseif k:sub(-6) == "OnLoop" then
-          local l = k:sub(0, k:len() - 6)
-          if not data[l] then
-            data[l] = {onLoop = v}
+        end
+      end,
+    image = function(path, lock)
+        if lock then
+          if loader.resources[path] then
+            loader.locked[path] = loader.resources[path]
+            loader.resources[path] = nil
+          elseif not loader.locked[path] then
+            loader.locked[path] = {data = imageWrapper(path), type = "image"}
+          end
+        else
+          if not loader.resources[path] and not loader.locked[path] then
+            loader.resources[path] = {data = imageWrapper(path), type = "image", imgData = imgData}
+          end
+        end
+      end,
+      sound = function(path, lock)
+          if lock then
+            if loader.resources[path] then
+              loader.locked[path] = loader.resources[path]
+              loader.resources[path] = nil
+            elseif not loader.locked[path] then
+              loader.locked[path] = {data = love.audio.newSource(path, "static"), type = "sound",
+                conf = love.filesystem.getInfo(path .. ".txt") and parseConf(path .. ".txt")}
+            end
           else
-            data[l].onLoop = v
+            if not loader.resources[path] and not loader.locked[path] then
+              loader.resources[path] = {data = love.audio.newSource(path, "static"), type = "sound",
+                conf = love.filesystem.getInfo(path .. ".txt") and parseConf(path .. ".txt")}
+            end
+          end
+        end,
+      animation = function(path, lock)
+          if lock then
+            if loader.resources[path] then
+              loader.locked[path] = loader.resources[path]
+              loader.resources[path] = nil
+              
+              local imgPath = loader.locked[path].img.path
+              
+              if loader.resources[imgPath] then
+                loader.locked[imgPath] = loader.resources[imgPath]
+                loader.resources[imgPath] = nil
+              end
+            elseif not loader.locked[path] then
+              local c = parseConf(path)
+              local fx, fy, fw, fh, fb = unpack(c.quad)
+              
+              if not fw or not fh then
+                fw = fx
+                fh = fy
+                fx = 0
+                fy = 0
+              end
+              
+              if c.image and not loader.get(c.image) then
+                loader.loaders.image(c.image, true)
+              end
+              if c.image and loader.resources[c.image] then
+                loader.locked[c.image] = loader.resources[c.image]
+                loader.resources[c.image] = nil
+              end
+              
+              loader.locked[path] = {data = anim8.newGrid(fw, fh, fx, fy, fb),
+                type = "animation", frames = c.frames, durations = c.durations,
+                onLoop = c.onLoop, img = loader.get(c.image)}
+            end
+          else
+            if not loader.resources[path] and not loader.locked[path] then
+              local c = parseConf(path)
+              local fx, fy, fw, fh, fb = unpack(c.quad)
+              
+              if not fw or not fh then
+                fw = fx
+                fh = fy
+                fx = 0
+                fy = 0
+              end
+              
+              if c.image and not loader.get(c.image) then
+                loader.loaders.image(c.image, false)
+              end
+              
+              loader.resources[path] = {data = anim8.newGrid(fw, fh, fx, fy, fb),
+                type = "animation", frames = c.frames, durations = c.durations,
+                onLoop = c.onLoop, img = loader.get(c.image)}
+            end
+          end
+        end,
+      animationSet = function(path, lock)
+          if lock then
+            if loader.resources[path] then
+              loader.locked[path] = loader.resources[path]
+              loader.resources[path] = nil
+              
+              local imgPath = loader.locked[path].img.path
+              
+              if loader.resources[imgPath] then
+                loader.locked[imgPath] = loader.resources[imgPath]
+                loader.resources[imgPath] = nil
+              end
+            elseif not loader.locked[path] then
+              local c = parseConf(path)
+              local data = {}
+              
+              for k, v in pairs(c) do
+                if k:sub(-6) == "Frames" then
+                  local l = k:sub(0, k:len() - 6)
+                  if not data[l] then
+                    data[l] = {frames = v}
+                  else
+                    data[l].frames = v
+                  end
+                elseif k:sub(-9) == "Durations" then
+                  local l = k:sub(0, k:len() - 9)
+                  if not data[l] then
+                    data[l] = {durations = v}
+                  else
+                    data[l].durations = v
+                  end
+                elseif k:sub(-6) == "OnLoop" then
+                  local l = k:sub(0, k:len() - 6)
+                  if not data[l] then
+                    data[l] = {onLoop = v}
+                  else
+                    data[l].onLoop = v
+                  end
+                end
+              end
+              
+              local fx, fy, fw, fh, fb = unpack(c.quad)
+              if not fw or not fh then
+                fw = fx
+                fh = fy
+                fx = 0
+                fy = 0
+              end
+              
+              local grid = anim8.newGrid(fw, fh, fx, fy, fb)
+              for _, v in pairs(data) do
+                v.data = grid
+              end
+              
+              if c.image and not loader.get(c.image) then
+                loader.loaders.image(c.image, true)
+              end
+              if c.image and loader.resources[c.image] then
+                loader.locked[c.image] = loader.resources[c.image]
+                loader.resources[c.image] = nil
+              end
+              
+              loader.locked[path] = {data = grid, type = "animationSet", sets = data,
+                default = c.default, img = loader.get(c.image)}
+            end
+          else
+            if not loader.resources[path] and not loader.locked[path] then
+              local c = parseConf(path)
+              local data = {}
+              
+              for k, v in pairs(c) do
+                if k:sub(-6) == "Frames" then
+                  local l = k:sub(0, k:len() - 6)
+                  if not data[l] then
+                    data[l] = {frames = v}
+                  else
+                    data[l].frames = v
+                  end
+                elseif k:sub(-9) == "Durations" then
+                  local l = k:sub(0, k:len() - 9)
+                  if not data[l] then
+                    data[l] = {durations = v}
+                  else
+                    data[l].durations = v
+                  end
+                elseif k:sub(-6) == "OnLoop" then
+                  local l = k:sub(0, k:len() - 6)
+                  if not data[l] then
+                    data[l] = {onLoop = v}
+                  else
+                    data[l].onLoop = v
+                  end
+                end
+              end
+              
+              local fx, fy, fw, fh, fb = unpack(c.quad)
+              if not fw or not fh then
+                fw = fx
+                fh = fy
+                fx = 0
+                fy = 0
+              end
+              
+              local grid = anim8.newGrid(fw, fh, fx, fy, fb)
+              for _, v in pairs(data) do
+                v.data = grid
+              end
+              
+              if c.image and not loader.get(c.image) then
+                loader.loaders.image(c.image, false)
+              end
+              
+              loader.resources[path] = {data = grid, type = "animationSet", sets = data,
+                default = c.default, img = loader.get(c.image)}
+            end
+          end
+        end
+  }
+
+loader.unloaders = {
+    imageData = function(path, bypassLock)
+        local res = bypassLock and loader.locked[path] or loader.resources[path]
+        
+        if res then
+          res.data:release()
+          res.img:release()
+          
+          if bypassLock then
+            loader.locked[path] = nil
+          else
+            loader.resources[path] = nil
+          end
+        end
+      end,
+    image = function(path, bypassLock)
+        local res = bypassLock and loader.locked[path] or loader.resources[path]
+        
+        if res then
+          res.data:release()
+          
+          if bypassLock then
+            loader.locked[path] = nil
+          else
+            loader.resources[path] = nil
+          end
+        end
+      end,
+    sound = function(path, bypassLock)
+        local res = bypassLock and loader.locked[path] or loader.resources[path]
+        
+        if res then
+          res.data:stop()
+          res.data:release()
+          
+          if bypassLock then
+            loader.locked[path] = nil
+          else
+            loader.resources[path] = nil
+          end
+        end
+      end,
+    animation = function(path, bypassLock)
+        local res = bypassLock and loader.locked[path] or loader.resources[path]
+        
+        if res then
+          res.data:release()
+          
+          if bypassLock then
+            loader.locked[path] = nil
+          else
+            loader.resources[path] = nil
+          end
+        end
+      end,
+    animationSet = function(path, bypassLock)
+        local res = bypassLock and loader.locked[path] or loader.resources[path]
+        
+        if res then
+          res.data:release()
+          
+          if bypassLock then
+            loader.locked[path] = nil
+          else
+            loader.resources[path] = nil
           end
         end
       end
-      local fx, fy, fw, fh, fb = unpack(c.quad)
-      if not fw or not fh then
-        fw = fx
-        fh = fy
-        fx = 0
-        fy = 0
-      end
-      local grid = anim8.newGrid(fw, fh, fx, fy, fb)
-      for _, v in pairs(data) do
-        v.data = grid
-      end
-      local img
-      if c.image then
-        img = imageWrapper(c.image)
-      end
-      loader.locked[nick] = {path=path, data=grid,
-        parameters=parameters, type=typ, sets=data, default=c.default, img=img}
-      loader.resources[nick] = nil
-      
-      return loader.locked[nick]
-    else
-      if loader.locked[nick] then
-        error("Cannot overwrite a locked resource.")
-      end
-      local c = parseConf(path)
-      local data = {}
-      for k, v in pairs(c) do
-        if k:sub(-6) == "Frames" then
-          local l = k:sub(0, k:len() - 6)
-          if not data[l] then
-            data[l] = {frames = v}
-          else
-            data[l].frames = v
-          end
-        elseif k:sub(-9) == "Durations" then
-          local l = k:sub(0, k:len() - 9)
-          if not data[l] then
-            data[l] = {durations = v}
-          else
-            data[l].durations = v
-          end
-        elseif k:sub(-6) == "OnLoop" then
-          local l = k:sub(0, k:len() - 6)
-          if not data[l] then
-            data[l] = {onLoop = v}
-          else
-            data[l].onLoop = v
-          end
-        end
-      end
-      local fx, fy, fw, fh, fb = unpack(c.quad)
-      if not fw or not fh then
-        fw = fx
-        fh = fy
-        fx = 0
-        fy = 0
-      end
-      local grid = anim8.newGrid(fw, fh, fx, fy, fb)
-      for _, v in pairs(data) do
-        v.data = grid
-      end
-      local img
-      if c.image then
-        img = imageWrapper(c.image)
-      end
-      loader.resources[nick] = {path=path, data=grid,
-        parameters=parameters, type=typ, sets=data, default=c.default, img=img}
-      
-      return loader.resources[nick]
-    end
-  end
-end
+  }
 
 function loader.ser()
   local result = {resources={}, locked={}}
   
-  for k, v in pairs(loader.resources) do
-    result.resources[k] = {path=v.path, nick=v.nick, type=v.type, parameters = v.parameters}
+  for path, _ in pairs(loader.resources) do
+    result.resources[#result.resources + 1] = path
   end
-  for k, v in pairs(loader.locked) do
-    result.locked[k] = {path=v.path, nick=v.nick, type=v.type, parameters = v.parameters}
+  for path, _ in pairs(loader.locked) do
+    result.locked[#result.locked + 1] = path
   end
   
   return result
@@ -211,111 +311,45 @@ end
 
 function loader.deser(t)
   loader.resource = {}
-  for k, v in pairs(t.resources) do
-    _load(v.path, k, v.type, v.parameters, false)
+  for _, path in pairs(t.resources) do
+    loader.load(path, false)
   end
   loader.locked = {}
-  for k, v in pairs(t.locked) do
-    _load(v.path, k, v.type, v.parameters, true)
+  for _, path in pairs(t.locked) do
+    loader.load(path, true)
   end
 end
 
--- Possible image args:
--- * absoluteFilePath:string, nickname:any.
--- * absoluteFilePath:string, nickname:any, loadAsCollisionMask:boolean (not required), isLocked:boolean (not required).
-
--- Possible sound/animation/animation set args:
--- * absoluteFilePath:string, nickname:any.
--- * absoluteFilePath:string, nickname:any, isLocked:boolean (not required).
-
--- Note: resource type are detected automatically via file extension.
-function loader.load(...)
-  local args = {...}
-  if #args < 2 then error("`loader.load` takes at least two arguments") end
-  local locked = false
-  local path = args[1]
-  local nick = args[2]
-  local t = ""
+function loader.load(path, lock)
+  local resType 
   
-  if checkExt(path, {"anim"}) then
-    t = "anim"
-    locked = args[3]
-    _load(path, nick, t, nil, locked)
-    return loader.get(nick)
-  elseif checkExt(path, {"animset"}) then
-    t = "animSet"
-    locked = args[3]
-    _load(path, nick, t, nil, locked)
-    return loader.get(nick)
+  if checkExt(path, {"data.png", "data.jpeg", "data.jpg", "data.bmp", "data.tga",
+      "data.hdr", "data.pic", "data.exr"}) then
+    resType = "imageData"
   elseif checkExt(path, {"png", "jpeg", "jpg", "bmp", "tga", "hdr", "pic", "exr"}) then
-    local ext = t
-    t = "texture"
-    if #args == 4 then
-      locked = args[4]
-      _load(path, nick, t, {args[3]}, locked)
-      return loader.get(nick)
-    else
-      locked = args[3]
-      _load(path, nick, t, nil, locked)
-      return loader.get(nick)
-    end
+    resType = "image"
   elseif checkExt(path, {"ogg", "mp3", "wav", "flac", "oga", "ogv", "xm", "it",
     "mod", "mid", "669", "amf", "ams", "dbm", "dmf", "dsm", "far",
     "j2b", "mdl", "med", "mt2", "mtm", "okt", "psm", "s3m", "stm", "ult", "umx", "abc", "pat"}) then
-    t = "sound"
-    locked = args[3]
-    _load(path, nick, t, nil, locked)
-    return loader.get(nick)
-  else
-    error("Could not detect resource type of \"" .. nick .. "\" based on given info.")
+    resType = "sound"
+  elseif checkExt(path, {"anim"}) then
+    resType = "animation"
+  elseif checkExt(path, {"animset"}) then
+    resType = "animationSet"
   end
+  
+  assert(resType, "Resource type could not be determined from file extension")
+  
+  loader.loaders[resType](path, lock)
 end
 
-function loader.lock(nick)
-  if loader.resources[nick] then
-    loader.locked[nick] = loader.resources[nick]
-    loader.resources[nick] = nil
-  end
+function loader.get(path)
+  return path and ((loader.resources[path] and loader.resources[path].data) or
+    (loader.locked[path] and loader.locked[path].data))
 end
 
-function loader.unlock(nick)
-  if loader.locked[nick] then
-    loader.resources[nick] = loader.locked[nick]
-    loader.locked[nick] = nil
-  end
-end
-
-function loader.get(nick)
-  return (loader.resources[nick] and loader.resources[nick].data) or (loader.locked[nick] and loader.locked[nick].data)
-end
-
-function loader.unload(nick)
-  if loader.resources[nick] then
-    if loader.resources[nick].type == "texture" then
-      loader.resources[nick].data:release()
-      if loader.resources[nick].img then
-        loader.resources[nick].img:release()
-      end
-    elseif loader.resources[nick].type == "anim" then
-      loader.resources[nick].data:release()
-      if loader.resources[nick].img then
-        loader.resources[nick].img:release()
-      end
-    elseif loader.resources[nick].type == "animSet" then
-      loader.resources[nick].data:release()
-      if loader.resources[nick].img then
-        loader.resources[nick].img:release()
-      end
-    elseif loader.resources[nick].type == "sound" then
-      loader.resources[nick].data:stop()
-      loader.resources[nick].data:release()
-    end
-    loader.resources[nick] = nil
-  end
-end
-
-function loader.getTable(nick)
-  return loader.resources[nick] or loader.locked[nick]
+function loader.getTable(path)
+  return loader.resources[path] or loader.locked[path]
 end
 
 function loader.getAll()
@@ -338,6 +372,10 @@ function loader.getAllTables()
     all[k] = v
   end
   return all
+end
+
+function loader.unload(path, bypassLock)
+  loader.unloaders[loader.getTable(path).type](path, bypassLock)
 end
 
 function loader.clear()

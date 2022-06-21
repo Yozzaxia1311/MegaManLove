@@ -1,11 +1,12 @@
 local continueState = state:extend()
 
 function continueState:begin()
-  loader.load("assets/misc/cont.png", "cont")
-  loader.load("assets/misc/menuSelect.png", "menuSelect")
-  loader.load("assets/sfx/cursorMove.ogg", "cursorMove")
   entities.add(contPanels)
 end
+
+loader.load("assets/misc/cont.png")
+loader.load("assets/misc/menuSelect.png")
+loader.load("assets/sfx/cursorMove.ogg")
 
 contPanels = basicEntity:extend()
 
@@ -13,7 +14,7 @@ contPanels.invisibleToHash = true
 
 function contPanels:new()
   contPanels.super.new(self)
-  self.tex = loader.get("cont")
+  self.tex = loader.get("assets/misc/cont.png")
   self.quadOne = quad(0, 0, 176, 48)
   self.quadTwo = quad(0, 48, 160, 56)
   self.state = 0
@@ -50,7 +51,7 @@ function contSelect:new()
   contSelect.super.new(self)
   self.x = 64
   self.y = 144
-  self.tex = loader.get("menuSelect")
+  self.tex = loader.get("assets/misc/menuSelect.png")
   self.pick = 0
   self.offY = self.y
   self.picked = false
@@ -77,7 +78,7 @@ function contSelect:update()
     end
   end
   if old ~= self.pick and not input.usingTouch then
-    sfx.play("cursorMove")
+    sfx.play("assets/sfx/cursorMove.ogg")
   end
   if (input.pressed.start1 or input.pressed.jump1 or touched) and not self.picked then
     if self.pick == 1 then

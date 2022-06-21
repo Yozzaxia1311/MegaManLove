@@ -10,9 +10,9 @@ function menuState:begin()
   end
 end
 
-loader.load("assets/misc/menuSelect.png", "menuSelect")
-loader.load("assets/sfx/cursorMove.ogg", "cursorMove")
-loader.load("assets/sfx/selected.ogg", "selected")
+loader.load("assets/misc/menuSelect.png")
+loader.load("assets/sfx/cursorMove.ogg")
+loader.load("assets/sfx/selected.ogg")
 
 menuSelect = basicEntity:extend()
 
@@ -21,7 +21,7 @@ menuSelect.invisibleToHash = true
 function menuSelect:new()
   menuSelect.super.new(self)
   self.x = 88
-  self.tex = loader.get("menuSelect")
+  self.tex = loader.get("assets/misc/menuSelect.png")
   self.pick = globals.fromOther or 0
   self.offY = 10 * 8
   self.y = self.offY + self.pick*16
@@ -52,7 +52,7 @@ function menuSelect:update()
       end
     end
     if old ~= self.pick and not input.usingTouch then
-      sfx.play("cursorMove")
+      sfx.play("assets/sfx/cursorMove.ogg")
     end
     if (input.pressed.start1 or input.pressed.jump1 or touched) and not self.picked then
       if self.pick == 0 then
@@ -73,7 +73,7 @@ function menuSelect:update()
             megaMan.setSkin(k, v)
           end
         end
-        sfx.play("selected")
+        sfx.play("assets/sfx/selected.ogg")
       elseif self.pick == 2 then
         local data = save.load("save.sav") or {}
         data.defeats = globals.defeats
@@ -89,7 +89,7 @@ function menuSelect:update()
           end
         end
         save.save("save.sav", data)
-        sfx.play("selected")
+        sfx.play("assets/sfx/selected.ogg")
       elseif self.pick == 3 and not isMobile and not isWeb then
         megautils.setFullscreen(not megautils.getFullscreen())
         local data = save.load("main.sav") or {}
@@ -102,7 +102,7 @@ function menuSelect:update()
           self.section = 1
           self.timer = 0
         end
-        sfx.play("selected")
+        sfx.play("assets/sfx/selected.ogg")
       elseif self.pick == 5 then
         self.picked = true
         self.section = -1
@@ -124,16 +124,16 @@ function menuSelect:update()
     self.timer = math.wrap(self.timer+1, 0, 20)
     local old = megautils.getScale()
     if input.pressed.left1 then
-      sfx.play("selected")
+      sfx.play("assets/sfx/selected.ogg")
       megautils.setScale(math.wrap(megautils.getScale()-1, 1, 8))
     elseif input.pressed.right1 then
-      sfx.play("selected")
+      sfx.play("assets/sfx/selected.ogg")
       megautils.setScale(math.wrap(megautils.getScale()+1, 1, 8))
     end
     if input.pressed.start1 or input.pressed.jump1 then
       self.section = 0
       self.timer = 20
-      sfx.play("selected")
+      sfx.play("assets/sfx/selected.ogg")
     end
   end
 end

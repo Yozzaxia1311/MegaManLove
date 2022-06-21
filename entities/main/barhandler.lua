@@ -1,7 +1,7 @@
-loader.load("assets/misc/barOne.png", "barOne", false, true)
-loader.load("assets/misc/barTwo.png", "barTwo", false, true)
-loader.load("assets/misc/barOutline.png", "barOutline", false, true)
-loader.load("assets/sfx/error.ogg", "error", true)
+loader.load("assets/misc/barOne.png", true)
+loader.load("assets/misc/barTwo.png", true)
+loader.load("assets/misc/barOutline.png", true)
+loader.load("assets/sfx/error.ogg", true)
 
 healthHandler = basicEntity:extend()
 
@@ -21,9 +21,9 @@ megautils.resetGameObjectsFuncs.barHandler = {func=function()
 
 function healthHandler:new(colorOne, colorTwo, colorOutline, side, r, segments, player)
   healthHandler.super.new(self)
-  self.barOne = loader.get("barOne")
-  self.barTwo = loader.get("barTwo")
-  self.barOutline = loader.get("barOutline")
+  self.barOne = loader.get("assets/misc/barOne.png")
+  self.barTwo = loader.get("assets/misc/barTwo.png")
+  self.barOutline = loader.get("assets/misc/barOutline.png")
   self.colorOne = colorOne or {252, 224, 168}
   self.colorTwo = colorTwo or {255, 255, 255}
   self.colorOutline = {0, 0, 0}
@@ -65,7 +65,7 @@ function healthHandler:update(dt)
     if self.riseTimer == 4 then
       self.riseTimer = 0
       self.renderedHealth = math.approach(self.renderedHealth, self.health, 1)
-      sfx.play("heal")
+      sfx.play("assets/sfx/mmHeal.ogg")
       if self.renderedHealth == self.health then
         entities.unfreeze("hb")
         self.rise = 0
@@ -96,7 +96,7 @@ function healthHandler:update(dt)
           self.tween = nil
           sfx.playFromFile("assets/sfx/selected.ogg")
         else
-          sfx.play("error")
+          sfx.play("assets/sfx/error.ogg")
         end
       end
     end
@@ -191,10 +191,9 @@ function weaponHandler:new(side, r, slots)
   self.weapons = {}
   self.energy = {}
   self.slots = {}
-  self.iconTex = loader.get("weaponSelect")
-  self.barOne = loader.get("barOne")
-  self.barTwo = loader.get("barTwo")
-  self.barOutline = loader.get("barOutline")
+  self.barOne = loader.get("assets/misc/barOne.png")
+  self.barTwo = loader.get("assets/misc/barTwo.png")
+  self.barOutline = loader.get("assets/misc/barOutline.png")
   self.quads = {}
   self.quads[0] = quad(0, 48, 8, 8)
   self.quads[1] = quad(8, 48, 8, 8)
@@ -227,7 +226,7 @@ function weaponHandler:register(slot, name, noRefill)
   end
   
   if weapon.resources[name] then
-    loader.load(weapon.icons[name], weapon.icons[name])
+    loader.load(weapon.icons[name])
     weapon.resources[name]()
   end
 end
@@ -304,7 +303,7 @@ function weaponHandler:update(dt)
       if self.riseTimer == 4 then
         self.renderedWE[self.currentSlot] = math.approach(self.renderedWE[self.currentSlot], self.energy[self.currentSlot], 1)
         self.riseTimer = 0
-        sfx.play("heal")
+        sfx.play("assets/sfx/mmHeal.ogg")
         if self.renderedWE[self.currentSlot] == self.energy[self.currentSlot] then
           entities.unfreeze("wb")
           sfx.stop("heal")

@@ -4,10 +4,10 @@ function stageSelectState:begin()
   entities.add(stageSelect)
 end
 
-loader.load("assets/misc/select.png", "mugshots")
-loader.load("assets/sfx/ascend.ogg", "selected")
-loader.load("assets/sfx/cursorMove.ogg", "cursorMove")
-loader.load("assets/players/mug.animset", "mugAnims")
+loader.load("assets/misc/select.png")
+loader.load("assets/sfx/ascend.ogg")
+loader.load("assets/sfx/cursorMove.ogg")
+loader.load("assets/players/mug.animset")
 
 stageSelect = basicEntity:extend()
 
@@ -33,7 +33,7 @@ function stageSelect:new()
   self.y = 24
   
   self.blinkQuad = quad(0, 32, 48, 48)
-  self.anims = animationSet("mugAnims")
+  self.anims = animationSet("assets/players/mug.animset")
   
   if megaMan.getSkin(1).traits.protoMug then
     self.anims:set("proto")
@@ -44,7 +44,7 @@ function stageSelect:new()
   
   self.wilyQuad = quad(0, 0, 32, 32)
   
-  self.tex = loader.get("mugshots")
+  self.tex = loader.get("assets/misc/select.png")
   self.timer = 0
   self.oldX = self.x
   self.oldY = self.y
@@ -151,7 +151,7 @@ function stageSelect:update()
   
   if oldx ~= self.sx or oldy ~= self.sy then
     if not input.usingTouch then
-      sfx.play("cursorMove")
+      sfx.play("assets/sfx/cursorMove.ogg")
     end
     local newx, newy = 0, 0
     if self.sx == 0 and self.sy == 0 then
@@ -251,7 +251,7 @@ function stageSelect:update()
       self.x = self.oldX + self.sx*80
       self.y = self.oldY + self.sy*64
       music.stop()
-      sfx.play("selected")
+      sfx.playFromFile("assets/sfx/ascend.ogg")
     end
   elseif (input.pressed.select1 or input.touchPressedOverlaps(8 - 4, (27 * 8) - 4, 32 + 8, 16 + 8)) and not self.stop then
     self.stop = true

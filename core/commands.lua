@@ -517,8 +517,8 @@ concmd["flip"] = {
       for i=1, #megaMan.allPlayers do
         megaMan.allPlayers[i]:setGravityMultiplier("gravityFlip", -megaMan.allPlayers[i].gravityMultipliers.gravityFlip)
         if i == 1 then
-          if loader.get("gravityFlip") then
-            sfx.play("gravityFlip")
+          if loader.get("assets/sfx/gravityFlip.ogg") then
+            sfx.play("assets/sfx/gravityFlip.ogg")
           else
             sfx.playFromFile("assets/sfx/gravityFlip.ogg")
           end

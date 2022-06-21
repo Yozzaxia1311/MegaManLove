@@ -63,8 +63,8 @@ function iterateFiles(func, path, noAppdata)
 end
 
 function checkExt(path, list)
-  local p = path:split("%.")
-  p = p[#p]:lower()
+  local p = path:match("^.-(%..+)$"):lower()
+  p = p:sub(2, p:len())
   
   for _, v in ipairs(list) do
     if v:lower() == p then
