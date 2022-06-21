@@ -119,6 +119,18 @@ function megaMan:getSkin()
   return megaMan.skins[player]
 end
 
+megautils.initEngineFuncs.megaMan = {func=function()
+    for i=1, maxPlayerCount do
+      megaMan.setSkin(i, "assets/players/megaMan")
+    end
+    
+    megaMan.colorOutline = {}
+    megaMan.colorOne = {}
+    megaMan.colorTwo = {}
+    megaMan.weaponHandler = {}
+    megaMan.individualLanded = {}
+  end, autoClean=false}
+
 megautils.reloadStateFuncs.megaMan = {func=function()
     megaMan.once = nil
     vPad.active = false
@@ -137,7 +149,7 @@ megautils.resetGameObjectsFuncs.megaMan = {func=function()
     megaMan.weaponHandler = {}
     megaMan.mainPlayer = nil
     megaMan.allPlayers = {}
-    megaMan.once = nil
+    megaMan.individualLanded = {}
     megautils.setLives((megautils.getLives() > globals.startingLives) and megautils.getLives() or globals.startingLives)
     globals.checkpoint = globals.overrideCheckpoint or "start"
     globals.overrideCheckpoint = nil
@@ -151,8 +163,6 @@ megautils.resetGameObjectsFuncs.megaMan = {func=function()
       megaMan.weaponHandler[i] = weaponHandler(nil, nil, 10)
       megaMan.registerWeapons(i)
     end
-    
-    megaMan.individualLanded = {}
   end, autoClean=false}
 
 megautils.difficultyChangeFuncs.megaMan = {func=function(d)
@@ -170,7 +180,6 @@ megautils.difficultyChangeFuncs.megaMan = {func=function(d)
   end, autoClean=false}
 
 mapEntity.register("player", function(v)
-    if megaMan.once then return end
     if v.properties.checkpoint == globals.checkpoint and not camera.once then
       camera.once = true
       entities.add(camera, v.x, v.y, v.properties.doScrollX, v.properties.doScrollY)
@@ -178,7 +187,6 @@ mapEntity.register("player", function(v)
   end, -1, true)
 
 mapEntity.register("player", function(v)
-    if megaMan.once then return end
     if v.properties.checkpoint == globals.checkpoint and camera.main and camera.once then
       camera.main:setRectangleCollision(8, 8)
       if v.properties.name then
@@ -192,7 +200,6 @@ mapEntity.register("player", function(v)
   end, 3, true)
 
 mapEntity.register("player", function(v)
-    if megaMan.once then return end
     if v.properties.checkpoint == globals.checkpoint then
       local g = v.properties.gravMult * v.properties.gravFlip
       if v.properties.individual and v.properties.individual > 0 then
@@ -201,14 +208,15 @@ mapEntity.register("player", function(v)
           entities.add(megaMan, v.x+11, v.y+((g >= 0) and 11 or 0),
             v.properties.side, v.properties.drop, v.properties.individual,
             v.properties.gravMult, v.properties.gravFlip, v.properties.control,
-            v.properties.doReady, v.properties.teleporter)
+            v.properties.doReady, v.properties.teleporter, v.properties.doWhistleForReady)
         end
       else
         for i=1, megaMan.playerCount do
           if not table.icontains(megaMan.individualLanded, i) then
             entities.add(megaMan, v.x+11, v.y+((g >= 0) and 11 or 0),
-              v.properties.side, v.properties.drop, i, v.properties.gravMult, v.properties.gravFlip, v.properties.control,
-              v.properties.doReady, v.properties.teleporter)
+              v.properties.side, v.properties.drop, i, v.properties.gravMult,
+                v.properties.gravFlip, v.properties.control,
+                v.properties.doReady, v.properties.teleporter, v.properties.doWhistleForReady)
           end
         end
       end
@@ -332,7 +340,8 @@ function megaMan:syncPlayerSkin()
   self.canShoot.global = skin.traits.canShoot == nil and self.canShoot.global or skin.traits.canShoot
   self.canClimb.global = skin.traits.canClimb == nil and self.canClimb.global or skin.traits.canClimb
   self.canDash.global = skin.traits.canDash == nil and self.canDash.global or skin.traits.canDash
-  self.canHaveSmallSlide.global = skin.traits.smallSlideHitbox == nil and self.canHaveSmallSlide.global or skin.traits.smallSlideHitbox
+  self.canHaveSmallSlide.global = skin.traits.smallSlideHitbox == nil and self.canHaveSmallSlide.global or
+    skin.traits.smallSlideHitbox
   self.canProtoShield.global = skin.traits.protoShield == nil and self.canProtoShield.global or skin.traits.protoShield
   self.protoIdle = skin.traits.protoIdleAnim == nil and self.protoIdle or skin.traits.protoIdleAnim
   self.protoWhistle = skin.traits.protoWhistle == nil and self.protoWhistle or skin.traits.protoWhistle
@@ -362,7 +371,7 @@ for i=1, maxPlayerCount do
   megaMan.setSkin(i, "assets/players/megaMan")
 end
 
-function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
+function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp, doWhistle)
   megaMan.resources()
   megaMan.super.new(self)
   self.doWeaponGet = states.currentStatePath == globals.weaponGetState
@@ -408,6 +417,7 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   self.teleporter = tp
   self.protoIdle = false
   self.protoWhistle = false
+  self.doWhistleForReady = doWhistle
   self.slideXColl = 0
   self.standSolidJumpTimer = -1
   self.shootOffsetXTable = {}
@@ -417,12 +427,15 @@ function megaMan:new(x, y, side, drop, p, g, gf, c, dr, tp)
   
   self.dropAnimation = {regular="spawn"}
   self.dropLandAnimation = {regular="spawnLand"}
-  self.idleAnimation = {regular="idle", shoot="idleShoot", s_dm="idleShootDM", s_um="idleShootUM", s_u="idleShootU", proto="protoIdle"}
+  self.idleAnimation = {regular="idle", shoot="idleShoot", s_dm="idleShootDM", s_um="idleShootUM",
+    s_u="idleShootU", proto="protoIdle"}
   self.nudgeAnimation = {regular="nudge", shoot="idleShoot", s_dm="idleShootDM", s_um="idleShootUM", s_u="idleShootU"}
-  self.jumpAnimation = {regular="jump", shoot="jumpShoot", s_dm="jumpShootDM", s_um="jumpShootUM", s_u="jumpShootU",
+  self.jumpAnimation = {regular="jump", shoot="jumpShoot", s_dm="jumpShootDM", s_um="jumpShootUM",
+    s_u="jumpShootU",
     ps=(megautils.getDifficulty() == "easy") and "jumpProtoShield2" or "jumpProtoShield"}
   self.runAnimation = {regular="run", shoot="runShoot"}
-  self.climbAnimation = {regular="climb", shoot="climbShoot", s_dm="climbShootDM", s_um="climbShootUM", s_u="climbShootU"}
+  self.climbAnimation = {regular="climb", shoot="climbShoot", s_dm="climbShootDM", s_um="climbShootUM",
+    s_u="climbShootU"}
   self.climbTipAnimation = {regular="climbTip"}
   self.hitAnimation = {regular="hit"}
   self.dashAnimation = {regular="dash", shoot="dashShoot"}
@@ -462,8 +475,8 @@ function megaMan:added()
     self.autoGravity.global = true
   end
   
-  if self._checkDR and megaMan.mainPlayer == self and not megaMan.once then
-    if self.protoWhistle then
+  if self._checkDR and megaMan.mainPlayer == self then
+    if self.doWhistleForReady and self.protoWhistle then
       self.ready = entities.add(ready, nil, 32)
       if music._queue then
         self.mq = music._queue
@@ -1913,9 +1926,6 @@ function megaMan:update()
     end
     self.anims:update(1/60)
   else
-    if not megaMan.once then
-      megaMan.once = true
-    end
     if megaMan.mainPlayer and megaMan.mainPlayer.ready then
       if megaMan.mainPlayer == self and self.ready.isRemoved then
         self.ready = nil

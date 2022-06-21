@@ -69,9 +69,6 @@ function menuSelect:update()
           globals.lifeSegments = data.lifeSegments
           megautils.setETanks(data.eTanks)
           megautils.setWTanks(data.wTanks)
-          for k, v in ipairs(data.players) do
-            megaMan.setSkin(k, v)
-          end
         end
         sfx.play("assets/sfx/selected.ogg")
       elseif self.pick == 2 then
@@ -83,11 +80,6 @@ function menuSelect:update()
         data.eTanks = megautils.getETanks()
         data.wTanks = megautils.getWTanks()
         data.players = {}
-        for i = 1, megaMan.playerCount do
-          if megaMan.getSkin(i) then
-            data.players[i] = megaMan.getSkin(i).path
-          end
-        end
         save.save("save.sav", data)
         sfx.play("assets/sfx/selected.ogg")
       elseif self.pick == 3 and not isMobile and not isWeb then

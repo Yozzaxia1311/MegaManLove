@@ -4,10 +4,11 @@ parallax.autoClean = false
 parallax.invisibleToHash = true
 
 mapEntity.register("parallax", function(v)
-    entities.add(parallax, v.x, v.y, v.width, v.height, v.properties.image, v.properties.animate, v.properties.animSpeed,
-      v.properties.animWidth, v.properties.animHeight, v.properties.speedMultX, v.properties.speedMultY,
-      v.properties.speedX, v.properties.speedY, v.properties.wrapX, v.properties.wrapY,
-      v.properties.centerOffX, v.properties.centerOffY, v.properties.layer)
+    entities.add(parallax, v.x, v.y, v.width, v.height, v.properties.image, v.properties.animate,
+      v.properties.animSpeed, v.properties.animWidth, v.properties.animHeight,
+      v.properties.speedMultX, v.properties.speedMultY, v.properties.speedX, v.properties.speedY,
+      v.properties.wrapX, v.properties.wrapY, v.properties.centerOffX, v.properties.centerOffY,
+      v.properties.layer)
   end, 0, true)
 
 function parallax:new(x, y, w, h, bg, a, as, aw, ah, spdMultX, spdMultY, sx, sy, wrapx, wrapy, cntx, cnty, l)

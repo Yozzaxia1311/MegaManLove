@@ -75,17 +75,39 @@ function loadBinds()
   
   if data and data.inputBinds then
     for i = 1, maxPlayerCount do
-      if data.inputBinds["up" .. tostring(i)] then input.bind(data.inputBinds["up" .. tostring(i)], "up" .. tostring(i), i == 1) end
-      if data.inputBinds["down" .. tostring(i)] then input.bind(data.inputBinds["down" .. tostring(i)], "down" .. tostring(i), i == 1) end
-      if data.inputBinds["left" .. tostring(i)] then input.bind(data.inputBinds["left" .. tostring(i)], "left" .. tostring(i), i == 1) end
-      if data.inputBinds["right" .. tostring(i)] then input.bind(data.inputBinds["right" .. tostring(i)], "right" .. tostring(i), i == 1) end
-      if data.inputBinds["jump" .. tostring(i)] then input.bind(data.inputBinds["jump" .. tostring(i)], "jump" .. tostring(i), i == 1) end
-      if data.inputBinds["shoot" .. tostring(i)] then input.bind(data.inputBinds["shoot" .. tostring(i)], "shoot" .. tostring(i), i == 1) end
-      if data.inputBinds["dash" .. tostring(i)] then input.bind(data.inputBinds["dash" .. tostring(i)], "dash" .. tostring(i), i == 1) end
-      if data.inputBinds["start" .. tostring(i)] then input.bind(data.inputBinds["start" .. tostring(i)], "start" .. tostring(i), i == 1) end
-      if data.inputBinds["select" .. tostring(i)] then input.bind(data.inputBinds["select" .. tostring(i)], "select" .. tostring(i), i == 1) end
-      if data.inputBinds["prev" .. tostring(i)] then input.bind(data.inputBinds["prev" .. tostring(i)], "prev" .. tostring(i), i == 1) end
-      if data.inputBinds["next" .. tostring(i)] then input.bind(data.inputBinds["next" .. tostring(i)], "next" .. tostring(i), i == 1) end
+      if data.inputBinds["up" .. tostring(i)] then
+        input.bind(data.inputBinds["up" .. tostring(i)],"up" .. tostring(i), i == 1)
+      end
+      if data.inputBinds["down" .. tostring(i)] then
+        input.bind(data.inputBinds["down" .. tostring(i)], "down" .. tostring(i), i == 1)
+      end
+      if data.inputBinds["left" .. tostring(i)] then
+        input.bind(data.inputBinds["left" .. tostring(i)], "left" .. tostring(i), i == 1)
+      end
+      if data.inputBinds["right" .. tostring(i)] then
+        input.bind(data.inputBinds["right" .. tostring(i)], "right" .. tostring(i), i == 1)
+      end
+      if data.inputBinds["jump" .. tostring(i)] then
+        input.bind(data.inputBinds["jump" .. tostring(i)], "jump" .. tostring(i), i == 1)
+      end
+      if data.inputBinds["shoot" .. tostring(i)] then
+        input.bind(data.inputBinds["shoot" .. tostring(i)], "shoot" .. tostring(i), i == 1)
+      end
+      if data.inputBinds["dash" .. tostring(i)] then
+        input.bind(data.inputBinds["dash" .. tostring(i)], "dash" .. tostring(i), i == 1)
+      end
+      if data.inputBinds["start" .. tostring(i)] then
+        input.bind(data.inputBinds["start" .. tostring(i)], "start" .. tostring(i), i == 1)
+      end
+      if data.inputBinds["select" .. tostring(i)] then
+        input.bind(data.inputBinds["select" .. tostring(i)], "select" .. tostring(i), i == 1)
+      end
+      if data.inputBinds["prev" .. tostring(i)] then
+        input.bind(data.inputBinds["prev" .. tostring(i)], "prev" .. tostring(i), i == 1)
+      end
+      if data.inputBinds["next" .. tostring(i)] then
+        input.bind(data.inputBinds["next" .. tostring(i)], "next" .. tostring(i), i == 1)
+      end
     end
   end
 end
@@ -134,7 +156,8 @@ function initEngine()
   -- [RM 1] [RM 2] [RM 3]
   -- [RM 4] [Wily] [RM 5]
   -- [RM 6] [RM 7] [RM 8]
-  globals.robotMasterEntities = { -- Every value in this list should either be a function, or a `.lua` file that returns an entity.
+  -- Every value in this list should either be a function, or a `.lua` file that returns an entity.
+  globals.robotMasterEntities = {
       nil, nil, nil,
       nil, wilyIntro, "demo/stickMan/stickman.lua",
       nil, nil, nil
@@ -147,7 +170,6 @@ function initEngine()
   megautils.runCallback(megautils.cleanFuncs)
   loader.clear()
   megautils.setDifficulty("normal")
-  megautils.runFile("init.lua")
   megautils.runCallback(megautils.initEngineFuncs)
 end
 

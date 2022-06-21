@@ -6,6 +6,7 @@
    <property name="checkpoint" value="start"/>
    <property name="control" type="bool" value="true"/>
    <property name="doReady" type="bool" value="true"/>
+   <property name="doWhistleForReady" type="bool" value="true"/>
    <property name="drop" type="bool" value="true"/>
    <property name="gravFlip" type="int" value="1"/>
    <property name="gravMult" type="float" value="1"/>

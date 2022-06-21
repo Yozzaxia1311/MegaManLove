@@ -50,10 +50,14 @@ function defaultBindsTable()
   local defaultInputBindsExtra = {}
   
   if #joysticks > 0 then
-    local joyBinds = {up={{type="axis", input="lefty-", name=joysticks[1]:getName()}, {type="gamepad", input="dpup", name=joysticks[1]:getName()}},
-    down={{type="axis", input="lefty+", name=joysticks[1]:getName()}, {type="gamepad", input="dpdown", name=joysticks[1]:getName()}},
-    left={{type="axis", input="leftx-", name=joysticks[1]:getName()}, {type="gamepad", input="dpleft", name=joysticks[1]:getName()}},
-    right={{type="axis", input="leftx+", name=joysticks[1]:getName()}, {type="gamepad", input="dpright", name=joysticks[1]:getName()}},
+    local joyBinds = {up={{type="axis", input="lefty-", name=joysticks[1]:getName()},
+        {type="gamepad", input="dpup", name=joysticks[1]:getName()}},
+    down={{type="axis", input="lefty+", name=joysticks[1]:getName()},
+      {type="gamepad", input="dpdown", name=joysticks[1]:getName()}},
+    left={{type="axis", input="leftx-", name=joysticks[1]:getName()},
+      {type="gamepad", input="dpleft", name=joysticks[1]:getName()}},
+    right={{type="axis", input="leftx+", name=joysticks[1]:getName()},
+      {type="gamepad", input="dpright", name=joysticks[1]:getName()}},
     jump={{type="gamepad", input="a", name=joysticks[1]:getName()}},
     shoot={{type="gamepad", input="x", name=joysticks[1]:getName()}},
     start={{type="gamepad", input="start", name=joysticks[1]:getName()}},
@@ -70,9 +74,12 @@ function defaultBindsTable()
     end
     for i=2, #joysticks do
       defaultInputBindsExtra[i] = {up={{type="axis", input="lefty-", name=joysticks[i]:getName()}, {type="gamepad", input="dpup", name=joysticks[i]:getName()}},
-      down={{type="axis", input="lefty+", name=joysticks[i]:getName()}, {type="gamepad", input="dpdown", name=joysticks[i]:getName()}},
-      left={{type="axis", input="leftx-", name=joysticks[i]:getName()}, {type="gamepad", input="dpleft", name=joysticks[i]:getName()}},
-      right={{type="axis", input="leftx+", name=joysticks[i]:getName()}, {type="gamepad", input="dpright", name=joysticks[i]:getName()}},
+      down={{type="axis", input="lefty+", name=joysticks[i]:getName()},
+        {type="gamepad", input="dpdown", name=joysticks[i]:getName()}},
+      left={{type="axis", input="leftx-", name=joysticks[i]:getName()},
+        {type="gamepad", input="dpleft", name=joysticks[i]:getName()}},
+      right={{type="axis", input="leftx+", name=joysticks[i]:getName()},
+        {type="gamepad", input="dpright", name=joysticks[i]:getName()}},
       jump={{type="gamepad", input="a", name=joysticks[i]:getName()}},
       shoot={{type="gamepad", input="x", name=joysticks[i]:getName()}},
       start={{type="gamepad", input="start", name=joysticks[i]:getName()}},
@@ -112,7 +119,7 @@ function love.conf(t)
   --t.window.minheight = 1                      -- Minimum window height if the window is resizable (number)
   --t.window.fullscreen = false                 -- Enable fullscreen (boolean)
   t.window.fullscreentype = "desktop"           -- Choose between "desktop" fullscreen or "exclusive" fullscreen mode (string)
-  t.window.vsync = -1                           -- Vertical sync mode (number)
+  t.window.vsync = 1                           -- Vertical sync mode (number)
   --t.window.msaa = 0                           -- The number of samples to use with multi-sampled antialiasing (number)
   --t.window.display = 1                        -- Index of the monitor to show the window in (number)
   --t.window.highdpi = false                    -- Enable high-dpi mode for the window on a Retina display (boolean)

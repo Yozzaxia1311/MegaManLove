@@ -19,6 +19,13 @@ megautils.resetGameObjectsFuncs.barHandler = {func=function()
     end
   end, autoClean=false}
 
+megautils.initEngineFuncs.barHandler = {func=function()
+    healthHandler.playerTimers = {}
+    for i=1, maxPlayerCount do
+      healthHandler.playerTimers[i] = -2
+    end
+  end, autoClean=false}
+
 function healthHandler:new(colorOne, colorTwo, colorOutline, side, r, segments, player)
   healthHandler.super.new(self)
   self.barOne = loader.get("assets/misc/barOne.png")
@@ -83,7 +90,8 @@ function healthHandler:update(dt)
         end
       elseif healthHandler.playerTimers[i] == -1 and
         (input.pressed["start" .. tostring(megaMan.playerToInput[i])] or
-        (megaMan.playerToInput[i] == 1 and input.touchPressedOverlaps(self.x - 8, self.y + 8 - 8, 48 + 16, 8 + 16))) then
+        (megaMan.playerToInput[i] == 1 and
+        input.touchPressedOverlaps(self.x - 8, self.y + 8 - 8, 48 + 16, 8 + 16))) then
         if megautils.getLives() > 0 then
           healthHandler.playerTimers[i] = -2
           local p = entities.add(megaMan, self.player.x, self.player.y, self.player.side, true, i)
@@ -131,7 +139,8 @@ function healthHandler:draw()
             love.graphics.print("p" .. tostring(i) .. " X", self.x, self.y+(i*8))
           else
             love.graphics.setColor(0.2, 1, 0.2, 1)
-            love.graphics.print("p" .. tostring(i) .. (i == 1 and input.usingTouch and " tap" or " O"), self.x, self.y+(i*8))
+            love.graphics.print("p" .. tostring(i) .. (i == 1 and input.usingTouch and " tap" or " O"),
+              self.x, self.y+(i*8))
           end
           love.graphics.setColor(1, 1, 1, 1)
         elseif healthHandler.playerTimers[i] > -1 then
