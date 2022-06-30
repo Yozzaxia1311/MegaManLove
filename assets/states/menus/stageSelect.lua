@@ -235,7 +235,7 @@ function stageSelect:update()
       
       local imgData = view.canvas:newImageData()
       imgData:mapPixel(function(x, y, r, g, b, a)
-          if r == 0 and g == 0 and b == 0 then
+          if r == 0 and g == 0 and b == 0 and a > 0 then
             return 1, 1, 1, 1
           end
           
