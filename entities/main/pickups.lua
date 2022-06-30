@@ -368,7 +368,7 @@ function eTank:new(x, y, despawn, gd, fwp, id, path)
   self.x = x or 0
   self.y = y or 0
   self:setRectangleCollision(16, 15)
-  self.anim = animationSet("assets/misc/tank.animset")
+  self.anim = animationSet("assets/misc/tanks.animset")
   self.anim:set("eTank")
   self.texOutline = loader.get("assets/misc/particlesOutline.png")
   self.texOne = loader.get("assets/misc/particlesOne.png")
@@ -427,7 +427,7 @@ function wTank:new(x, y, despawn, gd, fwp, id, path)
   self.x = x or 0
   self.y = y or 0
   self:setRectangleCollision(16, 15)
-  self.anim = animationSet("assets/misc/tank.animset")
+  self.anim = animationSet("assets/misc/tanks.animset")
   self.anim:set("wTank")
   self.texOutline = loader.get("assets/misc/particlesOutline.png")
   self.texOne = loader.get("assets/misc/particlesOne.png")

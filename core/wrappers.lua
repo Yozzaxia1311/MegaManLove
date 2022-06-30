@@ -53,9 +53,13 @@ function imageWrapper:draw(x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY, wh
       oy = vh - oy
     end
     
-    love.graphics.setShader(drawShader)
-    love.graphics.draw(self.image, x + offX, y + offY, math.rad(r), sx, sy, ox, oy)
-    love.graphics.setShader()
+    if drawShader then
+      love.graphics.setShader(drawShader)
+      love.graphics.draw(self.image, x + offX, y + offY, math.rad(r), sx, sy, ox, oy)
+      love.graphics.setShader()
+    else
+      love.graphics.draw(self.image, math.floor(x + offX), math.floor(y + offY), math.rad(r), sx, sy, ox, oy)
+    end
   end
 end
 
@@ -161,9 +165,13 @@ function quad:draw(image, x, y, r, sx, sy, ox, oy, offX, offY, flipX, flipY)
     oy = vh - oy
   end
   
-  love.graphics.setShader(drawShader)
-  love.graphics.draw(image.image, self.quad, x + offX, y + offY, math.rad(r), sx, sy, ox, oy)
-  love.graphics.setShader()
+  if drawShader then
+    love.graphics.setShader(drawShader)
+    love.graphics.draw(image.image, self.quad, x + offX, y + offY, math.rad(r), sx, sy, ox, oy)
+    love.graphics.setShader()
+  else
+    love.graphics.draw(image.image, self.quad, math.floor(x + offX), math.floor(y + offY), math.rad(r), sx, sy, ox, oy)
+  end
 end
 
 spriteBatch = class:extend()

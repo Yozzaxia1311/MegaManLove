@@ -10,7 +10,7 @@ if not isMobile and love.graphics then
   s:release()
 end
 
-drawShader = love.graphics.newShader([[
+drawShader = drawShader and love.graphics.newShader([[
     vec4 position(mat4 transform_projection, vec4 vertex_position)
     {
       vertex_position.xy = floor(vertex_position.xy);
@@ -367,104 +367,6 @@ function love.textinput(k)
   end
 end
 
-function love.update(dt)
-  if isWeb then
-    beforeUpdate()
-  end
-  
-  if love.joystick then
-    if globals.axisTmp then
-      if globals.axisTmp.x and (not globals.axisTmp.y or
-        math.abs(globals.axisTmp.x[3]) > math.abs(globals.axisTmp.y[3])) then
-        lastPressed.type, lastPressed.input, lastPressed.name = globals.axisTmp.x[1], globals.axisTmp.x[2], globals.axisTmp.x[4]
-      elseif globals.axisTmp.y then
-        lastPressed.type, lastPressed.input, lastPressed.name = globals.axisTmp.y[1], globals.axisTmp.y[2], globals.axisTmp.y[4]
-      end
-      globals.axisTmp = nil
-    end
-  end
-  
-  local doAgain = true
-  
-  while doAgain do
-    states.switched = false
-    if not record.demo then
-      input.poll()
-      vPad.update()
-    end
-    record.update()
-    if useConsole then console.update(dt) end
-    states.update(dt)
-    entities.update(dt)
-    megautils.checkQueue()
-    states.checkQueue()
-    input.flush()
-    record.anyPressed = false
-    doAgain = states.switched
-  end
-  
-  music.update()
-  
-  if love.joystick then
-    for k, _ in safepairs(gamepadCheck) do
-      gamepadCheck[k] = gamepadCheck[k] - 1
-      if gamepadCheck[k] < 0 then
-        gamepadCheck[k] = nil
-      end
-    end
-  end
-  if love.keyboard then
-    for k, _ in safepairs(keyboardCheck) do
-      keyboardCheck[k] = keyboardCheck[k] - 1
-      if keyboardCheck[k] < 0 then
-        keyboardCheck[k] = nil
-      end
-    end
-  end
-end
-
-function love.draw()
-  love.graphics.push()
-  view.draw()
-  love.graphics.pop()
-  vPad.draw()
-  if useConsole then console.draw() end
-  
-  if isWeb then
-    afterUpdate()
-  end
-end
-
-function love.quit()
-  if music and music.clean() then end
-end
-
--- Love2D doesn't fire the resize event for several functions, so here's some hacks.
-local lf = love.window.setFullscreen
-local lsm = love.window.setMode
-local lum = love.window.updateMode
-
-function love.window.setFullscreen(s)
-  if not isWeb then
-    lf(s)
-  end
-  love.resize(love.graphics.getDimensions())
-end
-
-function love.window.setMode(w, h, f)
-  if not isWeb then
-    lsm(w, h, f)
-  end
-  love.resize(love.graphics.getDimensions())
-end
-
-function love.window.updateMode(w, h, f)
-  if not isWeb then
-    lum(w, h, f)
-  end
-  love.resize(love.graphics.getDimensions())
-end
-
 local lt = love.timer
 local lt_sleep = love.timer.sleep
 local lt_getTime = love.timer.getTime
@@ -474,16 +376,14 @@ local lk_isDown = love.keyboard.isDown
 local le = love.event
 local le_pump = love.event.pump
 local le_poll = love.event.poll
-local lu = love.update
 local lg = love.graphics
 local lg_isActive = love.graphics.isActive
 local lg_origin = love.graphics.origin
 local lg_clear = love.graphics.clear
 local lg_getBackgroundColor = love.graphics.getBackgroundColor
 local lg_present = love.graphics.present
-local ld = love.draw
-local lh = love.handlers
-local lq = love.quit
+local lg_push = love.graphics.push
+local lg_pop = love.graphics.pop
 
 function pressingHardInputs(k)
   if megautils then
@@ -634,7 +534,112 @@ local function afterUpdate()
   lastTextInput = nil
 end
 
+function love.update(dt)
+  if isWeb then
+    beforeUpdate()
+  end
+  
+  if love.joystick then
+    if globals.axisTmp then
+      if globals.axisTmp.x and (not globals.axisTmp.y or
+        math.abs(globals.axisTmp.x[3]) > math.abs(globals.axisTmp.y[3])) then
+        lastPressed.type, lastPressed.input, lastPressed.name = globals.axisTmp.x[1],
+          globals.axisTmp.x[2], globals.axisTmp.x[4]
+      elseif globals.axisTmp.y then
+        lastPressed.type, lastPressed.input, lastPressed.name = globals.axisTmp.y[1],
+          globals.axisTmp.y[2], globals.axisTmp.y[4]
+      end
+      globals.axisTmp = nil
+    end
+  end
+  
+  local doAgain = true
+  
+  while doAgain do
+    states.switched = false
+    if not record.demo then
+      input.poll()
+      vPad.update()
+    end
+    record.update()
+    if useConsole then console.update(dt) end
+    states.update(dt)
+    entities.update(dt)
+    megautils.checkQueue()
+    states.checkQueue()
+    input.flush()
+    record.anyPressed = false
+    doAgain = states.switched
+  end
+  
+  music.update()
+  
+  if love.joystick then
+    for k, _ in safepairs(gamepadCheck) do
+      gamepadCheck[k] = gamepadCheck[k] - 1
+      if gamepadCheck[k] < 0 then
+        gamepadCheck[k] = nil
+      end
+    end
+  end
+  if love.keyboard then
+    for k, _ in safepairs(keyboardCheck) do
+      keyboardCheck[k] = keyboardCheck[k] - 1
+      if keyboardCheck[k] < 0 then
+        keyboardCheck[k] = nil
+      end
+    end
+  end
+end
+
+function love.draw()
+  lg_push()
+  view.draw()
+  lg_pop()
+  vPad.draw()
+  if useConsole then console.draw() end
+  
+  if isWeb then
+    afterUpdate()
+  end
+end
+
+function love.quit()
+  if music and music.clean() then end
+end
+
+-- Love2D doesn't fire the resize event for several functions, so here's some hacks.
+local lf = love.window.setFullscreen
+local lsm = love.window.setMode
+local lum = love.window.updateMode
+
+function love.window.setFullscreen(s)
+  if not isWeb then
+    lf(s)
+  end
+  love.resize(love.graphics.getDimensions())
+end
+
+function love.window.setMode(w, h, f)
+  if not isWeb then
+    lsm(w, h, f)
+  end
+  love.resize(love.graphics.getDimensions())
+end
+
+function love.window.updateMode(w, h, f)
+  if not isWeb then
+    lum(w, h, f)
+  end
+  love.resize(love.graphics.getDimensions())
+end
+
 if not isWeb then
+  local lu = love.update
+  local ld = love.draw
+  local lh = love.handlers
+  local lq = love.quit
+  
   function love.run()
     local bu = lt and lt.getTime()
     

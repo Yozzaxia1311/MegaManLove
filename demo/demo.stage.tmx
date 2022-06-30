@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="16" height="14" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#ffaaff" nextlayerid="8" nextobjectid="264">
- <editorsettings>
-  <export target="../demo.lua" format="lua"/>
- </editorsettings>
  <properties>
   <property name="fadeIn" type="bool" value="true"/>
   <property name="gmeTrack" type="int" value="8"/>

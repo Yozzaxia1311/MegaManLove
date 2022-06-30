@@ -1,7 +1,12 @@
 local stageSelectState = state:extend()
 
 function stageSelectState:begin()
+  view.forceCanvas = 1
   entities.add(stageSelect)
+end
+
+function stageSelectState:switching()
+  view.forceCanvas = false
 end
 
 loader.load("assets/misc/select.png")
@@ -10,20 +15,6 @@ loader.load("assets/sfx/cursorMove.ogg")
 loader.load("assets/players/mug.animset")
 
 stageSelect = basicEntity:extend()
-
-slShader = love.graphics.newShader([[
-    uniform bool invert = false;
-    vec3 black = vec3(0, 0, 0);
-    
-    vec4 effect(vec4 color, Image tex, vec2 texture_coords, vec2 screen_coords)
-    {
-      vec4 texturecolor = Texel(tex, texture_coords);
-      if (invert && texturecolor.rgb == black) {
-        texturecolor.rgb += 1;
-      }
-      return texturecolor * color;
-    }
-  ]])
 
 stageSelect.invisibleToHash = true
 
@@ -81,8 +72,6 @@ end
 
 function stageSelect:begin()
   self:updateMap()
-  
-  meShader = slShader
 end
 
 function stageSelect:updateMap()
@@ -100,16 +89,13 @@ function stageSelect:updateMap()
 end
 
 function stageSelect:removed()
-  slShader:release()
-  slShader = nil
-  meShader:release()
-  meShader = nil
   love.graphics.setBackgroundColor(0, 0, 0, 1)
   for i=1, 9 do
     if self.images[i] then
       self.images[i]:release()
     end
   end
+  self.invertImage:release()
 end
 
 function stageSelect:update()
@@ -195,11 +181,7 @@ function stageSelect:update()
     if self.timer == 6 then
       self.timer = 0
       self.selectBlink = self.selectBlink + 1
-      if math.wrap(self.selectBlink, 0, 1) == 1 then
-        slShader:send("invert", true)
-      else
-        slShader:send("invert", false)
-      end
+      self.invert = math.wrap(self.selectBlink, 0, 1) == 1
       if self.selectBlink == 12 then
         self.selected = false
         local pick = 1
@@ -250,10 +232,23 @@ function stageSelect:update()
       self.timer = 0
       self.x = self.oldX + self.sx*80
       self.y = self.oldY + self.sy*64
+      
+      local imgData = view.canvas:newImageData()
+      imgData:mapPixel(function(x, y, r, g, b, a)
+          if r == 0 and g == 0 and b == 0 then
+            return 1, 1, 1, 1
+          end
+          
+          return 0, 1, 0, 0
+        end)
+      
+      self.invertImage = love.graphics.newImage(imgData)
+      
       music.stop()
       sfx.playFromFile("assets/sfx/ascend.ogg")
     end
-  elseif (input.pressed.select1 or input.touchPressedOverlaps(8 - 4, (27 * 8) - 4, 32 + 8, 16 + 8)) and not self.stop then
+  elseif (input.pressed.select1 or input.touchPressedOverlaps(8 - 4, (27 * 8) - 4, 32 + 8, 16 + 8)) and
+    not self.stop then
     self.stop = true
     states.fadeToState(globals.menuState)
     music.stop()
@@ -315,14 +310,12 @@ function stageSelect:draw()
         
         if self.names[i] then
           love.graphics.setFont(menuFont)
-          love.graphics.setShader(slShader)
           if self.names[i][1] then
             love.graphics.print(self.names[i][1], 22+(x*81), 72+(y*64))
           end
           if self.names[i][2] then
             love.graphics.printf(self.names[i][2], -58+(x*81), 80+(y*64), 128, "right")
           end
-          love.graphics.setShader()
         end
       end
     end
@@ -330,6 +323,10 @@ function stageSelect:draw()
   
   if (self.blink and not self.stop) or self.selected then
     self.tex:draw(self.blinkQuad, self.x, self.y)
+  end
+  
+  if self.invert and self.invertImage then
+    love.graphics.draw(self.invertImage)
   end
 end
 

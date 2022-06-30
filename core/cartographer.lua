@@ -592,11 +592,11 @@ Layer.objectgroup.__index = Layer.objectgroup
 function Layer.objectgroup:_init(map)
   Layer.spritelayer._init(self, map)
 
-  for _, object in ipairs(self.objects) do
-    if object.gid and object.visible then
-      self:_setSprite(object.x, object.y - object.height, object.gid, true)
-    end
-  end
+--  for _, object in ipairs(self.objects) do
+--    if object.gid and object.visible then
+--      self:_setSprite(object.x, object.y - object.height, object.gid, true)
+--    end
+--  end
 end
 
 -- Represents an image layer in an exported Tiled map.

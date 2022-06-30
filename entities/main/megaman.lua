@@ -2007,11 +2007,14 @@ function megaMan:draw()
     return
   end
   
-  local offsetx, offsety = math.round(self.collisionShape.w/2), (self.gravity >= 0 and self.collisionShape.h or 0) + (self.teleportOffY or 0)
-  local floorX, floorY = #megaMan.allPlayers == 1 and (camera.main == nil or camera.main.transition or
-    camera.main.x <= camera.main.scrollx or camera.main.x + camera.main.collisionShape.w >= camera.main.scrollx + camera.main.scrollw),
-    #megaMan.allPlayers == 1 and (camera.main == nil or camera.main.transition or
-    camera.main.y <= camera.main.scrolly or camera.main.y + camera.main.collisionShape.h >= camera.main.scrolly + camera.main.scrollh)
+  local offsetx, offsety = math.round(self.collisionShape.w/2),
+    (self.gravity >= 0 and self.collisionShape.h or 0) + (self.teleportOffY or 0)
+  local floorX, floorY = drawShader and #megaMan.allPlayers == 1 and (camera.main == nil or camera.main.transition or
+    camera.main.x <= camera.main.scrollx or
+    camera.main.x + camera.main.collisionShape.w >= camera.main.scrollx + camera.main.scrollw),
+    drawShader and #megaMan.allPlayers == 1 and (camera.main == nil or camera.main.transition or
+    camera.main.y <= camera.main.scrolly or
+    camera.main.y + camera.main.collisionShape.h >= camera.main.scrolly + camera.main.scrollh)
   local thisX, thisY = floorX and self.x or math.floor(self.x), floorY and self.y or math.floor(self.y)
   local fx = self.side ~= 1
   local sy = self.gravity >= 0 and 1 or -1
@@ -2028,11 +2031,14 @@ function megaMan:draw()
   
   love.graphics.setColor(1, 1, 1, 1)
   self.texBase:draw(self.anims, thisX, thisY, 0, 1, sy, 32, 41, offsetx, offsety, fx)
-  love.graphics.setColor(megaMan.colorOutline[self.player][1]/255, megaMan.colorOutline[self.player][2]/255, megaMan.colorOutline[self.player][3]/255, 1)
+  love.graphics.setColor(megaMan.colorOutline[self.player][1]/255, megaMan.colorOutline[self.player][2]/255,
+    megaMan.colorOutline[self.player][3]/255, 1)
   self.texOutline:draw(self.anims, thisX, thisY, 0, 1, sy, 32, 41, offsetx, offsety, fx)
-  love.graphics.setColor(megaMan.colorOne[self.player][1]/255, megaMan.colorOne[self.player][2]/255, megaMan.colorOne[self.player][3]/255, 1)
+  love.graphics.setColor(megaMan.colorOne[self.player][1]/255, megaMan.colorOne[self.player][2]/255,
+    megaMan.colorOne[self.player][3]/255, 1)
   self.texOne:draw(self.anims, thisX, thisY, 0, 1, sy, 32, 41, offsetx, offsety, fx)
-  love.graphics.setColor(megaMan.colorTwo[self.player][1]/255, megaMan.colorTwo[self.player][2]/255, megaMan.colorTwo[self.player][3]/255, 1)
+  love.graphics.setColor(megaMan.colorTwo[self.player][1]/255, megaMan.colorTwo[self.player][2]/255,
+    megaMan.colorTwo[self.player][3]/255, 1)
   self.texTwo:draw(self.anims, thisX, thisY, 0, 1, sy, 32, 41, offsetx, offsety, fx)
   
   if self.weaponSwitchTimer ~= 70 then
@@ -2041,8 +2047,10 @@ function megaMan:draw()
     local woff = self.gravity >= 0 and -20 or (self.collisionShape.h + 4)
     local cgrav = self.gravity >= 0 and 1 or -1
     if checkFalse(self.canHaveThreeWeaponIcons) then
-      weapon.drawIcon(w.weapons[self.nextWeapon], true, thisX+math.round(self.collisionShape.w/2)+8, thisY+woff+(2*cgrav))
-      weapon.drawIcon(w.weapons[self.prevWeapon], true, thisX+math.round(self.collisionShape.w/2)-24, thisY+woff+(2*cgrav))
+      weapon.drawIcon(w.weapons[self.nextWeapon], true, thisX+math.round(self.collisionShape.w/2)+8,
+        thisY+woff+(2*cgrav))
+      weapon.drawIcon(w.weapons[self.prevWeapon], true, thisX+math.round(self.collisionShape.w/2)-24,
+        thisY+woff+(2*cgrav))
     end
     weapon.drawIcon(w.current, true, thisX+math.round(self.collisionShape.w/2)-8, thisY+woff)
   end

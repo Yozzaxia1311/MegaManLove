@@ -6,7 +6,9 @@ function view.ser()
       y=view.y,
       w=view.w,
       h=view.h,
-      cscr=cscreen.ser()
+      cscr=cscreen.ser(),
+      forceCanvas=view.forceCanvas,
+      wasForcingCanvas=view._wasForcingCanvas
     }
 end
 
@@ -16,6 +18,8 @@ function view.deser(t)
   view.w = t.w
   view.h = t.h
   cscreen.deser(t.cscr)
+  view.forceCanvas = t.forceCanvas
+  view._wasForcingCanvas = t.wasForcingCanvas
   view.resize(love.graphics.getDimensions())
 end
 
@@ -26,13 +30,15 @@ function view.init(sw, sh, s)
   view.h = sh or 1
   cscreen.init(view.w, view.h, borderLeft, borderRight)
   view.resize(love.graphics.getDimensions())
+  view.forceCanvas = false
+  view._wasForcingCanvas = false
 end
 
 function view.resize(w, h)
   local lastScale = view._canvasScale
   local nw, nh = math.floor(w / view.w), math.floor(h / view.h)
   
-  if nw == w / view.w and nh == h / view.h then
+  if not view.forceCanvas and nw == w / view.w and nh == h / view.h then
     if view.canvas then
       view.canvas:release()
       view.canvas = nil
@@ -41,6 +47,9 @@ function view.resize(w, h)
     cscreen.resizeGame(view.w, view.h)
   else
     view._canvasScale = math.min((nw >= nh) and nh or nw, isMobile and 2 or 3)
+    if type(view.forceCanvas) == "number" then
+      view._canvasScale = view.forceCanvas
+    end
     
     if not view.canvas or lastScale ~= view._canvasScale then
       if view.canvas then view.canvas:release() end
@@ -62,6 +71,11 @@ function view.project(x, y)
 end
 
 function view.draw()
+  if view.forceCanvas ~= view._wasForcingCanvas then
+    view._wasForcingCanvas = view.forceCanvas
+    view.resize(love.graphics.getDimensions())
+  end
+  
   if not view.canvas then
     love.graphics.clear(love.graphics.getBackgroundColor())
     cscreen.apply()

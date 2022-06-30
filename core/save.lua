@@ -21,7 +21,6 @@ function save.createDirChain(p)
 end
 
 function save.save(file, data)
-  assert(not isWeb, "Web cannot save! (Another frustating web bug)")
   assert(not (record.demo or record.recordInput), "Cannot save during recordings")
   
   local sv = binser.serialize(data)
@@ -31,7 +30,6 @@ function save.save(file, data)
 end
 
 function save.load(file)
-  assert(not isWeb, "Web cannot load save! (Another frustating web bug)")
   assert(not (record.demo or record.recordInput), "Cannot load during recordings")
   
   local sv = love.filesystem.getInfo(file) and love.filesystem.read(file)
