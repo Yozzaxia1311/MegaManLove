@@ -4,8 +4,12 @@ convar["cheats"] = {
   value = 0,
   fun = function(arg)
       if numberSanitize(arg) == 1 then
+        console.print("DO NOT OPEN A CONTEXT OR RECORDING FROM A SOURCE YOU DO NOT TRUST!")
+        console.print(".ctx and .rd FILES MAY EXECUTE MALICIOUS LUA CODE!")
         console.print("Press Control + O to quick-save context")
         console.print("Press Control + P to quick-load context")
+        console.print("Press Control + R to start recording")
+        console.print("Disable cheating for the rest of the game with the lockcheats command")
       end
     end
 }
@@ -168,7 +172,7 @@ concmd["help"] = {
 
 concmd["setskin"] = {
   helptext = "sets the skin for a player",
-  flags = {},
+  flags = {"cheat"},
   fun = function(cmd)
       if not cmd[2] then return end
       local path = cmd[2]
@@ -200,7 +204,7 @@ concmd["setskin"] = {
 
 concmd["rec"] = {
   helptext = "record after the state switches",
-  flags = {},
+  flags = {"cheat"},
   fun = function(cmd)
       if record.recordInput then
         console.print("Recording already in progress.")
@@ -215,9 +219,13 @@ concmd["recend"] = {
   helptext = "stop recording",
   flags = {},
   fun = function(cmd)
-      record.recordInput = false
-      console.print("Recording ended")
-      console.print("Remember to save with recsave")
+      if record.recordInput then
+        record.recordInput = false
+        console.print("Recording ended")
+        console.print("Remember to save with recsave")
+      else
+        console.print("Recording not started")
+      end
     end
 }
 

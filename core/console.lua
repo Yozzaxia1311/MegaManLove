@@ -189,9 +189,6 @@ function console.init()
   console.print("Welcome to Mega Man Love")
   console.print("Run \"findcmd\" for a list of commands")
   console.print("Run \"findcvar\" for a list of console variables")
-  console.print("Press Control + R to start recording")
-  console.print("DO NOT OPEN A CONTEXT OR RECORDING FROM A SOURCE YOU DO NOT TRUST!")
-  console.print(".ctx FILES MAY EXECUTE POTENTIALLY MALICIOUS LUA CODE!")
 end
 
 function console.open()
