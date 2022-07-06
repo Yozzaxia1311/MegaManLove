@@ -107,7 +107,8 @@ function disclaimer:cycle()
 end
 
 function disclaimer:draw()
-  love.graphics.setColor(self.colors[self.cycler][1]/255, self.colors[self.cycler][2]/255, self.colors[self.cycler][3]/255, 1)
+  love.graphics.setColor(self.colors[self.cycler][1]/255, self.colors[self.cycler][2]/255,
+    self.colors[self.cycler][3]/255, 1)
   self.t:draw(40, 150)
   self.t:draw(120, 150)
   self.t:draw(200, 150)

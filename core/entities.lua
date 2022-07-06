@@ -68,6 +68,10 @@ function entities.deser(t)
   entities.hashSize = t.hashSize
 end
 
+megautils.initEngineFuncs.entities = {func=function()
+    entities.init()
+  end, autoClean=false}
+
 function entities.init()
   entities.layers = {}
   entities.updates = {}

@@ -2,8 +2,10 @@ local playersState = state:extend()
 
 function playersState:begin()
   entities.add(smash)
-  entities.add(parallax, 0, 0, view.w, view.h, "assets/states/menus/menuParallax.png", nil, nil, nil, nil, 1, 1, 0.4, 0.4, true, true)
-  entities.add(parallax, 0, -32, view.w, view.h+32, "assets/states/menus/menuParallax.png", nil, nil, nil, nil, 1, 1, -0.4, 0.4, true, true)
+  entities.add(parallax, 0, 0, view.w, view.h, "assets/states/menus/menuParallax.png",
+    nil, nil, nil, nil, 1, 1, 0.4, 0.4, true, true)
+  entities.add(parallax, 0, -32, view.w, view.h+32, "assets/states/menus/menuParallax.png",
+    nil, nil, nil, nil, 1, 1, -0.4, 0.4, true, true)
   entities.add(fade, false, nil, nil, fade.remove)
   
   love.graphics.setBackgroundColor(0, 0.5, 136/255, 1)
@@ -185,10 +187,57 @@ function smash:nextUnusedSkin()
 end
 
 function smash:update()
-  if input.pressed.select1 then
+  if input.pressed.select1 or (input.usingTouch and
+    input.touchPressedOverlaps(8 - 4, 32 - 4 , 168 + 8, 8 + 8)) then
     globals.fromOther = 6
     states.fadeToState(globals.menuState)
     return
+  end
+  
+  if input.usingTouch then
+    for i = 1, maxPlayerCount do
+      if input.touchPressedOverlaps(128 + (i * 16) - 16 - 4, 144 - 4, 8 + 8, 8 + 8) then
+        globals.rPlayer = i
+        globals.sendBackToPlayers = true
+        states.fadeToState(globals.rebindState)
+        return
+      end
+    end
+    
+    if input.touchPressedOverlaps(40 - 4, 56 - 4, 40 + 8, 8 + 8) then
+      self.selectionOffset = math.wrap(self.selectionOffset - 1, 0, math.ceil(#self.players / 4) - 1)
+      sfx.play("assets/sfx/cursorMove.ogg")
+      return
+    elseif input.touchPressedOverlaps(176 - 4 , 56 - 4, 40 + 8, 8 + 8) then
+      self.selectionOffset = math.wrap(self.selectionOffset + 1, 0, math.ceil(#self.players / 4) - 1)
+      sfx.play("assets/sfx/cursorMove.ogg")
+      return
+    end
+    
+    local i = 1
+    for r = 1, #self.roles do
+      if self.cursors[r].input == 1 then
+        i = r
+        break
+      end
+    end
+    
+    for j = 1, 4 do
+      if not self.players[j + self.selectionOffset] then
+        break
+      end
+      
+      if self.roles[i] ~= self.players[j + (self.selectionOffset * 4)] and
+        input.touchPressedOverlaps((j * 64) - 64, 64, 64, 64) then
+        local realOffset = j + (self.selectionOffset * 4)
+        self.roles[i] = self.players[realOffset]
+        self.cursors[i].color = self.colors[realOffset].one
+        self.cursors[i].name = self.names[realOffset]
+        megaMan.setSkin(i, self.players[realOffset])
+        sfx.playFromFile("assets/sfx/selected.ogg")
+        break
+      end
+    end
   end
   
   self.playerAnims:update(1/60)
@@ -304,7 +353,14 @@ function smash:draw()
     love.graphics.print(i, 128 + (i * 16) - 16, 144)
   end
   love.graphics.print("CHOOSE A CUSTOM SKIN!", 48, 16)
-  love.graphics.print("(Select to go back)", 48, 32)
+  if input.usingTouch then
+    love.graphics.setColor(0.4, 0.4, 0.4, 1)
+    love.graphics.rectangle("fill", 48, 32, 168, 8)
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.print("(Tap here to go back)", 48, 32)
+  else
+    love.graphics.print("(Select to go back)", 48, 32)
+  end
   love.graphics.print("Rebind:", 64, 144)
   if self.hasMoreSkins then
     love.graphics.print("<Prev", 40, 56)

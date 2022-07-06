@@ -40,6 +40,10 @@ function record.deser(t)
   record._backupKey = t._backupKey
 end
 
+megautils.initEngineFuncs.record = {func=function()
+    record.init()
+  end, autoClean=false}
+
 record._startRecQ = false
 record._openRecQ = nil
 

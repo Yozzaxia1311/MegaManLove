@@ -23,7 +23,8 @@ function rebinder:new()
   self.x = 32
   self.y = 112
   self.keys = {"left", "right", "up", "down", "jump", "shoot", "dash", "prev", "next", "start", "select"}
-  self.keyNames = {"left", "right", "up", "down", "jump", "shoot", "dash", "previous weapon", "next weapon", "start", "select"}
+  self.keyNames = {"left", "right", "up", "down", "jump", "shoot", "dash", "previous weapon", "next weapon",
+    "start", "select"}
   self.currentKey = 1
   self.player = globals.rPlayer or 1
   globals.rPlayer = nil
@@ -84,7 +85,8 @@ function rebinder:draw()
   love.graphics.setFont(mmFont)
   love.graphics.printf("Press the player " .. tostring(self.player) .. " \n\""
     .. self.keyNames[self.currentKey] .. "\"!" ..
-    "\n\n(press " .. (input.gamepads ~= 0 and "Escape or Guide" or "Escape") .. " to leave)", self.x, self.y, 200, "center")
+    "\n\n(press " .. ((#input.gamepads ~= 0) and "Escape or Guide" or "Escape") .. " to leave)",
+    self.x, self.y, 200, "center")
 end
 
 return rebindState

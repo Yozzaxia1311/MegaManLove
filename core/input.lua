@@ -104,6 +104,11 @@ input._touchPressedMT = {__newindex = function(self, k, v)
     return input._touchPressedSV[k]
   end}
 
+megautils.initEngineFuncs.input = {func=function()
+    input.init()
+    loadBinds()
+  end, autoClean=false}
+
 function input.init()
   input.keys = {}
   input._pressedTable = {}

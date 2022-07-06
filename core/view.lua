@@ -23,6 +23,10 @@ function view.deser(t)
   view.resize(love.graphics.getDimensions())
 end
 
+megautils.initEngineFuncs.barHandler = {func=function()
+    view.forceCanvas = false
+  end, autoClean=false}
+
 function view.init(sw, sh, s)
   view.x = 0
   view.y = 0

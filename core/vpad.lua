@@ -16,6 +16,10 @@ function vPad.deser(t)
   vPad.extra = t.extra
 end
 
+megautils.initEngineFuncs.vPad = {func=function()
+    vPad.init()
+  end, autoClean=false}
+
 function vPad.init()
   vPad.active = false
   vPad.down = {}

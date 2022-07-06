@@ -118,13 +118,7 @@ function initEngine()
   gamepadCheck = {}
   doCheckDelay = false
   love.graphics.setFont(mmFont)
-  entities.init()
-  input.init()
-  loadBinds()
-  record.init()
-  vPad.init()
   globals = {}
-  view.init(gameWidth, gameHeight)
   
   megautils.runFile("core/commands.lua")
   
@@ -176,6 +170,7 @@ end
 function love.load()
   require("requires")
   
+  view.init(gameWidth, gameHeight)
   console.init()
   initEngine()
   
@@ -255,7 +250,8 @@ function love.keypressed(k, s, r)
       if k == "tab" and #console.input > 0 and #console.getCompletion(console.input) > 0 then
         console.complete()
       end
-      if k == "v" and (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl")) and love.system.getClipboardText() then
+      if k == "v" and (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl")) and
+        love.system.getClipboardText() then
         console.doInput(love.system.getClipboardText())
       end
       return

@@ -1,3 +1,5 @@
+invertImage = nil
+
 local stageSelectState = state:extend()
 
 function stageSelectState:begin()
@@ -7,6 +9,10 @@ end
 
 function stageSelectState:switching()
   view.forceCanvas = false
+  if invertImage then
+    invertImage:release()
+    invertImage = nil
+  end
 end
 
 loader.load("assets/misc/select.png")
@@ -95,7 +101,6 @@ function stageSelect:removed()
       self.images[i]:release()
     end
   end
-  self.invertImage:release()
 end
 
 function stageSelect:update()
@@ -105,14 +110,19 @@ function stageSelect:update()
   local touched = false
   
   if not self.stop then
-    if input.pressed.left1 then
-      self.sx = self.sx-1
-    elseif input.pressed.right1 then
-      self.sx = self.sx+1
-    elseif input.pressed.up1 then
-      self.sy = self.sy-1
-    elseif input.pressed.down1 then
-      self.sy = self.sy+1
+    if input.usingTouch then
+      self.sx = 1
+      self.sy = 1
+    else
+      if input.pressed.left1 then
+        self.sx = self.sx-1
+      elseif input.pressed.right1 then
+        self.sx = self.sx+1
+      elseif input.pressed.up1 then
+        self.sy = self.sy-1
+      elseif input.pressed.down1 then
+        self.sy = self.sy+1
+      end
     end
     
     if input.length(input.touchPressed) ~= 0 then
@@ -233,21 +243,10 @@ function stageSelect:update()
       self.x = self.oldX + self.sx*80
       self.y = self.oldY + self.sy*64
       
-      local imgData = view.canvas:newImageData()
-      imgData:mapPixel(function(x, y, r, g, b, a)
-          if r == 0 and g == 0 and b == 0 and a > 0 then
-            return 1, 1, 1, 1
-          end
-          
-          return 0, 1, 0, 0
-        end)
-      
-      self.invertImage = love.graphics.newImage(imgData)
-      
       music.stop()
       sfx.playFromFile("assets/sfx/ascend.ogg")
     end
-  elseif (input.pressed.select1 or input.touchPressedOverlaps(8 - 4, (27 * 8) - 4, 32 + 8, 16 + 8)) and
+  elseif (input.pressed.select1 or input.touchPressedOverlaps(8 - 4, (26 * 8) - 4, 32 + 8, 16 + 8)) and
     not self.stop then
     self.stop = true
     states.fadeToState(globals.menuState)
@@ -274,13 +273,13 @@ end
 
 function stageSelect:draw()
   if not self:checkRequirements() then
-    megaMan.getSkin(1).texture:draw(self.anims, 32+(1*81), 32+(1*64), 0, 1, 1, 16, 15)
+    megaMan.getSkin(1).texture:draw(self.anims, 32 + (1 * 81), 32 + (1 * 64), 0, 1, 1, 16, 15)
   else
-    self.tex:draw(self.wilyQuad, 32+(1*81), 32+(1*64))
+    self.tex:draw(self.wilyQuad, 32 + (1 * 81), 32 + (1 * 64))
   end
   
-  for x=0, 2 do
-    for y=0, 2 do
+  for x = 0, 2 do
+    for y = 0, 2 do
       local i = 1
       
       if x == 0 and y == 0 then
@@ -321,12 +320,27 @@ function stageSelect:draw()
     end
   end
   
-  if (self.blink and not self.stop) or self.selected then
+  if (self.blink and not self.stop) or self.selected or self.doImgData then
     self.tex:draw(self.blinkQuad, self.x, self.y)
   end
   
-  if self.invert and self.invertImage then
-    love.graphics.draw(self.invertImage)
+  if self.invert then
+    if not invertImage then
+      love.graphics.setCanvas()
+      local imgData = view.canvas:newImageData()
+      imgData:mapPixel(function(x, y, r, g, b, a)
+          if r == 0 and g == 0 and b == 0 and a > 0 then
+            return 1, 1, 1, 1
+          end
+          
+          return 0, 1, 0, 0
+        end)
+      
+      invertImage = love.graphics.newImage(imgData)
+      love.graphics.setCanvas(view.canvas)
+    end
+    
+    love.graphics.draw(invertImage)
   end
 end
 
