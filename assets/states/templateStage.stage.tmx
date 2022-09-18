@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="16" height="14" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#ffaaff" nextlayerid="6" nextobjectid="42">
+<map version="1.9" tiledversion="1.9.0" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="16" height="14" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#ffaaff" nextlayerid="6" nextobjectid="42">
  <properties>
   <property name="fadeIn" type="bool" value="true"/>
   <property name="musicPath" value=""/>
   <property name="musicVolume" type="float" value="1"/>
-  <property name="state" value=""/>
+  <property name="state" type="file" value=""/>
  </properties>
  <tileset firstgid="1" source="tilesets/testTileset.tsx"/>
  <layer id="1" name="layout" width="16" height="14">

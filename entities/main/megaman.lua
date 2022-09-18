@@ -853,7 +853,7 @@ function megaMan:attemptClimb()
   if lad then
     self.currentLadder = lad
     if (downDown and self.ground and self:collision(self.currentLadder)) or
-      (upDown and self.ground and not self:collision(self.currentLadder)) then
+      (upDown and not self:collision(self.currentLadder)) then
       self.currentLadder = nil
       return
     end
@@ -861,7 +861,8 @@ function megaMan:attemptClimb()
       self:slideToReg()
     end
     if downDown and self.ground and not self:collision(self.currentLadder) then
-      self.y = self.y + (self.gravity >= 0 and (math.round(self.collisionShape.h*0.3)) or (-math.round(self.collisionShape.h*0.3)))
+      self.y = self.y + (self.gravity >= 0 and (math.round(self.collisionShape.h*0.3)) or
+        (-math.round(self.collisionShape.h*0.3)))
     end
     self.velY = 0
     self.velX = 0
@@ -1442,7 +1443,8 @@ function megaMan:code(dt)
       self.stepTime = 0
       self.step = false
     end
-    if (input.pressed["jump" .. tostring(self.input)] or self.tJumpPressed) and self.extraJumps < self.maxExtraJumps then
+    if (input.pressed["jump" .. tostring(self.input)] or self.tJumpPressed) and
+      self.extraJumps < self.maxExtraJumps then
       self.extraJumps = self.extraJumps + 1
       self.velY = self.jumpSpeed * (self.gravity >= 0 and 1 or -1)
     end
@@ -1476,8 +1478,9 @@ function megaMan:code(dt)
   self.y = math.clamp(self.y, view.y-(self.collisionShape.h*1.4),
     view.y+view.h+4)
   self.shootFrames = math.max(self.shootFrames-1, 0)
-  if ((self.gravity >= 0 and self.y >= view.y+view.h) or (self.gravity < 0 and self.y+self.collisionShape.h <= view.y)) or 
-    (checkFalse(self.blockCollision) and checkTrue(self.canGetCrushed) and collision.checkSolid(self)) then
+  if ((self.gravity >= 0 and self.y >= view.y+view.h) or (self.gravity < 0 and
+    self.y+self.collisionShape.h <= view.y)) or (checkFalse(self.blockCollision) and
+    checkTrue(self.canGetCrushed) and collision.checkSolid(self)) then
     self.dieNextFrame = true
     self.pitDeath = true
   end
@@ -1494,7 +1497,8 @@ function megaMan:code(dt)
   end
   
   if megaMan.mainPlayer and (input.pressed["start" .. tostring(self.input)] or self.tStartPressed) and
-    checkFalse(megaMan.mainPlayer.canControl) and checkFalse(megaMan.mainPlayer.canUpdate) and checkFalse(self.canPause) then
+    checkFalse(megaMan.mainPlayer.canControl) and checkFalse(megaMan.mainPlayer.canUpdate) and
+    checkFalse(self.canPause) then
     self.weaponSwitchTimer = 70
     vPad.active = false
     mmWeaponsMenu.pause(self)

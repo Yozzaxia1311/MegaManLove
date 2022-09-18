@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="16" height="14" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#ffaaff" nextlayerid="8" nextobjectid="264">
+<map version="1.9" tiledversion="1.9.0" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="16" height="14" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#ffaaff" nextlayerid="8" nextobjectid="264">
+ <editorsettings>
+  <export target="demo.stage.tmj" format="json"/>
+ </editorsettings>
  <properties>
   <property name="fadeIn" type="bool" value="true"/>
   <property name="gmeTrack" type="int" value="8"/>
   <property name="musicPath" value="assets/sfx/mm5.nsf"/>
   <property name="musicVolume" type="float" value="1"/>
-  <property name="state" value=""/>
+  <property name="state" type="file" value=""/>
  </properties>
  <tileset firstgid="1" source="../assets/states/tilesets/testTileset.tsx"/>
  <tileset firstgid="29" source="../assets/states/templates/templateTileset32x32.tsx"/>

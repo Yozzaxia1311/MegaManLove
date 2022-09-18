@@ -256,7 +256,7 @@ function entities.getRecycled(c, ...)
   if vr and #vr > 0 then
     e = vr[#vr]
     e.recycling = true
-    e.regValues = nil
+    e.registerValues = nil
     e:new(...)
     e.recycling = false
     vr[#vr] = nil
@@ -1523,6 +1523,16 @@ function mapEntity:draw()
   love.graphics.pop()
 end
 
+-- Possible args:
+--
+-- From class: class, layer (call order), locked (protected from auto-unloading), spawnX, spawnY,
+--    spawnWidth, spawnHeight, ...
+-- Ex: `mapEntity.register(objClassHere, 1, false, 0, 0, 16, 16)`
+-- Note: Object properties in the tilemap will be written directly in the object instance as variables.
+--
+-- Custom: string nickname, function callback,
+--    layer (call order), locked (protected from auto-unloading)
+-- Ex: `mapEntity.register("registerNickname", function(mapProperties) end, 1, false)`
 function mapEntity.register(n, f, l, lock, spawnOffY, spawnWidth, spawnHeight, ...)
   if type(n) == "table" then
     local done = false
@@ -1626,10 +1636,10 @@ function mapEntity.add(ol, map)
             insert.id = v.id
             insert.x = v.x + ox
             insert.y = v.y + oy
-            insert.widthProperty = v.width
-            insert.heightProperty = v.height
-            insert.rotationProperty = v.rotation
-            insert.regValues = insert
+            insert.spawnWidth = v.width
+            insert.spawnHeight = v.height
+            insert.spawnRotation = v.rotation
+            insert.mapObjectProperties = insert
             
             if typ == nil or typ == "spawner" then
               entities.add(spawner, v.x + ox, v.y + oy, w, h, nil, layer.data[j].func).insert = insert
@@ -1737,10 +1747,12 @@ function advancedEntity:useHealthBar(oneColor, twoColor, outlineColor, add)
   end
   
   if (add == nil) or add then
-    self.healthHandler = entities.add(healthHandler, oneColor or {128, 128, 128}, twoColor or {255, 255, 255}, outlineColor or {0, 0, 0},
+    self.healthHandler = entities.add(healthHandler, oneColor or {128, 128, 128},
+      twoColor or {255, 255, 255}, outlineColor or {0, 0, 0},
       nil, nil, math.ceil(self.health/4))
   else
-    self.healthHandler = healthHandler(oneColor or {128, 128, 128}, twoColor or {255, 255, 255}, outlineColor or {0, 0, 0},
+    self.healthHandler = healthHandler(oneColor or {128, 128, 128},
+      twoColor or {255, 255, 255}, outlineColor or {0, 0, 0},
       nil, nil, math.ceil(self.health/4))
   end
   self.healthHandler:instantUpdate(self.health)
