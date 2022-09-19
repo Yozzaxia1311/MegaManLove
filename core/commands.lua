@@ -259,7 +259,7 @@ concmd["recdel"] = {
 
 concmd["recopen"] = {
   helptext = "open recording file",
-  flags = {},
+  flags = {"cheat"},
   fun = function(cmd)
       if not cmd[2] then return end
       if love.filesystem.getInfo(cmd[2] .. ".rd") then
