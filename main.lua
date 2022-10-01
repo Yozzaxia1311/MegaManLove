@@ -18,7 +18,6 @@ drawShader = drawShader and love.graphics.newShader([[
     }
   ]])
 
-
 serQueue = nil
 deserQueue = nil
 
