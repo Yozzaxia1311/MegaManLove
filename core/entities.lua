@@ -1539,14 +1539,14 @@ function mapEntity.register(n, f, l, lock, spawnOffY, spawnWidth, spawnHeight, .
     for i=1, #mapEntity.registered do
       if mapEntity.registered[i].layer == f or 0 then
         mapEntity.registered[i].data[#mapEntity.registered[i].data+1] = {func=n, name=getClassName(n),
-          locked=l, spawnInfo={lock, spawnOffY, spawnWidth, spawnHeight}}
+          locked=l, spawnInfo={lock, spawnOffY, spawnWidth, spawnHeight, ...}}
         done = true
         break
       end
     end
     if not done then
       mapEntity.registered[#mapEntity.registered+1] = {layer=f or 0, data={{func=n, name=getClassName(n),
-        locked=l, spawnInfo={lock, spawnOffY, spawnWidth, spawnHeight}}}}
+        locked=l, spawnInfo={lock, spawnOffY, spawnWidth, spawnHeight, ...}}}}
       mapEntity.doSort = true
     end
   else
