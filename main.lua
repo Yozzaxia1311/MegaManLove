@@ -21,6 +21,7 @@ drawShader = love.graphics.newShader([[
   
   nesShader = love.graphics.newShader("nesLUT.glsl")
 
+
   nesShader:send("palette", love.graphics.newImage("nesLUT.png"))
 
 serQueue = nil
