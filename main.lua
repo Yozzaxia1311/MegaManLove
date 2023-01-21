@@ -464,12 +464,12 @@ local function beforeUpdate()
       elseif lk_isDown("lctrl") or lk_isDown("rctrl") then
         if lk_isDown("o") then
           if not savestateOnce then
-            console.parse("savestatesave quickSavestate")
+            console.parse("sssave quickSavestate")
           end
           savestateOnce = true
         elseif lk_isDown("p") then
           if not savestateOnce then
-            console.parse("savestateopen quickSavestate")
+            console.parse("ssopen quickSavestate")
           end
           savestateOnce = true
         elseif lk_isDown("r") then

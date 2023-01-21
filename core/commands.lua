@@ -405,19 +405,19 @@ concmd["states"] = {
     end
 }
 
-concmd["savestatesave"] = {
+concmd["sssave"] = {
   helptext = "save savestate",
   flags = {"cheat"},
   fun = function(cmd)
       if not cmd[2] then return end
       serQueue = function(s)
           save.save(cmd[2] .. ".ss", s)
-          console.print("Savestates saved")
+          console.print("Savestate saved")
         end
     end
 }
 
-concmd["savestateopen"] = {
+concmd["ssopen"] = {
   helptext = "open savestate file",
   flags = {"cheat"},
   fun = function(cmd)
@@ -430,7 +430,7 @@ concmd["savestateopen"] = {
     end
 }
 
-concmd["savestatedel"] = {
+concmd["ssdel"] = {
   helptext = "delete savestate",
   flags = {},
   fun = function(cmd)
