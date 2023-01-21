@@ -76,7 +76,7 @@ end
 function record.startRec()
   record.resetRec()
   
-  record.record.context = ser()
+  record.record.savestate = ser()
   record.recordInput = true
 end
 
@@ -102,9 +102,9 @@ end
 function record.openRec(f)
   record.resetLoadedRec()
   local file = save.load(f)
-  record.oldContext = ser()
+  record.oldSavestate = ser()
   
-  deser(file.context)
+  deser(file.savestate)
   
   record.recPos = 1
   record.record = {data = {}}
@@ -130,8 +130,8 @@ function record.update()
       else
         deserQueue = function()
           record.demo = false
-          local c = record.oldContext
-          record.oldContext = nil
+          local c = record.oldSavestate
+          record.oldSavestate = nil
           return c
         end
       end
