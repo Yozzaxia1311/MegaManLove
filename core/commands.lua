@@ -4,10 +4,10 @@ convar["cheats"] = {
   value = 0,
   fun = function(arg)
       if numberSanitize(arg) == 1 then
-        console.print("DO NOT OPEN A CONTEXT OR RECORDING FROM A SOURCE YOU DO NOT TRUST!")
-        console.print(".cntx and .rd FILES MAY EXECUTE MALICIOUS LUA CODE!")
-        console.print("Press Control + O to quick-save context")
-        console.print("Press Control + P to quick-load context")
+        console.print("DO NOT OPEN A SAVESTATE OR RECORDING FROM A SOURCE YOU DO NOT TRUST!")
+        console.print(".ss and .rd FILES MAY EXECUTE MALICIOUS LUA CODE!")
+        console.print("Press Control + O to quick-save savestate")
+        console.print("Press Control + P to quick-load savestate")
         console.print("Press Control + R to start recording")
         console.print("Disable cheating for the rest of the game with the lockcheats command")
       end
@@ -405,47 +405,47 @@ concmd["states"] = {
     end
 }
 
-concmd["contextsave"] = {
-  helptext = "save context",
+concmd["savestatesave"] = {
+  helptext = "save savestate",
   flags = {"cheat"},
   fun = function(cmd)
       if not cmd[2] then return end
       serQueue = function(s)
-          save.save(cmd[2] .. ".cntx", s)
-          console.print("Context saved")
+          save.save(cmd[2] .. ".ss", s)
+          console.print("Savestates saved")
         end
     end
 }
 
-concmd["contextopen"] = {
-  helptext = "open context file",
+concmd["savestateopen"] = {
+  helptext = "open savestate file",
   flags = {"cheat"},
   fun = function(cmd)
       if not cmd[2] then return end
-      if love.filesystem.getInfo(cmd[2] .. ".cntx") then
-        deserQueue = save.load(cmd[2] .. ".cntx")
+      if love.filesystem.getInfo(cmd[2] .. ".ss") then
+        deserQueue = save.load(cmd[2] .. ".ss")
       else
-        console.print("No such context file \"" .. cmd[2] .. "\"")
+        console.print("No such savestate file \"" .. cmd[2] .. "\"")
       end
     end
 }
 
-concmd["contextdel"] = {
-  helptext = "delete context",
+concmd["savestatedel"] = {
+  helptext = "delete savestate",
   flags = {},
   fun = function(cmd)
       if not cmd[2] then return end
-      if not love.filesystem.getInfo(cmd[2] .. ".cntx") then
-        console.print("No such context file \"" .. cmd[2] .. "\"")
+      if not love.filesystem.getInfo(cmd[2] .. ".ss") then
+        console.print("No such savestate file \"" .. cmd[2] .. "\"")
       else
-        love.filesystem.remove(cmd[2] .. ".cntx")
-        console.print("Context deleted")
+        love.filesystem.remove(cmd[2] .. ".ss")
+        console.print("Savestate deleted")
       end
     end
 }
 
-concmd["contexts"] = {
-  helptext = "gives a list of contexts (savestates)",
+concmd["savestates"] = {
+  helptext = "gives a list of savestates",
   flags = {},
   fun = function(cmd)
       local check
@@ -454,13 +454,13 @@ concmd["contexts"] = {
         if not love.filesystem.getInfo(check) then console.print("No such directory \""..cmd[2].."\"") return end
       end
       local result = iterateFiles(function(f)
-          return f:sub(-5) == ".cntx"
+          return f:sub(-5) == ".ss"
         end, check)
       if #result == 0 then
         if check then
-          console.print("No contexts in directory \""..cmd[2].."\"")
+          console.print("No savestates in directory \""..cmd[2].."\"")
         else
-          console.print("No contexts exist")
+          console.print("No savestates exist")
         end
         return
       end

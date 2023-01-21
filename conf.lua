@@ -13,7 +13,7 @@ function engineGlobals(whenLoveModuleIsLoaded)
     useConsole = not isMobile and not isWeb
     canDoFullscreenShortcut = not isMobile and not isWeb
     canDoScaleShortcuts = not isMobile and not isWeb
-    canDoContextAndRecordShortcuts = not isMobile
+    canDoSavestateAndRecordShortcuts = not isMobile
     drawShader = not isWeb
   else
     gameWidth = 256

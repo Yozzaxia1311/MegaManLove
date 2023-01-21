@@ -31,7 +31,7 @@ lastTextInput = nil
 
 altEnterOnce = false
 scaleOnce = {false, false, false, false, false, false, false, false, false}
-contextOnce = false
+savestateOnce = false
 
 function useDefaultBinds()
   input.unbind()
@@ -458,25 +458,25 @@ local function beforeUpdate()
       end
     end
     
-    if canDoContextAndRecordShortcuts then
+    if canDoSavestateAndRecordShortcuts then
       if not lk_isDown("o") and not lk_isDown("p") and not lk_isDown("r") then
-        contextOnce = false
+        savestateOnce = false
       elseif lk_isDown("lctrl") or lk_isDown("rctrl") then
         if lk_isDown("o") then
-          if not contextOnce then
-            console.parse("contextsave quickContext")
+          if not savestateOnce then
+            console.parse("savestatesave quickSavestate")
           end
-          contextOnce = true
+          savestateOnce = true
         elseif lk_isDown("p") then
-          if not contextOnce then
-            console.parse("contextopen quickContext")
+          if not savestateOnce then
+            console.parse("savestateopen quickSavestate")
           end
-          contextOnce = true
+          savestateOnce = true
         elseif lk_isDown("r") then
-          if not contextOnce then
+          if not savestateOnce then
             console.parse("rec")
           end
-          contextOnce = true
+          savestateOnce = true
         end
       end
     end
