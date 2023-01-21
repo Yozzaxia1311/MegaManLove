@@ -781,8 +781,8 @@ function entities.remove(e)
 end
 
 function entities.clear()
-  for _, v in safeipairs(entities.all) do
-    entities.remove(v)
+  while entities.all[#entities.all] do
+    entities.remove(entities.all[#entities.all])
   end
   
   entities.recycle = {}
