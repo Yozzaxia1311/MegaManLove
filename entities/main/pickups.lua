@@ -19,6 +19,7 @@ function pickUp.isBanned(i, id, path)
 end
 
 function pickUp:new(despawn, gd, fwp, id, path)
+  self.cancelInsertEntity = true
   pickUp.super.new(self)
   self:setRectangleCollision(16, 16)
   self.timer = 0
@@ -37,6 +38,13 @@ function pickUp:new(despawn, gd, fwp, id, path)
   end
   if not pickUp.banIDs[self.__index] then
     pickUp.banIDs[self.__index] = {}
+  end
+
+  if not self.cancelInsertPickup and #basicEntity.insertVars ~= 0 then
+    for k, v in pairs(basicEntity.insertVars[#basicEntity.insertVars]) do
+      self[k] = v ~= nil and v or self[k]
+    end
+    basicEntity.insertVars[#basicEntity.insertVars] = nil
   end
 end
 
