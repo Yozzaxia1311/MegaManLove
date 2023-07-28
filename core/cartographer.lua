@@ -1042,13 +1042,13 @@ local function loadTSX(map, path)
         if v.source then
           tmp = ts.image
           local tmp2 = v.source:split("/")
-          ts.image = v.source:sub(0, -tmp2[#tmp2]:len()-1) .. tmp.source
+          ts.image = (v.source:sub(0, -tmp2[#tmp2]:len()-1) .. tmp.source):getAbsolutePath(usePath)
           ts.imagewidth = tonumber(tmp.width)
           ts.imageheight = tonumber(tmp.height)
         else
           v.imagewidth = tonumber(v.image.width)
           v.imageheight = tonumber(v.image.height)
-          v.image = v.image.source
+          v.image = v.image.source:getAbsolutePath(usePath)
         end
       end
       
