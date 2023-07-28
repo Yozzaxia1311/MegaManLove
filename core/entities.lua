@@ -995,7 +995,7 @@ function basicEntity:new()
   self.canUpdate = {global=true}
   self.canDraw = {global=true}
   
-  if #basicEntity.insertVars ~= 0 then
+  if not self.cancelInsertBasicEntity and #basicEntity.insertVars ~= 0 then
     for k, v in pairs(basicEntity.insertVars[#basicEntity.insertVars]) do
       self[k] = v ~= nil and v or self[k]
     end
@@ -1307,6 +1307,7 @@ entity = basicEntity:extend()
 entity.autoClean = false
 
 function entity:new()
+  self.cancelInsertBasicEntity = true
   entity.super.new(self)
   
   self.gravityMultipliers = {global=1}
@@ -1340,6 +1341,13 @@ function entity:new()
   self.moveByMoveY = 0
   self.canBeInvincible = {global=false}
   self.canStandSolid = {global=true}
+  
+  if not self.cancelInsertEntity and #basicEntity.insertVars ~= 0 then
+    for k, v in pairs(basicEntity.insertVars[#basicEntity.insertVars]) do
+      self[k] = v ~= nil and v or self[k]
+    end
+    basicEntity.insertVars[#basicEntity.insertVars] = nil
+  end
 end
 
 function entity:moveBy(xx, yy, round)
@@ -1692,6 +1700,7 @@ advancedEntity.BIGBLAST = 2
 advancedEntity.DEATHBLAST = 3
 
 function advancedEntity:new()
+  self.cancelInsertEntity = true
   advancedEntity.super.new(self)
   
   if not self.recycling then
@@ -1732,6 +1741,13 @@ function advancedEntity:new()
   self.healthHandler = nil
   self.autoFace = -1
   self.side = -1
+  
+  if not self.cancelInsertAdvancedEntity and #basicEntity.insertVars ~= 0 then
+    for k, v in pairs(basicEntity.insertVars[#basicEntity.insertVars]) do
+      self[k] = v ~= nil and v or self[k]
+    end
+    basicEntity.insertVars[#basicEntity.insertVars] = nil
+  end
 end
 
 function advancedEntity:added()
@@ -1941,6 +1957,7 @@ bossEntity = advancedEntity:extend()
 bossEntity.autoClean = false
 
 function bossEntity:new()
+  self.cancelInsertAdvancedEntity = true
   bossEntity.super.new(self)
   self.soundOnDeath = "assets/sfx/dieExplode.ogg"
   self.dropItem = false
@@ -1973,6 +1990,13 @@ function bossEntity:new()
   self.replayMusicWhenContinuing = true
   self:setMusic("assets/sfx/mm5.nsf", nil, 10)
   self:setBossIntroMusic("assets/sfx/mm5.nsf", nil, 14)
+  
+  if not self.cancelInsertBossEntity and #basicEntity.insertVars ~= 0 then
+    for k, v in pairs(basicEntity.insertVars[#basicEntity.insertVars]) do
+      self[k] = v ~= nil and v or self[k]
+    end
+    basicEntity.insertVars[#basicEntity.insertVars] = nil
+  end
 end
 
 function bossEntity:added()
