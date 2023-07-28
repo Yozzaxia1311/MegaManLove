@@ -44,12 +44,14 @@ function right:update(dt)
         camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
         camera.main.player = player
         camera.main.speed = self.spd
-        local s = self:collisionTable(section.getSections(self.x+2, self.y, self.collisionShape.w, self.collisionShape.h), 2, 0)
-        for _, v in ipairs(s) do
+        local s
+        for _, v in ipairs(self:collisionTable(section.getSections(self.x+2, self.y,
+          self.collisionShape.w, self.collisionShape.h), 2, 0)) do
           if v.name == self.name then
             s = v
             break
           end
+          s = v
         end
         camera.main.toSection = s
         camera.main.x = self.x+2-camera.main.collisionShape.w
@@ -106,12 +108,14 @@ function left:update(dt)
         camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
         camera.main.player = player
         camera.main.speed = self.spd
-        local s = self:collisionTable(section.getSections(self.x-2, self.y, self.collisionShape.w, self.collisionShape.h), -2, 0)
-        for _, v in ipairs(s) do
+        local s
+        for _, v in ipairs(self:collisionTable(section.getSections(self.x-2, self.y,
+          self.collisionShape.w, self.collisionShape.h), -2, 0)) do
           if v.name == self.name then
             s = v
             break
           end
+          s = v
         end
         camera.main.toSection = s
         camera.main.x = self.x
@@ -171,12 +175,14 @@ function down:update(dt)
         camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
         camera.main.player = player
         camera.main.speed = self.spd
-        local s = self:collisionTable(section.getSections(self.x, self.y+2, self.collisionShape.w, self.collisionShape.h), 0, 2)
-        for _, v in ipairs(s) do
+        local s
+        for _, v in ipairs(self:collisionTable(section.getSections(self.x, self.y+2,
+          self.collisionShape.w, self.collisionShape.h), 0, 2)) do
           if v.name == self.name then
             s = v
             break
           end
+          s = v
         end
         camera.main.toSection = s
         camera.main.y = self.y+2-camera.main.collisionShape.h
@@ -236,12 +242,14 @@ function up:update(dt)
         camera.main.doScrollX = (self.scrollx~=nil) and self.scrollx or camera.main.doScrollX
         camera.main.player = player
         camera.main.speed = self.spd
-        local s = self:collisionTable(section.getSections(self.x, self.y-2, self.collisionShape.w, self.collisionShape.h), 0, -2)
-        for _, v in ipairs(s) do
+        local s
+        for _, v in ipairs(self:collisionTable(section.getSections(self.x, self.y-2,
+          self.collisionShape.w, self.collisionShape.h), 0, -2)) do
           if v.name == self.name then
             s = v
             break
           end
+          s = v
         end
         camera.main.toSection = s
         camera.main.y = self.y
