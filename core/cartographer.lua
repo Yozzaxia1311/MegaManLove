@@ -1202,8 +1202,6 @@ local function layerGroupParenting(tab, map, path)
             end
           end
         end
-        
-        setProperties(v, path)
       elseif v.type == "objectgroup" then
         v.id = tonumber(v.id)
         v.visible = v.visible ~= "0"
