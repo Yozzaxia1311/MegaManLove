@@ -162,7 +162,7 @@ function bossDoor:update()
   end
   if self.state == 0 then
     self.timer = 0
-    if camera.main and not camera.main.transition then
+    if self.canWalkThrough and camera.main and not camera.main.transition then
       for i=1, #megaMan.allPlayers do
         local player = megaMan.allPlayers[i]
         if checkFalse(player.canControl) and self:collision(player) then
