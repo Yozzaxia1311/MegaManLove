@@ -1559,12 +1559,15 @@ function megaMan:charge(animOnly)
 end
 
 function megaMan:grav()
-  if self.gravityType == 0 then
-    self.velY = self.velY + self.gravity
-  elseif self.gravityType == 1 then
-    self.velY = math.approach(self.velY, 0, self.gravity)
+  if not megautils.isNoClip() then
+    if self.gravityType == 0 then
+      self.velY = self.velY + self.gravity
+    elseif self.gravityType == 1 then
+      self.velY = math.approach(self.velY, 0, self.gravity)
+    end
+    self.velY = self.gravity >= 0 and math.min(self.maxAirSpeed, self.velY) or
+      math.max(-self.maxAirSpeed, self.velY)
   end
-  self.velY = self.gravity >= 0 and math.min(self.maxAirSpeed, self.velY) or math.max(-self.maxAirSpeed, self.velY)
 end
 
 function megaMan:attemptWeaponSwitch()
