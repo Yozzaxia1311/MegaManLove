@@ -426,6 +426,7 @@ function music.play(path, vol, track, from)
       end
       music.music:setTrack(music.track)
       music.music:seek(music._time)
+      music.setVolume(music.vol)
       music.music:play()
       music.setLock(music.locked)
     end
