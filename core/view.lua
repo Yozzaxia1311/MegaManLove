@@ -150,7 +150,9 @@ function view.draw()
     love.graphics.setCanvas()
     love.graphics.setColor(1, 1, 1, 1)
     cscreen.apply()
+    love.graphics.setShader(nesShader)
     love.graphics.draw(view.canvas)
+    love.graphics.setShader()
     cscreen.cease()
   end
 end

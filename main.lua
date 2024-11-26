@@ -10,13 +10,19 @@ if not isMobile and love.graphics then
   s:release()
 end
 
-drawShader = drawShader and love.graphics.newShader([[
+drawShader = love.graphics.newShader([[
+    extern int pos[2];
+    
     vec4 position(mat4 transform_projection, vec4 vertex_position)
     {
-      vertex_position.xy = floor(vertex_position.xy);
-      return transform_projection * vertex_position;
+      return transform_projection * (vertex_position + vec4(pos[0], pos[1], 0, 0));
     }
   ]])
+  
+  nesShader = love.graphics.newShader("nesLUT.glsl")
+
+
+  nesShader:send("palette", love.graphics.newImage("nesLUT.png"))
 
 serQueue = nil
 deserQueue = nil
@@ -74,39 +80,17 @@ function loadBinds()
   
   if data and data.inputBinds then
     for i = 1, maxPlayerCount do
-      if data.inputBinds["up" .. tostring(i)] then
-        input.bind(data.inputBinds["up" .. tostring(i)],"up" .. tostring(i), i == 1)
-      end
-      if data.inputBinds["down" .. tostring(i)] then
-        input.bind(data.inputBinds["down" .. tostring(i)], "down" .. tostring(i), i == 1)
-      end
-      if data.inputBinds["left" .. tostring(i)] then
-        input.bind(data.inputBinds["left" .. tostring(i)], "left" .. tostring(i), i == 1)
-      end
-      if data.inputBinds["right" .. tostring(i)] then
-        input.bind(data.inputBinds["right" .. tostring(i)], "right" .. tostring(i), i == 1)
-      end
-      if data.inputBinds["jump" .. tostring(i)] then
-        input.bind(data.inputBinds["jump" .. tostring(i)], "jump" .. tostring(i), i == 1)
-      end
-      if data.inputBinds["shoot" .. tostring(i)] then
-        input.bind(data.inputBinds["shoot" .. tostring(i)], "shoot" .. tostring(i), i == 1)
-      end
-      if data.inputBinds["dash" .. tostring(i)] then
-        input.bind(data.inputBinds["dash" .. tostring(i)], "dash" .. tostring(i), i == 1)
-      end
-      if data.inputBinds["start" .. tostring(i)] then
-        input.bind(data.inputBinds["start" .. tostring(i)], "start" .. tostring(i), i == 1)
-      end
-      if data.inputBinds["select" .. tostring(i)] then
-        input.bind(data.inputBinds["select" .. tostring(i)], "select" .. tostring(i), i == 1)
-      end
-      if data.inputBinds["prev" .. tostring(i)] then
-        input.bind(data.inputBinds["prev" .. tostring(i)], "prev" .. tostring(i), i == 1)
-      end
-      if data.inputBinds["next" .. tostring(i)] then
-        input.bind(data.inputBinds["next" .. tostring(i)], "next" .. tostring(i), i == 1)
-      end
+      if data.inputBinds["up" .. tostring(i)] then input.bind(data.inputBinds["up" .. tostring(i)], "up" .. tostring(i), i == 1) end
+      if data.inputBinds["down" .. tostring(i)] then input.bind(data.inputBinds["down" .. tostring(i)], "down" .. tostring(i), i == 1) end
+      if data.inputBinds["left" .. tostring(i)] then input.bind(data.inputBinds["left" .. tostring(i)], "left" .. tostring(i), i == 1) end
+      if data.inputBinds["right" .. tostring(i)] then input.bind(data.inputBinds["right" .. tostring(i)], "right" .. tostring(i), i == 1) end
+      if data.inputBinds["jump" .. tostring(i)] then input.bind(data.inputBinds["jump" .. tostring(i)], "jump" .. tostring(i), i == 1) end
+      if data.inputBinds["shoot" .. tostring(i)] then input.bind(data.inputBinds["shoot" .. tostring(i)], "shoot" .. tostring(i), i == 1) end
+      if data.inputBinds["dash" .. tostring(i)] then input.bind(data.inputBinds["dash" .. tostring(i)], "dash" .. tostring(i), i == 1) end
+      if data.inputBinds["start" .. tostring(i)] then input.bind(data.inputBinds["start" .. tostring(i)], "start" .. tostring(i), i == 1) end
+      if data.inputBinds["select" .. tostring(i)] then input.bind(data.inputBinds["select" .. tostring(i)], "select" .. tostring(i), i == 1) end
+      if data.inputBinds["prev" .. tostring(i)] then input.bind(data.inputBinds["prev" .. tostring(i)], "prev" .. tostring(i), i == 1) end
+      if data.inputBinds["next" .. tostring(i)] then input.bind(data.inputBinds["next" .. tostring(i)], "next" .. tostring(i), i == 1) end
     end
   end
 end
@@ -117,7 +101,13 @@ function initEngine()
   gamepadCheck = {}
   doCheckDelay = false
   love.graphics.setFont(mmFont)
+  input.init()
+  loadBinds()
+  record.init()
+  vPad.init()
   globals = {}
+  view.init(gameWidth, gameHeight, 2)
+  cscreen.init(view.w*view.scale, view.h*view.scale, borderLeft, borderRight)
   
   megautils.runFile("core/commands.lua")
   
@@ -143,16 +133,15 @@ function initEngine()
   
   local wilyIntro = function()
       error("Placeholder for Wily")
-      --states.setq("WILY INTRO HERE")
+      --megautils.gotoState("WILY INTRO HERE")
     end
   
   -- [RM 1] [RM 2] [RM 3]
   -- [RM 4] [Wily] [RM 5]
   -- [RM 6] [RM 7] [RM 8]
-  -- Every value in this list should either be a function, or a `.lua` file that returns an entity.
-  globals.robotMasterEntities = {
+  globals.robotMasterEntities = { -- Every value in this list should either be a function, or a `.lua` file that returns an entity.
       nil, nil, nil,
-      nil, wilyIntro, "demo/stickMan/stickman.lua",
+      nil, wilyIntro, "demo/stickman.lua",
       nil, nil, nil
     }
   
@@ -160,16 +149,32 @@ function initEngine()
       globals.startingLives = (d == "easy") and 3 or 2
     end, autoClean=false}
   
-  megautils.runCallback(megautils.cleanFuncs)
-  loader.clear()
+  for _, v in pairs(megautils.cleanFuncs) do
+    if type(v) == "function" then
+      v()
+    else
+      v.func()
+    end
+  end
+  
+  megautils.unloadAllResources()
+  
+  for _, v in pairs(megautils.initEngineFuncs) do
+    if type(v) == "function" then
+      v()
+    else
+      v.func()
+    end
+  end
+  
   megautils.setDifficulty("normal")
-  megautils.runCallback(megautils.initEngineFuncs)
+  
+  megautils.runFile("init.lua")
 end
 
 function love.load()
   require("requires")
   
-  view.init(gameWidth, gameHeight)
   console.init()
   initEngine()
   
@@ -185,13 +190,13 @@ function love.load()
     save.save("main.sav", {})
   end
   
-  states.setq(globals.disclaimerState)
+  megautils.gotoState(globals.disclaimerState)
   
   console.parse("exec autoexec")
 end
 
 function love.resize(w, h)
-  view.resize(w, h)
+  cscreen.update(w, h)
   if console.state == 0 and console.y == -console.h then
     console.y = -math.huge
     console.update()
@@ -249,8 +254,7 @@ function love.keypressed(k, s, r)
       if k == "tab" and #console.input > 0 and #console.getCompletion(console.input) > 0 then
         console.complete()
       end
-      if k == "v" and (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl")) and
-        love.system.getClipboardText() then
+      if k == "v" and (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl")) and love.system.getClipboardText() then
         console.doInput(love.system.getClipboardText())
       end
       return
@@ -321,6 +325,7 @@ end
 function love.mousepressed(x, y, button, touch)
   if love.mouse and not touch then
     lastTouch.x, lastTouch.y = cscreen.project(x, y)
+    lastTouch.x, lastTouch.y = lastTouch.x / view.scale, lastTouch.y / view.scale
     lastTouch.id = "mousetouch"
     lastTouch.pressure = 1
     input.usingTouch = true
@@ -335,6 +340,7 @@ function love.touchpressed(id, x, y, dx, dy, pressure)
   if useConsole and console.state == 1 then return end
   
   lastTouch.x, lastTouch.y = cscreen.project(x, y)
+  lastTouch.x, lastTouch.y = lastTouch.x / view.scale, lastTouch.y / view.scale
   lastTouch.id = id
   lastTouch.pressure = pressure
   input.usingTouch = true
@@ -362,6 +368,106 @@ function love.textinput(k)
   end
 end
 
+function love.update(dt)
+  if isWeb then
+    beforeUpdate()
+  end
+  
+  if love.joystick then
+    if globals.axisTmp then
+      if globals.axisTmp.x and (not globals.axisTmp.y or
+        math.abs(globals.axisTmp.x[3]) > math.abs(globals.axisTmp.y[3])) then
+        lastPressed.type, lastPressed.input, lastPressed.name = globals.axisTmp.x[1], globals.axisTmp.x[2], globals.axisTmp.x[4]
+      elseif globals.axisTmp.y then
+        lastPressed.type, lastPressed.input, lastPressed.name = globals.axisTmp.y[1], globals.axisTmp.y[2], globals.axisTmp.y[4]
+      end
+      globals.axisTmp = nil
+    end
+  end
+  
+  local doAgain = true
+  
+  while doAgain do
+    states.switched = false
+    if not record.demo then
+      input.poll()
+      vPad.update()
+    end
+    record.update()
+    if useConsole then console.update(dt) end
+    states.update(dt)
+    megautils.checkQueue()
+    states.checkQueue()
+    input.flush()
+    record.anyPressed = false
+    doAgain = states.switched
+  end
+  
+  mmMusic.update()
+  
+  if love.joystick then
+    for k, _ in pairs(gamepadCheck) do
+      gamepadCheck[k] = gamepadCheck[k] - 1
+      if gamepadCheck[k] < 0 then
+        gamepadCheck[k] = nil
+      end
+    end
+  end
+  if love.keyboard then
+    for k, _ in pairs(keyboardCheck) do
+      keyboardCheck[k] = keyboardCheck[k] - 1
+      if keyboardCheck[k] < 0 then
+        keyboardCheck[k] = nil
+      end
+    end
+  end
+end
+
+function love.draw()
+  love.graphics.push()
+  view.draw()
+  love.graphics.pop()
+  vPad.draw()
+  if useConsole then console.draw() end
+  
+  if isWeb then
+    afterUpdate()
+  end
+end
+
+function love.quit()
+  if mmMusic then
+    mmMusic.stop()
+    if mmMusic.gme then mmMusic.gme:release() end
+  end
+end
+
+-- Love2D doesn't fire the resize event for several functions, so here's some hacks.
+local lf = love.window.setFullscreen
+local lsm = love.window.setMode
+local lum = love.window.updateMode
+
+function love.window.setFullscreen(s)
+  if not isWeb then
+    lf(s)
+  end
+  love.resize(love.graphics.getDimensions())
+end
+
+function love.window.setMode(w, h, f)
+  if not isWeb then
+    lsm(w, h, f)
+  end
+  love.resize(love.graphics.getDimensions())
+end
+
+function love.window.updateMode(w, h, f)
+  if not isWeb then
+    lum(w, h, f)
+  end
+  love.resize(love.graphics.getDimensions())
+end
+
 local lt = love.timer
 local lt_sleep = love.timer.sleep
 local lt_getTime = love.timer.getTime
@@ -371,14 +477,16 @@ local lk_isDown = love.keyboard.isDown
 local le = love.event
 local le_pump = love.event.pump
 local le_poll = love.event.poll
+local lu = love.update
 local lg = love.graphics
 local lg_isActive = love.graphics.isActive
 local lg_origin = love.graphics.origin
 local lg_clear = love.graphics.clear
 local lg_getBackgroundColor = love.graphics.getBackgroundColor
 local lg_present = love.graphics.present
-local lg_push = love.graphics.push
-local lg_pop = love.graphics.pop
+local ld = love.draw
+local lh = love.handlers
+local lq = love.quit
 
 function pressingHardInputs(k)
   if megautils then
@@ -512,8 +620,8 @@ end
 local function afterUpdate()
   megautils.checkQueue()
   states.checkQueue()
-  sfx.updateGMEVoiceMutes()
-  music.checkQueue()
+  megautils.updateGMEVoiceMutes()
+  mmMusic.checkQueue()
   console.doWait()
   record.anyPressed = false
   record.anyPressedDuringRec = false
@@ -529,112 +637,7 @@ local function afterUpdate()
   lastTextInput = nil
 end
 
-function love.update(dt)
-  if isWeb then
-    beforeUpdate()
-  end
-  
-  if love.joystick then
-    if globals.axisTmp then
-      if globals.axisTmp.x and (not globals.axisTmp.y or
-        math.abs(globals.axisTmp.x[3]) > math.abs(globals.axisTmp.y[3])) then
-        lastPressed.type, lastPressed.input, lastPressed.name = globals.axisTmp.x[1],
-          globals.axisTmp.x[2], globals.axisTmp.x[4]
-      elseif globals.axisTmp.y then
-        lastPressed.type, lastPressed.input, lastPressed.name = globals.axisTmp.y[1],
-          globals.axisTmp.y[2], globals.axisTmp.y[4]
-      end
-      globals.axisTmp = nil
-    end
-  end
-  
-  local doAgain = true
-  
-  while doAgain do
-    states.switched = false
-    if not record.demo then
-      input.poll()
-      vPad.update()
-    end
-    record.update()
-    if useConsole then console.update(dt) end
-    states.update(dt)
-    entities.update(dt)
-    megautils.checkQueue()
-    states.checkQueue()
-    input.flush()
-    record.anyPressed = false
-    doAgain = states.switched
-  end
-  
-  music.update()
-  
-  if love.joystick then
-    for k, _ in safepairs(gamepadCheck) do
-      gamepadCheck[k] = gamepadCheck[k] - 1
-      if gamepadCheck[k] < 0 then
-        gamepadCheck[k] = nil
-      end
-    end
-  end
-  if love.keyboard then
-    for k, _ in safepairs(keyboardCheck) do
-      keyboardCheck[k] = keyboardCheck[k] - 1
-      if keyboardCheck[k] < 0 then
-        keyboardCheck[k] = nil
-      end
-    end
-  end
-end
-
-function love.draw()
-  lg_push()
-  view.draw()
-  lg_pop()
-  vPad.draw()
-  if useConsole then console.draw() end
-  
-  if isWeb then
-    afterUpdate()
-  end
-end
-
-function love.quit()
-  if music and music.clean() then end
-end
-
--- Love2D doesn't fire the resize event for several functions, so here's some hacks.
-local lf = love.window.setFullscreen
-local lsm = love.window.setMode
-local lum = love.window.updateMode
-
-function love.window.setFullscreen(s)
-  if not isWeb then
-    lf(s)
-  end
-  love.resize(love.graphics.getDimensions())
-end
-
-function love.window.setMode(w, h, f)
-  if not isWeb then
-    lsm(w, h, f)
-  end
-  love.resize(love.graphics.getDimensions())
-end
-
-function love.window.updateMode(w, h, f)
-  if not isWeb then
-    lum(w, h, f)
-  end
-  love.resize(love.graphics.getDimensions())
-end
-
 if not isWeb then
-  local lu = love.update
-  local ld = love.draw
-  local lh = love.handlers
-  local lq = love.quit
-  
   function love.run()
     local bu = lt and lt.getTime()
     
@@ -684,18 +687,18 @@ function ser()
       isMobile = isMobile,
       isWeb = isWeb,
       compatMusicMode = compatMusicMode,
-      canUseGME = canUseGME,
       spriteBatchTileMaps = spriteBatchTileMaps,
       input = input.ser(),
       vPad = vPad.ser(),
+      cscreen = cscreen.ser(),
       view = view.ser(),
       megautils = megautils.ser(),
       state = states.ser(),
       basicEntity = basicEntity.basicEntityImgCache,
-      entities = entities.ser(),
+      entitySystem = entitySystem.ser(),
       section = section.ser(),
       loader = loader.ser(),
-      music = music.ser(),
+      music = mmMusic.ser(),
       record = record.ser(),
       collision = collision.ser(),
       banner = banner and banner.ser(),
@@ -724,8 +727,6 @@ end
 -- Load state
 function deser(from, dontChangeMusic)
   love.audio.stop()
-  sfx._cachedMutes = {}
-  sfx.curS = {}
   
   local t = binser.deserialize(from)
   
@@ -735,19 +736,19 @@ function deser(from, dontChangeMusic)
   isMobile = t.isMobile
   isWeb = t.isWeb
   compatMusicMode = t.compatMusicMode
-  canUseGME = t.canUseGME
   spriteBatchTileMaps = t.spriteBatchTileMaps
   input.deser(t.input)
   vPad.deser(t.vPad)
+  cscreen.deser(t.cscreen)
   view.deser(t.view)
   megautils.deser(t.megautils)
   states.deser(t.state)
-  entities.deser(t.entities)
   basicEntity._imgCache = t.basicEntityImgCache
+  entitySystem.deser(t.entitySystem)
   section.deser(t.section)
   loader.deser(t.loader)
   if not dontChangeMusic then
-    music.deser(t.music)
+    mmMusic.deser(t.music)
   end
   record.deser(t.record)
   collision.deser(t.collision)
